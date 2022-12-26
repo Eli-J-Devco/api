@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="User">
+	<resultMap id="UserAuthMap"
+		type="com.nwm.api.entities.UserEntity">
+		<result property="user_name" column="user_name" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="first_name" column="first_name" />
+		<result property="last_name" column="last_name" />
+		<result property="phone" column="phone" />
+		<result property="id" column="id" />
+		<result property="logo" column="logo" />
+		<result property="is_technical" column="is_technical" />
+		<result property="token_setpassword" column="token_setpassword" />
+		<result property="id_user" column="id_user" />
+	</resultMap>
+	
+	
+	<resultMap id="AccountMap"
+		type="com.nwm.api.entities.AccountEntity">
+		<result property="user_name" column="user_name" />
+		<result property="email" column="email" />
+		<result property="password" column="password" />
+		<result property="name" column="name" />
+		<result property="first_name" column="first_name" />
+		<result property="last_name" column="last_name" />
+		<result property="phone" column="phone" />
+		<result property="id" column="id" />
+		<result property="logo" column="logo" />
+		<result property="is_technical" column="is_technical" />
+		<result property="token_setpassword" column="token_setpassword" />
+		<result property="id_user" column="id_user" />
+	</resultMap>
+	
+	<select id="findByLoginId" resultMap="UserAuthMap"
+		parameterType="String">
+		SELECT
+		u.`id`,
+		u.`password`,
+		u.`first_name`,
+		u.`last_name`,
+		u.`id` AS id_user,
+		u.`email` AS user_name,
+		concat( u.first_name, ', ',
+		u.last_name ) AS `name`,
+		CONCAT( 'ROLE_', 1 ) AS roles,
+		u.logo,
+		u.phone,
+		u.is_technical
+		FROM
+		`customer` u
+		WHERE
+		email = #{value}
+		GROUP BY
+		u.id;
+	</select>
+	
+	<select id="getUserByEmail" resultMap="UserAuthMap" parameterType="String">
+    	SELECT
+    		u.`id`,
+			u.`first_name`,
+			u.`last_name`,
+			u.id as id_user,
+			u.email,
+			u.phone
+		FROM `employee` u
+		WHERE u.email = #{value}
+		;
+  	</select>
+  	
+  	<select id="getUserById" resultMap="AccountMap" parameterType="Integer">
+    	SELECT
+    		u.`id`,
+    		u.`password`,
+			u.`first_name`,
+			u.`last_name`,
+			u.id as id_user,
+			u.email,
+			u.phone
+		FROM `employee` u
+		WHERE u.id = #{value};
+  	</select>
+  	
+  	<!-- reset password -->
+	<update id="resetPassword">
+		UPDATE `employee`
+		SET
+			`password` = #{password}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateChangePassword">
+		UPDATE `employee`
+		SET
+			`password` = #{password}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="getUserAdminById" resultMap="AccountMap" parameterType="Integer">
+    	SELECT
+    		u.`id`,
+    		u.`password`,
+			u.`first_name`,
+			u.`last_name`,
+			u.id as id_user,
+			u.email,
+			u.phone
+		FROM `employee` u
+		WHERE u.id = ${value}
+		;
+  	</select>
+  	
+  	<update id="updateAdminChangePassword">
+		UPDATE `employee`
+		SET
+			`password` = #{password}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<!-- set new password -->
+	<update id="setNewPassword">
+		UPDATE `customer`
+		SET
+			`password` = #{password},
+			`token_setpassword` = ""
+		WHERE
+			`email` = #{email} AND  `token_setpassword` = #{token_setpassword}
+	</update>
+	
+	<update id="setNewPasswordAdmin">
+		UPDATE `employee`
+		SET
+			`password` = #{password}
+		WHERE
+			`email` = #{email}
+	</update>
+	
+	
+	<select id="getUserByEmailAndTokenSet" resultMap="AccountMap">
+    	SELECT
+    		u.`id`,
+			u.`first_name`,
+			u.`last_name`,
+			u.id as id_user,
+			u.email,
+			u.token_setpassword
+		FROM `customer` u
+		WHERE u.email = #{email} AND u.token_setpassword = #{token_setpassword}
+		;
+  	</select>
+  	
+  	<select id="getAdminByEmailAndTokenSet" resultMap="AccountMap">
+    	SELECT
+    		u.`id`,
+			u.`first_name`,
+			u.`last_name`,
+			u.id as id_user,
+			u.email
+		FROM `employee` u
+		WHERE u.email = #{email};
+  	</select>
+
+</mapper>

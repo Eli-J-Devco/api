@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomerSupport">
+	<resultMap id="CustomerSupportMap"
+		type="com.nwm.api.entities.CustomerSupportEntity">
+		<result property="id" column="id" />
+		<result property="id_site" column="id_site" />
+		<result property="account_name" column="account_name" />
+		<result property="phone" column="phone" />
+		<result property="email" column="email" />
+		<result property="note" column="note" />
+		<result property="parent" column="parent" />
+		<result property="id_support_type" column="id_support_type" />
+		<result property="status" column="status" />
+		<result property="offset" column="offset" />
+		<result property="created_date" column="created_date" />
+		<result property="created_by" column="created_by" />
+		<result property="updated_date" column="updated_by" />
+		<result property="contact_person" column="contact_person" />
+		
+	</resultMap>
+	
+	<insert id="insertCustomerSupport" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `support`(
+			`id_site`,
+			`account_name`,
+			`phone`,
+			`email`,
+			`note`,
+			`parent`,
+			`id_support_type`,
+			`status`,
+			`created_date`,
+			`updated_date`,
+			`created_by`,
+			`updated_by`,
+			`contact_person`
+		)VALUES(
+			#{id_site},
+			#{account_name},
+			#{phone},
+			#{email},
+			#{note},
+			#{parent},
+			#{id_support_type},
+			#{status},
+			NOW(),
+			NOW(),
+			#{created_by},
+			#{updated_by},
+			#{contact_person}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<insert id="insertSupportFile" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO  `support_file`(
+			id_support,
+			file_name,
+			file_size,
+			file_type
+		)VALUES(
+			#{id_support},
+			#{file_name},
+			#{file_size},
+			#{file_type}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+</mapper>

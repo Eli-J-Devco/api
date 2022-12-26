@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVPInverter">
+	<resultMap id="ModelPVPInverterMap"
+		type="com.nwm.api.entities.ModelPVPInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="total_kwh_delivered"
+			column="total_kwh_delivered" />
+		<result property="volts_a_l_n" column="volts_a_l_n" />
+		<result property="volts_b_l_n" column="volts_b_l_n" />
+		<result property="volts_c_l_n" column="volts_c_l_n" />
+		<result property="current_a" column="current_a" />
+		<result property="current_b" column="current_b" />
+		<result property="current_c" column="current_c" />
+		<result property="dc_output_voltage" column="dc_output_voltage" />
+		<result property="dc_output_current" column="dc_output_current" />
+		<result property="line_frenquency" column="line_frenquency" />
+		<result property="line_kw" column="line_kw" />
+		<result property="inverter_operating_status"
+			column="inverter_operating_status" />
+		<result property="inverter_fault_word0"
+			column="inverter_fault_word0" />
+		<result property="inverter_fault_word1"
+			column="inverter_fault_word1" />
+		<result property="inverter_fault_word2"
+			column="inverter_fault_word2" />
+		<result property="data_comm_status" column="data_comm_status" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+
+	</resultMap>
+
+	<insert id="insertModelPVPInverter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_pvp_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="total_kwh_delivered != 0.001">
+				`total_kwh_delivered`,
+			</if>
+			<if test="volts_a_l_n != 0.001">
+				`volts_a_l_n`,
+			</if>
+			<if test="volts_b_l_n != 0.001">
+				`volts_b_l_n`,
+			</if>
+			<if test="volts_c_l_n != 0.001">
+				`volts_c_l_n`,
+			</if>
+			<if test="current_a != 0.001">
+				`current_a`,
+			</if>
+			<if test="current_b != 0.001">
+				`current_b`,
+			</if>
+			<if test="current_c != 0.001">
+				`current_c`,
+			</if>
+			<if test="dc_output_voltage != 0.001">
+				`dc_output_voltage`,
+			</if>
+			<if test="dc_output_current != 0.001">
+				`dc_output_current`,
+			</if>
+			<if test="line_frenquency != 0.001">
+				`line_frenquency`,
+			</if>
+			<if test="line_kw != 0.001">
+				`line_kw`,
+			</if>
+			<if test="inverter_operating_status != '0.001'">
+				`inverter_operating_status`,
+			</if>
+			<if test="inverter_fault_word0 != 0.001">
+				`inverter_fault_word0`,
+			</if>
+			<if test="inverter_fault_word1 != 0.001">
+				`inverter_fault_word1`,
+			</if>
+			<if test="inverter_fault_word2 != 0.001">
+				`inverter_fault_word2`,
+			</if>
+			<if test="data_comm_status != '0.001'">
+				`data_comm_status`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="total_kwh_delivered != 0.001">
+				#{total_kwh_delivered},
+			</if>
+			<if test="volts_a_l_n != 0.001">
+				#{volts_a_l_n},
+			</if>
+			<if test="volts_b_l_n != 0.001">
+				#{volts_b_l_n},
+			</if>
+			<if test="volts_c_l_n != 0.001">
+				#{volts_c_l_n},
+			</if>
+			<if test="current_a != 0.001">
+				#{current_a},
+			</if>
+			<if test="current_b != 0.001">
+				#{current_b},
+			</if>
+			<if test="current_c != 0.001">
+				#{current_c},
+			</if>
+			<if test="dc_output_voltage != 0.001">
+				#{dc_output_voltage},
+			</if>
+			<if test="dc_output_current != 0.001">
+				#{dc_output_current},
+			</if>
+			<if test="line_frenquency != 0.001">
+				#{line_frenquency},
+			</if>
+			<if test="line_kw != 0.001">
+				#{line_kw},
+			</if>
+			<if test="inverter_operating_status != '0.001'">
+				#{inverter_operating_status},
+			</if>
+			<if test="inverter_fault_word0 != 0.001">
+				#{inverter_fault_word0},
+			</if>
+			<if test="inverter_fault_word1 != 0.001">
+				#{inverter_fault_word1},
+			</if>
+			<if test="inverter_fault_word2 != 0.001">
+				#{inverter_fault_word2},
+			</if>
+			<if test="data_comm_status != '0.001'">
+				#{data_comm_status},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="time != null">
+				`time` = #{time},
+			</if>
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="total_kwh_delivered != 0.001">
+				total_kwh_delivered = #{total_kwh_delivered},
+			</if>
+			<if test="volts_a_l_n != 0.001">
+				volts_a_l_n = #{volts_a_l_n},
+			</if>
+			<if test="volts_b_l_n != 0.001">
+				volts_b_l_n = #{volts_b_l_n},
+			</if>
+			<if test="volts_c_l_n != 0.001">
+				volts_c_l_n = #{volts_c_l_n},
+			</if>
+			<if test="current_a != 0.001">
+				current_a = #{current_a},
+			</if>
+			<if test="current_b != 0.001">
+				current_b = #{current_b},
+			</if>
+			<if test="current_c != 0.001">
+				current_c = #{current_c},
+			</if>
+			<if test="dc_output_voltage != 0.001">
+				dc_output_voltage = #{dc_output_voltage},
+			</if>
+			<if test="dc_output_current != 0.001">
+				dc_output_current = #{dc_output_current},
+			</if>
+			<if test="line_frenquency != 0.001">
+				line_frenquency = #{line_frenquency},
+			</if>
+			<if test="line_kw != 0.001">
+				line_kw = #{line_kw},
+			</if>
+			<if test="inverter_operating_status != '0.001'">
+				inverter_operating_status = #{inverter_operating_status},
+			</if>
+			<if test="inverter_fault_word0 != 0.001">
+				inverter_fault_word0 = #{inverter_fault_word0},
+			</if>
+			<if test="inverter_fault_word1 != 0.001">
+				inverter_fault_word1 = #{inverter_fault_word1},
+			</if>
+			<if test="inverter_fault_word2 != 0.001">
+				inverter_fault_word2 = #{inverter_fault_word2},
+			</if>
+			<if test="data_comm_status != '0.001'">
+				data_comm_status = #{data_comm_status},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+		</trim>
+	</insert>
+
+</mapper> 

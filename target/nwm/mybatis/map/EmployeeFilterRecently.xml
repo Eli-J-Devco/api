@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmployeeFilterRecently">
+	<resultMap id="EmployeeFilterRecentlyMap"
+		type="com.nwm.api.entities.EmployeeFilterRecentlyEntity">
+		<result property="id" column="id" />
+		<result property="id_employee" column="id_employee" />
+		<result property="id_site" column="id_site" />
+		<result property="offset" column="offset" />
+		<result property="data_component" column="data_component" />
+		<result property="data_parameter" column="data_parameter" />
+		<result property="created_date" column="created_date" />
+	</resultMap>
+	
+	<insert id="saveRecentlyUsedFilter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `employee_filter_recently`(
+			`id_employee`,
+			`id_site`,
+			`data_component`,
+			`data_parameter`,
+			`created_date`
+		)VALUES(
+			#{id_employee},
+			#{id_site},
+			#{data_component},
+			#{data_parameter},
+			#{created_date}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.EmployeeFilterRecentlyEntity">
+    	SELECT count(*) as totalRow
+		FROM `employee_filter_recently` s WHERE s.id_employee = #{id_employee} AND s.id_site = #{id_site}
+  	</select>
+  	
+  	
+  	
+  	
+  	<select id="getListRecently" resultType="Map" >
+		SELECT
+			s.`id_employee`,
+			s.`id_site`,
+			s.data_component,
+			s.data_parameter,
+			DATE_FORMAT(s.created_date, "%m/%d/%Y %H:%i %p") AS created_date
+		FROM
+			`employee_filter_recently` s 
+		WHERE s.id_employee = #{id_employee} AND s.id_site = #{id_site} ORDER BY id DESC
+		 LIMIT 10;
+	</select>
+	
+  	<delete id="deleteRecentlyUsedFilter">
+  		DELETE FROM `employee_filter_recently`
+	 	WHERE id_employee = #{id_employee} AND id_site = #{id_site} ORDER BY id ASC LIMIT 1;
+	</delete>
+	
+</mapper>

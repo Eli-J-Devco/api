@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SiteQuery">
+	<select id="getDetail" resultType="com.nwm.api.entities.SiteQueryEntity" parameterType="com.nwm.api.entities.SiteQueryEntity">
+		SELECT
+			CONCAT_WS( ", ", s.city, s.postal_code ) AS address_short,
+			CONCAT_WS( ", ", s.number, s.street ) AS street_ws,
+			s.id,
+			scm.id_customer,
+			s.id_country,
+			s.id_time_zone,
+			s.`name`,
+			s.lat,
+			s.lng,
+			s.old_data,
+			s.number,
+			s.street,
+			s.postal_code,
+			s.city,
+			s.state,
+			DATE_FORMAT( s.commissioning, '%m-%d-%Y' ) AS commissioning,
+			s.emergency_contact,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.`status`,
+			s.is_delete,
+			s.created_date,
+			s.created_by,
+			s.updated_date,
+			s.updated_by,
+			s.data_send_time,
+			DATE_FORMAT( s.built_since, '%m-%d-%Y' ) AS built_since,
+			c.`name` AS country_name,
+			s.gallery,
+			c.localization_format,
+			c.format_sql_short,
+			c.format_sql_long,
+			c.format_sql_string_short,
+			c.format_sql_string_long,
+			c.format_sql_string_mdy,
+			IFNULL(ert.total_error, 0) AS total_error
+		FROM
+			site s 
+			LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+			LEFT JOIN country c ON c.id = s.id_country
+			LEFT JOIN (
+				SELECT
+					s.id AS id_site,
+					COUNT( a.id ) AS total_error 
+				FROM
+					site s
+					LEFT JOIN device d ON d.id_site = s.id
+					RIGHT JOIN alert a ON a.id_device = d.id 
+					AND a.`status` = 1
+					LEFT JOIN error er ON a.id_error_generate = er.id_generate 
+				GROUP BY s.id 
+			) ert ON ert.id_site = s.id
+		WHERE
+			s.id = #{id_site}
+			AND s.`status` = 1 
+			AND s.is_delete = 0 GROUP BY s.id
+	</select>
+	
+	
+	<select id="getListDeviceByIdSite" resultType="Map" parameterType="com.nwm.api.entities.SiteQueryEntity">
+		SELECT
+			d.serial_number,
+			d.id,
+			d.id_site,
+			d.id_device_group,
+			d.devicename,
+			d.datatablename,
+			dt.`name` AS device_type_name,
+			dt.image,
+			er.message,
+			er.icon_alert,
+			er.error_level_name,
+			s.name AS name
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					dv.id,
+					e.message,
+					el.`name` AS error_level_name,
+					i.icon AS icon_alert
+				FROM
+					device dv
+					LEFT JOIN alert al ON dv.id = al.id_device 
+					LEFT JOIN error e ON e.id_generate = al.id_error_generate
+					LEFT JOIN error_level el ON el.id = e.id_error_level
+					LEFT JOIN icon i ON i.id = el.id_icon
+				WHERE
+					al.`status` = 1 
+					AND al.is_delete = 0 
+					GROUP BY dv.id
+				ORDER BY
+					al.id DESC 
+			)er ON d.id = er.id
+		WHERE
+			d.id_site = #{id_site}
+	</select>
+	
+	<select id="getLastRowItem" resultType="com.nwm.api.entities.ItemLastRowSiteQueryEntity">
+    	SELECT
+    		`time`, 
+    		id_device, 
+    		<if test="datatablename == 'model_lufft_class8020'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.IrradianceActual, 0 ),2), "W/m²" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_abb_trio_class6210'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.GridPower * 0.001, 0 ),2), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_shark100'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.watts_3ph_total, 0 ),2), "kW" ) AS key_indicator,
+    		</if>
+
+    		 <if test="datatablename == 'model_veris_industries_e51c2_power_meter'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.TotalRealPowerPresentDemand, 0 ), 2), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_advanced_energy_solaron'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.ac_power, 0 ), 2), "kW" ) AS key_indicator,
+    		</if>
+    		
+   		 	<if test="datatablename == 'model_imtsolar_class8000'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.irradiance * 0.1, 0 ), 2), "W/m²" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_w_kipp_zonen_rt1'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.SunPOATempComp, 0 ), 2), "W/m²" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_satcon_pvs357_inverter'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.Output_kw, 0 ), 2), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_chint_solectria_inverter_class9725'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.AC_ActivePower, 0 ), 2), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_kippzonen_rt1_class8009'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.sensor1_data, 0 ), 2), "W/m²" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_ivt_solaron_ext'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.ac_power, 0 ), 2), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		
+    		<if test="datatablename == 'model_pvp_inverter'">
+    			CONCAT_WS(" ", IFNULL(u.line_kw, 0 ), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		
+    		<if test="datatablename == 'model_rt1_class30000'">
+    			CONCAT_WS(" ", IFNULL(u.sensor1_data, 0 ), "W/m²" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_elkor_production_meter'">
+    			CONCAT_WS(" ", IFNULL(u.ActivePowerTotal, 0 ), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		<if test="datatablename == 'model_elkor_wattson_pv_meter'">
+    			CONCAT_WS(" ", IFNULL(u.TotalRealPower, 0 ), "kW" ) AS key_indicator,
+    		</if>
+    		
+    		error,
+				CASE
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( u.time, '+00:00', t.`offset` ), NOW( ) )
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( u.time, '+00:00', t.`offset` ), NOW( ) ) 
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 MINUTE ) THEN
+					TIMESTAMPDIFF( MINUTE, CONVERT_TZ( u.time, '+00:00', t.`offset` ), NOW( ) ) ELSE 0
+				END AS times_ago,
+				
+				CASE
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 DAY ) THEN 'day'
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 HOUR ) THEN 'hour'
+					WHEN CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( NOW( ), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				END AS times_ago_unit
+				
+			
+		FROM ${datatablename} u 
+		LEFT JOIN device d ON u.id_device = d.id
+		LEFT JOIN site s ON d.id_site = s.id
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE 
+		u.id_device = #{id}
+		<!-- AND CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<=]]> NOW() -->
+		
+		AND CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<=]]> '2022-01-19 11:06:00'
+						
+		GROUP BY u.time ORDER BY `time` DESC LIMIT 1;
+  	</select>
+	
+	
+	
+	<select id="getDeviceDetail" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.devicetype,
+			d.deviceclass,
+			d.configuration,
+			d.configurationchecksum,
+			d.configurationchangetime,
+			d.datatablename,
+			dt.`name` AS device_type_name,
+			dt.image,
+			s.name AS site_name
+		FROM
+			device AS d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			d.id = #{id};
+	</select>
+	
+	
+	<select id="getListDeviceParameter" resultType="com.nwm.api.entities.DeviceParameterEntity" parameterType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			dp.id,
+			dp.`name`,
+			dp.slug,
+			dp.unit,
+			dp.chart_type,
+			dp.description,
+			dp.register,
+			dp.hide,
+			dp.standard_alert_message
+		FROM
+			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group 
+			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+		WHERE
+			d.id = #{id};
+	</select>
+	
+	
+	<select id="getModelLastRowItem" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			<if test="datatablename == 'model_imtsolar_class8000'">
+    			ROUND((u.irradiance * 0.1), 2) AS irradiance,
+		        ROUND((u.tcell * 0.1 - 25), 2) AS tcell,
+    		</if>
+			u.*,
+			DATE_FORMAT( u.time, '%m/%d/%Y, %r' ) AS last_communication
+		FROM
+			${datatablename} u 
+			LEFT JOIN device d ON u.id_device = d.id
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		
+		WHERE
+			u.id_device = #{id} 
+			AND CONVERT_TZ( u.time, '+00:00', t.`offset` ) <![CDATA[<=]]> #{current_time}
+		ORDER BY
+			`time` DESC 
+			LIMIT 1;
+	
+  	</select>
+</mapper>

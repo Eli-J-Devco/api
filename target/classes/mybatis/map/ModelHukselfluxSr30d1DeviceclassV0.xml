@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelHukselfluxSr30d1DeviceclassV0">
+	<resultMap id="ModelHukselfluxSr30d1DeviceclassV0Map"
+		type="com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="IrradianceTcs" column="IrradianceTcs" />
+		<result property="IrradianceUs" column="IrradianceUs" />
+		<result property="SensorBodyTemperature" column="SensorBodyTemperature" />
+		<result property="SensorElectricalResistance" column="SensorElectricalResistance" />
+		<result property="ScalingFactorIrradiance" column="ScalingFactorIrradiance" />
+		<result property="ScalingFactorTemperature" column="ScalingFactorTemperature" />
+		<result property="SensorSerialNumber" column="SensorSerialNumber" />
+		<result property="SensorSensitivity" column="SensorSensitivity" />
+		<result property="SensorCalibrationDate" column="SensorCalibrationDate" />
+		<result property="InternalHumidity" column="InternalHumidity" />
+		<result property="TiltAngle" column="TiltAngle" />
+		<result property="TiltAngleaverage" column="TiltAngleaverage" />
+		<result property="FanSpeedRPM" column="FanSpeedRPM" />
+		<result property="HeaterCurrent" column="HeaterCurrent" />
+		<result property="FanCurrent" column="FanCurrent" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+	</resultMap>
+	
+	<insert id="insertModelHukselfluxSr30d1DeviceclassV0" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_hukseflux_sr30d1_deviceclass_v0`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="IrradianceTcs != 0.001">
+				`IrradianceTcs`,
+			</if>
+			<if test="IrradianceUs != 0.001">
+				`IrradianceUs`,
+			</if>
+			<if test="SensorBodyTemperature != 0.001">
+				`SensorBodyTemperature`,
+			</if>
+			<if test="SensorElectricalResistance != 0.001">
+				`SensorElectricalResistance`,
+			</if>
+			<if test="ScalingFactorIrradiance != 0.001">
+				`ScalingFactorIrradiance`,
+			</if>
+			<if test="ScalingFactorTemperature != 0.001">
+				`ScalingFactorTemperature`,
+			</if>
+			<if test="SensorSerialNumber != 0.001">
+				`SensorSerialNumber`,
+			</if>
+			<if test="SensorSensitivity != 0.001">
+				`SensorSensitivity`,
+			</if>
+			<if test="SensorCalibrationDate != 0.001">
+				`SensorCalibrationDate`,
+			</if>
+			<if test="InternalHumidity != 0.001">
+				`InternalHumidity`,
+			</if>
+			<if test="TiltAngle != 0.001">
+				`TiltAngle`,
+			</if>
+			<if test="TiltAngleaverage != 0.001">
+				`TiltAngleaverage`,
+			</if>
+			<if test="FanSpeedRPM != 0.001">
+				`FanSpeedRPM`,
+			</if>
+			<if test="HeaterCurrent != 0.001">
+				`HeaterCurrent`,
+			</if>
+			<if test="FanCurrent != 0.001">
+				`FanCurrent`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="IrradianceTcs != 0.001">
+				#{IrradianceTcs},
+			</if>
+			<if test="IrradianceUs != 0.001">
+				#{IrradianceUs},
+			</if>
+			<if test="SensorBodyTemperature != 0.001">
+				#{SensorBodyTemperature},
+			</if>
+			<if test="SensorElectricalResistance != 0.001">
+				#{SensorElectricalResistance},
+			</if>
+			<if test="ScalingFactorIrradiance != 0.001">
+				#{ScalingFactorIrradiance},
+			</if>
+			<if test="ScalingFactorTemperature != 0.001">
+				#{ScalingFactorTemperature},
+			</if>
+			<if test="SensorSerialNumber != 0.001">
+				#{SensorSerialNumber},
+			</if>
+			<if test="SensorSensitivity != 0.001">
+				#{SensorSensitivity},
+			</if>
+			<if test="SensorCalibrationDate != 0.001">
+				#{SensorCalibrationDate},
+			</if>
+			<if test="InternalHumidity != 0.001">
+				#{InternalHumidity},
+			</if>
+			<if test="TiltAngle != 0.001">
+				#{TiltAngle},
+			</if>
+			<if test="TiltAngleaverage != 0.001">
+				#{TiltAngleaverage},
+			</if>
+			<if test="FanSpeedRPM != 0.001">
+				#{FanSpeedRPM},
+			</if>
+			<if test="HeaterCurrent != 0.001">
+				#{HeaterCurrent},
+			</if>
+			<if test="FanCurrent != 0.001">
+				#{FanCurrent},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="IrradianceTcs != 0.001">
+				`IrradianceTcs` = #{IrradianceTcs},
+			</if>
+			<if test="IrradianceUs != 0.001">
+				`IrradianceUs` = #{IrradianceUs},
+			</if>
+			<if test="SensorBodyTemperature != 0.001">
+				`SensorBodyTemperature` = #{SensorBodyTemperature},
+			</if>
+			<if test="SensorElectricalResistance != 0.001">
+				`SensorElectricalResistance` = #{SensorElectricalResistance},
+			</if>
+			<if test="ScalingFactorIrradiance != 0.001">
+				`ScalingFactorIrradiance` = #{ScalingFactorIrradiance},
+			</if>
+			<if test="ScalingFactorTemperature != 0.001">
+				`ScalingFactorTemperature` = #{ScalingFactorTemperature},
+			</if>
+			<if test="SensorSerialNumber != 0.001">
+				`SensorSerialNumber` = #{SensorSerialNumber},
+			</if>
+			<if test="SensorSensitivity != 0.001">
+				`SensorSensitivity` = #{SensorSensitivity},
+			</if>
+			<if test="SensorCalibrationDate != 0.001">
+				`SensorCalibrationDate` = #{SensorCalibrationDate},
+			</if>
+			<if test="InternalHumidity != 0.001">
+				`InternalHumidity` = #{InternalHumidity},
+			</if>
+			<if test="TiltAngle != 0.001">
+				`TiltAngle` = #{TiltAngle},
+			</if>
+			<if test="TiltAngleaverage != 0.001">
+				`TiltAngleaverage` = #{TiltAngleaverage},
+			</if>
+			<if test="FanSpeedRPM != 0.001">
+				`FanSpeedRPM` = #{FanSpeedRPM},
+			</if>
+			<if test="HeaterCurrent != 0.001">
+				`HeaterCurrent` = #{HeaterCurrent},
+			</if>
+			<if test="FanCurrent != 0.001">
+				`FanCurrent` = #{FanCurrent},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance` = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+		</trim>
+	</insert>
+
+</mapper>

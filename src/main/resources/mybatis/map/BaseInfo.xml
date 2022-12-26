@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BaseInfo">
+  	<resultMap id="baseInfo" type="com.nwm.api.entities.BaseEntity">
+		<result property="created_date" column="created_date" />
+		<result property="created_user" column="created_user" />
+		<result property="updated_date" column="updated_date" />
+		<result property="updated_user" column="updated_user" />
+	</resultMap>
+	<select id="selectDual" resultMap="baseInfo">
+    	select now() as created_date,'sss' as created_user,now() as updated_date,'aaa' as updated_user from dual
+  	</select>
+</mapper>

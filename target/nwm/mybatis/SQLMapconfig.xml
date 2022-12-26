@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+		<setting name="callSettersOnNulls" value="null"/>
+	</settings>
+	<typeAliases>
+	  <typeAlias alias="mapE" type="java.util.LinkedHashMap" />
+	</typeAliases>
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${database.driver}" />
+				<property name="url" value="${database.url}" />
+				<property name="username" value="${database.username}" />
+				<property name="password" value="${database.password}" />
+				
+				<property name="poolMaximumActiveConnections" value="50" />
+				<property name="poolMaximumIdleConnections" value="10" />
+				<property name="poolMaximumCheckoutTime" value="120000" />
+				<property name="poolTimeToWait" value="500" />
+				
+				
+				<property name="poolPingQuery" value="select 1" />
+				<property name="poolPingEnabled" value="false" />
+				<!-- <property name="Pool.MaximumWait" value="1000" /> -->
+				<!-- <property name="autoCommitOnClose" value="true"/> -->
+			</dataSource>
+		</environment>
+	</environments>
+	<mappers>
+		<mapper resource="mybatis/map/BaseInfo.xml" />
+		<mapper resource="mybatis/map/Demo.xml" />
+		<mapper resource="mybatis/map/A8810.xml" />
+		<mapper resource="mybatis/map/User.xml" />
+		<mapper resource="mybatis/map/Employee.xml" />
+		<mapper resource="mybatis/map/Device.xml" />
+		<mapper resource="mybatis/map/ModelShark100.xml" />
+		<mapper resource="mybatis/map/ModelRT1Class30000.xml" />
+		<mapper resource="mybatis/map/ModelIVTSolaronEXT.xml" />
+		<mapper resource="mybatis/map/Site.xml" />
+		<mapper resource="mybatis/map/TimeZone.xml" />
+		<mapper resource="mybatis/map/Country.xml" />
+		<mapper resource="mybatis/map/MiniSite.xml" />
+		<mapper resource="mybatis/map/DeviceType.xml" />
+		<mapper resource="mybatis/map/DeviceParameter.xml" />
+		<mapper resource="mybatis/map/Alert.xml" />
+		<mapper resource="mybatis/map/CustomerView.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeA.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeB.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeC.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeD.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeE.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeF.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeG.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeH.xml" />
+		<mapper resource="mybatis/map/CustomerViewTypeI.xml" />
+		
+		
+		<mapper resource="mybatis/map/ModelIMTSolarClass8000.xml" />
+		<mapper resource="mybatis/map/ModelAdvancedEnergySolaron.xml" />
+		<mapper resource="mybatis/map/ModelPVPInverter.xml" />
+		<mapper resource="mybatis/map/ModelChintSolectriaInverterClass9725.xml" />
+		<mapper resource="mybatis/map/ModelVerisIndustriesE51c2PowerMeter.xml" />
+		<mapper resource="mybatis/map/ModelKippZonenRT1Class8009.xml" />
+		<mapper resource="mybatis/map/ModelSatconPvs357Inverter.xml" />
+		<mapper resource="mybatis/map/ModelElkorWattsonPVMeter.xml" />
+		<mapper resource="mybatis/map/ModelWKippZonenRT1.xml" />
+		<mapper resource="mybatis/map/ModelElkorProductionMeter.xml" />
+		<mapper resource="mybatis/map/ModelAbbTrioClass6210.xml" />
+		<mapper resource="mybatis/map/ModelLufftClass8020.xml" />
+		<mapper resource="mybatis/map/ModelShark100Test.xml" />
+		<mapper resource="mybatis/map/ModelPVPowered3550260500kwInverter.xml" />
+		<mapper resource="mybatis/map/ModelSolectriaSGI226IVT.xml" />
+		<mapper resource="mybatis/map/ModelDatalogger.xml" />
+		<mapper resource="mybatis/map/ModelTTiTracker.xml" />
+		<mapper resource="mybatis/map/ModelXantrexGT100250500.xml" />
+		<mapper resource="mybatis/map/ModelHukselfluxSr30d1DeviceclassV0.xml"/>
+		<mapper resource="mybatis/map/ModelIMTSolarTmodulClass8006.xml"/>
+		
+		
+		
+		
+		
+		<mapper resource="mybatis/map/Role.xml" />
+		<mapper resource="mybatis/map/Customer.xml" />
+		<mapper resource="mybatis/map/SiteType.xml" />
+		<mapper resource="mybatis/map/Vendor.xml" />
+		<mapper resource="mybatis/map/DeviceGroup.xml" />
+		<mapper resource="mybatis/map/Portfolio.xml" />
+		<mapper resource="mybatis/map/ErrorLevel.xml" />
+		<mapper resource="mybatis/map/Error.xml" />
+		<mapper resource="mybatis/map/BatchJob.xml" />
+		<mapper resource="mybatis/map/Map.xml" />
+		<mapper resource="mybatis/map/SiteQuery.xml" />
+		<mapper resource="mybatis/map/ErrorType.xml" />
+		<mapper resource="mybatis/map/Icons.xml" />
+		<mapper resource="mybatis/map/ChartTool.xml" />
+		<mapper resource="mybatis/map/Avatar.xml" />
+		<mapper resource="mybatis/map/Configuration.xml" />
+		<mapper resource="mybatis/map/CustomerSupport.xml" />
+		<mapper resource="mybatis/map/Reports.xml" />
+		<mapper resource="mybatis/map/SitesDevices.xml" />
+		<mapper resource="mybatis/map/SitesAlert.xml" />
+		<mapper resource="mybatis/map/SitesAnalytics.xml" />
+		<mapper resource="mybatis/map/SitesReports.xml" />
+		<mapper resource="mybatis/map/SitesDashboard.xml" />
+		<mapper resource="mybatis/map/Company.xml" />
+		 <mapper resource="mybatis/map/Dashboard.xml" />
+		 <mapper resource="mybatis/map/EmployeeFilterFavorites.xml" />
+		 <mapper resource="mybatis/map/EmployeeFilterRecently.xml" />
+		 <mapper resource="mybatis/map/SiteConfig.xml" />
+		 <mapper resource="mybatis/map/SiteGroup.xml" />
+		 <mapper resource="mybatis/map/Group.xml" />
+		 <mapper resource="mybatis/map/ImportOldData.xml" />
+		 
+		 
+		
+		
+	</mappers>
+</configuration>
+

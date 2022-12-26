@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelWKippZonenRT1">
+	<resultMap id="ModelWKippZonenRT1Map"
+		type="com.nwm.api.entities.ModelWKippZonenRT1Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="DeviceType" column="DeviceType" />
+		<result property="DataModelVersion" column="DataModelVersion" />
+		<result property="OperationalMode" column="OperationalMode" />
+		<result property="StatusFlags" column="StatusFlags" />
+		<result property="SunPOATempComp" column="SunPOATempComp" />
+		<result property="PanelTemperature" column="PanelTemperature" />
+		<result property="ExtPowerSensor" column="ExtPowerSensor" />
+		<result property="BatchNumber" column="BatchNumber" />
+		<result property="SerialNumber" column="SerialNumber" />
+		<result property="CalibrationDateYYMMDD"
+			column="CalibrationDateYYMMDD" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+
+
+	</resultMap>
+
+	<insert id="insertModelWKippZonenRT1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_w_kipp_zonen_rt1`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="DeviceType != 0.001">
+				`DeviceType`,
+			</if>
+			<if test="DataModelVersion != 0.001">
+				`DataModelVersion`,
+			</if>
+			<if test="OperationalMode != 0.001">
+				`OperationalMode`,
+			</if>
+			<if test="StatusFlags != 0.001">
+				`StatusFlags`,
+			</if>
+			<if test="SunPOATempComp != 0.001">
+				`SunPOATempComp`,
+			</if>
+			<if test="PanelTemperature != 0.001">
+				`PanelTemperature`,
+			</if>
+			<if test="ExtPowerSensor != 0.001">
+				`ExtPowerSensor`,
+			</if>
+			<if test="BatchNumber != 0.001">
+				`BatchNumber`,
+			</if>
+			<if test="SerialNumber != 0.001">
+				`SerialNumber`,
+			</if>
+			<if test="CalibrationDateYYMMDD != 0.001">
+				`CalibrationDateYYMMDD`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="DeviceType != 0.001">
+				#{DeviceType},
+			</if>
+			<if test="DataModelVersion != 0.001">
+				#{DataModelVersion},
+			</if>
+			<if test="OperationalMode != 0.001">
+				#{OperationalMode},
+			</if>
+			<if test="StatusFlags != 0.001">
+				#{StatusFlags},
+			</if>
+			<if test="SunPOATempComp != 0.001">
+				#{SunPOATempComp},
+			</if>
+			<if test="PanelTemperature != 0.001">
+				#{PanelTemperature},
+			</if>
+			<if test="ExtPowerSensor != 0.001">
+				#{ExtPowerSensor},
+			</if>
+			<if test="BatchNumber != 0.001">
+				#{BatchNumber},
+			</if>
+			<if test="SerialNumber != 0.001">
+				#{SerialNumber},
+			</if>
+			<if test="CalibrationDateYYMMDD != 0.001">
+				#{CalibrationDateYYMMDD},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="DeviceType != 0.001">
+				DeviceType = #{DeviceType},
+			</if>
+			<if test="DataModelVersion != 0.001">
+				DataModelVersion = #{DataModelVersion},
+			</if>
+			<if test="OperationalMode != 0.001">
+				OperationalMode = #{OperationalMode},
+			</if>
+			<if test="StatusFlags != 0.001">
+				StatusFlags = #{StatusFlags},
+			</if>
+			<if test="SunPOATempComp != 0.001">
+				SunPOATempComp = #{SunPOATempComp},
+			</if>
+			<if test="PanelTemperature != 0.001">
+				PanelTemperature = #{PanelTemperature},
+			</if>
+			<if test="ExtPowerSensor != 0.001">
+				ExtPowerSensor = #{ExtPowerSensor},
+			</if>
+			<if test="BatchNumber != 0.001">
+				BatchNumber = #{BatchNumber},
+			</if>
+			<if test="SerialNumber != 0.001">
+				SerialNumber = #{SerialNumber},
+			</if>
+			<if test="CalibrationDateYYMMDD != 0.001">
+				CalibrationDateYYMMDD = #{CalibrationDateYYMMDD},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+		</trim>
+	</insert>
+
+</mapper> 

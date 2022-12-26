@@ -1,0 +1,733 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CustomerViewTypeI">
+	<select id="getCustomerViewInfo" resultType="Map" >
+		SELECT
+				s.id,
+				scm.id_customer,
+				s.`name`,
+				s.dc_capacity,
+				s.ac_capacity,
+				s.lat,
+				s.lng,
+				s.data_send_time,
+				t.`offset`,
+				IFNULL(ltplan.energy_lifetime,0) AS energy_lifetime,
+				IF(d.energy_today, d.energy_today, 0) AS energy_today,
+				IF(plan.ytd_kwh_total, FORMAT(ROUND(plan.ytd_kwh_total * 0.0117, 0), 0) , 0) AS total_tree,
+				IF(plan.ytd_kwh_total, FORMAT(ROUND((plan.ytd_kwh_total * 392), 0), 0) , 0) AS total_co2,
+				IF(ptoday.peak_power_today, ptoday.peak_power_today, 0) AS peak_power_today,
+				IFNULL(this_month.sum_energy_this_month, 0) AS energy_this_month
+				
+			FROM
+				site s
+				LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+				LEFT JOIN country c ON c.id = s.id_country
+				
+			
+				LEFT JOIN (
+					SELECT 
+						tk.*,
+						SUM(tk.energy_month) AS sum_energy_this_month
+						FROM (
+								SELECT
+									iv.time,
+									si.id AS id_site,
+									MAX(iv.AccumulatedRealEnergyNet) - MIN(iv.AccumulatedRealEnergyNet) AS energy_month
+								FROM
+									site si
+									LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+									LEFT JOIN time_zone t ON t.id = si.id_time_zone
+									LEFT JOIN device d ON d.id_site = si.id 
+									LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+								WHERE
+									si.id = #{id_site}
+									AND scm.id_customer = #{id_customer}
+									AND si.`status` = 1 
+									AND si.is_delete = 0 
+									AND YEAR ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = YEAR ( #{current_time} ) 
+									AND MONTH ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = MONTH ( #{current_time} )
+									AND iv.AccumulatedRealEnergyNet > 0
+									GROUP BY iv.id_device
+					)tk
+				)this_month ON this_month.id_site = s.id
+				
+				
+				LEFT JOIN (
+						SELECT 
+						sumplan.id_site,
+						SUM(sumplan.energy_lifetime) AS energy_lifetime
+						FROM (
+							SELECT
+								d.id_site,
+								sh.id_device,
+								MAX(sh.AccumulatedRealEnergyNet) AS energy_lifetime,
+								MAX( CONVERT_TZ( sh.time, '+00:00', t.`offset` ) ) AS sh_time 
+							FROM
+								site s
+								LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								LEFT JOIN device d ON d.id_site = s.id
+								LEFT JOIN model_veris_industries_e51c2_power_meter AS sh ON sh.id_device = d.id 
+								
+							WHERE
+								CONVERT_TZ( sh.time, '+00:00', t.`offset` ) <![CDATA[<=]]> #{current_time}
+								AND s.id = #{id_site}
+								AND scm.id_customer = #{id_customer}
+							GROUP BY
+								sh.id_device 
+						)sumplan
+	
+				) ltplan ON ltplan.id_site = s.id 
+
+
+				LEFT JOIN(
+							SELECT 
+							tsum.id_site,
+							ROUND(SUM(tsum.energy_today), 2) AS  energy_today FROM (
+								SELECT
+									d.id_site,
+									sh.id_device,
+									MAX( sh.AccumulatedRealEnergyNet ) - MIN( sh.AccumulatedRealEnergyNet ) AS energy_today
+								FROM
+									site s
+									LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+									LEFT JOIN device d ON d.id_site = s.id
+									LEFT JOIN model_veris_industries_e51c2_power_meter AS sh ON sh.id_device = d.id
+								WHERE
+									YEAR ( CONVERT_TZ( sh.time,  '+00:00', t.`offset` ) ) = YEAR ( #{current_time} )
+									AND MONTH ( CONVERT_TZ( sh.time,  '+00:00', t.`offset` ) ) = MONTH ( #{current_time} )
+									AND DAY ( CONVERT_TZ(sh.time,  '+00:00', t.`offset` ) ) = DAY ( #{current_time} )
+									AND CONVERT_TZ( sh.time,  '+00:00', t.`offset` ) <![CDATA[<=]]> #{current_time}
+									AND s.id = #{id_site}
+									AND scm.id_customer = #{id_customer}
+									AND sh.AccumulatedRealEnergyNet != 0
+									GROUP BY sh.id_device
+									
+							)tsum
+	
+				)d ON d.id_site = s.id
+				
+				
+				
+				
+				
+				LEFT JOIN (
+						SELECT 
+						sumplan.id_site,
+						SUM(sumplan.w_hours_received) AS ytd_kwh_total
+						FROM (
+							SELECT
+								d.id_site,
+								sh.id_device,
+								MAX(sh.AccumulatedRealEnergyNet) AS w_hours_received,
+								MAX( CONVERT_TZ( sh.time, '+00:00', t.`offset` ) ) AS sh_time 
+							FROM
+								site s
+								LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								LEFT JOIN device d ON d.id_site = s.id
+								LEFT JOIN model_veris_industries_e51c2_power_meter AS sh ON sh.id_device = d.id 
+							WHERE
+								
+								CONVERT_TZ( sh.time, '+00:00', t.`offset` ) <![CDATA[<=]]> #{current_time}
+								AND s.id = #{id_site}
+								AND scm.id_customer = #{id_customer}
+								AND sh.AccumulatedRealEnergyNet != 0
+							GROUP BY
+								sh.id_device 
+						)sumplan
+	
+				) plan ON plan.id_site = s.id 
+				
+			
+			LEFT JOIN(
+				SELECT
+					ptd.id_site,
+					ROUND( SUM( ptd.peak_power_today ), 1 ) AS peak_power_today 
+				FROM
+					(
+					SELECT
+						s.id AS id_site,
+						mr.id_device,
+						mr.TotalNetInstantaneousRealPower AS peak_power_today,
+						mr.time 
+					FROM
+						site s
+						LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						LEFT JOIN device d ON d.id_site = s.id
+						LEFT JOIN model_veris_industries_e51c2_power_meter mr ON mr.id_device = d.id 
+					WHERE
+						s.id = #{id_site}
+						AND scm.id_customer = #{id_customer}
+						AND s.`status` = 1 
+						AND s.is_delete = 0 
+						AND mr.time IS NOT NULL 
+						AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN CONCAT_WS( ' ', DATE_FORMAT( #{current_time}, '%Y-%m-%d' ), '00:00:00' ) 
+						AND #{current_time}
+					ORDER BY
+						mr.time DESC 
+					LIMIT 1
+					) ptd
+			)ptoday ON ptoday.id_site = s.id
+			
+			
+
+			WHERE s.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND s.`status` = 1 
+				AND s.is_delete = 0;
+	</select>
+
+	
+	<select id="getListDeviceTypeMeter" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id = 3
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	<select id="getTotalGeneration" resultType="Map">
+		
+			SELECT
+				MAX(iv.AccumulatedRealEnergyNet) - MIN(iv.AccumulatedRealEnergyNet) AS totalGeneration
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id 
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device} 
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND iv.error = 0
+				
+				<if test="filterBy == 'this_month' or filterBy == 'last_month'">
+					AND YEAR ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = YEAR (  #{end_date} ) 
+					AND MONTH ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = MONTH (  #{end_date} )
+					AND	 CONVERT_TZ( iv.time, '+00:00', t.`offset` )  <![CDATA[<=]]>  #{end_date}
+				</if>
+				<if test="filterBy == '12_month' or filterBy == 'today'">
+					AND (CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+				</if>
+	
+  	</select>
+	
+	
+	<select id="getChartDataEnergyByDeviceId" resultType="Map">
+	
+		<if test="filterBy == 'today' and setup_send_time == 1 and data_send_time == 1">
+			SELECT
+				iv.time,
+				si.id,
+				iv.id_device,
+				iv.TotalNetInstantaneousRealPower AS chart_energy_kwh,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS local_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS download_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS full_time
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device} 
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} 
+				AND #{end_date}
+		</if>
+		
+		<if test="filterBy == 'today' and setup_send_time == 1 and data_send_time == 2">
+			SELECT
+				iv.time,
+				si.id,
+				iv.id_device,
+				ROUND(AVG(iv.TotalNetInstantaneousRealPower),1) AS chart_energy_kwh,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS last_updated,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS local_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS download_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS full_time,
+				FLOOR(UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` ))/(15 * 60)) AS timekey
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer} 
+				AND d.id = #{id_device}
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} 
+				AND #{end_date}
+				GROUP BY timekey
+				
+		</if>
+		
+		<if test="filterBy == 'today' and setup_send_time == 2 and data_send_time == 2">
+			SELECT
+				iv.time,
+				si.id,
+				iv.id_device,
+				ROUND(AVG(iv.TotalNetInstantaneousRealPower),1) AS chart_energy_kwh,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS last_updated,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS local_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS download_time,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS full_time,
+				FLOOR(UNIX_TIMESTAMP(CONVERT_TZ( iv.time, '+00:00', t.`offset` ))/(15 * 60)) AS timekey
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device} 
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} 
+				AND #{end_date}
+				GROUP BY timekey
+		</if>
+		
+		<if test="filterBy == 'today' and data_send_time == 3">
+			SELECT
+				iv.time,
+				si.id,
+				iv.id_device,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H' ) AS local_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%l%p' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%l%p' ) AS full_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i' ) AS download_time,
+				CONCAT_WS('-', iv.id_device, DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%H:00' )) AS join_param,
+				ROUND(AVG(iv.TotalNetInstantaneousRealPower),1) AS chart_energy_kwh
+				
+			FROM 
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id
+		
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}  
+				GROUP BY local_time;
+		</if>
+		
+		
+		<if test="filterBy == 'this_month' or filterBy == 'last_month'">
+			SELECT
+				iv.time,
+				si.id,
+				iv.id_device,
+				MAX(iv.AccumulatedRealEnergyNet) - MIN(iv.AccumulatedRealEnergyNet) AS chart_energy_kwh,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS local_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%W, %b %d, %Y' ) AS full_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time
+				
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id 
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				AND iv.AccumulatedRealEnergyNet > 0
+				AND YEAR ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = YEAR ( #{end_date} ) 
+				AND MONTH ( CONVERT_TZ( iv.time, '+00:00', t.`offset` ) ) = MONTH ( #{end_date} )
+				AND	 CONVERT_TZ( iv.time, '+00:00', t.`offset` ) <![CDATA[<=]]> #{end_date}
+				GROUP BY local_time, iv.id_device
+		</if>
+		
+		<if test="filterBy == '12_month'">
+			SELECT
+				tmin.*,
+				ROUND(MAX( tmin.AccumulatedRealEnergyNet ) - MIN( tmin.AccumulatedRealEnergyNet ), 2) AS chart_energy_kwh
+			FROM
+				(
+				SELECT
+					iv.time,
+					si.id,
+					si.ac_capacity,
+					iv.id_device,
+					iv.TotalEnergyConsumption,
+					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS local_time,
+ 					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS convert_time,
+					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS full_time,
+					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS download_time
+					
+				FROM
+					site si
+					LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+					LEFT JOIN time_zone t ON t.id = si.id_time_zone
+					LEFT JOIN device d ON d.id_site = si.id
+					LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+				WHERE
+					si.id = #{id_site}
+					AND scm.id_customer = #{id_customer}
+					AND d.id = #{id_device}
+					AND si.`status` = 1
+					AND si.is_delete = 0 
+					AND (CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+					
+				) tmin 
+				
+			GROUP BY tmin.local_time
+		</if>
+		
+		<if test="filterBy == 'lifetime'">
+		SELECT
+			tmin.*,
+			ROUND(MAX( tmin.AccumulatedRealEnergyNet ) - MIN( tmin.AccumulatedRealEnergyNet ), 2) AS chart_energy_kwh
+		FROM
+			(
+			SELECT
+				iv.time,
+				iv.TotalEnergyConsumption,
+				<choose>
+				    <when test="typeView == 'month'">
+				      DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS local_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS full_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS mr_local_time,
+				    </when>
+				    
+				    <otherwise>
+				      DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS local_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS full_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS mr_local_time,
+				    </otherwise>
+				</choose>
+				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), #{format_sql_long} ) AS last_updated,
+				t.`offset`
+				
+			FROM
+				site si
+				LEFT JOIN site_customer_map scm ON scm.id_site = si.id
+				LEFT JOIN time_zone t ON t.id = si.id_time_zone
+				LEFT JOIN device d ON d.id_site = si.id
+				LEFT JOIN model_veris_industries_e51c2_power_meter iv ON iv.id_device = d.id 
+			WHERE
+				si.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND si.`status` = 1 
+				AND si.is_delete = 0 
+				<choose>
+				    <when test="typeView == 'month'">
+				      AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+				    </when>
+				    
+				    <otherwise>
+				      AND CONVERT_TZ( iv.time, '+00:00', t.`offset` ) <![CDATA[<=]]> #{end_date}
+				    </otherwise>
+				</choose>
+				
+			) tmin 
+		GROUP BY tmin.local_time
+		</if>
+		
+	</select>
+	
+	<select id="getListDeviceTypeIrradiance" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename 
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id = 6
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	
+	<select id="getChartDataIrradianceByDeviceId" resultType="Map">
+		<if test="filterBy == 'today' and setup_send_time == 1 and data_send_time == 1">
+			SELECT
+				s.id,
+				s.id_time_zone,
+				mr.id_device,
+				DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%H:%i' ) AS time_day,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS full_time,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS download_time,
+				ROUND(mr.irradiance * 0.1, 2) AS chart_energy_kwh
+			FROM
+				site s
+				LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				LEFT JOIN device d ON d.id_site = s.id
+				LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+			WHERE
+				s.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND s.`status` = 1 
+				AND s.is_delete = 0 
+				AND mr.time IS NOT NULL
+				AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+        </if>
+        
+        <if test="filterBy == 'today' and setup_send_time == 1 and data_send_time == 2">
+        	SELECT
+				s.id,
+				s.id_time_zone,
+				mr.id_device,
+				DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%H:%i' ) AS time_day,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS full_time,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS download_time,
+				ROUND(mr.irradiance * 0.1, 2) AS chart_energy_kwh,
+				FLOOR(UNIX_TIMESTAMP(CONVERT_TZ( mr.time, '+00:00', t.`offset` ))/(15 * 60)) AS timekey
+			FROM
+				site s
+				LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				LEFT JOIN device d ON d.id_site = s.id
+				LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+			WHERE
+				s.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND s.`status` = 1 
+				AND s.is_delete = 0 
+				AND mr.time IS NOT NULL
+				AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+				GROUP BY timekey
+        </if>
+        
+        <if test="filterBy == 'today' and setup_send_time == 2 and data_send_time == 2">
+        	SELECT
+				s.id,
+				s.id_time_zone,
+				mr.id_device,
+				DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%H:%i' ) AS time_day,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS full_time,
+				DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS download_time,
+				ROUND(mr.irradiance * 0.1, 2) AS chart_energy_kwh
+			FROM
+				site s
+				LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				LEFT JOIN device d ON d.id_site = s.id
+				LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+			WHERE
+				s.id = #{id_site}
+				AND scm.id_customer = #{id_customer}
+				AND d.id = #{id_device}
+				AND s.`status` = 1 
+				AND s.is_delete = 0 
+				AND mr.time IS NOT NULL
+				AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+        </if>
+              
+		
+		<if test="filterBy == 'today' and data_send_time == 3">
+			
+			SELECT 
+			t.id,
+			t.id_device,
+			t.local_time,
+			t.categories_time,
+			t.convert_time,
+			t.full_time,
+			t.download_time,
+			t.mr_local_time,
+			ROUND((AVG(t.chart_energy_kwh)) ,2)  AS chart_energy_kwh 
+				FROM (
+					SELECT
+							s.id,
+							mr.id_device,
+							CONVERT_TZ( mr.time, '+00:00', t.`offset` ) AS local_time,
+							DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%l%p' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H' ) AS convert_time,
+							DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%l%p' ) AS full_time,
+							DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d %H' ) AS mr_local_time,
+							ROUND(mr.irradiance * 0.1, 2) AS chart_energy_kwh
+						FROM
+							site s
+							LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							LEFT JOIN device d ON d.id_site = s.id
+							LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+						WHERE
+							s.id = #{id_site}
+							AND scm.id_customer = #{id_customer}
+							AND d.id = #{id_device}
+							AND s.`status` = 1 
+							AND s.is_delete = 0 
+							AND mr.time IS NOT NULL
+							AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+				)t GROUP BY t.convert_time
+		</if>
+		
+		
+		<if test="filterBy == 'this_month' or filterBy == 'last_month'">
+			SELECT t.*, ROUND((AVG(t.irradiance)) ,2)  AS chart_energy_kwh FROM (
+				SELECT
+						s.id,
+						s.id_time_zone,
+						mr.id_device,
+						DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+						CONVERT_TZ( mr.time, '+00:00', t.`offset` ) AS local_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%H:%i' ) AS time_day,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%d. %b' ) AS convert_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%W, %b %d, %Y' ) AS full_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS mr_local_time,
+						ROUND(mr.irradiance * 0.1, 2) AS irradiance
+					FROM
+						site s
+						LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						LEFT JOIN device d ON d.id_site = s.id
+						LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+					WHERE
+						s.id = #{id_site}
+						AND scm.id_customer = #{id_customer}
+						AND s.`status` = 1 
+						AND s.is_delete = 0 
+						AND mr.time IS NOT NULL
+						AND YEAR ( CONVERT_TZ( mr.time, '+00:00', t.`offset` ) ) = YEAR ( #{end_date} ) 
+						AND MONTH ( CONVERT_TZ( mr.time, '+00:00', t.`offset` ) ) = MONTH ( #{end_date} ) 
+						AND CONVERT_TZ( mr.time, '+00:00', t.`offset`) <![CDATA[<=]]> #{end_date}
+			)t GROUP BY t.convert_time
+		</if>
+		
+		<if test="filterBy == '12_month'">
+			SELECT t.*, 
+				ROUND((AVG(t.irradiance)) ,2)  AS chart_energy_kwh 
+				FROM (
+					SELECT
+						s.id,
+						s.id_time_zone,
+						mr.id_device,
+						DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+						CONVERT_TZ( mr.time, '+00:00', t.`offset` ) AS local_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS convert_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS full_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS download_time,
+						DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m' ) AS mr_local_time,
+						ROUND(mr.irradiance * 0.1, 2) AS irradiance
+					FROM
+						site s
+						LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						LEFT JOIN device d ON d.id_site = s.id
+						LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+					WHERE
+						s.id = #{id_site}
+						AND scm.id_customer = #{id_customer}
+						AND d.id = #{id_device}
+						AND s.`status` = 1 
+						AND s.is_delete = 0 
+						AND mr.time IS NOT NULL
+						AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+			)t GROUP BY t.convert_time
+		</if>
+
+		<if test="filterBy == 'lifetime'">
+			SELECT t.*, ROUND((AVG(t.irradiance)) ,2)  AS chart_energy_kwh FROM (
+						SELECT
+								s.id,
+								s.id_time_zone,
+								mr.id_device,
+								DATE_FORMAT( mr.time, '%Y-%m-%d %H:%i:00' ) AS `utc_time`,
+								CONVERT_TZ( mr.time, '+00:00', t.`offset` ) AS local_time,
+								DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%H:%i' ) AS time_day,
+								<choose>
+								    <when test="typeView == 'month'">
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS convert_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS full_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%b. %Y' ) AS download_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y-%m' ) AS mr_local_time,
+								    </when>
+								    
+								    <otherwise>
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y' ) AS convert_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y' ) AS full_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
+										DATE_FORMAT( CONVERT_TZ( mr.time, '+00:00', t.`offset` ), '%Y' ) AS mr_local_time,
+								    </otherwise>
+	   							</choose>
+								ROUND(mr.irradiance*0.1, 2) AS irradiance
+							FROM
+								site s
+								LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								LEFT JOIN device d ON d.id_site = s.id
+								LEFT JOIN model_imtsolar_class8000 mr ON mr.id_device = d.id 
+							WHERE
+								s.id = #{id_site}
+								AND scm.id_customer = #{id_customer}
+								AND s.`status` = 1 
+								AND s.is_delete = 0 
+								AND mr.time IS NOT NULL
+								<choose>
+								    <when test="typeView == 'month'">
+								      AND CONVERT_TZ( mr.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+								    </when>
+								    
+								    <otherwise>
+								      AND CONVERT_TZ( mr.time, '+00:00', t.`offset` )  <![CDATA[<=]]> #{end_date}
+								    </otherwise>
+	   							</choose>
+								
+					)t GROUP BY t.convert_time
+		</if>
+	</select>
+	
+	
+	
+</mapper>

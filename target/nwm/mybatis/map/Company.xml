@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Company">
+	<resultMap id="CompanyMap"
+		type="com.nwm.api.entities.CompanyEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="text" column="text" />
+		<result property="value" column="value" />
+		<result property="offset" column="offset" />
+		<result property="status" column="status" />
+		<result property="is_delete" column="is_delete" />
+		<result property="created_date" column="created_date" />
+		<result property="created_by" column="created_by" />
+		<result property="updated_date" column="updated_by" />
+		<result property="active" column="active" />
+		<result property="description" column="description" />
+	</resultMap>
+	
+
+	
+
+	<select id="getDropdownList" resultMap="CompanyMap" parameterType="String">
+		SELECT
+			t.*,
+			t.name AS text,
+			0 as active
+		FROM
+			company AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `name` ASC;
+	</select>
+	
+	<select id="getList" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.`description`,
+			s.`status`,
+			s.is_delete
+		FROM
+			company s 
+		WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                s.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'status'">
+	                `status` ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.CompanyEntity">
+    	SELECT count(*) as totalRow
+		FROM company s WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	<update id="updateStatus">
+		UPDATE `company`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	<update id="delete">
+		UPDATE `company`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="insertCompany" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `company`(
+			`name`,
+			`description`
+		)VALUES(
+			#{name},
+			#{description}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateCompany">
+		UPDATE `company`
+		SET
+			`name` = #{name},
+			`description` = #{description}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+</mapper>

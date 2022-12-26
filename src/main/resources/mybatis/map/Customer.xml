@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Customer">
+	<resultMap id="CustomerMap" type="com.nwm.api.entities.CustomerEntity">
+  			<result property="id" column="id" />
+  			<result property="first_name" column="first_name" />
+  			<result property="last_name" column="last_name" />
+  			<result property="phone" column="phone" />
+  			<result property="mobile_phone" column="mobile_phone" />
+  			<result property="email" column="email" />
+  			<result property="fax" column="fax" />
+  			<result property="address" column="address" />
+  			<result property="password" column="password" />
+  			<result property="status" column="status" />
+  			<result property="is_delete" column="is_delete" />
+  			<result property="created_date" column="created_date" />
+  			<result property="created_by" column="created_by" />
+  			<result property="updated_date" column="updated_date" />
+  			<result property="updated_by" column="updated_by" />
+  			<result property="order_by" column="order_by" />
+			<result property="sort_column" column="sort_column" />
+			<result property="limit" column="limit" />
+			<result property="offset" column="offset" />
+			<result property="logo" column="logo" />
+			<result property="keyword" column="keyword" />
+			
+	</resultMap>	
+	
+	<resultMap id="CustomerDropdownMap" type="com.nwm.api.entities.CustomerEntity">
+  			<result property="id" column="id" />
+  			<result property="first_name" column="first_name" />
+  			<result property="last_name" column="last_name" />
+  			<result property="fullname" column="fullname" />
+  			<result property="text" column="text" />
+	</resultMap>
+	
+	<select id="getList" resultMap="CustomerMap" parameterType="com.nwm.api.entities.CustomerEntity" >
+		SELECT id, password, first_name, last_name, phone, mobile_phone, fax, email, email AS re_email, address, is_delete, status, logo, is_technical FROM `customer` c
+		WHERE c.is_delete = 0
+		<if test="keyword != null">
+			AND ( first_name LIKE CONCAT("%",#{keyword}, "%") OR last_name LIKE CONCAT("%",#{keyword}, "%") OR phone LIKE CONCAT("%",#{keyword}, "%") OR email LIKE CONCAT("%",#{keyword}, "%"))
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'first_name'">
+	                first_name ${order_by}
+	            </when>
+	            <when test="sort_column == 'last_name'">
+	                last_name ${order_by}
+	            </when>
+	            <when test="sort_column == 'phone'">
+	                phone ${order_by}
+	            </when>
+	            <when test="sort_column == 'email'">
+	                email ${order_by}
+	            </when>
+	            <when test="sort_column == 'status'">
+	                status ${order_by}
+	            </when>
+	            <otherwise>
+			      id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.CustomerEntity">
+    	SELECT count(*) as totalRecord
+		FROM customer 
+		<if test="keyword != null">
+			WHERE ( first_name LIKE CONCAT("%",#{keyword}, "%") OR last_name LIKE CONCAT("%",#{keyword}, "%") OR phone LIKE CONCAT("%",#{keyword}, "%") OR email LIKE CONCAT("%",#{keyword}, "%"))
+		</if>
+  	</select>
+  	
+  	
+  	<update id="updateStatus">
+		UPDATE `customer`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="insertCustomer" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `customer`(
+			`first_name`,
+			`last_name`,
+			`phone`,
+			`mobile_phone`,
+			`email`,
+			`fax`,
+			`address`,
+			`password`,
+			`logo`,
+			`token_setpassword`,
+			`is_technical`
+		)VALUES(
+			#{first_name},
+			#{last_name},
+			#{phone},
+			#{mobile_phone},
+			#{email},
+			#{fax},
+			#{address},
+			#{password},
+			#{logo},
+			#{token_setpassword},
+			#{is_technical}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateCustomer">
+		UPDATE `customer`
+		SET
+			`first_name` = #{first_name},
+			`last_name` = #{last_name},
+			`phone` = #{phone},
+			`mobile_phone` = #{mobile_phone},
+			`email` = #{email},
+			`password` = #{password},
+			`fax` = #{fax},
+			`address` = #{address},
+			`logo` = #{logo},
+			`is_technical` = #{is_technical}
+			
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="deleteCustomer">
+		DELETE FROM `customer`
+		WHERE id = #{id}
+	</update>
+	
+	<select id="getCustomerByEmail" resultMap="CustomerMap" parameterType="String">
+    	SELECT
+    		id, 
+    		first_name, 
+    		last_name, 
+    		phone, 
+    		mobile_phone, 
+    		fax, 
+    		email, 
+    		address, 
+    		is_delete, 
+    		`status`, 
+    		logo,
+    		is_technical
+		FROM `customer` u
+		WHERE u.email = #{value} AND u.status = 1 AND u.is_delete = 0
+		;
+  	</select>
+  	
+  	<select id="checkCustomerEmailExist" parameterType="com.nwm.api.entities.CustomerEntity" resultType="int">
+    	SELECT
+    	COUNT(id) as totalRecord
+		FROM `customer` as u
+		WHERE u.email = #{email} AND u.id != #{id};
+  	</select>
+	
+	<select id="getCustomerById" resultMap="CustomerMap" parameterType="int">
+    	SELECT
+    		id, 
+    		first_name, 
+    		last_name, 
+    		phone, 
+    		mobile_phone, 
+    		password,
+    		fax, 
+    		email, 
+    		address, 
+    		is_delete, 
+    		`status`, 
+    		logo,
+    		is_technical
+		FROM `customer` u
+		WHERE u.id = #{value}
+		;
+  	</select>
+  	
+  	<select id="getAll" resultMap="CustomerDropdownMap" parameterType="String" >
+		SELECT
+			id,
+			CONCAT_WS( ' ', first_name, last_name ) AS fullname,
+			CONCAT_WS( ' ', first_name, last_name ) AS text,
+			CONCAT_WS( ' ', first_name, last_name ) AS label,
+			id AS value 
+		FROM
+			`customer` 
+		WHERE
+			`status` = 1 
+			AND is_delete = 0 
+		ORDER BY
+			id DESC;
+	</select>
+	
+	
+	<update id="customerUpdateToken">
+		UPDATE `customer`
+		SET
+			`token_setpassword` = #{token_setpassword}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+</mapper>

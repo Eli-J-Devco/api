@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ImportOldData">
+
+
+	<select id="getAllSiteByEmployeeId" resultType="Map" >
+		SELECT
+			s.id,
+			SHA1(s.id) AS hash_id,
+			s.`name`,
+			s.`name` AS text,
+			s.`name` AS label,
+			s.id AS `value`
+		FROM
+			site AS s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+		WHERE
+			s.is_delete = 0 
+			AND s.`status` = 1 
+			AND sem.id_employee = #{id_employee}
+		ORDER BY s.`name` ASC
+	</select>
+	
+	<select id="getAllDeviceBySiteId" resultType="Map" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename AS text,
+			d.devicename AS label,
+			d.id AS `value`,
+			dg.group_name AS device_group_name,
+			dg.table_name
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			
+		WHERE
+			d.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.id_device_type != 5
+			AND d.id_site = #{id_site}
+			AND dg.`status` = 1
+			AND dg.is_delete = 0
+			GROUP BY d.id
+			ORDER BY d.`devicename` ASC
+			
+	</select>
+	
+	
+	
+	
+</mapper>

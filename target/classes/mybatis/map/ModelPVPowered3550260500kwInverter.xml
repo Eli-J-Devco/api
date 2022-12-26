@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVPowered3550260500kwInverter">
+	<resultMap id="ModelPVPowered3550260500kwInverterMap"
+		type="com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="InverterIDASCIICHAR0001"
+			column="InverterIDASCIICHAR0001" />
+		<result property="InverterIDASCIICHAR0203"
+			column="InverterIDASCIICHAR0203" />
+		<result property="InverterIDASCIICHAR0405"
+			column="InverterIDASCIICHAR0405" />
+		<result property="InverterIDASCIICHAR0607"
+			column="InverterIDASCIICHAR0607" />
+		<result property="InverterIDASCIICHAR0809"
+			column="InverterIDASCIICHAR0809" />
+		<result property="InverterIDASCIICHAR1011"
+			column="InverterIDASCIICHAR1011" />
+		<result property="InverterIDASCIICHAR1213"
+			column="InverterIDASCIICHAR1213" />
+		<result property="InverterIDASCIICHAR1415"
+			column="InverterIDASCIICHAR1415" />
+		<result property="FirmwareVersionASCIICHAR0001"
+			column="FirmwareVersionASCIICHAR0001" />
+		<result property="FirmwareVersionASCIICHAR0203"
+			column="FirmwareVersionASCIICHAR0203" />
+		<result property="FirmwareVersionASCIICHAR0405"
+			column="FirmwareVersionASCIICHAR0405" />
+		<result property="FirmwareVersionASCIICHAR0607"
+			column="FirmwareVersionASCIICHAR0607" />
+		<result property="MapVersion" column="MapVersion" />
+		<result property="InverterConfiguration"
+			column="InverterConfiguration" />
+		<result property="InverterSerialASCIICHAR0001"
+			column="InverterSerialASCIICHAR0001" />
+		<result property="InverterSerialASCIICHAR0203"
+			column="InverterSerialASCIICHAR0203" />
+		<result property="InverterSerialASCIICHAR0405"
+			column="InverterSerialASCIICHAR0405" />
+		<result property="InverterSerialASCIICHAR0607"
+			column="InverterSerialASCIICHAR0607" />
+		<result property="InverterSerialASCIICHAR0809"
+			column="InverterSerialASCIICHAR0809" />
+		<result property="InverterSerialASCIICHAR1011"
+			column="InverterSerialASCIICHAR1011" />
+		<result property="InverterSerialASCIICHAR1213"
+			column="InverterSerialASCIICHAR1213" />
+		<result property="InverterSerialASCIICHAR1415"
+			column="InverterSerialASCIICHAR1415" />
+		<result property="InverterSerialASCIICHAR1617"
+			column="InverterSerialASCIICHAR1617" />
+		<result property="InverterSerialASCIICHAR1819"
+			column="InverterSerialASCIICHAR1819" />
+		<result property="VoltageAN" column="VoltageAN" />
+		<result property="VoltageBN" column="VoltageBN" />
+		<result property="VoltageCN" column="VoltageCN" />
+		<result property="CurrentA" column="CurrentA" />
+		<result property="CurrentB" column="CurrentB" />
+		<result property="CurrentC" column="CurrentC" />
+		<result property="DCInputVoltage" column="DCInputVoltage" />
+		<result property="DCInputCurrent" column="DCInputCurrent" />
+		<result property="LineFrequency" column="LineFrequency" />
+		<result property="OutputGeneration" column="OutputGeneration" />
+		<result property="TotalEnergyGeneration"
+			column="TotalEnergyGeneration" />
+		<result property="PVInputVoltage" column="PVInputVoltage" />
+		<result property="InputGenerationCalculated"
+			column="InputGenerationCalculated" />
+		<result property="InverterOperatingStatus"
+			column="InverterOperatingStatus" />
+		<result property="MainFault" column="MainFault" />
+		<result property="DriveFault" column="DriveFault" />
+		<result property="VoltageFault" column="VoltageFault" />
+		<result property="GridFault" column="GridFault" />
+		<result property="TemperatureFault" column="TemperatureFault" />
+		<result property="SystemFault" column="SystemFault" />
+		<result property="SystemWarnings" column="SystemWarnings" />
+		<result property="PVMStatusCodes" column="PVMStatusCodes" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelPVPowered3550260KWInverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_pv_powered_35_50_260_500kw_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="InverterIDASCIICHAR0001 != '0.001'">
+				`InverterIDASCIICHAR0001`,
+			</if>
+			<if test="InverterIDASCIICHAR0203 != '0.001'">
+				`InverterIDASCIICHAR0203`,
+			</if>
+			<if test="InverterIDASCIICHAR0405 != '0.001'">
+				`InverterIDASCIICHAR0405`,
+			</if>
+			<if test="InverterIDASCIICHAR0607 != '0.001'">
+				`InverterIDASCIICHAR0607`,
+			</if>
+			<if test="InverterIDASCIICHAR0809 != '0.001'">
+				`InverterIDASCIICHAR0809`,
+			</if>
+			<if test="InverterIDASCIICHAR1011 != '0.001'">
+				`InverterIDASCIICHAR1011`,
+			</if>
+			<if test="InverterIDASCIICHAR1213 != '0.001'">
+				`InverterIDASCIICHAR1213`,
+			</if>
+			<if test="InverterIDASCIICHAR1415 != '0.001'">
+				`InverterIDASCIICHAR1415`,
+			</if>
+			<if test="FirmwareVersionASCIICHAR0001 != '0.001'">
+				`FirmwareVersionASCIICHAR0001`,
+			</if>
+			<if test="FirmwareVersionASCIICHAR0203 != '0.001'">
+				`FirmwareVersionASCIICHAR0203`,
+			</if>
+			<if test="FirmwareVersionASCIICHAR0405 != '0.001'">
+				`FirmwareVersionASCIICHAR0405`,
+			</if>
+			<if test="FirmwareVersionASCIICHAR0607 != '0.001'">
+				`FirmwareVersionASCIICHAR0607`,
+			</if>
+			<if test="MapVersion != '0.001'">
+				`MapVersion`,
+			</if>
+			<if test="InverterConfiguration != '0.001'">
+				`InverterConfiguration`,
+			</if>
+			<if test="InverterSerialASCIICHAR0001 != '0.001'">
+				`InverterSerialASCIICHAR0001`,
+			</if>
+			<if test="InverterSerialASCIICHAR0203 != '0.001'">
+				`InverterSerialASCIICHAR0203`,
+			</if>
+			<if test="InverterSerialASCIICHAR0405 != '0.001'">
+				`InverterSerialASCIICHAR0405`,
+			</if>
+			<if test="InverterSerialASCIICHAR0607 != '0.001'">
+				`InverterSerialASCIICHAR0607`,
+			</if>
+			<if test="InverterSerialASCIICHAR0809 != '0.001'">
+				`InverterSerialASCIICHAR0809`,
+			</if>
+			<if test="InverterSerialASCIICHAR1011 != '0.001'">
+				`InverterSerialASCIICHAR1011`,
+			</if>
+			<if test="InverterSerialASCIICHAR1213 != '0.001'">
+				`InverterSerialASCIICHAR1213`,
+			</if>
+			<if test="InverterSerialASCIICHAR1415 != '0.001'">
+				`InverterSerialASCIICHAR1415`,
+			</if>
+			<if test="InverterSerialASCIICHAR1617 != '0.001'">
+				`InverterSerialASCIICHAR1617`,
+			</if>
+			<if test="InverterSerialASCIICHAR1819 != '0.001'">
+				`InverterSerialASCIICHAR1819`,
+			</if>
+			<if test="VoltageAN != 0.001">
+				`VoltageAN`,
+			</if>
+			<if test="VoltageBN != 0.001">
+				`VoltageBN`,
+			</if>
+			<if test="VoltageCN != 0.001">
+				`VoltageCN`,
+			</if>
+			<if test="CurrentA != 0.001">
+				`CurrentA`,
+			</if>
+			<if test="CurrentB != 0.001">
+				`CurrentB`,
+			</if>
+			<if test="CurrentC != 0.001">
+				`CurrentC`,
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				`DCInputVoltage`,
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				`DCInputCurrent`,
+			</if>
+			<if test="LineFrequency != 0.001">
+				`LineFrequency`,
+			</if>
+			<if test="OutputGeneration != 0.001">
+				`OutputGeneration`,
+			</if>
+			<if test="TotalEnergyGeneration != 0.001">
+				`TotalEnergyGeneration`,
+			</if>
+			<if test="PVInputVoltage != 0.001">
+				`PVInputVoltage`,
+			</if>
+			<if test="InputGenerationCalculated != 0.001">
+				`InputGenerationCalculated`,
+			</if>
+			<if test="InverterOperatingStatus != 0.001">
+				`InverterOperatingStatus`,
+			</if>
+			<if test="MainFault != 0.001">
+				`MainFault`,
+			</if>
+			<if test="DriveFault != 0.001">
+				`DriveFault`,
+			</if>
+			<if test="VoltageFault != 0.001">
+				`VoltageFault`,
+			</if>
+			<if test="GridFault != 0.001">
+				`GridFault`,
+			</if>
+			<if test="TemperatureFault != 0.001">
+				`TemperatureFault`,
+			</if>
+			<if test="SystemFault != 0.001">
+				`SystemFault`,
+			</if>
+			<if test="SystemWarnings != 0.001">
+				`SystemWarnings`,
+			</if>
+			<if test="PVMStatusCodes != 0.001">
+				`PVMStatusCodes`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="InverterIDASCIICHAR0001 != '0.001'">
+				#{InverterIDASCIICHAR0001},
+			</if>
+			<if test="InverterIDASCIICHAR0203 != '0.001'">
+				#{InverterIDASCIICHAR0203},
+			</if>
+			<if test="InverterIDASCIICHAR0405 != '0.001'">
+				#{InverterIDASCIICHAR0405},
+			</if>
+			<if test="InverterIDASCIICHAR0607 != '0.001'">
+				#{InverterIDASCIICHAR0607},
+			</if>
+			<if test="InverterIDASCIICHAR0809 != '0.001'">
+				#{InverterIDASCIICHAR0809},
+			</if>
+			<if test="InverterIDASCIICHAR1011 != '0.001'">
+				#{InverterIDASCIICHAR1011},
+			</if>
+			<if test="InverterIDASCIICHAR1213 != '0.001'">
+				#{InverterIDASCIICHAR1213},
+			</if>
+			<if test="InverterIDASCIICHAR1415 != '0.001'">
+				#{InverterIDASCIICHAR1415},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0001 != '0.001'">
+				#{FirmwareVersionASCIICHAR0001},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0203 != '0.001'">
+				#{FirmwareVersionASCIICHAR0203},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0405 != '0.001'">
+				#{FirmwareVersionASCIICHAR0405},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0607 != '0.001'">
+				#{FirmwareVersionASCIICHAR0607},
+			</if>
+			<if test="MapVersion != '0.001'">
+				#{MapVersion},
+			</if>
+			<if test="InverterConfiguration != '0.001'">
+				#{InverterConfiguration},
+			</if>
+			<if test="InverterSerialASCIICHAR0001 != '0.001'">
+				#{InverterSerialASCIICHAR0001},
+			</if>
+			<if test="InverterSerialASCIICHAR0203 != '0.001'">
+				#{InverterSerialASCIICHAR0203},
+			</if>
+			<if test="InverterSerialASCIICHAR0405 != '0.001'">
+				#{InverterSerialASCIICHAR0405},
+			</if>
+			<if test="InverterSerialASCIICHAR0607 != '0.001'">
+				#{InverterSerialASCIICHAR0607},
+			</if>
+			<if test="InverterSerialASCIICHAR0809 != '0.001'">
+				#{InverterSerialASCIICHAR0809},
+			</if>
+			<if test="InverterSerialASCIICHAR1011 != '0.001'">
+				#{InverterSerialASCIICHAR1011},
+			</if>
+			<if test="InverterSerialASCIICHAR1213 != '0.001'">
+				#{InverterSerialASCIICHAR1213},
+			</if>
+			<if test="InverterSerialASCIICHAR1415 != '0.001'">
+				#{InverterSerialASCIICHAR1415},
+			</if>
+			<if test="InverterSerialASCIICHAR1617 != '0.001'">
+				#{InverterSerialASCIICHAR1617},
+			</if>
+			<if test="InverterSerialASCIICHAR1819 != '0.001'">
+				#{InverterSerialASCIICHAR1819},
+			</if>
+			<if test="VoltageAN != 0.001">
+				#{VoltageAN},
+			</if>
+			<if test="VoltageBN != 0.001">
+				#{VoltageBN},
+			</if>
+			<if test="VoltageCN != 0.001">
+				#{VoltageCN},
+			</if>
+			<if test="CurrentA != 0.001">
+				#{CurrentA},
+			</if>
+			<if test="CurrentB != 0.001">
+				#{CurrentB},
+			</if>
+			<if test="CurrentC != 0.001">
+				#{CurrentC},
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				#{DCInputVoltage},
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				#{DCInputCurrent},
+			</if>
+			<if test="LineFrequency != 0.001">
+				#{LineFrequency},
+			</if>
+			<if test="OutputGeneration != 0.001">
+				#{OutputGeneration},
+			</if>
+			<if test="TotalEnergyGeneration != 0.001">
+				#{TotalEnergyGeneration},
+			</if>
+			<if test="PVInputVoltage != 0.001">
+				#{PVInputVoltage},
+			</if>
+			<if test="InputGenerationCalculated != 0.001">
+				#{InputGenerationCalculated},
+			</if>
+			<if test="InverterOperatingStatus != 0.001">
+				#{InverterOperatingStatus},
+			</if>
+			<if test="MainFault != 0.001">
+				#{MainFault},
+			</if>
+			<if test="DriveFault != 0.001">
+				#{DriveFault},
+			</if>
+			<if test="VoltageFault != 0.001">
+				#{VoltageFault},
+			</if>
+			<if test="GridFault != 0.001">
+				#{GridFault},
+			</if>
+			<if test="TemperatureFault != 0.001">
+				#{TemperatureFault},
+			</if>
+			<if test="SystemFault != 0.001">
+				#{SystemFault},
+			</if>
+			<if test="SystemWarnings != 0.001">
+				#{SystemWarnings},
+			</if>
+			<if test="PVMStatusCodes != 0.001">
+				#{PVMStatusCodes},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if> 
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="InverterIDASCIICHAR0001 != '0.001'">
+				InverterIDASCIICHAR0001 = #{InverterIDASCIICHAR0001},
+			</if>
+			<if test="InverterIDASCIICHAR0203 != '0.001'">
+				InverterIDASCIICHAR0203 = #{InverterIDASCIICHAR0203},
+			</if>
+			<if test="InverterIDASCIICHAR0405 != '0.001'">
+				InverterIDASCIICHAR0405 = #{InverterIDASCIICHAR0405},
+			</if>
+			<if test="InverterIDASCIICHAR0607 != '0.001'">
+				InverterIDASCIICHAR0607= #{InverterIDASCIICHAR0607},
+			</if>
+			<if test="InverterIDASCIICHAR0809 != '0.001'">
+				InverterIDASCIICHAR0809 = #{InverterIDASCIICHAR0809},
+			</if>
+			<if test="InverterIDASCIICHAR1011 != '0.001'">
+				InverterIDASCIICHAR1011 = #{InverterIDASCIICHAR1011},
+			</if>
+			<if test="InverterIDASCIICHAR1213 != '0.001'">
+				InverterIDASCIICHAR1213 = #{InverterIDASCIICHAR1213},
+			</if>
+			<if test="InverterIDASCIICHAR1415 != '0.001'">
+				InverterIDASCIICHAR1415 = #{InverterIDASCIICHAR1415},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0001 != '0.001'">
+				FirmwareVersionASCIICHAR0001 =
+				#{FirmwareVersionASCIICHAR0001},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0203 != '0.001'">
+				FirmwareVersionASCIICHAR0203 =
+				#{FirmwareVersionASCIICHAR0203},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0405 != '0.001'">
+				FirmwareVersionASCIICHAR0405 =
+				#{FirmwareVersionASCIICHAR0405},
+			</if>
+			<if test="FirmwareVersionASCIICHAR0607 != '0.001'">
+				FirmwareVersionASCIICHAR0607 =
+				#{FirmwareVersionASCIICHAR0607},
+			</if>
+			<if test="MapVersion != '0.001'">
+				MapVersion = #{MapVersion},
+			</if>
+			<if test="InverterConfiguration != '0.001'">
+				InverterConfiguration = #{InverterConfiguration},
+			</if>
+			<if test="InverterSerialASCIICHAR0001 != '0.001'">
+				InverterSerialASCIICHAR0001 =
+				#{InverterSerialASCIICHAR0001},
+			</if>
+			<if test="InverterSerialASCIICHAR0203 != '0.001'">
+				InverterSerialASCIICHAR0203 =
+				#{InverterSerialASCIICHAR0203},
+			</if>
+			<if test="InverterSerialASCIICHAR0405 != '0.001'">
+				InverterSerialASCIICHAR0405 =
+				#{InverterSerialASCIICHAR0405},
+			</if>
+			<if test="InverterSerialASCIICHAR0607 != '0.001'">
+				InverterSerialASCIICHAR0607 =
+				#{InverterSerialASCIICHAR0607},
+			</if>
+			<if test="InverterSerialASCIICHAR0809 != '0.001'">
+				InverterSerialASCIICHAR0809 =
+				#{InverterSerialASCIICHAR0809},
+			</if>
+			<if test="InverterSerialASCIICHAR1011 != '0.001'">
+				InverterSerialASCIICHAR1011 =
+				#{InverterSerialASCIICHAR1011},
+			</if>
+			<if test="InverterSerialASCIICHAR1213 != '0.001'">
+				InverterSerialASCIICHAR1213 =
+				#{InverterSerialASCIICHAR1213},
+			</if>
+			<if test="InverterSerialASCIICHAR1415 != '0.001'">
+				InverterSerialASCIICHAR1415 =
+				#{InverterSerialASCIICHAR1415},
+			</if>
+			<if test="InverterSerialASCIICHAR1617 != '0.001'">
+				InverterSerialASCIICHAR1617 =
+				#{InverterSerialASCIICHAR1617},
+			</if>
+			<if test="InverterSerialASCIICHAR1819 != '0.001'">
+				InverterSerialASCIICHAR1819 =
+				#{InverterSerialASCIICHAR1819},
+			</if>
+			<if test="VoltageAN != 0.001">
+				VoltageAN = #{VoltageAN},
+			</if>
+			<if test="VoltageBN != 0.001">
+				VoltageBN = #{VoltageBN},
+			</if>
+			<if test="VoltageCN != 0.001">
+				VoltageCN = #{VoltageCN},
+			</if>
+			<if test="CurrentA != 0.001">
+				CurrentA = #{CurrentA},
+			</if>
+			<if test="CurrentB != 0.001">
+				CurrentB = #{CurrentB},
+			</if>
+			<if test="CurrentC != 0.001">
+				CurrentC = #{CurrentC},
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				DCInputVoltage = #{DCInputVoltage},
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				DCInputCurrent = #{DCInputCurrent},
+			</if>
+			<if test="LineFrequency != 0.001">
+				LineFrequency = #{LineFrequency},
+			</if>
+			<if test="OutputGeneration != 0.001">
+				OutputGeneration = #{OutputGeneration},
+			</if>
+			<if test="TotalEnergyGeneration != 0.001">
+				TotalEnergyGeneration = #{TotalEnergyGeneration},
+			</if>
+			<if test="PVInputVoltage != 0.001">
+				PVInputVoltage = #{PVInputVoltage},
+			</if>
+			<if test="InputGenerationCalculated != 0.001">
+				InputGenerationCalculated = #{InputGenerationCalculated},
+			</if>
+			<if test="InverterOperatingStatus != 0.001">
+				InverterOperatingStatus = #{InverterOperatingStatus},
+			</if>
+			<if test="MainFault != 0.001">
+				MainFault = #{MainFault},
+			</if>
+			<if test="DriveFault != 0.001">
+				DriveFault = #{DriveFault},
+			</if>
+			<if test="VoltageFault != 0.001">
+				VoltageFault = #{VoltageFault},
+			</if>
+			<if test="GridFault != 0.001">
+				GridFault = #{GridFault},
+			</if>
+			<if test="TemperatureFault != 0.001">
+				TemperatureFault = #{TemperatureFault},
+			</if>
+			<if test="SystemFault != 0.001">
+				SystemFault = #{SystemFault},
+			</if>
+			<if test="SystemWarnings != 0.001">
+				SystemWarnings = #{SystemWarnings},
+			</if>
+			<if test="PVMStatusCodes != 0.001">
+				PVMStatusCodes = #{PVMStatusCodes},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+		</trim>
+
+	</insert>
+	
+	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(464,465,466,467,468,469,470,471,472,473,474,475,476)
+			</if>
+			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(477,478,479,480,481,482)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(483,484,485,486,487,488,489,490,491,492,493,494)
+			</if>
+			
+			<if test="faultCodeLevel == 4">
+				AND l.id_error IN(495,496,497,498,499,500,501,502,503,504,505,506,507)
+			</if>
+			
+			<if test="faultCodeLevel == 5">
+				AND l.id_error IN(508,509,510,511,512,513,514,515,516,517,518,519,520,521)
+			</if>
+			
+			<if test="faultCodeLevel == 6">
+				AND l.id_error IN(522,523,524,525,526,527,528,529,530,531)
+			</if>
+			
+			<if test="faultCodeLevel == 7">
+				AND l.id_error IN(532,533,534,535,536,537,538,539,540)
+			</if>
+			
+			<if test="faultCodeLevel == 8">
+				AND l.id_error IN(541,542,543,544,545,546,547,548,549,550)
+			</if>
+			<if test="faultCodeLevel == 9">
+				AND l.id_error IN(551,552,553,554)
+			</if>
+			
+			
+			
+			
+			
+	</select>
+	
+	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity">
+    	SELECT
+			SUM( t.InverterOperatingStatus ) AS totalInverterOperatingStatus,
+			SUM( t.MainFault ) AS totalMainFault,
+			SUM( t.DriveFault ) AS totalDriveFault,
+			SUM( t.VoltageFault ) AS totalVoltageFault,
+			SUM( t.GridFault ) AS totalGridFault,
+			SUM( t.TemperatureFault ) AS totalTemperatureFault,
+			SUM( t.SystemFault ) AS totalSystemFault,
+			SUM( t.SystemWarnings ) AS totalSystemWarnings,
+			SUM( t.PVMStatusCodes ) AS totalPVMStatusCodes
+			
+		FROM
+			(
+			SELECT
+				IF(m.InverterOperatingStatus > 0, 1, 0) AS InverterOperatingStatus,
+				IF(m.MainFault > 0, 1, 0) AS MainFault,
+				IF(m.DriveFault > 0, 1, 0) AS DriveFault,
+				IF(m.VoltageFault > 0, 1, 0) AS VoltageFault,
+				IF(m.GridFault > 0, 1, 0) AS GridFault,
+				IF(m.TemperatureFault > 0, 1, 0) AS TemperatureFault,
+				IF(m.SystemFault > 0, 1, 0) AS SystemFault,
+				IF(m.SystemWarnings > 0, 1, 0) AS SystemWarnings,
+				IF(m.PVMStatusCodes > 0, 1, 0) AS PVMStatusCodes
+			FROM
+				model_pv_powered_35_50_260_500kw_inverter m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 4 
+			)t
+  	</select>
+
+</mapper> 

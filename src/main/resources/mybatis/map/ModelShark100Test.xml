@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelShark100Test">
+	<resultMap id="ModelShark100TestMap" type="com.nwm.api.entities.ModelShark100TestEntity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="ip_address" column="ip_address" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="volts_a_n" column="volts_a_n" />
+		   <result property="volts_b_n" column="volts_b_n" />
+		   <result property="volts_c_n" column="volts_c_n" />
+		   <result property="volts_a_b" column="volts_a_b" />
+		   <result property="volts_b_c" column="volts_b_c" />
+		   <result property="volts_c_a" column="volts_c_a" />
+		   <result property="amps_a" column="amps_a" />
+		   <result property="amps_b" column="amps_b" />
+		   <result property="amps_c" column="amps_c" />
+		   <result property="watts_3ph_total" column="watts_3ph_total" />
+		   <result property="vars_3ph_total" column="vars_3ph_total" />
+		   <result property="vas_3ph_total" column="vas_3ph_total" />
+		   <result property="power_factor_3ph_total" column="power_factor_3ph_total" />
+		   <result property="frequency" column="frequency" />
+		   <result property="neutral_current" column="neutral_current" />
+		   <result property="w_hours_received" column="w_hours_received" />
+		   <result property="w_hours_delivered" column="w_hours_delivered" />
+		   <result property="w_hours_net" column="w_hours_net" />
+		   <result property="w_hours_total" column="w_hours_total" />
+		   <result property="var_hours_positive" column="var_hours_positive" />
+		   <result property="var_hours_negative" column="var_hours_negative" />
+		   <result property="var_hours_net" column="var_hours_net" />
+		   <result property="var_hours_total" column="var_hours_total" />
+		   <result property="va_hours_total" column="va_hours_total" />
+		   <result property="amps_a_average" column="amps_a_average" />
+		   <result property="amps_b_average" column="amps_b_average" />
+		   <result property="amps_c_average" column="amps_c_average" />
+		   <result property="positive_watts_3ph_average" column="positive_watts_3ph_average" />
+		   <result property="positive_vars_3ph_average" column="positive_vars_3ph_average" />
+		   <result property="negative_watts_3ph_average" column="negative_watts_3ph_average" />
+		   <result property="negative_vars_3ph_average" column="negative_vars_3ph_average" />
+		   <result property="vas_3ph_average" column="vas_3ph_average" />
+		   <result property="positive_pf_3ph_average" column="positive_pf_3ph_average" />
+		   <result property="negative_pf_3ph_average" column="negative_pf_3ph_average" />
+		   <result property="volts_a_n_min" column="volts_a_n_min" />
+		   <result property="volts_b_n_min" column="volts_b_n_min" />
+		   <result property="volts_c_n_min" column="volts_c_n_min" />
+		   <result property="volts_a_b_min" column="volts_a_b_min" />
+		   <result property="volts_b_c_min" column="volts_b_c_min" />
+		   <result property="volts_c_a_min" column="volts_c_a_min" />
+		   <result property="amps_a_min_avg_demand" column="amps_a_min_avg_demand" />
+		   <result property="amps_b_min_avg_demand" column="amps_b_min_avg_demand" />
+		   <result property="amps_c_min_avg_demand" column="amps_c_min_avg_demand" />
+		   <result property="positive_watts_3ph_min_avg_demand" column="positive_watts_3ph_min_avg_demand" />
+		   <result property="positive_vars_3ph_min_avg_demand" column="positive_vars_3ph_min_avg_demand" />
+		   <result property="negative_watts_3ph_min_avg_demand" column="negative_watts_3ph_min_avg_demand" />
+		   <result property="negative_vars_3ph_min_avg_demand" column="negative_vars_3ph_min_avg_demand" />
+		   <result property="vas_3ph_min_avg_demand" column="vas_3ph_min_avg_demand" />
+		   <result property="positive_pf_3ph_min_avg_demand" column="positive_pf_3ph_min_avg_demand" />
+		   <result property="negative_pf_3ph_min_avg_demand" column="negative_pf_3ph_min_avg_demand" />
+		   <result property="frequency_min" column="frequency_min" />
+		   <result property="volts_a_n_max" column="volts_a_n_max" />
+		   <result property="volts_b_n_max" column="volts_b_n_max" />
+		   <result property="volts_c_n_max" column="volts_c_n_max" />
+		   <result property="volts_a_b_max" column="volts_a_b_max" />
+		   <result property="volts_b_c_max" column="volts_b_c_max" />
+		   <result property="volts_c_a_max" column="volts_c_a_max" />
+		   <result property="amps_a_max_avg_demand" column="amps_a_max_avg_demand" />
+		   <result property="amps_b_max_avg_demand" column="amps_b_max_avg_demand" />
+		   <result property="amps_c_max_avg_demand" column="amps_c_max_avg_demand" />
+		   <result property="positive_watts_3ph_max_avg_demand" column="positive_watts_3ph_max_avg_demand" />
+		   <result property="positive_vars_3ph_max_avg_demand" column="positive_vars_3ph_max_avg_demand" />
+		   <result property="negative_watts_3ph_max_avg_demand" column="negative_watts_3ph_max_avg_demand" />
+		   <result property="negative_vars_3ph_max_avg_demand" column="negative_vars_3ph_max_avg_demand" />
+		   <result property="vas_3ph_max_avg_demand" column="vas_3ph_max_avg_demand" />
+		   <result property="positive_pf_3ph_max_avg_demand" column="positive_pf_3ph_max_avg_demand" />
+		   <result property="negative_pf_3ph_max_avg_demand" column="negative_pf_3ph_max_avg_demand" />
+		   <result property="frequency_max" column="frequency_max" />
+		   <result property="volts_a_n_thd" column="volts_a_n_thd" />
+		   <result property="volts_b_n_thd" column="volts_b_n_thd" />
+		   <result property="volts_c_n_thd" column="volts_c_n_thd" />
+		   <result property="amps_a_thd" column="amps_a_thd" />
+		   <result property="amps_b_thd" column="amps_b_thd" />
+		   <result property="amps_c_thd" column="amps_c_thd" />
+		   <result property="phase_a_current_0th" column="phase_a_current_0th" />
+		   <result property="phase_a_current_1st" column="phase_a_current_1st" />
+		   <result property="phase_a_current_2nd" column="phase_a_current_2nd" />
+		   <result property="phase_a_current_3rd" column="phase_a_current_3rd" />
+		   <result property="phase_a_current_4th" column="phase_a_current_4th" />
+		   <result property="phase_a_current_5th" column="phase_a_current_5th" />
+		   <result property="phase_a_current_6th" column="phase_a_current_6th" />
+		   <result property="phase_a_current_7th" column="phase_a_current_7th" />
+		   <result property="phase_a_voltage_0th" column="phase_a_voltage_0th" />
+		   <result property="phase_a_voltage_1st" column="phase_a_voltage_1st" />
+		   <result property="phase_a_voltage_2nd" column="phase_a_voltage_2nd" />
+		   <result property="phase_a_voltage_3rd" column="phase_a_voltage_3rd" />
+		   <result property="phase_b_current_0th" column="phase_b_current_0th" />
+		   <result property="phase_b_current_1st" column="phase_b_current_1st" />
+		   <result property="phase_b_current_2nd" column="phase_b_current_2nd" />
+		   <result property="phase_b_current_3rd" column="phase_b_current_3rd" />
+		   <result property="phase_b_current_4th" column="phase_b_current_4th" />
+		   <result property="phase_b_current_5th" column="phase_b_current_5th" />
+		   <result property="phase_b_current_6th" column="phase_b_current_6th" />
+		   <result property="phase_b_current_7th" column="phase_b_current_7th" />
+		   <result property="phase_b_voltage_0th" column="phase_b_voltage_0th" />
+		   <result property="phase_b_voltage_1st" column="phase_b_voltage_1st" />
+		   <result property="phase_b_voltage_2nd" column="phase_b_voltage_2nd" />
+		   <result property="phase_b_voltage_3rd" column="phase_b_voltage_3rd" />
+		   <result property="phase_c_current_0th" column="phase_c_current_0th" />
+		   <result property="phase_c_current_1st" column="phase_c_current_1st" />
+		   <result property="phase_c_current_2nd" column="phase_c_current_2nd" />
+		   <result property="phase_c_current_3rd" column="phase_c_current_3rd" />
+		   <result property="phase_c_current_4th" column="phase_c_current_4th" />
+		   <result property="phase_c_current_5th" column="phase_c_current_5th" />
+		   <result property="phase_c_current_6th" column="phase_c_current_6th" />
+		   <result property="phase_c_current_7th" column="phase_c_current_7th" />
+		   <result property="phase_c_voltage_0th" column="phase_c_voltage_0th" />
+		   <result property="phase_c_voltage_1st" column="phase_c_voltage_1st" />
+		   <result property="phase_c_voltage_2nd" column="phase_c_voltage_2nd" />
+		   <result property="phase_c_voltage_3rd" column="phase_c_voltage_3rd" />
+		   <result property="angle_phase_a_current" column="angle_phase_a_current" />
+		   <result property="angle_phase_b_current" column="angle_phase_b_current" />
+		   <result property="angle_phase_c_current" column="angle_phase_c_current" />
+		   <result property="angle_volts_a_b" column="angle_volts_a_b" />
+		   <result property="angle_volts_b_c" column="angle_volts_b_c" />
+		   <result property="angle_volts_c_a" column="angle_volts_c_a" />
+
+	</resultMap>
+
+	<insert id="insertModelShark100Test" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_shark100_test`(
+		  `time`,
+		  `id_device`,
+		  `ip_address`,
+		  `error`,
+		  `low_alarm`,
+		  `high_alarm`,
+		  `volts_a_n`,
+		  `volts_b_n`,
+		  `volts_c_n`,
+		  `volts_a_b`,
+		  `volts_b_c`,
+		  `volts_c_a`,
+		  `amps_a`,
+		  `amps_b`,
+		  `amps_c`,
+		  `watts_3ph_total`,
+		  `vars_3ph_total`,
+		  `vas_3ph_total`,
+		  `power_factor_3ph_total`,
+		  `frequency`,
+		  `neutral_current`,
+		  `w_hours_received`,
+		  `w_hours_delivered`,
+		  `w_hours_net`,
+		  `w_hours_total`,
+		  `var_hours_positive`,
+		  `var_hours_negative`,
+		  `var_hours_net`,
+		  `var_hours_total`,
+		  `va_hours_total`,
+		  `amps_a_average`,
+		  `amps_b_average`,
+		  `amps_c_average`,
+		  `positive_watts_3ph_average`,
+		  `positive_vars_3ph_average`,
+		  `negative_watts_3ph_average`,
+		  `negative_vars_3ph_average`,
+		  `vas_3ph_average`,
+		  `positive_pf_3ph_average`,
+		  `negative_pf_3ph_average`,
+		  `volts_a_n_min`,
+		  `volts_b_n_min`,
+		  `volts_c_n_min` ,
+		  `volts_a_b_min`,
+		  `volts_b_c_min`,
+		  `volts_c_a_min` ,
+		  `amps_a_min_avg_demand`,
+		  `amps_b_min_avg_demand`,
+		  `amps_c_min_avg_demand`,
+		  `positive_watts_3ph_min_avg_demand`,
+		  `positive_vars_3ph_min_avg_demand`,
+		  `negative_watts_3ph_min_avg_demand`,
+		  `negative_vars_3ph_min_avg_demand`,
+		  `vas_3ph_min_avg_demand`,
+		  `positive_pf_3ph_min_avg_demand`,
+		  `negative_pf_3ph_min_avg_demand`,
+		  `frequency_min`,
+		  `volts_a_n_max`,
+		  `volts_b_n_max`,
+		  `volts_c_n_max`,
+		  `volts_a_b_max`,
+		  `volts_b_c_max`,
+		  `volts_c_a_max`,
+		  `amps_a_max_avg_demand`,
+		  `amps_b_max_avg_demand`,
+		  `amps_c_max_avg_demand`,
+		  `positive_watts_3ph_max_avg_demand`,
+		  `positive_vars_3ph_max_avg_demand`,
+		  `negative_watts_3ph_max_avg_demand`,
+		  `negative_vars_3ph_max_avg_demand`,
+		  `vas_3ph_max_avg_demand`,
+		  `positive_pf_3ph_max_avg_demand`,
+		  `negative_pf_3ph_max_avg_demand`,
+		  `frequency_max`,
+		  `volts_a_n_thd`,
+		  `volts_b_n_thd`,
+		  `volts_c_n_thd`,
+		  `amps_a_thd`,
+		  `amps_b_thd`,
+		  `amps_c_thd`,
+		  `phase_a_current_0th`,
+		  `phase_a_current_1st`,
+		  `phase_a_current_2nd`,
+		  `phase_a_current_3rd`,
+		  `phase_a_current_4th`,
+		  `phase_a_current_5th`,
+		  `phase_a_current_6th`,
+		  `phase_a_current_7th`,
+		  `phase_a_voltage_0th`,
+		  `phase_a_voltage_1st`,
+		  `phase_a_voltage_2nd`,
+		  `phase_a_voltage_3rd`,
+		  `phase_b_current_0th`,
+		  `phase_b_current_1st`,
+		  `phase_b_current_2nd`,
+		  `phase_b_current_3rd`,
+		  `phase_b_current_4th`,
+		  `phase_b_current_5th`,
+		  `phase_b_current_6th`,
+		  `phase_b_current_7th`,
+		  `phase_b_voltage_0th`,
+		  `phase_b_voltage_1st`,
+		  `phase_b_voltage_2nd`,
+		  `phase_b_voltage_3rd`,
+		  `phase_c_current_0th`,
+		  `phase_c_current_1st`,
+		  `phase_c_current_2nd`,
+		  `phase_c_current_3rd`,
+		  `phase_c_current_4th`,
+		  `phase_c_current_5th`,
+		  `phase_c_current_6th`,
+		  `phase_c_current_7th`,
+		  `phase_c_voltage_0th`,
+		  `phase_c_voltage_1st`,
+		  `phase_c_voltage_2nd`,
+		  `phase_c_voltage_3rd`,
+		  `angle_phase_a_current`,
+		  `angle_phase_b_current`,
+		  `angle_phase_c_current`,
+		  `angle_volts_a_b`,
+		  `angle_volts_b_c`,
+		  `angle_volts_c_a`
+		)VALUES(
+		  #{time},
+		  #{id_device},
+		  #{ip_address},
+		  #{error},
+		  #{low_alarm},
+		  #{high_alarm},
+		  #{volts_a_n},
+		  #{volts_b_n},
+		  #{volts_c_n},
+		  #{volts_a_b},
+		  #{volts_b_c},
+		  #{volts_c_a},
+		  #{amps_a},
+		  #{amps_b},
+		  #{amps_c},
+		  #{watts_3ph_total},
+		  #{vars_3ph_total},
+		  #{vas_3ph_total},
+		  #{power_factor_3ph_total},
+		  #{frequency},
+		  #{neutral_current},
+		  #{w_hours_received},
+		  #{w_hours_delivered},
+		  #{w_hours_net},
+		  #{w_hours_total},
+		  #{var_hours_positive},
+		  #{var_hours_negative},
+		  #{var_hours_net},
+		  #{var_hours_total},
+		  #{va_hours_total},
+		  #{amps_a_average},
+		  #{amps_b_average},
+		  #{amps_c_average},
+		  #{positive_watts_3ph_average},
+		  #{positive_vars_3ph_average},
+		  #{negative_watts_3ph_average},
+		  #{negative_vars_3ph_average},
+		  #{vas_3ph_average},
+		  #{positive_pf_3ph_average},
+		  #{negative_pf_3ph_average},
+		  #{volts_a_n_min},
+		  #{volts_b_n_min},
+		  #{volts_c_n_min},
+		  #{volts_a_b_min},
+		  #{volts_b_c_min},
+		  #{volts_c_a_min},
+		  #{amps_a_min_avg_demand},
+		  #{amps_b_min_avg_demand},
+		  #{amps_c_min_avg_demand},
+		  #{positive_watts_3ph_min_avg_demand},
+		  #{positive_vars_3ph_min_avg_demand},
+		  #{negative_watts_3ph_min_avg_demand},
+		  #{negative_vars_3ph_min_avg_demand},
+		  #{vas_3ph_min_avg_demand},
+		  #{positive_pf_3ph_min_avg_demand},
+		  #{negative_pf_3ph_min_avg_demand},
+		  #{frequency_min},
+		  #{volts_a_n_max},
+		  #{volts_b_n_max},
+		  #{volts_c_n_max},
+		  #{volts_a_b_max},
+		  #{volts_b_c_max},
+		  #{volts_c_a_max},
+		  #{amps_a_max_avg_demand},
+		  #{amps_b_max_avg_demand},
+		  #{amps_c_max_avg_demand},
+		  #{positive_watts_3ph_max_avg_demand},
+		  #{positive_vars_3ph_max_avg_demand},
+		  #{negative_watts_3ph_max_avg_demand},
+		  #{negative_vars_3ph_max_avg_demand},
+		  #{vas_3ph_max_avg_demand},
+		  #{positive_pf_3ph_max_avg_demand},
+		  #{negative_pf_3ph_max_avg_demand},
+		  #{frequency_max},
+		  #{volts_a_n_thd},
+		  #{volts_b_n_thd},
+		  #{volts_c_n_thd},
+		  #{amps_a_thd},
+		  #{amps_b_thd},
+		  #{amps_c_thd},
+		  #{phase_a_current_0th},
+		  #{phase_a_current_1st},
+		  #{phase_a_current_2nd},
+		  #{phase_a_current_3rd},
+		  #{phase_a_current_4th},
+		  #{phase_a_current_5th},
+		  #{phase_a_current_6th},
+		  #{phase_a_current_7th},
+		  #{phase_a_voltage_0th},
+		  #{phase_a_voltage_1st},
+		  #{phase_a_voltage_2nd},
+		  #{phase_a_voltage_3rd},
+		  #{phase_b_current_0th},
+		  #{phase_b_current_1st},
+		  #{phase_b_current_2nd},
+		  #{phase_b_current_3rd},
+		  #{phase_b_current_4th},
+		  #{phase_b_current_5th},
+		  #{phase_b_current_6th},
+		  #{phase_b_current_7th},
+		  #{phase_b_voltage_0th},
+		  #{phase_b_voltage_1st},
+		  #{phase_b_voltage_2nd},
+		  #{phase_b_voltage_3rd},
+		  #{phase_c_current_0th},
+		  #{phase_c_current_1st},
+		  #{phase_c_current_2nd},
+		  #{phase_c_current_3rd},
+		  #{phase_c_current_4th},
+		  #{phase_c_current_5th},
+		  #{phase_c_current_6th},
+		  #{phase_c_current_7th},
+		  #{phase_c_voltage_0th},
+		  #{phase_c_voltage_1st},
+		  #{phase_c_voltage_2nd},
+		  #{phase_c_voltage_3rd},
+		  #{angle_phase_a_current},
+		  #{angle_phase_b_current},
+		  #{angle_phase_c_current},
+		  #{angle_volts_a_b},
+		  #{angle_volts_b_c},
+		  #{angle_volts_c_a}
+		);
+	</insert>
+
+</mapper> 

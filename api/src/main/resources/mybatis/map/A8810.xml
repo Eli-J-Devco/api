@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="A8810">
+	<resultMap id="A8810Map"
+		type="com.nwm.api.entities.A8810Entity">
+		<result property="time" column="time" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="ion6200_kwh" column="ion6200_kwh" />
+		<result property="ion6200_demand_kw" column="ion6200_demand_kw" />
+	</resultMap>
+
+	<insert id="insertA8810" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `sometable`(
+		`time`, `error`, `low_alarm`,
+		`high_alarm`, `ion6200_kwh`, `ion6200_demand_kw`
+		)VALUES(
+		#{time},
+		#{error},
+		#{low_alarm},
+		#{high_alarm},
+		#{ion6200_kwh},
+		#{ion6200_demand_kw}
+		);
+	</insert>
+
+</mapper> 

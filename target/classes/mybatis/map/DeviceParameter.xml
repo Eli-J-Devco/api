@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DeviceParameter">
+	<select id="getListParameterByDevice"  resultType="Map" parameterType="String">
+		SELECT
+			dp.*,
+			d.id_site,
+			scm.id_customer,
+			d.devicename,
+			d.datatablename,
+			d.id AS id_device,
+			CONCAT(d.id,dp.id) AS id_alias,
+			0 AS active 
+		FROM
+			device d
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN site_customer_map scm ON scm.id_site = s.id
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id 
+		WHERE
+			dp.`status` = 1 
+			AND dp.is_delete = 0 
+			AND dp.is_filter = 1 
+			AND d.id = ${id_device}
+		GROUP BY
+			dp.id
+	</select>
+	
+</mapper>

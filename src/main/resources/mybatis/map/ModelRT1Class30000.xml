@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelRT1Class30000">
+	<resultMap id="ModelRT1Class30000Map"
+		type="com.nwm.api.entities.ModelRT1Class30000Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="device_type" column="device_type" />
+		<result property="data_model_version"
+			column="data_model_version" />
+		<result property="operational_mode" column="operational_mode" />
+		<result property="status_flags" column="status_flags" />
+		<result property="sensor1_data" column="sensor1_data" />
+		<result property="panel_temperature" column="panel_temperature" />
+		<result property="external_power_sensor"
+			column="external_power_sensor" />
+		<result property="calibration_date" column="calibration_date" />
+		<result property="error_code" column="error_code" />
+		<result property="protocol_error" column="protocol_error" />
+		<result property="batch_number" column="batch_number" />
+		<result property="serial_number" column="serial_number" />
+		<result property="software_version" column="software_version" />
+		<result property="hardware_version" column="hardware_version" />
+		<result property="node_id" column="node_id" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+
+
+	</resultMap>
+
+	<insert id="insertModelRT1Class30000" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_rt1_class30000`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="device_type != 0.001">
+				`device_type`,
+			</if>
+			<if test="data_model_version != 0.001">
+				`data_model_version`,
+			</if>
+			<if test="operational_mode != 0.001">
+				`operational_mode`,
+			</if>
+			<if test="status_flags != 0.001">
+				`status_flags`,
+			</if>
+			<if test="sensor1_data != 0.001">
+				`sensor1_data`,
+			</if>
+			<if test="panel_temperature != 0.001">
+				`panel_temperature`,
+			</if>
+			<if test="external_power_sensor != 0.001">
+				`external_power_sensor`,
+			</if>
+			<if test="calibration_date != 0.001">
+				`calibration_date`,
+			</if>
+			<if test="error_code != 0.001">
+				`error_code`,
+			</if>
+			<if test="protocol_error != 0.001">
+				`protocol_error`,
+			</if>
+			<if test="batch_number != 0.001">
+				`batch_number`,
+			</if>
+			<if test="serial_number != 0.001">
+				`serial_number`,
+			</if>
+			<if test="software_version != 0.001">
+				`software_version`,
+			</if>
+			<if test="hardware_version != 0.001">
+				`hardware_version`,
+			</if>
+			<if test="node_id != 0.001">
+				`node_id`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="device_type != 0.001">
+				#{device_type},
+			</if>
+			<if test="data_model_version != 0.001">
+				#{data_model_version},
+			</if>
+			<if test="operational_mode != 0.001">
+				#{operational_mode},
+			</if>
+			<if test="status_flags != 0.001">
+				#{status_flags},
+			</if>
+			<if test="sensor1_data != 0.001">
+				#{sensor1_data},
+			</if>
+			<if test="panel_temperature != 0.001">
+				#{panel_temperature},
+			</if>
+			<if test="external_power_sensor != 0.001">
+				#{external_power_sensor},
+			</if>
+			<if test="calibration_date != 0.001">
+				#{calibration_date},
+			</if>
+			<if test="error_code != 0.001">
+				#{error_code},
+			</if>
+			<if test="protocol_error != 0.001">
+				#{protocol_error},
+			</if>
+			<if test="batch_number != 0.001">
+				#{batch_number},
+			</if>
+			<if test="serial_number != 0.001">
+				#{serial_number},
+			</if>
+			<if test="software_version != 0.001">
+				#{software_version},
+			</if>
+			<if test="hardware_version != 0.001">
+				#{hardware_version},
+			</if>
+			<if test="node_id != 0.001">
+				#{node_id},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="device_type != 0.001">
+				device_type = #{device_type},
+			</if>
+			<if test="data_model_version != 0.001">
+				data_model_version = #{data_model_version},
+			</if>
+			<if test="operational_mode != 0.001">
+				operational_mode = #{operational_mode},
+			</if>
+			<if test="status_flags != 0.001">
+				status_flags = #{status_flags},
+			</if>
+			<if test="sensor1_data != 0.001">
+				sensor1_data = #{sensor1_data},
+			</if>
+			<if test="panel_temperature != 0.001">
+				panel_temperature = #{panel_temperature},
+			</if>
+			<if test="external_power_sensor != 0.001">
+				external_power_sensor = #{external_power_sensor},
+			</if>
+			<if test="calibration_date != 0.001">
+				calibration_date = #{calibration_date},
+			</if>
+			<if test="error_code != 0.001">
+				error_code = #{error_code},
+			</if>
+			<if test="protocol_error != 0.001">
+				protocol_error = #{protocol_error},
+			</if>
+			<if test="batch_number != 0.001">
+				batch_number = #{batch_number},
+			</if>
+			<if test="serial_number != 0.001">
+				serial_number = #{serial_number},
+			</if>
+			<if test="software_version != 0.001">
+				software_version = #{software_version},
+			</if>
+			<if test="hardware_version != 0.001">
+				hardware_version = #{hardware_version},
+			</if>
+			<if test="node_id != 0.001">
+				node_id = #{node_id},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+
+		</trim>
+	</insert>
+
+</mapper> 

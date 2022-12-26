@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Avatar">
+	<resultMap id="AvatarMap"
+		type="com.nwm.api.entities.AvatarEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="icon" column="icon" />
+		<result property="text" column="text" />
+		<result property="offset" column="offset" />
+		<result property="status" column="status" />
+		<result property="is_delete" column="is_delete" />
+		<result property="created_date" column="created_date" />
+		<result property="created_by" column="created_by" />
+		<result property="updated_date" column="updated_by" />
+	</resultMap>
+	
+	<select id="getListDropdown" resultMap="AvatarMap" parameterType="String">
+		SELECT
+			t.*,
+			t.name AS text
+		FROM
+			`avatar` AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0;
+	</select>
+	
+	<select id="getList" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.`status`,
+			s.is_delete,
+			s.`icon`
+		FROM
+			avatar s 	
+		WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                s.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'status'">
+	                `status` ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+  	
+	
+	<select id="getTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.AvatarEntity">
+    	SELECT count(*) as totalRow
+		FROM `avatar` s WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	<update id="updateStatus">
+		UPDATE `avatar`
+		SET	
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	<update id="delete">
+		UPDATE `avatar`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="insertAvatar" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `avatar`(
+			`name`,
+			`icon`
+		)VALUES(
+			#{name},
+			#{icon}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateAvatar">
+		UPDATE `avatar`
+		SET
+			`name` = #{name},
+			`icon` = #{icon}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+</mapper>
