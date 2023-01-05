@@ -4692,7 +4692,7 @@ public class ReportsController extends BaseController {
 					Row row25 = sheet.createRow(24);
 					Cell cel25D = row25.createCell(3);
 					cel25D.setCellStyle(cellStyleH);
-					cel25D.setCellValue("Time");
+					cel25D.setCellValue("Timestamp");
 					
 					Cell cel25E = row25.createCell(4);
 					cel25E.setCellStyle(cellStyleH);
@@ -4876,13 +4876,16 @@ public class ReportsController extends BaseController {
 							
 							// create axis
 							XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-							bottomAxis.getOrAddMajorGridProperties();
 							
 							XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 							leftAxis.setTitle("kWh");
 							leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 							leftAxis.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
 							leftAxis.setMinimum(0);
+							XDDFLineProperties lineProperties = new XDDFLineProperties();
+							byte[] color = {(byte) 240, (byte) 240, (byte) 240};
+							lineProperties.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(color)));
+							leftAxis.getOrAddMajorGridProperties().setLineProperties(lineProperties);
 				
 							// create data and series
 							XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
@@ -5022,7 +5025,7 @@ public class ReportsController extends BaseController {
 					
 					// header of data table
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Time").setBold()));
+					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Generation (kWh)").setBold()));
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 					// data table

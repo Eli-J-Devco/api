@@ -44,9 +44,15 @@ public class EmployeeManageEntity{
 	private String text;
 	private String label;
 	private int value;
+	private String table_column;
 	
 	
-	
+	public String getTable_column() {
+		return table_column;
+	}
+	public void setTable_column(String table_column) {
+		this.table_column = table_column;
+	}
 	public String getText() {
 		return text;
 	}
