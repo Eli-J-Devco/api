@@ -1743,7 +1743,7 @@
 			site s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 		WHERE
-			s.`status` = 1
+			s.`status` = 1 AND s.id IN(97,88,57,50)
 	</select>
 	
 	

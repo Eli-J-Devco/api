@@ -303,5 +303,24 @@ public class EmployeeController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description update table columns in Portfolio
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-table-column")
+	public Object updateTableColumn(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateTableColumn(obj);
+			return this.jsonResult(true, "Updated table column", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 
 }

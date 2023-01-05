@@ -335,5 +335,21 @@ public class EmployeeService extends DB {
 		}
 		return employee;
 	}
+	
+	/**
+	 * @description update table columns in Portfolio
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateTableColumn(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateTableColumn", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateTableColumn", ex);
+			return false;
+		}
+	}
+	
 
 }
