@@ -792,11 +792,11 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -860,10 +860,10 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -911,10 +911,10 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -959,10 +959,10 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -1007,10 +1007,10 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -1036,10 +1036,10 @@ public class BatchJobService extends DB {
 			if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormat.parse("2022-01-01 00:00:00");
+				Date startDate = dateFormat.parse("2022-12-25 00:00:00");
 				Calendar cal = Calendar.getInstance();
 				
-				for(int t = 0; t < 365; t++) {
+				for(int t = 0; t < 30; t++) {
 					cal.setTime(startDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));

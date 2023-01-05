@@ -50,10 +50,17 @@ public class UserEntity implements UserDetails, Authentication{
 	private String token_setpassword;
 	private int is_technical;
 	private int id_user;
+	private String table_column;
 	
 	
 	
 
+	public String getTable_column() {
+		return table_column;
+	}
+	public void setTable_column(String table_column) {
+		this.table_column = table_column;
+	}
 	public int getId_user() {
 		return id_user;
 	}

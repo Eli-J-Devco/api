@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.nwm.api.batchjob.BatchJob;
+import com.nwm.api.batchjob.BatchJobFTP;
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -183,7 +184,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */40 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobGenerateDataReport();
@@ -224,7 +225,7 @@ public class BatchConfig {
 	 * @since 2022-12-22
 	 */
 	@Scheduled(cron = "0 0 */1 28-31 * *") // cron expression don't support last day of month L for this running spring version
-	@Scheduled(cron = "0 0 */1 1 * *") // case: local time (server) is before time at site
+	@Scheduled(cron = "0 0 */1 1 * *") // case: local time (server) is after time at site
 	public void sentMailMonthlyReportOnSchedule() throws Exception {
 		Calendar calendar = Calendar.getInstance();
 		if ((calendar.get(Calendar.DATE) == calendar.getActualMaximum(Calendar.DATE)) || (calendar.get(Calendar.DATE) == 1)) {
@@ -242,7 +243,7 @@ public class BatchConfig {
 	@Scheduled(cron = "0 0 */1 30 6 *")
 	@Scheduled(cron = "0 0 */1 30 9 *")
 	@Scheduled(cron = "0 0 */1 31 12 *")
-	@Scheduled(cron = "0 0 */1 1 1,4,7,10 *") // case: local time (server) is before time at site
+	@Scheduled(cron = "0 0 */1 1 1,4,7,10 *") // case: local time (server) is after time at site
 	public void sentMailQuarterlyReportOnSchedule() throws Exception {
 		BatchJob job = new BatchJob(); 
 		job.sentMailReportOnSchedule(3);
@@ -254,10 +255,22 @@ public class BatchConfig {
 	 * @since 2022-12-22
 	 */
 	@Scheduled(cron = "0 0 */1 31 12 *")
-	@Scheduled(cron = "0 0 */1 1 1 *") // case: local time (server) is before time at site
+	@Scheduled(cron = "0 0 */1 1 1 *") // case: local time (server) is after time at site
 	public void sentMailAnnuallyReportOnSchedule() throws Exception {
 		BatchJob job = new BatchJob(); 
 		job.sentMailReportOnSchedule(4);
+	}
+	
+	
+	/**
+	 * @description read folder from FTP account
+	 * @author Long.Pham
+	 * @since 2023-01-04
+	 */
+	@Scheduled(cron = "0 */1 * * * *")
+	public void readFolderFTP() throws Exception {
+		BatchJobFTP job = new BatchJobFTP(); 
+		job.readFolderFTP();
 	}
 	
 	

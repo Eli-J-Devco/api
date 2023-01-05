@@ -9,12 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -26,14 +23,12 @@ import java.util.TimeZone;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.nwm.api.controllers.ReportsController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
@@ -907,6 +902,7 @@ public class BatchJob {
 						endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 					}
 					
+					timeSchedule = timeScheduleFormat.format(timeScheduleFormat.parse(timeSchedule));
 					timeScheduleFormat.setTimeZone(timeZone);
 					startDateFormat.setTimeZone(timeZone);
 					endDateFormat.setTimeZone(timeZone);
