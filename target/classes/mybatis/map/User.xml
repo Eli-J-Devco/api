@@ -17,6 +17,7 @@
 		<result property="is_technical" column="is_technical" />
 		<result property="token_setpassword" column="token_setpassword" />
 		<result property="id_user" column="id_user" />
+		<result property="table_column" column="table_column" />
 	</resultMap>
 	
 	
@@ -66,7 +67,8 @@
 			u.`last_name`,
 			u.id as id_user,
 			u.email,
-			u.phone
+			u.phone,
+			u.table_column
 		FROM `employee` u
 		WHERE u.email = #{value}
 		;
