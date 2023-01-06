@@ -13,7 +13,6 @@
 		<result property="last_name" column="last_name" />
 		<result property="id" column="id_user" />
 		<result property="logo" column="logo" />
-		<result property="table_column" column="table_column" />
 	</resultMap>
 	
 	
@@ -91,8 +90,7 @@
 			concat( u.first_name, ', ', u.last_name ) AS `name`,
 			u.avatar,
 			t.roles,
-			k.id_sites,
-			u.table_column
+			k.id_sites
 			
 		FROM
 			`employee` u
@@ -406,15 +404,7 @@
 	<delete id = "deleteSiteEmployeeMap" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
 		DELETE from `site_employee_map` WHERE id_employee = #{id};
 	</delete>
-	
-	<update id="updateTableColumn" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
-		UPDATE `employee`
-		SET
-			`table_column` = #{table_column}
-		WHERE
-			`id` = #{id};
-	</update>
-	
+		
   	
   	
 </mapper>
