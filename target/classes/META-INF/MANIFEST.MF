@@ -57,7 +57,7 @@ Class-Path: . lib/spring-boot-starter-web-2.3.3.RELEASE.jar lib/spring-b
  4.jar lib/font-asian-7.2.4.jar lib/forms-7.2.4.jar lib/hyph-7.2.4.jar l
  ib/io-7.2.4.jar lib/commons-7.2.4.jar lib/kernel-7.2.4.jar lib/layout-7
  .2.4.jar lib/pdfa-7.2.4.jar lib/sign-7.2.4.jar lib/styled-xml-parser-7.
- 2.4.jar lib/svg-7.2.4.jar
+ 2.4.jar lib/svg-7.2.4.jar lib/commons-net-3.6.jar
 Implementation-Title: api
 Implementation-Version: 0.0.1-SNAPSHOT
 Main-Class: com.nwm.api.Application
