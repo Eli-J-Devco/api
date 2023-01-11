@@ -493,7 +493,7 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
 						FROM
 							${item.datatablename} dv
@@ -546,7 +546,7 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
 						FROM
 							${item.datatablename} dv
@@ -599,7 +599,7 @@
 				LEFT JOIN device de ON de.id = sd.id_device
 				WHERE de.`status` = 1 
 				AND de.is_delete = 0
-				AND de.id_device_type = 4
+				AND de.id_device_type = 3
 				AND SHA1( de.id_site ) = #{id_site}
 			)mt ON mt.id_site = s.id
 			
@@ -1200,7 +1200,7 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
 						FROM
 							${item.datatablename} dv

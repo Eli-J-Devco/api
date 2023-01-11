@@ -1743,7 +1743,7 @@
 			site s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 		WHERE
-			s.`status` = 1 AND s.id IN(97,88,57,50)
+			s.`status` = 1
 	</select>
 	
 	
@@ -1765,5 +1765,18 @@
 			AND r.cadence_range = #{cadence_range}
 	</select>
   	
+  	
+  	
+  	<select id="checkExitsDeviceUploadSungrow" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.*
+		FROM
+			device d
+		WHERE
+			d.`status` = 1
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
+			AND d.serial_number = #{serial_number}
+			AND d.is_delete = 0
+	</select>
   	
 </mapper>

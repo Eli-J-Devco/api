@@ -184,7 +184,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */60 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobGenerateDataReport();
@@ -267,7 +267,7 @@ public class BatchConfig {
 	 * @author Long.Pham
 	 * @since 2023-01-04
 	 */
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void readFolderFTP() throws Exception {
 		BatchJobFTP job = new BatchJobFTP(); 
 		job.readFolderFTP();
