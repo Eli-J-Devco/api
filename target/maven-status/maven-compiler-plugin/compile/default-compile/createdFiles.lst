@@ -51,14 +51,17 @@ com/nwm/api/services/SiteConfigService.class
 com/nwm/api/controllers/ImageController.class
 com/nwm/api/entities/ModelAdvancedEnergySolaronEntity.class
 com/nwm/api/entities/ModelTTiTrackerEntity.class
+com/nwm/api/services/ModelSungrowWeatherPvmet75200Service.class
 com/nwm/api/utils/Constants$PAYMENT_MODE.class
 com/nwm/api/services/SitesAlertService.class
 com/nwm/api/services/DeviceGroupService.class
+com/nwm/api/entities/ModelSungrowUmg604Entity.class
 com/nwm/api/utils/EventSendHelper.class
 com/nwm/api/controllers/AvatarController.class
 com/nwm/api/controllers/SiteQueryController.class
 com/nwm/api/services/VendorService.class
 com/nwm/api/entities/ModelIVTSolaronEXTEntity.class
+com/nwm/api/services/ModelSungrowUmg604Service.class
 com/nwm/api/services/MiniSiteService.class
 com/nwm/api/entities/SupportFileMapEntity.class
 com/nwm/api/entities/EmployeeManageEntity.class
@@ -66,6 +69,7 @@ com/nwm/api/services/FilesStorageServiceImpl.class
 com/nwm/api/controllers/SiteGroupController.class
 com/nwm/api/controllers/CustomerViewController.class
 com/nwm/api/entities/ModelShark100TestEntity.class
+com/nwm/api/batchjob/BatchJobFTP.class
 com/nwm/api/utils/Constants$STATE.class
 com/nwm/api/controllers/CustomerController.class
 com/nwm/api/utils/SecretCards.class
@@ -79,6 +83,7 @@ com/nwm/api/entities/SiteTypeEntity.class
 com/nwm/api/entities/SiteQueryEntity.class
 com/nwm/api/entities/ModelIMTSolarTmodulClass8006Entity.class
 com/nwm/api/entities/ModelChintSolectriaInverterClass9725Entity.class
+com/nwm/api/entities/ModelSungrowSg50cxEntity.class
 com/nwm/api/config/BatchConfig.class
 com/nwm/api/DBManagers/DB.class
 com/nwm/api/entities/RoleEntity.class
@@ -128,9 +133,11 @@ com/nwm/api/entities/GroupEntity.class
 com/nwm/api/entities/ErrorTypeEntity.class
 com/nwm/api/services/CustomUserDetailService.class
 com/nwm/api/entities/ModelWKippZonenRT1Entity.class
+com/nwm/api/services/ModelSungrowSg110cxService.class
 com/nwm/api/services/ModelAdvancedEnergySolaronService.class
 com/nwm/api/controllers/CompanyController.class
 com/nwm/api/utils/FLLogger$1.class
+com/nwm/api/services/ModelSungrowSg50cxService.class
 com/nwm/api/utils/Constants.class
 com/nwm/api/entities/ModelLufftClass8020Entity.class
 com/nwm/api/services/CustomerSupportService.class
@@ -226,6 +233,8 @@ com/nwm/api/services/ChartToolService.class
 com/nwm/api/config/CustomLocaleResolver.class
 com/nwm/api/services/ModelLufftClass8020Service.class
 com/nwm/api/config/AuthenticationSuccessHandler.class
+com/nwm/api/entities/ModelSungrowSg110cxEntity.class
+com/nwm/api/entities/ModelSungrowWeatherPvmet75200Entity.class
 com/nwm/api/entities/CustomerEntity.class
 com/nwm/api/utils/FLLogger$LogLevel.class
 com/nwm/api/config/OAuth2ResourceServerConfig.class

@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSungrowUmg604">
+	<resultMap id="ModelSungrowUmg604Map"
+		type="com.nwm.api.entities.ModelSungrowUmg604Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		<result property="M_AC_U1" column="M_AC_U1" />
+		<result property="M_AC_U2" column="M_AC_U2" />
+		<result property="M_AC_U3" column="M_AC_U3" />
+		<result property="M_AC_U_L1L2" column="M_AC_U_L1L2" />
+		<result property="M_AC_U_L2L3" column="M_AC_U_L2L3" />
+		<result property="M_AC_U_L3L1" column="M_AC_U_L3L1" />
+		<result property="M_AC_I1" column="M_AC_I1" />
+		<result property="M_AC_I2" column="M_AC_I2" />
+		<result property="M_AC_I3" column="M_AC_I3" />
+		<result property="M_AC_P1" column="M_AC_P1" />
+		<result property="M_AC_P2" column="M_AC_P2" />
+		<result property="M_AC_P3" column="M_AC_P3" />
+		<result property="M_AC_P" column="M_AC_P" />
+		<result property="M_AC_E_M1" column="M_AC_E_M1" />
+		<result property="M_AC_Q1" column="M_AC_Q1" />
+		<result property="M_AC_Q2" column="M_AC_Q2" />
+		<result property="M_AC_Q3" column="M_AC_Q3" />
+		<result property="M_AC_Q" column="M_AC_Q" />
+		<result property="M_AC_S1" column="M_AC_S1" />
+		<result property="M_AC_S2" column="M_AC_S2" />
+		<result property="M_AC_S3" column="M_AC_S3" />
+		<result property="M_AC_S" column="M_AC_S" />
+		<result property="M_AC_PF" column="M_AC_PF" />
+		<result property="M_AC_F" column="M_AC_F" />
+		<result property="M_AC_E_EXP" column="M_AC_E_EXP" />
+		<result property="M_AC_E_IMP" column="M_AC_E_IMP" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelSungrowUmg604" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_sungrow_umg604`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="M_AC_U1 != 0.001">
+			`M_AC_U1`,
+			</if>
+			<if test="M_AC_U2 != 0.001">
+			`M_AC_U2`,
+			</if>
+			<if test="M_AC_U3 != 0.001">
+			`M_AC_U3`,
+			</if>
+			<if test="M_AC_U_L1L2 != 0.001">
+			`M_AC_U_L1L2`,
+			</if>
+			<if test="M_AC_U_L2L3 != 0.001">
+			`M_AC_U_L2L3`,
+			</if>
+			<if test="M_AC_U_L3L1 != 0.001">
+			`M_AC_U_L3L1`,
+			</if>
+			<if test="M_AC_I1 != 0.001">
+			`M_AC_I1`,
+			</if>
+			<if test="M_AC_I2 != 0.001">
+			`M_AC_I2`,
+			</if>
+			<if test="M_AC_I3 != 0.001">
+			`M_AC_I3`,
+			</if>
+			<if test="M_AC_P1 != 0.001">
+			`M_AC_P1`,
+			</if>
+			<if test="M_AC_P2 != 0.001">
+			`M_AC_P2`,
+			</if>
+			<if test="M_AC_P3 != 0.001">
+			`M_AC_P3`,
+			</if>
+			<if test="M_AC_P != 0.001">
+			`M_AC_P`,
+			</if>
+			<if test="M_AC_E_M1 != 0.001">
+			`M_AC_E_M1`,
+			</if>
+			<if test="M_AC_Q1 != 0.001">
+			`M_AC_Q1`,
+			</if>
+			<if test="M_AC_Q2 != 0.001">
+			`M_AC_Q2`,
+			</if>
+			<if test="M_AC_Q3 != 0.001">
+			`M_AC_Q3`,
+			</if>
+			<if test="M_AC_S1 != 0.001">
+			`M_AC_Q`,
+			</if>
+			<if test="high_alarm != 0.001">
+			`M_AC_S1`,
+			</if>
+			<if test="M_AC_S2 != 0.001">
+			`M_AC_S2`,
+			</if>
+			<if test="M_AC_S3 != 0.001">
+			`M_AC_S3`,
+			</if>
+			<if test="M_AC_S != 0.001">
+			`M_AC_S`,
+			</if>
+			<if test="M_AC_PF != 0.001">
+			`M_AC_PF`,
+			</if>
+			<if test="M_AC_F != 0.001">
+			`M_AC_F`,
+			</if>
+			<if test="M_AC_E_EXP != 0.001">
+			`M_AC_E_EXP`,
+			</if>
+			<if test="M_AC_E_IMP != 0.001">
+			`M_AC_E_IMP`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="M_AC_U1 != 0.001">
+			#{M_AC_U1},
+			</if>
+			<if test="M_AC_U2 != 0.001">
+			#{M_AC_U2},
+			</if>
+			<if test="M_AC_U3 != 0.001">
+			#{M_AC_U3},
+			</if>
+			<if test="M_AC_U_L1L2 != 0.001">
+			#{M_AC_U_L1L2},
+			</if>
+			<if test="M_AC_U_L2L3 != 0.001">
+			#{M_AC_U_L2L3},
+			</if>
+			<if test="M_AC_U_L3L1 != 0.001">
+			#{M_AC_U_L3L1},
+			</if>
+			<if test="M_AC_I1 != 0.001">
+			#{M_AC_I1},
+			</if>
+			<if test="M_AC_I2 != 0.001">
+			#{M_AC_I2},
+			</if>
+			<if test="M_AC_I3 != 0.001">
+			#{M_AC_I3},
+			</if>
+			<if test="M_AC_P1 != 0.001">
+			#{M_AC_P1},
+			</if>
+			<if test="M_AC_P2 != 0.001">
+			#{M_AC_P2},
+			</if>
+			<if test="M_AC_P3 != 0.001">
+			#{M_AC_P3},
+			</if>
+			<if test="M_AC_P != 0.001">
+			#{M_AC_P},
+			</if>
+			<if test="M_AC_E_M1 != 0.001">
+			#{M_AC_E_M1},
+			</if>
+			<if test="M_AC_Q1 != 0.001">
+			#{M_AC_Q1},
+			</if>
+			<if test="M_AC_Q2 != 0.001">
+			#{M_AC_Q2},
+			</if>
+			<if test="M_AC_Q3 != 0.001">
+			#{M_AC_Q3},
+			</if>
+			<if test="M_AC_S1 != 0.001">
+			#{M_AC_Q},
+			</if>
+			<if test="high_alarm != 0.001">
+			#{M_AC_S1},
+			</if>
+			<if test="M_AC_S2 != 0.001">
+			#{M_AC_S2},
+			</if>
+			<if test="M_AC_S3 != 0.001">
+			#{M_AC_S3},
+			</if>
+			<if test="M_AC_S != 0.001">
+			#{M_AC_S},
+			</if>
+			<if test="M_AC_PF != 0.001">
+			#{M_AC_PF},
+			</if>
+			<if test="M_AC_F != 0.001">
+			#{M_AC_F},
+			</if>
+			<if test="M_AC_E_EXP != 0.001">
+			#{M_AC_E_EXP},
+			</if>
+			<if test="M_AC_E_IMP != 0.001">
+			#{M_AC_E_IMP},
+			</if>
+			<if test="nvmActivePower != 0.001">
+			#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			#{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="M_AC_U1 != 0.001">
+			`M_AC_U1` = #{M_AC_U1},
+			</if>
+			<if test="M_AC_U2 != 0.001">
+			`M_AC_U2` = #{M_AC_U2},
+			</if>
+			<if test="M_AC_U3 != 0.001">
+			`M_AC_U3` = #{M_AC_U3},
+			</if>
+			<if test="M_AC_U_L1L2 != 0.001">
+			`M_AC_U_L1L2` = #{M_AC_U_L1L2},
+			</if>
+			<if test="M_AC_U_L2L3 != 0.001">
+			`M_AC_U_L2L3` = #{M_AC_U_L2L3},
+			</if>
+			<if test="M_AC_U_L3L1 != 0.001">
+			`M_AC_U_L3L1` = #{M_AC_U_L3L1},
+			</if>
+			<if test="M_AC_I1 != 0.001">
+			`M_AC_I1` = #{M_AC_I1},
+			</if>
+			<if test="M_AC_I2 != 0.001">
+			`M_AC_I2` = #{M_AC_I2},
+			</if>
+			<if test="M_AC_I3 != 0.001">
+			`M_AC_I3` = #{M_AC_I3},
+			</if>
+			<if test="M_AC_P1 != 0.001">
+			`M_AC_P1` = #{M_AC_P1},
+			</if>
+			<if test="M_AC_P2 != 0.001">
+			`M_AC_P2` = #{M_AC_P2},
+			</if>
+			<if test="M_AC_P3 != 0.001">
+			`M_AC_P3` = #{M_AC_P3},
+			</if>
+			<if test="M_AC_P != 0.001">
+			`M_AC_P` = #{M_AC_P},
+			</if>
+			<if test="M_AC_E_M1 != 0.001">
+			`M_AC_E_M1` = #{M_AC_E_M1},
+			</if>
+			<if test="M_AC_Q1 != 0.001">
+			`M_AC_Q1` = #{M_AC_Q1},
+			</if>
+			<if test="M_AC_Q2 != 0.001">
+			`M_AC_Q2` = #{M_AC_Q2},
+			</if>
+			<if test="M_AC_Q3 != 0.001">
+			`M_AC_Q3` = #{M_AC_Q3},
+			</if>
+			<if test="M_AC_S1 != 0.001">
+			`M_AC_Q` = #{M_AC_Q},
+			</if>
+			<if test="high_alarm != 0.001">
+			`M_AC_S1` = #{M_AC_S1},
+			</if>
+			<if test="M_AC_S2 != 0.001">
+			`M_AC_S2` = #{M_AC_S2},
+			</if>
+			<if test="M_AC_S3 != 0.001">
+			`M_AC_S3` = #{M_AC_S3},
+			</if>
+			<if test="M_AC_S != 0.001">
+			`M_AC_S` = #{M_AC_S},
+			</if>
+			<if test="M_AC_PF != 0.001">
+			`M_AC_PF` = #{M_AC_PF},
+			</if>
+			<if test="M_AC_F != 0.001">
+			`M_AC_F` = #{M_AC_F},
+			</if>
+			<if test="M_AC_E_EXP != 0.001">
+			`M_AC_E_EXP` = #{M_AC_E_EXP},
+			</if>
+			<if test="M_AC_E_IMP != 0.001">
+			`M_AC_E_IMP` = #{M_AC_E_IMP},
+			</if>
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+
+  	
+</mapper> 

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSungrowWeatherPvmet75200">
+	<resultMap id="ModelSungrowWeatherPvmet75200Map"
+		type="com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		<result property="SRAD_D_H" column="SRAD_D_H" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		
+
+	</resultMap>
+
+	<insert id="insertModelSungrowWeatherPvmet75200" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_sungrow_weather_pvmet75200`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="SRAD_D_H != 0.001">
+			`SRAD_D_H`,
+			</if>
+			
+			<if test="nvm_irradiance != 0.001">
+			`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+			`nvm_temperature`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="SRAD_D_H != 0.001">
+			#{SRAD_D_H},
+			</if>
+			
+			<if test="nvm_irradiance != 0.001">
+			#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+			#{nvm_temperature},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="SRAD_D_H != 0.001">
+			`SRAD_D_H` = #{SRAD_D_H},
+			</if>
+			
+			<if test="nvm_irradiance != 0.001">
+			`nvm_irradiance` = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+			`nvm_temperature` = #{nvm_temperature},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+
+  	
+</mapper> 

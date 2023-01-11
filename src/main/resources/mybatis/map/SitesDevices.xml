@@ -40,6 +40,10 @@
 				WHEN d.datatablename = 'model_datalogger' THEN "N/A"				
 				WHEN d.datatablename = 'model_tti_tracker' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "Degrees" ))
 				WHEN d.datatablename = 'model_xantrex_gt100_250_500' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_umg604' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_sg110cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_sg50cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_weather_pvmet75200' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))	
 				ELSE "N/A"
 			END AS key_indicator,
 			IFNULL(p.totalError, 0 ) AS totalError,
