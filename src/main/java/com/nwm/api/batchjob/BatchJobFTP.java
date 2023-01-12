@@ -246,15 +246,14 @@ public class BatchJobFTP {
      	                        		timestamp = timestamp.replace("Z", "");
      	                        		
      	                        		ZoneId utc = ZoneId.of("Etc/UTC");
-	     	                   	        DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+	     	                   	        DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 	
 	     	                   	        //ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-	     	                   	        ZoneId zoneId = ZoneId.of(rowItem.getTimezone_value());
-	     	                   	        ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zoneId).withZoneSameInstant(utc);
+	     	                   	        ZoneId zId = ZoneId.of(rowItem.getTimezone_value());
+	     	                   	    
+	     	                   	        ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
 	     	                   	        String formatterUtcDateTime = utcDateTime.format(targetFormatter);
-	     	                   	        
-	     	                   	        System.out.println("formatterUtcDateTime: " + formatterUtcDateTime);
-     	                   	    
+	     	                   	    
      	                        		if(rowItem != null && rowItem.getId() > 0) {
      	                        			NodeList aceList = resource.getElementsByTagName("mv");
 											switch (rowItem.getDatatablename()) {
