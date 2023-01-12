@@ -5,62 +5,29 @@
 *********************************************************/
 package com.nwm.api.batchjob;
 
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.TimeZone;
-
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.collections4.Get;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.nwm.api.controllers.ReportsController;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ModelDataloggerEntity;
-import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
 import com.nwm.api.entities.ModelSungrowSg110cxEntity;
 import com.nwm.api.entities.ModelSungrowSg50cxEntity;
 import com.nwm.api.entities.ModelSungrowUmg604Entity;
 import com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity;
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.ViewReportEntity;
-import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelSungrowSg110cxService;
@@ -70,7 +37,6 @@ import com.nwm.api.services.ModelSungrowWeatherPvmet75200Service;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -104,106 +70,6 @@ public class BatchJobFTP {
 	    }
 	}
 	
-	static void listDirectory(FTPClient ftpClient, String parentDir,
-        String currentDir, int level) throws IOException {
-        String dirToList = parentDir;
-        if (!currentDir.equals("")) {
-            dirToList += "/" + currentDir;
-        }
-        FTPFile[] subFiles = ftpClient.listFiles(dirToList);
-        if (subFiles != null && subFiles.length > 0) {
-            for (FTPFile aFile : subFiles) {
-                String currentFileName = aFile.getName();
-                if (currentFileName.equals(".")
-                        || currentFileName.equals("..")) {
-                    // skip parent directory and directory itself
-                    continue;
-                }
-                for (int i = 0; i < level; i++) {
-                    System.out.print("\t");
-                }
-                if (aFile.isDirectory()) {
-                    System.out.println("[" + currentFileName + "]");
-                    listDirectory(ftpClient, dirToList, currentFileName, level + 1);
-                } else {
-                	
-//                	String filePath = parentDir + "/"+ currentFileName;
-                	String filePath = parentDir + "/" + currentDir + "/" + currentFileName;
-                	System.out.println("filePath: " + filePath);
-                	
-//                	boolean success = downloadSingleFile(ftpClient, filePath,"/Volumes/Data/sources/nextwavemonitoring/api/uploads/ftp/"+ currentFileName);
-//                    if (success) {
-////                        System.out.println("DOWNLOADED the file: " + filePath);
-//                    } else {
-////                        System.out.println("COULD NOT download the file: "+ filePath);
-//                    }
-                    
-//                    System.out.println("File Name: "+ currentFileName);
-//                    String FILENAME = "/public_html/"+currentFileName;
-//                    downloadSingleFile(ftpClient, "/aaa", "aa");
-                    // Instantiate the Factory
-//                    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-//                    try {
-//
-//                        // optional, but recommended
-//                        // process XML securely, avoid attacks like XML External Entities (XXE)
-//                        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-//
-//                        // parse XML file
-//                        DocumentBuilder db = dbf.newDocumentBuilder();
-//
-//                        Document doc = db.parse(new File(FILENAME));
-//
-//                        // optional, but recommended
-//                        // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-//                        doc.getDocumentElement().normalize();
-//
-//                        System.out.println("Root Element :" + doc.getDocumentElement().getNodeName());
-//                        System.out.println("------");
-//
-//                        // get <staff>
-//                        NodeList list = doc.getElementsByTagName("uuid");
-
-//                        for (int temp = 0; temp < list.getLength(); temp++) {
-//
-//                            Node node = list.item(temp);
-//
-//                            if (node.getNodeType() == Node.ELEMENT_NODE) {
-
-//                                Element element = (Element) node;
-
-                                // get staff's attribute
-//                                String id = element.getAttribute("id");
-//
-//                                // get text
-//                                String firstname = element.getElementsByTagName("firstname").item(0).getTextContent();
-//                                String lastname = element.getElementsByTagName("lastname").item(0).getTextContent();
-//                                String nickname = element.getElementsByTagName("nickname").item(0).getTextContent();
-//
-//                                NodeList salaryNodeList = element.getElementsByTagName("salary");
-//                                String salary = salaryNodeList.item(0).getTextContent();
-//
-//                                // get salary's attribute
-//                                String currency = salaryNodeList.item(0).getAttributes().getNamedItem("currency").getTextContent();
-//
-//                                System.out.println("Current Element :" + node.getNodeName());
-//                                System.out.println("Staff Id : " + id);
-//                                System.out.println("First Name : " + firstname);
-//                                System.out.println("Last Name : " + lastname);
-//                                System.out.println("Nick Name : " + nickname);
-//                                System.out.printf("Salary [Currency] : %,.2f [%s]%n%n", Float.parseFloat(salary), currency);
-
-//                            }
-//                        }
-
-//                    } catch (ParserConfigurationException | SAXException | IOException e) {
-//                        e.printStackTrace();
-//                    }
-                }
-            }
-        }
-    }
-	
 	
 	public void readFolderFTP() {
 		try {
@@ -229,7 +95,6 @@ public class BatchJobFTP {
 	                System.out.println("Could not login to the server");
 	                return;
 	            }
-//	            listDirectory(ftpClient, dirToList, "", 0);
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
@@ -270,8 +135,6 @@ public class BatchJobFTP {
 	        dirToList += "/" + currentDir;
 	    }
 	    
-//	    String remoteDirPath = "/SMAFTP"; 
-//        String saveDirPath = "/Volumes/Data/sources/nextwavemonitoring/api/uploads/ftp";
 	 
 	    FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 	 
@@ -312,7 +175,6 @@ public class BatchJobFTP {
 	            	File f = new File(newDirPath);
 	            	if(!f.exists()) { 
 	            	    // do something
-//	            		filePath = "/SMAFTP/";
 	            		boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
 	            		if (success) {
 		                    // Read file xml
@@ -381,8 +243,18 @@ public class BatchJobFTP {
      	                        		ModelSungrowSg50cxService serviceUmgSg50 = new ModelSungrowSg50cxService();
      	                        		ModelSungrowWeatherPvmet75200Service serviceSW = new ModelSungrowWeatherPvmet75200Service();
      	                        		DeviceService serviceD = new DeviceService();
-     	                        		timestamp = timestamp.replace("T", " ").replace("Z", "");
+     	                        		timestamp = timestamp.replace("Z", "");
      	                        		
+     	                        		ZoneId utc = ZoneId.of("Etc/UTC");
+	     	                   	        DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+	
+	     	                   	        //ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
+	     	                   	        ZoneId zoneId = ZoneId.of(rowItem.getTimezone_value());
+	     	                   	        ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zoneId).withZoneSameInstant(utc);
+	     	                   	        String formatterUtcDateTime = utcDateTime.format(targetFormatter);
+	     	                   	        
+	     	                   	        System.out.println("formatterUtcDateTime: " + formatterUtcDateTime);
+     	                   	    
      	                        		if(rowItem != null && rowItem.getId() > 0) {
      	                        			NodeList aceList = resource.getElementsByTagName("mv");
 											switch (rowItem.getDatatablename()) {
@@ -393,7 +265,7 @@ public class BatchJobFTP {
 												entitySW.setError(0);
 												entitySW.setHigh_alarm(0);
 												entitySW.setLow_alarm(0);
-												entitySW.setTime(timestamp);
+												entitySW.setTime(formatterUtcDateTime);
 												
 												for (int j = 0; j < aceList.getLength(); j++) {
 													Element mv = (Element) aceList.item(j);
@@ -423,7 +295,7 @@ public class BatchJobFTP {
 													entitySg110.setError(0);
 													entitySg110.setHigh_alarm(0);
 													entitySg110.setLow_alarm(0);
-													entitySg110.setTime(timestamp);
+													entitySg110.setTime(formatterUtcDateTime);
 													
 													for (int j = 0; j < aceList.getLength(); j++) {
 														Element mv = (Element) aceList.item(j);
@@ -510,7 +382,7 @@ public class BatchJobFTP {
 													serviceUmgSg110.insertModelSungrowSg110cx(entitySg110);
 													
 													if(entitySg110.getP_DC() >= 0) {
-														deviceUpdateE.setLast_updated(timestamp);
+														deviceUpdateE.setLast_updated(formatterUtcDateTime);
 														deviceUpdateE.setLast_value(entitySg110.getP_DC() >= 0 ? entitySg110.getP_DC() : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
@@ -527,7 +399,7 @@ public class BatchJobFTP {
 													entityUmg604.setError(0);
 													entityUmg604.setHigh_alarm(0);
 													entityUmg604.setLow_alarm(0);
-													entityUmg604.setTime(timestamp);
+													entityUmg604.setTime(formatterUtcDateTime);
 													for (int j = 0; j < aceList.getLength(); j++) {
 														Element mv = (Element) aceList.item(j);
 														if((mv.getAttribute("t")).equals("M_AC_U1")) { entityUmg604.setM_AC_U1(Double.parseDouble(mv.getAttribute("v"))); }
@@ -566,7 +438,7 @@ public class BatchJobFTP {
 													serviceUmg604.insertModelSungrowUmg604(entityUmg604);
 													
 													if(entityUmg604.getM_AC_P() >= 0) {
-														deviceUpdateE.setLast_updated(timestamp);
+														deviceUpdateE.setLast_updated(formatterUtcDateTime);
 														deviceUpdateE.setLast_value(entityUmg604.getM_AC_P() >= 0 ? entityUmg604.getM_AC_P() : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
@@ -582,7 +454,7 @@ public class BatchJobFTP {
 													entitySg50.setError(0);
 													entitySg50.setHigh_alarm(0);
 													entitySg50.setLow_alarm(0);
-													entitySg50.setTime(timestamp);
+													entitySg50.setTime(formatterUtcDateTime);
 													for (int j = 0; j < aceList.getLength(); j++) {
 														Element mv = (Element) aceList.item(j);
 														if((mv.getAttribute("t")).equals("E_DAY")) { entitySg50.setE_DAY(Double.parseDouble(mv.getAttribute("v"))); }
@@ -685,7 +557,7 @@ public class BatchJobFTP {
 													}
 													serviceUmgSg50.insertModelSungrowSg50cx(entitySg50);
 													if(entitySg50.getP_DC() >= 0) {
-														deviceUpdateE.setLast_updated(timestamp);
+														deviceUpdateE.setLast_updated(formatterUtcDateTime);
 														deviceUpdateE.setLast_value(entitySg50.getP_DC() >= 0 ? entitySg50.getP_DC() : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
@@ -712,7 +584,12 @@ public class BatchJobFTP {
 							}
 							
 							// Delete file for FTP
-							
+							boolean deleted = ftpClient.deleteFile(filePath);
+							if (deleted) {
+				                System.out.println("The file was deleted successfully.");
+				            } else {
+				                System.out.println("Could not delete the  file, it may not exist.");
+				            }
 		                    
 		                } else {
 		                    System.out.println("COULD NOT download the file: " + filePath);
