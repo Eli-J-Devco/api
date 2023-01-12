@@ -275,7 +275,7 @@ public class BatchJobFTP {
 												serviceSW.insertModelSungrowWeatherPvmet75200(entitySW);
 												
 												if(entitySW.getSRAD_D_H() >= 0) {
-													deviceUpdateE.setLast_updated(timestamp);
+													deviceUpdateE.setLast_updated(formatterUtcDateTime);
 													deviceUpdateE.setLast_value(entitySW.getSRAD_D_H() >= 0 ? entitySW.getSRAD_D_H() : null);
 												} else {
 													deviceUpdateE.setLast_updated(null);
