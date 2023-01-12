@@ -269,8 +269,8 @@ public class BatchConfig {
 	 */
 	@Scheduled(cron = "0 */1 * * * *")
 	public void readFolderFTP() throws Exception {
-		BatchJobFTP job = new BatchJobFTP(); 
-		job.readFolderFTP();
+//		BatchJobFTP job = new BatchJobFTP(); 
+//		job.readFolderFTP();
 	}
 	
 	
