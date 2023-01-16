@@ -48,6 +48,7 @@ import com.nwm.api.entities.ModelRT1Class30000Entity;
 import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
+import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
 import com.nwm.api.entities.ModelTTiTrackerEntity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
@@ -73,6 +74,7 @@ import com.nwm.api.services.ModelRT1Class30000Service;
 import com.nwm.api.services.ModelSatconPvs357InverterService;
 import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
+import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
 import com.nwm.api.services.ModelTTiTrackerService;
 import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
@@ -1669,6 +1671,88 @@ public class UploadFilesController extends BaseController {
 														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
+												}
+											}
+											
+											break;
+											
+											
+											
+										case "model_solaredge_inverter":
+											ModelSolarEdgeInverterService serviceModelSET = new ModelSolarEdgeInverterService();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													DecimalFormat df = new DecimalFormat("#.0");
+													double nvmActivePowerSET = Double.parseDouble((!Lib.isBlank(words.get(19)) ? words.get(19) : "0") ) / 1000;
+													double nvmActiveEnergySET = Double.parseDouble((!Lib.isBlank(words.get(30)) ? words.get(30) : "0") ) / 1000;
+													
+													
+													if(!Lib.isBlank(words.get(19))) {
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+													}
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
+													dataModelSET.setId_device(item.getId());
+													dataModelSET.setI_AC_Power(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
+													dataModelSET.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
+													dataModelSET.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? df.format(nvmActiveEnergySET) : "0.001"));
+													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+													
 												}
 											}
 											
