@@ -305,7 +305,7 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			d.`status` = 1 
+			d.`status` = 1 AND d.is_delete = 0
 			AND s.`status` = 1 AND d.id_device_type IN (1, 3) AND d.disable_alert = 0
 	</select>
 	
