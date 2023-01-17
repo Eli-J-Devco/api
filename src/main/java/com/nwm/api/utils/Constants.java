@@ -10,9 +10,9 @@ package com.nwm.api.utils;
  * @version 1.0
  */
 public class Constants {
-	public static final String FTPServer="ftp.server";
-	public static final String FTPUser="ftp.user";
-	public static final String FTPPass="ftp.pass";
+	public static final String FTPSGServer="ftpSG.server";
+	public static final String FTPSGUser="ftpSG.user";
+	public static final String FTPSGPass="ftpSG.pass";
 	public static final String uploadFilePathConfigKeyFTP="uploadpath.ftp";
 	
 	public static final String weatherAPIURL = "https://api.openweathermap.org/data/2.5/weather";

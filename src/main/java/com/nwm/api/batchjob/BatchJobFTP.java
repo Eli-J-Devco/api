@@ -73,11 +73,11 @@ public class BatchJobFTP {
 	
 	public void readFolderFTP() {
 		try {
-	        String server = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPServer);
-	        String user = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPUser);
-	        String pass = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPPass);
+	        String server = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGServer);
+	        String user = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGUser);
+	        String pass = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGPass);
 	        int port = 21;
-	        String remoteDirPath = "/SMAFTP"; 
+	        String remoteDirPath = "/SGFTP"; 
 	        
 			String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyFTP);
 	        
