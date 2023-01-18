@@ -55,6 +55,7 @@
   			<result property="text" column="text" />	
   			<result property="label" column="label" />
   			<result property="value" column="value" />
+  			<result property="role_ids" column="role_ids" />
 	</resultMap>
 	
 	
@@ -65,15 +66,18 @@
 			CONCAT_WS( ' ', first_name, last_name ) AS text,
 			CONCAT_WS( ' ', first_name, last_name ) AS label,
 			id AS value,
-			email
+			email,
+			GROUP_CONCAT(er.id_role) AS role_ids
 		FROM
 			`employee` e
+			LEFT JOIN employee_role_map er ON er.id_employee = e.id
 		WHERE
 			`status` = 1 
 			AND is_delete = 0 
 			<if test="email != null">
 				AND e.email = #{email}
 			</if>
+		GROUP BY e.id
 		ORDER BY
 			id DESC;
 	</select>

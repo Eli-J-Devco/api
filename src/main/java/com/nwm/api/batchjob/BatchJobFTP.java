@@ -73,11 +73,11 @@ public class BatchJobFTP {
 	
 	public void readFolderFTP() {
 		try {
-	        String server = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPServer);
-	        String user = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPUser);
-	        String pass = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPPass);
+	        String server = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGServer);
+	        String user = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGUser);
+	        String pass = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.FTPSGPass);
 	        int port = 21;
-	        String remoteDirPath = "/SMAFTP"; 
+	        String remoteDirPath = "/SGFTP"; 
 	        
 			String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyFTP);
 	        
@@ -246,15 +246,14 @@ public class BatchJobFTP {
      	                        		timestamp = timestamp.replace("Z", "");
      	                        		
      	                        		ZoneId utc = ZoneId.of("Etc/UTC");
-	     	                   	        DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss", Locale.ENGLISH);
+	     	                   	        DateTimeFormatter targetFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 	
 	     	                   	        //ZoneId zoneId = ZoneId.of("Asia/Ho_Chi_Minh");
-	     	                   	        ZoneId zoneId = ZoneId.of(rowItem.getTimezone_value());
-	     	                   	        ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zoneId).withZoneSameInstant(utc);
+	     	                   	        ZoneId zId = ZoneId.of(rowItem.getTimezone_value());
+	     	                   	    
+	     	                   	        ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
 	     	                   	        String formatterUtcDateTime = utcDateTime.format(targetFormatter);
-	     	                   	        
-	     	                   	        System.out.println("formatterUtcDateTime: " + formatterUtcDateTime);
-     	                   	    
+	     	                   	    
      	                        		if(rowItem != null && rowItem.getId() > 0) {
      	                        			NodeList aceList = resource.getElementsByTagName("mv");
 											switch (rowItem.getDatatablename()) {

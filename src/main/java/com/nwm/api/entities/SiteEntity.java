@@ -149,6 +149,14 @@ public class SiteEntity {
 	private double actualPower;
 	private double nvm_temperature;
 	private int id_site_group;
+	private int timezone_datalogger;
+	
+	public int getTimezone_datalogger() {
+		return timezone_datalogger;
+	}
+	public void setTimezone_datalogger(int timezone_datalogger) {
+		this.timezone_datalogger = timezone_datalogger;
+	}
 	public int getId() {
 		return id;
 	}

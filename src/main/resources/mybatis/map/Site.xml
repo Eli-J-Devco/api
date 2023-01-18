@@ -65,6 +65,8 @@
 		<result property="kiosk_view" column="kiosk_view" />
 		<result property="site_logo" column="site_logo" />
 		<result property="id_site_group" column="id_site_group" />
+		<result property="timezone_datalogger" column="timezone_datalogger" />
+		
 		
 		
 	</resultMap>
@@ -107,7 +109,8 @@
 			em.first_name,
 			em.last_name,
 			sg.name AS site_group,
-			s.id_site_group
+			s.id_site_group,
+			s.timezone_datalogger
 			
 		FROM
 			site AS s
@@ -199,7 +202,8 @@
 			s.about,
 			s.kiosk_view,
 			s.site_logo,
-			s.id_site_group
+			s.id_site_group,
+			s.timezone_datalogger
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -307,7 +311,8 @@
 			`about`,
 			`kiosk_view`,
 			`site_logo`,
-			`id_site_group`
+			`id_site_group`,
+			`timezone_datalogger`
 		)VALUES(
 			#{id_company},
 			#{id_country},
@@ -337,7 +342,8 @@
 			#{about},
 			#{kiosk_view},
 			#{site_logo},
-			#{id_site_group}
+			#{id_site_group},
+			#{timezone_datalogger}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -376,7 +382,8 @@
 			`about` = #{about},
 			`kiosk_view` = #{kiosk_view},
 			`site_logo` = #{site_logo},
-			`id_site_group` = #{id_site_group}
+			`id_site_group` = #{id_site_group},
+			`timezone_datalogger` = #{timezone_datalogger}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -419,7 +426,8 @@
 			s.about,
 			s.kiosk_view,
 			s.site_logo,
-			s.id_site_group
+			s.id_site_group,
+			s.timezone_datalogger
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -541,7 +549,8 @@
 			s.about,
 			s.kiosk_view,
 			s.site_logo,
-			s.id_site_group
+			s.id_site_group,
+			s.timezone_datalogger
 		FROM
 			site AS s
 		WHERE
@@ -592,7 +601,8 @@
 			s.about,
 			s.kiosk_view,
 			s.site_logo,
-			s.id_site_group
+			s.id_site_group,
+			s.timezone_datalogger
 		FROM
 			site AS s
 		WHERE s.is_delete = 0;

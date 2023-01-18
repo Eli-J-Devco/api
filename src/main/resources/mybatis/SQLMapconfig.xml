@@ -84,10 +84,7 @@
 		<mapper resource="mybatis/map/ModelSungrowSg110cx.xml"/>
 		<mapper resource="mybatis/map/ModelSungrowUMG604.xml"/>
 		<mapper resource="mybatis/map/ModelSungrowWeatherPvmet75200.xml"/>
-		
-		
-		
-		
+		<mapper resource="mybatis/map/ModelSolarEdgeInverter.xml"/>
 		
 		
 		

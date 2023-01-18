@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolarEdgeInverter">
+	<resultMap id="ModelSolarEdgeInverterMap"
+		type="com.nwm.api.entities.ModelSolarEdgeInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		<result property="C_DeviceAddress" column="C_DeviceAddress" />
+		<result property="C_SunSpec_DID" column="C_SunSpec_DID" />
+		<result property="C_SunSpec_Length" column="C_SunSpec_Length" />
+		<result property="I_AC_Current" column="I_AC_Current" />
+		<result property="I_AC_CurrentA" column="I_AC_CurrentA" />
+		<result property="I_AC_CurrentB" column="I_AC_CurrentB" />
+		<result property="I_AC_CurrentC" column="I_AC_CurrentC" />
+		<result property="I_AC_Current_SF" column="I_AC_Current_SF" />
+		<result property="I_AC_VoltageAB" column="I_AC_VoltageAB" />
+		<result property="I_AC_VoltageBC" column="I_AC_VoltageBC" />
+		<result property="I_AC_VoltageCA" column="I_AC_VoltageCA" />
+		<result property="I_AC_VoltageAN" column="I_AC_VoltageAN" />
+		<result property="I_AC_VoltageBN" column="I_AC_VoltageBN" />
+		<result property="I_AC_VoltageCN" column="I_AC_VoltageCN" />
+		<result property="I_AC_Voltage_SF" column="I_AC_Voltage_SF" />
+		<result property="I_AC_Power" column="I_AC_Power" />
+		<result property="I_AC_Power_SF" column="I_AC_Power_SF" />
+		<result property="I_AC_Frequency" column="I_AC_Frequency" />
+		<result property="I_AC_Frequency_SF" column="I_AC_Frequency_SF" />
+		<result property="I_AC_VA" column="I_AC_VA" />
+		<result property="I_AC_VA_SF" column="I_AC_VA_SF" />
+		<result property="I_AC_VAR" column="I_AC_VAR" />
+		<result property="I_AC_VAR_SF" column="I_AC_VAR_SF" />
+		<result property="I_AC_PF" column="I_AC_PF" />
+		<result property="I_AC_PF_SF" column="I_AC_PF_SF" />
+		<result property="I_AC_Energy_WH" column="I_AC_Energy_WH" />
+		<result property="I_AC_Energy_WH_SF" column="I_AC_Energy_WH_SF" />
+		<result property="I_DC_Current" column="I_DC_Current" />
+		<result property="I_DC_Current_SF" column="I_DC_Current_SF" />
+		<result property="I_DC_Voltage" column="I_DC_Voltage" />
+		<result property="I_DC_Voltage_SF" column="I_DC_Voltage_SF" />
+		<result property="I_DC_Power" column="I_DC_Power" />
+		<result property="I_DC_Power_SF" column="I_DC_Power_SF" />
+		<result property="I_Temp_Sink" column="I_Temp_Sink" />
+		<result property="I_Temp_SF" column="I_Temp_SF" />
+		<result property="I_Status" column="I_Status" />
+		<result property="I_Status_Vendor" column="I_Status_Vendor" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelSolarEdgeInverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_solaredge_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="C_DeviceAddress != 0.001">
+				`C_DeviceAddress`,
+			</if>
+			<if test="C_SunSpec_DID != 0.001">
+				`C_SunSpec_DID`,
+			</if>
+			<if test="C_SunSpec_Length != 0.001">
+				`C_SunSpec_Length`,
+			</if>
+			<if test="I_AC_Current != 0.001">
+				`I_AC_Current`,
+			</if>
+			<if test="I_AC_CurrentA != 0.001">
+				`I_AC_CurrentA`,
+			</if>
+			<if test="I_AC_CurrentB != 0.001">
+				`I_AC_CurrentB`,
+			</if>
+			<if test="I_AC_CurrentC != 0.001">
+				`I_AC_CurrentC`,
+			</if>
+			<if test="I_AC_Current_SF != 0.001">
+				`I_AC_Current_SF`,
+			</if>
+			<if test="I_AC_VoltageAB != 0.001">
+				`I_AC_VoltageAB`,
+			</if>
+			<if test="I_AC_VoltageBC != 0.001">
+				`I_AC_VoltageBC`,
+			</if>
+			<if test="I_AC_VoltageCA != 0.001">
+				`I_AC_VoltageCA`,
+			</if>
+			<if test="I_AC_VoltageAN != 0.001">
+				`I_AC_VoltageAN`,
+			</if>
+			<if test="I_AC_VoltageBN != 0.001">
+				`I_AC_VoltageBN`,
+			</if>
+			<if test="I_AC_VoltageCN != 0.001">
+				`I_AC_VoltageCN`,
+			</if>
+			<if test="I_AC_Voltage_SF != 0.001">
+				`I_AC_Voltage_SF`,
+			</if>
+			<if test="I_AC_Power != 0.001">
+				`I_AC_Power`,
+			</if>
+			<if test="I_AC_Power_SF != 0.001">
+				`I_AC_Power_SF`,
+			</if>
+			<if test="I_AC_Frequency != 0.001">
+				`I_AC_Frequency`,
+			</if>
+			<if test="I_AC_Frequency_SF != 0.001">
+				`I_AC_Frequency_SF`,
+			</if>
+			<if test="I_AC_VA != 0.001">
+				`I_AC_VA`,
+			</if>
+			<if test="I_AC_VA_SF != 0.001">
+				`I_AC_VA_SF`,
+			</if>
+			<if test="I_AC_VAR != 0.001">
+				`I_AC_VAR`,
+			</if>
+			<if test="I_AC_VAR_SF != 0.001">
+				`I_AC_VAR_SF`,
+			</if>
+			<if test="I_AC_PF != 0.001">
+				`I_AC_PF`,
+			</if>
+			<if test="I_AC_PF_SF != 0.001">
+				`I_AC_PF_SF`,
+			</if>
+			<if test="I_AC_Energy_WH != 0.001">
+				`I_AC_Energy_WH`,
+			</if>
+			<if test="I_AC_Energy_WH_SF != 0.001">
+				`I_AC_Energy_WH_SF`,
+			</if>
+			<if test="I_DC_Current != 0.001">
+				`I_DC_Current`,
+			</if>
+			<if test="I_DC_Current_SF != 0.001">
+				`I_DC_Current_SF`,
+			</if>
+			<if test="I_DC_Voltage != 0.001">
+				`I_DC_Voltage`,
+			</if>
+			<if test="I_DC_Voltage_SF != 0.001">
+				`I_DC_Voltage_SF`,
+			</if>
+			<if test="I_DC_Power != 0.001">
+				`I_DC_Power`,
+			</if>
+			<if test="I_DC_Power_SF != 0.001">
+				`I_DC_Power_SF`,
+			</if>
+			<if test="I_Temp_Sink != 0.001">
+				`I_Temp_Sink`,
+			</if>
+			<if test="I_Temp_SF != 0.001">
+				`I_Temp_SF`,
+			</if>
+			<if test="I_Status != 0.001">
+				`I_Status`,
+			</if>
+			<if test="I_Status_Vendor != 0.001">
+				`I_Status_Vendor`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="C_DeviceAddress != 0.001">
+				#{C_DeviceAddress},
+			</if>
+			<if test="C_SunSpec_DID != 0.001">
+				#{C_SunSpec_DID},
+			</if>
+			<if test="C_SunSpec_Length != 0.001">
+				#{C_SunSpec_Length},
+			</if>
+			<if test="I_AC_Current != 0.001">
+				#{I_AC_Current},
+			</if>
+			<if test="I_AC_CurrentA != 0.001">
+				#{I_AC_CurrentA},
+			</if>
+			<if test="I_AC_CurrentB != 0.001">
+				#{I_AC_CurrentB},
+			</if>
+			<if test="I_AC_CurrentC != 0.001">
+				#{I_AC_CurrentC},
+			</if>
+			<if test="I_AC_Current_SF != 0.001">
+				#{I_AC_Current_SF},
+			</if>
+			<if test="I_AC_VoltageAB != 0.001">
+				#{I_AC_VoltageAB},
+			</if>
+			<if test="I_AC_VoltageBC != 0.001">
+				#{I_AC_VoltageBC},
+			</if>
+			<if test="I_AC_VoltageCA != 0.001">
+				#{I_AC_VoltageCA},
+			</if>
+			<if test="I_AC_VoltageAN != 0.001">
+				#{I_AC_VoltageAN},
+			</if>
+			<if test="I_AC_VoltageBN != 0.001">
+				#{I_AC_VoltageBN},
+			</if>
+			<if test="I_AC_VoltageCN != 0.001">
+				#{I_AC_VoltageCN},
+			</if>
+			<if test="I_AC_Voltage_SF != 0.001">
+				#{I_AC_Voltage_SF},
+			</if>
+			<if test="I_AC_Power != 0.001">
+				#{I_AC_Power},
+			</if>
+			<if test="I_AC_Power_SF != 0.001">
+				#{I_AC_Power_SF},
+			</if>
+			<if test="I_AC_Frequency != 0.001">
+				#{I_AC_Frequency},
+			</if>
+			<if test="I_AC_Frequency_SF != 0.001">
+				#{I_AC_Frequency_SF},
+			</if>
+			<if test="I_AC_VA != 0.001">
+				#{I_AC_VA},
+			</if>
+			<if test="I_AC_VA_SF != 0.001">
+				#{I_AC_VA_SF},
+			</if>
+			<if test="I_AC_VAR != 0.001">
+				#{I_AC_VAR},
+			</if>
+			<if test="I_AC_VAR_SF != 0.001">
+				#{I_AC_VAR_SF},
+			</if>
+			<if test="I_AC_PF != 0.001">
+				#{I_AC_PF},
+			</if>
+			<if test="I_AC_PF_SF != 0.001">
+				#{I_AC_PF_SF},
+			</if>
+			<if test="I_AC_Energy_WH != 0.001">
+				#{I_AC_Energy_WH},
+			</if>
+			<if test="I_AC_Energy_WH_SF != 0.001">
+				#{I_AC_Energy_WH_SF},
+			</if>
+			<if test="I_DC_Current != 0.001">
+				#{I_DC_Current},
+			</if>
+			<if test="I_DC_Current_SF != 0.001">
+				#{I_DC_Current_SF},
+			</if>
+			<if test="I_DC_Voltage != 0.001">
+				#{I_DC_Voltage},
+			</if>
+			<if test="I_DC_Voltage_SF != 0.001">
+				#{I_DC_Voltage_SF},
+			</if>
+			<if test="I_DC_Power != 0.001">
+				#{I_DC_Power},
+			</if>
+			<if test="I_DC_Power_SF != 0.001">
+				#{I_DC_Power_SF},
+			</if>
+			<if test="I_Temp_Sink != 0.001">
+				#{I_Temp_Sink},
+			</if>
+			<if test="I_Temp_SF != 0.001">
+				#{I_Temp_SF},
+			</if>
+			<if test="I_Status != 0.001">
+				#{I_Status},
+			</if>
+			<if test="I_Status_Vendor != 0.001">
+				#{I_Status_Vendor},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="C_DeviceAddress != 0.001">
+				`C_DeviceAddress` = #{C_DeviceAddress},
+			</if>
+			<if test="C_SunSpec_DID != 0.001">
+				`C_SunSpec_DID` = #{C_SunSpec_DID},
+			</if>
+			<if test="C_SunSpec_Length != 0.001">
+				`C_SunSpec_Length` = #{C_SunSpec_Length},
+			</if>
+			<if test="I_AC_Current != 0.001">
+				`I_AC_Current` = #{I_AC_Current},
+			</if>
+			<if test="I_AC_CurrentA != 0.001">
+				`I_AC_CurrentA` = #{I_AC_CurrentA},
+			</if>
+			<if test="I_AC_CurrentB != 0.001">
+				`I_AC_CurrentB` = #{I_AC_CurrentB},
+			</if>
+			<if test="I_AC_CurrentC != 0.001">
+				`I_AC_CurrentC` = #{I_AC_CurrentC},
+			</if>
+			<if test="I_AC_Current_SF != 0.001">
+				`I_AC_Current_SF` = #{I_AC_Current_SF},
+			</if>
+			<if test="I_AC_VoltageAB != 0.001">
+				`I_AC_VoltageAB` = #{I_AC_VoltageAB},
+			</if>
+			<if test="I_AC_VoltageBC != 0.001">
+				`I_AC_VoltageBC` = #{I_AC_VoltageBC},
+			</if>
+			<if test="I_AC_VoltageCA != 0.001">
+				`I_AC_VoltageCA` = #{I_AC_VoltageCA},
+			</if>
+			<if test="I_AC_VoltageAN != 0.001">
+				`I_AC_VoltageAN` = #{I_AC_VoltageAN},
+			</if>
+			<if test="I_AC_VoltageBN != 0.001">
+				`I_AC_VoltageBN` = #{I_AC_VoltageBN},
+			</if>
+			<if test="I_AC_VoltageCN != 0.001">
+				`I_AC_VoltageCN` = #{I_AC_VoltageCN},
+			</if>
+			<if test="I_AC_Voltage_SF != 0.001">
+				`I_AC_Voltage_SF` = #{I_AC_Voltage_SF},
+			</if>
+			<if test="I_AC_Power != 0.001">
+				`I_AC_Power` = #{I_AC_Power},
+			</if>
+			<if test="I_AC_Power_SF != 0.001">
+				`I_AC_Power_SF` = #{I_AC_Power_SF},
+			</if>
+			<if test="I_AC_Frequency != 0.001">
+				`I_AC_Frequency` = #{I_AC_Frequency},
+			</if>
+			<if test="I_AC_Frequency_SF != 0.001">
+				`I_AC_Frequency_SF` = #{I_AC_Frequency_SF},
+			</if>
+			<if test="I_AC_VA != 0.001">
+				`I_AC_VA` = #{I_AC_VA},
+			</if>
+			<if test="I_AC_VA_SF != 0.001">
+				`I_AC_VA_SF` = #{I_AC_VA_SF},
+			</if>
+			<if test="I_AC_VAR != 0.001">
+				`I_AC_VAR` = #{I_AC_VAR},
+			</if>
+			<if test="I_AC_VAR_SF != 0.001">
+				`I_AC_VAR_SF` = #{I_AC_VAR_SF},
+			</if>
+			<if test="I_AC_PF != 0.001">
+				`I_AC_PF` = #{I_AC_PF},
+			</if>
+			<if test="I_AC_PF_SF != 0.001">
+				`I_AC_PF_SF` = #{I_AC_PF_SF},
+			</if>
+			<if test="I_AC_Energy_WH != 0.001">
+				`I_AC_Energy_WH` = #{I_AC_Energy_WH},
+			</if>
+			<if test="I_AC_Energy_WH_SF != 0.001">
+				`I_AC_Energy_WH_SF` = #{I_AC_Energy_WH_SF},
+			</if>
+			<if test="I_DC_Current != 0.001">
+				`I_DC_Current` = #{I_DC_Current},
+			</if>
+			<if test="I_DC_Current_SF != 0.001">
+				`I_DC_Current_SF` = #{I_DC_Current_SF},
+			</if>
+			<if test="I_DC_Voltage != 0.001">
+				`I_DC_Voltage` = #{I_DC_Voltage},
+			</if>
+			<if test="I_DC_Voltage_SF != 0.001">
+				`I_DC_Voltage_SF` = #{I_DC_Voltage_SF},
+			</if>
+			<if test="I_DC_Power != 0.001">
+				`I_DC_Power` = #{I_DC_Power},
+			</if>
+			<if test="I_DC_Power_SF != 0.001">
+				`I_DC_Power_SF` = #{I_DC_Power_SF},
+			</if>
+			<if test="I_Temp_Sink != 0.001">
+				`I_Temp_Sink` = #{I_Temp_Sink},
+			</if>
+			<if test="I_Temp_SF != 0.001">
+				`I_Temp_SF` = #{I_Temp_SF},
+			</if>
+			<if test="I_Status != 0.001">
+				`I_Status` = #{I_Status},
+			</if>
+			<if test="I_Status_Vendor != 0.001">
+				`I_Status_Vendor` = #{I_Status_Vendor},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+	</insert>
+	
+
+</mapper> 

@@ -108,6 +108,7 @@ com/nwm/api/entities/AlertEntity.class
 com/nwm/api/services/ModelIMTSolarTmodulClass8006Service.class
 com/nwm/api/controllers/UserController.class
 com/nwm/api/services/ModelIMTSolarClass8000Service.class
+com/nwm/api/entities/ModelSolarEdgeInverterEntity.class
 com/nwm/api/entities/ErrorEntity.class
 com/nwm/api/controllers/EmployeeController.class
 com/nwm/api/entities/A8810Entity.class
@@ -138,6 +139,7 @@ com/nwm/api/services/ModelAdvancedEnergySolaronService.class
 com/nwm/api/controllers/CompanyController.class
 com/nwm/api/utils/FLLogger$1.class
 com/nwm/api/services/ModelSungrowSg50cxService.class
+com/nwm/api/services/ModelSolarEdgeInverterService.class
 com/nwm/api/utils/Constants.class
 com/nwm/api/entities/ModelLufftClass8020Entity.class
 com/nwm/api/services/CustomerSupportService.class

@@ -167,6 +167,7 @@
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/TimeZoneService.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/SiteCustomerMapEntity.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/ModelSungrowSg50cxEntity.java
+/Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/ModelSolarEdgeInverterService.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/ModelSungrowWeatherPvmet75200Service.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/DemoEntity.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/ModelElkorWattsonPVMeterService.java
@@ -191,6 +192,7 @@
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/ModelPVPInverterEntity.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/config/SwaggerCustomIgnore.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/SiteService.java
+/Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/ModelSolarEdgeInverterEntity.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/AlertService.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/entities/ModelSolarOpenWeatherEntity.java
 /Volumes/Data/sources/nextwave/api/src/main/java/com/nwm/api/services/DashboardService.java
