@@ -614,7 +614,7 @@
 	</select>
 	
 	
-	<select id="getDataPowerMeterYear" resultType="Map" >
+	<select id="getDataPowerMeterDayYear" resultType="Map" >
 		SELECT
 			s.id,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
@@ -658,8 +658,98 @@
 		
 	</select>
 	
+	<select id="getDataPowerMeter7DayYear" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
+			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			
+			
+			CASE
+				WHEN mt.totalMeter > 0 THEN "meter"
+				ELSE "inverter"
+			END AS deviceType,
+			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
+			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+		FROM
+			site_data_report sdr 
+			LEFT JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			LEFT JOIN (
+				SELECT de.id_site, COUNT(de.id) AS totalMeter 
+				FROM site_data_report sd
+				LEFT JOIN device de ON de.id = sd.id_device
+				WHERE de.`status` = 1 
+				AND de.is_delete = 0
+				AND de.id_device_type = 4
+				AND SHA1( de.id_site ) = #{id_site}
+			)mt ON mt.id_site = s.id
+			
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
+			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
+			ORDER BY time
+		
+	</select>
 	
-	<select id="getDataPowerMeter12Month" resultType="Map" >
+	
+	<select id="getDataPowerMeterMonthYear" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
+			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
+			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
+			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			
+			
+			CASE
+				WHEN mt.totalMeter > 0 THEN "meter"
+				ELSE "inverter"
+			END AS deviceType,
+			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
+			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+		FROM
+			site_data_report sdr 
+			LEFT JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			LEFT JOIN (
+				SELECT de.id_site, COUNT(de.id) AS totalMeter 
+				FROM site_data_report sd
+				LEFT JOIN device de ON de.id = sd.id_device
+				WHERE de.`status` = 1 
+				AND de.is_delete = 0
+				AND de.id_device_type = 4
+				AND SHA1( de.id_site ) = #{id_site}
+			)mt ON mt.id_site = s.id
+			
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
+			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
+		
+	</select>
+	
+	
+	<select id="getDataPowerMeterMonth12Month" resultType="Map" >
 		SELECT
 			s.id,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
@@ -703,14 +793,12 @@
 		
 	</select>
 	
-	
-	
-	<select id="getDataPowerMeterLifetime" resultType="Map" >
+	<select id="getDataPowerMeter7Day12Month" resultType="Map" >
 		SELECT
 			s.id,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
+			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
@@ -745,7 +833,53 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
+			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
+			ORDER BY time
+	</select>
+	
+	
+	
+	<select id="getDataPowerMeterYearLifetime" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
+			DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
+			DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
+			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
+			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			
+			
+			CASE
+				WHEN mt.totalMeter > 0 THEN "meter"
+				ELSE "inverter"
+			END AS deviceType,
+			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
+			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+		FROM
+			site_data_report sdr 
+			LEFT JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			LEFT JOIN (
+				SELECT de.id_site, COUNT(de.id) AS totalMeter 
+				FROM site_data_report sd
+				LEFT JOIN device de ON de.id = sd.id_device
+				WHERE de.`status` = 1 
+				AND de.is_delete = 0
+				AND de.id_device_type = 4
+				AND SHA1( de.id_site ) = #{id_site}
+			)mt ON mt.id_site = s.id
+			
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
+			GROUP BY DATE_FORMAT( sdr.time, '%Y' )
 		<!-- SELECT
 			t.time,
 			t.time_format,
