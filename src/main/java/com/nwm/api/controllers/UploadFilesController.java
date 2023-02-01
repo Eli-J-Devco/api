@@ -232,7 +232,7 @@ public class UploadFilesController extends BaseController {
 							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 							        int hours = zdtNowLosAngeles.getHour();
 							        
-									if(item.getModbusdevicenumber() == Integer.parseInt(modbusdevice)) {
+									if(item.getModbusdevicenumber() == modbusdevice) {
 										switch (item.getDatatablename()) {
 
 										// Model model_pv_powered_35_50_260_500kw_inverter
@@ -2035,7 +2035,7 @@ public class UploadFilesController extends BaseController {
 								ModelShark100TestService serviceModelShark100 = new ModelShark100TestService();
 								for (int i = 0; i < dataDevice.size(); i++) {
 									DeviceEntity item = dataDevice.get(i);
-									if(item.getModbusdevicenumber() == Integer.parseInt(modbusdevice)) {
+									if(item.getModbusdevicenumber() == modbusdevice) {
 										
 										switch (item.getDatatablename()) {
 										case "model_shark100_test":

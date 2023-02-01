@@ -236,7 +236,7 @@ public class BatchJobFTP {
 	                        	    if(serial != "" && timestamp != "" && id != "" && type == "") {
      	                        	    
 	                        	    	entity.setSerial_number(serial);
-     	                        		entity.setModbusdevicenumber(Integer.parseInt(id.replaceAll("[^0-9]", "")));
+     	                        		entity.setModbusdevicenumber(id.replaceAll("[^0-9]", ""));
      	                        		DeviceEntity rowItem = service.checkExitsDeviceUploadSungrow(entity);
      	                        		ModelSungrowUmg604Service serviceUmg604 = new ModelSungrowUmg604Service();
      	                        		ModelSungrowSg110cxService serviceUmgSg110 = new ModelSungrowSg110cxService();

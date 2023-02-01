@@ -15,7 +15,7 @@ public class DeviceEntity {
 	private int id_vendor;
 	private String serial_number;
 	private String serialnumber;
-	private int modbusdevicenumber;
+	private String modbusdevicenumber;
 	private String devicename;
 	private String devicetype;
 	private int deviceclass;
@@ -79,75 +79,6 @@ public class DeviceEntity {
 	private Double lng;
 	private int kiosk_view;
 	private int id_employee;
-	
-	
-	
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
-	}
-	public int getKiosk_view() {
-		return kiosk_view;
-	}
-	public void setKiosk_view(int kiosk_view) {
-		this.kiosk_view = kiosk_view;
-	}
-	public Double getLat() {
-		return lat;
-	}
-	public void setLat(Double lat) {
-		this.lat = lat;
-	}
-	public Double getLng() {
-		return lng;
-	}
-	public void setLng(Double lng) {
-		this.lng = lng;
-	}
-	public List getGroupMeter() {
-		return groupMeter;
-	}
-	public void setGroupMeter(List groupMeter) {
-		this.groupMeter = groupMeter;
-	}
-	public List getGroupInverter() {
-		return groupInverter;
-	}
-	public void setGroupInverter(List groupInverter) {
-		this.groupInverter = groupInverter;
-	}
-	public List getGroupWeather() {
-		return groupWeather;
-	}
-	public void setGroupWeather(List groupWeather) {
-		this.groupWeather = groupWeather;
-	}
-	public int getYear() {
-		return year;
-	}
-	public void setYear(int year) {
-		this.year = year;
-	}
-	public String getSerialnumber() {
-		return serialnumber;
-	}
-	public void setSerialnumber(String serialnumber) {
-		this.serialnumber = serialnumber;
-	}
-	public int getTotal_error() {
-		return total_error;
-	}
-	public void setTotal_error(int total_error) {
-		this.total_error = total_error;
-	}
-	public String getHash_id_site() {
-		return hash_id_site;
-	}
-	public void setHash_id_site(String hash_id_site) {
-		this.hash_id_site = hash_id_site;
-	}
 	public int getId() {
 		return id;
 	}
@@ -172,10 +103,16 @@ public class DeviceEntity {
 	public void setSerial_number(String serial_number) {
 		this.serial_number = serial_number;
 	}
-	public int getModbusdevicenumber() {
+	public String getSerialnumber() {
+		return serialnumber;
+	}
+	public void setSerialnumber(String serialnumber) {
+		this.serialnumber = serialnumber;
+	}
+	public String getModbusdevicenumber() {
 		return modbusdevicenumber;
 	}
-	public void setModbusdevicenumber(int modbusdevicenumber) {
+	public void setModbusdevicenumber(String modbusdevicenumber) {
 		this.modbusdevicenumber = modbusdevicenumber;
 	}
 	public String getDevicename() {
@@ -490,6 +427,68 @@ public class DeviceEntity {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 	}
+	public String getHash_id_site() {
+		return hash_id_site;
+	}
+	public void setHash_id_site(String hash_id_site) {
+		this.hash_id_site = hash_id_site;
+	}
+	public int getTotal_error() {
+		return total_error;
+	}
+	public void setTotal_error(int total_error) {
+		this.total_error = total_error;
+	}
+	public List getGroupMeter() {
+		return groupMeter;
+	}
+	public void setGroupMeter(List groupMeter) {
+		this.groupMeter = groupMeter;
+	}
+	public List getGroupInverter() {
+		return groupInverter;
+	}
+	public void setGroupInverter(List groupInverter) {
+		this.groupInverter = groupInverter;
+	}
+	public List getGroupWeather() {
+		return groupWeather;
+	}
+	public void setGroupWeather(List groupWeather) {
+		this.groupWeather = groupWeather;
+	}
+	public int getYear() {
+		return year;
+	}
+	public void setYear(int year) {
+		this.year = year;
+	}
+	public Double getLat() {
+		return lat;
+	}
+	public void setLat(Double lat) {
+		this.lat = lat;
+	}
+	public Double getLng() {
+		return lng;
+	}
+	public void setLng(Double lng) {
+		this.lng = lng;
+	}
+	public int getKiosk_view() {
+		return kiosk_view;
+	}
+	public void setKiosk_view(int kiosk_view) {
+		this.kiosk_view = kiosk_view;
+	}
+	public int getId_employee() {
+		return id_employee;
+	}
+	public void setId_employee(int id_employee) {
+		this.id_employee = id_employee;
+	}
+	
+	
 	
 	
 }

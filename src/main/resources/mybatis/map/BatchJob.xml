@@ -1783,5 +1783,22 @@
 			AND d.is_delete = 0
 			LIMIT 1
 	</select>
+	
+	
+	<select id="checkExitsDeviceSMA" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			t.`value` AS timezone_value,
+			t.`offset` AS timezone_offset,
+			d.*
+		FROM
+			device d
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger 
+		WHERE
+			d.`status` = 1
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
+			AND d.is_delete = 0
+			LIMIT 1
+	</select>
   	
 </mapper>

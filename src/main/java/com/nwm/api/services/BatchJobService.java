@@ -1194,4 +1194,26 @@ public class BatchJobService extends DB {
 		return rowItem;
 	}
 	
+	
+	/**
+	 * @description check device exits upload sma
+	 * @author long.pham
+	 * @since 2023-01-30
+	 * @param {}
+	 * @return Object
+	 */
+
+	public DeviceEntity checkExitsDeviceSMA(DeviceEntity obj) {
+		DeviceEntity rowItem = new DeviceEntity();
+		try {
+			rowItem = (DeviceEntity) queryForObject("BatchJob.checkExitsDeviceSMA", obj);
+			if (rowItem == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			log.error("BatchJob.checkExitsDeviceSMA", ex);
+			return new DeviceEntity();
+		}
+		return rowItem;
+	}
+	
 }

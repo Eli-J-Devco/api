@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmaInverterStp24ktlus10">
+	<resultMap id="ModelSmaInverterStp24ktlus10Map"
+		type="com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		
+		<result property="Metering_TotWhOut" column="Metering_TotWhOut" />
+		<result property="Operation_GriSwCnt" column="Operation_GriSwCnt" />
+		<result property="Metering_TotOpTms" column="Metering_TotOpTms" />
+		<result property="Metering_TotFeedTms" column="Metering_TotFeedTms" />
+		<result property="Metering_GridMs_TotWhOut" column="Metering_GridMs_TotWhOut" />
+		
+		<result property="GridMs_TotW" column="GridMs_TotW" />
+		<result property="GridMs_Hz" column="GridMs_Hz" />
+		<result property="Isolation_FltA" column="Isolation_FltA" />
+		<result property="Isolation_LeakRis" column="Isolation_LeakRis" />
+		<result property="DcMs_VolA" column="DcMs_VolA" />
+		<result property="DcMs_VolB" column="DcMs_VolB" />
+		<result property="DcMs_AmpA" column="DcMs_AmpA" />
+		<result property="DcMs_AmpB" column="DcMs_AmpB" />
+		<result property="DcMs_AmpA1" column="DcMs_AmpA1" />
+		<result property="GridMs_PhV_phsA" column="GridMs_PhV_phsA" />
+		<result property="GridMs_PhV_phsB" column="GridMs_PhV_phsB" />
+		<result property="GridMs_PhV_phsC" column="GridMs_PhV_phsC" />
+		<result property="GridMs_A_phsA" column="GridMs_A_phsA" />
+		<result property="GridMs_A_phsB" column="GridMs_A_phsB" />
+		<result property="GridMs_A_phsC" column="GridMs_A_phsC" />
+		<result property="DcMs_WattA" column="DcMs_WattA" />
+		<result property="DcMs_WattB" column="DcMs_WattB" />
+		<result property="Operation_Health" column="Operation_Health" />
+		<result property="Operation_Evt_Prio" column="Operation_Evt_Prio" />
+		<result property="Operation_Evt_Msg" column="Operation_Evt_Msg" />
+		<result property="Operation_Evt_Dsc" column="Operation_Evt_Dsc" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelSmaInverterStp24ktlus10" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_sma_inverter_stp24ktlus10`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Metering_TotWhOut != 0.001">
+			`Metering_TotWhOut`,
+			</if>
+			<if test="Operation_GriSwCnt != 0.001">
+			`Operation_GriSwCnt`,
+			</if>
+			<if test="Metering_TotOpTms != 0.001">
+			`Metering_TotOpTms`,
+			</if>
+			<if test="Metering_TotFeedTms != 0.001">
+			`Metering_TotFeedTms`,
+			</if>
+			
+			<if test="Metering_GridMs_TotWhOut != 0.001">
+			`Metering_GridMs_TotWhOut`,
+			</if>
+			
+			<if test="GridMs_TotW != 0.001">
+			`GridMs_TotW`,
+			</if>
+			<if test="GridMs_Hz != 0.001">
+			`GridMs_Hz`,
+			</if>
+			<if test="Isolation_FltA != 0.001">
+			`Isolation_FltA`,
+			</if>
+			<if test="Isolation_LeakRis != 0.001">
+			`Isolation_LeakRis`,
+			</if>
+			<if test="DcMs_VolA != 0.001">
+			`DcMs_VolA`,
+			</if>
+			<if test="DcMs_VolB != 0.001">
+			`DcMs_VolB`,
+			</if>
+			<if test="DcMs_AmpA != 0.001">
+			`DcMs_AmpA`,
+			</if>
+			<if test="DcMs_AmpB != 0.001">
+			`DcMs_AmpB`,
+			</if>
+			<if test="DcMs_AmpA1 != 0.001">
+			`DcMs_AmpA1`,
+			</if>
+			<if test="GridMs_PhV_phsA != 0.001">
+			`GridMs_PhV_phsA`,
+			</if>
+			<if test="GridMs_PhV_phsB != 0.001">
+			`GridMs_PhV_phsB`,
+			</if>
+			<if test="GridMs_PhV_phsC != 0.001">
+			`GridMs_PhV_phsC`,
+			</if>
+			<if test="GridMs_A_phsA != 0.001">
+			`GridMs_A_phsA`,
+			</if>
+			<if test="GridMs_A_phsB != 0.001">
+			`GridMs_A_phsB`,
+			</if>
+			<if test="GridMs_A_phsC != 0.001">
+			`GridMs_A_phsC`,
+			</if>
+			<if test="DcMs_WattA != 0.001">
+			`DcMs_WattA`,
+			</if>
+			<if test="DcMs_WattB != 0.001">
+			`DcMs_WattB`,
+			</if>
+			<if test="Operation_Health != '0.001'">
+			`Operation_Health`,
+			</if>
+			<if test="Operation_Evt_Prio !='0.001'">
+			`Operation_Evt_Prio`,
+			</if>
+			<if test="Operation_Evt_Msg != '0.001'">
+			`Operation_Evt_Msg`,
+			</if>
+			<if test="Operation_Evt_Dsc != '0.001'">
+			`Operation_Evt_Dsc`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Metering_TotWhOut != 0.001">
+			#{Metering_TotWhOut},
+			</if>
+			<if test="Operation_GriSwCnt != 0.001">
+			#{Operation_GriSwCnt},
+			</if>
+			<if test="Metering_TotOpTms != 0.001">
+			#{Metering_TotOpTms},
+			</if>
+			<if test="Metering_TotFeedTms != 0.001">
+			#{Metering_TotFeedTms},
+			</if>
+			<if test="Metering_GridMs_TotWhOut != 0.001">
+			#{Metering_GridMs_TotWhOut},
+			</if>
+			<if test="GridMs_TotW != 0.001">
+			#{GridMs_TotW},
+			</if>
+			<if test="GridMs_Hz != 0.001">
+			#{GridMs_Hz},
+			</if>
+			<if test="Isolation_FltA != 0.001">
+			#{Isolation_FltA},
+			</if>
+			<if test="Isolation_LeakRis != 0.001">
+			#{Isolation_LeakRis},
+			</if>
+			<if test="DcMs_VolA != 0.001">
+			#{DcMs_VolA},
+			</if>
+			<if test="DcMs_VolB != 0.001">
+			#{DcMs_VolB},
+			</if>
+			<if test="DcMs_AmpA != 0.001">
+			#{DcMs_AmpA},
+			</if>
+			<if test="DcMs_AmpB != 0.001">
+			#{DcMs_AmpB},
+			</if>
+			<if test="DcMs_AmpA1 != 0.001">
+			#{DcMs_AmpA1},
+			</if>
+			<if test="GridMs_PhV_phsA != 0.001">
+			#{GridMs_PhV_phsA},
+			</if>
+			<if test="GridMs_PhV_phsB != 0.001">
+			#{GridMs_PhV_phsB},
+			</if>
+			<if test="GridMs_PhV_phsC != 0.001">
+			#{GridMs_PhV_phsC},
+			</if>
+			<if test="GridMs_A_phsA != 0.001">
+			#{GridMs_A_phsA},
+			</if>
+			<if test="GridMs_A_phsB != 0.001">
+			#{GridMs_A_phsB},
+			</if>
+			<if test="GridMs_A_phsC != 0.001">
+			#{GridMs_A_phsC},
+			</if>
+			<if test="DcMs_WattA != 0.001">
+			#{DcMs_WattA},
+			</if>
+			<if test="DcMs_WattB != 0.001">
+			#{DcMs_WattB},
+			</if>
+			<if test="Operation_Health != '0.001'">
+			#{Operation_Health},
+			</if>
+			<if test="Operation_Evt_Prio != '0.001'">
+			#{Operation_Evt_Prio},
+			</if>
+			<if test="Operation_Evt_Msg != '0.001'">
+			#{Operation_Evt_Msg},
+			</if>
+			<if test="Operation_Evt_Dsc != '0.001'">
+			#{Operation_Evt_Dsc},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			#{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Metering_TotWhOut != 0.001">
+			`Metering_TotWhOut` = #{Metering_TotWhOut},
+			</if>
+			<if test="Operation_GriSwCnt != 0.001">
+			`Operation_GriSwCnt` = #{Operation_GriSwCnt},
+			</if>
+			<if test="Metering_TotOpTms != 0.001">
+			`Metering_TotOpTms` = #{Metering_TotOpTms},
+			</if>
+			<if test="Metering_TotFeedTms != 0.001">
+			`Metering_TotFeedTms` = #{Metering_TotFeedTms},
+			</if>
+			<if test="Metering_GridMs_TotWhOut != 0.001">
+			`Metering_GridMs_TotWhOut` = #{Metering_GridMs_TotWhOut},
+			</if>
+			
+			<if test="GridMs_TotW != 0.001">
+			`GridMs_TotW` = #{GridMs_TotW},
+			</if>
+			<if test="GridMs_Hz != 0.001">
+			`GridMs_Hz` = #{GridMs_Hz},
+			</if>
+			<if test="Isolation_FltA != 0.001">
+			`Isolation_FltA` = #{Isolation_FltA},
+			</if>
+			<if test="Isolation_LeakRis != 0.001">
+			`Isolation_LeakRis` = #{Isolation_LeakRis},
+			</if>
+			<if test="DcMs_VolA != 0.001">
+			`DcMs_VolA` = #{DcMs_VolA},
+			</if>
+			<if test="DcMs_VolB != 0.001">
+			`DcMs_VolB` = #{DcMs_VolB},
+			</if>
+			<if test="DcMs_AmpA != 0.001">
+			`DcMs_AmpA` = #{DcMs_AmpA},
+			</if>
+			<if test="DcMs_AmpB != 0.001">
+			`DcMs_AmpB` = #{DcMs_AmpB},
+			</if>
+			<if test="DcMs_AmpA1 != 0.001">
+			`DcMs_AmpA1` = #{DcMs_AmpA1},
+			</if>
+			
+			<if test="GridMs_PhV_phsA != 0.001">
+			`GridMs_PhV_phsA` = #{GridMs_PhV_phsA},
+			</if>
+			<if test="GridMs_PhV_phsB != 0.001">
+			`GridMs_PhV_phsB` = #{GridMs_PhV_phsB},
+			</if>
+			<if test="GridMs_PhV_phsC != 0.001">
+			`GridMs_PhV_phsC` = #{GridMs_PhV_phsC},
+			</if>
+			<if test="GridMs_A_phsA != 0.001">
+			`GridMs_A_phsA` = #{GridMs_A_phsA},
+			</if>
+			<if test="GridMs_A_phsB != 0.001">
+			`GridMs_A_phsB` = #{GridMs_A_phsB},
+			</if>
+			<if test="GridMs_A_phsC != 0.001">
+			`GridMs_A_phsC` = #{GridMs_A_phsC},
+			</if>
+			<if test="DcMs_WattA != 0.001">
+			`DcMs_WattA` = #{DcMs_WattA},
+			</if>
+			<if test="DcMs_WattB != 0.001">
+			`DcMs_WattB` = #{DcMs_WattB},
+			</if>
+			<if test="Operation_Health != '0.001'">
+			`Operation_Health` = #{Operation_Health},
+			</if>
+			<if test="Operation_Evt_Prio != '0.001'">
+			`Operation_Evt_Prio` = #{Operation_Evt_Prio},
+			</if>
+			<if test="Operation_Evt_Msg != '0.001'">
+			`Operation_Evt_Msg` = #{Operation_Evt_Msg},
+			</if>
+			<if test="Operation_Evt_Dsc != '0.001'">
+			`Operation_Evt_Dsc` = #{Operation_Evt_Dsc},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+
+</mapper> 
