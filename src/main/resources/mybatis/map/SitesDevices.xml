@@ -43,7 +43,10 @@
 				WHEN d.datatablename = 'model_sungrow_umg604' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_sungrow_sg110cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_sungrow_sg50cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
-				WHEN d.datatablename = 'model_sungrow_weather_pvmet75200' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))	
+				WHEN d.datatablename = 'model_sungrow_weather_pvmet75200' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sma_inverter_stp1200tlus10' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sma_inverter_stp24ktlus10' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sma_cluster_controller' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))	
 				ELSE "N/A"
 			END AS key_indicator,
 			IFNULL(p.totalError, 0 ) AS totalError,

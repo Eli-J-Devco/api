@@ -70,6 +70,8 @@ public class SitesAnalyticsService extends DB {
 					maps.put("datatablename", map.get("datatablename"));
 					maps.put("id", map.get("id"));
 					maps.put("device_name", map.get("devicename"));
+					maps.put("id_device_group", map.get("id_device_group"));
+					
 					
 					List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
 					

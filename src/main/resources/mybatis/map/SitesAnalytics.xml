@@ -59,6 +59,7 @@
 			dv.id_device,
 			0 AS is_checked,
 			d.datatablename,
+			d.id_device_group,
 			<if test="datatablename == 'model_sma_inverter_stp1200tlus10'">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
