@@ -16,6 +16,8 @@ public class Constants {
 	public static final String OPEN_WEATHER_URL = "https://api.solcast.com.au/data/forecast/radiation_and_weather";
 	public static final String OPEN_WEATHER_KEY = "Aec4Vj7qmIrIXf39aSAbKferD6V_LSxU";
 	
+	public static final String sunriseSunsetAPI = "https://api.sunrise-sunset.org/json";
+	
 	public static final String logoURL = "http://dev.vinarealtor.com.vn/assets/images/logo.png";
 	
 	public static final String dataBaseConfigFile = "database";
