@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
@@ -975,6 +976,82 @@ public class BatchJob {
 			}
 		} catch (Exception e) {
 			System.out.println("Error: sent mail report on schedule " + e);
+			log.error(e);
+		}
+	}
+	
+	public static SiteEntity fetchFromJSONSunriseSunset(double lat, double lng, String time_zone_value)
+			throws FileNotFoundException, IOException, org.json.simple.parser.ParseException {
+		try {
+			String inline = "";
+			SiteEntity item = new SiteEntity();
+			String APIURL = Constants.sunriseSunsetAPI + "?lat=" + lat + "&lng=" + lng + "&formatted=0";
+			URL url = new URL(APIURL);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.setRequestMethod("GET");
+			conn.connect();
+			int responsecode = conn.getResponseCode();
+			if (responsecode == 200) {
+				Scanner sc = new Scanner(url.openStream());
+				while (sc.hasNext()) {
+					inline += sc.nextLine();
+				}
+				sc.close();
+				JSONParser parse = new JSONParser();
+				JSONObject jobj = (JSONObject) parse.parse(inline);
+				JSONObject jsonobj_1 = (JSONObject) jobj.get("results");
+				
+				String sunrise = (String) jsonobj_1.get("sunrise");
+				String sunset = (String) jsonobj_1.get("sunset");
+				Instant timestampSunrise = Instant.parse(sunrise);
+				Instant timestampSunset = Instant.parse(sunset);
+				
+				ZonedDateTime zdtSunrise = timestampSunrise.atZone(ZoneId.of(time_zone_value));
+				int hourOfSunrise = zdtSunrise.getHour();
+				item.setStart_date_time(hourOfSunrise);
+				ZonedDateTime zdtSunset = timestampSunset.atZone(ZoneId.of(time_zone_value));
+				int hourOfSunset = zdtSunset.getHour();
+				item.setEnd_date_time(hourOfSunset);
+				
+			}
+			return item;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public void runCronJobGetSunriseSunset() {
+		try {
+			BatchJobService service = new BatchJobService();
+			
+			// Get list site 
+			List listSite = service.getListSite(new SiteEntity());
+			if (listSite == null || listSite.size() == 0) {
+				return;
+			}
+			
+			for (int i = 0; i < listSite.size(); i++) {
+				SiteEntity siteItem = (SiteEntity) listSite.get(i);
+				
+				// Get sunrise sunset API
+				double lat = (double) siteItem.getLat();
+				double lng = (double) siteItem.getLng();
+				String time_zone_value = (String) siteItem.getTime_zone_value();
+				
+				if (lat == 0 && lng == 0) {
+					siteItem.setStart_date_time(8);
+					siteItem.setEnd_date_time(18);
+				} else {
+					SiteEntity res = fetchFromJSONSunriseSunset(lat, lng, time_zone_value);
+					siteItem.setStart_date_time(res.getStart_date_time());
+					siteItem.setEnd_date_time(res.getEnd_date_time());
+				}
+				
+				// Update site sunrise and sunset time
+				service.updateSunriseSunset(siteItem);				
+			}
+			
+		} catch (Exception e) {
 			log.error(e);
 		}
 	}

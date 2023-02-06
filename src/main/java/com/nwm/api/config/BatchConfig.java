@@ -287,4 +287,14 @@ public class BatchConfig {
 	}
 	
 	
+	/**
+	 * @description get sunrise sunset
+	 * @author Duy.Phan
+	 * @since 2023-02-02
+	 */
+	@Scheduled(cron = "0 0 2 * * 0")
+	public void startBatchJobGetSunriseSunset() throws Exception {
+		BatchJob job = new BatchJob(); 
+		job.runCronJobGetSunriseSunset();
+	}
 }

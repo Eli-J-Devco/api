@@ -705,6 +705,20 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update sunrise and sunset time 
+	 * @author duy.phan
+	 * @since 2023-02-02
+	 */
+	public boolean updateSunriseSunset(SiteEntity obj){
+		try{
+			return update("BatchJob.updateSunriseSunset", obj)>0;
+		}catch (Exception ex) {
+			log.error("BatchJob.updateSunriseSunset", ex);
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * @description get last row "data table name" by device
