@@ -20,6 +20,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.EnergyExpectationsEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
+import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
@@ -273,8 +274,111 @@ public class ReportsService extends DB {
 				dataObj.setDataReports(dataEnergy);
 			}
 			
-			List dataEnergyExpectations = queryForList("Reports.getReportEnergyExpectations", obj);
-			dataObj.setDataExpectations(dataEnergyExpectations);
+			EnergyExpectationsEntity expec = (EnergyExpectationsEntity) queryForObject("Reports.getExpectationsRow", obj);
+			
+			List<QuarterlyDateEntity> categories = new ArrayList<QuarterlyDateEntity> ();
+			
+			SimpleDateFormat dateFormat;
+			SimpleDateFormat catFormat;
+			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+			
+			boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
+			
+			if (quarterlyReportByDay) {
+				dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				catFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+			} else {
+				dateFormat = new SimpleDateFormat("yyyy-MM");
+				catFormat = new SimpleDateFormat("MMM-yyyy");
+			}
+			
+			Date startDate = dateFormat.parse(obj.getStart_date());
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(startDate);
+			
+			for (int i = 0; i < 3; i++) {
+				int month = Integer.parseInt(monthFormat.format(cal.getTime()).toString());
+				int expecValue = 0;
+				if(expec != null) {
+					switch ( month ) {
+					case  1: expecValue = expec.getJan(); break;
+					case  2: expecValue = expec.getFeb(); break;
+					case  3: expecValue = expec.getMar(); break;
+					case  4: expecValue = expec.getApr(); break;
+					case  5: expecValue = expec.getMar(); break;
+					case  6: expecValue = expec.getJun(); break;
+					case  7: expecValue = expec.getJul(); break;
+					case  8: expecValue = expec.getAug(); break;
+					case  9: expecValue = expec.getSep(); break;
+					case  10: expecValue = expec.getOct(); break;
+					case  11: expecValue = expec.getNov(); break;
+					case  12: expecValue = expec.getDec(); break;
+					default:
+						expecValue = 0;
+					}
+				}
+				
+				if (quarterlyReportByDay) {
+					int numOfDaysInMonth = cal.getActualMaximum(Calendar.DATE);
+					
+					for (int j = 0; j < numOfDaysInMonth; j++) {
+						QuarterlyDateEntity category = new QuarterlyDateEntity();
+						category.setTime_format(dateFormat.format(cal.getTime()));
+						category.setCategories_time(catFormat.format(cal.getTime()));
+						category.setActual(null);
+						category.setEstimated((double) expecValue/numOfDaysInMonth);
+						categories.add(category);
+						cal.add(Calendar.DATE, 1);
+					}
+				} else {
+					QuarterlyDateEntity category = new QuarterlyDateEntity();
+					category.setTime_format(dateFormat.format(cal.getTime()));
+					category.setCategories_time(catFormat.format(cal.getTime()));
+					category.setActual(null);
+					category.setEstimated((double) expecValue);
+					categories.add(category);
+					cal.add(Calendar.MONTH, 1);
+				}
+			}
+			
+			List data = dataObj.getDataReports();
+			List<QuarterlyDateEntity> dataNew = new ArrayList<QuarterlyDateEntity> ();
+			
+			if (data.size() > 0 && categories.size() > 0) {
+				for (QuarterlyDateEntity item : categories) {
+					boolean flag = false;
+					QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
+					
+					for( int v = 0; v < data.size(); v++) {
+						Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+						String categoriesTime = item.getTime_format();
+						String powerTime = itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString();
+						
+						if (categoriesTime.equals(powerTime)) {
+							flag = true;
+							mapItemObj.setCategories_time(itemT.get(quarterlyReportByDay ? "categories_time_by_day" : "categories_time").toString());
+							mapItemObj.setTime_format(itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString());
+							mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()));
+							mapItemObj.setEstimated(item.getEstimated());
+							break;
+						}
+					}
+					
+					if(flag == false) {
+						QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
+						mapItem.setCategories_time(item.getCategories_time());
+						mapItem.setTime_format(item.getTime_format());
+						mapItem.setActual(null);
+						mapItem.setEstimated(null);
+						dataNew.add(mapItem);
+					} else {
+						dataNew.add(mapItemObj);
+					}
+				}
+			}
+			
+			dataObj.setDataReports(dataNew);
 			
 			return dataObj;
 		} catch (Exception ex) {

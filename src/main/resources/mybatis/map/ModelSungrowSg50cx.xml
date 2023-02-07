@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSungrowSg50cx">
+	<resultMap id="ModelSungrowSg50cxMap"
+		type="com.nwm.api.entities.ModelSungrowSg50cxEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		
+		<result property="E_DAY" column="E_DAY" />
+		<result property="E_TOTAL" column="E_TOTAL" />
+		<result property="E_YEAR" column="E_YEAR" />
+		<result property="OT_AC_TOTAL" column="OT_AC_TOTAL" />
+		<result property="T_WR" column="T_WR" />
+		<result property="U_DC1" column="U_DC1" />
+		<result property="I_DC1" column="I_DC1" />
+		<result property="U_DC2" column="U_DC2" />
+		<result property="I_DC2" column="I_DC2" />
+		<result property="U_DC3" column="U_DC3" />
+		<result property="I_DC3" column="I_DC3" />
+		<result property="U_DC4" column="U_DC4" />
+		<result property="I_DC4" column="I_DC4" />
+		<result property="U_DC5" column="U_DC5" />
+		<result property="I_DC5" column="I_DC5" />
+		<result property="U_DC6" column="U_DC6" />
+		<result property="I_DC6" column="I_DC6" />
+		<result property="U_DC7" column="U_DC7" />
+		<result property="I_DC7" column="I_DC7" />
+		<result property="U_DC8" column="U_DC8" />
+		<result property="I_DC8" column="I_DC8" />
+		<result property="U_DC9" column="U_DC9" />
+		<result property="I_DC9" column="I_DC9" />
+		<result property="U_DC10" column="U_DC10" />
+		<result property="I_DC10" column="I_DC10" />
+		<result property="U_DC11" column="U_DC11" />
+		<result property="I_DC11" column="I_DC11" />
+		<result property="U_DC12" column="U_DC12" />
+		<result property="I_DC12" column="I_DC12" />
+		<result property="U_DC13" column="U_DC13" />
+		<result property="I_DC13" column="I_DC13" />
+		<result property="U_DC14" column="U_DC14" />
+		<result property="I_DC14" column="I_DC14" />
+		<result property="U_DC15" column="U_DC15" />
+		<result property="I_DC15" column="I_DC15" />
+		<result property="U_DC16" column="U_DC16" />
+		<result property="I_DC16" column="I_DC16" />
+		<result property="U_DC17" column="U_DC17" />
+		<result property="I_DC17" column="I_DC17" />
+		<result property="U_DC18" column="U_DC18" />
+		<result property="I_DC18" column="I_DC18" />
+		<result property="U_DC19" column="U_DC19" />
+		<result property="I_DC19" column="I_DC19" />
+		<result property="U_DC20" column="U_DC20" />
+		<result property="I_DC20" column="I_DC20" />
+	
+		<result property="U_STR1" column="U_STR1" />
+		<result property="I_STR1" column="I_STR1" />
+		<result property="U_STR2" column="U_STR2" />
+		<result property="I_STR2" column="I_STR2" />
+		<result property="U_STR3" column="U_STR3" />
+		<result property="I_STR3" column="I_STR3" />
+		<result property="U_STR4" column="U_STR4" />
+		<result property="I_STR4" column="I_STR4" />
+		<result property="U_STR5" column="U_STR5" />
+		<result property="I_STR5" column="I_STR5" />
+		<result property="U_STR6" column="U_STR6" />
+		<result property="I_STR6" column="I_STR6" />
+		<result property="U_STR7" column="U_STR7" />
+		<result property="I_STR7" column="I_STR7" />
+		<result property="U_STR8" column="U_STR8" />
+		<result property="I_STR8" column="I_STR8" />
+		<result property="U_STR9" column="U_STR9" />
+		<result property="I_STR9" column="I_STR9" />
+		<result property="U_STR10" column="U_STR10" />
+		<result property="I_STR10" column="I_STR10" />
+		<result property="I_STR11" column="I_STR11" />
+		<result property="I_STR12" column="I_STR12" />
+		<result property="I_STR13" column="I_STR13" />
+		<result property="I_STR14" column="I_STR14" />
+		<result property="I_STR15" column="I_STR15" />
+		<result property="I_STR16" column="I_STR16" />
+		<result property="I_STR17" column="I_STR17" />
+		<result property="I_STR18" column="I_STR18" />
+		<result property="I_STR19" column="I_STR19" />
+		<result property="I_STR20" column="I_STR20" />
+		<result property="I_STR21" column="I_STR21" />
+		<result property="I_STR22" column="I_STR22" />
+		<result property="P_DC" column="P_DC" />
+		<result property="U_AC1" column="U_AC1" />
+		<result property="U_AC2" column="U_AC2" />
+		<result property="U_AC3" column="U_AC3" />
+		<result property="I_AC1" column="I_AC1" />
+		<result property="I_AC2" column="I_AC2" />
+		<result property="I_AC3" column="I_AC3" />
+		<result property="S_AC" column="S_AC" />
+		<result property="P_AC" column="P_AC" />
+		<result property="Q_AC" column="Q_AC" />
+		<result property="COS_PHI" column="COS_PHI" />
+		<result property="F_AC" column="F_AC" />
+		<result property="FT_AC_DAY" column="FT_AC_DAY" />
+		<result property="R_ISO" column="R_ISO" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelSungrowSg50cx" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_sungrow_sg50cx`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="E_DAY != 0.001">
+			`E_DAY`,
+			</if>
+			<if test="E_TOTAL != 0.001">
+			`E_TOTAL`,
+			</if>
+			<if test="E_YEAR != 0.001">
+			`E_YEAR`,
+			</if>
+			<if test="OT_AC_TOTAL != 0.001">
+			`OT_AC_TOTAL`,
+			</if>
+			<if test="T_WR != 0.001">
+			`T_WR`,
+			</if>
+			<if test="U_DC1 != 0.001">
+			`U_DC1`,
+			</if>
+			<if test="I_DC1 != 0.001">
+			`I_DC1`,
+			</if>
+			<if test="U_DC2 != 0.001">
+			`U_DC2`,
+			</if>
+			<if test="I_DC2 != 0.001">
+			`I_DC2`,
+			</if>
+			<if test="U_DC3 != 0.001">
+			`U_DC3`,
+			</if>
+			<if test="I_DC3 != 0.001">
+			`I_DC3`,
+			</if>
+			<if test="U_DC4 != 0.001">
+			`U_DC4`,
+			</if>
+			<if test="I_DC4 != 0.001">
+			`I_DC4`,
+			</if>
+			<if test="U_DC5 != 0.001">
+			`U_DC5`,
+			</if>
+			<if test="I_DC5 != 0.001">
+			`I_DC5`,
+			</if>
+			<if test="U_DC6 != 0.001">
+			`U_DC6`,
+			</if>
+			<if test="I_DC6 != 0.001">
+			`I_DC6`,
+			</if>
+			<if test="U_DC7 != 0.001">
+			`U_DC7`,
+			</if>
+			<if test="I_DC7 != 0.001">
+			`I_DC7`,
+			</if>
+			<if test="U_DC8 != 0.001">
+			`U_DC8`,
+			</if>
+			<if test="I_DC8 != 0.001">
+			`I_DC8`,
+			</if>
+			<if test="U_DC9 != 0.001">
+			`U_DC9`,
+			</if>
+			<if test="I_DC9 != 0.001">
+			`I_DC9`,
+			</if>
+			<if test="U_DC10 != 0.001">
+			`U_DC10`,
+			</if>
+			<if test="I_DC10 != 0.001">
+			`I_DC10`,
+			</if>
+			<if test="U_DC11 != 0.001">
+			`U_DC11`,
+			</if>
+			<if test="I_DC11 != 0.001">
+			`I_DC11`,
+			</if>
+			<if test="U_DC12 != 0.001">
+			`U_DC12`,
+			</if>
+			<if test="I_DC12 != 0.001">
+			`I_DC12`,
+			</if>
+			<if test="U_DC13 != 0.001">
+			`U_DC13`,
+			</if>
+			<if test="I_DC13 != 0.001">
+			`I_DC13`,
+			</if>
+			<if test="U_DC14 != 0.001">
+			`U_DC14`,
+			</if>
+			<if test="I_DC14 != 0.001">
+			`I_DC14`,
+			</if>
+			<if test="U_DC15 != 0.001">
+			`U_DC15`,
+			</if>
+			<if test="I_DC15 != 0.001">
+			`I_DC15`,
+			</if>
+			<if test="U_DC16 != 0.001">
+			`U_DC16`,
+			</if>
+			<if test="I_DC16 != 0.001">
+			`I_DC16`,
+			</if>
+			<if test="U_DC17 != 0.001">
+			`U_DC17`,
+			</if>
+			<if test="I_DC17 != 0.001">
+			`I_DC17`,
+			</if>
+			<if test="U_DC18 != 0.001">
+			`U_DC18`,
+			</if>
+			<if test="I_DC18 != 0.001">
+			`I_DC18`,
+			</if>
+			<if test="U_DC19 != 0.001">
+			`U_DC19`,
+			</if>
+			<if test="I_DC19 != 0.001">
+			`I_DC19`,
+			</if>
+			<if test="U_DC20 != 0.001">
+			`U_DC20`,
+			</if>
+			<if test="I_DC20 != 0.001">
+			`I_DC20`,
+			</if>
+			<if test="U_STR1 != 0.001">		
+			`U_STR1`,
+			</if>
+			<if test="I_STR1 != 0.001">
+			`I_STR1`,
+			</if>
+			<if test="U_STR2 != 0.001">
+			`U_STR2`,
+			</if>
+			<if test="I_STR2 != 0.001">
+			`I_STR2`,
+			</if>
+			<if test="U_STR3 != 0.001">
+			`U_STR3`,
+			</if>
+			<if test="I_STR3 != 0.001">
+			`I_STR3`,
+			</if>
+			<if test="U_STR4 != 0.001">
+			`U_STR4`,
+			</if>
+			<if test="I_STR4 != 0.001">
+			`I_STR4`,
+			</if>
+			<if test="U_STR5 != 0.001">
+			`U_STR5`,
+			</if>
+			<if test="I_STR5 != 0.001">
+			`I_STR5`,
+			</if>
+			<if test="U_STR6 != 0.001">
+			`U_STR6`,
+			</if>
+			<if test="I_STR6 != 0.001">
+			`I_STR6`,
+			</if>
+			<if test="U_STR7 != 0.001">
+			`U_STR7`,
+			</if>
+			<if test="I_STR7 != 0.001">
+			`I_STR7`,
+			</if>
+			<if test="U_STR8 != 0.001">
+			`U_STR8`,
+			</if>
+			<if test="I_STR8 != 0.001">
+			`I_STR8`,
+			</if>
+			<if test="U_STR9 != 0.001">
+			`U_STR9`,
+			</if>
+			<if test="I_STR9 != 0.001">
+			`I_STR9`,
+			</if>
+			<if test="U_STR10 != 0.001">
+			`U_STR10`,
+			</if>
+			<if test="I_STR10 != 0.001">
+			`I_STR10`,
+			</if>
+			<if test="I_STR11 != 0.001">
+			`I_STR11`,
+			</if>
+			<if test="I_STR12 != 0.001">
+			`I_STR12`,
+			</if>
+			<if test="I_STR13 != 0.001">
+			`I_STR13`,
+			</if>
+			<if test="I_STR14 != 0.001">
+			`I_STR14`,
+			</if>
+			<if test="I_STR15 != 0.001">
+			`I_STR15`,
+			</if>
+			<if test="I_STR16 != 0.001">
+			`I_STR16`,
+			</if>
+			<if test="I_STR17 != 0.001">
+			`I_STR17`,
+			</if>
+			<if test="I_STR18 != 0.001">
+			`I_STR18`,
+			</if>
+			<if test="I_STR19 != 0.001">
+			`I_STR19`,
+			</if>
+			<if test="I_STR20 != 0.001">
+			`I_STR20`,
+			</if>
+			<if test="I_STR21 != 0.001">
+			`I_STR21`,
+			</if>
+			<if test="I_STR22 != 0.001">
+			`I_STR22`,
+			</if>
+			<if test="P_DC != 0.001">
+			`P_DC`,
+			</if>
+			<if test="U_AC1 != 0.001">
+			`U_AC1`,
+			</if>
+			<if test="U_AC2 != 0.001">
+			`U_AC2`,
+			</if>
+			<if test="U_AC3 != 0.001">
+			`U_AC3`,
+			</if>
+			<if test="I_AC1 != 0.001">
+			`I_AC1`,
+			</if>
+			<if test="I_AC2 != 0.001">
+			`I_AC2`,
+			</if>
+			<if test="I_AC3 != 0.001">
+			`I_AC3`,
+			</if>
+			<if test="S_AC != 0.001">
+			`S_AC`,
+			</if>
+			<if test="P_AC != 0.001">
+			`P_AC`,
+			</if>
+			<if test="Q_AC != 0.001">
+			`Q_AC`,
+			</if>
+			<if test="COS_PHI != 0.001">
+			`COS_PHI`,
+			</if>
+			<if test="F_AC != 0.001">
+			`F_AC`,
+			</if>
+			<if test="FT_AC_DAY != 0.001">
+			`FT_AC_DAY`,
+			</if>
+			<if test="R_ISO != 0.001">
+			`R_ISO`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="E_DAY != 0.001">
+			#{E_DAY},
+			</if>
+			<if test="E_TOTAL != 0.001">
+			#{E_TOTAL},
+			</if>
+			<if test="E_YEAR != 0.001">
+			#{E_YEAR},
+			</if>
+			<if test="OT_AC_TOTAL != 0.001">
+			#{OT_AC_TOTAL},
+			</if>
+			<if test="T_WR != 0.001">
+			#{T_WR},
+			</if>
+			<if test="U_DC1 != 0.001">
+			#{U_DC1},
+			</if>
+			<if test="I_DC1 != 0.001">
+			#{I_DC1},
+			</if>
+			<if test="U_DC2 != 0.001">
+			#{U_DC2},
+			</if>
+			<if test="I_DC2 != 0.001">
+			#{I_DC2},
+			</if>
+			<if test="U_DC3 != 0.001">
+			#{U_DC3},
+			</if>
+			<if test="I_DC3 != 0.001">
+			#{I_DC3},
+			</if>
+			<if test="U_DC4 != 0.001">
+			#{U_DC4},
+			</if>
+			<if test="I_DC4 != 0.001">
+			#{I_DC4},
+			</if>
+			<if test="U_DC5 != 0.001">
+			#{U_DC5},
+			</if>
+			<if test="I_DC5 != 0.001">
+			#{I_DC5},
+			</if>
+			<if test="U_DC6 != 0.001">
+			#{U_DC6},
+			</if>
+			<if test="I_DC6 != 0.001">
+			#{I_DC6},
+			</if>
+			<if test="U_DC7 != 0.001">
+			#{U_DC7},
+			</if>
+			<if test="I_DC7 != 0.001">
+			#{I_DC7},
+			</if>
+			<if test="U_DC8 != 0.001">
+			#{U_DC8},
+			</if>
+			<if test="I_DC8 != 0.001">
+			#{I_DC8},
+			</if>
+			<if test="U_DC9 != 0.001">
+			#{U_DC9},
+			</if>
+			<if test="I_DC9 != 0.001">
+			#{I_DC9},
+			</if>
+			<if test="U_DC10 != 0.001">
+			#{U_DC10},
+			</if>
+			<if test="I_DC10 != 0.001">
+			#{I_DC10},
+			</if>
+			<if test="U_DC11 != 0.001">
+			#{U_DC11},
+			</if>
+			<if test="I_DC11 != 0.001">
+			#{I_DC11},
+			</if>
+			<if test="U_DC12 != 0.001">
+			#{U_DC12},
+			</if>
+			<if test="I_DC12 != 0.001">
+			#{I_DC12},
+			</if>
+			<if test="U_DC13 != 0.001">
+			#{U_DC13},
+			</if>
+			<if test="I_DC13 != 0.001">
+			#{I_DC13},
+			</if>
+			<if test="U_DC14 != 0.001">
+			#{U_DC14},
+			</if>
+			<if test="I_DC14 != 0.001">
+			#{I_DC14},
+			</if>
+			<if test="U_DC15 != 0.001">
+			#{U_DC15},
+			</if>
+			<if test="I_DC15 != 0.001">
+			#{I_DC15},
+			</if>
+			<if test="U_DC16 != 0.001">
+			#{U_DC16},
+			</if>
+			<if test="I_DC16 != 0.001">
+			#{I_DC16},
+			</if>
+			<if test="U_DC17 != 0.001">
+			#{U_DC17},
+			</if>
+			<if test="I_DC17 != 0.001">
+			#{I_DC17},
+			</if>
+			<if test="U_DC18 != 0.001">
+			#{U_DC18},
+			</if>
+			<if test="I_DC18 != 0.001">
+			#{I_DC18},
+			</if>
+			<if test="U_DC19 != 0.001">
+			#{U_DC19},
+			</if>
+			<if test="I_DC19 != 0.001">
+			#{I_DC19},
+			</if>
+			<if test="U_DC20 != 0.001">
+			#{U_DC20},
+			</if>
+			<if test="I_DC20 != 0.001">
+			#{I_DC20},
+			</if>
+			<if test="U_STR1 != 0.001">		
+			#{U_STR1},
+			</if>
+			<if test="I_STR1 != 0.001">
+			#{I_STR1},
+			</if>
+			<if test="U_STR2 != 0.001">
+			#{U_STR2},
+			</if>
+			<if test="I_STR2 != 0.001">
+			#{I_STR2},
+			</if>
+			<if test="U_STR3 != 0.001">
+			#{U_STR3},
+			</if>
+			<if test="I_STR3 != 0.001">
+			#{I_STR3},
+			</if>
+			<if test="U_STR4 != 0.001">
+			#{U_STR4},
+			</if>
+			<if test="I_STR4 != 0.001">
+			#{I_STR4},
+			</if>
+			<if test="U_STR5 != 0.001">
+			#{U_STR5},
+			</if>
+			<if test="I_STR5 != 0.001">
+			#{I_STR5},
+			</if>
+			<if test="U_STR6 != 0.001">
+			#{U_STR6},
+			</if>
+			<if test="I_STR6 != 0.001">
+			#{I_STR6},
+			</if>
+			<if test="U_STR7 != 0.001">
+			#{U_STR7},
+			</if>
+			<if test="I_STR7 != 0.001">
+			#{I_STR7},
+			</if>
+			<if test="U_STR8 != 0.001">
+			#{U_STR8},
+			</if>
+			<if test="I_STR8 != 0.001">
+			#{I_STR8},
+			</if>
+			<if test="U_STR9 != 0.001">
+			#{U_STR9},
+			</if>
+			<if test="I_STR9 != 0.001">
+			#{I_STR9},
+			</if>
+			<if test="U_STR10 != 0.001">
+			#{U_STR10},
+			</if>
+			<if test="I_STR10 != 0.001">
+			#{I_STR10},
+			</if>
+			<if test="I_STR11 != 0.001">
+			#{I_STR11},
+			</if>
+			<if test="I_STR12 != 0.001">
+			#{I_STR12},
+			</if>
+			<if test="I_STR13 != 0.001">
+			#{I_STR13},
+			</if>
+			<if test="I_STR14 != 0.001">
+			#{I_STR14},
+			</if>
+			<if test="I_STR15 != 0.001">
+			#{I_STR15},
+			</if>
+			<if test="I_STR16 != 0.001">
+			#{I_STR16},
+			</if>
+			<if test="I_STR17 != 0.001">
+			#{I_STR17},
+			</if>
+			<if test="I_STR18 != 0.001">
+			#{I_STR18},
+			</if>
+			<if test="I_STR19 != 0.001">
+			#{I_STR19},
+			</if>
+			<if test="I_STR20 != 0.001">
+			#{I_STR20},
+			</if>
+			<if test="I_STR21 != 0.001">
+			#{I_STR21},
+			</if>
+			<if test="I_STR22 != 0.001">
+			#{I_STR22},
+			</if>
+			<if test="P_DC != 0.001">
+			#{P_DC},
+			</if>
+			<if test="U_AC1 != 0.001">
+			#{U_AC1},
+			</if>
+			<if test="U_AC2 != 0.001">
+			#{U_AC2},
+			</if>
+			<if test="U_AC3 != 0.001">
+			#{U_AC3},
+			</if>
+			<if test="I_AC1 != 0.001">
+			#{I_AC1},
+			</if>
+			<if test="I_AC2 != 0.001">
+			#{I_AC2},
+			</if>
+			<if test="I_AC3 != 0.001">
+			#{I_AC3},
+			</if>
+			<if test="S_AC != 0.001">
+			#{S_AC},
+			</if>
+			<if test="P_AC != 0.001">
+			#{P_AC},
+			</if>
+			<if test="Q_AC != 0.001">
+			#{Q_AC},
+			</if>
+			<if test="COS_PHI != 0.001">
+			#{COS_PHI},
+			</if>
+			<if test="F_AC != 0.001">
+			#{F_AC},
+			</if>
+			<if test="FT_AC_DAY != 0.001">
+			#{FT_AC_DAY},
+			</if>
+			<if test="R_ISO != 0.001">
+			#{R_ISO},
+			</if>
+			<if test="nvmActivePower != 0.001">
+			#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			#{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="E_DAY != 0.001">
+			`E_DAY` = #{E_DAY},
+			</if>
+			<if test="E_TOTAL != 0.001">
+			`E_TOTAL` = #{E_TOTAL},
+			</if>
+			<if test="E_YEAR != 0.001">
+			`E_YEAR` = #{E_YEAR},
+			</if>
+			<if test="OT_AC_TOTAL != 0.001">
+			`OT_AC_TOTAL` = #{OT_AC_TOTAL},
+			</if>
+			<if test="T_WR != 0.001">
+			`T_WR` = #{T_WR},
+			</if>
+			<if test="U_DC1 != 0.001">
+			`U_DC1` = #{U_DC1},
+			</if>
+			<if test="I_DC1 != 0.001">
+			`I_DC1` = #{I_DC1},
+			</if>
+			<if test="U_DC2 != 0.001">
+			`U_DC2` = #{U_DC2},
+			</if>
+			<if test="I_DC2 != 0.001">
+			`I_DC2` = #{I_DC2},
+			</if>
+			<if test="U_DC3 != 0.001">
+			`U_DC3` = #{U_DC3},
+			</if>
+			<if test="I_DC3 != 0.001">
+			`I_DC3` = #{I_DC3},
+			</if>
+			<if test="U_DC4 != 0.001">
+			`U_DC4` = #{U_DC4},
+			</if>
+			<if test="I_DC4 != 0.001">
+			`I_DC4` = #{I_DC4},
+			</if>
+			<if test="U_DC5 != 0.001">
+			`U_DC5` = #{U_DC5},
+			</if>
+			<if test="I_DC5 != 0.001">
+			`I_DC5` = #{I_DC5},
+			</if>
+			<if test="U_DC6 != 0.001">
+			`U_DC6` = #{U_DC6},
+			</if>
+			<if test="I_DC6 != 0.001">
+			`I_DC6` = #{I_DC6},
+			</if>
+			<if test="U_DC7 != 0.001">
+			`U_DC7` = #{U_DC7},
+			</if>
+			<if test="I_DC7 != 0.001">
+			`I_DC7` = #{I_DC7},
+			</if>
+			<if test="U_DC8 != 0.001">
+			`U_DC8` = #{U_DC8},
+			</if>
+			<if test="I_DC8 != 0.001">
+			`I_DC8` = #{I_DC8},
+			</if>
+			<if test="U_DC9 != 0.001">
+			`U_DC9` = #{U_DC9},
+			</if>
+			<if test="I_DC9 != 0.001">
+			`I_DC9` = #{I_DC9},
+			</if>
+			<if test="U_DC10 != 0.001">
+			`U_DC10` = #{U_DC10},
+			</if>
+			<if test="I_DC10 != 0.001">
+			`I_DC10` = #{I_DC10},
+			</if>
+			<if test="U_DC11 != 0.001">
+			`U_DC11` = #{U_DC11},
+			</if>
+			<if test="I_DC11 != 0.001">
+			`I_DC11` = #{I_DC11},
+			</if>
+			<if test="U_DC12 != 0.001">
+			`U_DC12` = #{U_DC12},
+			</if>
+			<if test="I_DC12 != 0.001">
+			`I_DC12` = #{I_DC12},
+			</if>
+			<if test="U_DC13 != 0.001">
+			`U_DC13` = #{U_DC13},
+			</if>
+			<if test="I_DC13 != 0.001">
+			`I_DC13` = #{I_DC13},
+			</if>
+			<if test="U_DC14 != 0.001">
+			`U_DC14` = #{U_DC14},
+			</if>
+			<if test="I_DC14 != 0.001">
+			`I_DC14` = #{I_DC14},
+			</if>
+			<if test="U_DC15 != 0.001">
+			`U_DC15` = #{U_DC15},
+			</if>
+			<if test="I_DC15 != 0.001">
+			`I_DC15` = #{I_DC15},
+			</if>
+			<if test="U_DC16 != 0.001">
+			`U_DC16` = #{U_DC16},
+			</if>
+			<if test="I_DC16 != 0.001">
+			`I_DC16` = #{I_DC16},
+			</if>
+			<if test="U_DC17 != 0.001">
+			`U_DC17` = #{U_DC17},
+			</if>
+			<if test="I_DC17 != 0.001">
+			`I_DC17` = #{I_DC17},
+			</if>
+			<if test="U_DC18 != 0.001">
+			`U_DC18` = #{U_DC18},
+			</if>
+			<if test="I_DC18 != 0.001">
+			`I_DC18` = #{I_DC18},
+			</if>
+			<if test="U_DC19 != 0.001">
+			`U_DC19` = #{U_DC19},
+			</if>
+			<if test="I_DC19 != 0.001">
+			`I_DC19` = #{I_DC19},
+			</if>
+			<if test="U_DC20 != 0.001">
+			`U_DC20` = #{U_DC20},
+			</if>
+			<if test="I_DC20 != 0.001">
+			`I_DC20` = #{I_DC20},
+			</if>
+			<if test="U_STR1 != 0.001">		
+			`U_STR1` = #{U_STR1},
+			</if>
+			<if test="I_STR1 != 0.001">
+			`I_STR1` = #{I_STR1},
+			</if>
+			<if test="U_STR2 != 0.001">
+			`U_STR2` = #{U_STR2},
+			</if>
+			<if test="I_STR2 != 0.001">
+			`I_STR2` = #{I_STR2},
+			</if>
+			<if test="U_STR3 != 0.001">
+			`U_STR3` = #{U_STR3},
+			</if>
+			<if test="I_STR3 != 0.001">
+			`I_STR3` = #{I_STR3},
+			</if>
+			<if test="U_STR4 != 0.001">
+			`U_STR4` = #{U_STR4},
+			</if>
+			<if test="I_STR4 != 0.001">
+			`I_STR4` = #{I_STR4},
+			</if>
+			<if test="U_STR5 != 0.001">
+			`U_STR5` = #{U_STR5},
+			</if>
+			<if test="I_STR5 != 0.001">
+			`I_STR5` = #{I_STR5},
+			</if>
+			<if test="U_STR6 != 0.001">
+			`U_STR6` = #{U_STR6},
+			</if>
+			<if test="I_STR6 != 0.001">
+			`I_STR6` = #{I_STR6},
+			</if>
+			<if test="U_STR7 != 0.001">
+			`U_STR7` = #{U_STR7},
+			</if>
+			<if test="I_STR7 != 0.001">
+			`I_STR7` = #{I_STR7},
+			</if>
+			<if test="U_STR8 != 0.001">
+			`U_STR8` = #{U_STR8},
+			</if>
+			<if test="I_STR8 != 0.001">
+			`I_STR8` = #{I_STR8},
+			</if>
+			<if test="U_STR9 != 0.001">
+			`U_STR9` = #{U_STR9},
+			</if>
+			<if test="I_STR9 != 0.001">
+			`I_STR9` = #{I_STR9},
+			</if>
+			<if test="U_STR10 != 0.001">
+			`U_STR10` = #{U_STR10},
+			</if>
+			<if test="I_STR10 != 0.001">
+			`I_STR10` = #{I_STR10},
+			</if>
+			<if test="I_STR11 != 0.001">
+			`I_STR11` = #{I_STR11},
+			</if>
+			<if test="I_STR12 != 0.001">
+			`I_STR12` = #{I_STR12},
+			</if>
+			<if test="I_STR13 != 0.001">
+			`I_STR13` = #{I_STR13},
+			</if>
+			<if test="I_STR14 != 0.001">
+			`I_STR14` = #{I_STR14},
+			</if>
+			<if test="I_STR15 != 0.001">
+			`I_STR15` = #{I_STR15},
+			</if>
+			<if test="I_STR16 != 0.001">
+			`I_STR16` = #{I_STR16},
+			</if>
+			<if test="I_STR17 != 0.001">
+			`I_STR17` = #{I_STR17},
+			</if>
+			<if test="I_STR18 != 0.001">
+			`I_STR18` = #{I_STR18},
+			</if>
+			<if test="I_STR19 != 0.001">
+			`I_STR19` = #{I_STR19},
+			</if>
+			<if test="I_STR20 != 0.001">
+			`I_STR20` = #{I_STR20},
+			</if>
+			<if test="I_STR21 != 0.001">
+			`I_STR21` = #{I_STR21},
+			</if>
+			<if test="I_STR22 != 0.001">
+			`I_STR22` = #{I_STR22},
+			</if>
+			<if test="P_DC != 0.001">
+			`P_DC` = #{P_DC},
+			</if>
+			<if test="U_AC1 != 0.001">
+			`U_AC1` = #{U_AC1},
+			</if>
+			<if test="U_AC2 != 0.001">
+			`U_AC2` = #{U_AC2},
+			</if>
+			<if test="U_AC3 != 0.001">
+			`U_AC3` = #{U_AC3},
+			</if>
+			<if test="I_AC1 != 0.001">
+			`I_AC1` = #{I_AC1},
+			</if>
+			<if test="I_AC2 != 0.001">
+			`I_AC2` = #{I_AC2},
+			</if>
+			<if test="I_AC3 != 0.001">
+			`I_AC3` = #{I_AC3},
+			</if>
+			<if test="S_AC != 0.001">
+			`S_AC` = #{S_AC},
+			</if>
+			<if test="P_AC != 0.001">
+			`P_AC` = #{P_AC},
+			</if>
+			<if test="Q_AC != 0.001">
+			`Q_AC` = #{Q_AC},
+			</if>
+			<if test="COS_PHI != 0.001">
+			`COS_PHI` = #{COS_PHI},
+			</if>
+			<if test="F_AC != 0.001">
+			`F_AC` = #{F_AC},
+			</if>
+			<if test="FT_AC_DAY != 0.001">
+			`FT_AC_DAY` = #{FT_AC_DAY},
+			</if>
+			<if test="R_ISO != 0.001">
+			`R_ISO` = #{R_ISO},
+			</if>
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+
+</mapper> 

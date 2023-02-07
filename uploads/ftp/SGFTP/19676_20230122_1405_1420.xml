@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<mii xmlns="http://api.sspcdn.com/mii" targetNamespace="http://api.sspcdn.com/mii" version="2.0">
+  <datalogger>
+    <configuration xmlns="http://api.sspcdn.com/mii/datalogger/configuration">
+      <uuid>
+        <vendor>SUNGROW</vendor>
+        <serial>B2111104632</serial>
+      </uuid>
+      <next-scheduled-transfer>2023-01-22T14:35:00Z</next-scheduled-transfer>
+      <devices>
+        <device id="meter-5" type="meter">
+          <uid>5</uid>
+          <name>UMG604(COM3-009)</name>
+          <model>UMG604</model>
+        </device>
+      </devices>
+    </configuration>
+    <datapoints xmlns="http://api.sspcdn.com/mii/datalogger/datapoints">
+      <datapoint timestamp="2023-01-22T14:15:00Z" interval="900">
+        <device id="meter-5">
+          <mv v="177.9400" t="M_AC_U1"/>
+          <mv v="178.5750" t="M_AC_U2"/>
+          <mv v="180.8050" t="M_AC_U3"/>
+          <mv v="309.2350" t="M_AC_U_L1L2"/>
+          <mv v="310.3850" t="M_AC_U_L2L3"/>
+          <mv v="310.6100" t="M_AC_U_L3L1"/>
+          <mv v="341.3800" t="M_AC_I1"/>
+          <mv v="374.2200" t="M_AC_I2"/>
+          <mv v="370.6800" t="M_AC_I3"/>
+          <mv v="7.2053" t="M_AC_P1"/>
+          <mv v="11.7505" t="M_AC_P2"/>
+          <mv v="10.8521" t="M_AC_P3"/>
+          <mv v="30.1014" t="M_AC_P"/>
+          <mv v="30.1014" t="M_AC_E_M1"/>
+          <mv v="nan" t="M_AC_Q1"/>
+          <mv v="-nan" t="M_AC_Q2"/>
+          <mv v="nan" t="M_AC_Q3"/>
+          <mv v="nan" t="M_AC_Q"/>
+          <mv v="0.0000" t="M_AC_S1"/>
+          <mv v="0.0000" t="M_AC_S2"/>
+          <mv v="0.0000" t="M_AC_S3"/>
+          <mv v="160.0394" t="M_AC_S"/>
+          <mv v="0.1881" t="M_AC_PF"/>
+          <mv v="50.0764" t="M_AC_F"/>
+          <mv v="2852299.2500" t="M_AC_E_EXP"/>
+          <mv v="0.0000" t="M_AC_E_IMP"/>
+        </device>
+      </datapoint>
+    </datapoints>
+    <events xmlns="http://api.sspcdn.com/mii/datalogger/events"/>
+  </datalogger>
+</mii>

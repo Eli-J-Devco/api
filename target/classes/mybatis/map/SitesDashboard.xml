@@ -188,7 +188,15 @@
 				WHEN d.datatablename = 'model_pv_powered_35_50_260_500kw_inverter' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_solectria_sgi_226ivt' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_tti_tracker' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "Degrees" ))
-				WHEN d.datatablename = 'model_xantrex_gt100_250_500' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))		
+				WHEN d.datatablename = 'model_xantrex_gt100_250_500' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_umg604' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_sg110cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_sg50cx' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sungrow_weather_pvmet75200' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				
+				WHEN d.datatablename = 'model_sma_inverter_stp1200tlus10' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sma_inverter_stp24ktlus10' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
+				WHEN d.datatablename = 'model_sma_cluster_controller' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))		
 				ELSE "N/A"
 			END AS key_indicator,
 			
@@ -313,113 +321,6 @@
 					AND s.is_delete = 0;
 	</select>
 	
-	
-	<!-- <select id="getGenerationInverter" resultType="Map" >
-		SELECT
-			s.id,
-			s.`name`,
-			s.dc_capacity,
-			s.ac_capacity,
-			s.lat,
-			s.lng,
-			s.data_send_time,
-			t.`offset`,
-			IFNULL(this_month.nvmActiveEnergy, 0) AS energy_this_month,
-			ptoday.power_today,
-			IFNULL(today.nvmActiveEnergy, 0) AS totalGeneration
-		FROM
-			site s
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN(
-				SELECT 
-					m.id_site,
-					ROUND(SUM(m.nvmActiveEnergy), 2) AS nvmActiveEnergy
-				FROM (
-						<foreach collection="groupMeter" item="item" index="index" separator="union all">
-						<![CDATA[
-							SELECT
-								d.id_site,
-								ROUND((
-										MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) 
-										),
-									1 
-								) AS nvmActiveEnergy 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 1
-								AND dv.nvmActiveEnergy > 0 
-								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{current_time}, '%Y-%m-%d')
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id 
-						]]>
-				      	</foreach>
-						
-				)m
-			)today ON today.id_site = s.id
-			
-			LEFT JOIN(
-				SELECT 
-					m.id_site,
-					SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-				FROM (
-						<foreach collection="groupMeter" item="item" index="index" separator="union all">
-						<![CDATA[
-							SELECT
-								d.id_site,
-								ROUND((
-										MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) 
-										),
-									1 
-								) AS nvmActiveEnergy 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 1 
-								AND dv.nvmActiveEnergy > 0 
-								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{current_time}, '%Y-%m')
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id 
-						]]>
-				      	</foreach>
-						
-				)m
-			)this_month ON this_month.id_site = s.id
-			
-						
-			LEFT JOIN(
-					SELECT
-					s.id AS id_site,
-					SUM(d.last_value) AS power_today
-				FROM
-					site s
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					LEFT JOIN device d ON d.id_site = s.id 
-				WHERE
-					s.`status` = 1 
-					AND d.`status` = 1 
-					AND d.id_device_type = 1
-					AND s.id = #{id_site}
-			)ptoday ON ptoday.id_site = s.id
-						
-		WHERE
-					s.id = #{id_site}
-					AND s.`status` = 1 
-					AND s.is_delete = 0;
-	</select>
- -->
 	
 	
 </mapper>

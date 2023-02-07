@@ -21,14 +21,14 @@ import com.nwm.api.utils.SecretCards;
 import com.nwm.api.utils.Translator;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+//import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 public abstract class BaseController {
 	protected FLLogger log = FLLogger.getLogger("controller/"+this.getClass().getSimpleName());
 	@Autowired
 	protected SecretCards secretCard;
-	@Autowired
-	private JwtTokenStore tokenstore;
+//	@Autowired
+//	private JwtTokenStore tokenstore;
 	/**
 	 * respone json data 
 	 * @param status

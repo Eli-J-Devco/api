@@ -10,6 +10,16 @@ package com.nwm.api.utils;
  * @version 1.0
  */
 public class Constants {
+	public static final String FTPSGServer="ftpSG.server";
+	public static final String FTPSGUser="ftpSG.user";
+	public static final String FTPSGPass="ftpSG.pass";
+	public static final String uploadFilePathConfigKeyFTP="uploadpath.ftp";
+	
+	public static final String FTPSMAServer="ftpSMA.server";
+	public static final String FTPSMAUser="ftpSMA.user";
+	public static final String FTPSMAPass="ftpSMA.pass";
+	public static final String uploadFilePathConfigKeySMAFTP="uploadpath.sma";
+	
 	public static final String weatherAPIURL = "https://api.openweathermap.org/data/2.5/weather";
 	public static final String weatherAPIKEY = "868e4c309abc11cdfd41b07b84c4cd7f";
 	
@@ -36,6 +46,7 @@ public class Constants {
 	public static final String uploadFilePathConfigKeySupport="uploadpath.supports";
 	public static final String uploadFilePathConfigKeyLogoReport="uploadpath.reports";
 	public static final String uploadFilePathReportFiles="uploadpath.files";
+	
 	
 	
 	public static final String freeShopOrderLimit="free_shop_order_limit";

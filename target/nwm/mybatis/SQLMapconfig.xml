@@ -80,6 +80,15 @@
 		<mapper resource="mybatis/map/ModelXantrexGT100250500.xml" />
 		<mapper resource="mybatis/map/ModelHukselfluxSr30d1DeviceclassV0.xml"/>
 		<mapper resource="mybatis/map/ModelIMTSolarTmodulClass8006.xml"/>
+		<mapper resource="mybatis/map/ModelSungrowSg50cx.xml"/>
+		<mapper resource="mybatis/map/ModelSungrowSg110cx.xml"/>
+		<mapper resource="mybatis/map/ModelSungrowUMG604.xml"/>
+		<mapper resource="mybatis/map/ModelSungrowWeatherPvmet75200.xml"/>
+		<mapper resource="mybatis/map/ModelSolarEdgeInverter.xml"/>
+		<mapper resource="mybatis/map/ModelSmaClusterController.xml"/>
+		<mapper resource="mybatis/map/ModelSmaInverterStp1200tlus10.xml"/>
+		<mapper resource="mybatis/map/ModelSmaInverterStp24ktlus10.xml"/>
+		
 		
 		
 		

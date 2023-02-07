@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.batchjob.BatchJobFTP;
+import com.nwm.api.batchjob.BatchJobSMAFTP;
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -184,7 +185,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */60 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobGenerateDataReport();
@@ -267,11 +268,24 @@ public class BatchConfig {
 	 * @author Long.Pham
 	 * @since 2023-01-04
 	 */
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void readFolderFTP() throws Exception {
 		BatchJobFTP job = new BatchJobFTP(); 
 		job.readFolderFTP();
 	}
+	
+	
+	/**
+	 * @description SMA read folder from FTP account
+	 * @author Long.Pham
+	 * @since 2023-01-30
+	 */
+	@Scheduled(cron = "0 */5 * * * *")
+	public void readFolderSMAFTP() throws Exception {
+		BatchJobSMAFTP job = new BatchJobSMAFTP(); 
+		job.readFolderSMAFTP();
+	}
+	
 	
 	/**
 	 * @description get sunrise sunset
