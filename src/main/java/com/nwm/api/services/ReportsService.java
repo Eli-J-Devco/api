@@ -288,6 +288,15 @@ public class ReportsService extends DB {
 				dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 				catFormat = new SimpleDateFormat("MM/dd/yyyy");
 
+				List dataInverterAvailability = queryForList("Reports.getDataInverterAvailabilityByDay", obj);
+				if (dataInverterAvailability.size() > 0) { 
+					dataObj.setDataAvailability(dataInverterAvailability);
+				}
+				
+				List dataWeatherStation = queryForList("Reports.getDataWeatherStationByDay", obj);
+				if (dataWeatherStation != null && dataWeatherStation.size() > 0) {
+					dataObj.setDataWeatherStation(dataWeatherStation);
+				}
 			} else {
 				dateFormat = new SimpleDateFormat("yyyy-MM");
 				catFormat = new SimpleDateFormat("MMM-yyyy");
@@ -326,7 +335,6 @@ public class ReportsService extends DB {
 						QuarterlyDateEntity category = new QuarterlyDateEntity();
 						category.setTime_format(dateFormat.format(cal.getTime()));
 						category.setCategories_time(catFormat.format(cal.getTime()));
-						category.setActual(null);
 						category.setEstimated((double) expecValue/numOfDaysInMonth);
 						categories.add(category);
 						cal.add(Calendar.DATE, 1);
@@ -335,7 +343,6 @@ public class ReportsService extends DB {
 					QuarterlyDateEntity category = new QuarterlyDateEntity();
 					category.setTime_format(dateFormat.format(cal.getTime()));
 					category.setCategories_time(catFormat.format(cal.getTime()));
-					category.setActual(null);
 					category.setEstimated((double) expecValue);
 					categories.add(category);
 					cal.add(Calendar.MONTH, 1);
@@ -379,6 +386,85 @@ public class ReportsService extends DB {
 			}
 			
 			dataObj.setDataReports(dataNew);
+			
+			if (quarterlyReportByDay) {
+				List dataInverterAvailability = dataObj.getDataAvailability();
+				List<QuarterlyDateEntity> dataInverterNew = new ArrayList<QuarterlyDateEntity> ();
+				
+				if (dataInverterAvailability.size() > 0 && categories.size() > 0) {
+					for (QuarterlyDateEntity item : categories) {
+						boolean flag = false;
+						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
+						
+						for( int v = 0; v < dataInverterAvailability.size(); v++) {
+							Map<String, Object> itemT = (Map<String, Object>) dataInverterAvailability.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get("time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+								mapItemObj.setTime_format(itemT.get("time_format").toString());
+								mapItemObj.setInverterAvailability(Double.parseDouble(itemT.get("InverterAvailability").toString()));
+								break;
+							}
+						}
+						
+						if(flag == false) {
+							QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
+							mapItem.setCategories_time(item.getCategories_time());
+							mapItem.setTime_format(item.getTime_format());
+							mapItem.setInverterAvailability(null);
+							dataInverterNew.add(mapItem);
+						} else {
+							dataInverterNew.add(mapItemObj);
+						}
+					}
+					
+					dataObj.setDataAvailability(dataInverterNew);
+				}
+				
+				
+				List dataWeatherStation = dataObj.getDataWeatherStation();
+				List<QuarterlyDateEntity> dataWeatherStationNew = new ArrayList<QuarterlyDateEntity> ();
+				
+				if (dataWeatherStation != null && dataWeatherStation.size() > 0 && categories.size() > 0) {
+					for (QuarterlyDateEntity item : categories) {
+						boolean flag = false;
+						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
+						
+						for( int v = 0; v < dataWeatherStation.size(); v++) {
+							Map<String, Object> itemT = (Map<String, Object>) dataWeatherStation.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get("time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+								mapItemObj.setTime_format(itemT.get("time_format").toString());
+								mapItemObj.setPOAAVG(itemT.get("POAAVG") != null ? Double.parseDouble(itemT.get("POAAVG").toString()) : null);
+								mapItemObj.setTCellAVG(itemT.get("TCellAVG") != null ? Double.parseDouble(itemT.get("TCellAVG").toString()) : null);
+								break;
+							}
+						}
+						
+						if(flag == false) {
+							QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
+							mapItem.setCategories_time(item.getCategories_time());
+							mapItem.setTime_format(item.getTime_format());
+							mapItem.setPOAAVG(null);
+							mapItem.setTCellAVG(null);
+							dataWeatherStationNew.add(mapItem);
+						} else {
+							dataWeatherStationNew.add(mapItemObj);
+						}
+					}
+					
+					dataObj.setDataWeatherStation(dataWeatherStationNew);
+				}
+				
+			}
+			
 			
 			return dataObj;
 		} catch (Exception ex) {
