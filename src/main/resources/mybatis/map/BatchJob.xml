@@ -981,7 +981,8 @@
 			0.001 AS PowerTodayTotal,
 			0.001 AS PowerTodayAVG,
 			ROUND(t.nvm_irradiance, 1) AS POATotal,
-			ROUND(t.avg_nvm_irradiance, 1) AS POAAVG
+			ROUND(t.avg_nvm_irradiance, 1) AS POAAVG,
+			ROUND(t.avg_nvm_temperature, 1) AS TCellAVG
 		FROM (
 			SELECT
 				d.id_site,
@@ -993,7 +994,8 @@
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00' ) AS time_full,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
 				IF(SUM(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, SUM(dv.nvm_irradiance)) AS nvm_irradiance,
-				IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_irradiance)) AS avg_nvm_irradiance
+				IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_irradiance)) AS avg_nvm_irradiance,
+				IF(AVG(dv.nvm_temperature) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_temperature)) AS avg_nvm_temperature
 			FROM
 				${datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device
@@ -1055,6 +1057,9 @@
 			<if test="POAAVG != 0.001">
 				`POAAVG`,
 			</if>
+			<if test="TCellAVG != 0.001">
+				`TCellAVG`,
+			</if>
 			
 		</trim>
 		
@@ -1099,6 +1104,9 @@
 			<if test="POAAVG != 0.001">
 				#{POAAVG},
 			</if>
+			<if test="TCellAVG != 0.001">
+				#{TCellAVG},
+			</if>
 		</trim>
 		
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
@@ -1134,6 +1142,9 @@
 			</if>
 			<if test="POAAVG != 0.001">
 				`POAAVG` = #{POAAVG},
+			</if>
+			<if test="TCellAVG != 0.001">
+				`TCellAVG` = #{TCellAVG},
 			</if>
 		</trim>
 		

@@ -20,6 +20,7 @@ public class SiteDataReportEntity {
 	private double PowerTodayAVG;
 	private double POATotal;
 	private double POAAVG;
+	private double TCellAVG;
 	public String getTime() {
 		return time;
 	}
@@ -97,6 +98,12 @@ public class SiteDataReportEntity {
 	}
 	public void setPOAAVG(double pOAAVG) {
 		POAAVG = pOAAVG;
+	}
+	public double getTCellAVG() {
+		return TCellAVG;
+	}
+	public void setTCellAVG(double tCellAVG) {
+		TCellAVG = tCellAVG;
 	}
 	
 	

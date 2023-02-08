@@ -458,6 +458,39 @@
 		
 	</select>
 	
+	<select id="getDataInverterAvailabilityByDay" resultType="Map" >
+		SELECT
+			ROUND(AVG(sdr.InverterAvailability) * 100, 2) AS InverterAvailability,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
+			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
+		FROM
+			site_data_report sdr
+			LEFT JOIN device d ON d.id = sdr.id_device
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_device_type = 1
+			AND d.id_site = #{id_site}
+			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+		GROUP BY time_format
+	</select>
+	
+	<select id="getDataWeatherStationByDay" resultType="Map" >
+		SELECT
+			sdr.POAAVG,
+			sdr.TCellAVG,
+			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
+			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
+		FROM
+			site_data_report sdr
+			LEFT JOIN device d ON d.id = sdr.id_device
+		WHERE
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND d.id_device_type = 4
+			AND d.id_site = #{id_site}
+			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+	</select>
 	
 	
 	<select id="getDataEnergyAnnuallyReport" resultType="Map" >
