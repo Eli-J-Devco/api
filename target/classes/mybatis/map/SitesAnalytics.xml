@@ -10,7 +10,8 @@
 			d.id_site,
 			d.id_device_group,
 			d.devicename,
-			d.datatablename,
+			d.view_tablename,
+			d.datatablename AS datatablename, 
 			dg.group_name,
 			d.id AS id_device,
 			d.id_device_type,
@@ -59,8 +60,9 @@
 			dv.id_device,
 			0 AS is_checked,
 			d.datatablename,
+			d.view_tablename,
 			d.id_device_group,
-			<if test="datatablename == 'model_sma_inverter_stp1200tlus10'">
+			<if test="(datatablename == 'model_sma_inverter_stp1200tlus10') || (datatablename == 'ViewModelSmaInverterStp1200tlus10')">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
@@ -84,7 +86,7 @@
 				IFNULL(ROUND(AVG(dv.DcMs_WattB), 2), 0.001) AS DcMs_WattB,
 			</if>
 			
-			<if test="datatablename == 'model_sma_inverter_stp24ktlus10'">
+			<if test="(datatablename == 'model_sma_inverter_stp24ktlus10') || (datatablename == 'ViewModelSmaInverterStp24ktlus10')">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
@@ -109,7 +111,7 @@
 				IFNULL(ROUND(AVG(dv.DcMs_WattB), 2), 0.001) AS DcMs_WattB,
 			</if>
 			
-			<if test="datatablename == 'model_sma_cluster_controller'">
+			<if test="(datatablename == 'model_sma_cluster_controller') || (datatablename == 'ViewModelSmaClusterController')">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
@@ -137,7 +139,7 @@
 				IFNULL(ROUND(AVG(dv.Env_ExInsol), 2), 0.001) AS Env_ExInsol,
 			</if>
 			
-			<if test="datatablename == 'model_solaredge_inverter'">
+			<if test="(datatablename == 'model_solaredge_inverter') || (datatablename == 'ViewModelSolaredgeInverter')">
 				IFNULL(ROUND(AVG(dv.C_DeviceAddress), 2), 0.001) AS C_DeviceAddress,
 				IFNULL(ROUND(AVG(dv.C_SunSpec_DID), 2), 0.001) AS C_SunSpec_DID,
 				IFNULL(ROUND(AVG(dv.C_SunSpec_Length), 2), 0.001) AS C_SunSpec_Length,
@@ -178,7 +180,7 @@
 
 			</if>
 			
-			<if test="datatablename == 'model_sungrow_umg604'">
+			<if test="(datatablename == 'model_sungrow_umg604') || (datatablename == 'ViewModelSungrowUmg604')">
 				IFNULL(ROUND(AVG(dv.M_AC_U1), 2), 0.001) AS M_AC_U1,
 				IFNULL(ROUND(AVG(dv.M_AC_U2), 2), 0.001) AS M_AC_U2,
 				IFNULL(ROUND(AVG(dv.M_AC_U3), 2), 0.001) AS M_AC_U3,
@@ -206,7 +208,7 @@
 				IFNULL(ROUND(AVG(dv.M_AC_E_EXP), 2), 0.001) AS M_AC_E_EXP,
 				IFNULL(ROUND(AVG(dv.M_AC_E_IMP), 2), 0.001) AS M_AC_E_IMP,
 			</if>
-			<if test="datatablename == 'model_sungrow_sg110cx'">
+			<if test="(datatablename == 'model_sungrow_sg110cx') || (datatablename == 'ViewModelSungrowSg110cx')">
 				IFNULL(ROUND(AVG(E_DAY), 2), 0.001) AS E_DAY,
 				IFNULL(ROUND(AVG(E_TOTAL), 2), 0.001) AS E_TOTAL,
 				IFNULL(ROUND(AVG(E_YEAR), 2), 0.001) AS E_YEAR,
@@ -281,7 +283,7 @@
 				IFNULL(ROUND(AVG(FT_AC_DAY), 2), 0.001) AS FT_AC_DAY,
 				IFNULL(ROUND(AVG(R_ISO), 2), 0.001) AS R_ISO,
 			</if>
-			<if test="datatablename == 'model_sungrow_sg50cx'">
+			<if test="(datatablename == 'model_sungrow_sg50cx') || (datatablename == 'ViewModelSungrowSg50cx')">
 				IFNULL(ROUND(AVG(E_DAY), 2), 0.001) AS E_DAY,
 				IFNULL(ROUND(AVG(E_TOTAL), 2), 0.001) AS E_TOTAL,
 				IFNULL(ROUND(AVG(E_YEAR), 2), 0.001) AS E_YEAR,
@@ -375,16 +377,16 @@
 				IFNULL(ROUND(AVG(FT_AC_DAY), 2), 0.001) AS FT_AC_DAY,
 				IFNULL(ROUND(AVG(R_ISO), 2), 0.001) AS R_ISO,
 			</if>
-			<if test="datatablename == 'model_sungrow_weather_pvmet75200'">
+			<if test="(datatablename == 'model_sungrow_weather_pvmet75200') || (datatablename == 'ViewModelSungrowWeatherPvmet75200')">
 				  IFNULL(ROUND(AVG(dv.SRAD_D_H), 2), 0.001) AS SRAD_D_H,
 			</if>
 			
 			
-			<if test="datatablename == 'model_imtsolar_tmodul_class8006'">
+			<if test="(datatablename == 'model_imtsolar_tmodul_class8006') || (datatablename == 'ViewModelImtsolarTmodulClass8006')">
 				  IFNULL(ROUND(AVG(dv.ModuleTemperature), 2), 0.001) AS ModuleTemperature,
 			</if>
 			
-			<if test="datatablename == 'model_hukseflux_sr30d1_deviceclass_v0'">
+			<if test="(datatablename == 'model_hukseflux_sr30d1_deviceclass_v0') || (datatablename == 'ViewModelHuksefluxSr30d1DeviceclassV0')">
 				  IFNULL(ROUND(AVG(dv.IrradianceTcs), 2), 0.001) AS IrradianceTcs,
 			      IFNULL(ROUND(AVG(dv.IrradianceUs), 2), 0.001) AS IrradianceUs,
 			      IFNULL(ROUND(AVG(dv.SensorBodyTemperature), 2), 0.001) AS SensorBodyTemperature,
@@ -403,7 +405,7 @@
 			</if>
 			
 			
-			<if test="datatablename == 'model_tti_tracker'">
+			<if test="(datatablename == 'model_tti_tracker') || (datatablename == 'ViewModelTtiTracker')">
 				  IFNULL(ROUND(AVG(dv.Mode), 2), 0.001) AS Mode,
 			      IFNULL(ROUND(AVG(dv.SubMode), 2), 0.001) AS SubMode,
 			      IFNULL(ROUND(AVG(dv.MotorStatus), 2), 0.001) AS MotorStatus,
@@ -444,7 +446,7 @@
 			      IFNULL(ROUND(AVG(dv.WindStowTime), 2), 0.001) AS WindStowTime,
 			</if>
 			
-			<if test="datatablename == 'model_chint_solectria_inverter_class9725'">
+			<if test="(datatablename == 'model_chint_solectria_inverter_class9725') || (datatablename == 'ViewModelChintSolectriaInverterClass9725')">
 				  IFNULL(ROUND(AVG(dv.PowerOnOff), 2), 0.001) AS PowerOnOff,
 			      IFNULL(ROUND(AVG(dv.PActiveSet), 2), 0.001) AS PActiveSet,
 			      IFNULL(ROUND(AVG(dv.PFactorSet), 2), 0.001) AS PFactorSet,
@@ -497,7 +499,7 @@
 			      IFNULL(ROUND(AVG(dv.FaultCode2), 2), 0.001) AS FaultCode2,
 			</if>
 			
-			<if test="datatablename == 'model_pv_powered_35_50_260_500kw_inverter'">
+			<if test="(datatablename == 'model_pv_powered_35_50_260_500kw_inverter') || (datatablename == 'ViewModelPvPowered3550260500kwInverter')">
 			IFNULL(ROUND(AVG(dv.VoltageAN), 2), 0.001) AS VoltageAN,
 			IFNULL(ROUND(AVG(dv.VoltageBN), 2), 0.001) AS VoltageBN,
 			IFNULL(ROUND(AVG(dv.VoltageCN), 2), 0.001) AS VoltageCN,
@@ -521,7 +523,7 @@
 			IFNULL(ROUND(AVG(dv.SystemWarnings), 2), 0.001) AS SystemWarnings,
 			IFNULL(ROUND(AVG(dv.PVMStatusCodes), 2), 0.001) AS PVMStatusCodes,
 			</if>
-			<if test="datatablename == 'model_shark100'">
+			<if test="(datatablename == 'model_shark100') || (datatablename == 'ViewModelShark100')">
 				  IFNULL(ROUND(AVG(dv.volts_a_n), 2), 0.001) AS volts_a_n,
 			      IFNULL(ROUND(AVG(dv.volts_b_n), 2), 0.001) AS volts_b_n,
 			      IFNULL(ROUND(AVG(dv.volts_c_n), 2), 0.001) AS volts_c_n,
@@ -638,13 +640,13 @@
 			      IFNULL(ROUND(AVG(dv.angle_volts_b_c), 2), 0.001) AS angle_volts_b_c,
 			      IFNULL(ROUND(AVG(dv.angle_volts_c_a), 2), 0.001) AS angle_volts_c_a,
 			</if>
-			<if test="datatablename == 'model_kippzonen_rt1_class8009'">
+			<if test="(datatablename == 'model_kippzonen_rt1_class8009') || (datatablename == 'ViewModelKippzonenRt1Class8009')">
 				  IFNULL(ROUND(AVG(dv.sensor1_data), 2), 0.001) AS sensor1_data,
 			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
 			      IFNULL(ROUND(COUNT(dv.error_code), 2), 0.001) AS error_code,
 			</if>
-			<if test="datatablename == 'model_ivt_solaron_ext'">
+			<if test="(datatablename == 'model_ivt_solaron_ext') || (datatablename == 'ViewModelIvtSolaronExt')">
 				  IFNULL(ROUND(AVG(dv.today_kwh), 2), 0.001) AS today_kwh,
 			      IFNULL(ROUND(AVG(dv.ytd_kwh_total), 2), 0.001) AS ytd_kwh_total,
 			      IFNULL(ROUND(AVG(dv.life_kwh_total), 2), 0.001) AS life_kwh_total,
@@ -670,7 +672,7 @@
 			      IFNULL(ROUND(COUNT(dv.warnings3_reserved), 2), 0.001) AS warnings3_reserved,
 			      IFNULL(ROUND(AVG(dv.ac_current), 2), 0.001) AS ac_current,
 			</if>
-			<if test="datatablename == 'model_pvp_inverter'">
+			<if test="(datatablename == 'model_pvp_inverter') || (datatablename == 'ViewModelPvpInverter')">
 				  IFNULL(ROUND(AVG(dv.total_kwh_delivered), 2), 0.001) AS total_kwh_delivered,
 			      IFNULL(ROUND(AVG(dv.volts_a_l_n), 2), 0.001) AS volts_a_l_n,
 			      IFNULL(ROUND(AVG(dv.volts_b_l_n), 2), 0.001) AS volts_b_l_n,
@@ -686,11 +688,11 @@
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word1), 2), 0.001) AS inverter_fault_word1,
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word2), 2), 0.001) AS inverter_fault_word2,
 			</if>
-			<if test="datatablename == 'model_imtsolar_class8000'">
+			<if test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
 				IFNULL(ROUND(AVG(dv.irradiance * 0.1), 2), 0.001) AS irradiance,
 		      	IFNULL(ROUND(AVG(dv.tcell * 0.1 - 25), 2), 0.001) AS tcell,
 			</if>
-			<if test="datatablename == 'model_advanced_energy_solaron'">
+			<if test="(datatablename == 'model_advanced_energy_solaron') || (datatablename == 'ViewModelAdvancedEnergySolaron')">
 				  IFNULL(ROUND(AVG(dv.today_kwh), 2), 0.001) AS today_kwh,
 			      IFNULL(ROUND(AVG(dv.ytd_kwh_total), 2), 0.001) AS ytd_kwh_total,
 			      IFNULL(ROUND(AVG(dv.life_kwh_total), 2), 0.001) AS life_kwh_total,
@@ -715,7 +717,7 @@
 			      IFNULL(ROUND(COUNT(dv.warnings2_reserved), 2), 0.001) AS warnings2_reserved,
 			      IFNULL(ROUND(COUNT(dv.warnings3_reserved), 2), 0.001) AS warnings3_reserved,
 			</if>
-			<if test="datatablename == 'model_rt1_class30000'">
+			<if test="(datatablename == 'model_rt1_class30000') || (datatablename == 'ViewModelRt1Class30000')">
 				  IFNULL(ROUND(AVG(dv.sensor1_data), 2), 0.001) AS sensor1_data,
 			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
@@ -723,7 +725,7 @@
 			</if>
 			
 			
-			<if test="datatablename == 'model_veris_industries_e51c2_power_meter'">
+			<if test="(datatablename == 'model_veris_industries_e51c2_power_meter') || (datatablename == 'ViewModelVerisIndustriesE51c2PowerMeter')">
 				  IFNULL(ROUND(AVG(dv.AccumulatedRealEnergyNet), 2), 0.001) AS AccumulatedRealEnergyNet,
 			      IFNULL(ROUND(AVG(dv.RealEnergyQuadrants14Import), 2), 0.001) AS RealEnergyQuadrants14Import,
 			      IFNULL(ROUND(AVG(dv.RealEnergyQuadrants23Export), 2), 0.001) AS RealEnergyQuadrants23Export,
@@ -797,7 +799,7 @@
 			      IFNULL(ROUND(AVG(dv.CurrentPhaseB), 2), 0.001) AS CurrentPhaseB,
 			      IFNULL(ROUND(AVG(dv.CurrentPhaseC), 2), 0.001) AS CurrentPhaseC,
 			</if>
-			<if test="datatablename == 'model_satcon_pvs357_inverter'">
+			<if test="(datatablename == 'model_satcon_pvs357_inverter') || (datatablename == 'ViewModelSatconPvs357Inverter')">
 				  IFNULL(ROUND(AVG(dv.Software_Identification_Number), 2), 0.001) AS Software_Identification_Number,
 			      IFNULL(ROUND(AVG(dv.Fault_Word1), 2), 0.001) AS Fault_Word1,
 			      IFNULL(ROUND(AVG(dv.Fault_Word2), 2), 0.001) AS Fault_Word2,
@@ -931,7 +933,7 @@
 			      IFNULL(ROUND(AVG(dv.Serial_number_word4), 2), 0.001) AS Serial_number_word4,
 			      IFNULL(ROUND(AVG(dv.Number_of_Strings), 2), 0.001) AS Number_of_Strings,
 			</if>
-			<if test="datatablename == 'model_elkor_wattson_pv_meter'">
+			<if test="(datatablename == 'model_elkor_wattson_pv_meter') || (datatablename == 'ViewModelElkorWattsonPvMeter')">
 				  IFNULL(ROUND(AVG(dv.TotalEnergyConsumption), 2), 0.001) AS TotalEnergyConsumption,
 			      IFNULL(ROUND(AVG(dv.TotalRealPower), 2), 0.001) AS TotalRealPower,
 			      IFNULL(ROUND(AVG(dv.TotalReactivePower), 2), 0.001) AS TotalReactivePower,
@@ -965,7 +967,7 @@
 			      IFNULL(ROUND(AVG(dv.PowerFactorB), 2), 0.001) AS PowerFactorB,
 			      IFNULL(ROUND(AVG(dv.PowerFactorC), 2), 0.001) AS PowerFactorC,
 			</if>
-			<if test="datatablename == 'model_w_kipp_zonen_rt1'">
+			<if test="(datatablename == 'model_w_kipp_zonen_rt1') || (datatablename == 'ViewModelWKippZonenRt1')">
 				IFNULL(ROUND(AVG(dv.DeviceType), 2), 0.001) AS DeviceType,
 		    	IFNULL(ROUND(AVG(dv.DataModelVersion), 2), 0.001) AS DataModelVersion,
 		    	IFNULL(ROUND(AVG(dv.OperationalMode), 2), 0.001) AS OperationalMode,
@@ -977,7 +979,7 @@
 		    	IFNULL(ROUND(AVG(dv.SerialNumber), 2), 0.001) AS SerialNumber,
 		    	IFNULL(ROUND(AVG(dv.CalibrationDateYYMMDD), 2), 0.001) AS CalibrationDateYYMMDD,
 			</if>
-			<if test="datatablename == 'model_elkor_production_meter'">
+			<if test="(datatablename == 'model_elkor_production_meter') || (datatablename == 'ViewModelElkorProductionMeter')">
 				IFNULL(ROUND(AVG(dv.ActivePowerTotal), 2), 0.001) AS ActivePowerTotal,
 		    	IFNULL(ROUND(AVG(dv.ReactivePowerTotal), 2), 0.001) AS ReactivePowerTotal,
 		    	IFNULL(ROUND(AVG(dv.ApparentPowerTotal), 2), 0.001) AS ApparentPowerTotal,
@@ -1059,7 +1061,7 @@
 		    	IFNULL(ROUND(AVG(dv.Q4ReactiveEnergyB), 2), 0.001) AS Q4ReactiveEnergyB,
 		    	IFNULL(ROUND(AVG(dv.Q4ReactiveEnergyC), 2), 0.001) AS Q4ReactiveEnergyC,
 			</if>
-			<if test="datatablename == 'model_abb_trio_class6210'">
+			<if test="(datatablename == 'model_abb_trio_class6210') || (datatablename == 'ViewModelAbbTrioClass6210')">
 				  IFNULL(ROUND(AVG(dv.AuroraType), 2), 0.001) AS AuroraType,
 			      IFNULL(ROUND(AVG(dv.GridType), 2), 0.001) AS GridType,
 			      IFNULL(ROUND(AVG(dv.TransformerType), 2), 0.001) AS TransformerType,
@@ -1083,7 +1085,7 @@
 			      IFNULL(ROUND(AVG(dv.BooseterTemperature), 2), 0.001) AS BooseterTemperature,
 			      IFNULL(ROUND(AVG(dv.IslolationResistance), 2), 0.001) AS IslolationResistance,
 			</if>
-			<if test="datatablename == 'model_lufft_class8020'">
+			<if test="(datatablename == 'model_lufft_class8020') || (datatablename == 'ViewModelLufftClass8020')">
 				  IFNULL(ROUND(AVG(dv.RelativeHumidityActual), 2), 0.001) AS RelativeHumidityActual,
 			      IFNULL(ROUND(AVG(dv.RelativeHumidityMin), 2), 0.001) AS RelativeHumidityMin,
 			      IFNULL(ROUND(AVG(dv.RelativeHumidityMax), 2), 0.001) AS RelativeHumidityMax,
@@ -1151,7 +1153,7 @@
 			      IFNULL(ROUND(AVG(dv.WindValueQualityFast), 2), 0.001) AS WindValueQualityFast,
 			</if>
 			
-			<if test="datatablename == 'model_solectria_sgi_226ivt'">
+			<if test="(datatablename == 'model_solectria_sgi_226ivt') || (datatablename == 'ViewModelSolectriaSgi226ivt')">
 				  IFNULL(ROUND(AVG(dv.DCVoltage), 2), 0.001) AS DCVoltage,
 			      IFNULL(ROUND(AVG(dv.ACPowerOutput), 2), 0.001) AS ACPowerOutput,
 			      IFNULL(ROUND(AVG(dv.ACGridFrequency), 2), 0.001) AS ACGridFrequency,
@@ -1169,7 +1171,7 @@
 			      IFNULL(ROUND(AVG(dv.InformativeAlarms), 2), 0.001) AS InformativeAlarms,
 			</if>
 			
-			<if test="datatablename == 'model_xantrex_gt100_250_500'">
+			<if test="(datatablename == 'model_xantrex_gt100_250_500') || (datatablename == 'ViewModelXantrexGt100250500')">
 				  IFNULL(ROUND(AVG(dv.VAB), 2), 0.001) AS VAB,
 			      IFNULL(ROUND(AVG(dv.VBC), 2), 0.001) AS VBC,
 			      IFNULL(ROUND(AVG(dv.VCA), 2), 0.001) AS VCA,

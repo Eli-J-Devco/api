@@ -145,9 +145,11 @@
 	
 	<select id="getListSite" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
+			t.`value` AS time_zone_value,
 			s.*
 		FROM
 			site AS s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 		WHERE
 			s.`status` = 1 AND s.is_delete = 0
 	</select>
@@ -305,7 +307,7 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			d.`status` = 1 
+			d.`status` = 1 AND d.is_delete = 0
 			AND s.`status` = 1 AND d.id_device_type IN (1, 3) AND d.disable_alert = 0
 	</select>
 	
@@ -489,19 +491,15 @@
 	</update>
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<update id="updateSunriseSunset">
+		UPDATE `site`
+		SET
+			start_date_time = #{start_date_time},
+			end_date_time = #{end_date_time}
+		WHERE
+			`id` = #{id}
+	</update>
+		
 
 	<select id="getListDevice" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT

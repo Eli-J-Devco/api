@@ -36,6 +36,17 @@ public class CustomerViewService extends DB {
 		List dataListDeviceMeter = new ArrayList<>();
 		List dataListDeviceIrr = new ArrayList<>();
 		try {
+			Date dt = new Date();
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(dt); 
+			c.add(Calendar.MONTH, -3);
+			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+			Date d1 = dateFor.parse(obj.getStart_date());
+			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+			if(d1.compareTo(d2) < 0) {
+				obj.setRead_data_all("all_data");
+			}
+			
 			dataListDeviceMeter = queryForList("CustomerView.getListDeviceTypeMeter", obj);
 			if (dataListDeviceMeter.size() > 0) {
 				// Get by meter

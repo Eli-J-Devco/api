@@ -76,12 +76,26 @@ public class SitesDevicesEntity {
 	private int id_employee;
 	private String sort_column;
 	private int kiosk_view;	
+	private String read_data_all;
+	private String view_tablename;
 	
 	
 	
 	
 	
 	
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getRead_data_all() {
+		return read_data_all;
+	}
+	public void setRead_data_all(String read_data_all) {
+		this.read_data_all = read_data_all;
+	}
 	public int getKiosk_view() {
 		return kiosk_view;
 	}

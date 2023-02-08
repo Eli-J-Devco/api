@@ -10,7 +10,14 @@
 			d.id,
 			d.devicename,
 			d.devicename AS export_devicename,
-			d.datatablename,
+			<choose>    
+		      <when test="read_data_all == 'all_data'">      
+		          d.datatablename AS datatablename, 
+		      </when>       
+		      <otherwise>      
+		          d.view_tablename AS datatablename,
+	          </otherwise>  
+          </choose>
 			d.id_site
 		FROM
 			device d
@@ -29,7 +36,14 @@
 			d.id,
 			d.devicename,
 			d.devicename AS export_devicename,
-			d.datatablename,
+			<choose>    
+		      <when test="read_data_all == 'all_data'">      
+		          d.datatablename AS datatablename, 
+		      </when>       
+		      <otherwise>      
+		          d.view_tablename AS datatablename,
+	          </otherwise>  
+          </choose>
 			d.id_site
 		FROM
 			device d
@@ -937,7 +951,14 @@
 		SELECT
 			d.id,
 			d.devicename,
-			d.datatablename,
+			<choose>    
+		      <when test="read_data_all == 'all_data'">      
+		          d.datatablename AS datatablename, 
+		      </when>       
+		      <otherwise>      
+		          d.view_tablename AS datatablename,
+	          </otherwise>  
+          </choose>
 			d.id_site
 		FROM
 			device d
