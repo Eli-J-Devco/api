@@ -5,7 +5,10 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,7 @@ public class SitesAnalyticsService extends DB {
 	 */
 	public List getListDeviceBySite(DeviceEntity obj) {
 		try {
+			
 			List dataListNew = new ArrayList();
 			List dataList = queryForList("SitesAnalytics.getListDeviceBySite", obj);
 			if(dataList.size() > 0) {
@@ -67,7 +71,24 @@ public class SitesAnalyticsService extends DB {
 					maps.put("start_date", obj.getStart_date());
 					maps.put("end_date", obj.getEnd_date());
 					maps.put("data_send_time", obj.getData_send_time());
-					maps.put("datatablename", map.get("datatablename"));
+					Date dt = new Date();
+					Calendar c = Calendar.getInstance(); 
+					c.setTime(dt); 
+					c.add(Calendar.MONTH, -3);
+					SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+					Date d1 = dateFor.parse(obj.getStart_date());
+					Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+					if(d1.compareTo(d2) < 0) {
+						maps.put("datatablename", map.get("datatablename"));
+						System.out.println("a: " + map.get("datatablename"));
+					} else {
+						maps.put("datatablename", map.get("view_tablename"));
+						System.out.println("a: " + map.get("view_tablename"));
+					}
+					
+					
+					
+					
 					maps.put("id", map.get("id"));
 					maps.put("device_name", map.get("devicename"));
 					maps.put("id_device_group", map.get("id_device_group"));

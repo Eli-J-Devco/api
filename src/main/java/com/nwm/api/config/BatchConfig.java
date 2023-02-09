@@ -7,6 +7,8 @@ package com.nwm.api.config;
 
 
 import java.util.Calendar;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.batchjob.BatchJobFTP;
 import com.nwm.api.batchjob.BatchJobSMAFTP;
+import com.nwm.api.utils.Constants;
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -270,10 +273,29 @@ public class BatchConfig {
 	 */
 	@Scheduled(cron = "0 */5 * * * *")
 	public void readFolderFTP() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		BatchJobFTP job = new BatchJobFTP(); 
-		job.readFolderFTP();
+		switch (env) {
+		case "test":
+			job.readFolderFTP();
+			break;
+		case "prod":
+			job.readFolderFTP();
+			break;
+		}
+		
+		
 	}
 	
+	
+	private static String readProperty(ResourceBundle resourceBundle, String key, String defaultValue) {
+		String value = defaultValue;
+		try {
+			value = resourceBundle.getString(key);
+		} catch (Exception e) {}
+		return value;
+	}
 	
 	/**
 	 * @description SMA read folder from FTP account
@@ -282,9 +304,29 @@ public class BatchConfig {
 	 */
 	@Scheduled(cron = "0 */5 * * * *")
 	public void readFolderSMAFTP() throws Exception {
-		BatchJobSMAFTP job = new BatchJobSMAFTP(); 
-		job.readFolderSMAFTP();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		BatchJobSMAFTP job = new BatchJobSMAFTP();
+		switch (env) {
+		case "test":
+			job.readFolderSMAFTP();
+			break;
+		case "prod":
+			job.readFolderSMAFTP();
+			break;
+		}
 	}
 	
 	
+	/**
+	 * @description get sunrise sunset
+	 * @author Duy.Phan
+	 * @since 2023-02-02
+	 */
+	@Scheduled(cron = "0 0 0 * * 0")
+	@Scheduled(cron = "0 0 0 * * 1")
+	public void startBatchJobGetSunriseSunset() throws Exception {
+		BatchJob job = new BatchJob(); 
+		job.runCronJobGetSunriseSunset();
+	}
 }

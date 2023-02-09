@@ -232,7 +232,7 @@ public class UploadFilesController extends BaseController {
 							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 							        int hours = zdtNowLosAngeles.getHour();
 							        
-									if(item.getModbusdevicenumber() == modbusdevice) {
+									if( modbusdevice.equals(item.getModbusdevicenumber())) {
 										switch (item.getDatatablename()) {
 
 										// Model model_pv_powered_35_50_260_500kw_inverter
