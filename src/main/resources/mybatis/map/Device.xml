@@ -118,6 +118,7 @@
 			DATE_FORMAT(s.configurationchangetime,'%m/%d/%Y') AS configurationchangetime,
 			s.configurationchecksum,
 			s.datatablename,
+			s.order_id,
 			s.`status`,
 			s.is_delete,
 			dt.name AS device_type_name
@@ -216,7 +217,8 @@
 			`configuration`,
 			`configurationchangetime`,
 			`configurationchecksum`,
-			`datatablename`
+			`datatablename`,
+			`order_id`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -231,7 +233,8 @@
 			#{configuration},
 			#{configurationchangetime},
 			#{configurationchecksum},
-			#{datatablename}
+			#{datatablename},
+			#{order_id}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -255,7 +258,8 @@
 			configuration = #{configuration},
 			configurationchangetime = #{configurationchangetime},
 			configurationchecksum = #{configurationchecksum},
-			datatablename = #{datatablename}
+			datatablename = #{datatablename},
+			order_id = #{order_id}
 		WHERE
 			`id` = #{id}
 	</update>
