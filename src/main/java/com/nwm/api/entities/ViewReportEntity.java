@@ -41,7 +41,8 @@ public class ViewReportEntity {
 	private String deviceType;
 	private int file_type;
 	private String time_zone;
-	
+	private List dataWeatherStation;
+
 	public String getDeviceType() {
 		return deviceType;
 	}
@@ -239,6 +240,12 @@ public class ViewReportEntity {
 	}
 	public void setTime_zone(String time_zone) {
 		this.time_zone = time_zone;
+	}
+	public List getDataWeatherStation() {
+		return dataWeatherStation;
+	}
+	public void setDataWeatherStation(List dataWeatherStation) {
+		this.dataWeatherStation = dataWeatherStation;
 	}
 	
 	

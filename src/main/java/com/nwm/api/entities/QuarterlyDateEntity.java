@@ -18,6 +18,9 @@ public class QuarterlyDateEntity{
 	private int month_number;
 	private Double actual;
 	private Double estimated;
+	private Double inverterAvailability;
+	private Double POAAVG;
+	private Double TCellAVG;
 	public String getMonth() {
 		return month;
 	}
@@ -83,6 +86,24 @@ public class QuarterlyDateEntity{
 	}
 	public void setEstimated(Double estimated) {
 		this.estimated = estimated;
+	}
+	public Double getInverterAvailability() {
+		return inverterAvailability;
+	}
+	public void setInverterAvailability(Double inverterAvailability) {
+		this.inverterAvailability = inverterAvailability;
+	}
+	public Double getPOAAVG() {
+		return POAAVG;
+	}
+	public void setPOAAVG(Double pOAAVG) {
+		POAAVG = pOAAVG;
+	}
+	public Double getTCellAVG() {
+		return TCellAVG;
+	}
+	public void setTCellAVG(Double tCellAVG) {
+		TCellAVG = tCellAVG;
 	}
 	
 	

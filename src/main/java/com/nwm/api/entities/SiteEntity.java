@@ -150,7 +150,15 @@ public class SiteEntity {
 	private double nvm_temperature;
 	private int id_site_group;
 	private int timezone_datalogger;
+	private String read_data_all;
 	
+	
+	public String getRead_data_all() {
+		return read_data_all;
+	}
+	public void setRead_data_all(String read_data_all) {
+		this.read_data_all = read_data_all;
+	}
 	public int getTimezone_datalogger() {
 		return timezone_datalogger;
 	}

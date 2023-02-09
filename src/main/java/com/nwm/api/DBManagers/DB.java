@@ -98,6 +98,16 @@ public class DB {
 				mysql_maximum_active_connections = readProperty(resourceBundle, "prod_mysql_maximum_active_connections",
 						"50");
 				break;
+				
+			case "staging":
+				driver = readProperty(resourceBundle, "staging_driver", "com.mysql.jdbc.Driver");
+				url = readProperty(resourceBundle, "staging_url", "");
+				encryptedUsername = readProperty(resourceBundle, "staging_username", "");
+				encryptedPassword = readProperty(resourceBundle, "staging_password", "");
+				isEnscrypt = readProperty(resourceBundle, "staging_encrypt", "");
+				mysql_maximum_active_connections = readProperty(resourceBundle, "staging_mysql_maximum_active_connections",
+						"50");
+				break;
 			default:
 				driver = readProperty(resourceBundle, "dev_driver", "com.mysql.jdbc.Driver");
 				url = readProperty(resourceBundle, "dev_url", "");
