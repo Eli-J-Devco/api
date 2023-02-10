@@ -1214,6 +1214,13 @@
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%H:%i' ) AS categories_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
 			</if>
+			
+			<if test="(filterBy == 'today') and data_send_time == 4">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%H:%i' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_first_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+			</if>
 
 
 			<if test="(filterBy == '3_day') and data_send_time == 1">
@@ -1236,6 +1243,13 @@
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_first_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+			</if>
+			
+			<if test="(filterBy == '3_day') and data_send_time == 4">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_first_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
 			</if>
 
 
@@ -1261,6 +1275,13 @@
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
 			</if>
 			
+			<if test="(filterBy == 'this_week') and data_send_time == 4">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_first_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+			</if>
+			
 			<if test="(filterBy == 'last_week') and data_send_time == 1">
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full,
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b' ) AS categories_time,
@@ -1273,6 +1294,13 @@
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b' ) AS categories_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_first_time,
 				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+			</if>
+			
+			<if test="(filterBy == 'last_week') and data_send_time == 4">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_first_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
 			</if>
 			
 			
