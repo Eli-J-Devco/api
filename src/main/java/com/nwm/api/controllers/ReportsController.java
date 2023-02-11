@@ -2125,8 +2125,7 @@ public class ReportsController extends BaseController {
 		private static void writeHeaderQuarterlyReport(Sheet sheet, int rowIndex, ViewReportEntity dataObj) {
 			try {				
 				DecimalFormat df = new DecimalFormat("###,###");
-				DecimalFormat dfp = new DecimalFormat("###,###.0");
-				DecimalFormat dfp4 = new DecimalFormat("###,###.0000");
+				DecimalFormat dfp = new DecimalFormat("###,##0.0");
 				boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
 				// create CellStyle
 				CellStyle cellStyle = createStyleForHeader(sheet);
@@ -2553,6 +2552,9 @@ public class ReportsController extends BaseController {
 					cel33 = row28.createCell(12);
 					cel33.setCellStyle(cellStyleH);
 					cel33.setCellValue("");
+					
+					sheet.groupRow(8, 46);
+					sheet.setRowGroupCollapsed(29, true);
 				}
 				
 				Double totalBaseline = (double) 0;
@@ -2665,7 +2667,7 @@ public class ReportsController extends BaseController {
 							sheet.addMergedRegion(new CellRangeAddress(48 + i, 48 + i, 5, 6));
 							Cell cel35 = row32.createCell(5);
 							cel35.setCellStyle(cellStyleYellow);
-							cel35.setCellValue(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp4.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "");
+							cel35.setCellValue(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "");
 							cel35 = row32.createCell(6);
 							cel35.setCellStyle(cellStyleYellow);
 							cel35.setCellValue("");
@@ -2698,10 +2700,10 @@ public class ReportsController extends BaseController {
 				}
 				
 				// collapse rows that use for second chart in case this chart is hidden
-				if (dataWeatherStation == null) {
-					sheet.groupRow(29, 46);
-					sheet.setRowGroupCollapsed(29, true);
-				}
+//				if (dataWeatherStation == null) {
+//					sheet.groupRow(29, 46);
+//					sheet.setRowGroupCollapsed(29, true);
+//				}				
 
 				// Create font
 				Font styleTotal = sheet.getWorkbook().createFont();
@@ -2822,9 +2824,14 @@ public class ReportsController extends BaseController {
 					List dataInverterAvailability = dataObj.getDataAvailability();
 					
 					XSSFSheet chartSheet = document.createSheet("Quarterly Production Report");
-					XSSFSheet dataSheet = document.createSheet("data");
-					XSSFSheet dataSheetCumulative = document.createSheet("cumulative");
-
+					XSSFSheet dataSheet = null;
+					XSSFSheet dataSheetCumulative = null;
+					
+					if (!quarterlyReportByDay) {
+						dataSheet = document.createSheet("data");
+						dataSheetCumulative = document.createSheet("cumulative");
+					}
+					
 					// FileInputStream obtains input bytes from the image file
 					InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg" );
 					// Get the contents of an InputStream as a byte[].
@@ -2861,8 +2868,9 @@ public class ReportsController extends BaseController {
 					for (int i = 0; i < dataExports.size(); i++ ) {
 						QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
 						
-						dataSheet.createRow(i).createCell(0).setCellValue(item.getCategories_time());
 						if (!quarterlyReportByDay) {
+							dataSheet.createRow(i).createCell(0).setCellValue(item.getCategories_time());
+							
 							if (item.getEstimated() != null) {
 								dataSheet.getRow(i).createCell(1).setCellValue(item.getEstimated());
 							}
@@ -2880,32 +2888,32 @@ public class ReportsController extends BaseController {
 								dataSheetCumulative.getRow(i).createCell(2).setCellValue(totalActual);
 							}
 						} else {
-							if (item.getActual() != null) {
-								dataSheet.getRow(i).createCell(1).setCellValue(item.getActual());
-							}
-							if (dataWeatherStation != null) {
-								QuarterlyDateEntity itemWeatherStation = (QuarterlyDateEntity) dataWeatherStation.get(i);
-								
-								if (itemWeatherStation.getPOAAVG() != null) {
-									dataSheet.getRow(i).createCell(2).setCellValue(itemWeatherStation.getPOAAVG());
-								}
-								if (itemWeatherStation.getPOAAVG() != null) {
-									dataSheet.getRow(i).createCell(3).setCellValue(itemWeatherStation.getPOAAVG() * 24 /1000);
-								}
-								if (itemWeatherStation.getTCellAVG() != null) {
-									dataSheet.getRow(i).createCell(4).setCellValue(itemWeatherStation.getTCellAVG());
-								}
-								if (item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0) {
-									dataSheet.getRow(i).createCell(5).setCellValue(item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100);
-								}
-							}
-							if (dataInverterAvailability != null) {
-								QuarterlyDateEntity itemInverterAvailability = (QuarterlyDateEntity) dataInverterAvailability.get(i);
-								
-								if (itemInverterAvailability.getInverterAvailability() != null) {
-									dataSheet.getRow(i).createCell(6).setCellValue(itemInverterAvailability.getInverterAvailability());
-								}
-							}
+//							if (item.getActual() != null) {
+//								dataSheet.getRow(i).createCell(1).setCellValue(item.getActual());
+//							}
+//							if (dataWeatherStation != null) {
+//								QuarterlyDateEntity itemWeatherStation = (QuarterlyDateEntity) dataWeatherStation.get(i);
+//								
+//								if (itemWeatherStation.getPOAAVG() != null) {
+//									dataSheet.getRow(i).createCell(2).setCellValue(itemWeatherStation.getPOAAVG());
+//								}
+//								if (itemWeatherStation.getPOAAVG() != null) {
+//									dataSheet.getRow(i).createCell(3).setCellValue(itemWeatherStation.getPOAAVG() * 24 /1000);
+//								}
+//								if (itemWeatherStation.getTCellAVG() != null) {
+//									dataSheet.getRow(i).createCell(4).setCellValue(itemWeatherStation.getTCellAVG());
+//								}
+//								if (item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0) {
+//									dataSheet.getRow(i).createCell(5).setCellValue(item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100);
+//								}
+//							}
+//							if (dataInverterAvailability != null) {
+//								QuarterlyDateEntity itemInverterAvailability = (QuarterlyDateEntity) dataInverterAvailability.get(i);
+//								
+//								if (itemInverterAvailability.getInverterAvailability() != null) {
+//									dataSheet.getRow(i).createCell(6).setCellValue(itemInverterAvailability.getInverterAvailability());
+//								}
+//							}
 						}
 					}
 
@@ -3056,198 +3064,198 @@ public class ReportsController extends BaseController {
 						legend = chart.getOrAddLegend();
 					    legend.setPosition(LegendPosition.BOTTOM);
 					} else {
-						XDDFLineChartData data;
-						XDDFLineChartData.Series series;
-						
-						//====== first line chart============================================================
-						anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 9, 13, 26);
-						chart = drawing1.createChart(anchor1);
-						chart.setTitleText("");
-						chart.setTitleOverlay(false);
-
-						// create data sources
-						int numOfPoints = dataExports.size();
-						// dummy 0-values for the pad data source
-						Double[] dummyValuesForPad = new Double[numOfPoints];
-						for (int i = 0; i < numOfPoints; i++) {
-							dummyValuesForPad[i] = 0d;
-						}
-						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 0, 0));
-						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 1, 1));
-						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 2, 2));
-						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 3, 3));
-						XDDFNumericalDataSource<Double> valuesData4 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 4, 4));
-						XDDFNumericalDataSource<Double> valuesData5 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 5, 5));
-						XDDFNumericalDataSource<Double> valuesData6 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-								new CellRangeAddress(0, numOfPoints - 1, 6, 6));
-						
-						for (int i = 0; i < numOfPoints; i++) {
-							XSSFRow row = dataSheet.getRow(i);
-							if (row == null)
-								row = dataSheet.createRow(i);
-							XSSFCell cell = row.createCell(255);
-							cell.setCellValue(0);
-						}
-						
-						// create axis
-						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						
-						// first series
-						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-						leftAxis.setTitle("kWh");
-						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-						leftAxis.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
-			
-						// create data and series
-						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
-						data.setVaryColors(false);
-						series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData1);
-						
-						series.setTitle("Daily System Production (kWh)", new CellReference(chartSheet.getSheetName(), 47, 1, true, true));
-						series.setSmooth(true);
-						series.setMarkerStyle(MarkerStyle.NONE);
-						
-						chart.plot(data);
-						solidLineSeries(data, 0, PresetColor.STEEL_BLUE);
-						
-						// second series
-						if (dataWeatherStation != null) {
-							XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
-							rightAxis.setTitle("W/m²");
-							rightAxis.setCrosses(AxisCrosses.MAX);
-							rightAxis.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
-							
-							// create data and series
-							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
-							data.setVaryColors(false);
-							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData2);
-							series.setTitle("Daily POA (W/m²)", new CellReference(chartSheet.getSheetName(), 47, 3, true, true));
-							series.setSmooth(true);
-							series.setMarkerStyle(MarkerStyle.NONE);
-							
-							chart.plot(data);
-							solidLineSeries(data, 0, PresetColor.LIGHT_STEEL_BLUE);
-						}
-						
-						
-						// third series
-						if (dataWeatherStation != null) {
-							XDDFValueAxis rightAxis1 = chart.createValueAxis(AxisPosition.RIGHT);
-							rightAxis1.setTitle("kWh/m²");
-							rightAxis1.setCrosses(AxisCrosses.MAX);
-							rightAxis1.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
-							
-							// create data and series
-							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis1);
-							data.setVaryColors(false);
-							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
-							series.setTitle("Daily POA Insolation (kWh/m²)	", new CellReference(chartSheet.getSheetName(), 47, 5, true, true));
-							series.setSmooth(true);
-							series.setMarkerStyle(MarkerStyle.NONE);
-							
-							chart.plot(data);
-							solidLineSeries(data, 0, PresetColor.ORANGE);
-						}
-						
-						CTPlotArea plotArea = chart.getCTChart().getPlotArea();
-						plotArea.getValAxArray()[0].addNewMajorGridlines().addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {(byte) 240, (byte) 240, (byte) 240});
-						plotArea.getCatAxArray(0).addNewTickLblSkip().setVal(2);
-					    CTDispBlanksAs disp = CTDispBlanksAs.Factory.newInstance();
-					    disp.setVal(STDispBlanksAs.GAP);
-						chart.getCTChart().setDispBlanksAs(disp);
-
-						
-						// create legend
-						legend = chart.getOrAddLegend();
-						legend.setPosition(LegendPosition.BOTTOM);
-						legend.setOverlay(false);
-						
-			
-						//====== second line chart============================================================
-						if (dataWeatherStation != null) {
-							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 27, 13, 44);
-							chart = drawing1.createChart(anchor1);
-							// create axis
-							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						}
-						
-						// fourth series
-						if (dataWeatherStation != null) {
-							XDDFValueAxis leftAxis1 = chart.createValueAxis(AxisPosition.LEFT);
-							leftAxis1.setTitle("°C");
-							leftAxis1.setCrosses(AxisCrosses.AUTO_ZERO);
-							leftAxis1.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
-						
-							// create data and series
-							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis1);
-							data.setVaryColors(false);
-							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData4);
-							series.setTitle("TCell (°C)", new CellReference(chartSheet.getSheetName(), 47, 7, true, true));
-							series.setSmooth(true);
-							series.setMarkerStyle(MarkerStyle.NONE);
-							
-							chart.plot(data);
-							solidLineSeries(data, 0, PresetColor.SADDLE_BROWN);
-						}
-						
-						
-						// fifth series
-						XDDFValueAxis rightAxis2;
-						rightAxis2 = chart.createValueAxis(AxisPosition.RIGHT);
-						rightAxis2.setTitle("%");
-						rightAxis2.setCrosses(AxisCrosses.MAX);
-						rightAxis2.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
-						
-						if (dataWeatherStation != null) {
-							// create data and series
-							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis2);
-							data.setVaryColors(false);
-							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData5);
-							series.setTitle("Temperature Corrected PR (%)", new CellReference(chartSheet.getSheetName(), 47, 9, true, true));
-							series.setSmooth(true);
-							series.setMarkerStyle(MarkerStyle.NONE);
-	
-							chart.plot(data);
-							solidLineSeries(data, 0, PresetColor.GREEN);
-						}
-						
-						
-						// sixth series
-						if (dataInverterAvailability != null) { 
-							// create data and series
-							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis2);
-							data.setVaryColors(false);
-							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData6);
-							series.setTitle("Inverter Availability (%)", new CellReference(chartSheet.getSheetName(), 47, 11, true, true));
-							series.setSmooth(true);
-							series.setMarkerStyle(MarkerStyle.NONE);
-							
-							chart.plot(data);
-							solidLineSeries(data, 0, PresetColor.DARK_ORANGE);
-						}
-						
-						if (dataWeatherStation != null) {
-							chart.setTitleText("");
-							chart.setTitleOverlay(false);
-							
-							plotArea = chart.getCTChart().getPlotArea();
-							plotArea.getValAxArray()[0].addNewMajorGridlines().addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {(byte) 240, (byte) 240, (byte) 240});
-							plotArea.getCatAxArray(0).addNewTickLblSkip().setVal(2);
-							disp = CTDispBlanksAs.Factory.newInstance();
-							disp.setVal(STDispBlanksAs.GAP);
-							chart.getCTChart().setDispBlanksAs(disp);
-							
-							// create legend
-							legend = chart.getOrAddLegend();
-							legend.setPosition(LegendPosition.BOTTOM);
-							legend.setOverlay(false);
-						}
+//						XDDFLineChartData data;
+//						XDDFLineChartData.Series series;
+//						
+//						//====== first line chart============================================================
+//						anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 9, 13, 26);
+//						chart = drawing1.createChart(anchor1);
+//						chart.setTitleText("");
+//						chart.setTitleOverlay(false);
+//
+//						// create data sources
+//						int numOfPoints = dataExports.size();
+//						// dummy 0-values for the pad data source
+//						Double[] dummyValuesForPad = new Double[numOfPoints];
+//						for (int i = 0; i < numOfPoints; i++) {
+//							dummyValuesForPad[i] = 0d;
+//						}
+//						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 0, 0));
+//						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 1, 1));
+//						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 2, 2));
+//						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 3, 3));
+//						XDDFNumericalDataSource<Double> valuesData4 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 4, 4));
+//						XDDFNumericalDataSource<Double> valuesData5 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 5, 5));
+//						XDDFNumericalDataSource<Double> valuesData6 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+//								new CellRangeAddress(0, numOfPoints - 1, 6, 6));
+//						
+//						for (int i = 0; i < numOfPoints; i++) {
+//							XSSFRow row = dataSheet.getRow(i);
+//							if (row == null)
+//								row = dataSheet.createRow(i);
+//							XSSFCell cell = row.createCell(255);
+//							cell.setCellValue(0);
+//						}
+//						
+//						// create axis
+//						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+//						
+//						// first series
+//						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+//						leftAxis.setTitle("kWh");
+//						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+//						leftAxis.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
+//			
+//						// create data and series
+//						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
+//						data.setVaryColors(false);
+//						series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData1);
+//						
+//						series.setTitle("Daily System Production (kWh)", new CellReference(chartSheet.getSheetName(), 47, 1, true, true));
+//						series.setSmooth(true);
+//						series.setMarkerStyle(MarkerStyle.NONE);
+//						
+//						chart.plot(data);
+//						solidLineSeries(data, 0, PresetColor.STEEL_BLUE);
+//						
+//						// second series
+//						if (dataWeatherStation != null) {
+//							XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
+//							rightAxis.setTitle("W/m²");
+//							rightAxis.setCrosses(AxisCrosses.MAX);
+//							rightAxis.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
+//							
+//							// create data and series
+//							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
+//							data.setVaryColors(false);
+//							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData2);
+//							series.setTitle("Daily POA (W/m²)", new CellReference(chartSheet.getSheetName(), 47, 3, true, true));
+//							series.setSmooth(true);
+//							series.setMarkerStyle(MarkerStyle.NONE);
+//							
+//							chart.plot(data);
+//							solidLineSeries(data, 0, PresetColor.LIGHT_STEEL_BLUE);
+//						}
+//						
+//						
+//						// third series
+//						if (dataWeatherStation != null) {
+//							XDDFValueAxis rightAxis1 = chart.createValueAxis(AxisPosition.RIGHT);
+//							rightAxis1.setTitle("kWh/m²");
+//							rightAxis1.setCrosses(AxisCrosses.MAX);
+//							rightAxis1.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
+//							
+//							// create data and series
+//							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis1);
+//							data.setVaryColors(false);
+//							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
+//							series.setTitle("Daily POA Insolation (kWh/m²)	", new CellReference(chartSheet.getSheetName(), 47, 5, true, true));
+//							series.setSmooth(true);
+//							series.setMarkerStyle(MarkerStyle.NONE);
+//							
+//							chart.plot(data);
+//							solidLineSeries(data, 0, PresetColor.ORANGE);
+//						}
+//						
+//						CTPlotArea plotArea = chart.getCTChart().getPlotArea();
+//						plotArea.getValAxArray()[0].addNewMajorGridlines().addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {(byte) 240, (byte) 240, (byte) 240});
+//						plotArea.getCatAxArray(0).addNewTickLblSkip().setVal(2);
+//					    CTDispBlanksAs disp = CTDispBlanksAs.Factory.newInstance();
+//					    disp.setVal(STDispBlanksAs.GAP);
+//						chart.getCTChart().setDispBlanksAs(disp);
+//
+//						
+//						// create legend
+//						legend = chart.getOrAddLegend();
+//						legend.setPosition(LegendPosition.BOTTOM);
+//						legend.setOverlay(false);
+//						
+//			
+//						//====== second line chart============================================================
+//						if (dataWeatherStation != null) {
+//							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 27, 13, 44);
+//							chart = drawing1.createChart(anchor1);
+//							// create axis
+//							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+//						}
+//						
+//						// fourth series
+//						if (dataWeatherStation != null) {
+//							XDDFValueAxis leftAxis1 = chart.createValueAxis(AxisPosition.LEFT);
+//							leftAxis1.setTitle("°C");
+//							leftAxis1.setCrosses(AxisCrosses.AUTO_ZERO);
+//							leftAxis1.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
+//						
+//							// create data and series
+//							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis1);
+//							data.setVaryColors(false);
+//							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData4);
+//							series.setTitle("TCell (°C)", new CellReference(chartSheet.getSheetName(), 47, 7, true, true));
+//							series.setSmooth(true);
+//							series.setMarkerStyle(MarkerStyle.NONE);
+//							
+//							chart.plot(data);
+//							solidLineSeries(data, 0, PresetColor.SADDLE_BROWN);
+//						}
+//						
+//						
+//						// fifth series
+//						XDDFValueAxis rightAxis2;
+//						rightAxis2 = chart.createValueAxis(AxisPosition.RIGHT);
+//						rightAxis2.setTitle("%");
+//						rightAxis2.setCrosses(AxisCrosses.MAX);
+//						rightAxis2.setCrossBetween(AxisCrossBetween.MIDPOINT_CATEGORY);
+//						
+//						if (dataWeatherStation != null) {
+//							// create data and series
+//							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis2);
+//							data.setVaryColors(false);
+//							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData5);
+//							series.setTitle("Temperature Corrected PR (%)", new CellReference(chartSheet.getSheetName(), 47, 9, true, true));
+//							series.setSmooth(true);
+//							series.setMarkerStyle(MarkerStyle.NONE);
+//	
+//							chart.plot(data);
+//							solidLineSeries(data, 0, PresetColor.GREEN);
+//						}
+//						
+//						
+//						// sixth series
+//						if (dataInverterAvailability != null) { 
+//							// create data and series
+//							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis2);
+//							data.setVaryColors(false);
+//							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData6);
+//							series.setTitle("Inverter Availability (%)", new CellReference(chartSheet.getSheetName(), 47, 11, true, true));
+//							series.setSmooth(true);
+//							series.setMarkerStyle(MarkerStyle.NONE);
+//							
+//							chart.plot(data);
+//							solidLineSeries(data, 0, PresetColor.DARK_ORANGE);
+//						}
+//						
+//						if (dataWeatherStation != null) {
+//							chart.setTitleText("");
+//							chart.setTitleOverlay(false);
+//							
+//							plotArea = chart.getCTChart().getPlotArea();
+//							plotArea.getValAxArray()[0].addNewMajorGridlines().addNewSpPr().addNewLn().addNewSolidFill().addNewSrgbClr().setVal(new byte[] {(byte) 240, (byte) 240, (byte) 240});
+//							plotArea.getCatAxArray(0).addNewTickLblSkip().setVal(2);
+//							disp = CTDispBlanksAs.Factory.newInstance();
+//							disp.setVal(STDispBlanksAs.GAP);
+//							chart.getCTChart().setDispBlanksAs(disp);
+//							
+//							// create legend
+//							legend = chart.getOrAddLegend();
+//							legend.setPosition(LegendPosition.BOTTOM);
+//							legend.setOverlay(false);
+//						}
 					}
 					
 					// Write the output to a file
@@ -3364,11 +3372,11 @@ public class ReportsController extends BaseController {
 
 					if (quarterlyReportByDay) {
 						// first chart
-						chartCell1 = new com.itextpdf.layout.element.Cell(14, 13);
-						table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+//						chartCell1 = new com.itextpdf.layout.element.Cell(14, 13);
+//						table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 						
 						// gap between data table and chart
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
 
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Date")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily System Production (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
@@ -3380,8 +3388,7 @@ public class ReportsController extends BaseController {
 
 						// data table
 						DecimalFormat df = new DecimalFormat("###,###");
-						DecimalFormat dfp = new DecimalFormat("###,###.0");
-						DecimalFormat dfp4 = new DecimalFormat("###,###.0000");
+						DecimalFormat dfp = new DecimalFormat("###,##0.0");
 						
 						if(dataExports.size() > 0) {
 							for(int i = 0; i < dataExports.size(); i++ ) {
@@ -3392,7 +3399,7 @@ public class ReportsController extends BaseController {
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.getCategories_time()).setBold()));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? df.format(itemWeatherStation.getPOAAVG()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp4.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getTCellAVG() != null ? dfp.format(itemWeatherStation.getTCellAVG()) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0 ? dfp.format(item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataInverterAvailability != null && itemInverterAvailabilty.getInverterAvailability() != null ? dfp.format(itemInverterAvailabilty.getInverterAvailability()) : "")));
@@ -3418,7 +3425,7 @@ public class ReportsController extends BaseController {
 						
 						// data table
 						DecimalFormat df = new DecimalFormat("###,###");
-						DecimalFormat dfp = new DecimalFormat("###,###.0");
+						DecimalFormat dfp = new DecimalFormat("###,##0.0");
 						
 						totalBaseline = (double) 0;
 						totalActual = (double) 0;
@@ -3508,185 +3515,185 @@ public class ReportsController extends BaseController {
 					
 					//====== chart ============================================================
 					if (quarterlyReportByDay) {
-						final float tickMarkLength = 5;
-						final float tickMarkStroke = 1;
-						final float seriesStroke = 2;
-						final double domainAxisMargin = 0.005;
-						final double rangeAxisMargin = 0.2;
-						
-						TimeSeries powerSeries = new TimeSeries("Daily System Production (kWh)");
-						TimeSeries poaSeries = new TimeSeries("Daily POA (W/m²)");
-						TimeSeries poaInsolationSeries = new TimeSeries("Daily POA Insolation (kWh/m²)");
-						TimeSeries tCellSeries = new TimeSeries("TCell (°C)");
-						TimeSeries temperatureCorrectedSeries = new TimeSeries("Temperature Corrected PR (%)");
-						TimeSeries inverterAvailabilitySeries = new TimeSeries("Inverter Availability (%)");
-						
-						TimeSeriesCollection actualDataset = new TimeSeriesCollection(powerSeries);
-						TimeSeriesCollection poaDataset = new TimeSeriesCollection(poaSeries);
-						TimeSeriesCollection poaInsolationDataset = new TimeSeriesCollection(poaInsolationSeries);
-						TimeSeriesCollection tCellDataset = new TimeSeriesCollection(tCellSeries);
-						TimeSeriesCollection temperatureCorrectedDataset = new TimeSeriesCollection(temperatureCorrectedSeries);
-						TimeSeriesCollection inverterAvailabilityDataset = new TimeSeriesCollection(inverterAvailabilitySeries);
-						
-						JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "", actualDataset);
-						
-						// configure plot
-						XYPlot plot = chart.getXYPlot();
-						plot.setBackgroundPaint(Color.white);
-						plot.setRangeGridlinePaint(Color.gray);
-						// remove gap between plot and axis
-						plot.setAxisOffset(new RectangleInsets(0,0,0,0));
-						
-						// configure horizontal axis
-						DateAxis domainAxis= (DateAxis) plot.getDomainAxis();
-						domainAxis.setDateFormatOverride(new SimpleDateFormat("MM/dd/yyy"));
-						domainAxis.setTickMarkInsideLength(tickMarkLength);
-						domainAxis.setTickMarkOutsideLength(tickMarkLength);
-						domainAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-						domainAxis.setLowerMargin(domainAxisMargin);
-						domainAxis.setUpperMargin(domainAxisMargin);
-						domainAxis.setVerticalTickLabels(true);
-						
-						// dataset
-						for (int i = 0; i < dataExports.size(); i++) {
-							QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
-							QuarterlyDateEntity itemWeatherStation = dataWeatherStation != null ? (QuarterlyDateEntity) dataWeatherStation.get(i) : null;
-							QuarterlyDateEntity itemInverterAvailabilty = dataInverterAvailability != null ? (QuarterlyDateEntity) dataInverterAvailability.get(i) : null;
-							
-							Double actual = item.getActual() != null ? item.getActual() : null;
-							Double poa = dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? itemWeatherStation.getPOAAVG() : null;
-							Double poaInsolation = dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? itemWeatherStation.getPOAAVG() * 24 /1000 : null;
-							Double tCell = dataWeatherStation != null && itemWeatherStation.getTCellAVG() != null ? itemWeatherStation.getTCellAVG() : null;
-							Double temperatureCorrected = dataWeatherStation != null && item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0 ? item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100 : null;
-							Double inverterAvailability = dataInverterAvailability != null && itemInverterAvailabilty.getInverterAvailability() != null ? itemInverterAvailabilty.getInverterAvailability() : null;
-							
-							powerSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), actual);
-							poaSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), poa);
-							poaInsolationSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), poaInsolation);
-							tCellSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), tCell);
-							temperatureCorrectedSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), temperatureCorrected);
-							inverterAvailabilitySeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), inverterAvailability);
-						}
-						
-						// first line chart
-						XYSplineRenderer actualRenderer = new XYSplineRenderer();
-						actualRenderer.setSeriesPaint(0, new Color(49, 119, 168));
-						actualRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-						actualRenderer.setSeriesShapesVisible(0, false);
-						
-						NumberAxis actualAxis = new NumberAxis("kWh");
-						actualAxis.setTickMarkInsideLength(tickMarkLength);
-						actualAxis.setTickMarkOutsideLength(tickMarkLength);
-						actualAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-						actualAxis.setLowerMargin(rangeAxisMargin);
-						actualAxis.setUpperMargin(rangeAxisMargin);
-
-						plot.setRenderer(0, actualRenderer);
-						plot.setRangeAxis(0, actualAxis);
-						plot.setDataset(0, actualDataset);
-						plot.mapDatasetToRangeAxis(0, 0);
-						plot.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
-						
-						// second line chart
-						if (dataWeatherStation != null) {
-							XYSplineRenderer poaRenderer = new XYSplineRenderer();
-							poaRenderer.setSeriesPaint(0, new Color(163, 188, 215));
-							poaRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-							poaRenderer.setSeriesShapesVisible(0, false);
-	
-							NumberAxis poaAxis = new NumberAxis("W/m²");
-							poaAxis.setTickMarkInsideLength(tickMarkLength);
-							poaAxis.setTickMarkOutsideLength(tickMarkLength);
-							poaAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-							poaAxis.setLowerMargin(rangeAxisMargin);
-							poaAxis.setUpperMargin(rangeAxisMargin);
-							
-							plot.setRenderer(1, poaRenderer);
-							plot.setRangeAxis(1, poaAxis);
-							plot.setDataset(1, poaDataset);
-							plot.mapDatasetToRangeAxis(1, 1);
-							plot.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);
-						}
-
-						// third line chart
-						if (dataWeatherStation != null) {
-							XYSplineRenderer poaInsolationRenderer = new XYSplineRenderer();
-							poaInsolationRenderer.setSeriesPaint(0, new Color(255, 129, 39));
-							poaInsolationRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-							poaInsolationRenderer.setSeriesShapesVisible(0, false);
-	
-							NumberAxis poaInsolationAxis = new NumberAxis("kWh/m²");
-							poaInsolationAxis.setTickMarkInsideLength(tickMarkLength);
-							poaInsolationAxis.setTickMarkOutsideLength(tickMarkLength);
-							poaInsolationAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-							poaInsolationAxis.setLowerMargin(rangeAxisMargin);
-							poaInsolationAxis.setUpperMargin(rangeAxisMargin);
-	
-							plot.setRenderer(2, poaInsolationRenderer);
-							plot.setRangeAxis(2, poaInsolationAxis);
-							plot.setDataset(2, poaInsolationDataset);
-							plot.mapDatasetToRangeAxis(2, 2);
-							plot.setRangeAxisLocation(2, AxisLocation.TOP_OR_LEFT);
-						}
-
-						// fourth line chart
-						if (dataWeatherStation != null) {
-							XYSplineRenderer tCellRenderer = new XYSplineRenderer();
-							tCellRenderer.setSeriesPaint(0, new Color(165, 42, 42));
-							tCellRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-							tCellRenderer.setSeriesShapesVisible(0, false);
-	
-							NumberAxis tCellAxis = new NumberAxis("°C");
-							tCellAxis.setTickMarkInsideLength(tickMarkLength);
-							tCellAxis.setTickMarkOutsideLength(tickMarkLength);
-							tCellAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-							tCellAxis.setLowerMargin(rangeAxisMargin);
-							tCellAxis.setUpperMargin(rangeAxisMargin);
-	
-							plot.setRenderer(3, tCellRenderer);
-							plot.setRangeAxis(3, tCellAxis);
-							plot.setDataset(3, tCellDataset);
-							plot.mapDatasetToRangeAxis(3, 3);
-							plot.setRangeAxisLocation(3, AxisLocation.TOP_OR_RIGHT);
-						}
-
-						// fifth line chart
-						NumberAxis temperatureCorrectedAxis = new NumberAxis("%");
-						temperatureCorrectedAxis.setTickMarkInsideLength(tickMarkLength);
-						temperatureCorrectedAxis.setTickMarkOutsideLength(tickMarkLength);
-						temperatureCorrectedAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-						temperatureCorrectedAxis.setLowerMargin(rangeAxisMargin);
-						temperatureCorrectedAxis.setUpperMargin(rangeAxisMargin);
-						
-						plot.setRangeAxis(4, temperatureCorrectedAxis);
-						plot.setRangeAxisLocation(4, AxisLocation.TOP_OR_RIGHT);
-						
-						if (dataWeatherStation != null) {
-							XYSplineRenderer temperatureCorrectedRenderer = new XYSplineRenderer();
-							temperatureCorrectedRenderer.setSeriesPaint(0, new Color(27, 176, 96));
-							temperatureCorrectedRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-							temperatureCorrectedRenderer.setSeriesShapesVisible(0, false);
-	
-							
-							plot.setRenderer(4, temperatureCorrectedRenderer);
-							plot.setDataset(4, temperatureCorrectedDataset);
-							plot.mapDatasetToRangeAxis(4, 4);
-						}
-
-						// sixth line chart
-						if (dataInverterAvailability != null) {
-							XYSplineRenderer inverterAvailabilityRenderer = new XYSplineRenderer();
-							inverterAvailabilityRenderer.setSeriesPaint(0, new Color(253, 183, 52));
-							inverterAvailabilityRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-							inverterAvailabilityRenderer.setSeriesShapesVisible(0, false);
-	
-							plot.setRenderer(5, inverterAvailabilityRenderer);
-							plot.setDataset(5, inverterAvailabilityDataset);
-							plot.mapDatasetToRangeAxis(5, 4);
-						}
-						
-						// plot and return image
-						chartCell1.add(new Image(ImageDataFactory.create(chart.createBufferedImage(2000, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 500));
+//						final float tickMarkLength = 5;
+//						final float tickMarkStroke = 1;
+//						final float seriesStroke = 2;
+//						final double domainAxisMargin = 0.005;
+//						final double rangeAxisMargin = 0.2;
+//						
+//						TimeSeries powerSeries = new TimeSeries("Daily System Production (kWh)");
+//						TimeSeries poaSeries = new TimeSeries("Daily POA (W/m²)");
+//						TimeSeries poaInsolationSeries = new TimeSeries("Daily POA Insolation (kWh/m²)");
+//						TimeSeries tCellSeries = new TimeSeries("TCell (°C)");
+//						TimeSeries temperatureCorrectedSeries = new TimeSeries("Temperature Corrected PR (%)");
+//						TimeSeries inverterAvailabilitySeries = new TimeSeries("Inverter Availability (%)");
+//						
+//						TimeSeriesCollection actualDataset = new TimeSeriesCollection(powerSeries);
+//						TimeSeriesCollection poaDataset = new TimeSeriesCollection(poaSeries);
+//						TimeSeriesCollection poaInsolationDataset = new TimeSeriesCollection(poaInsolationSeries);
+//						TimeSeriesCollection tCellDataset = new TimeSeriesCollection(tCellSeries);
+//						TimeSeriesCollection temperatureCorrectedDataset = new TimeSeriesCollection(temperatureCorrectedSeries);
+//						TimeSeriesCollection inverterAvailabilityDataset = new TimeSeriesCollection(inverterAvailabilitySeries);
+//						
+//						JFreeChart chart = ChartFactory.createTimeSeriesChart("", "", "", actualDataset);
+//						
+//						// configure plot
+//						XYPlot plot = chart.getXYPlot();
+//						plot.setBackgroundPaint(Color.white);
+//						plot.setRangeGridlinePaint(Color.gray);
+//						// remove gap between plot and axis
+//						plot.setAxisOffset(new RectangleInsets(0,0,0,0));
+//						
+//						// configure horizontal axis
+//						DateAxis domainAxis= (DateAxis) plot.getDomainAxis();
+//						domainAxis.setDateFormatOverride(new SimpleDateFormat("MM/dd/yyy"));
+//						domainAxis.setTickMarkInsideLength(tickMarkLength);
+//						domainAxis.setTickMarkOutsideLength(tickMarkLength);
+//						domainAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//						domainAxis.setLowerMargin(domainAxisMargin);
+//						domainAxis.setUpperMargin(domainAxisMargin);
+//						domainAxis.setVerticalTickLabels(true);
+//						
+//						// dataset
+//						for (int i = 0; i < dataExports.size(); i++) {
+//							QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
+//							QuarterlyDateEntity itemWeatherStation = dataWeatherStation != null ? (QuarterlyDateEntity) dataWeatherStation.get(i) : null;
+//							QuarterlyDateEntity itemInverterAvailabilty = dataInverterAvailability != null ? (QuarterlyDateEntity) dataInverterAvailability.get(i) : null;
+//							
+//							Double actual = item.getActual() != null ? item.getActual() : null;
+//							Double poa = dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? itemWeatherStation.getPOAAVG() : null;
+//							Double poaInsolation = dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? itemWeatherStation.getPOAAVG() * 24 /1000 : null;
+//							Double tCell = dataWeatherStation != null && itemWeatherStation.getTCellAVG() != null ? itemWeatherStation.getTCellAVG() : null;
+//							Double temperatureCorrected = dataWeatherStation != null && item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0 ? item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100 : null;
+//							Double inverterAvailability = dataInverterAvailability != null && itemInverterAvailabilty.getInverterAvailability() != null ? itemInverterAvailabilty.getInverterAvailability() : null;
+//							
+//							powerSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), actual);
+//							poaSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), poa);
+//							poaInsolationSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), poaInsolation);
+//							tCellSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), tCell);
+//							temperatureCorrectedSeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), temperatureCorrected);
+//							inverterAvailabilitySeries.add(new Day(new SimpleDateFormat("MM/dd/yyyy").parse(item.getCategories_time())), inverterAvailability);
+//						}
+//						
+//						// first line chart
+//						XYSplineRenderer actualRenderer = new XYSplineRenderer();
+//						actualRenderer.setSeriesPaint(0, new Color(49, 119, 168));
+//						actualRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//						actualRenderer.setSeriesShapesVisible(0, false);
+//						
+//						NumberAxis actualAxis = new NumberAxis("kWh");
+//						actualAxis.setTickMarkInsideLength(tickMarkLength);
+//						actualAxis.setTickMarkOutsideLength(tickMarkLength);
+//						actualAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//						actualAxis.setLowerMargin(rangeAxisMargin);
+//						actualAxis.setUpperMargin(rangeAxisMargin);
+//
+//						plot.setRenderer(0, actualRenderer);
+//						plot.setRangeAxis(0, actualAxis);
+//						plot.setDataset(0, actualDataset);
+//						plot.mapDatasetToRangeAxis(0, 0);
+//						plot.setRangeAxisLocation(0, AxisLocation.TOP_OR_LEFT);
+//						
+//						// second line chart
+//						if (dataWeatherStation != null) {
+//							XYSplineRenderer poaRenderer = new XYSplineRenderer();
+//							poaRenderer.setSeriesPaint(0, new Color(163, 188, 215));
+//							poaRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//							poaRenderer.setSeriesShapesVisible(0, false);
+//	
+//							NumberAxis poaAxis = new NumberAxis("W/m²");
+//							poaAxis.setTickMarkInsideLength(tickMarkLength);
+//							poaAxis.setTickMarkOutsideLength(tickMarkLength);
+//							poaAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//							poaAxis.setLowerMargin(rangeAxisMargin);
+//							poaAxis.setUpperMargin(rangeAxisMargin);
+//							
+//							plot.setRenderer(1, poaRenderer);
+//							plot.setRangeAxis(1, poaAxis);
+//							plot.setDataset(1, poaDataset);
+//							plot.mapDatasetToRangeAxis(1, 1);
+//							plot.setRangeAxisLocation(1, AxisLocation.TOP_OR_LEFT);
+//						}
+//
+//						// third line chart
+//						if (dataWeatherStation != null) {
+//							XYSplineRenderer poaInsolationRenderer = new XYSplineRenderer();
+//							poaInsolationRenderer.setSeriesPaint(0, new Color(255, 129, 39));
+//							poaInsolationRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//							poaInsolationRenderer.setSeriesShapesVisible(0, false);
+//	
+//							NumberAxis poaInsolationAxis = new NumberAxis("kWh/m²");
+//							poaInsolationAxis.setTickMarkInsideLength(tickMarkLength);
+//							poaInsolationAxis.setTickMarkOutsideLength(tickMarkLength);
+//							poaInsolationAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//							poaInsolationAxis.setLowerMargin(rangeAxisMargin);
+//							poaInsolationAxis.setUpperMargin(rangeAxisMargin);
+//	
+//							plot.setRenderer(2, poaInsolationRenderer);
+//							plot.setRangeAxis(2, poaInsolationAxis);
+//							plot.setDataset(2, poaInsolationDataset);
+//							plot.mapDatasetToRangeAxis(2, 2);
+//							plot.setRangeAxisLocation(2, AxisLocation.TOP_OR_LEFT);
+//						}
+//
+//						// fourth line chart
+//						if (dataWeatherStation != null) {
+//							XYSplineRenderer tCellRenderer = new XYSplineRenderer();
+//							tCellRenderer.setSeriesPaint(0, new Color(165, 42, 42));
+//							tCellRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//							tCellRenderer.setSeriesShapesVisible(0, false);
+//	
+//							NumberAxis tCellAxis = new NumberAxis("°C");
+//							tCellAxis.setTickMarkInsideLength(tickMarkLength);
+//							tCellAxis.setTickMarkOutsideLength(tickMarkLength);
+//							tCellAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//							tCellAxis.setLowerMargin(rangeAxisMargin);
+//							tCellAxis.setUpperMargin(rangeAxisMargin);
+//	
+//							plot.setRenderer(3, tCellRenderer);
+//							plot.setRangeAxis(3, tCellAxis);
+//							plot.setDataset(3, tCellDataset);
+//							plot.mapDatasetToRangeAxis(3, 3);
+//							plot.setRangeAxisLocation(3, AxisLocation.TOP_OR_RIGHT);
+//						}
+//
+//						// fifth line chart
+//						NumberAxis temperatureCorrectedAxis = new NumberAxis("%");
+//						temperatureCorrectedAxis.setTickMarkInsideLength(tickMarkLength);
+//						temperatureCorrectedAxis.setTickMarkOutsideLength(tickMarkLength);
+//						temperatureCorrectedAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+//						temperatureCorrectedAxis.setLowerMargin(rangeAxisMargin);
+//						temperatureCorrectedAxis.setUpperMargin(rangeAxisMargin);
+//						
+//						plot.setRangeAxis(4, temperatureCorrectedAxis);
+//						plot.setRangeAxisLocation(4, AxisLocation.TOP_OR_RIGHT);
+//						
+//						if (dataWeatherStation != null) {
+//							XYSplineRenderer temperatureCorrectedRenderer = new XYSplineRenderer();
+//							temperatureCorrectedRenderer.setSeriesPaint(0, new Color(27, 176, 96));
+//							temperatureCorrectedRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//							temperatureCorrectedRenderer.setSeriesShapesVisible(0, false);
+//	
+//							
+//							plot.setRenderer(4, temperatureCorrectedRenderer);
+//							plot.setDataset(4, temperatureCorrectedDataset);
+//							plot.mapDatasetToRangeAxis(4, 4);
+//						}
+//
+//						// sixth line chart
+//						if (dataInverterAvailability != null) {
+//							XYSplineRenderer inverterAvailabilityRenderer = new XYSplineRenderer();
+//							inverterAvailabilityRenderer.setSeriesPaint(0, new Color(253, 183, 52));
+//							inverterAvailabilityRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+//							inverterAvailabilityRenderer.setSeriesShapesVisible(0, false);
+//	
+//							plot.setRenderer(5, inverterAvailabilityRenderer);
+//							plot.setDataset(5, inverterAvailabilityDataset);
+//							plot.mapDatasetToRangeAxis(5, 4);
+//						}
+//						
+//						// plot and return image
+//						chartCell1.add(new Image(ImageDataFactory.create(chart.createBufferedImage(2000, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 500));
 					} else {
 						final float tickMarkStroke = 1;
 						CategoryPlot plot = new CategoryPlot();
