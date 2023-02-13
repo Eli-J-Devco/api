@@ -79,6 +79,7 @@ public class DeviceEntity {
 	private Double lng;
 	private int kiosk_view;
 	private int id_employee;
+	private Integer order_id;
 	private String read_data_all;
 	private String view_tablename;
 	
@@ -504,6 +505,12 @@ public class DeviceEntity {
 	}
 	public void setId_employee(int id_employee) {
 		this.id_employee = id_employee;
+	}
+	public Integer getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(Integer order_id) {
+		this.order_id = order_id;
 	}
 	
 	
