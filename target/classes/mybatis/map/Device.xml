@@ -23,6 +23,7 @@
 		<result property="id_device_group" column="id_device_group" />
 		<result property="keyword" column="keyword" />
 		<result property="device_type_name" column="device_type_name" />
+		<result property="view_tablename" column="view_tablename" />
 		
 		
 		
@@ -120,7 +121,8 @@
 			s.datatablename,
 			s.`status`,
 			s.is_delete,
-			dt.name AS device_type_name
+			dt.name AS device_type_name,
+			s.view_tablename
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -216,7 +218,8 @@
 			`configuration`,
 			`configurationchangetime`,
 			`configurationchecksum`,
-			`datatablename`
+			`datatablename`,
+			`view_tablename`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -231,7 +234,8 @@
 			#{configuration},
 			#{configurationchangetime},
 			#{configurationchecksum},
-			#{datatablename}
+			#{datatablename},
+			#{view_tablename}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -255,7 +259,8 @@
 			configuration = #{configuration},
 			configurationchangetime = #{configurationchangetime},
 			configurationchecksum = #{configurationchecksum},
-			datatablename = #{datatablename}
+			datatablename = #{datatablename},
+			view_tablename = #{view_tablename}
 		WHERE
 			`id` = #{id}
 	</update>

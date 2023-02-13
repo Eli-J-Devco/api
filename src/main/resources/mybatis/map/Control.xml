@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Control">
+	<select id="getListInverter" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.serial_number,
+			d.id,
+			SHA1(d.id) AS hash_id,
+			d.id_site,
+			SHA1(d.id_site) AS hash_site_id,
+			d.id_device_group,
+			d.devicename,
+			d.datatablename,
+			dt.`name` AS device_type_name,
+			dt.image,
+			d.id_device_type,
+			s.datalogger_ip,
+			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated
+			
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND dt.id = 1
+			
+			order by
+	        <choose> 
+	        	<when test="sort_column == 'id'">
+	                d.id ${order_by}
+	            </when> 
+	            
+	            <when test="sort_column == 'devicename'">
+	                d.devicename ${order_by}
+	            </when>         
+	            <when test="sort_column == 'id_device_type'">
+	                d.id_device_type ${order_by}
+	            </when>
+	            <when test="sort_column == 'last_value'">
+	                d.last_value ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'last_updated'">
+	                d.last_updated ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      d.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 LIMIT ${limit} OFFSET ${offset};
+		 
+	</select>
+	
+	
+  	
+  	
+	
+	
+	
+</mapper>

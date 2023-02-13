@@ -16,6 +16,7 @@
 		<result property="created_by" column="created_by" />
 		<result property="updated_date" column="updated_by" />
 		<result property="code_prefix" column="code_prefix" />
+		<result property="view_tablename" column="view_tablename" />
 	</resultMap>
 	
 
@@ -24,7 +25,8 @@
 	<select id="getListDropdown" resultMap="DeviceGroupMap" parameterType="String">
 		SELECT
 			t.*,
-			t.group_name AS text
+			t.group_name AS text,
+			t.view_tablename
 		FROM
 			device_group AS t
 		WHERE

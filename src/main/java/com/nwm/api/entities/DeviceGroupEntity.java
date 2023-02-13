@@ -19,7 +19,16 @@ public class DeviceGroupEntity{
 	private String table_name;
 	private String code_prefix;
 	private int id_device_type;
+	private String view_tablename;
 	
+	
+	
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
 	public int getId_device_type() {
 		return id_device_type;
 	}

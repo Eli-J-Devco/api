@@ -80,10 +80,8 @@ public class SitesAnalyticsService extends DB {
 					Date d2 = dateFor.parse(dateFor.format(c.getTime()));
 					if(d1.compareTo(d2) < 0) {
 						maps.put("datatablename", map.get("datatablename"));
-						System.out.println("a: " + map.get("datatablename"));
 					} else {
 						maps.put("datatablename", map.get("view_tablename"));
-						System.out.println("a: " + map.get("view_tablename"));
 					}
 					
 					
