@@ -164,6 +164,7 @@
 			d.devicename,
 			d.datatablename,
 			d.id_device_type,
+			d.order_id,
 			dt.`name` AS device_type_name,
 			dt.image,
 			s.datalogger_ip,
