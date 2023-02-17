@@ -81,6 +81,9 @@ public class ImportOldDataController extends BaseController {
 			ImportOldDataService service = new ImportOldDataService();
 			ImportOldDataEntity data = service.insertImportOldData(obj);
 			if (data != null) {
+				if (data.getRow() > 0) {
+					return this.jsonResult(false, "Error date format at row " + data.getRow(), null, 0);
+				}
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 			} else {
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);

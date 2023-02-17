@@ -28,9 +28,51 @@ public class ImportOldDataEntity{
 	private List dataList;
 	private String table_name;
 	private int id_employee;
+	private String end_date;
+	private String start_date;
+	private String datatablename;
+	private String year;
+	private int id_device_type;
+	private int row; 
 	
 	
 	
+	public int getRow() {
+		return row;
+	}
+	public void setRow(int row) {
+		this.row = row;
+	}
+	public int getId_device_type() {
+		return id_device_type;
+	}
+	public void setId_device_type(int id_device_type) {
+		this.id_device_type = id_device_type;
+	}
+	public String getYear() {
+		return year;
+	}
+	public void setYear(String year) {
+		this.year = year;
+	}
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getEnd_date() {
+		return end_date;
+	}
+	public void setEnd_date(String end_date) {
+		this.end_date = end_date;
+	}
+	public String getStart_date() {
+		return start_date;
+	}
+	public void setStart_date(String start_date) {
+		this.start_date = start_date;
+	}
 	public int getId_employee() {
 		return id_employee;
 	}
@@ -43,10 +85,10 @@ public class ImportOldDataEntity{
 	public void setTable_name(String table_name) {
 		this.table_name = table_name;
 	}
-	public int getId() {
+	public int getId_device() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId_device(int id) {
 		this.id = id;
 	}
 	public int getId_site() {
