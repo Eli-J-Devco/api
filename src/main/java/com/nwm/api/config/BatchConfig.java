@@ -31,10 +31,10 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */60 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void startBatchJobSolarOpenWeather() throws Exception {
 		BatchJob job =new BatchJob(); 
-		job.runCronJobSolarOpenWeather();
+//		job.runCronJobSolarOpenWeather();
 	}
 	
 	

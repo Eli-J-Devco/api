@@ -23,8 +23,8 @@ public class Constants {
 	public static final String weatherAPIURL = "https://api.openweathermap.org/data/2.5/weather";
 	public static final String weatherAPIKEY = "868e4c309abc11cdfd41b07b84c4cd7f";
 	
-	public static final String OPEN_WEATHER_URL = "https://api.solcast.com.au/data/forecast/radiation_and_weather";
-	public static final String OPEN_WEATHER_KEY = "Aec4Vj7qmIrIXf39aSAbKferD6V_LSxU";
+	public static final String OPEN_WEATHER_URL = "http://api.openweathermap.org/data/2.5/solar_radiation/history?";
+	public static final String OPEN_WEATHER_KEY = "792920f7ad45e75ac6c3806358544d31";
 	
 	public static final String sunriseSunsetAPI = "https://api.sunrise-sunset.org/json";
 	
