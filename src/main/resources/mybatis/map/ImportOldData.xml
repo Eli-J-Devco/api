@@ -49,7 +49,56 @@
 			
 	</select>
 	
+	<select id="getListDeviceMeterBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename,
+			d.datatablename,
+			d.id_site
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id IN(3) 
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
 	
+	<select id="getListDeviceWeather" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename,
+			d.datatablename,
+			d.id_site
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id IN(4) 
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	<select id="getListDeviceInverterBySite" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename,
+			d.datatablename,
+			d.id_site
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id IN(1) 
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
 	
 	
 </mapper>

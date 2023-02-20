@@ -880,7 +880,7 @@ public class BatchJobService extends DB {
 			}
 			
 			// Case 2: inverter, meter
-			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
+			else if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
 				// Create list date 
 				
 				for(int t = 0; t < setTime; t++) {
@@ -928,7 +928,7 @@ public class BatchJobService extends DB {
 			}
 			
 			// Case 3: inverter, weather
-			if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
+			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				for(int t = 0; t < setTime; t++) {
 					cal.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
@@ -972,7 +972,7 @@ public class BatchJobService extends DB {
 			}
 			
 			// Case 4: meter, weather
-			if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
+			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				
 				for(int t = 0; t < setTime; t++) {
@@ -1017,7 +1017,7 @@ public class BatchJobService extends DB {
 				
 			}
 			// Case 5: meter
-			if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
+			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 
 				for(int t = 0; t < setTime; t++) {
@@ -1043,7 +1043,7 @@ public class BatchJobService extends DB {
 				}
 			}
 			// Case 6: inverter
-			if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
+			else if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 				
 				for(int t = 0; t < setTime; t++) {
