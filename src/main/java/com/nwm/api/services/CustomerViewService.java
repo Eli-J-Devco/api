@@ -175,6 +175,307 @@ public class CustomerViewService extends DB {
 					}
 					break;
 				case "custom":
+					// Create list date 
+					SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
+					SimpleDateFormat usFormatCustom = new SimpleDateFormat("MM/dd/yyyy");
+					SimpleDateFormat usFormatCustomMonth = new SimpleDateFormat("MM/yyyy");
+					
+					SimpleDateFormat catFormatCustom = new SimpleDateFormat("MMM. yyyy");
+					SimpleDateFormat catFormatCustomMonth = new SimpleDateFormat("MMM. yyyy");
+
+					SimpleDateFormat usFormatCustomYear = new SimpleDateFormat("yyyy");
+					SimpleDateFormat catFormatCustomYear = new SimpleDateFormat("yyyy");
+					
+					Date startDateCustom = dateFormatCustom.parse(obj.getStart_date() + " AM");
+					Calendar calCustom = Calendar.getInstance();
+					calCustom.setTime(startDateCustom);
+					
+					
+					Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
+					Calendar calEndCustom = Calendar.getInstance();
+					calEndCustom.setTime(endDateCustom);
+					
+					switch (obj.getData_send_time()) {
+						case 4:
+							List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
+							int dayYTD = 1;
+							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
+							
+							for(int t = 0; t <= forCountYTD; t++) {
+								calCustom.setTime(startDateCustom);
+								
+								ClientMonthlyDateEntity headerDateYTD = new ClientMonthlyDateEntity();
+								calCustom.add(Calendar.DATE, t * dayYTD);
+								headerDateYTD.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+								headerDateYTD.setTime_full(usFormatCustom.format(calCustom.getTime()));
+								headerDateYTD.setTime_format(usFormatCustom.format(calCustom.getTime()));
+								headerDateYTD.setCategories_time(catFormatCustom.format(calCustom.getTime()));
+								headerDateYTD.setChart_energy_kwh(0.001);
+								headerDateYTD.setNvm_irradiance(0.001);
+								categoriesYTD.add(headerDateYTD);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
+							List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
+							if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesYTD) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerMYTD.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
+										String categoriesTimeYTD = item.getTime_format();
+										String powerTimeYTD = itemT.get("time_format").toString();
+										if (categoriesTimeYTD.equals(powerTimeYTD)) {
+								        	flag = true;
+								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	break;
+								        }
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewYTD.add(mapItem);
+									} else {
+										dataNewYTD.add(mapItemObjYTD);
+									}
+								}
+							}
+							
+							
+							Map<String, Object> deviceItemMYTD = new HashMap<>();
+							if (dataPowerMYTD.size() > 0) {
+								deviceItemMYTD.put("data_energy", dataNewYTD);
+								deviceItemMYTD.put("type", "energy");
+								deviceItemMYTD.put("devicename", "Energy output");
+								deviceItemMYTD.put("deviceType", "meter");
+								dataEnergy.add(deviceItemMYTD);
+							}							
+							break;
+						
+						case 5:
+							LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
+							LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
+							long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
+						    
+							List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
+							int YTD7Day = 1;
+							
+							for(int t = 0; t <= forCountYTD7Day; t++) {
+								calCustom.setTime(startDateCustom);
+								ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+								calCustom.add(Calendar.WEEK_OF_YEAR, t * YTD7Day);
+								headerDateLT.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+								headerDateLT.setTime_format(String.valueOf(t));
+								headerDateLT.setTime_full(usFormatCustom.format(calCustom.getTime()));
+								headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
+								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setNvm_irradiance(0.001);
+								categoriesYTD7Day.add(headerDateLT);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
+							List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
+							
+							if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerYTD7Day.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
+										String categoriesTimeYTD = item.getTime_format();
+										String powerTimeYTD = itemT.get("time_format").toString();
+										if (categoriesTimeYTD.equals(powerTimeYTD)) {
+								        	flag = true;
+								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	break;
+								        }
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewYTD7Day.add(mapItem);
+									} else {
+										dataNewYTD7Day.add(mapItemObjYTD);
+									}
+								}
+							}
+							
+							Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
+							if (dataPowerYTD7Day.size() > 0) {
+								deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
+								deviceItemMYTD7Day.put("type", "energy");
+								deviceItemMYTD7Day.put("devicename", "Energy output");
+								deviceItemMYTD7Day.put("deviceType", "meter");
+								dataEnergy.add(deviceItemMYTD7Day);
+							}							
+							break;
+
+						case 6:
+							YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+							YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+							long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
+					        
+							List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
+							int monthYTD = 1;
+							
+							for(int t = 0; t <= forCountYTDMonth; t++) {
+								calCustom.setTime(startDateCustom);
+								ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+								calCustom.add(Calendar.MONTH, t * monthYTD);
+								headerDateLT.setDownload_time(usFormatCustomMonth.format(calCustom.getTime()));
+								headerDateLT.setTime_full(usFormatCustomMonth.format(calCustom.getTime()));
+								headerDateLT.setTime_format(usFormatCustomMonth.format(calCustom.getTime()));
+								headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
+								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setNvm_irradiance(0.001);
+								categoriesYTDMonth.add(headerDateLT);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
+							List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
+							if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerMLT.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
+										String categoriesTimeLT = item.getTime_format();
+										String powerTimeLT = itemT.get("time_format").toString();
+										if (categoriesTimeLT.equals(powerTimeLT)) {
+								        	flag = true;
+								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	break;
+								        }
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewYTDMonth.add(mapItem);
+									} else {
+										dataNewYTDMonth.add(mapItemObjLT);
+									}
+								}
+							}
+							
+							
+							Map<String, Object> deviceItemMLT = new HashMap<>();
+							if (dataPowerMLT.size() > 0) {
+								deviceItemMLT.put("data_energy", dataNewYTDMonth);
+								deviceItemMLT.put("type", "energy");
+								deviceItemMLT.put("devicename", "Energy output");
+								deviceItemMLT.put("deviceType", "meter");
+								dataEnergy.add(deviceItemMLT);
+							}
+							
+							break;
+
+						case 7:
+							YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+							YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+							long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
+
+							if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
+									forCountLTYear += 1;
+								}
+							
+							List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
+							int yearLT = 1;
+							
+							for(int t = 0; t <= forCountLTYear; t++) {
+								calCustom.setTime(startDateCustom);
+								ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+								calCustom.add(Calendar.YEAR, t * yearLT);
+								headerDateLT.setDownload_time(usFormatCustomYear.format(calCustom.getTime()));
+								headerDateLT.setTime_full(usFormatCustomYear.format(calCustom.getTime()));
+								headerDateLT.setTime_format(usFormatCustomYear.format(calCustom.getTime()));
+								headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
+								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setNvm_irradiance(0.001);
+								categoriesLTYear.add(headerDateLT);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
+							List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
+							
+							if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesLTYear) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerMLTYear.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
+										String categoriesTimeLT = item.getTime_format();
+										String powerTimeLT = itemT.get("time_format").toString();
+										if (categoriesTimeLT.equals(powerTimeLT)) {
+								        	flag = true;
+								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	break;
+								        }
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewLTYear.add(mapItem);
+									} else {
+										dataNewLTYear.add(mapItemObjLT);
+									}
+								}
+							}
+							
+							Map<String, Object> deviceItemMLTYear = new HashMap<>();
+							if (dataPowerMLTYear.size() > 0) {
+								deviceItemMLTYear.put("data_energy", dataNewLTYear);
+								deviceItemMLTYear.put("type", "energy");
+								deviceItemMLTYear.put("devicename", "Energy output");
+								deviceItemMLTYear.put("deviceType", "meter");
+								dataEnergy.add(deviceItemMLTYear);
+							}
+							break;
+					}
+					break;
 				case "this_week":
 				case "last_week":
 				case "3_day":
@@ -1114,6 +1415,307 @@ public class CustomerViewService extends DB {
 							break;
 							
 						case "custom":
+						// Create list date 
+						SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
+						SimpleDateFormat usFormatCustom = new SimpleDateFormat("MM/dd/yyyy");
+						SimpleDateFormat usFormatCustomMonth = new SimpleDateFormat("MM/yyyy");
+						
+						SimpleDateFormat catFormatCustom = new SimpleDateFormat("MMM. yyyy");
+						SimpleDateFormat catFormatCustomMonth = new SimpleDateFormat("MMM. yyyy");
+
+						SimpleDateFormat usFormatCustomYear = new SimpleDateFormat("yyyy");
+						SimpleDateFormat catFormatCustomYear = new SimpleDateFormat("yyyy");
+						
+						Date startDateCustom = dateFormatCustom.parse(obj.getStart_date() + " AM");
+						Calendar calCustom = Calendar.getInstance();
+						calCustom.setTime(startDateCustom);
+						
+						
+						Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
+						Calendar calEndCustom = Calendar.getInstance();
+						calEndCustom.setTime(endDateCustom);
+						
+						switch (obj.getData_send_time()) {
+							case 4:
+								List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
+								int dayYTD = 1;
+								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
+								
+								for(int t = 0; t <= forCountYTD; t++) {
+									calCustom.setTime(startDateCustom);
+									
+									ClientMonthlyDateEntity headerDateYTD = new ClientMonthlyDateEntity();
+									calCustom.add(Calendar.DATE, t * dayYTD);
+									headerDateYTD.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+									headerDateYTD.setTime_full(usFormatCustom.format(calCustom.getTime()));
+									headerDateYTD.setTime_format(usFormatCustom.format(calCustom.getTime()));
+									headerDateYTD.setCategories_time(catFormatCustom.format(calCustom.getTime()));
+									headerDateYTD.setChart_energy_kwh(0.001);
+									headerDateYTD.setNvm_irradiance(0.001);
+									categoriesYTD.add(headerDateYTD);
+								}
+								
+								List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
+								List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
+								if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
+									for (ClientMonthlyDateEntity item : categoriesYTD) {
+										boolean flag = false;
+										ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+										for( int v = 0; v < dataPowerMYTD.size(); v++){
+											Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
+											String categoriesTimeYTD = item.getTime_format();
+											String powerTimeYTD = itemT.get("time_format").toString();
+											if (categoriesTimeYTD.equals(powerTimeYTD)) {
+														flag = true;
+														mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+														mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+														mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+														mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+														mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+														mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+														break;
+													}
+										}
+										
+										if(flag == false) {
+											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+											mapItem.setCategories_time(item.getCategories_time());
+											mapItem.setTime_format(item.getTime_format());
+											mapItem.setTime_full(item.getTime_full());
+											mapItem.setDownload_time(item.getDownload_time());
+											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											dataNewYTD.add(mapItem);
+										} else {
+											dataNewYTD.add(mapItemObjYTD);
+										}
+									}
+								}
+								
+								
+								Map<String, Object> deviceItemMYTD = new HashMap<>();
+								if (dataPowerMYTD.size() > 0) {
+									deviceItemMYTD.put("data_energy", dataNewYTD);
+									deviceItemMYTD.put("type", "energy");
+									deviceItemMYTD.put("devicename", "Energy output");
+									deviceItemMYTD.put("deviceType", "meter");
+									dataEnergy.add(deviceItemMYTD);
+								}							
+								break;
+							
+							case 5:
+								LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
+								LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
+								long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
+									
+								List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
+								int YTD7Day = 1;
+								
+								for(int t = 0; t <= forCountYTD7Day; t++) {
+									calCustom.setTime(startDateCustom);
+									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+									calCustom.add(Calendar.WEEK_OF_YEAR, t * YTD7Day);
+									headerDateLT.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+									headerDateLT.setTime_format(String.valueOf(t));
+									headerDateLT.setTime_full(usFormatCustom.format(calCustom.getTime()));
+									headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
+									headerDateLT.setChart_energy_kwh(0.001);
+									headerDateLT.setNvm_irradiance(0.001);
+									categoriesYTD7Day.add(headerDateLT);
+								}
+								
+								List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
+								List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
+								
+								if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
+									for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
+										boolean flag = false;
+										ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+										for( int v = 0; v < dataPowerYTD7Day.size(); v++){
+											Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
+											String categoriesTimeYTD = item.getTime_format();
+											String powerTimeYTD = itemT.get("time_format").toString();
+											if (categoriesTimeYTD.equals(powerTimeYTD)) {
+														flag = true;
+														mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+														mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+														mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+														mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+														mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+														mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+														break;
+													}
+										}
+										
+										if(flag == false) {
+											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+											mapItem.setCategories_time(item.getCategories_time());
+											mapItem.setTime_format(item.getTime_format());
+											mapItem.setTime_full(item.getTime_full());
+											mapItem.setDownload_time(item.getDownload_time());
+											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											dataNewYTD7Day.add(mapItem);
+										} else {
+											dataNewYTD7Day.add(mapItemObjYTD);
+										}
+									}
+								}
+								
+								Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
+								if (dataPowerYTD7Day.size() > 0) {
+									deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
+									deviceItemMYTD7Day.put("type", "energy");
+									deviceItemMYTD7Day.put("devicename", "Energy output");
+									deviceItemMYTD7Day.put("deviceType", "meter");
+									dataEnergy.add(deviceItemMYTD7Day);
+								}							
+								break;
+
+							case 6:
+								YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+								YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+								long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
+										
+								List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
+								int monthYTD = 1;
+								
+								for(int t = 0; t <= forCountYTDMonth; t++) {
+									calCustom.setTime(startDateCustom);
+									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+									calCustom.add(Calendar.MONTH, t * monthYTD);
+									headerDateLT.setDownload_time(usFormatCustomMonth.format(calCustom.getTime()));
+									headerDateLT.setTime_full(usFormatCustomMonth.format(calCustom.getTime()));
+									headerDateLT.setTime_format(usFormatCustomMonth.format(calCustom.getTime()));
+									headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
+									headerDateLT.setChart_energy_kwh(0.001);
+									headerDateLT.setNvm_irradiance(0.001);
+									categoriesYTDMonth.add(headerDateLT);
+								}
+								
+								List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
+								List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
+								if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
+									for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
+										boolean flag = false;
+										ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+										for( int v = 0; v < dataPowerMLT.size(); v++){
+											Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
+											String categoriesTimeLT = item.getTime_format();
+											String powerTimeLT = itemT.get("time_format").toString();
+											if (categoriesTimeLT.equals(powerTimeLT)) {
+														flag = true;
+														mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+														mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+														mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+														break;
+													}
+										}
+										
+										if(flag == false) {
+											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+											mapItem.setCategories_time(item.getCategories_time());
+											mapItem.setTime_format(item.getTime_format());
+											mapItem.setTime_full(item.getTime_full());
+											mapItem.setDownload_time(item.getDownload_time());
+											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											dataNewYTDMonth.add(mapItem);
+										} else {
+											dataNewYTDMonth.add(mapItemObjLT);
+										}
+									}
+								}
+								
+								
+								Map<String, Object> deviceItemMLT = new HashMap<>();
+								if (dataPowerMLT.size() > 0) {
+									deviceItemMLT.put("data_energy", dataNewYTDMonth);
+									deviceItemMLT.put("type", "energy");
+									deviceItemMLT.put("devicename", "Energy output");
+									deviceItemMLT.put("deviceType", "meter");
+									dataEnergy.add(deviceItemMLT);
+								}
+								
+								break;
+
+							case 7:
+								YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+								YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+								long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
+
+								if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
+										forCountLTYear += 1;
+									}
+								
+								List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
+								int yearLT = 1;
+								
+								for(int t = 0; t <= forCountLTYear; t++) {
+									calCustom.setTime(startDateCustom);
+									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+									calCustom.add(Calendar.YEAR, t * yearLT);
+									headerDateLT.setDownload_time(usFormatCustomYear.format(calCustom.getTime()));
+									headerDateLT.setTime_full(usFormatCustomYear.format(calCustom.getTime()));
+									headerDateLT.setTime_format(usFormatCustomYear.format(calCustom.getTime()));
+									headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
+									headerDateLT.setChart_energy_kwh(0.001);
+									headerDateLT.setNvm_irradiance(0.001);
+									categoriesLTYear.add(headerDateLT);
+								}
+								
+								List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
+								List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
+								
+								if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
+									for (ClientMonthlyDateEntity item : categoriesLTYear) {
+										boolean flag = false;
+										ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+										for( int v = 0; v < dataPowerMLTYear.size(); v++){
+											Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
+											String categoriesTimeLT = item.getTime_format();
+											String powerTimeLT = itemT.get("time_format").toString();
+											if (categoriesTimeLT.equals(powerTimeLT)) {
+														flag = true;
+														mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+														mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+														mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+														break;
+													}
+										}
+										
+										if(flag == false) {
+											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+											mapItem.setCategories_time(item.getCategories_time());
+											mapItem.setTime_format(item.getTime_format());
+											mapItem.setTime_full(item.getTime_full());
+											mapItem.setDownload_time(item.getDownload_time());
+											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											dataNewLTYear.add(mapItem);
+										} else {
+											dataNewLTYear.add(mapItemObjLT);
+										}
+									}
+								}
+								
+								Map<String, Object> deviceItemMLTYear = new HashMap<>();
+								if (dataPowerMLTYear.size() > 0) {
+									deviceItemMLTYear.put("data_energy", dataNewLTYear);
+									deviceItemMLTYear.put("type", "energy");
+									deviceItemMLTYear.put("devicename", "Energy output");
+									deviceItemMLTYear.put("deviceType", "meter");
+									dataEnergy.add(deviceItemMLTYear);
+								}
+								break;
+						}
+						break;
 						case "3_day":
 						case "this_week":
 						case "last_week":
