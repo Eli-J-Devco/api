@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TablePreference">
+	
+	<select id="getPreference" resultType="com.nwm.api.entities.TablePreferenceEntity" parameterType="com.nwm.api.entities.TablePreferenceEntity" >
+		SELECT
+			id_employee,
+			`table`,
+			order_by,
+			sort_column
+		FROM
+			table_preference
+		WHERE
+			id_employee = #{id_employee}
+			AND `table` = #{table}
+	</select>
+	
+	<insert id="insertPreference" useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO table_preference (
+			id_employee,
+			`table`,
+			order_by,
+			sort_column
+			) VALUES (
+			#{id_employee},
+			#{table},
+			#{order_by},
+			#{sort_column}
+			)
+	</insert>
+	
+	<update id="updatePreference" >
+		UPDATE table_preference
+		SET
+			order_by = #{order_by},
+			sort_column = #{sort_column}
+		WHERE
+			id_employee = #{id_employee}
+			AND `table` = #{table}
+	</update>
+	
+
+</mapper>

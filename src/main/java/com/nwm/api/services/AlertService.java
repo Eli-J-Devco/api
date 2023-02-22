@@ -14,6 +14,7 @@ import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.ErrorLevelEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 
 public class AlertService extends DB {
 	/**
@@ -25,6 +26,32 @@ public class AlertService extends DB {
 
 	public List getList(AlertEntity obj) {
 		try {
+			// get user preference for table sorting column
+			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
+			tablePreference.setId_employee(obj.getId_employee());
+			tablePreference.setTable("Alert");
+			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			
+			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
+				if (tablePreference != null) {
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					update("TablePreference.updatePreference", tablePreference);
+				} else {
+					tablePreference = new TablePreferenceEntity();
+					tablePreference.setId_employee(obj.getId_employee());
+					tablePreference.setTable("Alert");
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					insert("TablePreference.insertPreference", tablePreference);
+				}
+			} else {
+				if (tablePreference != null) {
+					obj.setOrder_by(tablePreference.getOrder_by());
+					obj.setSort_column(tablePreference.getSort_column());
+				}
+			}
+			
 			List rs = queryForList("Alert.getList", obj);
 			if (rs == null) {
 				return new ArrayList<>();
