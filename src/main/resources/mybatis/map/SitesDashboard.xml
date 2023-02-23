@@ -227,7 +227,30 @@
 			) p ON p.id_device = d.id
 			
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0  ORDER BY d.id_device_type DESC
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+			
+		ORDER BY
+	        <choose> 
+	       		<when test="sort_column == 'order_id'">
+	                d.order_id ${order_by}
+	            </when>
+	             
+	            <when test="sort_column == 'devicename'">
+	                d.devicename ${order_by}
+	            </when>     
+	                
+	            <when test="sort_column == 'key_indicator'">
+	                key_indicator ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'times_ago'">
+	                last_updated ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      d.id_device_type DESC
+			    </otherwise>                                                  
+	        </choose>
 	</select>
 	
   	

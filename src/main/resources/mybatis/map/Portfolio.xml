@@ -326,7 +326,6 @@
 	            <when test="sort_column == 'name'">
 	                s.name ${order_by}
 	            </when>     
-	            
 	                
 	            <when test="sort_column == 'dc_capacity'">
 	                s.dc_capacity ${order_by}
@@ -344,6 +343,41 @@
 	                s.PerformanceRatioYesterday ${order_by}
 	            </when>
 	            
+	       		<when test="sort_column == 'total_error'">
+	                total_error ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'kiosk_view'">
+	                s.kiosk_view ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'id_company'">
+	                s.id_company ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'energy_now'">
+	                activePower ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'weather'">
+	                s.weather_icon ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'irradiance'">
+	                irradiance ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'built_since'">
+	                s.built_since ${order_by}
+	            </when>
+	            
+	       		<when test="sort_column == 'last_updated'">
+	                p.last_updated ${order_by}
+	            </when>
 	            
 	            
 	            <otherwise>

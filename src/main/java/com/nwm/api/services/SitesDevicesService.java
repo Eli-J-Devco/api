@@ -17,6 +17,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.utils.SecretCards;
 
 public class SitesDevicesService extends DB {
@@ -59,6 +60,32 @@ public class SitesDevicesService extends DB {
 		List dataList, dataListNew = new ArrayList();
 		SecretCards secretCard = new SecretCards();
 		try {
+			// get user preference for table sorting column
+			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
+			tablePreference.setId_employee(obj.getId_employee());
+			tablePreference.setTable("SiteDevice");
+			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			
+			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
+				if (tablePreference != null) {
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					update("TablePreference.updatePreference", tablePreference);
+				} else {
+					tablePreference = new TablePreferenceEntity();
+					tablePreference.setId_employee(obj.getId_employee());
+					tablePreference.setTable("SiteDevice");
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					insert("TablePreference.insertPreference", tablePreference);
+				}
+			} else {
+				if (tablePreference != null) {
+					obj.setOrder_by(tablePreference.getOrder_by());
+					obj.setSort_column(tablePreference.getSort_column());
+				}
+			}
+			
 			dataList = queryForList("SitesDevices.getListDeviceByIdSite", obj);
 			return dataList;
 				
