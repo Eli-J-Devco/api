@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
+import com.github.s7connector.api.factory.S7ConnectorFactory;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.ControlService;
@@ -25,6 +29,34 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/control")
 public class ControlController extends BaseController {
+	
+	
+    
+    /**
+	 * @description Get list device by site
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/readPLCS71200")
+	public Object readPLCS71200(@RequestBody DeviceEntity obj) {
+		try {
+			//Open TCP Connection
+		    S7Connector connector = S7ConnectorFactory
+		            .buildTCPConnector()
+		            .withHost("192.168.1.101")
+		            .withRack(0) //optional
+		            .withSlot(2) //optional
+		            .build();
+		    
+		    byte[] bs = connector.read(DaveArea.DB, 100, 10, 0);
+		    
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 10);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	/**
 	 * @description Get detail site 
