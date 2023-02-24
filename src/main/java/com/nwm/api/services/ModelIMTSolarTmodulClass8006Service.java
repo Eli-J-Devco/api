@@ -36,7 +36,7 @@ public class ModelIMTSolarTmodulClass8006Service extends DB {
 				dataModelIMTSolarTmodulClass8006.setModuleTemperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				// set custom field nvm_irradiance
 				dataModelIMTSolarTmodulClass8006.setNvm_irradiance(Double.parseDouble("0.001"));
-				dataModelIMTSolarTmodulClass8006.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.0"));
+				dataModelIMTSolarTmodulClass8006.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				return dataModelIMTSolarTmodulClass8006;
 				
 			} else {

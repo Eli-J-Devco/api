@@ -101,7 +101,7 @@ public class ModelLufftClass8020Service extends DB {
 				
 				// set custom field nvm_irradiance
 				dataModelLufft.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
-				dataModelLufft.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.0"));
+				dataModelLufft.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				
 				return dataModelLufft;
 				

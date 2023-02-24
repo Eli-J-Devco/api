@@ -50,7 +50,7 @@ public class ModelKippZonenRT1Class8009Service extends DB {
 				
 				// set custom field nvm_irradiance
 				dataKippZonen.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataKippZonen.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.0"));
+				dataKippZonen.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				return dataKippZonen;
 				

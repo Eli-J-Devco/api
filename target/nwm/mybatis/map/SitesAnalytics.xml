@@ -1113,7 +1113,7 @@
 			      IFNULL(ROUND(AVG(dv.AirTemperatureAvg), 2), 0.001) AS AirTemperatureAvg,
 			      IFNULL(ROUND(AVG(dv.DewPointActual), 2), 0.001) AS DewPointActual,
 			      IFNULL(ROUND(AVG(dv.DewPointMin), 2), 0.001) AS DewPointMin,
-			      IFNULL(ROUND(AVG(ivDewPointMax.), 2), 0.001) AS DewPointMax,
+			      IFNULL(ROUND(AVG(dv.DewPointMax), 2), 0.001) AS DewPointMax,
 			      IFNULL(ROUND(AVG(dv.DewPointAvg), 2), 0.001) AS DewPointAvg,
 			      IFNULL(ROUND(AVG(dv.WindChillTemperature), 2), 0.001) AS WindChillTemperature,
 			      IFNULL(ROUND(AVG(dv.HeatingTemperatureWind), 2), 0.001) AS HeatingTemperatureWind,
