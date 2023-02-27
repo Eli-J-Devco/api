@@ -145,4 +145,27 @@ public class PortfolioService extends DB {
 
 	}
 	
+	/**
+	 * @description get user preference for table sorting column
+	 * @author Hung.Bui
+	 * @since 2023-02-27
+	 * @param id_customer, id_site
+	 */
+	public TablePreferenceEntity getPreference(PortfolioEntity obj) {
+		try {
+			// get user preference for table sorting column
+			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
+			tablePreference.setId_employee(obj.getId_employee());
+			tablePreference.setTable("Portfolio");
+			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			
+			if (tablePreference == null) {
+				return new TablePreferenceEntity();
+			}
+			return tablePreference;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 }

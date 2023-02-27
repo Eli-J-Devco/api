@@ -10,6 +10,7 @@ public class JsonResultEntity {
 	private String mess;
 	private Object data;
 	private int total_row;
+	private TablePreferenceEntity preference;
 	public boolean isStatus() {
 		return status;
 	}
@@ -33,5 +34,11 @@ public class JsonResultEntity {
 	}
 	public void setTotal_row(int totalRow) {
 		this.total_row = totalRow;
+	}
+	public TablePreferenceEntity getPreference() {
+		return preference;
+	}
+	public void setPreference(TablePreferenceEntity preference) {
+		this.preference = preference;
 	}
 }

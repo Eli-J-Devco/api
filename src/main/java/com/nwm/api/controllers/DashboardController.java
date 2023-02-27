@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DashboardEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.utils.Constants;
 
@@ -39,10 +40,11 @@ public class DashboardController extends BaseController {
 			
 			DashboardService service = new DashboardService();
 			List data = service.getList(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+			TablePreferenceEntity preference = service.getPreference(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1, preference);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
 		}
     }
 	
@@ -64,10 +66,11 @@ public class DashboardController extends BaseController {
 			
 			DashboardService service = new DashboardService();
 			List data = service.getListActualvsExpected(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+			TablePreferenceEntity preference = service.getPreference(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1, preference);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
 		}
     }
 	

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.PortfolioService;
 import com.nwm.api.utils.Constants;
 
@@ -39,10 +40,11 @@ public class PortfolioController extends BaseController {
 			
 			
 			int totalRecord = service.getTotalRecord(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			TablePreferenceEntity preference = service.getPreference(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
 		}
 	}
 	
