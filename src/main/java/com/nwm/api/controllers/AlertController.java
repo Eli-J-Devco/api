@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.AlertService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -53,10 +54,11 @@ public class AlertController extends BaseController {
 			AlertService service = new AlertService();
 			List data = service.getList(obj);
 			int totalRecord = service.getListTotalCount(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			TablePreferenceEntity preference = service.getPreference(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
 		}
     }
 	

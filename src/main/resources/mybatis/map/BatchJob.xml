@@ -994,13 +994,16 @@
 				IF(SUM(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, SUM(dv.nvm_irradiance)) AS nvm_irradiance,
 				IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_irradiance)) AS avg_nvm_irradiance,
 				<choose>
-				    <when test="datatablename == 'model_w_kipp_zonen_rt1' or datatablename == 'model_imtsolar_class8000'">
-						IF(AVG(dv.nvm_temperature / 10) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_temperature / 10)) AS avg_nvm_temperature
+				    <when test="datatablename == 'model_w_kipp_zonen_rt1'">
+						AVG(dv.nvm_temperature * 0.1)
+				    </when>
+				    <when test="datatablename == 'model_imtsolar_class8000'">
+						AVG(dv.nvm_temperature * 0.1 - 25)
 				    </when>
 				    <otherwise>
-						IF(AVG(dv.nvm_temperature) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_temperature)) AS avg_nvm_temperature
+						AVG(dv.nvm_temperature)
 				    </otherwise>
-				</choose>
+				</choose> AS avg_nvm_temperature
 			FROM
 				${datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device

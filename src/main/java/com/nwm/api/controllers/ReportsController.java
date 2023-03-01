@@ -2126,6 +2126,7 @@ public class ReportsController extends BaseController {
 			try {				
 				DecimalFormat df = new DecimalFormat("###,###");
 				DecimalFormat dfp = new DecimalFormat("###,##0.0");
+				DecimalFormat dfp4 = new DecimalFormat("###,##0.0000");
 				boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
 				// create CellStyle
 				CellStyle cellStyle = createStyleForHeader(sheet);
@@ -2555,6 +2556,8 @@ public class ReportsController extends BaseController {
 					
 					sheet.groupRow(8, 46);
 					sheet.setRowGroupCollapsed(29, true);
+					sheet.groupColumn(3, 4);
+					sheet.setColumnGroupCollapsed(3, true);
 				}
 				
 				Double totalBaseline = (double) 0;
@@ -2667,7 +2670,7 @@ public class ReportsController extends BaseController {
 							sheet.addMergedRegion(new CellRangeAddress(48 + i, 48 + i, 5, 6));
 							Cell cel35 = row32.createCell(5);
 							cel35.setCellStyle(cellStyleYellow);
-							cel35.setCellValue(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "");
+							cel35.setCellValue(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp4.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "");
 							cel35 = row32.createCell(6);
 							cel35.setCellStyle(cellStyleYellow);
 							cel35.setCellValue("");
@@ -3378,17 +3381,20 @@ public class ReportsController extends BaseController {
 						// gap between data table and chart
 //						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setHeight(14).setBorder(Border.NO_BORDER));
 
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setBorder(Border.NO_BORDER));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Date")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily System Production (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily POA (W/m²)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily POA (W/m²)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Daily POA Insolation (kWh/m²)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("TCell (°C)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Temperature Corrected PR (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Inverter Availability (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setBorder(Border.NO_BORDER));
 
 						// data table
 						DecimalFormat df = new DecimalFormat("###,###");
 						DecimalFormat dfp = new DecimalFormat("###,##0.0");
+						DecimalFormat dfp4 = new DecimalFormat("###,##0.0000");
 						
 						if(dataExports.size() > 0) {
 							for(int i = 0; i < dataExports.size(); i++ ) {
@@ -3396,13 +3402,15 @@ public class ReportsController extends BaseController {
 								QuarterlyDateEntity itemWeatherStation = dataWeatherStation != null ? (QuarterlyDateEntity) dataWeatherStation.get(i) : null;
 								QuarterlyDateEntity itemInverterAvailabilty = dataInverterAvailability != null ? (QuarterlyDateEntity) dataInverterAvailability.get(i) : null;
 								
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setBorder(Border.NO_BORDER));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.getCategories_time()).setBold()));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.getActual() != null ? df.format(item.getActual()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? df.format(itemWeatherStation.getPOAAVG()) : "")));
-								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "")));
+//								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? df.format(itemWeatherStation.getPOAAVG()) : "")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getPOAAVG() != null ? dfp4.format(itemWeatherStation.getPOAAVG() * 24 /1000) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && itemWeatherStation.getTCellAVG() != null ? dfp.format(itemWeatherStation.getTCellAVG()) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataWeatherStation != null && item.getActual() != null && itemWeatherStation.getPOAAVG() != null && itemWeatherStation.getTCellAVG() != null && itemWeatherStation.getPOAAVG() > 0 ? dfp.format(item.getActual() / ((dataObj.getDc_capacity() * itemWeatherStation.getPOAAVG() * 24 / 1000) * (1 - (-0.47 / 100) * (25 - itemWeatherStation.getTCellAVG()))) * 100) : "")));
 								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataInverterAvailability != null && itemInverterAvailabilty.getInverterAvailability() != null ? dfp.format(itemInverterAvailabilty.getInverterAvailability()) : "")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setBorder(Border.NO_BORDER));
 							}
 						}
 						
