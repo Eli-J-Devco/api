@@ -809,8 +809,8 @@ public class BatchJobService extends DB {
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -20);
-			int setTime = 20;
+			calCurrent.add(Calendar.DATE, -400);
+			int setTime = 400;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
