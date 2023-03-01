@@ -42,5 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/minisite/**")
                 .antMatchers("/swagger-resources/**");
     }
+    
+    
 
 }

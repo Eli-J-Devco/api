@@ -188,7 +188,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */60 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobGenerateDataReport();
