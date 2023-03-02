@@ -5,9 +5,6 @@
 *********************************************************/
 package com.nwm.api.config;
 
-
-import java.util.Calendar;
-import java.util.Properties;
 import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -231,11 +228,8 @@ public class BatchConfig {
 	@Scheduled(cron = "0 0 */1 28-31 * *") // cron expression don't support last day of month L for this running spring version
 	@Scheduled(cron = "0 0 */1 1 * *") // case: local time (server) is after time at site
 	public void sentMailMonthlyReportOnSchedule() throws Exception {
-		Calendar calendar = Calendar.getInstance();
-		if ((calendar.get(Calendar.DATE) == calendar.getActualMaximum(Calendar.DATE)) || (calendar.get(Calendar.DATE) == 1)) {
-			BatchJob job = new BatchJob(); 
-			job.sentMailReportOnSchedule(2);
-		}
+		BatchJob job = new BatchJob(); 
+		job.sentMailReportOnSchedule(2);
 	}
 	
 	/**

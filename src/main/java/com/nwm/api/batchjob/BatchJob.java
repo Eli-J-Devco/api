@@ -908,6 +908,7 @@ public class BatchJob {
 					startDateFormat.setTimeZone(timeZone);
 					endDateFormat.setTimeZone(timeZone);
 					
+					log.infoSuffixes("MailReportOnSchedule", "Cadence: " + cadenceRange + "\nTimeSchedule: " + timeSchedule + "\nNow: " + timeScheduleFormat.format(calQ.getTime()) + "\nEqual: " + timeSchedule.equals(timeScheduleFormat.format(calQ.getTime())));
 					// convert local time (server) to time on site and compare to time schedule
 					if (timeSchedule.equals(timeScheduleFormat.format(calQ.getTime()))) {
 						ReportsController controller = new ReportsController();
@@ -934,7 +935,7 @@ public class BatchJob {
 							
 							// sent mail
 							if (objReport.getFile_type() == 1) {
-							controller.sentMailPdfMonthlyReport(objReport);
+								controller.sentMailPdfMonthlyReport(objReport);
 							} else if (objReport.getFile_type() == 2) {
 								controller.sentMailMonthlyReport(objReport);
 							}
