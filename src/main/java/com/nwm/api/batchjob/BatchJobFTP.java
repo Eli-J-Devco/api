@@ -91,6 +91,9 @@ public class BatchJobFTP {
 	                return;
 	            }
 	            boolean success = ftpClient.login(user, pass);
+	            
+	            System.out.println("success: "+ success);
+	            
 	            if (!success) {
 	                System.out.println("Could not login to the server");
 	                return;
