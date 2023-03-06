@@ -272,8 +272,9 @@ public class BatchConfig {
 		BatchJobFTP job = new BatchJobFTP(); 
 		switch (env) {
 		case "test":
-			job.readFolderFTP();
+//			job.readFolderFTP();
 			break;
+		case "staging":
 		case "prod":
 			job.readFolderFTP();
 			break;
@@ -303,8 +304,9 @@ public class BatchConfig {
 		BatchJobSMAFTP job = new BatchJobSMAFTP();
 		switch (env) {
 		case "test":
-			job.readFolderSMAFTP();
+//			job.readFolderSMAFTP();
 			break;
+		case "staging":
 		case "prod":
 			job.readFolderSMAFTP();
 			break;
