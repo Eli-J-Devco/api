@@ -137,7 +137,10 @@ public class BatchJobFTP {
 	    
 	 
 	    FTPFile[] subFiles = ftpClient.listFiles(dirToList);
-	 
+	    
+	    
+	    System.out.println("subFiles: "+ subFiles);
+	    
 	    if (subFiles != null && subFiles.length > 0) {
 	    	System.out.println("Start");
 	        for (FTPFile aFile : subFiles) {
@@ -608,6 +611,8 @@ public class BatchJobFTP {
 	                
 	            }
 	        }
+	    } else {
+	    	System.out.println("Error.");
 	    }
 	}
 	
