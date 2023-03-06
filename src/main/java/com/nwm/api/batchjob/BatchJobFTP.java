@@ -139,6 +139,7 @@ public class BatchJobFTP {
 	    FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 	 
 	    if (subFiles != null && subFiles.length > 0) {
+	    	System.out.println("Start");
 	        for (FTPFile aFile : subFiles) {
 	            String currentFileName = aFile.getName();
 	            if (currentFileName.equals(".") || currentFileName.equals("..")) {
@@ -173,9 +174,16 @@ public class BatchJobFTP {
 	            } else {
 	                // download the file
 	            	File f = new File(newDirPath);
+	            	System.out.println("filePath: " + filePath);
+	            	
+	            	System.out.println("New path: " + newDirPath);
+	            	
 	            	if(!f.exists()) { 
 	            	    // do something
 	            		boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
+	            		
+	            		System.out.println("success: " + success);
+	            		
 	            		if (success) {
 		                    // Read file xml
 		                    // Instantiate the Factory
@@ -593,6 +601,8 @@ public class BatchJobFTP {
 		                } else {
 		                    System.out.println("COULD NOT download the file: " + filePath);
 		                }
+	            	} else {
+	            		System.out.println("File not exits.");
 	            	}
 	                
 	                
