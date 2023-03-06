@@ -1132,7 +1132,7 @@ public class CustomerViewService extends DB {
 							List<ClientMonthlyDateEntity> categories12 = new ArrayList<ClientMonthlyDateEntity> ();
 							int day12 = 1;
 							
-							for(int t = 1; t <= 12; t++) {
+							for(int t = 0; t <= 12; t++) {
 								cal12.setTime(startDate12);
 								ClientMonthlyDateEntity headerDate12 = new ClientMonthlyDateEntity();
 								cal12.add(Calendar.MONTH, t * day12);
@@ -2074,7 +2074,7 @@ public class CustomerViewService extends DB {
 									int dayYTD = 1;
 									long forCountYTD = ChronoUnit.DAYS.between(calYTD.getTime().toInstant(), calEndYTD.getTime().toInstant());
 									
-									for(int t = 1; t <= forCountYTD; t++) {
+									for(int t = 0; t <= forCountYTD; t++) {
 										calYTD.setTime(startDateYTD);
 										
 										ClientMonthlyDateEntity headerDateYTD = new ClientMonthlyDateEntity();
@@ -2437,7 +2437,7 @@ public class CustomerViewService extends DB {
 									List<ClientMonthlyDateEntity> categories12 = new ArrayList<ClientMonthlyDateEntity> ();
 									int day12 = 1;
 									
-									for(int t = 1; t <= 12; t++) {
+									for(int t = 0; t <= 12; t++) {
 										cal12.setTime(startDate12);
 										ClientMonthlyDateEntity headerDate12 = new ClientMonthlyDateEntity();
 										cal12.add(Calendar.MONTH, t * day12);
