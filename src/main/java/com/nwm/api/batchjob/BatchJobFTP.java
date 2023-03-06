@@ -95,6 +95,10 @@ public class BatchJobFTP {
 	                System.out.println("Could not login to the server");
 	                return;
 	            }
+	            
+	            System.out.println("remoteDirPath: "+ remoteDirPath);
+	            System.out.println("saveDirPath: "+ saveDirPath);
+	            
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
@@ -102,6 +106,7 @@ public class BatchJobFTP {
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
+	        	System.out.println("logs out and disconnects from server");
 	            try {
 	                if (ftpClient.isConnected()) {
 	                    ftpClient.logout();
@@ -135,11 +140,13 @@ public class BatchJobFTP {
 	        dirToList += "/" + currentDir;
 	    }
 	    
+	    System.out.println("dirToList: "+ dirToList);
 	 
 	    FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 	    
 	    
-	    System.out.println("subFiles: "+ subFiles);
+	    
+	    System.out.println("subFiles: "+ subFiles.length);
 	    
 	    if (subFiles != null && subFiles.length > 0) {
 	    	System.out.println("Start");
