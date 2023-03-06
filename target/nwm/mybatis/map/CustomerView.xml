@@ -1024,7 +1024,7 @@
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-		
+			ORDER BY sdr.time
 	</select>
 	
 	<select id="getDataPowerMeter7Day12Month" resultType="Map" >
