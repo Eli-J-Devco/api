@@ -809,8 +809,8 @@ public class BatchJobService extends DB {
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -400);
-			int setTime = 400;
+			calCurrent.add(Calendar.DATE, -10);
+			int setTime = 10;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
@@ -827,7 +827,6 @@ public class BatchJobService extends DB {
 					for (int i = 0; i < dataListInverter.size(); i++) {
 						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
 						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						System.out.println("deviceItem1: " + deviceItem);
 						
 						deviceItem.setYear( Integer.parseInt(year) );
 						deviceItem.setGroupMeter(dataListMeter);
@@ -847,7 +846,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						System.out.println("deviceItemMeter1: " + deviceItemMeter);
 						deviceItemMeter.setYear( Integer.parseInt(year) );
 						deviceItemMeter.setGroupMeter(dataListMeter);
 						deviceItemMeter.setGroupInverter(dataListInverter);
@@ -865,7 +863,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListWeather.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						System.out.println("deviceItemMeter3: " + deviceItemWeather);
 						deviceItemWeather.setYear( Integer.parseInt(year) );
 						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
@@ -894,7 +891,6 @@ public class BatchJobService extends DB {
 						
 						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
 						
-						System.out.println("deviceItemMeter4: " + deviceItem);
 						
 						deviceItem.setYear( Integer.parseInt(year) );
 						deviceItem.setGroupMeter(dataListMeter);
@@ -912,7 +908,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						System.out.println("deviceItemMeter5: " + deviceItemMeter);
 						
 						deviceItemMeter.setYear( Integer.parseInt(year) );
 						deviceItemMeter.setGroupMeter(dataListMeter);
@@ -939,7 +934,6 @@ public class BatchJobService extends DB {
 					for (int i = 0; i < dataListInverter.size(); i++) {
 						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
 						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						System.out.println("deviceItemMeter6: " + deviceItem);
 						
 						deviceItem.setYear( Integer.parseInt(year) );
 						deviceItem.setGroupMeter(dataListMeter);
@@ -958,7 +952,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListWeather.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						System.out.println("deviceItemMeter7: " + deviceItemWeather);
 						deviceItemWeather.setYear( Integer.parseInt(year) );
 						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
@@ -983,7 +976,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						System.out.println("deviceItemMeter8: " + deviceItemMeter);
 						
 						deviceItemMeter.setYear( Integer.parseInt(year) );
 						deviceItemMeter.setGroupMeter(dataListMeter);
@@ -1000,7 +992,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListWeather.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						System.out.println("deviceItemMeter9: " + deviceItemWeather);
 						deviceItemWeather.setYear( Integer.parseInt(year) );
 						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
@@ -1028,7 +1019,6 @@ public class BatchJobService extends DB {
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
 						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						System.out.println("deviceItemMeter10: " + deviceItemMeter);
 						
 						deviceItemMeter.setYear( Integer.parseInt(year) );
 						deviceItemMeter.setGroupMeter(dataListMeter);
@@ -1057,7 +1047,6 @@ public class BatchJobService extends DB {
 						
 						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
 						
-						System.out.println("deviceItemMeter11: " + deviceItem);
 						
 						deviceItem.setYear( Integer.parseInt(year) );
 						deviceItem.setGroupInverter(dataListInverter);
