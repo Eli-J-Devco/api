@@ -26,6 +26,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import com.nwm.api.entities.DeviceEntity;
@@ -133,6 +134,13 @@ public class BatchJobSMAFTP {
 		if (!currentDir.equals("")) {
 			dirToList += "/" + currentDir;
 		}
+		
+		ftpClient.enterLocalPassiveMode();
+
+		FTPClientConfig config = new FTPClientConfig();
+		config.setUnparseableEntries(true);
+		ftpClient.configure(config);
+		
 
 		FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 
