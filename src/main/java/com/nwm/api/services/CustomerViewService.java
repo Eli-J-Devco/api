@@ -1129,10 +1129,14 @@ public class CustomerViewService extends DB {
 						break;
 						case 6:
 							cal12.set(Calendar.DAY_OF_MONTH, cal12.getActualMaximum(Calendar.DAY_OF_MONTH));
+							YearMonth startMonth12 = YearMonth.of( cal12.get(Calendar.YEAR) , cal12.get(Calendar.MONTH) + 1 );
+							YearMonth endMonth12 = YearMonth.of(calEnd12.get(Calendar.YEAR) , calEnd12.get(Calendar.MONTH) + 1);
+							long forCount12Month = ChronoUnit.MONTHS.between(startMonth12, endMonth12);
+							
 							List<ClientMonthlyDateEntity> categories12 = new ArrayList<ClientMonthlyDateEntity> ();
 							int day12 = 1;
 							
-							for(int t = 0; t <= 12; t++) {
+							for(int t = 0; t <= forCount12Month; t++) {
 								cal12.setTime(startDate12);
 								ClientMonthlyDateEntity headerDate12 = new ClientMonthlyDateEntity();
 								cal12.add(Calendar.MONTH, t * day12);
