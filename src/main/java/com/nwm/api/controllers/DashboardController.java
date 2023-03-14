@@ -20,7 +20,7 @@ import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
 
-@CrossOrigin(origins = "https://staging.nextwavemonitoring.com")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @ApiIgnore
 @RequestMapping("/dashboard")
