@@ -28,14 +28,18 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
         response.setHeader("Access-Control-Allow-Credentials", "true");
         
+        System.out.println("CORSFilter HTTP Request: " + request.getMethod());
+        
         //response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "POST, PUT, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, grant_type, customer_type, client_id, lang, x-access-token");
         response.setHeader("Access-Control-Max-Age", "3600");
         
         if (HttpMethod.OPTIONS.name().equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {
+        	System.out.println("Core method: " + request.getMethod());
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
+        	System.out.println("Core method: " + request.getMethod());
         	if("client_credentials".equals(req.getParameter("grant_type"))) {
         		System.out.print(req.getParameter("grant_type"));
         	}
