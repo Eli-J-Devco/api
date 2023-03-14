@@ -37,6 +37,8 @@ public class CorsFilter implements Filter {
         
         if (HttpMethod.OPTIONS.name().equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {
         	System.out.println("Core method: " + request.getMethod());
+        	System.out.println("Core OK: " + HttpServletResponse.SC_OK);
+        	
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
         	System.out.println("Core method: " + request.getMethod());
