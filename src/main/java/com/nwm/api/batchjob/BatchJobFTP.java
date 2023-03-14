@@ -88,20 +88,15 @@ public class BatchJobFTP {
 	            ftpClient.connect(server, port);
 	            int replyCode = ftpClient.getReplyCode();
 	            if (!FTPReply.isPositiveCompletion(replyCode)) {
-	                System.out.println("Connect failed");
 	                return;
 	            }
 	            boolean success = ftpClient.login(user, pass);
 	            
-	            System.out.println("success: "+ success);
 	            
 	            if (!success) {
-	                System.out.println("Could not login to the server");
 	                return;
 	            }
 	            
-	            System.out.println("remoteDirPath: "+ remoteDirPath);
-	            System.out.println("saveDirPath: "+ saveDirPath);
 	            
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
@@ -110,7 +105,6 @@ public class BatchJobFTP {
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
-	        	System.out.println("logs out and disconnects from server");
 	            try {
 	                if (ftpClient.isConnected()) {
 	                    ftpClient.logout();
@@ -145,7 +139,6 @@ public class BatchJobFTP {
 			dirToList += "/" + currentDir;
 		}
 
-		System.out.println("dirToList: " + dirToList);
 		ftpClient.enterLocalPassiveMode();
 
 		FTPClientConfig config = new FTPClientConfig();
@@ -154,10 +147,8 @@ public class BatchJobFTP {
 
 		FTPFile[] subFiles = ftpClient.listFiles(dirToList);
 
-		System.out.println("subFiles: " + subFiles.length);
 
 		if (subFiles != null && subFiles.length > 0) {
-			System.out.println("Start");
 			for (FTPFile aFile : subFiles) {
 				String currentFileName = aFile.getName();
 				if (currentFileName.equals(".") || currentFileName.equals("..")) {
@@ -190,15 +181,11 @@ public class BatchJobFTP {
 				} else {
 					// download the file
 					File f = new File(newDirPath);
-					System.out.println("filePath: " + filePath);
 
-					System.out.println("New path: " + newDirPath);
 
 					if (!f.exists()) {
 						// do something
 						boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
-
-						System.out.println("success: " + success);
 
 						if (success) {
 							// Read file xml
@@ -1034,22 +1021,22 @@ public class BatchJobFTP {
 							// Delete file upload
 							File logFile = new File(newDirPath);
 							if (logFile.delete()) {
-								System.out.println("Deleted file: " + newDirPath);
+								//System.out.println("Deleted file: " + newDirPath);
 							}
 
 							// Delete file for FTP
 							boolean deleted = ftpClient.deleteFile(filePath);
 							if (deleted) {
-								System.out.println("The file was deleted successfully.");
+								//System.out.println("The file was deleted successfully.");
 							} else {
-								System.out.println("Could not delete the  file, it may not exist.");
+								//System.out.println("Could not delete the  file, it may not exist.");
 							}
 
 						} else {
-							System.out.println("COULD NOT download the file: " + filePath);
+							//System.out.println("COULD NOT download the file: " + filePath);
 						}
 					} else {
-						System.out.println("File not exits.");
+						//System.out.println("File not exits.");
 					}
 
 				}
