@@ -20,6 +20,7 @@ import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
 
+@CrossOrigin(origins = "https://staging.nextwavemonitoring.com")
 @RestController
 @ApiIgnore
 @RequestMapping("/dashboard")
@@ -59,7 +60,6 @@ public class DashboardController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 
-	@CrossOrigin(origins = "https://staging.nextwavemonitoring.com")
 	@PostMapping("/list-actual-vs-expected")
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
 		try {
