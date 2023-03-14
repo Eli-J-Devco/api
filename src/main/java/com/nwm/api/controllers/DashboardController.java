@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,6 +59,7 @@ public class DashboardController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 
+	@CrossOrigin(origins = "https://staging.nextwavemonitoring.com")
 	@PostMapping("/list-actual-vs-expected")
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
 		try {
