@@ -7,8 +7,16 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.stream.XMLInputFactory;
+
+import com.github.s7connector.api.DaveArea;
+import com.github.s7connector.api.S7Connector;
+import com.github.s7connector.api.factory.S7ConnectorFactory;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+
+import lombok.experimental.var;
 
 public class ControlService extends DB {
 
@@ -50,7 +58,51 @@ public class ControlService extends DB {
 		List dataList = new ArrayList();
 		try {
 			dataList = queryForList("Control.getListInverter", obj);
-			return dataList;
+			List dataListNew = new ArrayList();
+			S7Connector connector = S7ConnectorFactory
+		            .buildTCPConnector()
+		            .withHost("192.168.1.101")
+		            .withRack(0) //optional
+		            .withSlot(1) //optional
+		            .build();
+		    // read AC power 
+		    byte[] bs = connector.read(DaveArea.DB, 3, 24, 0);
+		    for (int i = 0; i < bs.length; i++) {
+			    System.out.println(bs[i]);
+			}
+		    
+		    // read setpoint
+		    byte[] bsSetPoint = connector.read(DaveArea.DB, 3, 24, 24);
+		    for (int i = 0; i < bsSetPoint.length; i++) {
+			    System.out.println("setpoint: "+bsSetPoint[i]);
+			}
+//		    
+		    connector.close();
+		    int bsStep = 1;
+		    for(int j = 0; j < dataList.size(); j++) {
+		    	DeviceEntity item = (DeviceEntity)dataList.get(j);
+		    	Integer power = 0;
+		    	Integer setpoint = 0;
+		    	if( bsStep <= bs.length){
+		    		power = Byte.toUnsignedInt(bs[bsStep]);
+		    	}
+		    	
+		    	if( bsStep <= bsSetPoint.length){
+		    		setpoint = Byte.toUnsignedInt(bsSetPoint[bsStep]);
+		    	}
+		    	
+		    		
+		    		
+//		    		System.out.println("aa: "+ power);
+			    	item.setCon_power(power);
+			    	item.setCon_setpoint(setpoint);
+			    	bsStep = bsStep + 2;
+//		    	}
+		    	
+		    	dataListNew.add(item);
+		    }
+		    
+			return dataListNew;
 				
 		} catch (Exception ex) {
 			return new ArrayList();

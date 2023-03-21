@@ -5,8 +5,10 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -38,26 +40,31 @@ public class ControlController extends BaseController {
 	 * @since 2022-02-09
 	 * @return data (status, message, array, total_row
 	 */
-	@PostMapping("/readPLCS71200")
-	public Object readPLCS71200(@RequestBody DeviceEntity obj) {
-		try {
-			//Open TCP Connection
-		    S7Connector connector = S7ConnectorFactory
-		            .buildTCPConnector()
-		            .withHost("192.168.1.101")
-		            .withRack(0) //optional
-		            .withSlot(2) //optional
-		            .build();
-		    
-		    byte[] bs = connector.read(DaveArea.DB, 100, 10, 0);
-		    
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 10);
-		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-		}
-	}
-	
+//	@PostMapping("/readPLCS71200")
+//	public Object readPLCS71200(@RequestBody DeviceEntity obj) {
+//		try {
+//			//Open TCP Connection
+//		    S7Connector connector = S7ConnectorFactory
+//		            .buildTCPConnector()
+//		            .withHost("192.168.1.101")
+//		            .withRack(0) //optional
+//		            .withSlot(1) //optional
+//		            .build();
+//		    
+//		    byte[] bs = connector.read(DaveArea.DB, 3, 12, 0);
+//		    for (int i = 0; i < bs.length; i++) {
+//			    System.out.println(bs[i]);
+//			}
+//		    
+//		    byte[] test = new byte[] {(byte) 0, (byte) 11, (byte) 0, (byte) 12,(byte) 0, (byte) 13,(byte) 0, (byte) 14,(byte) 0, (byte) 15,(byte) 0, (byte) 16};
+//		    connector.write(DaveArea.DB, 3, 12, test);
+//			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 10);
+//		} catch (Exception e) {
+//			log.error(e);
+//			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+//		}
+//	}
+//	
 	/**
 	 * @description Get detail site 
 	 * @author long.pham
@@ -91,6 +98,47 @@ public class ControlController extends BaseController {
 		try {
 			ControlService service = new ControlService();
 			List data = service.getListInverter(obj);
+//			List dataListNew = new ArrayList();
+//			if(data.size() > 0) {
+//				try {
+//					//Open TCP Connection
+//				    S7Connector connector = S7ConnectorFactory
+//				            .buildTCPConnector()
+//				            .withHost("192.168.1.101")
+//				            .withRack(0) //optional
+//				            .withSlot(1) //optional
+//				            .build();
+//				    // read AC power 
+//				    byte[] bs = connector.read(DaveArea.DB, 3, 12, 0);
+//				    for (int i = 0; i < bs.length; i++) {
+//					    System.out.println(bs[i]);
+//					}
+//				    connector.close();
+//				    for(int j = 0; j < data.size(); j++) {
+//				    	DeviceEntity item = (DeviceEntity)data.get(j);
+//				    	Integer power = Byte.toUnsignedInt(bs[2*j]);
+////				    	item.setCon_power(power);
+//				    	dataListNew.add(item);
+//				    }
+//
+//				    
+//				    
+//				    
+//				    
+////				    byte[] test = new byte[] {(byte) 0, (byte) 11, (byte) 0, (byte) 12,(byte) 0, (byte) 13,(byte) 0, (byte) 14,(byte) 0, (byte) 15,(byte) 0, (byte) 16};
+////				    connector.write(DaveArea.DB, 3, 12, test);
+//					
+////					return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataListNew, data.size());
+//				} catch (Exception e) {
+//					log.error(e);
+//					return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+//				}
+//			} else {
+//				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+//			}
+			
+			
+			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);

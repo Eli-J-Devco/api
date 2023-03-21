@@ -82,22 +82,9 @@ public class DeviceEntity {
 	private Integer order_id;
 	private String read_data_all;
 	private String view_tablename;
-	
-	
-	
-	
-	public String getView_tablename() {
-		return view_tablename;
-	}
-	public void setView_tablename(String view_tablename) {
-		this.view_tablename = view_tablename;
-	}
-	public String getRead_data_all() {
-		return read_data_all;
-	}
-	public void setRead_data_all(String read_data_all) {
-		this.read_data_all = read_data_all;
-	}
+	private int con_power;
+	private int con_setpoint;
+	private int con_temp;
 	public int getId() {
 		return id;
 	}
@@ -511,6 +498,36 @@ public class DeviceEntity {
 	}
 	public void setOrder_id(Integer order_id) {
 		this.order_id = order_id;
+	}
+	public String getRead_data_all() {
+		return read_data_all;
+	}
+	public void setRead_data_all(String read_data_all) {
+		this.read_data_all = read_data_all;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public int getCon_power() {
+		return con_power;
+	}
+	public void setCon_power(int con_power) {
+		this.con_power = con_power;
+	}
+	public int getCon_setpoint() {
+		return con_setpoint;
+	}
+	public void setCon_setpoint(int con_setpoint) {
+		this.con_setpoint = con_setpoint;
+	}
+	public int getCon_temp() {
+		return con_temp;
+	}
+	public void setCon_temp(int con_temp) {
+		this.con_temp = con_temp;
 	}
 	
 	

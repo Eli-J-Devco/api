@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Control">
-	<select id="getListInverter" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
+	<select id="getListInverter" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.serial_number,
 			d.id,
