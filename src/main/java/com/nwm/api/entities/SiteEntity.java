@@ -151,8 +151,17 @@ public class SiteEntity {
 	private int id_site_group;
 	private int timezone_datalogger;
 	private String read_data_all;
+	private List devices;
 	
 	
+	
+	
+	public List getDevices() {
+		return devices;
+	}
+	public void setDevices(List devices) {
+		this.devices = devices;
+	}
 	public String getRead_data_all() {
 		return read_data_all;
 	}

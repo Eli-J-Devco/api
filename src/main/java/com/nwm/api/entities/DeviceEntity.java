@@ -85,6 +85,15 @@ public class DeviceEntity {
 	private int con_power;
 	private int con_setpoint;
 	private int con_temp;
+	private Double max_ac_power;
+	
+	
+	public Double getMax_ac_power() {
+		return max_ac_power;
+	}
+	public void setMax_ac_power(Double max_ac_power) {
+		this.max_ac_power = max_ac_power;
+	}
 	public int getId() {
 		return id;
 	}

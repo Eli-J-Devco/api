@@ -31,12 +31,8 @@ public class CorsFilter implements Filter {
         response.setHeader("Access-Control-Max-Age", "3600");
         
         if (HttpMethod.OPTIONS.name().equalsIgnoreCase(((HttpServletRequest) req).getMethod())) {
-        	System.out.println("Core method: " + request.getMethod());
-        	System.out.println("Core OK: " + HttpServletResponse.SC_OK);
-        	
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
-        	System.out.println("Core method: " + request.getMethod());
         	if("client_credentials".equals(req.getParameter("grant_type"))) {
         		System.out.print(req.getParameter("grant_type"));
         	}
