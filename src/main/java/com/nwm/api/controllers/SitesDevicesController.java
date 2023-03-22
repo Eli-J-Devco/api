@@ -59,8 +59,7 @@ public class SitesDevicesController extends BaseController {
 		try {
 			SitesDevicesService service = new SitesDevicesService();
 			List data = service.getListDeviceByIdSite(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size(), preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
