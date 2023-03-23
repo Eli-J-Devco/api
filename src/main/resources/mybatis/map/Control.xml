@@ -3,10 +3,11 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Control">
-	<select id="getListInverter" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
+	<select id="getListInverter" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.serial_number,
 			d.id,
+			d.max_ac_power,
 			SHA1(d.id) AS hash_id,
 			d.id_site,
 			SHA1(d.id_site) AS hash_site_id,
@@ -48,12 +49,25 @@
 	            </when>
 	            
 	            <otherwise>
-			      d.id DESC
+			      d.order_id ASC
 			    </otherwise>                                                  
 	        </choose>  
 		 LIMIT ${limit} OFFSET ${offset};
 		 
 	</select>
+	
+	
+	
+	<select id="getSiteDetail" resultType="com.nwm.api.entities.SiteEntity" parameterType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			* 
+		FROM
+			site s 
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND s.id = #{id_site} LIMIT 1;
+  	</select>
 	
 	
   	
