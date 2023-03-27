@@ -341,6 +341,7 @@
 			s.name,
 			s.id AS id_site,
 			IF(s.rec_id IS NULL || s.rec_id = '', CONCAT_WS("-", "NWM", s.id), s.rec_id) AS rec_id,
+			IF(s.gu_id IS NULL || s.gu_id = '', CONCAT_WS("-", "NWM", s.id), s.gu_id) AS gu_id,
 			IFNULL(ROUND(SUM( d.energy_this_month ) / 1000, 1), 0 ) AS energy_this_month,
 			DATE_FORMAT( #{start_date}, "%m/%d/%Y") AS start_date,
 			DATE_FORMAT(#{end_date}, "%m/%d/%Y") AS end_date,
@@ -370,6 +371,7 @@
 			s.id AS id_site,
 			s.`name`,
 			IF(s.rec_id IS NULL || s.rec_id = '', CONCAT_WS("-", "NWM", s.id), s.rec_id) AS rec_id,
+			IF(s.gu_id IS NULL || s.gu_id = '', CONCAT_WS("-", "NWM", s.id), s.gu_id) AS gu_id,
 			DATE_FORMAT( #{start_date}, "%m/%d/%Y") AS start_date,
 			DATE_FORMAT(#{end_date}, "%m/%d/%Y") AS end_date,
 			DATE_FORMAT(#{end_date}, "%m/%Y") AS vintage_date,
@@ -377,7 +379,8 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-			ROUND( (IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) )) / 1000, 2 ) AS energy_this_month,
+			
+			FORMAT( ROUND( (IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) )) / 1000, 2 ) , 2) AS energy_this_month,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 			
@@ -412,6 +415,15 @@
 		UPDATE `site`
 		SET
 			`rec_id` = #{rec_id}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<update id="updateGUID">
+		UPDATE `site`
+		SET
+			`gu_id` = #{gu_id}
 		WHERE
 			`id` = #{id}
 	</update>
