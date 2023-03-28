@@ -3890,7 +3890,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/render-excel-renewable-month")
 	public Object excelRenewableMonth(@RequestBody ReportsEntity obj) {
 		try {
-			String[] header = {"REU ID", "GUID", "Site Name", "Vintage", "Begin Date", "End Date", "Total MWh"};
+			String[] header = {"REU ID", "GUID", "Site Name", "Vintage", "Begin Date", "End Date", "Generation (MWh)"};
 	        List<String[]> list = new ArrayList<>();
 //	        list.add(header);
 	     
