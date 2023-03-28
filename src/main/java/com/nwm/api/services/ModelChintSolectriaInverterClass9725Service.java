@@ -37,7 +37,13 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
+				
+				System.out.println("id device: " + dataModelChint.getId_device() + " - word0: "+ dataModelChint.getTime());
+				
 				dataModelChint.setTime(words.get(0).replace("'", ""));
+				
+				System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime());
+				
 				dataModelChint.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelChint.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelChint.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
