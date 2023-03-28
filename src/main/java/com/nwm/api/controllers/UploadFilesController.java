@@ -998,18 +998,18 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
-														}
+//														if(logFile.delete()){  
+////															System.out.println(logFile.getName() + " deleted .log");  
+//														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
 																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
+//														if(logGzFile.delete()) {  
+////															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//														}		
 													}  
 													catch(Exception e){  
 //														System.out.println("Error: " + e);
