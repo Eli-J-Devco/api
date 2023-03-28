@@ -38,7 +38,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
 				
-				System.out.println("id device: " + dataModelChint.getId_device() + " - word0: "+ dataModelChint.getTime());
+				System.out.println("id device: " + dataModelChint.getId_device() + " - word0: "+ words.get(0));
 				
 				dataModelChint.setTime(words.get(0).replace("'", ""));
 				
