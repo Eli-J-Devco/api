@@ -754,7 +754,6 @@ public class BatchJob {
 		        bathJobEntity.setDatatablename(obj.getDatatablename());
 		        bathJobEntity.setId_device_type(obj.getId_device_type());
 		        BatchJobTableEntity lastRowItem = service.getLastRowItemResetLastValue(bathJobEntity);
-		        System.out.println("Run batchJob reset last value device: "+ lastRowItem.getId_device());
 		        
 		        if(lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == -1 ) {
 		        	DeviceEntity deviceObj = new DeviceEntity(); 
