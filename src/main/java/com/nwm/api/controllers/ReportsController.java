@@ -3903,9 +3903,9 @@ public class ReportsController extends BaseController {
 							item.get("rec_id").toString(), 
 							item.get("gu_id").toString(), 
 							item.get("name").toString(),
-							item.get("vintage_date").toString(),
-							item.get("start_date").toString(),
-							item.get("end_date").toString(),
+							" "+item.get("vintage_date").toString(),
+							" "+item.get("start_date").toString(),
+							" "+item.get("end_date").toString(),
 							item.get("energy_this_month").toString()
 							};
 					list.add(record);
@@ -3915,11 +3915,8 @@ public class ReportsController extends BaseController {
 				String dir = uploadRootPath() + "/"
 						+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 				String fileName = dir + "/Renewable-energy-credits-" + timeStamp + ".csv";
-				try (CSVWriter writer = new CSVWriter(new FileWriter(fileName), ';',
-                        CSVWriter.NO_QUOTE_CHARACTER,
-                        CSVWriter.DEFAULT_SEPARATOR,
-                        CSVWriter.DEFAULT_LINE_END)) {
-		            writer.writeAll(list);
+				try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
+		            writer.writeAll(list, false);
 		            writer.flush();
 		        }
 				
