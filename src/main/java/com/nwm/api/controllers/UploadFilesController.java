@@ -991,6 +991,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
 													dataModelChint.setId_device(item.getId());
+													
+													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime());
+													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
 													try  
 													{ 
