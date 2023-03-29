@@ -44,6 +44,9 @@
 		<result property="manage_site_total" column="manage_site_total" />
 		<result property="color" column="color" />
 		<result property="id_role" column="id_role" />
+		<result property="last_login" column="last_login" />
+		<result property="offset_timezone" column="offset_timezone" />
+		<result property="page_login" column="page_login" />
 		
 	</resultMap>
 	
@@ -184,7 +187,10 @@
 			t.role_ids,
 			t.color,
 			IFNULL(st.manage_site_total, 0) AS manage_site_total,
-			m.ids_site
+			m.ids_site,
+			s.last_login,
+			s.offset_timezone,
+			s.page_login
 		FROM
 			`employee` e	
 			
@@ -217,6 +223,18 @@
 			LEFT JOIN (
 				SELECT COUNT(se.id_employee) AS manage_site_total, se.id_employee FROM site_employee_map se GROUP BY se.id_employee
 			)st ON st.id_employee = e.id
+
+			LEFT JOIN (
+				SELECT *
+				FROM account_status
+				WHERE (id_employee, CONVERT_TZ(last_login,offset_timezone, "+00:00")) IN (
+					SELECT 
+						id_employee,
+						MAX(CONVERT_TZ(last_login,offset_timezone, "+00:00")) AS last_login
+					FROM account_status
+					GROUP BY id_employee
+				)
+			)s ON s.id_employee = e.id
 		WHERE e.is_delete = 0
 		<if test="roles != null and !roles.isEmpty() ">
 			AND t.group_roles <![CDATA[!=]]> ""

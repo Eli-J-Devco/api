@@ -127,6 +127,7 @@
 		 <mapper resource="mybatis/map/ImportOldData.xml" />
 		 <mapper resource="mybatis/map/Control.xml" />
 		 <mapper resource="mybatis/map/TablePreference.xml" />
+		 <mapper resource="mybatis/map/AccountStatus.xml" />
 		 
 		 
 		
