@@ -152,10 +152,17 @@ public class SiteEntity {
 	private int timezone_datalogger;
 	private String read_data_all;
 	private List devices;
+	private String gu_id;
 	
 	
 	
 	
+	public String getGu_id() {
+		return gu_id;
+	}
+	public void setGu_id(String gu_id) {
+		this.gu_id = gu_id;
+	}
 	public List getDevices() {
 		return devices;
 	}

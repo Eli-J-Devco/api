@@ -3846,6 +3846,26 @@ public class ReportsController extends BaseController {
 	
 	
 	/**
+	 * @description update gu_id
+	 * @author long.pham
+	 * @since 2023-03-27
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-site-gu-id")
+	public Object updateGUID(@RequestBody SiteEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			service.updateGUID(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
 	 * @description Get list site by employee
 	 * @author long.pham
 	 * @since 2021-01-20
@@ -3870,20 +3890,22 @@ public class ReportsController extends BaseController {
 	@PostMapping("/render-excel-renewable-month")
 	public Object excelRenewableMonth(@RequestBody ReportsEntity obj) {
 		try {
-			String[] header = {"REU ID", "Site Name", "Vintage", "Begin Date", "End Date", "Total MWh"};
+			String[] header = {"REU ID", "GUID", "Site Name", "Vintage", "Begin Date", "End Date", "Generation (MWh)"};
 	        List<String[]> list = new ArrayList<>();
-	        list.add(header);
+//	        list.add(header);
 	     
 	        ReportsService service = new ReportsService();
 			List data = service.getListREC(obj);
 			if(data.size() > 0) {
 				for (int i = 0; i < data.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) data.get(i);
-					String[] record = { item.get("rec_id").toString(), 
+					String[] record = { 
+							item.get("rec_id").toString(), 
+							item.get("gu_id").toString(), 
 							item.get("name").toString(),
-							item.get("vintage_date").toString(),
-							item.get("start_date").toString(),
-							item.get("end_date").toString(),
+							" "+item.get("vintage_date").toString(),
+							" "+item.get("start_date").toString(),
+							" "+item.get("end_date").toString(),
 							item.get("energy_this_month").toString()
 							};
 					list.add(record);
@@ -3894,9 +3916,14 @@ public class ReportsController extends BaseController {
 						+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 				String fileName = dir + "/Renewable-energy-credits-" + timeStamp + ".csv";
 				try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
-		            writer.writeAll(list);
+		            writer.writeAll(list, false);
+		            writer.flush();
 		        }
 				
+				
+				
+				 
+
 				String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 						Constants.mailFromContact);
 				String msgTemplate = Constants.getMailTempleteByState(15);
@@ -4044,17 +4071,21 @@ public class ReportsController extends BaseController {
 				
 				cell9 = row9.createCell(1);
 				cell9.setCellStyle(cellStyleItem);
-				cell9.setCellValue( (String)item.get("vintage_date") );
+				cell9.setCellValue( (String)item.get("gu_id") );
 				
 				cell9 = row9.createCell(2);
 				cell9.setCellStyle(cellStyleItem);
-				cell9.setCellValue( (String)item.get("start_date") );
+				cell9.setCellValue( (String)item.get("vintage_date") );
 				
 				cell9 = row9.createCell(3);
 				cell9.setCellStyle(cellStyleItem);
-				cell9.setCellValue( (String)item.get("end_date") );
+				cell9.setCellValue( (String)item.get("start_date") );
 				
 				cell9 = row9.createCell(4);
+				cell9.setCellStyle(cellStyleItem);
+				cell9.setCellValue( (String)item.get("end_date") );
+				
+				cell9 = row9.createCell(5);
 				cell9.setCellStyle(cellStyleItem);
 				cell9.setCellValue( (double)item.get("energy_this_month")  );
 			}

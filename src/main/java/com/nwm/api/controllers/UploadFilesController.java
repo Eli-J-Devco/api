@@ -144,20 +144,20 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "FILETIME", required = false) String filetime) {
 
 //		public String message = " ";
-		System.out.println("---------------------------------start------------------------------");
-		System.out.println("SENDDATATRACE: " + senddatatrace);
-		System.out.println("MODE: " + mode);
-		System.out.println("SERIALNUMBER: " + serialnumber);
-		System.out.println("PASSWORD: " + password);
-		System.out.println("LOOPNAME: " + loopname);
-		System.out.println("MODBUSIP: " + modbusip);
-		System.out.println("MODBUSPORT: " + modbusport);
-		System.out.println("MODBUSDEVICE: " + modbusdevice);
-		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-		System.out.println("-------------------------------end--------------------------------");
+//		System.out.println("---------------------------------start------------------------------");
+//		System.out.println("SENDDATATRACE: " + senddatatrace);
+//		System.out.println("MODE: " + mode);
+//		System.out.println("SERIALNUMBER: " + serialnumber);
+//		System.out.println("PASSWORD: " + password);
+//		System.out.println("LOOPNAME: " + loopname);
+//		System.out.println("MODBUSIP: " + modbusip);
+//		System.out.println("MODBUSPORT: " + modbusport);
+//		System.out.println("MODBUSDEVICE: " + modbusdevice);
+//		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//		System.out.println("-------------------------------end--------------------------------");
 		
 		try {
 
@@ -285,7 +285,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -294,7 +294,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -357,7 +357,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -366,7 +366,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){    
@@ -428,7 +428,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -437,7 +437,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -500,7 +500,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -509,7 +509,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -572,7 +572,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -581,7 +581,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -642,7 +642,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -651,7 +651,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -712,7 +712,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -721,7 +721,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -783,7 +783,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -792,7 +792,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -855,7 +855,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -864,11 +864,11 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-														System.out.println("e1: " + e);
+//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -925,7 +925,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -934,7 +934,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -991,25 +991,28 @@ public class UploadFilesController extends BaseController {
 													
 													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
 													dataModelChint.setId_device(item.getId());
+													
+													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
+													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
-														}
+//														if(logFile.delete()){  
+////															System.out.println(logFile.getName() + " deleted .log");  
+//														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" +dataModelChint.getId_device()+ "-" + modbusdevice  + "-" + unique + "."
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-														}		
+//														if(logGzFile.delete()) {  
+////															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//														}		
 													}  
 													catch(Exception e){  
-														System.out.println("Error: " + e);
+//														System.out.println("Error: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -1067,7 +1070,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1076,7 +1079,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1143,7 +1146,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1152,7 +1155,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1213,7 +1216,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1222,7 +1225,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1284,7 +1287,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1293,7 +1296,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1354,7 +1357,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1363,7 +1366,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1431,7 +1434,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1440,7 +1443,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1503,7 +1506,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1512,7 +1515,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1578,7 +1581,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1587,7 +1590,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1655,7 +1658,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1664,11 +1667,11 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-														System.out.println("e1: " + e);
+//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -1737,7 +1740,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1746,7 +1749,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1813,7 +1816,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1822,11 +1825,11 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-														System.out.println("e1: " + e);
+//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -2188,7 +2191,7 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-															System.out.println(logFile.getName() + " deleted .log");  
+//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2197,7 +2200,7 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  

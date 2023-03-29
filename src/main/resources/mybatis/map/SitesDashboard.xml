@@ -248,7 +248,7 @@
 	            </when>
 	            
 	            <otherwise>
-			      d.id_device_type DESC
+			      d.order_id ASC
 			    </otherwise>                                                  
 	        </choose>
 	</select>

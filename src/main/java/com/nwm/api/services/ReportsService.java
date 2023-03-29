@@ -487,6 +487,23 @@ public class ReportsService extends DB {
 			return false;
 		}
 	}
+	
+	
+	/**
+	 * @description update site gu_id
+	 * @author long.pham
+	 * @since 2023-03-27
+	 * @param id
+	 */
+	public boolean updateGUID(SiteEntity obj) {
+		try {
+			return update("Reports.updateGUID", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Reports.updateGUID", ex);
+			return false;
+		}
+	}
+	
 	/**
 	 * @description get list site for page employee manage site
 	 * @author long.pham
