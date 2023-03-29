@@ -45,6 +45,9 @@ public class EmployeeManageEntity{
 	private String label;
 	private int value;
 	private String table_column;
+	private String last_login;
+	private String offset_timezone;
+	private String page_login;
 	
 	
 	public String getTable_column() {
@@ -262,6 +265,24 @@ public class EmployeeManageEntity{
 	}
 	public void setId_role(int id_role) {
 		this.id_role = id_role;
+	}
+	public String getLast_login() {
+		return last_login;
+	}
+	public void setLast_login(String last_login) {
+		this.last_login = last_login;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
+	}
+	public String getPage_login() {
+		return page_login;
+	}
+	public void setPage_login(String page_login) {
+		this.page_login = page_login;
 	}
 	
 	
