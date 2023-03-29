@@ -1003,7 +1003,7 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" +dataModelChint.getId_device()+ "-" + modbusdevice  + "-" + unique + "."
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
