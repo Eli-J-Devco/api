@@ -25,6 +25,9 @@
 		<result property="device_type_name" column="device_type_name" />
 		<result property="view_tablename" column="view_tablename" />
 		<result property="order_id" column="order_id" />
+		<result property="reverse_poa" column="reverse_poa" />
+		
+		
 		
 		
 		
@@ -50,7 +53,8 @@
 			s.start_date_time,
 			s.end_date_time,
 			t.`offset` AS timezone_offset,
-			t.`value` AS timezone_value
+			t.`value` AS timezone_value,
+			d.reverse_poa
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -125,7 +129,8 @@
 			s.is_delete,
 			dt.name AS device_type_name,
 			s.view_tablename,
-			s.order_id
+			s.order_id,
+			s.reverse_poa
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -223,7 +228,8 @@
 			`configurationchecksum`,
 			`datatablename`,
 			`view_tablename`,
-			`order_id`
+			`order_id`,
+			`reverse_poa`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -240,7 +246,8 @@
 			#{configurationchecksum},
 			#{datatablename},
 			#{view_tablename},
-			#{order_id}
+			#{order_id},
+			#{reverse_poa}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -266,7 +273,8 @@
 			configurationchecksum = #{configurationchecksum},
 			datatablename = #{datatablename},
 			view_tablename = #{view_tablename},
-			order_id = #{order_id}
+			order_id = #{order_id},
+			reverse_poa = #{reverse_poa}
 		WHERE
 			`id` = #{id}
 	</update>

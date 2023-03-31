@@ -86,8 +86,16 @@ public class DeviceEntity {
 	private int con_setpoint;
 	private int con_temp;
 	private Double max_ac_power;
+	private int reverse_poa;
 	
 	
+	
+	public int getReverse_poa() {
+		return reverse_poa;
+	}
+	public void setReverse_poa(int reverse_poa) {
+		this.reverse_poa = reverse_poa;
+	}
 	public Double getMax_ac_power() {
 		return max_ac_power;
 	}
