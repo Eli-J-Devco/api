@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AccountStatusEntity;
-import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.services.AccountStatusService;
-import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -55,6 +53,15 @@ public class AccountStatusController extends BaseController {
 			AccountStatusService service = new AccountStatusService();
 			AccountStatusEntity data = service.insertAccountStatus(obj);
 			if (data != null) {
+				// delete old records, only keep specific number of latest records
+				List<Integer> latestRecordList = service.getLatestRecordsByEmployee(obj);
+				if (latestRecordList != null) {
+					String latestRecordListString = latestRecordList.toString();
+					latestRecordListString = latestRecordListString.substring(1, latestRecordListString.length() - 1);
+					obj.setLatest_records(latestRecordListString);
+					service.deleteOldRecordsByEmployee(obj);
+				}
+				
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 			} else {
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
