@@ -119,7 +119,7 @@ public class ModelElkorProductionMeterService extends DB {
 			
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelElkorP.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelElkorP.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModelElkorP.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
 				
 				return dataModelElkorP;
 				
