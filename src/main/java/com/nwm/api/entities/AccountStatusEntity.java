@@ -15,6 +15,7 @@ public class AccountStatusEntity {
 	private int offset;
 	private String sort_column;
 	private String order_by;
+	private String latest_records;
 	
 	public int getId() {
 		return id;
@@ -69,6 +70,12 @@ public class AccountStatusEntity {
 	}
 	public void setOrder_by(String order_by) {
 		this.order_by = order_by;
+	}
+	public String getLatest_records() {
+		return latest_records;
+	}
+	public void setLatest_records(String latest_records) {
+		this.latest_records = latest_records;
 	}
 	
 }

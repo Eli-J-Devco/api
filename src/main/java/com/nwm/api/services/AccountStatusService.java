@@ -31,6 +31,24 @@ public class AccountStatusService extends DB {
 	}
 	
 	/**
+	 * @description get latest records by employee
+	 * @author Hung.Bui
+	 * @since 2023-03-24
+	 */
+	
+	public List getLatestRecordsByEmployee(AccountStatusEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("AccountStatus.getLatestRecordsByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
 	 * @description get total record account status
 	 * @author Hung.Bui
 	 * @since 2023-03-24
@@ -60,6 +78,20 @@ public class AccountStatusService extends DB {
 		} catch (Exception ex) {
 			log.error("AccountStatus.insertAccountStatus", ex);
 			return null;
+		}
+	}
+	
+	/** @description delete old records by employee
+	 * @author Hung.Bui
+	 * @since 2023-03-24
+	 * @param id
+	 */
+	public boolean deleteOldRecordsByEmployee(AccountStatusEntity obj) {
+		try {
+			return delete("AccountStatus.deleteOldRecordsByEmployee", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AccountStatus.deleteOldRecordsByEmployee", ex);
+			return false;
 		}
 	}
 

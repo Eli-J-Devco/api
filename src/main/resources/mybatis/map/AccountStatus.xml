@@ -24,6 +24,14 @@
 		LIMIT ${limit} OFFSET ${offset}
 	</select>
 	
+	<select id="getLatestRecordsByEmployee" resultType="int" parameterType="com.nwm.api.entities.AccountStatusEntity" >
+		SELECT id
+		FROM account_status
+		WHERE id_employee = #{id_employee}
+		ORDER BY id DESC
+		LIMIT 20
+	</select>
+	
 	<select id="getListCount" resultType="int" parameterType="com.nwm.api.entities.AccountStatusEntity">
     	SELECT count(*) as totalRecord
 		FROM account_status
@@ -47,5 +55,13 @@
 	        LAST_INSERT_ID() as id
         </selectKey>
 	</insert>
+	
+	<delete id="deleteOldRecordsByEmployee" parameterType="com.nwm.api.entities.AccountStatusEntity">
+		DELETE FROM account_status
+		WHERE
+			id_employee = #{id_employee}
+			AND id NOT IN (${latest_records})
+		
+	</delete>
 	
 </mapper>
