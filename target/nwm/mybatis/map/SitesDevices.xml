@@ -21,12 +21,16 @@
 			dt.alias AS device_type_alias,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
-				WHEN d.datatablename = 'model_lufft_class8020' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value, 0 ),2), "W/m²" )
+				WHEN d.datatablename = 'model_lufft_class8020' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value, 0 ),2), "Degrees C" )
 				WHEN d.datatablename = 'model_abb_trio_class6210' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_shark100' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_veris_industries_e51c2_power_meter' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_advanced_energy_solaron' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_imtsolar_class8000' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value * 0.1, 0 ), 2), "W/m²" )
+				WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value, 0 ), 2), "Degrees C" )
+				
+				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value, 0 ), 2), "W/m²" )
+				
 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' THEN CONCAT_WS(" ", ROUND(IFNULL(d.last_value, 0 ), 2), "W/m²" )
 				WHEN d.datatablename = 'model_satcon_pvs357_inverter' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))
 				WHEN d.datatablename = 'model_chint_solectria_inverter_class9725' THEN IF(d.last_value = -1 or d.last_value IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.last_value, 2), "kW" ))  
