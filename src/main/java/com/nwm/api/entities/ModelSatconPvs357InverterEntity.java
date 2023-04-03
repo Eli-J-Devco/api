@@ -143,6 +143,59 @@ public class ModelSatconPvs357InverterEntity {
 	private double Number_of_Strings;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	
+	private int totalFaultWord1;
+	private int totalFaultWord2;
+	private int totalFaultWord3;
+	private int totalFaultWord4;
+	private int totalFaultWord5;
+	private int totalFaultWord6;
+	private int totalFaultWord7;
+	
+	
+	
+	public int getTotalFaultWord1() {
+		return totalFaultWord1;
+	}
+	public void setTotalFaultWord1(int totalFaultWord1) {
+		this.totalFaultWord1 = totalFaultWord1;
+	}
+	public int getTotalFaultWord2() {
+		return totalFaultWord2;
+	}
+	public void setTotalFaultWord2(int totalFaultWord2) {
+		this.totalFaultWord2 = totalFaultWord2;
+	}
+	public int getTotalFaultWord3() {
+		return totalFaultWord3;
+	}
+	public void setTotalFaultWord3(int totalFaultWord3) {
+		this.totalFaultWord3 = totalFaultWord3;
+	}
+	public int getTotalFaultWord4() {
+		return totalFaultWord4;
+	}
+	public void setTotalFaultWord4(int totalFaultWord4) {
+		this.totalFaultWord4 = totalFaultWord4;
+	}
+	public int getTotalFaultWord5() {
+		return totalFaultWord5;
+	}
+	public void setTotalFaultWord5(int totalFaultWord5) {
+		this.totalFaultWord5 = totalFaultWord5;
+	}
+	public int getTotalFaultWord6() {
+		return totalFaultWord6;
+	}
+	public void setTotalFaultWord6(int totalFaultWord6) {
+		this.totalFaultWord6 = totalFaultWord6;
+	}
+	public int getTotalFaultWord7() {
+		return totalFaultWord7;
+	}
+	public void setTotalFaultWord7(int totalFaultWord7) {
+		this.totalFaultWord7 = totalFaultWord7;
+	}
 	public String getTime() {
 		return time;
 	}

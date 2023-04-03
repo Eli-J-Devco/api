@@ -2368,4 +2368,126 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSatconPVS357Inverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 569; break;
+			case 1: errorCode = 570; break;
+			case 2: errorCode = 571; break;
+			case 3: errorCode = 572; break;
+			case 4: errorCode = 573; break;
+			case 5: errorCode = 574; break;
+			case 6: errorCode = 575; break;
+			case 7: errorCode = 576; break;
+			case 8: errorCode = 577; break;
+			case 9: errorCode = 578; break;
+			case 10: errorCode = 579; break;
+			case 11: errorCode = 580; break;
+			case 12: errorCode = 581; break;
+			case 13: errorCode = 582; break;
+			case 14: errorCode = 583; break;
+			case 15: errorCode = 584; break;
+			case 16: errorCode = 585; break;
+			case 17: errorCode = 586; break;
+			case 18: errorCode = 587; break;
+			case 19: errorCode = 588; break;
+			case 20: errorCode = 589; break;
+			case 21: errorCode = 590; break;
+			case 22: errorCode = 591; break;
+			case 23: errorCode = 592; break;
+			case 24: errorCode = 593; break;
+			case 25: errorCode = 594; break;
+			case 26: errorCode = 595; break;
+			case 27: errorCode = 596; break;
+			case 28: errorCode = 597; break;
+			case 29: errorCode = 598; break;
+			case 30: errorCode = 599; break;
+			case 31: errorCode = 600; break;
+			case 32: errorCode = 601; break;
+			case 33: errorCode = 602; break;
+			case 34: errorCode = 603; break;
+			case 35: errorCode = 604; break;
+			case 36: errorCode = 605; break;
+			case 37: errorCode = 606; break;
+			case 38: errorCode = 607; break;
+			case 39: errorCode = 608; break;
+			case 40: errorCode = 609; break;
+			case 41: errorCode = 610; break;
+			case 42: errorCode = 611; break;
+			case 43: errorCode = 612; break;
+			case 44: errorCode = 613; break;
+			case 45: errorCode = 614; break;
+			case 46: errorCode = 615; break;
+			case 47: errorCode = 616; break;
+			case 48: errorCode = 617; break;
+			case 49: errorCode = 618; break;
+			case 50: errorCode = 619; break;
+			case 51: errorCode = 620; break;
+			case 52: errorCode = 621; break;
+			case 53: errorCode = 622; break;
+			case 54: errorCode = 623; break;
+			case 55: errorCode = 624; break;
+			case 56: errorCode = 625; break;
+			case 57: errorCode = 626; break;
+			case 58: errorCode = 627; break;
+			case 59: errorCode = 628; break;
+			case 60: errorCode = 629; break;
+			case 61: errorCode = 630; break;
+			case 62: errorCode = 631; break;
+			case 63: errorCode = 632; break;
+			case 64: errorCode = 633; break;
+			case 65: errorCode = 634; break;
+			case 66: errorCode = 635; break;
+			case 67: errorCode = 636; break;
+			case 68: errorCode = 637; break;
+			case 69: errorCode = 638; break;
+			case 70: errorCode = 639; break;
+			case 71: errorCode = 640; break;
+			case 72: errorCode = 641; break;
+			case 73: errorCode = 642; break;
+			case 74: errorCode = 643; break;
+			case 75: errorCode = 644; break;
+			case 76: errorCode = 645; break;
+			case 77: errorCode = 646; break;
+			case 78: errorCode = 647; break;
+			case 79: errorCode = 648; break;
+			case 80: errorCode = 649; break;
+			case 81: errorCode = 650; break;
+			case 82: errorCode = 651; break;
+			case 83: errorCode = 652; break;
+			case 84: errorCode = 653; break;
+			case 85: errorCode = 654; break;
+			case 86: errorCode = 655; break;
+			case 87: errorCode = 656; break;
+			case 88: errorCode = 657; break;
+			case 89: errorCode = 658; break;
+			case 90: errorCode = 659; break;
+			case 91: errorCode = 660; break;
+			case 92: errorCode = 661; break;
+			case 93: errorCode = 662; break;
+			case 94: errorCode = 663; break;
+			case 95: errorCode = 664; break;
+			case 96: errorCode = 665; break;
+			case 97: errorCode = 666; break;
+			case 98: errorCode = 667; break;
+			case 99: errorCode = 668; break;
+			case 100: errorCode = 669; break;
+			case 101: errorCode = 670; break;
+			}
+			break;
+		
+		
+		}
+
+		return errorCode;
+	}
+	
 }

@@ -6,13 +6,20 @@
 package com.nwm.api.services;
 
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelSatconPvs357InverterService extends DB {
 
@@ -194,10 +201,18 @@ public class ModelSatconPvs357InverterService extends DB {
 	public boolean insertModelSatconPvs357Inverter(ModelSatconPvs357InverterEntity obj) {
 		try {
 			 Object insertId = insert("ModelSatconPvs357Inverter.insertModelSatconPvs357Inverter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if(hours >=8 && hours <= 18) {
+	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
+	        }
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
@@ -225,5 +240,476 @@ public class ModelSatconPvs357InverterService extends DB {
 		}
 		return dataObj;
 	}
+	
+	
+
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2023-04-03
+	 * @param datatablename
+	 */
+
+	public ModelSatconPvs357InverterEntity checkAlertWriteCode(ModelSatconPvs357InverterEntity obj) {
+		ModelSatconPvs357InverterEntity rowItem = new ModelSatconPvs357InverterEntity();
+		try {
+			rowItem = (ModelSatconPvs357InverterEntity) queryForObject("ModelSatconPvs357Inverter.checkAlertWriteCode", obj);
+			if (rowItem == null)
+				return new ModelSatconPvs357InverterEntity();
+		} catch (Exception ex) {
+			return new ModelSatconPvs357InverterEntity();
+		}
+		return rowItem;
+	}
+	
+
+	/**
+	 * @description check trigger alert fault code
+	 * @author long.pham
+	 * @since  2023-04-03
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelSatconPVS357Inverter(ModelSatconPvs357InverterEntity obj) {
+		// Check device alert by fault code
+		int fault1 = (obj.getFault_Word1() > 0 && obj.getFault_Word1() != 0.001) ? (int) obj.getFault_Word1() : 0;
+		int fault2 = (obj.getFault_Word2() > 0 && obj.getFault_Word2() != 0.001) ? (int) obj.getFault_Word2() : 0;
+		int fault3 = (obj.getFault_Word3() > 0 && obj.getFault_Word3() != 0.001) ? (int) obj.getFault_Word3() : 0;
+		int fault4 = (obj.getFault_Word4() > 0 && obj.getFault_Word4() != 0.001) ? (int) obj.getFault_Word4() : 0;
+		int fault5 = (obj.getFault_Word5() > 0 && obj.getFault_Word5() != 0.001) ? (int) obj.getFault_Word5() : 0;
+		int fault6 = (obj.getFault_Word6() > 0 && obj.getFault_Word6() != 0.001) ? (int) obj.getFault_Word6() : 0;
+		int fault7 = (obj.getFault_Word7() > 0 && obj.getFault_Word7() != 0.001) ? (int) obj.getFault_Word7() : 0;
+		
+		
+		ModelSatconPvs357InverterEntity rowItem = (ModelSatconPvs357InverterEntity) checkAlertWriteCode(obj);
+		
+		
+		// check fault code 1
+		if (fault1 > 0  && rowItem.getTotalFaultWord1() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault1);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 1
+			try {
+				if(rowItem.getTotalFaultWord1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault1 = new ArrayList();
+					dataListFault1 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault1.size() > 0) {
+						for(int i = 0; i < dataListFault1.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// check fault code 2
+		if (fault2 > 0  && rowItem.getTotalFaultWord2() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault2);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 
+			try {
+				if(rowItem.getTotalFaultWord2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault2 = new ArrayList();
+					dataListFault2 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault2.size() > 0) {
+						for(int i = 0; i < dataListFault2.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		// check fault code 3
+		if (fault3 > 0  && rowItem.getTotalFaultWord3() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault3);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 3
+			try {
+				if(rowItem.getTotalFaultWord3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault3 = new ArrayList();
+					dataListFault3 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault3.size() > 0) {
+						for(int i = 0; i < dataListFault3.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		
+		
+		// check fault code 4
+		if (fault4 > 0  && rowItem.getTotalFaultWord4() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault4);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 4
+			try {
+				if(rowItem.getTotalFaultWord4() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault4 = new ArrayList();
+					dataListFault4 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault4.size() > 0) {
+						for(int i = 0; i < dataListFault4.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault4.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		// check fault code 5
+		if (fault5 > 0  && rowItem.getTotalFaultWord5() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault5);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 5
+			try {
+				if(rowItem.getTotalFaultWord5() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault5 = new ArrayList();
+					dataListFault5 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault5.size() > 0) {
+						for(int i = 0; i < dataListFault5.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault5.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// check fault code 6
+		if (fault6 > 0  && rowItem.getTotalFaultWord6() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault6);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 6
+			try {
+				if(rowItem.getTotalFaultWord6() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault6 = new ArrayList();
+					dataListFault6 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault6.size() > 0) {
+						for(int i = 0; i < dataListFault6.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault6.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// check fault code 7
+		if (fault7 > 0  && rowItem.getTotalFaultWord7() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault7);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 7
+			try {
+				if(rowItem.getTotalFaultWord7() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault7 = new ArrayList();
+					dataListFault7 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault7.size() > 0) {
+						for(int i = 0; i < dataListFault7.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault7.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+
+		
+	}
+	
 
 }
