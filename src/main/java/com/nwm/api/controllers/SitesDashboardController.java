@@ -56,7 +56,8 @@ public class SitesDashboardController extends BaseController {
 		try {
 			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDeviceByIdSite(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+			TablePreferenceEntity preference = service.getPreference(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size(), preference);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);

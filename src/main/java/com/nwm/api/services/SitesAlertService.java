@@ -11,6 +11,7 @@ import java.util.List;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
+import com.nwm.api.entities.TablePreferenceEntity;
 
 public class SitesAlertService extends DB {
 	/**
@@ -22,6 +23,32 @@ public class SitesAlertService extends DB {
 
 	public List getListBySiteId(AlertEntity obj) {
 		try {
+			// get user preference for table sorting column
+			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
+			tablePreference.setId_employee(obj.getId_employee());
+			tablePreference.setTable("SiteAlerts");
+			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			
+			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
+				if (tablePreference != null) {
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					update("TablePreference.updatePreference", tablePreference);
+				} else {
+					tablePreference = new TablePreferenceEntity();
+					tablePreference.setId_employee(obj.getId_employee());
+					tablePreference.setTable("SiteAlerts");
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					insert("TablePreference.insertPreference", tablePreference);
+				}
+			} else {
+				if (tablePreference != null) {
+					obj.setOrder_by(tablePreference.getOrder_by());
+					obj.setSort_column(tablePreference.getSort_column());
+				}
+			}
+			
 			List rs = queryForList("SitesAlert.getListBySiteId", obj);
 			if (rs == null) {
 				return new ArrayList<>();
@@ -152,5 +179,27 @@ public class SitesAlertService extends DB {
 		return dataObj;
 	}
 	
+	/**
+	 * @description get user preference for table sorting column
+	 * @author Hung.Bui
+	 * @since 2023-02-27
+	 * @param id_customer, id_site
+	 */
+	public TablePreferenceEntity getPreference(AlertEntity obj) {
+		try {
+			// get user preference for table sorting column
+			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
+			tablePreference.setId_employee(obj.getId_employee());
+			tablePreference.setTable("SiteAlerts");
+			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			
+			if (tablePreference == null) {
+				return new TablePreferenceEntity();
+			}
+			return tablePreference;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
 
 }
