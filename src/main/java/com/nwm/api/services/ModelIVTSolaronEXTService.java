@@ -6,13 +6,20 @@
 package com.nwm.api.services;
 
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelIVTSolaronEXTService extends DB {
 	/**
@@ -113,16 +120,446 @@ public class ModelIVTSolaronEXTService extends DB {
 	
 	public boolean insertModelIVTSolaronEXT(ModelIVTSolaronEXTEntity obj) {
 		try {
-			 Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+//		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
+//	        if(insertId == null ) {
+//	        	return false;
+//	        }
+//	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+//	        if(hours >=8 && hours <= 18) {
+	        	checkTriggerAlertModelIVTSolaronEXT(obj);
+	        	
+//	        }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
 	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2023-04-04
+	 * @param datatablename
+	 */
+
+	public ModelIVTSolaronEXTEntity checkAlertWriteCode(ModelIVTSolaronEXTEntity obj) {
+		ModelIVTSolaronEXTEntity rowItem = new ModelIVTSolaronEXTEntity();
+		try {
+			rowItem = (ModelIVTSolaronEXTEntity) queryForObject("ModelIVTSolaronEXT.checkAlertWriteCode", obj);
+			if (rowItem == null)
+				return new ModelIVTSolaronEXTEntity();
+		} catch (Exception ex) {
+			return new ModelIVTSolaronEXTEntity();
+		}
+		return rowItem;
+	}
+	
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author long.pham
+	 * @since 2022-09-26
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelIVTSolaronEXT(ModelIVTSolaronEXTEntity obj) {
+		// Check device alert by fault code
+		int fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (int) obj.getActive_faults1() : 0;
+		int fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (int) obj.getActive_faults2() : 0;
+		int fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (int) obj.getActive_faults3() : 0;
+		int limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (int) obj.getLimits() : 0;
+		int statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (int) obj.getStatus() : 0;
+		int warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (int) obj.getWarnings1() : 0;
+		
+		ModelIVTSolaronEXTEntity rowItem = (ModelIVTSolaronEXTEntity) checkAlertWriteCode(obj);
+		
+		if(warningCode > 0 && rowItem.getTotalWarning() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(warningCode);
+				System.out.println("warning toBinary: " + toBinary);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				System.out.println("warning toBinary32Bit: " + toBinary32Bit);
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetWarningsCodeModelIVTSolaronEXT(v);
+						System.out.println("warning errorId: " + errorId);
+						
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close warning code 
+			try {
+				if(rowItem.getTotalWarning() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 6 is warning code
+					alertItemClose.setFaultCodeLevel(5);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		
+		if(statusCode > 0  && rowItem.getTotalStatus() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(statusCode);
+				System.out.println("status toBinary: " + toBinary);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				System.out.println("status toBinary32Bit: " + toBinary32Bit);
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetStatusCodeModelIVTSolaronEXT(v);
+						System.out.println("status errorId: " + errorId);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close status code 
+			try {
+				if(rowItem.getTotalStatus() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 5 is status code
+					alertItemClose.setFaultCodeLevel(5);
+					List dataListStatusCode = new ArrayList();
+					dataListStatusCode = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListStatusCode.size() > 0) {
+						for(int i = 0; i < dataListStatusCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListStatusCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		if(limitCode > 0  && rowItem.getTotalLimits() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(limitCode);
+				System.out.println("limits toBinary: " + toBinary);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				System.out.println("limits toBinary32Bit: " + toBinary32Bit);
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetLimitCodeModelIVTSolaronEXT(v);
+						System.out.println("limits errorId: " + errorId);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem) > 0;
+									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+									if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close limits code 
+			try {
+				if(rowItem.getTotalLimits() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// Type 4 is limits code
+					alertItemClose.setFaultCodeLevel(4);
+					List dataListLimitCode = new ArrayList();
+					dataListLimitCode = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListLimitCode.size() > 0) {
+						for(int i = 0; i < dataListLimitCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListLimitCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+
+		if (fault1 > 0  && rowItem.getTotalFault1() >= 4) {
+			try {
+				String toBinary = Integer.toBinaryString(fault1);
+				System.out.println("fault1 toBinary: " + toBinary);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				System.out.println("fault1 toBinary32Bit: " + toBinary32Bit);
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer
+							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v, 1);
+						System.out.println("fault1 errorId: " + errorId);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem) > 0;
+									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+									if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 1
+			try {
+				if(rowItem.getTotalFault1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault1 = new ArrayList();
+					dataListFault1 = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault1.size() > 0) {
+						for(int i = 0; i < dataListFault1.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (fault2 > 0  && rowItem.getTotalFault2() >= 4) {
+			try {
+				String toBinary2 = Integer.toBinaryString(fault2);
+				System.out.println("fault2 toBinary: " + toBinary2);
+				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
+				System.out.println("fault2 toBinary32Bit: " + toBinary32Bit2);
+				int v2 = 0;
+				for (int b2 = toBinary32Bit2.length() - 1; b2 >= 0; b2--) {
+					int index2 = b2;
+					int bitLevel2 = Integer
+							.parseInt(toBinary32Bit2.substring(index2, Math.min(index2 + 1, toBinary32Bit2.length())));
+					if (bitLevel2 == 1) {
+						int errorId2 = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v2, 2);
+						System.out.println("fault2 errorId: " + errorId2);
+						if (errorId2 > 0) {
+							AlertEntity alertDeviceItem2 = new AlertEntity();
+							alertDeviceItem2.setId_device(obj.getId_device());
+							alertDeviceItem2.setStart_date(obj.getTime());
+							alertDeviceItem2.setId_error(errorId2);
+							boolean checkAlertDeviceExist2 = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem2) > 0;
+									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem2) > 0;
+									if (!checkAlertDeviceExist2 && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem2);
+							}
+						}
+					}
+					v2 += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close fault code 2
+			try {
+				if(rowItem.getTotalFault2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(2);
+					List dataListFault2 = new ArrayList();
+					dataListFault2 = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault2.size() > 0) {
+						for(int i = 0; i < dataListFault2.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if (fault3 > 0   && rowItem.getTotalFault3() >= 4) {
+			try {
+				String toBinary3 = Integer.toBinaryString(fault3);
+				System.out.println("fault3 toBinary: " + toBinary3);
+				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");
+				System.out.println("fault3 toBinary32Bit: " + toBinary32Bit3);
+				int v3 = 0;
+				for (int b3 = toBinary32Bit3.length() - 1; b3 >= 0; b3--) {
+					int index3 = b3;
+					int bitLevel3 = Integer
+							.parseInt(toBinary32Bit3.substring(index3, Math.min(index3 + 1, toBinary32Bit3.length())));
+					if (bitLevel3 == 1) {
+						int errorId3 = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v3, 3);
+						System.out.println("fault3 errorId: " + errorId3);
+						if (errorId3 > 0) {
+							AlertEntity alertDeviceItem3 = new AlertEntity();
+							alertDeviceItem3.setId_device(obj.getId_device());
+							alertDeviceItem3.setStart_date(obj.getTime());
+							alertDeviceItem3.setId_error(errorId3);
+							boolean checkAlertDeviceExist3 = (int) queryForObject("BatchJob.checkAlertlExist",
+									alertDeviceItem3) > 0;
+									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem3) > 0;
+									if (!checkAlertDeviceExist3 && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem3);
+							}
+						}
+					}
+					v3 += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 3
+			try {
+				if(rowItem.getTotalFault3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(3);
+					List dataListFault3 = new ArrayList();
+					dataListFault3 = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault3.size() > 0) {
+						for(int i = 0; i < dataListFault3.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
 
 }

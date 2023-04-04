@@ -60,6 +60,52 @@ public class ModelIVTSolaronEXTEntity {
 	private double power_factor_ramp_rate;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	
+	private int totalFault1;
+	private int totalFault2;
+	private int totalFault3;
+	private int totalLimits;
+	private int totalWarning;
+	private int totalStatus;
+	
+	
+	
+	public int getTotalFault1() {
+		return totalFault1;
+	}
+	public void setTotalFault1(int totalFault1) {
+		this.totalFault1 = totalFault1;
+	}
+	public int getTotalFault2() {
+		return totalFault2;
+	}
+	public void setTotalFault2(int totalFault2) {
+		this.totalFault2 = totalFault2;
+	}
+	public int getTotalFault3() {
+		return totalFault3;
+	}
+	public void setTotalFault3(int totalFault3) {
+		this.totalFault3 = totalFault3;
+	}
+	public int getTotalLimits() {
+		return totalLimits;
+	}
+	public void setTotalLimits(int totalLimits) {
+		this.totalLimits = totalLimits;
+	}
+	public int getTotalWarning() {
+		return totalWarning;
+	}
+	public void setTotalWarning(int totalWarning) {
+		this.totalWarning = totalWarning;
+	}
+	public int getTotalStatus() {
+		return totalStatus;
+	}
+	public void setTotalStatus(int totalStatus) {
+		this.totalStatus = totalStatus;
+	}
 	public String getTime() {
 		return time;
 	}

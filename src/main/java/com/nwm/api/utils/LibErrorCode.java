@@ -2490,4 +2490,465 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	
+	
+	
+	
+	/**
+	 * get error code from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelIVTSolaronEXT(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0:
+				// The DC auxiliary power supply voltages are out of range.
+				errorCode = 671;
+				break;
+			case 2:
+				// The softstart relay did not close properly in order to charge the DCC bus.
+				// This can occur if the AC grid fails and the facility has a backup generator
+				// that is interlocked with the inverter.
+				errorCode = 672;
+				break;
+			case 3:
+				// Indicates one of the following:
+				// The pump has stopped
+				// Coolant has leaked enough to have air in the coolant system
+				errorCode = 673;
+				break;
+			case 4:
+				// The coolant has reached its maximum temperature limit. The pump and blower
+				// will continue to run until the temperature falls back within limits and then
+				// the unit will automatically restart.
+				errorCode = 674;
+				break;
+			case 5:
+				// Indicates a failure of the control board.
+				errorCode = 675;
+				break;
+			case 6:
+				// Indicates one of the following:
+				errorCode = 676;
+				break;
+			case 10:
+				// Error occurred when updating firmware.
+				errorCode = 677;
+				break;
+			case 11:
+				// The current was flowing into the PV panels from the DC bus. This fault could
+				// occur because of a shorted PV panel or another problem with the array.
+				errorCode = 678;
+				break;
+			case 12:
+				// The DC bus voltage is too high to allow the inverter to turn on.
+				errorCode = 679;
+				break;
+			case 13:
+				// The DC bus voltage fell below the minimum value required to allow the unit to
+				// continue to run.
+				errorCode = 680;
+				break;
+			case 14:
+				// Negative DC from the array has gone past the trip limit.
+				errorCode = 681;
+				break;
+			case 15:
+				// Hardware protection against incorrect input AC voltage.
+				errorCode = 682;
+				break;
+			case 16:
+				// AC output current has exceeded the allowed maximum.
+				errorCode = 683;
+				break;
+			case 17:
+				// There is an unexplained imbalance of current in the 3-phase AC output. This
+				// is caused by either AC ground current or a failure in the AC measurement
+				// devices.
+				errorCode = 684;
+				break;
+			case 19:
+				// A 3-phase voltage surge exceeded the limit of the unit.
+				errorCode = 685;
+				break;
+			case 22:
+				// The mains contactor opened.
+				errorCode = 686;
+				break;
+			case 24:
+				// There was a sag in the 3-phase line voltage that went beyond the limit of the
+				// unit in either time or voltage.
+				errorCode = 687;
+				break;
+			case 25:
+				// The unit has cycled on and off too many times in a short period. There might
+				// be something wrong with the unit or the utility supply.
+				errorCode = 688;
+				break;
+			case 26:
+				// The line reactor temperature in the bottom of the unit cabinet has exceeded
+				// the maximum limit. There might be something wrong with the airflow.
+				errorCode = 689;
+				break;
+			case 29:
+				// A low frequency has persisted too long for the parameters of the unit.
+				errorCode = 690;
+				break;
+			case 30:
+				// AC frequency has exceeded the limit set in the configuration file.
+				errorCode = 691;
+				break;
+			case 31:
+				// The ground current from the DC side exceeds the limit.
+				errorCode = 692;
+				break;
+			}
+			break;
+		case 2:
+			switch (bitLevel) {
+			case 0:
+				// There is too much AC common-mode voltage on the PV area neutral and hot
+				// wires.
+				errorCode = 693;
+				break;
+			case 1:
+				// The DC contactor has reported that it has unexpectedly openedor has not
+				// operated properly during startup.
+				errorCode = 694;
+				break;
+			case 2:
+				// The ambient temperature has exceeded the upper limit. The pump and fans will
+				// continue to run until the temperature falls below the limit.
+				errorCode = 695;
+				break;
+			case 3:
+				// The cabinet temperature has exceeded the upper limit. The pump and fans will
+				// continue to run until the temperature falls below the limit.
+				errorCode = 696;
+				break;
+			case 4:
+				// The PV array tie contactor has reported that it has unexpectedly opened or
+				// has not operated properly during startup.
+				errorCode = 697;
+				break;
+			case 9:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 698;
+				break;
+			case 10:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 699;
+				break;
+			case 11:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 700;
+				break;
+			case 12:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 701;
+				break;
+			case 13:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 702;
+				break;
+			case 14:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 703;
+				break;
+			case 15:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 104;
+				break;
+			case 16:
+				// A cable or connector has become loose inside the unit.
+				errorCode = 705;
+				break;
+			case 17:
+				// The internal DC bus voltage did not reach an acceptable level quickly enough.
+				errorCode = 706;
+				break;
+			case 18:
+				// Someone has pressed the Stop button or the external interlock is preventing
+				// the unit from operating.
+				errorCode = 707;
+				break;
+			case 19:
+				// A cloud edge disturbed the PV voltage to the unit during turn-on before the
+				// unit's DCcontactor could close, causing too great a difference between the
+				// bus voltage and the PV voltage.
+				errorCode = 708;
+				break;
+			case 20:
+				// Fan is not running fast enough.
+				errorCode = 709;
+				break;
+			case 21:
+				// Fan is not running fast enough.
+				errorCode = 710;
+				break;
+			case 22:
+				// Fan is not running fast enough.
+				errorCode = 711;
+				break;
+			case 23:
+				// Fan is not running fast enough.
+				errorCode = 712;
+				break;
+			case 24:
+				// Fan is not running fast enough.
+				errorCode = 713;
+				break;
+			case 25:
+				// The positive and negative bipolar PV array voltages are out of balance (not
+				// equal), possibly due to a ground fault or insulation failure in the array. On
+				// units with the optional charge Equalizer accessory, this fault may occur at
+				// night or during the wake-up transition. Array balance faults produced under
+				// these conditions are considered normal behavior.
+				errorCode = 714;
+				break;
+			case 26:
+				// The available PV array power increased too fast for the inverter to back off
+				// the voltage and keep the power from exceeding the trip limit.
+				errorCode = 715;
+				break;
+			case 27:
+				// A failure has occurred in a ground fault detection component in the unit.
+				errorCode = 716;
+				break;
+			case 28:
+				// Fan is not running fast enough.
+				errorCode = 717;
+				break;
+			case 29:
+				// Fan is not running fast enough.
+				errorCode = 718;
+				break;
+			}
+			break;
+		case 3:
+			switch (bitLevel) {
+			case 0:
+				// The cable for the ground fault detection and interruption(GFDI) device is
+				// loose or removed.
+				errorCode = 719;
+				break;
+			case 1:
+				// The soft-start contactor is likely to be welded closed and unable to open.
+				// Caution is required when dealing with thissituation.
+				errorCode = 720;
+				break;
+			case 2:
+				// The PV Tie contactor is likely to be welded closed and unable to open.
+				// Caution is required when dealing with this situation.
+				errorCode = 721;
+				break;
+			case 3:
+				// The DC contactor is likely to be welded closed and unable to open. Caution is
+				// required when dealing with this situation.
+				errorCode = 722;
+				break;
+			case 4:
+				// The AC contactor is likely to be welded closed and unable to open. Caution is
+				// required when dealing with this situation.
+				errorCode = 723;
+				break;
+			case 8:
+				// Fan is not running fast enough.
+				errorCode = 724;
+				break;
+			case 9:
+				// phase-A low
+				errorCode = 725;
+				break;
+			case 10:
+				// phase-B low
+				errorCode = 726;
+				break;
+			case 11:
+				// phase-C low
+				errorCode = 727;
+				break;
+			case 12:
+				// phase-A high
+				errorCode = 728;
+				break;
+			case 13:
+				// phase-B high
+				errorCode = 729;
+				break;
+			case 14:
+				// phase-C high
+				errorCode = 730;
+				break;
+			}
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	
+	/**
+	 * get wainning limit codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetLimitCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 8:
+			// The unit is reducing power because the output alternating current limit has been exceeded.
+			errorCode = 731;
+			break;
+		case 16:
+			// The unit is reducing power because the PV array direct current limit has been exceeded.
+			errorCode = 732;
+			break;
+		case 17:
+			// The unit is reducing output power because the AC power limit has been exceeded.
+			errorCode = 733;
+			break;
+		case 18:
+			// The MPPT is limited due to excessive DC voltage.
+			errorCode = 734;
+			break;
+		case 19:
+			// The MPPT is limited due to insufficient DC voltage.
+			errorCode = 735;
+			break;
+		case 20:
+			// The unit is consuming reactive power to limit current harmonics.
+			errorCode = 736;
+			break;
+		case 21:
+			// The unit is reducing power due to excessive coolant temperature.
+			errorCode = 737;
+			break;
+		case 22:
+			// The unit is inhibiting PWM switching due to excessive AC current.
+			errorCode = 738;
+			break;
+		case 23:
+			// The unit is inhibiting PWM switching due to excessive bus capacitor voltage slew rate.
+			errorCode = 739;
+			break;
+		case 24:
+			// The unit is inhibiting PWM switching due to excessive power.
+			errorCode = 740;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	/**
+	 * get status codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetStatusCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 0:
+			// Bit set if unit is on
+			errorCode = 741;
+			break;
+		case 1:
+			// Bit set if the unit has one or more active faults. Important Bit 1 is normally set during sleep status and should be treated as information only during sleep status.
+			errorCode = 742;
+			break;
+		case 2:
+			// Bit set if the unit operation has been affected by one or more operating limits. Important Limits are not seen as faults by the unit. The unit will continue to operate with one or more active limits and should not cause alerts to a SCADA control system.
+			errorCode = 743;
+			break;
+		case 3:
+			// Bit set for enabled for master control enabled
+			errorCode = 744;
+			break;
+		case 4:
+			// Bit set if the unit is in startup mode
+			errorCode = 745;
+			break;
+		case 5:
+			// Bit set if the unit has an active warning. Important Warnings are not seen as faults by the unit. The unit will continue to operate with one or more active warnings and should not cause alerts to a SCADA control system.
+			errorCode = 746;
+			break;
+		case 6:
+			// Bit set if the unit has been locked out
+			errorCode = 747;
+			break;
+		case 8:
+			// Bit set for tracking on (MPP active)
+			errorCode = 748;
+			break;
+		case 9:
+			// Bit set for sleep. Important Bit 1 (fault status) is normally set whenever bit 9 is set, and should be treated as information only when the sleep bit is set and not as an active fault.
+			errorCode = 749;
+			break;
+		case 10:
+			// Bit set for autostart on
+			errorCode = 750;
+			break;
+		case 11:
+			// Bit set if a surge protection device has failed
+			errorCode = 751;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
+	/**
+	 * get warning codes from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetWarningsCodeModelIVTSolaronEXT(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Fan not operating normally
+			errorCode = 752;
+			break;
+		case 2:
+			// Fan not operating normally
+			errorCode = 753;
+			break;
+		case 3:
+			// Fan not operating normally
+			errorCode = 754;
+			break;
+		case 4:
+			// Fan not operating normally
+			errorCode = 755;
+			break;
+		case 5:
+			// Fan not operating normally
+			errorCode = 756;
+			break;
+		case 6:
+			// Fan not operating normally
+			errorCode = 757;
+			break;
+		case 7:
+			// Fan not operating normally
+			errorCode = 758;
+			break;
+		case 8:
+			// Charge abatement option not operating correctly
+			errorCode = 759;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	
 }
