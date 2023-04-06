@@ -35,6 +35,7 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			CASE
 			WHEN COUNT(t.id_alert) > 0 THEN 
 					CONCAT(
@@ -61,9 +62,16 @@
 			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
-			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
+			
+			d.id_device_type,
+			d.datatablename,
+			d.view_tablename,
+			d.id AS id_device,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
+			
 			
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
@@ -275,7 +283,8 @@
 			`alert_acknowledged` = #{alert_acknowledged},
 			`disable_notification` = #{disable_notification},
 			`resolved` = #{resolved},
-			`status` = #{status}
+			`status` = #{status},
+			`note` = #{note}
 		WHERE
 			`id` = #{id}
 	</update>

@@ -403,4 +403,30 @@ public class AlertController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description Get list alert by site
+	 * @author long.pham
+	 * @since 2020-11-16
+	 * @param id_customer, id_site, start_date, end_date
+	 * @return data (status, message, array, total_row
+	 */
+
+	@PostMapping("/get-data-chart")
+    public Object getDataChart(@RequestBody AlertEntity obj){
+		try {
+			if(obj.getLimit() == 0) {
+				obj.setLimit(10000);
+			}
+			
+			AlertService service = new AlertService();
+			List data = service.getDataChart(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+    }
+	
+	
+	
 }

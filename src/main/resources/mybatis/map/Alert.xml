@@ -36,6 +36,7 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			CASE
 			WHEN COUNT(t.id_alert) > 0 THEN 
 					CONCAT(
@@ -55,6 +56,7 @@
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.description,
 			e.error_code,
 			d.devicename,
 			s.`name` AS site_name,
@@ -63,9 +65,15 @@
 			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
-			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
+			d.datatablename,
+			d.view_tablename,
+			d.id AS id_device,
+			d.id_device_type,
+			
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			
 			CASE
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
@@ -244,6 +252,7 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			al.`name` AS `level`,
 			e.message,
@@ -256,6 +265,7 @@
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
 				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
@@ -334,6 +344,7 @@
 			l.asset,
 			el.name AS priority_name,
 			l.capacity,
+			l.note,
 			l.`status`,
 			l.alert_acknowledged,
 			l.disable_notification,
@@ -552,6 +563,7 @@
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
+			l.note,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			el.`name` AS `level`,
 			e.message,
@@ -561,10 +573,15 @@
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
+			d.datatablename,
+			d.view_tablename,
+			d.id AS id_device,
+			DATE_FORMAT( l.start_date, '%Y-%m-%d %H:%i:%s') AS org_start_date,
 			el.id AS id_error_level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
 				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
@@ -722,7 +739,8 @@
 			`alert_acknowledged` = #{alert_acknowledged},
 			`disable_notification` = #{disable_notification},
 			`resolved` = #{resolved},
-			`status` = #{status}
+			`status` = #{status},
+			`note` = #{note}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -812,6 +830,7 @@
 			a.close_send_mail,
 			s.cf_email_subscribers,
 			a.`status`,
+			a.note,
 			s.id AS id_site
 		FROM
 			alert a
@@ -994,6 +1013,7 @@
 			el.name AS priority_name,
 			l.capacity,
 			l.`status`,
+			l.note,
 			l.alert_acknowledged,
 			l.disable_notification,
 			l.resolved,
@@ -1011,6 +1031,7 @@
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
 			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
 			
 			CONCAT_WS('', 
 				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
@@ -1104,6 +1125,25 @@
 			  </choose>
   
 			LIMIT #{limit} OFFSET #{offset};
+	</select>
+	
+	
+	<select id="getDataChart" resultType="Map" >
+  		SELECT
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
+			IFNULL(m.nvmActivePower, 0.001) AS power
+		FROM
+			${datatablename} m 
+			LEFT JOIN device d ON d.id = m.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			m.id_device = #{id_device}
+			AND (CAST(CONVERT_TZ(m.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+			GROUP BY time_group_by 
+			ORDER BY time_group_by ASC
 	</select>
 	
 	

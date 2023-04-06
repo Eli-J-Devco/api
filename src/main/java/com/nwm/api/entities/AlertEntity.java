@@ -72,6 +72,29 @@ public class AlertEntity {
 	private int close_send_mail;
 	private String status_name;
 	private int faultCodeLevel;
+	private String note;
+	private String datatablename;
+	private String view_tablename;
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
 	public int getId() {
 		return id;
 	}
