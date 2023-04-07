@@ -35,6 +35,10 @@ public class ModelSatconPvs357InverterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelSatconPvs357InverterEntity dataModelSatcon = new ModelSatconPvs357InverterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelSatcon.setTime(words.get(0).replace("'", ""));
 				dataModelSatcon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelSatcon.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -70,7 +74,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				dataModelSatcon.setLine_Voltage_Unbalance(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModelSatcon.setLine_Current_Unbalance(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModelSatcon.setInput_kW(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
-				dataModelSatcon.setOutput_kw(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelSatcon.setOutput_kw(power);
 				dataModelSatcon.setOutput_kvar(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
 				
 				dataModelSatcon.setOutput_kva(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
@@ -177,7 +181,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				dataModelSatcon.setNumber_of_Strings(Double.parseDouble(!Lib.isBlank(words.get(133)) ? words.get(133) : "0.001"));
 				
 				
-				dataModelSatcon.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelSatcon.setNvmActivePower(power);
 				
 				return dataModelSatcon;
 				

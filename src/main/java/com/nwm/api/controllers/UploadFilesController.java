@@ -1392,6 +1392,8 @@ public class UploadFilesController extends BaseController {
 													DecimalFormat df = new DecimalFormat("#.0");
 													double nvmActivePowerABB = Double.parseDouble((!Lib.isBlank(words.get(15)) ? words.get(15) : "0") ) / 1000;
 													
+													if(nvmActivePowerABB < 0) { nvmActivePowerABB = 0.0; };
+													
 													if(!Lib.isBlank(words.get(15))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
@@ -1539,7 +1541,7 @@ public class UploadFilesController extends BaseController {
 													
 													DecimalFormat df = new DecimalFormat("#.0");
 													double nvmActivePower226 = Double.parseDouble((!Lib.isBlank(words.get(5)) ? words.get(5) : "0") ) / 1000;
-													
+													if(nvmActivePower226 < 0 ) {nvmActivePower226 = 0.0; }
 													
 													if(!Lib.isBlank(words.get(5))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));

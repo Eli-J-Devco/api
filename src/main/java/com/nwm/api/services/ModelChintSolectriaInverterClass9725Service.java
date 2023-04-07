@@ -38,6 +38,9 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			if (words.size() > 0) {
 				ModelChintSolectriaInverterClass9725Entity dataModelChint = new ModelChintSolectriaInverterClass9725Entity();
 				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelChint.setTime(words.get(0).replace("'", ""));
 				dataModelChint.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelChint.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -70,7 +73,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setPowerFactor1(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModelChint.setMaxActivePowerToday(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				dataModelChint.setRunTimeToGrid(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
-				dataModelChint.setAC_ActivePower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelChint.setAC_ActivePower(power);
 				dataModelChint.setAC_ApparentPower(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
 				dataModelChint.setGridVoltageUab(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModelChint.setGridVoltageUbc(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
@@ -97,7 +100,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelChint.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelChint.setNvmActivePower(power);
 				dataModelChint.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				return dataModelChint;
 				

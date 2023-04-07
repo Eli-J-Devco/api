@@ -28,13 +28,17 @@ public class ModelElkorWattsonPVMeterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelElkorWattsonPVMeterEntity dataModelElkor = new ModelElkorWattsonPVMeterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelElkor.setTime(words.get(0).replace("'", ""));
 				dataModelElkor.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelElkor.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelElkor.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
 				dataModelElkor.setTotalEnergyConsumption(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelElkor.setTotalRealPower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelElkor.setTotalRealPower(power);
 				dataModelElkor.setTotalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelElkor.setTotalApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelElkor.setAverageVoltageLN(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -67,7 +71,7 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelElkor.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelElkor.setNvmActivePower(power);
 				dataModelElkor.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				
 				return dataModelElkor;

@@ -35,6 +35,10 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = new ModelPVPowered3550260500kwInverterEntity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelPVPowered.setTime(words.get(0).replace("'", ""));
 				dataModelPVPowered.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelPVPowered.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -73,7 +77,7 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 				dataModelPVPowered.setDCInputVoltage(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModelPVPowered.setDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
 				dataModelPVPowered.setLineFrequency(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModelPVPowered.setOutputGeneration(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModelPVPowered.setOutputGeneration(power);
 				dataModelPVPowered.setTotalEnergyGeneration(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModelPVPowered.setPVInputVoltage(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModelPVPowered.setInputGenerationCalculated(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
@@ -89,7 +93,7 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelPVPowered.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModelPVPowered.setNvmActivePower(power);
 				dataModelPVPowered.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				
 				

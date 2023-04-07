@@ -35,6 +35,9 @@ public class ModelIVTSolaronEXTService extends DB {
 			if (words.size() > 0) {
 				ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = new ModelIVTSolaronEXTEntity();
 				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelIVTSolaronEXT.setTime(words.get(0).replace("'", ""));
 				dataModelIVTSolaronEXT.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelIVTSolaronEXT.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -50,7 +53,7 @@ public class ModelIVTSolaronEXTService extends DB {
 				dataModelIVTSolaronEXT.setLast_restart(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				
 				dataModelIVTSolaronEXT.setUptime(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModelIVTSolaronEXT.setAc_power(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelIVTSolaronEXT.setAc_power(power);
 				dataModelIVTSolaronEXT.setAc_frequency(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelIVTSolaronEXT.setPv_voltage(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelIVTSolaronEXT.setPv_current(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
@@ -94,7 +97,7 @@ public class ModelIVTSolaronEXTService extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelIVTSolaronEXT.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelIVTSolaronEXT.setNvmActivePower(power);
 				dataModelIVTSolaronEXT.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				
 				return dataModelIVTSolaronEXT;

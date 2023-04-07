@@ -36,6 +36,10 @@ public class ModelXantrexGT100250500Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelXantrexGT100250500Entity dataModelXantrex = new ModelXantrexGT100250500Entity();
+				
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
+				if(power < 0) { power = 0.0; };
+				
 				dataModelXantrex.setTime(words.get(0).replace("'", ""));
 				dataModelXantrex.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelXantrex.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -46,7 +50,7 @@ public class ModelXantrexGT100250500Service extends DB {
 				dataModelXantrex.setCurrentA(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelXantrex.setCurrentB(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
 				dataModelXantrex.setCurrentC(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
-				dataModelXantrex.setReadPower(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModelXantrex.setReadPower(power);
 				dataModelXantrex.setPVVoltage(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelXantrex.setPVCurrent(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModelXantrex.setPVPower(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
@@ -61,7 +65,7 @@ public class ModelXantrexGT100250500Service extends DB {
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelXantrex.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModelXantrex.setNvmActivePower(power);
 				dataModelXantrex.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				
 				

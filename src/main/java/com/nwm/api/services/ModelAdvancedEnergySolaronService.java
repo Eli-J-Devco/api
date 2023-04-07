@@ -35,6 +35,8 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = new ModelAdvancedEnergySolaronEntity();
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
+				if(power < 0) { power = 0.0; };
 				dataModelAdvancedEnergySolaron.setTime(words.get(0).replace("'", ""));
 				dataModelAdvancedEnergySolaron.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelAdvancedEnergySolaron.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -50,7 +52,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				dataModelAdvancedEnergySolaron.setLast_restart(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				
 				dataModelAdvancedEnergySolaron.setUptime(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModelAdvancedEnergySolaron.setAc_power(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelAdvancedEnergySolaron.setAc_power(power);
 				dataModelAdvancedEnergySolaron.setAc_frequency(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelAdvancedEnergySolaron.setPv_voltage(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelAdvancedEnergySolaron.setPv_current(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
@@ -81,7 +83,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				dataModelAdvancedEnergySolaron.setCurrent_time(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				dataModelAdvancedEnergySolaron.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelAdvancedEnergySolaron.setNvmActivePower(power);
 				dataModelAdvancedEnergySolaron.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				return dataModelAdvancedEnergySolaron;
 				
