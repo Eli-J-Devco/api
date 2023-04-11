@@ -2396,6 +2396,11 @@ LibErrorCode {
 			case 14: errorCode = 583; break;
 			case 15: errorCode = 584; break;
 			case 16: errorCode = 585; break;
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
 			case 17: errorCode = 586; break;
 			case 18: errorCode = 587; break;
 			case 19: errorCode = 588; break;
@@ -2412,6 +2417,11 @@ LibErrorCode {
 			case 30: errorCode = 599; break;
 			case 31: errorCode = 600; break;
 			case 32: errorCode = 601; break;
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			
 			case 33: errorCode = 602; break;
 			case 34: errorCode = 603; break;
 			case 35: errorCode = 604; break;
@@ -2428,6 +2438,11 @@ LibErrorCode {
 			case 46: errorCode = 615; break;
 			case 47: errorCode = 616; break;
 			case 48: errorCode = 617; break;
+			
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
 			case 49: errorCode = 618; break;
 			case 50: errorCode = 619; break;
 			case 51: errorCode = 620; break;
@@ -2444,6 +2459,11 @@ LibErrorCode {
 			case 62: errorCode = 631; break;
 			case 63: errorCode = 632; break;
 			case 64: errorCode = 633; break;
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			
 			case 65: errorCode = 634; break;
 			case 66: errorCode = 635; break;
 			case 67: errorCode = 636; break;
@@ -2460,6 +2480,10 @@ LibErrorCode {
 			case 78: errorCode = 647; break;
 			case 79: errorCode = 648; break;
 			case 80: errorCode = 649; break;
+			}
+			break;
+		case 6: 
+			switch (bitLevel) {
 			case 81: errorCode = 650; break;
 			case 82: errorCode = 651; break;
 			case 83: errorCode = 652; break;
@@ -2476,6 +2500,10 @@ LibErrorCode {
 			case 94: errorCode = 663; break;
 			case 95: errorCode = 664; break;
 			case 96: errorCode = 665; break;
+			}
+			break;
+		case 7: 
+			switch (bitLevel) {
 			case 97: errorCode = 666; break;
 			case 98: errorCode = 667; break;
 			case 99: errorCode = 668; break;

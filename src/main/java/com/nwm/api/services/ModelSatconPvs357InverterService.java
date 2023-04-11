@@ -359,7 +359,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 2);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -420,7 +420,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 3);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -481,7 +481,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 4);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -542,7 +542,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 5);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -602,7 +602,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 6);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -662,7 +662,7 @@ public class ModelSatconPvs357InverterService extends DB {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
-						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 1);
+						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 7);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
