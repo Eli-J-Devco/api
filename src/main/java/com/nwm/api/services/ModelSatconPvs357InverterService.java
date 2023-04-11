@@ -385,7 +385,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord2() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(2);
 					List dataListFault2 = new ArrayList();
 					dataListFault2 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault2.size() > 0) {
@@ -446,7 +446,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord3() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(3);
 					List dataListFault3 = new ArrayList();
 					dataListFault3 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault3.size() > 0) {
@@ -507,7 +507,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord4() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(4);
 					List dataListFault4 = new ArrayList();
 					dataListFault4 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault4.size() > 0) {
@@ -568,7 +568,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord5() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(5);
 					List dataListFault5 = new ArrayList();
 					dataListFault5 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault5.size() > 0) {
@@ -628,7 +628,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord6() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(6);
 					List dataListFault6 = new ArrayList();
 					dataListFault6 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault6.size() > 0) {
@@ -688,7 +688,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				if(rowItem.getTotalFaultWord7() == 0) {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
-					alertItemClose.setFaultCodeLevel(1);
+					alertItemClose.setFaultCodeLevel(7);
 					List dataListFault7 = new ArrayList();
 					dataListFault7 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
 					if(dataListFault7.size() > 0) {
