@@ -2504,11 +2504,11 @@ LibErrorCode {
 			break;
 		case 7: 
 			switch (bitLevel) {
-			case 97: errorCode = 666; break;
-			case 98: errorCode = 667; break;
-			case 99: errorCode = 668; break;
-			case 100: errorCode = 669; break;
-			case 101: errorCode = 670; break;
+			case 0: errorCode = 666; break;
+			case 1: errorCode = 667; break;
+			case 2: errorCode = 668; break;
+			case 3: errorCode = 669; break;
+			case 4: errorCode = 670; break;
 			}
 			break;
 		
