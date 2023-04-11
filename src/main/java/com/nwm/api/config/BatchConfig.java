@@ -277,7 +277,7 @@ public class BatchConfig {
 		case "staging":
 		case "prod":
 			System.out.println("FTP Sungrow start upload");
-			job.readFolderFTP();
+//			job.readFolderFTP();
 			break;
 		}
 		
@@ -309,7 +309,7 @@ public class BatchConfig {
 			break;
 		case "staging":
 		case "prod":
-			job.readFolderSMAFTP();
+//			job.readFolderSMAFTP();
 			break;
 		}
 	}
