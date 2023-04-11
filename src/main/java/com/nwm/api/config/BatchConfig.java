@@ -265,7 +265,7 @@ public class BatchConfig {
 	 * @author Long.Pham
 	 * @since 2023-01-04
 	 */
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void readFolderFTP() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
@@ -309,7 +309,7 @@ public class BatchConfig {
 			break;
 		case "staging":
 		case "prod":
-//			job.readFolderSMAFTP();
+			job.readFolderSMAFTP();
 			break;
 		}
 	}

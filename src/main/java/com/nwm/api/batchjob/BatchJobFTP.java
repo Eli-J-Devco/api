@@ -246,7 +246,7 @@ public class BatchJobFTP {
 									String id = resource.getAttribute("id");
 									String type = resource.getAttribute("type");
 
-									if (serial != "" && timestamp != "" && id != "" && type == "") {
+									if (serial != "" && timestamp != "" && id != "" && type != "") {
 
 										entity.setSerial_number(serial);
 										entity.setModbusdevicenumber(id.replaceAll("[^0-9]", ""));
