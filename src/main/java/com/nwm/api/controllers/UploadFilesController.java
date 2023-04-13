@@ -1468,9 +1468,9 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(25))) {
+													if(!Lib.isBlank(words.get(36))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(36)) ? Double.parseDouble(words.get(36)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);

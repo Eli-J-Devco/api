@@ -78,12 +78,19 @@ public class SitesDevicesEntity {
 	private int kiosk_view;	
 	private String read_data_all;
 	private String view_tablename;
+	private int unit_type_temp;
 	
 	
 	
 	
 	
 	
+	public int getUnit_type_temp() {
+		return unit_type_temp;
+	}
+	public void setUnit_type_temp(int unit_type_temp) {
+		this.unit_type_temp = unit_type_temp;
+	}
 	public String getView_tablename() {
 		return view_tablename;
 	}

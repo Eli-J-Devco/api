@@ -153,10 +153,18 @@ public class SiteEntity {
 	private String read_data_all;
 	private List devices;
 	private String gu_id;
+	private int unit_type_temp;
+	
+
 	
 	
 	
-	
+	public int getUnit_type_temp() {
+		return unit_type_temp;
+	}
+	public void setUnit_type_temp(int unit_type_temp) {
+		this.unit_type_temp = unit_type_temp;
+	}
 	public String getGu_id() {
 		return gu_id;
 	}
