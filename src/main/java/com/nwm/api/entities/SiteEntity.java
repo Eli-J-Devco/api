@@ -154,11 +154,18 @@ public class SiteEntity {
 	private List devices;
 	private String gu_id;
 	private int unit_type_temp;
+	private int unit_wind_speed;
 	
 
 	
 	
 	
+	public int getUnit_wind_speed() {
+		return unit_wind_speed;
+	}
+	public void setUnit_wind_speed(int unit_wind_speed) {
+		this.unit_wind_speed = unit_wind_speed;
+	}
 	public int getUnit_type_temp() {
 		return unit_type_temp;
 	}

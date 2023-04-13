@@ -79,12 +79,18 @@ public class SitesDevicesEntity {
 	private String read_data_all;
 	private String view_tablename;
 	private int unit_type_temp;
+	private int unit_wind_speed;
 	
 	
 	
 	
 	
-	
+	public int getUnit_wind_speed() {
+		return unit_wind_speed;
+	}
+	public void setUnit_wind_speed(int unit_wind_speed) {
+		this.unit_wind_speed = unit_wind_speed;
+	}
 	public int getUnit_type_temp() {
 		return unit_type_temp;
 	}

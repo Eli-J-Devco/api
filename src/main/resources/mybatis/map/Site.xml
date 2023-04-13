@@ -67,6 +67,8 @@
 		<result property="id_site_group" column="id_site_group" />
 		<result property="timezone_datalogger" column="timezone_datalogger" />
 		<result property="unit_type_temp" column="unit_type_temp" />
+		<result property="unit_wind_speed" column="unit_wind_speed" />
+		
 		
 		
 		
@@ -113,7 +115,8 @@
 			sg.name AS site_group,
 			s.id_site_group,
 			s.timezone_datalogger,
-			s.unit_type_temp
+			s.unit_type_temp,
+			s.unit_wind_speed
 			
 		FROM
 			site AS s
@@ -207,7 +210,8 @@
 			s.site_logo,
 			s.id_site_group,
 			s.timezone_datalogger,
-			s.unit_type_temp
+			s.unit_type_temp,
+			s.unit_wind_speed
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -317,7 +321,8 @@
 			`site_logo`,
 			`id_site_group`,
 			`timezone_datalogger`,
-			`unit_type_temp`
+			`unit_type_temp`,
+			`unit_wind_speed`
 		)VALUES(
 			#{id_company},
 			#{id_country},
@@ -349,7 +354,8 @@
 			#{site_logo},
 			#{id_site_group},
 			#{timezone_datalogger},
-			#{unit_type_temp}
+			#{unit_type_temp},
+			#{unit_wind_speed}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -390,7 +396,8 @@
 			`site_logo` = #{site_logo},
 			`id_site_group` = #{id_site_group},
 			`timezone_datalogger` = #{timezone_datalogger},
-			`unit_type_temp` = #{unit_type_temp}
+			`unit_type_temp` = #{unit_type_temp},
+			`unit_wind_speed` = #{unit_wind_speed}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -435,7 +442,8 @@
 			s.site_logo,
 			s.id_site_group,
 			s.timezone_datalogger,
-			s.unit_type_temp
+			s.unit_type_temp,
+			s.unit_wind_speed
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -559,7 +567,8 @@
 			s.site_logo,
 			s.id_site_group,
 			s.timezone_datalogger,
-			s.unit_type_temp
+			s.unit_type_temp,
+			s.unit_wind_speed
 		FROM
 			site AS s
 		WHERE
@@ -612,7 +621,8 @@
 			s.site_logo,
 			s.id_site_group,
 			s.timezone_datalogger,
-			s.unit_type_temp
+			s.unit_type_temp,
+			s.unit_wind_speed
 		FROM
 			site AS s
 		WHERE s.is_delete = 0;
