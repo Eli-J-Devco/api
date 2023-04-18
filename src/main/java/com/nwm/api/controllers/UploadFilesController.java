@@ -355,7 +355,7 @@ public class UploadFilesController extends BaseController {
 													
 													// vas_3ph_total
 													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
 													} else {
 														deviceUpdateE.setField_value3(null);
 													}
