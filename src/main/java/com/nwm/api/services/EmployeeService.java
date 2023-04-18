@@ -351,5 +351,23 @@ public class EmployeeService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get table columns in Portfolio
+	 * @author duy.phan
+	 * @since 2023-04-18
+	 * @param id
+	 */
+	public EmployeeManageEntity getTableColumn(int id) {
+		EmployeeManageEntity employee = new EmployeeManageEntity();
+		try {
+			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", id);
+			if (employee == null)
+				return new EmployeeManageEntity();
+		} catch (Exception ex) {
+			log.error("Employee.getTableColumnEmployeeById", ex);
+			return new EmployeeManageEntity();
+		}
+		return employee;
+	}
 
 }
