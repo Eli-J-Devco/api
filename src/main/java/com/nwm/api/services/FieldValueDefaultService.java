@@ -9,22 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.DateFormatEntity;
-import com.nwm.api.entities.TimeZoneEntity;
+import com.nwm.api.entities.FieldValueDefaultEntity;
 
-public class TimeZoneService extends DB {
+public class FieldValueDefaultService extends DB {
 
 	/**
-	 * @description get list time zone
+	 * @description get list field value default
 	 * @author long.pham
-	 * @since 2020-10-30
+	 * @since 2023-04-17
 	 * @returns array
 	 */
 	
-	public List getList(TimeZoneEntity obj) {
+	public List getList(FieldValueDefaultEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("TimeZone.getList", obj);
+			dataList = queryForList("FieldValueDefault.getList", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -35,17 +34,18 @@ public class TimeZoneService extends DB {
 	
 	
 	
+	
 	/**
-	 * @description get list time zone
+	 * @description get list field value default
 	 * @author long.pham
-	 * @since 2020-10-30
+	 * @since 2023-04-17
 	 * @returns array
 	 */
 	
-	public List getListDateFormat(DateFormatEntity obj) {
+	public List getListByGroup(FieldValueDefaultEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("TimeZone.getListDateFormat", obj);
+			dataList = queryForList("FieldValueDefault.getListByGroup", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -53,5 +53,6 @@ public class TimeZoneService extends DB {
 		}
 		return dataList;
 	}
+	
 
 }

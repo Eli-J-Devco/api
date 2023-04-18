@@ -81,6 +81,18 @@
 	</update>
 	
 	
+	
+	<update id="updateSiteSetting">
+		UPDATE `site`
+		SET
+			`display_time_format` = #{display_time_format},
+			`display_date_format` = #{display_date_format},
+			`display_timezone` = #{display_timezone}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
 	<update id="updateDeviceResetDisableAlert">
 		UPDATE `device`
 		SET

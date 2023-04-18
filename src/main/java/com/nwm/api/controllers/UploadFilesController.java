@@ -246,12 +246,30 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// OutputGeneration
 													if(!Lib.isBlank(words.get(37))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// DCInputVoltage
+													if(!Lib.isBlank(words.get(34))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(34)) ? Double.parseDouble(words.get(34)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// DCInputCurrent
+													if(!Lib.isBlank(words.get(35))) {
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(35)) ? Double.parseDouble(words.get(35)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													
@@ -316,13 +334,32 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// watts_3ph_total
 													if(!Lib.isBlank(words.get(13))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// vars_3ph_total
+													if(!Lib.isBlank(words.get(14))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// vas_3ph_total
+													if(!Lib.isBlank(words.get(15))) {
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
+													}
+													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
@@ -388,13 +425,26 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// sensor1_data
 													if(!Lib.isBlank(words.get(8))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// panel_temperature
+													if(!Lib.isBlank(words.get(9))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -461,13 +511,27 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// Sensor1_data
 													if(!Lib.isBlank(words.get(8))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// panel_temperature
+													if(!Lib.isBlank(words.get(9))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -533,12 +597,29 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ac_power
 													if(!Lib.isBlank(words.get(13))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// ac_frequency
+													if(!Lib.isBlank(words.get(15))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// pv_voltage
+													if(!Lib.isBlank(words.get(16))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(16)) ? Double.parseDouble(words.get(16)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -603,13 +684,26 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// IrradianceTcs
 													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// SensorBodyTemperature
+													if(!Lib.isBlank(words.get(6))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(6)) ? Double.parseDouble(words.get(6)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -672,13 +766,27 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// irradiance
 													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// tcell
+													if(!Lib.isBlank(words.get(5))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -746,10 +854,18 @@ public class UploadFilesController extends BaseController {
 													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// value 2
+													deviceUpdateE.setField_value2(null);
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -813,12 +929,30 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// ac_power
 													if(!Lib.isBlank(words.get(13))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// ac_frequency
+													if(!Lib.isBlank(words.get(14))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// pv_voltage
+													if(!Lib.isBlank(words.get(15))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -886,12 +1020,29 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// line_kw
 													if(!Lib.isBlank(words.get(14))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// dc_output_voltage
+													if(!Lib.isBlank(words.get(11))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(11)) ? Double.parseDouble(words.get(11)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// dc_output_current
+													if(!Lib.isBlank(words.get(12))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -957,13 +1108,32 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// AC_ActivePower
 													if(!Lib.isBlank(words.get(32))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0"));
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// AC_ApparentPower
+													if(!Lib.isBlank(words.get(33))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(33)) ? Double.parseDouble(words.get(33)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// PV1_Voltage
+													if(!Lib.isBlank(words.get(40))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(40)) ? Double.parseDouble(words.get(40)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
+													}
+													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1031,12 +1201,29 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// TotalNetInstantaneousRealPower
 													if(!Lib.isBlank(words.get(14))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// RealPowerPhaseA
+													if(!Lib.isBlank(words.get(55))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(55)) ? Double.parseDouble(words.get(55)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// RealPowerPhaseB
+													if(!Lib.isBlank(words.get(56))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(56)) ? Double.parseDouble(words.get(56)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -1106,12 +1293,29 @@ public class UploadFilesController extends BaseController {
 													
 													Double nvmEnergyTotal = nvm103 * 1000 + nvm102;
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													//Input_kW
 													if(!Lib.isBlank(words.get(31))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(31)) ? Double.parseDouble(words.get(31)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(31)) ? Double.parseDouble(words.get(31)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// Output_kw
+													if(!Lib.isBlank(words.get(30))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// DC_Input_Volts
+													if(!Lib.isBlank(words.get(15))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -1181,9 +1385,25 @@ public class UploadFilesController extends BaseController {
 													if(!Lib.isBlank(words.get(5))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// TotalReactivePower
+													if(!Lib.isBlank(words.get(6))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(6)) ? Double.parseDouble(words.get(6)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// TotalApparentPower
+													if(!Lib.isBlank(words.get(7))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(7)) ? Double.parseDouble(words.get(7)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());
@@ -1248,14 +1468,27 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// SunPOATempComp
 													if(!Lib.isBlank(words.get(8))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
 
+													// PanelTemperature
+													if(!Lib.isBlank(words.get(9))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
@@ -1319,13 +1552,31 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ActivePowerTotal
 													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// VoltageA
+													if(!Lib.isBlank(words.get(14))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// VoltageB
+													if(!Lib.isBlank(words.get(15))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
+													}
+													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1394,17 +1645,30 @@ public class UploadFilesController extends BaseController {
 													
 													if(nvmActivePowerABB < 0) { nvmActivePowerABB = 0.0; };
 													
+													// Input1Power
 													if(!Lib.isBlank(words.get(15))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// Input1Voltage
+													if(!Lib.isBlank(words.get(18))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(18)) ? Double.parseDouble(words.get(18)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
-													
+													 
 													// Insert alert
 													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
 														// Check error code
@@ -1468,13 +1732,26 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// AirTemperatureActual
 													if(!Lib.isBlank(words.get(25))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// IrradianceActual
+													if(!Lib.isBlank(words.get(21))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1546,10 +1823,22 @@ public class UploadFilesController extends BaseController {
 													if(!Lib.isBlank(words.get(5))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(nvmActivePower226)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(nvmActivePower226)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// IrradianceActual
+													if(!Lib.isBlank(words.get(21))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1619,13 +1908,26 @@ public class UploadFilesController extends BaseController {
 													double setAngle = Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.0");
 													setAngle = Math.round((setAngle * 180) / 3.14);
 													
+													// ReadAngle
 													if(!Lib.isBlank(words.get(7))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(7)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(7)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// WindSpeed
+													if(!Lib.isBlank(words.get(10))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(10)) ? Double.parseDouble(words.get(10)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1702,10 +2004,18 @@ public class UploadFilesController extends BaseController {
 													if(!Lib.isBlank(words.get(19))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 													}
+													
+													// value 2
+													deviceUpdateE.setField_value2(null);
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1776,14 +2086,30 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
-													
+													// ReadPower
 													if(!Lib.isBlank(words.get(7))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
 														
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// PVVoltage
+													if(!Lib.isBlank(words.get(11))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(11)) ? Double.parseDouble(words.get(11)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// PVCurrent
+													if(!Lib.isBlank(words.get(12))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
 													}
 													
 													deviceUpdateE.setId(item.getId());

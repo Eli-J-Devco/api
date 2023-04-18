@@ -45,4 +45,17 @@
 		WHERE t.is_delete = 0;
 	</select>
 	
+	
+	
+	<select id="getListDeviceGroupBySite" resultType="Map">
+		SELECT
+			t.*,
+			t.group_name AS text
+		FROM
+			device_group AS t
+			LEFT JOIN device d ON d.id_device_group = t.id
+		WHERE t.is_delete = 0 AND t.`status` = 1 AND d.id_site = #{id_site}
+		GROUP BY d.id_device_group
+	</select>
+	
 </mapper>

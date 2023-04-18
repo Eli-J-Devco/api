@@ -60,4 +60,25 @@ public class DeviceGroupController extends BaseController {
 	
 	
 	
+	
+	/**
+	 * @description Get list group device
+	 * @author long.pham
+	 * @since 2021-01-11
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-by-site-id")
+	public Object getListDeviceGroupBySite(@RequestBody DeviceGroupEntity obj) {
+		try {
+			DeviceGroupService service = new DeviceGroupService();
+			List data = service.getListDeviceGroupBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
 }

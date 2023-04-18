@@ -50,5 +50,26 @@ public class DeviceGroupService extends DB {
 		}
 		return dataList;
 	}
+	
+	
+	
+	/**
+	 * @description get list device group by site id
+	 * @author long.pham
+	 * @since 2021-04-28
+	 * @returns array
+	 */
+	
+	public List getListDeviceGroupBySite(DeviceGroupEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceGroup.getListDeviceGroupBySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 
 }

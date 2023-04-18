@@ -87,9 +87,39 @@ public class DeviceEntity {
 	private int con_temp;
 	private Double max_ac_power;
 	private int reverse_poa;
+	private String field_value_default;
+	private Double field_value1;
+	private Double field_value2;
+	private Double field_value3;
 	
 	
 	
+	
+	public Double getField_value1() {
+		return field_value1;
+	}
+	public void setField_value1(Double field_value1) {
+		this.field_value1 = field_value1;
+	}
+	public Double getField_value2() {
+		return field_value2;
+	}
+	public void setField_value2(Double field_value2) {
+		this.field_value2 = field_value2;
+	}
+	public Double getField_value3() {
+		return field_value3;
+	}
+	public void setField_value3(Double field_value3) {
+		this.field_value3 = field_value3;
+	}
+
+	public String getField_value_default() {
+		return field_value_default;
+	}
+	public void setField_value_default(String field_value_default) {
+		this.field_value_default = field_value_default;
+	}
 	public int getReverse_poa() {
 		return reverse_poa;
 	}
