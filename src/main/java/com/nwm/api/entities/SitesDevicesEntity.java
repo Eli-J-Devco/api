@@ -80,11 +80,31 @@ public class SitesDevicesEntity {
 	private String view_tablename;
 	private int unit_type_temp;
 	private int unit_wind_speed;
+	private int display_time_format;
+	private int display_date_format;
+	private int display_timezone;
 	
 	
 	
 	
-	
+	public int getDisplay_time_format() {
+		return display_time_format;
+	}
+	public void setDisplay_time_format(int display_time_format) {
+		this.display_time_format = display_time_format;
+	}
+	public int getDisplay_date_format() {
+		return display_date_format;
+	}
+	public void setDisplay_date_format(int display_date_format) {
+		this.display_date_format = display_date_format;
+	}
+	public int getDisplay_timezone() {
+		return display_timezone;
+	}
+	public void setDisplay_timezone(int display_timezone) {
+		this.display_timezone = display_timezone;
+	}
 	public int getUnit_wind_speed() {
 		return unit_wind_speed;
 	}

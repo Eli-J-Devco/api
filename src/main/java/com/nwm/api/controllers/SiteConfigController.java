@@ -49,6 +49,29 @@ public class SiteConfigController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description update site setting
+	 * @author long.pham
+	 * @since 2023-04-17
+	 * @param  {}
+	 */
+
+	@PostMapping("/update-site-setting")
+	public Object updateSiteSetting(@Valid @RequestBody SitesDevicesEntity obj) {
+		try {
+			SiteConfigService service = new SiteConfigService();
+			boolean insert = service.updateSiteSetting(obj);
+			if (insert == true) {
+				return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+			} else {
+				return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description Get list site for page employee manage site

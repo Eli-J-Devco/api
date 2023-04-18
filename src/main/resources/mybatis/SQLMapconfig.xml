@@ -128,6 +128,8 @@
 		 <mapper resource="mybatis/map/Control.xml" />
 		 <mapper resource="mybatis/map/TablePreference.xml" />
 		 <mapper resource="mybatis/map/AccountStatus.xml" />
+		 <mapper resource="mybatis/map/FieldValueDefault.xml" />
+		 
 		 
 		 
 		

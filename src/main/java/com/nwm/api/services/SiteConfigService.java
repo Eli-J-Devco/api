@@ -47,6 +47,30 @@ public class SiteConfigService extends DB {
 	
 	
 	
+	
+	/**
+	 * @description update site config
+	 * @author long.pham
+	 * @since 2022-07-27
+	 * @param id
+	 */
+	public boolean updateSiteSetting(SitesDevicesEntity obj){
+		
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("SiteConfig.updateSiteSetting", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("SiteConfig.updateSiteSetting", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
 	/**
 	 * @description get list site config
 	 * @author long.pham

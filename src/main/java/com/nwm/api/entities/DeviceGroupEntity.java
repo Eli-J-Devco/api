@@ -20,9 +20,16 @@ public class DeviceGroupEntity{
 	private String code_prefix;
 	private int id_device_type;
 	private String view_tablename;
+	private int id_site;
 	
 	
 	
+	public int getId_site() {
+		return id_site;
+	}
+	public void setId_site(int id_site) {
+		this.id_site = id_site;
+	}
 	public String getView_tablename() {
 		return view_tablename;
 	}

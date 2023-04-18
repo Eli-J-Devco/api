@@ -52,7 +52,10 @@
 			s.unit_type_temp,
 			s.unit_wind_speed,
 			IF(s.cf_email_subscribers IS NULL || s.cf_email_subscribers = '',t.cf_email_subscribers,s.cf_email_subscribers) AS cf_email_subscribers,
-			g.total_error
+			g.total_error,
+			s.display_time_format,
+			s.display_date_format,
+			s.display_timezone
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

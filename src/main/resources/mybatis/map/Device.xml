@@ -26,6 +26,8 @@
 		<result property="view_tablename" column="view_tablename" />
 		<result property="order_id" column="order_id" />
 		<result property="reverse_poa" column="reverse_poa" />
+		<result property="field_value_default" column="field_value_default" />
+		
 		
 		
 		
@@ -54,7 +56,8 @@
 			s.end_date_time,
 			t.`offset` AS timezone_offset,
 			t.`value` AS timezone_value,
-			d.reverse_poa
+			d.reverse_poa,
+			d.field_value_default
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -130,7 +133,8 @@
 			dt.name AS device_type_name,
 			s.view_tablename,
 			s.order_id,
-			s.reverse_poa
+			s.reverse_poa,
+			s.field_value_default
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -197,7 +201,10 @@
 			<if test="last_updated != null">
 				 `last_updated` = #{last_updated},
 			</if> 
-			`last_value` = #{last_value}
+			`last_value` = #{last_value},
+			`field_value1` = #{field_value1},
+			`field_value2` = #{field_value2},
+			`field_value3` = #{field_value3}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -229,7 +236,8 @@
 			`datatablename`,
 			`view_tablename`,
 			`order_id`,
-			`reverse_poa`
+			`reverse_poa`,
+			`field_value_default`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -247,7 +255,8 @@
 			#{datatablename},
 			#{view_tablename},
 			#{order_id},
-			#{reverse_poa}
+			#{reverse_poa},
+			#{field_value_default}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -274,7 +283,8 @@
 			datatablename = #{datatablename},
 			view_tablename = #{view_tablename},
 			order_id = #{order_id},
-			reverse_poa = #{reverse_poa}
+			reverse_poa = #{reverse_poa},
+			field_value_default = #{field_value_default}
 		WHERE
 			`id` = #{id}
 	</update>
