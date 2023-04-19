@@ -322,5 +322,23 @@ public class EmployeeController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description get table columns in Portfolio
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-table-column")
+	public Object getTableColumn(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			EmployeeManageEntity data = service.getTableColumn(obj.getId());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
 }
