@@ -47,6 +47,7 @@
 		<result property="last_login" column="last_login" />
 		<result property="offset_timezone" column="offset_timezone" />
 		<result property="page_login" column="page_login" />
+		<result property="table_column" column="table_column" />
 		
 	</resultMap>
 	
@@ -437,6 +438,11 @@
 			`id` = #{id};
 	</update>
 	
-  	
+  	<select id="getTableColumnEmployeeById" resultMap="EmployeeMap"  parameterType="int">
+    	SELECT
+    		table_column
+		FROM `employee` u
+		WHERE u.id = #{value};
+  	</select>
   	
 </mapper>
