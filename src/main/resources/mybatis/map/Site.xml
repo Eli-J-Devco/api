@@ -443,10 +443,16 @@
 			s.id_site_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
-			s.unit_wind_speed
+			s.unit_wind_speed,
+			c.name AS company,
+			sg.name AS site_group,
+			tz.name AS time_zone
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN (
 						SELECT id_site, 
 							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,
