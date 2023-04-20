@@ -83,10 +83,17 @@ public class SitesDevicesEntity {
 	private int display_time_format;
 	private int display_date_format;
 	private int display_timezone;
+	private String date_format;
 	
 	
 	
 	
+	public String getDate_format() {
+		return date_format;
+	}
+	public void setDate_format(String date_format) {
+		this.date_format = date_format;
+	}
 	public int getDisplay_time_format() {
 		return display_time_format;
 	}
