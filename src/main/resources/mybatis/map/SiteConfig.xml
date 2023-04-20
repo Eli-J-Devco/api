@@ -83,13 +83,27 @@
 	
 	
 	<update id="updateSiteSetting">
-		UPDATE `site`
-		SET
+		<if test="checkall == 1">
+			UPDATE site SET
 			`display_time_format` = #{display_time_format},
 			`display_date_format` = #{display_date_format},
-			`display_timezone` = #{display_timezone}
-		WHERE
-			`id` = #{id}
+			`id_time_zone` = #{id_time_zone}
+			WHERE id IN(
+					SELECT sem.id_site FROM site_employee_map sem WHERE sem.id_employee = #{id_employee}
+				)
+		</if> 
+		
+		<if test="checkall == 0">
+			UPDATE `site`
+			SET
+				`display_time_format` = #{display_time_format},
+				`display_date_format` = #{display_date_format},
+				`id_time_zone` = #{id_time_zone}
+			WHERE
+				`id` = #{id}
+		</if> 
+		
+		
 	</update>
 	
 	

@@ -82,12 +82,20 @@ public class SitesDevicesEntity {
 	private int unit_wind_speed;
 	private int display_time_format;
 	private int display_date_format;
-	private int display_timezone;
 	private String date_format;
+	private int checkall;
 	
 	
 	
 	
+	
+	
+	public int getCheckall() {
+		return checkall;
+	}
+	public void setCheckall(int checkall) {
+		this.checkall = checkall;
+	}
 	public String getDate_format() {
 		return date_format;
 	}
@@ -106,12 +114,7 @@ public class SitesDevicesEntity {
 	public void setDisplay_date_format(int display_date_format) {
 		this.display_date_format = display_date_format;
 	}
-	public int getDisplay_timezone() {
-		return display_timezone;
-	}
-	public void setDisplay_timezone(int display_timezone) {
-		this.display_timezone = display_timezone;
-	}
+
 	public int getUnit_wind_speed() {
 		return unit_wind_speed;
 	}
