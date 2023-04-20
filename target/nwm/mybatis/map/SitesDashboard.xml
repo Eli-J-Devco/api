@@ -55,7 +55,6 @@
 			g.total_error,
 			s.display_time_format,
 			s.display_date_format,
-			s.display_timezone,
 			d.name AS date_format
 		FROM
 			site s 
