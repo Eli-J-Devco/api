@@ -31,6 +31,7 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
+import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
 import com.nwm.api.entities.ModelDataloggerEntity;
@@ -57,6 +58,7 @@ import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAbbTrioClass6210Service;
+import com.nwm.api.services.ModelAdam4017WSClass8110Nelis190Service;
 import com.nwm.api.services.ModelAdvancedEnergySolaronService;
 import com.nwm.api.services.ModelChintSolectriaInverterClass9725Service;
 import com.nwm.api.services.ModelDataloggerService;
@@ -2139,6 +2141,93 @@ public class UploadFilesController extends BaseController {
 													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
 													dataModelXantrex.setId_device(item.getId());
 													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+//															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+//														System.out.println("e1: " + e);
+														e.printStackTrace();  
+													}
+												}
+											}
+											
+											break;
+											
+											
+										case "model_adam4017ws_class8110_nelis190": 
+											ModelAdam4017WSClass8110Nelis190Service serviceModelAdam4017 = new ModelAdam4017WSClass8110Nelis190Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ReadPower
+													if(!Lib.isBlank(words.get(7))) {
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
+														
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// AmbientTemp
+													if(!Lib.isBlank(words.get(4))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
+													dataModelAdam4017.setId_device(item.getId());
+													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataModelAdam4017);
 													
 													try  
 													{ 
