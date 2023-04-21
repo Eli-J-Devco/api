@@ -62,6 +62,26 @@
 			d.datatablename,
 			d.view_tablename,
 			d.id_device_group,
+			
+			<if test="(datatablename == 'model_adam4017ws_class8110_nelis190') || (datatablename == 'ViewModelAdam4017WSClass8110Nelis190')">
+				IFNULL(ROUND(AVG(dv.AmbientTemp), 2), 0.001) AS AmbientTemp,
+				IFNULL(ROUND(AVG(dv.PVPanelTemp), 2), 0.001) AS PVPanelTemp,
+				IFNULL(ROUND(AVG(dv.PVPanelTemp1), 2), 0.001) AS PVPanelTemp1,
+				IFNULL(ROUND(AVG(dv.WindSpeed), 2), 0.001) AS WindSpeed,
+				IFNULL(ROUND(AVG(dv.POACMP11), 2), 0.001) AS POACMP11,
+				IFNULL(ROUND(AVG(dv.IrradiancePOA), 2), 0.001) AS IrradiancePOA,
+				IFNULL(ROUND(AVG(dv.IMTInternalTemp), 2), 0.001) AS IMTInternalTemp,
+				IFNULL(ROUND(AVG(dv.PVPanelTemp2), 2), 0.001) AS PVPanelTemp2,
+				IFNULL(ROUND(AVG(dv.code_ch0), 2), 0.001) AS code_ch0,
+				IFNULL(ROUND(AVG(dv.code_ch1), 2), 0.001) AS code_ch1,
+				IFNULL(ROUND(AVG(dv.code_ch2), 2), 0.001) AS code_ch2,
+				IFNULL(ROUND(AVG(dv.code_ch3), 2), 0.001) AS code_ch3,
+				IFNULL(ROUND(AVG(dv.code_ch4), 2), 0.001) AS code_ch4,
+				IFNULL(ROUND(AVG(dv.code_ch5), 2), 0.001) AS code_ch5,
+				IFNULL(ROUND(AVG(dv.code_ch6), 2), 0.001) AS code_ch6,
+				IFNULL(ROUND(AVG(dv.code_ch7), 2), 0.001) AS code_ch7,
+			</if>
+			
 			<if test="(datatablename == 'model_sma_inverter_stp1200tlus10') || (datatablename == 'ViewModelSmaInverterStp1200tlus10')">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
