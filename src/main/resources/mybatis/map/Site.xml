@@ -480,7 +480,7 @@
 	            <when test="sort_column == 'id'">
 	                s.id ${order_by}
 	            </when>         
-	            <when test="sort_column == 'name'">
+	            <when test="sort_column == 'site_name'">
 	                s.name ${order_by}
 	            </when>
 	            <when test="sort_column == 'customer_name'">
@@ -489,8 +489,26 @@
 	            <when test="sort_column == 'dc_capacity'">
 	                dc_capacity ${order_by}
 	            </when>
+	             <when test="sort_column == 'ac_capacity'">
+	                ac_capacity ${order_by}
+	            </when>
 	            <when test="sort_column == 'built_since'">
 	                built_since ${order_by}
+	            </when>
+	            <when test="sort_column == 'company'">
+	                company ${order_by}
+	            </when>
+	            <when test="sort_column == 'site_group'">
+	                site_group ${order_by}
+	            </when>
+	            <when test="sort_column == 'commissioning'">
+	                commissioning ${order_by}
+	            </when>
+	            <when test="sort_column == 'time_zone'">
+	                time_zone ${order_by}
+	            </when>
+	            <when test="sort_column == 'data_send_time'">
+	                s.data_send_time ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'status'">
