@@ -63,6 +63,28 @@
 			d.view_tablename,
 			d.id_device_group,
 			
+			
+			<if test="(datatablename == 'model_campell_scientific_meter1') || (datatablename == 'ViewModelCampellScientificMeter1')">
+				IFNULL(ROUND(AVG(dv.Meter1_ACPower), 2), 0.001) AS Meter1_ACPower,
+				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
+			</if>
+			
+			<if test="(datatablename == 'model_campell_scientific_meter2') || (datatablename == 'ViewModelCampellScientificMeter2')">
+				IFNULL(ROUND(AVG(dv.Meter2_ACPower), 2), 0.001) AS Meter2_ACPower,
+				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
+			</if>
+			
+			<if test="(datatablename == 'model_campell_scientific_meter3') || (datatablename == 'ViewModelCampellScientificMeter3')">
+				IFNULL(ROUND(AVG(dv.Meter3_ACPower), 2), 0.001) AS Meter3_ACPower,
+				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
+			</if>
+			
+			<if test="(datatablename == 'model_campell_scientific_meter4') || (datatablename == 'ViewModelCampellScientificMeter4')">
+				IFNULL(ROUND(AVG(dv.Meter4_ACPower), 2), 0.001) AS Meter4_ACPower,
+				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
+			</if>
+			
+			
 			<if test="(datatablename == 'model_adam4017ws_class8110_nelis190') || (datatablename == 'ViewModelAdam4017WSClass8110Nelis190')">
 				IFNULL(ROUND(AVG(dv.AmbientTemp), 2), 0.001) AS AmbientTemp,
 				IFNULL(ROUND(AVG(dv.PVPanelTemp), 2), 0.001) AS PVPanelTemp,

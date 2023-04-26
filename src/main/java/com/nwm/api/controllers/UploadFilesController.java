@@ -1702,7 +1702,11 @@ public class UploadFilesController extends BaseController {
 													
 													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
 													dataModelABB.setId_device(item.getId());
-													dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
+													
+													double input1Power = Double.parseDouble((!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+													if(input1Power < 0) { input1Power = 0.0; };
+													
+													dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? df.format(input1Power) : "0.001"));
 													dataModelABB.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? df.format(nvmActivePowerABB) : "0.001"));
 
 													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
@@ -2265,7 +2269,6 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_campell_scientific_meter1": 
 											ModelCampellScientificMeter1Service serviceModelCSM1 = new ModelCampellScientificMeter1Service();
-											System.out.println("modbusport: " + modbusport + " - MODBUSDEVICE: " + modbusdevice);
 
 											// Check insert database status
 											while ((line = br.readLine()) != null) {
