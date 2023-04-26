@@ -665,7 +665,12 @@ public class BatchJob {
 										bathJobEntity.setCurrent_time(CurrentDate);
 										bathJobEntity.setStart_date_time(obj.getStart_date_time());
 										bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
-										bathJobEntity.setDatatablename(obj.getDatatablename());
+										if(obj.getView_tablename() != null) {
+											bathJobEntity.setDatatablename(obj.getView_tablename());
+										} else {
+											bathJobEntity.setDatatablename(obj.getDatatablename());
+										}
+										
 										bathJobEntity.setId_device(obj.getId());
 										
 										int noCommunication = 0;
@@ -689,9 +694,6 @@ public class BatchJob {
 										alertItem.setId_device(obj.getId());
 										alertItem.setId_error(noCommunication);
 										alertItem.setStart_date( !Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
-										System.out.println(lastRowItem.getId_device() + " - " + lastRowItem.getNvmActivePower());	
-										
-										System.out.println(Lib.isBlank(lastRowItem.getNvmActivePower()));	
 										
 										if (lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == 0.001) {
 											// Check error exits
@@ -794,7 +796,14 @@ public class BatchJob {
 		        BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
 	        	bathJobEntity.setCurrent_time(sDateUTC);
 		        bathJobEntity.setId_device(obj.getId());
-		        bathJobEntity.setDatatablename(obj.getDatatablename());
+		        if(obj.getView_tablename() != null) {
+		        	bathJobEntity.setDatatablename(obj.getView_tablename());
+		        } else {
+		        	bathJobEntity.setView_tablename(obj.getDatatablename());
+		        	
+		        }
+		        
+		        
 		        
 		        BatchJobTableEntity lastRowItem = service.getLastRowItem(bathJobEntity);	
 		        System.out.println("Run batchJob close alert from datalogger: "+ obj.getId());

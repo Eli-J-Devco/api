@@ -13,6 +13,7 @@ public class BatchJobTableEntity{
 	private int id_device;
 	private int error;
 	private String datatablename;
+	private String view_tablename;
 	private String end_date;
 	private int status;
 	private int id;
@@ -25,6 +26,14 @@ public class BatchJobTableEntity{
 	private double nvmActiveEnergy;
 	private int id_device_type;	
 	private int id_device_group;
+	
+	
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
 	public String getTime() {
 		return time;
 	}
