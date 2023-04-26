@@ -23,6 +23,18 @@
 			dt.alias AS device_type_alias,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
+				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
+				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
+				
+				
+				WHEN d.datatablename = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
+				WHEN d.datatablename = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
+				WHEN d.datatablename = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
+				WHEN d.datatablename = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				WHEN d.datatablename = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
 				WHEN d.datatablename = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
