@@ -27,9 +27,15 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 	public ModelAdam4017WSClass8110Nelis190Entity setModelAdam4017WSClass8110Nelis190(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+			
+			System.out.println(words);
+			
+			
+			
 			if (words.size() > 0) {
 				ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = new ModelAdam4017WSClass8110Nelis190Entity();
 				dataModelAdam4017.setTime(words.get(0).replace("'", ""));
+				System.out.println("dataModelAdam4017: " + dataModelAdam4017.getTime());
 				dataModelAdam4017.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				
 				dataModelAdam4017.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
