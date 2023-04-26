@@ -41,6 +41,28 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 				dataModelAdam4017.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelAdam4017.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
+				System.out.println("word0: " + words.get(0) );
+				System.out.println("word1: " + words.get(1) );
+				System.out.println("word2: " + words.get(2) );
+				System.out.println("word3: " + words.get(3) );
+				System.out.println("word4: " + words.get(4) );
+				System.out.println("word5: " + words.get(5) );
+				System.out.println("word6: " + words.get(6) );
+				System.out.println("word7: " + words.get(7) );
+				System.out.println("word8: " + words.get(8) );
+				System.out.println("word9: " + words.get(9) );
+				System.out.println("word10: " + words.get(10) );
+				System.out.println("word11: " + words.get(11) );
+				System.out.println("word12: " + words.get(12) );
+				System.out.println("word13: " + words.get(13) );
+				System.out.println("word14: " + words.get(14) );
+				System.out.println("word15: " + words.get(15) );
+				System.out.println("word16: " + words.get(16) );
+				System.out.println("word17: " + words.get(17) );
+				System.out.println("word18: " + words.get(18) );
+				System.out.println("word19: " + words.get(19) );
+				System.out.println("word20: " + words.get(20) );
+				
 				dataModelAdam4017.setAmbientTemp(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				dataModelAdam4017.setPVPanelTemp(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelAdam4017.setPVPanelTemp1(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
@@ -74,6 +96,7 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 			
 		} catch (Exception ex) {
 			log.error("insert", ex);
+			System.out.println("ex: " + ex);
 			return new ModelAdam4017WSClass8110Nelis190Entity();
 		}
 	}
