@@ -2265,6 +2265,8 @@ public class UploadFilesController extends BaseController {
 											
 										case "model_campell_scientific_meter1": 
 											ModelCampellScientificMeter1Service serviceModelCSM1 = new ModelCampellScientificMeter1Service();
+											System.out.println("modbusport: " + modbusport + " - MODBUSDEVICE: " + modbusdevice);
+
 											// Check insert database status
 											while ((line = br.readLine()) != null) {
 												sb.append(line); // appends line to string buffer
@@ -2274,7 +2276,7 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													if(!Lib.isBlank(words.get(7))) {
+													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
@@ -2356,7 +2358,7 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													if(!Lib.isBlank(words.get(7))) {
+													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
@@ -2437,7 +2439,7 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													if(!Lib.isBlank(words.get(7))) {
+													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
@@ -2519,7 +2521,7 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													if(!Lib.isBlank(words.get(7))) {
+													if(!Lib.isBlank(words.get(4))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
 														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
