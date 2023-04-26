@@ -28,14 +28,9 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			
-			System.out.println(words);
-			
-			
-			
 			if (words.size() > 0) {
 				ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = new ModelAdam4017WSClass8110Nelis190Entity();
 				dataModelAdam4017.setTime(words.get(0).replace("'", ""));
-				System.out.println("dataModelAdam4017: " + dataModelAdam4017.getTime());
 				dataModelAdam4017.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				
 				dataModelAdam4017.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -61,7 +56,6 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 				System.out.println("word17: " + words.get(17) );
 				System.out.println("word18: " + words.get(18) );
 				System.out.println("word19: " + words.get(19) );
-				System.out.println("word20: " + words.get(20) );
 				
 				dataModelAdam4017.setAmbientTemp(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				dataModelAdam4017.setPVPanelTemp(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
