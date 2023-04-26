@@ -30,6 +30,7 @@ public class ModelAdam4017WSClass8110Nelis190Entity {
 	
 	private double nvm_irradiance;
 	private double nvm_temperature;
+	
 	public String getTime() {
 		return time;
 	}

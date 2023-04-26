@@ -76,9 +76,9 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 				dataModelAdam4017.setCode_ch2(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelAdam4017.setCode_ch3(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelAdam4017.setCode_ch4(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
-				dataModelAdam4017.setCode_ch5(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
-				dataModelAdam4017.setCode_ch6(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
-				dataModelAdam4017.setCode_ch7(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
+				dataModelAdam4017.setCode_ch5(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
+				dataModelAdam4017.setCode_ch6(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
+				dataModelAdam4017.setCode_ch7(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				
 				
 				// set custom field nvm_irradiance
