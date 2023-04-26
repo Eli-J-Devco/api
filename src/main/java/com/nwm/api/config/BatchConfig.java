@@ -129,7 +129,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */20 * * * *")
 	public void startBatchJobGetNoCommunication() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobGetNoCommunication();
