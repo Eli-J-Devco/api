@@ -46,7 +46,7 @@ public class SendMail {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mail_from));
             message.setRecipients(
-                    Message.RecipientType.TO,
+                    Message.RecipientType.BCC,
                     InternetAddress.parse(mail_to)
             );
             message.setSubject(subject);
@@ -100,7 +100,7 @@ public class SendMail {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mail_from));
             message.setRecipients(
-                    Message.RecipientType.TO,
+                    Message.RecipientType.BCC,
                     InternetAddress.parse(mail_to)
             );
             message.setSubject(subject);
@@ -146,7 +146,7 @@ public class SendMail {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mail_from));
             message.setRecipients(
-                    Message.RecipientType.TO,
+                    Message.RecipientType.BCC,
                     InternetAddress.parse(mail_to)
             );
             message.setSubject(subject);
@@ -189,7 +189,7 @@ public class SendMail {
 		// Create a message with the specified information.
 		MimeMessage msg = new MimeMessage(session);
 		msg.setFrom(new InternetAddress(mail_from, from_name));
-		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(mail_to));
+		msg.setRecipient(Message.RecipientType.BCC, new InternetAddress(mail_to));
 		msg.setSubject(subject);
 		msg.setContent(body, "text/html");
 
