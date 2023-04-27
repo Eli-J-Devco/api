@@ -1229,7 +1229,8 @@
 							AND d.id_device_type IN(4)
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_key
 						) m 
@@ -1282,7 +1283,8 @@
 							AND d.id_device_type IN(4)
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id}
 						GROUP BY
 							d.id, time_key
 						) m 
@@ -1331,7 +1333,8 @@
 							AND d.id_device_type IN(4)
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 
@@ -1384,7 +1387,8 @@
 							AND d.id_device_type IN(4)
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 
@@ -1434,7 +1438,8 @@
 							AND d.id_device_type IN(4)
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 
@@ -1483,7 +1488,8 @@
 							AND d.id_device_type IN(4)
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 
@@ -1536,7 +1542,8 @@
 							AND d.id_device_type IN(4)
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 
@@ -1588,7 +1595,8 @@
 							AND d.id_device_type IN(4)
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
-							AND d.`status` = 1 
+							AND d.`status` = 1
+							AND d.id = #{item.id} 
 						GROUP BY
 							d.id, time_format
 						) m 

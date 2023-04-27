@@ -77,15 +77,23 @@ public class CustomerViewService extends DB {
 						
 						// Get Irradiance
 						if (dataListDeviceIrr.size() > 0) {
-							Map<String, Object> deviceIrrItem1 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceIrr);
-							
-							List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
-							if(dataIrradianceDevice.size() > 0 ) {
-								deviceIrrItem1.put("data_energy", dataIrradianceDevice);
-								deviceIrrItem1.put("type", "irradiance");
-								deviceIrrItem1.put("devicename", "Irradiance");
-								dataEnergy.add(deviceIrrItem1);
+							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+								Map<String, Object> deviceIrrItem1 = new HashMap<>();
+								
+								List dataListAIrrDevice = new ArrayList<>();
+								
+								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+								dataListAIrrDevice.add(item);
+								
+								obj.setGroupMeter(dataListAIrrDevice);
+								
+								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+								if(dataIrradianceDevice.size() > 0 ) {
+									deviceIrrItem1.put("data_energy", dataIrradianceDevice);
+									deviceIrrItem1.put("type", "irradiance");
+									deviceIrrItem1.put("devicename", dataListDeviceIrr.get(i));
+									dataEnergy.add(deviceIrrItem1);
+								}
 							}
 						}
 						
@@ -105,15 +113,23 @@ public class CustomerViewService extends DB {
 						
 						// Get Irradiance
 						if (dataListDeviceIrr.size() > 0) {
-							Map<String, Object> deviceIrrItem2 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceIrr);
-							
-							List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-							if(dataIrradianceDevice.size() > 0 ) {
-								deviceIrrItem2.put("data_energy", dataIrradianceDevice);
-								deviceIrrItem2.put("type", "irradiance");
-								deviceIrrItem2.put("devicename", "Irradiance");
-								dataEnergy.add(deviceIrrItem2);
+							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+								Map<String, Object> deviceIrrItem2 = new HashMap<>();
+								
+								List dataListAIrrDevice = new ArrayList<>();
+								
+								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+								dataListAIrrDevice.add(item);
+								
+								obj.setGroupMeter(dataListAIrrDevice);
+								
+								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
+								if(dataIrradianceDevice.size() > 0 ) {
+									deviceIrrItem2.put("data_energy", dataIrradianceDevice);
+									deviceIrrItem2.put("type", "irradiance");
+									deviceIrrItem2.put("devicename", dataListDeviceIrr.get(i));
+									dataEnergy.add(deviceIrrItem2);
+								}
 							}
 						}
 
@@ -133,15 +149,23 @@ public class CustomerViewService extends DB {
 						
 						// Get Irradiance
 						if (dataListDeviceIrr.size() > 0) {
-							Map<String, Object> deviceIrrItem3 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceIrr);
-							
-							List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-							if(dataIrradianceDevice.size() > 0 ) {
-								deviceIrrItem3.put("data_energy", dataIrradianceDevice);
-								deviceIrrItem3.put("type", "irradiance");
-								deviceIrrItem3.put("devicename", "Irradiance");
-								dataEnergy.add(deviceIrrItem3);
+							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+								Map<String, Object> deviceIrrItem3 = new HashMap<>();
+								
+								List dataListAIrrDevice = new ArrayList<>();
+								
+								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+								dataListAIrrDevice.add(item);
+								
+								obj.setGroupMeter(dataListAIrrDevice);
+								
+								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
+								if(dataIrradianceDevice.size() > 0 ) {
+									deviceIrrItem3.put("data_energy", dataIrradianceDevice);
+									deviceIrrItem3.put("type", "irradiance");
+									deviceIrrItem3.put("devicename", dataListDeviceIrr.get(i));
+									dataEnergy.add(deviceIrrItem3);
+								}
 							}
 						}
 						break;
@@ -160,15 +184,23 @@ public class CustomerViewService extends DB {
 						
 						// Get Irradiance
 						if (dataListDeviceIrr.size() > 0) {
-							Map<String, Object> deviceIrrItem4 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceIrr);
-							
-							List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-							if(dataIrradianceDevice.size() > 0 ) {
-								deviceIrrItem4.put("data_energy", dataIrradianceDevice);
-								deviceIrrItem4.put("type", "irradiance");
-								deviceIrrItem4.put("devicename", "Irradiance");
-								dataEnergy.add(deviceIrrItem4);
+							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+								Map<String, Object> deviceIrrItem4 = new HashMap<>();
+								
+								List dataListAIrrDevice = new ArrayList<>();
+								
+								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+								dataListAIrrDevice.add(item);
+								
+								obj.setGroupMeter(dataListAIrrDevice);
+								
+								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
+								if(dataIrradianceDevice.size() > 0 ) {
+									deviceIrrItem4.put("data_energy", dataIrradianceDevice);
+									deviceIrrItem4.put("type", "irradiance");
+									deviceIrrItem4.put("devicename", dataListDeviceIrr.get(i));
+									dataEnergy.add(deviceIrrItem4);
+								}
 							}
 						}
 						break;
@@ -564,15 +596,23 @@ public class CustomerViewService extends DB {
 							// Get Irradiance
 							
 							if (dataListDeviceIrr.size() > 0) {
-								Map<String, Object> deviceIrrItem5 = new HashMap<>();
-								obj.setGroupMeter(dataListDeviceIrr);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									deviceIrrItem5.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem5.put("type", "irradiance");
-									deviceIrrItem5.put("devicename", "Irradiance");
-									dataEnergy.add(deviceIrrItem5);
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem5 = new HashMap<>();
+
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem5.put("type", "irradiance");
+										deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem5);
+									}
 								}
 							}
 							
@@ -593,15 +633,23 @@ public class CustomerViewService extends DB {
 							// Get Irradiance
 							
 							if (dataListDeviceIrr.size() > 0) {
-								Map<String, Object> deviceIrrItem6 = new HashMap<>();
-								obj.setGroupMeter(dataListDeviceIrr);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									deviceIrrItem6.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem6.put("type", "irradiance");
-									deviceIrrItem6.put("devicename", "Irradiance");
-									dataEnergy.add(deviceIrrItem6);
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem6 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+										
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+										
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem6.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem6.put("type", "irradiance");
+											deviceIrrItem6.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem6);
+										}
 								}
 							}
 	
@@ -622,15 +670,23 @@ public class CustomerViewService extends DB {
 							// Get Irradiance
 
 							if (dataListDeviceIrr.size() > 0) {
-								Map<String, Object> deviceIrrItem7 = new HashMap<>();
-								obj.setGroupMeter(dataListDeviceIrr);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									deviceIrrItem7.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem7.put("type", "irradiance");
-									deviceIrrItem7.put("devicename", "Irradiance");
-									dataEnergy.add(deviceIrrItem7);
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem7 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										deviceIrrItem7.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem7.put("type", "irradiance");
+										deviceIrrItem7.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem7);
+									}
 								}
 							}
 							break;
@@ -650,15 +706,23 @@ public class CustomerViewService extends DB {
 							
 							// Get Irradiance
 							if (dataListDeviceIrr.size() > 0) {
-								Map<String, Object> deviceIrrItem8 = new HashMap<>();
-								obj.setGroupMeter(dataListDeviceIrr);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									deviceIrrItem8.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem8.put("type", "irradiance");
-									deviceIrrItem8.put("devicename", "Irradiance");
-									dataEnergy.add(deviceIrrItem8);
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem8 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										deviceIrrItem8.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem8.put("type", "irradiance");
+										deviceIrrItem8.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem8);
+									}
 								}
 							}
 							break;
@@ -1390,15 +1454,23 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem11 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem11.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem11.put("type", "irradiance");
-										deviceIrrItem11.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem11);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem11 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem11.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem11.put("type", "irradiance");
+											deviceIrrItem11.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem11);
+										}
 									}
 								}
 								
@@ -1418,15 +1490,23 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem22 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem22.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem22.put("type", "irradiance");
-										deviceIrrItem22.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem22);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem22 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem22.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem22.put("type", "irradiance");
+											deviceIrrItem22.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem22);
+										}
 									}
 								}
 								break;
@@ -1445,15 +1525,23 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem33 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem33.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem33.put("type", "irradiance");
-										deviceIrrItem33.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem33);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem33 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem33.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem33.put("type", "irradiance");
+											deviceIrrItem33.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem33);
+										}
 									}
 								}
 								break;
@@ -1472,15 +1560,23 @@ public class CustomerViewService extends DB {
 								
 								// Get Irradiance
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem44 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem44.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem44.put("type", "irradiance");
-										deviceIrrItem44.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem44);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem44 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem44.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem44.put("type", "irradiance");
+											deviceIrrItem44.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem44);
+										}
 									}
 								}
 								break;
@@ -1877,15 +1973,23 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem55 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem55.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem55.put("type", "irradiance");
-										deviceIrrItem55.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem55);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem55 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem55.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem55.put("type", "irradiance");
+											deviceIrrItem55.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem55);
+										}
 									}
 								}
 								
@@ -1905,16 +2009,24 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									List dataListSensor = new ArrayList<>();
-									Map<String, Object> deviceIrrItem66 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem66.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem66.put("type", "irradiance");
-										deviceIrrItem66.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem66);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										List dataListSensor = new ArrayList<>();
+										Map<String, Object> deviceIrrItem66 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem66.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem66.put("type", "irradiance");
+											deviceIrrItem66.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem66);
+										}
 									}
 								}
 								break;
@@ -1933,15 +2045,23 @@ public class CustomerViewService extends DB {
 								// Get Irradiance
 								
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem77 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem77.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem77.put("type", "irradiance");
-										deviceIrrItem77.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem77);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem77 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem77.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem77.put("type", "irradiance");
+											deviceIrrItem77.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem77);
+										}
 									}
 								}
 								break;
@@ -1960,15 +2080,23 @@ public class CustomerViewService extends DB {
 								
 								// Get Irradiance
 								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> deviceIrrItem88 = new HashMap<>();
-									obj.setGroupMeter(dataListDeviceIrr);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										deviceIrrItem88.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem88.put("type", "irradiance");
-										deviceIrrItem88.put("devicename", "Irradiance");
-										dataEnergy.add(deviceIrrItem88);
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem88 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem88.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem88.put("type", "irradiance");
+											deviceIrrItem88.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem88);
+										}
 									}
 								}
 								
