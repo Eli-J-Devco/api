@@ -96,7 +96,7 @@
 				
 				IFNULL(ROUND(IF(AVG(dv.POACMP11) <![CDATA[<]]> 0, 0, AVG(dv.POACMP11)), 2), 0.001) AS POACMP11,
 				
-				IFNULL(ROUND(AVG(dv.IrradiancePOA), 2), 0.001) AS IrradiancePOA,
+				IFNULL(ROUND(IF(AVG(dv.IrradiancePOA) <![CDATA[<]]> 0, 0, AVG(dv.IrradiancePOA)), 2), 0.001) AS IrradiancePOA,
 				IFNULL(ROUND(AVG(dv.IMTInternalTemp), 2), 0.001) AS IMTInternalTemp,
 				IFNULL(ROUND(AVG(dv.PVPanelTemp2), 2), 0.001) AS PVPanelTemp2,
 				IFNULL(ROUND(AVG(dv.code_ch0), 2), 0.001) AS code_ch0,
@@ -208,7 +208,9 @@
 				IFNULL(ROUND(AVG(dv.I_AC_VoltageBN), 2), 0.001) AS I_AC_VoltageBN,
 				IFNULL(ROUND(AVG(dv.I_AC_VoltageCN), 2), 0.001) AS I_AC_VoltageCN,
 				IFNULL(ROUND(AVG(dv.I_AC_Voltage_SF), 2), 0.001) AS I_AC_Voltage_SF,
-				IFNULL(ROUND(AVG(dv.I_AC_Power), 2), 0.001) AS I_AC_Power,
+
+				IFNULL(ROUND(IF(AVG(dv.I_AC_Power) <![CDATA[<]]> 0, 0, AVG(dv.I_AC_Power)), 2), 0.001) AS I_AC_Power,
+				
 				IFNULL(ROUND(AVG(dv.I_AC_Power_SF), 2), 0.001) AS I_AC_Power_SF,
 				IFNULL(ROUND(AVG(dv.I_AC_Frequency), 2), 0.001) AS I_AC_Frequency,
 				IFNULL(ROUND(AVG(dv.I_AC_Frequency_SF), 2), 0.001) AS I_AC_Frequency_SF,
@@ -246,7 +248,9 @@
 				IFNULL(ROUND(AVG(dv.M_AC_P1), 2), 0.001) AS M_AC_P1,
 				IFNULL(ROUND(AVG(dv.M_AC_P2), 2), 0.001) AS M_AC_P2,
 				IFNULL(ROUND(AVG(dv.M_AC_P3), 2), 0.001) AS M_AC_P3,
-				IFNULL(ROUND(AVG(dv.M_AC_P), 2), 0.001) AS M_AC_P,
+				
+				IFNULL(ROUND(IF(AVG(dv.M_AC_P) <![CDATA[<]]> 0, 0, AVG(dv.M_AC_P)), 2), 0.001) AS M_AC_P,
+				
 				IFNULL(ROUND(AVG(dv.M_AC_E_M1), 2), 0.001) AS M_AC_E_M1,
 				IFNULL(ROUND(AVG(dv.M_AC_Q1), 2), 0.001) AS M_AC_Q1,
 				IFNULL(ROUND(AVG(dv.M_AC_Q2), 2), 0.001) AS M_AC_Q2,
@@ -444,7 +448,9 @@
 			</if>
 			
 			<if test="(datatablename == 'model_hukseflux_sr30d1_deviceclass_v0') || (datatablename == 'ViewModelHuksefluxSr30d1DeviceclassV0')">
-				  IFNULL(ROUND(AVG(dv.IrradianceTcs), 2), 0.001) AS IrradianceTcs,
+				  
+				  IFNULL(ROUND(IF(AVG(dv.IrradianceTcs) <![CDATA[<]]> 0, 0, AVG(dv.IrradianceTcs)), 2), 0.001) AS IrradianceTcs,
+				  
 			      IFNULL(ROUND(AVG(dv.IrradianceUs), 2), 0.001) AS IrradianceUs,
 			      IFNULL(ROUND(AVG(dv.SensorBodyTemperature), 2), 0.001) AS SensorBodyTemperature,
 			      IFNULL(ROUND(AVG(dv.SensorElectricalResistance), 2), 0.001) AS SensorElectricalResistance,
@@ -704,7 +710,9 @@
 			      IFNULL(ROUND(AVG(dv.angle_volts_c_a), 2), 0.001) AS angle_volts_c_a,
 			</if>
 			<if test="(datatablename == 'model_kippzonen_rt1_class8009') || (datatablename == 'ViewModelKippzonenRt1Class8009')">
-				  IFNULL(ROUND(AVG(dv.sensor1_data), 2), 0.001) AS sensor1_data,
+				  
+				  IFNULL(ROUND(IF(AVG(dv.sensor1_data) <![CDATA[<]]> 0, 0, AVG(dv.sensor1_data)), 2), 0.001) AS sensor1_data,
+				  
 			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
 			      IFNULL(ROUND(COUNT(dv.error_code), 2), 0.001) AS error_code,
@@ -756,7 +764,9 @@
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word2), 2), 0.001) AS inverter_fault_word2,
 			</if>
 			<if test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
-				IFNULL(ROUND(AVG(dv.irradiance * 0.1), 2), 0.001) AS irradiance,
+				
+				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance * 0.1 )), 2), 0.001) AS irradiance,
+				
 		      	IFNULL(ROUND(AVG(dv.tcell * 0.1 - 25), 2), 0.001) AS tcell,
 			</if>
 			<if test="(datatablename == 'model_advanced_energy_solaron') || (datatablename == 'ViewModelAdvancedEnergySolaron')">
@@ -787,7 +797,8 @@
 			      IFNULL(ROUND(COUNT(dv.warnings3_reserved), 2), 0.001) AS warnings3_reserved,
 			</if>
 			<if test="(datatablename == 'model_rt1_class30000') || (datatablename == 'ViewModelRt1Class30000')">
-				  IFNULL(ROUND(AVG(dv.sensor1_data), 2), 0.001) AS sensor1_data,
+				  IFNULL(ROUND(IF(AVG(dv.sensor1_data) <![CDATA[<]]> 0, 0, AVG(dv.sensor1_data  )), 2), 0.001) AS sensor1_data,
+				  
 			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
 			      IFNULL(ROUND(COUNT(dv.error_code), 2), 0.001) AS error_code,
@@ -1045,7 +1056,9 @@
 		    	IFNULL(ROUND(AVG(dv.DataModelVersion), 2), 0.001) AS DataModelVersion,
 		    	IFNULL(ROUND(AVG(dv.OperationalMode), 2), 0.001) AS OperationalMode,
 		    	IFNULL(ROUND(AVG(dv.StatusFlags), 2), 0.001) AS StatusFlags,
-		    	IFNULL(ROUND(AVG(dv.SunPOATempComp), 2), 0.001) AS SunPOATempComp,
+		    	
+		    	IFNULL(ROUND(IF(AVG(dv.SunPOATempComp) <![CDATA[<]]> 0, 0, AVG(dv.SunPOATempComp  )), 2), 0.001) AS SunPOATempComp,
+		    	
 		    	IFNULL(ROUND(AVG(dv.PanelTemperature * 0.1), 2), 0.001) AS PanelTemperature,
 		    	IFNULL(ROUND(AVG(dv.ExtPowerSensor), 2), 0.001) AS ExtPowerSensor,
 		    	IFNULL(ROUND(AVG(dv.BatchNumber), 2), 0.001) AS BatchNumber,
@@ -1180,7 +1193,9 @@
 			      IFNULL(ROUND(AVG(dv.Compass), 2), 0.001) AS Compass,
 			      IFNULL(ROUND(AVG(dv.PrecipitationType), 2), 0.001) AS PrecipitationType,
 			      IFNULL(ROUND(AVG(dv.WindMeasurementQuality), 2), 0.001) AS WindMeasurementQuality,
-			      IFNULL(ROUND(AVG(dv.IrradianceActual * 0.1), 2), 0.001) AS IrradianceActual,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.IrradianceActual) <![CDATA[<]]> 0, 0, AVG(dv.IrradianceActual * 0.1 )), 2), 0.001) AS IrradianceActual,
+			      
 			      IFNULL(ROUND(AVG(dv.IrradianceMin), 2), 0.001) AS IrradianceMin,
 			      IFNULL(ROUND(AVG(dv.IrradianceMax), 2), 0.001) AS IrradianceMax,
 			      IFNULL(ROUND(AVG(dv.IrradianceAvg), 2), 0.001) AS IrradianceAvg,
