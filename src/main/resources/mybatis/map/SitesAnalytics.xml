@@ -65,22 +65,25 @@
 			
 			
 			<if test="(datatablename == 'model_campell_scientific_meter1') || (datatablename == 'ViewModelCampellScientificMeter1')">
-				IFNULL(ROUND(AVG(dv.Meter1_ACPower), 2), 0.001) AS Meter1_ACPower,
+				
+				IFNULL(ROUND(IF(AVG(dv.Meter1_ACPower) <![CDATA[<]]> 0, 0, AVG(dv.Meter1_ACPower)), 2), 0.001) AS Meter1_ACPower,
+				
 				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
 			</if>
 			
 			<if test="(datatablename == 'model_campell_scientific_meter2') || (datatablename == 'ViewModelCampellScientificMeter2')">
-				IFNULL(ROUND(AVG(dv.Meter2_ACPower), 2), 0.001) AS Meter2_ACPower,
+				IFNULL(ROUND(IF(AVG(dv.Meter2_ACPower) <![CDATA[<]]> 0, 0, AVG(dv.Meter2_ACPower)), 2), 0.001) AS Meter2_ACPower,
+				
 				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
 			</if>
 			
 			<if test="(datatablename == 'model_campell_scientific_meter3') || (datatablename == 'ViewModelCampellScientificMeter3')">
-				IFNULL(ROUND(AVG(dv.Meter3_ACPower), 2), 0.001) AS Meter3_ACPower,
+				IFNULL(ROUND(IF(AVG(dv.Meter3_ACPower) <![CDATA[<]]> 0, 0, AVG(dv.Meter3_ACPower)), 2), 0.001) AS Meter3_ACPower,
 				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
 			</if>
 			
 			<if test="(datatablename == 'model_campell_scientific_meter4') || (datatablename == 'ViewModelCampellScientificMeter4')">
-				IFNULL(ROUND(AVG(dv.Meter4_ACPower), 2), 0.001) AS Meter4_ACPower,
+				IFNULL(ROUND(IF(AVG(dv.Meter4_ACPower) <![CDATA[<]]> 0, 0, AVG(dv.Meter4_ACPower)), 2), 0.001) AS Meter4_ACPower,
 				IFNULL(ROUND(AVG(dv.Total_Energy), 2), 0.001) AS Total_Energy,
 			</if>
 			
@@ -90,7 +93,9 @@
 				IFNULL(ROUND(AVG(dv.PVPanelTemp), 2), 0.001) AS PVPanelTemp,
 				IFNULL(ROUND(AVG(dv.PVPanelTemp1), 2), 0.001) AS PVPanelTemp1,
 				IFNULL(ROUND(AVG(dv.WindSpeed), 2), 0.001) AS WindSpeed,
-				IFNULL(ROUND(AVG(dv.POACMP11), 2), 0.001) AS POACMP11,
+				
+				IFNULL(ROUND(IF(AVG(dv.POACMP11) <![CDATA[<]]> 0, 0, AVG(dv.POACMP11)), 2), 0.001) AS POACMP11,
+				
 				IFNULL(ROUND(AVG(dv.IrradiancePOA), 2), 0.001) AS IrradiancePOA,
 				IFNULL(ROUND(AVG(dv.IMTInternalTemp), 2), 0.001) AS IMTInternalTemp,
 				IFNULL(ROUND(AVG(dv.PVPanelTemp2), 2), 0.001) AS PVPanelTemp2,
@@ -110,7 +115,9 @@
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
 				IFNULL(ROUND(AVG(dv.Metering_TotFeedTms), 2), 0.001) AS Metering_TotFeedTms,
 				IFNULL(ROUND(AVG(dv.Metering_GridMs_TotWhOut), 2), 0.001) AS Metering_GridMs_TotWhOut,
-				IFNULL(ROUND(AVG(dv.GridMs_TotW), 2), 0.001) AS GridMs_TotW,
+				
+				IFNULL(ROUND(IF(AVG(dv.GridMs_TotW) <![CDATA[<]]> 0, 0, AVG(dv.GridMs_TotW)), 2), 0.001) AS GridMs_TotW,
+				
 				IFNULL(ROUND(AVG(dv.GridMs_Hz), 2), 0.001) AS GridMs_Hz,
 				IFNULL(ROUND(AVG(dv.Isolation_FltA), 2), 0.001) AS Isolation_FltA,
 				IFNULL(ROUND(AVG(dv.Isolation_LeakRis), 2), 0.001) AS Isolation_LeakRis,
@@ -134,7 +141,9 @@
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
 				IFNULL(ROUND(AVG(dv.Metering_TotFeedTms), 2), 0.001) AS Metering_TotFeedTms,
 				IFNULL(ROUND(AVG(dv.Metering_GridMs_TotWhOut), 2), 0.001) AS Metering_GridMs_TotWhOut,
-				IFNULL(ROUND(AVG(dv.GridMs_TotW), 2), 0.001) AS GridMs_TotW,
+				
+				IFNULL(ROUND(IF(AVG(dv.GridMs_TotW) <![CDATA[<]]> 0, 0, AVG(dv.GridMs_TotW)), 2), 0.001) AS GridMs_TotW,
+				
 				IFNULL(ROUND(AVG(dv.GridMs_Hz), 2), 0.001) AS GridMs_Hz,
 				IFNULL(ROUND(AVG(dv.Isolation_FltA), 2), 0.001) AS Isolation_FltA,
 				IFNULL(ROUND(AVG(dv.Isolation_LeakRis), 2), 0.001) AS Isolation_LeakRis,
@@ -158,7 +167,9 @@
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
 				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
 				IFNULL(ROUND(AVG(dv.Metering_TotFeedTms), 2), 0.001) AS Metering_TotFeedTms,
-				IFNULL(ROUND(AVG(dv.GridMs_TotW), 2), 0.001) AS GridMs_TotW,
+				
+				IFNULL(ROUND(IF(AVG(dv.GridMs_TotW) <![CDATA[<]]> 0, 0, AVG(dv.GridMs_TotW)), 2), 0.001) AS GridMs_TotW,
+				
 				IFNULL(ROUND(AVG(dv.GridMs_Hz), 2), 0.001) AS GridMs_Hz,
 				IFNULL(ROUND(AVG(dv.Isolation_FltA), 2), 0.001) AS Isolation_FltA,
 				IFNULL(ROUND(AVG(dv.Isolation_LeakRis), 2), 0.001) AS Isolation_LeakRis,
@@ -310,7 +321,9 @@
 				IFNULL(ROUND(AVG(I_STR17), 2), 0.001) AS I_STR17,
 				IFNULL(ROUND(AVG(U_STR18), 2), 0.001) AS U_STR18,
 				IFNULL(ROUND(AVG(I_STR18), 2), 0.001) AS I_STR18,
-				IFNULL(ROUND(AVG(P_DC), 2), 0.001) AS P_DC,
+				
+				IFNULL(ROUND(IF(AVG(dv.P_DC) <![CDATA[<]]> 0, 0, AVG(dv.P_DC)), 2), 0.001) AS P_DC,
+				
 				IFNULL(ROUND(AVG(U_AC1), 2), 0.001) AS U_AC1,
 				IFNULL(ROUND(AVG(U_AC2), 2), 0.001) AS U_AC2,
 				IFNULL(ROUND(AVG(U_AC3), 2), 0.001) AS U_AC3,
@@ -404,7 +417,9 @@
 				IFNULL(ROUND(AVG(I_STR20), 2), 0.001) AS I_STR20,
 				IFNULL(ROUND(AVG(I_STR21), 2), 0.001) AS I_STR21,
 				IFNULL(ROUND(AVG(I_STR22), 2), 0.001) AS I_STR22,
-				IFNULL(ROUND(AVG(P_DC), 2), 0.001) AS P_DC,
+				
+				IFNULL(ROUND(IF(AVG(dv.P_DC) <![CDATA[<]]> 0, 0, AVG(dv.P_DC)), 2), 0.001) AS P_DC,
+				
 				IFNULL(ROUND(AVG(U_AC1), 2), 0.001) AS U_AC1,
 				IFNULL(ROUND(AVG(U_AC2), 2), 0.001) AS U_AC2,
 				IFNULL(ROUND(AVG(U_AC3), 2), 0.001) AS U_AC3,
@@ -516,7 +531,9 @@
 			      IFNULL(ROUND(AVG(dv.PowerFactor1), 2), 0.001) AS PowerFactor1,
 			      IFNULL(ROUND(AVG(dv.MaxActivePowerToday), 2), 0.001) AS MaxActivePowerToday,
 			      IFNULL(ROUND(AVG(dv.RunTimeToGrid), 2), 0.001) AS RunTimeToGrid,
-			      IFNULL(ROUND(AVG(dv.AC_ActivePower), 2), 0.001) AS AC_ActivePower,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.AC_ActivePower) <![CDATA[<]]> 0, 0, AVG(dv.AC_ActivePower)), 2), 0.001) AS AC_ActivePower,
+			      
 			      IFNULL(ROUND(AVG(dv.AC_ApparentPower), 2), 0.001) AS AC_ApparentPower,
 			      IFNULL(ROUND(AVG(dv.GridVoltageUab), 2), 0.001) AS GridVoltageUab,
 			      IFNULL(ROUND(AVG(dv.GridVoltageUbc), 2), 0.001) AS GridVoltageUbc,
@@ -551,7 +568,9 @@
 			IFNULL(ROUND(AVG(dv.DCInputVoltage), 2), 0.001) AS DCInputVoltage,
 			IFNULL(ROUND(AVG(dv.DCInputCurrent), 2), 0.001) AS DCInputCurrent,
 			IFNULL(ROUND(AVG(dv.LineFrequency), 2), 0.001) AS LineFrequency,
-			IFNULL(ROUND(AVG(dv.OutputGeneration), 2), 0.001) AS OutputGeneration,
+			
+			IFNULL(ROUND(IF(AVG(dv.OutputGeneration) <![CDATA[<]]> 0, 0, AVG(dv.OutputGeneration)), 2), 0.001) AS OutputGeneration,
+			
 			IFNULL(ROUND(AVG(dv.TotalEnergyGeneration), 2), 0.001) AS TotalEnergyGeneration,
 			IFNULL(ROUND(AVG(dv.PVInputVoltage), 2), 0.001) AS PVInputVoltage,
 			IFNULL(ROUND(AVG(dv.InputGenerationCalculated), 2), 0.001) AS InputGenerationCalculated,
@@ -574,7 +593,9 @@
 			      IFNULL(ROUND(AVG(dv.amps_a), 2), 0.001) AS amps_a,
 			      IFNULL(ROUND(AVG(dv.amps_b), 2), 0.001) AS amps_b,
 			      IFNULL(ROUND(AVG(dv.amps_c), 2), 0.001) AS amps_c,
-			      IFNULL(ROUND(AVG(dv.watts_3ph_total), 2), 0.001) AS watts_3ph_total,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.watts_3ph_total) <![CDATA[<]]> 0, 0, AVG(dv.watts_3ph_total)), 2), 0.001) AS watts_3ph_total,
+			      
 			      IFNULL(ROUND(AVG(dv.vars_3ph_total), 2), 0.001) AS vars_3ph_total,
 			      IFNULL(ROUND(AVG(dv.vas_3ph_total), 2), 0.001) AS vas_3ph_total,
 			      IFNULL(ROUND(AVG(dv.power_factor_3ph_total), 2), 0.001) AS power_factor_3ph_total,
@@ -695,7 +716,9 @@
 			      IFNULL(ROUND(AVG(dv.ytd_kwh), 2), 0.001) AS ytd_kwh,
 			      IFNULL(ROUND(AVG(dv.life_kwh), 2), 0.001) AS life_kwh,
 			      IFNULL(ROUND(AVG(dv.last_15min_kwh), 2), 0.001) AS last_15min_kwh,
-			      IFNULL(ROUND(AVG(dv.ac_power), 2), 0.001) AS ac_power,
+
+			      IFNULL(ROUND(IF(AVG(dv.ac_power) <![CDATA[<]]> 0, 0, AVG(dv.ac_power)), 2), 0.001) AS ac_power,
+			      
 			      IFNULL(ROUND(AVG(dv.ac_frequency), 2), 0.001) AS ac_frequency,
 			      IFNULL(ROUND(AVG(dv.pv_voltage), 2), 0.001) AS pv_voltage,
 			      IFNULL(ROUND(AVG(dv.pv_current), 2), 0.001) AS pv_current,
@@ -725,7 +748,9 @@
 			      IFNULL(ROUND(AVG(dv.dc_output_voltage), 2), 0.001) AS dc_output_voltage,
 			      IFNULL(ROUND(AVG(dv.dc_output_current), 2), 0.001) AS dc_output_current,
 			      IFNULL(ROUND(AVG(dv.line_frenquency), 2), 0.001) AS line_frenquency,
-			      IFNULL(ROUND(AVG(dv.line_kw), 2), 0.001) AS line_kw,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.line_kw) <![CDATA[<]]> 0, 0, AVG(dv.line_kw)), 2), 0.001) AS line_kw,
+			      
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word0), 2), 0.001) AS inverter_fault_word0,
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word1), 2), 0.001) AS inverter_fault_word1,
 			      IFNULL(ROUND(COUNT(dv.inverter_fault_word2), 2), 0.001) AS inverter_fault_word2,
@@ -741,7 +766,9 @@
 			      IFNULL(ROUND(AVG(dv.ytd_kwh), 2), 0.001) AS ytd_kwh,
 			      IFNULL(ROUND(AVG(dv.life_kwh), 2), 0.001) AS life_kwh,
 			      IFNULL(ROUND(AVG(dv.last_15min_kwh), 2), 0.001) AS last_15min_kwh,
-			      IFNULL(ROUND(AVG(dv.ac_power), 2), 0.001) AS ac_power,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.ac_power) <![CDATA[<]]> 0, 0, AVG(dv.ac_power)), 2), 0.001) AS ac_power,
+			      
 			      IFNULL(ROUND(AVG(dv.ac_frequency), 2), 0.001) AS ac_frequency,
 			      IFNULL(ROUND(AVG(dv.pv_voltage), 2), 0.001) AS pv_voltage,
 			      IFNULL(ROUND(AVG(dv.pv_current), 2), 0.001) AS pv_current,
@@ -786,7 +813,7 @@
 			      IFNULL(ROUND(AVG(dv.VoltageLN3pAve), 2), 0.001) AS VoltageLN3pAve,
 			      IFNULL(ROUND(AVG(dv.Current3pAve), 2), 0.001) AS Current3pAve,
 			      IFNULL(ROUND(AVG(dv.Frequency), 2), 0.001) AS Frequency,
-			      IFNULL(ROUND(AVG(dv.TotalRealPowerPresentDemand), 2), 0.001) AS TotalRealPowerPresentDemand,
+			      IFNULL(ROUND(IF(AVG(dv.TotalRealPowerPresentDemand) <![CDATA[<]]> 0, 0, AVG(dv.TotalRealPowerPresentDemand)), 2), 0.001) AS TotalRealPowerPresentDemand,
 			      IFNULL(ROUND(AVG(dv.TotalReactivePowerPresentDemand), 2), 0.001) AS TotalReactivePowerPresentDemand,
 			      IFNULL(ROUND(AVG(dv.TotalApparentPowerPresentDemand), 2), 0.001) AS TotalApparentPowerPresentDemand,
 			      IFNULL(ROUND(AVG(dv.TotalRealPowerMaxDemandImport), 2), 0.001) AS TotalRealPowerMaxDemandImport,
@@ -868,7 +895,9 @@
 			      IFNULL(ROUND(AVG(dv.Line_Voltage_Unbalance), 2), 0.001) AS Line_Voltage_Unbalance,
 			      IFNULL(ROUND(AVG(dv.Line_Current_Unbalance), 2), 0.001) AS Line_Current_Unbalance,
 			      IFNULL(ROUND(AVG(dv.Input_kW), 2), 0.001) AS Input_kW,
-			      IFNULL(ROUND(AVG(dv.Output_kw), 2), 0.001) AS Output_kw,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.Output_kw) <![CDATA[<]]> 0, 0, AVG(dv.Output_kw)), 2), 0.001) AS Output_kw,
+			      
 			      IFNULL(ROUND(AVG(dv.Output_kvar), 2), 0.001) AS Output_kvar,
 			      IFNULL(ROUND(AVG(dv.Output_kva), 2), 0.001) AS Output_kva,
 			      IFNULL(ROUND(AVG(dv.Power_Factor), 2), 0.001) AS Power_Factor,
@@ -977,7 +1006,9 @@
 			</if>
 			<if test="(datatablename == 'model_elkor_wattson_pv_meter') || (datatablename == 'ViewModelElkorWattsonPvMeter')">
 				  IFNULL(ROUND(AVG(dv.TotalEnergyConsumption), 2), 0.001) AS TotalEnergyConsumption,
-			      IFNULL(ROUND(AVG(dv.TotalRealPower), 2), 0.001) AS TotalRealPower,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.TotalRealPower) <![CDATA[<]]> 0, 0, AVG(dv.TotalRealPower)), 2), 0.001) AS TotalRealPower,
+			      
 			      IFNULL(ROUND(AVG(dv.TotalReactivePower), 2), 0.001) AS TotalReactivePower,
 			      IFNULL(ROUND(AVG(dv.TotalApparentPower), 2), 0.001) AS TotalApparentPower,
 			      IFNULL(ROUND(AVG(dv.AverageVoltageLN), 2), 0.001) AS AverageVoltageLN,
@@ -1022,7 +1053,9 @@
 		    	IFNULL(ROUND(AVG(dv.CalibrationDateYYMMDD), 2), 0.001) AS CalibrationDateYYMMDD,
 			</if>
 			<if test="(datatablename == 'model_elkor_production_meter') || (datatablename == 'ViewModelElkorProductionMeter')">
-				IFNULL(ROUND(AVG(dv.ActivePowerTotal), 2), 0.001) AS ActivePowerTotal,
+				
+				IFNULL(ROUND(IF(AVG(dv.ActivePowerTotal) <![CDATA[<]]> 0, 0, AVG(dv.ActivePowerTotal)), 2), 0.001) AS ActivePowerTotal,
+				
 		    	IFNULL(ROUND(AVG(dv.ReactivePowerTotal), 2), 0.001) AS ReactivePowerTotal,
 		    	IFNULL(ROUND(AVG(dv.ApparentPowerTotal), 2), 0.001) AS ApparentPowerTotal,
 		    	IFNULL(ROUND(AVG(dv.VoltageAverage), 2), 0.001) AS VoltageAverage,
@@ -1115,7 +1148,9 @@
 			      IFNULL(ROUND(AVG(dv.TotalEnergy), 2), 0.001) AS TotalEnergy,
 			      IFNULL(ROUND(AVG(dv.GridVoltage), 2), 0.001) AS GridVoltage,
 			      IFNULL(ROUND(AVG(dv.GridCurrent), 2), 0.001) AS GridCurrent,
-			      IFNULL(ROUND(AVG(dv.GridPower/1000), 2), 0.001) AS GridPower,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.GridPower) <![CDATA[<]]> 0, 0, AVG(dv.GridPower/1000)), 2), 0.001) AS GridPower,
+			      
 			      IFNULL(ROUND(AVG(dv.Frequency), 2), 0.001) AS Frequency,
 			      IFNULL(ROUND(AVG(dv.Input1Power), 2), 0.001) AS Input1Power,
 			      IFNULL(ROUND(AVG(dv.Input1Voltage), 2), 0.001) AS Input1Voltage,
@@ -1197,7 +1232,9 @@
 			
 			<if test="(datatablename == 'model_solectria_sgi_226ivt') || (datatablename == 'ViewModelSolectriaSgi226ivt')">
 				  IFNULL(ROUND(AVG(dv.DCVoltage), 2), 0.001) AS DCVoltage,
-			      IFNULL(ROUND(AVG(dv.ACPowerOutput), 2), 0.001) AS ACPowerOutput,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.ACPowerOutput) <![CDATA[<]]> 0, 0, AVG(dv.ACPowerOutput)), 2), 0.001) AS ACPowerOutput,
+			      
 			      IFNULL(ROUND(AVG(dv.ACGridFrequency), 2), 0.001) AS ACGridFrequency,
 			      IFNULL(ROUND(AVG(dv.ACPowerStageCurrent), 2), 0.001) AS ACPowerStageCurrent,
 			      IFNULL(ROUND(AVG(dv.L1toL2ACVoltage), 2), 0.001) AS L1toL2ACVoltage,
@@ -1220,7 +1257,9 @@
 			      IFNULL(ROUND(AVG(dv.CurrentA), 2), 0.001) AS CurrentA,
 			      IFNULL(ROUND(AVG(dv.CurrentB), 2), 0.001) AS CurrentB,
 			      IFNULL(ROUND(AVG(dv.CurrentC), 2), 0.001) AS CurrentC,
-			      IFNULL(ROUND(AVG(dv.ReadPower), 2), 0.001) AS ReadPower,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.ReadPower) <![CDATA[<]]> 0, 0, AVG(dv.ReadPower)), 2), 0.001) AS ReadPower,
+			      
 			      IFNULL(ROUND(AVG(dv.PVVoltage), 2), 0.001) AS PVVoltage,
 			      IFNULL(ROUND(AVG(dv.PVCurrent), 2), 0.001) AS PVCurrent,
 			      IFNULL(ROUND(AVG(dv.PVPower), 2), 0.001) AS PVPower,
