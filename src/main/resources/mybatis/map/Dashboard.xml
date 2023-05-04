@@ -104,6 +104,10 @@
 	                s.`name` ${order_by}
 	            </when> 
 	            
+	            <when test="sort_column == 'devicename'">
+	                d.`devicename` ${order_by}
+	            </when> 
+	            
 	            <when test="sort_column == 'start_date'">
 	                l.start_date ${order_by}
 	            </when> 
