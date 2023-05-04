@@ -545,6 +545,7 @@ public class BatchJob {
 											case "model_campell_scientific_meter2": noProduction = 765; break;
 											case "model_campell_scientific_meter3": noProduction = 766; break;
 											case "model_campell_scientific_meter4": noProduction = 767; break;
+											case "model_xantrex_gt100_250_500": noProduction = 762; break;
 										}
 										
 										
