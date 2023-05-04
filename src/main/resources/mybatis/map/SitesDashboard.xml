@@ -197,7 +197,7 @@
 				WHEN d.datatablename = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
 				WHEN d.datatablename = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
 				
-				WHEN d.datatablename = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
+				WHEN d.datatablename = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
 				WHEN d.datatablename = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 				
 				WHEN d.datatablename = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
@@ -208,16 +208,16 @@
 				WHEN d.datatablename = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
 				
 				WHEN d.datatablename = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN d.datatablename = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "C" )))
+				WHEN d.datatablename = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
 				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
 				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
 				
 				
-				WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "C" )))
+				WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))
 				
 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "C" )))
+				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
 				WHEN d.datatablename = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
@@ -228,7 +228,7 @@
 				WHEN d.datatablename = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
 				
 				WHEN d.datatablename = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN d.datatablename = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "C" )))
+				WHEN d.datatablename = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
 				WHEN d.datatablename = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
@@ -239,7 +239,7 @@
 				WHEN d.datatablename = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
 				
 				WHEN d.datatablename = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN d.datatablename = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "C" )))
+				WHEN d.datatablename = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
 				WHEN d.datatablename = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
