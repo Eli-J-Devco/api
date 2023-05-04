@@ -541,6 +541,10 @@ public class BatchJob {
 											case "model_abb_trio_class6210": noProduction = 61; break;
 											case "model_solectria_sgi_226ivt": noProduction = 133; break;
 											case "model_pv_powered_35_50_260_500kw_inverter": noProduction = 135; break;
+											case "model_campell_scientific_meter1": noProduction = 764; break;
+											case "model_campell_scientific_meter2": noProduction = 765; break;
+											case "model_campell_scientific_meter3": noProduction = 766; break;
+											case "model_campell_scientific_meter4": noProduction = 767; break;
 										}
 										
 										
@@ -687,6 +691,11 @@ public class BatchJob {
 											case "model_abb_trio_class6210": noCommunication = 70; break;
 											case "model_solectria_sgi_226ivt": noCommunication = 132; break;
 											case "model_pv_powered_35_50_260_500kw_inverter": noCommunication = 134; break;
+											case "model_xantrex_gt100_250_500": noCommunication = 763; break;
+											case "model_campell_scientific_meter1": noCommunication = 771; break;
+											case "model_campell_scientific_meter2": noCommunication = 770; break;
+											case "model_campell_scientific_meter3": noCommunication = 769; break;
+											case "model_campell_scientific_meter4": noCommunication = 768; break;
 										}
 										
 										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);
