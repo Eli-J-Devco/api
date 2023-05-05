@@ -58,6 +58,7 @@
 				
 				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
 				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
+				WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
 				
 				
 				WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
