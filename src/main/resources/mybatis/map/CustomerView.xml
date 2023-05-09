@@ -27,7 +27,7 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-		GROUP BY d.id_device_type
+		<!--GROUP BY d.id_device_type -->
 	</select>
 	
 	
@@ -92,7 +92,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
@@ -146,7 +146,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -198,7 +198,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
@@ -252,7 +252,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							
@@ -304,7 +304,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
@@ -462,7 +462,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -515,7 +515,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -2003,7 +2003,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -2053,7 +2053,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
