@@ -75,8 +75,37 @@ public class AlertEntity {
 	private String note;
 	private String datatablename;
 	private String view_tablename;
+	private int is_read;
+	private int is_notification;
+	private String view_notification;
+	private List alerts;
 	
 	
+	
+	public List getAlerts() {
+		return alerts;
+	}
+	public void setAlerts(List alerts) {
+		this.alerts = alerts;
+	}
+	public String getView_notification() {
+		return view_notification;
+	}
+	public int getIs_read() {
+		return is_read;
+	}
+	public void setIs_read(int is_read) {
+		this.is_read = is_read;
+	}
+	public int getIs_notification() {
+		return is_notification;
+	}
+	public void setIs_notification(int is_notification) {
+		this.is_notification = is_notification;
+	}
+	public void setView_notification(String view_notification) {
+		this.view_notification = view_notification;
+	}
 	public String getDatatablename() {
 		return datatablename;
 	}

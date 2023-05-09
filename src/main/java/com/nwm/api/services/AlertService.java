@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
@@ -491,6 +493,50 @@ public class AlertService extends DB {
 			return dataNewPower;
 		} catch (Exception ex) {
 			return null;
+		}
+	}
+	
+	/**
+	 * @description update is_read
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 */
+	public boolean updateIsRead(AlertEntity obj) {
+		try {
+			return update("Alert.updateIsRead", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Alert.updateIsRead", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update is_notification
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 */
+	public boolean updateIsNotification(AlertEntity obj) {
+		SqlSession session = this.beginTransaction();
+		try {
+			List dataList = obj.getAlerts();
+			if (dataList.size() <= 0) {
+				return true;
+			}
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				session.update("Alert.updateIsNotification", dataList.get(i));
+			}	
+			
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Alert.updateIsNotification", ex);
+			return false;
+		} finally {
+			session.close();
 		}
 	}
 	

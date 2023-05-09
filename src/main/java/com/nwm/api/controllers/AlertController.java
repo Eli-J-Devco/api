@@ -427,6 +427,41 @@ public class AlertController extends BaseController {
 		}
     }
 	
+	/**
+	 * @description update isRead 
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-is-read")
+	public Object updateIsRead(@RequestBody AlertEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateIsRead(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
-	
+	/**
+	 * @description update isRead 
+	 * @author duy.phan
+	 * @since 2023-05-08
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-is-notification")
+	public Object updateIsNotification(@RequestBody AlertEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateIsNotification(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 }
