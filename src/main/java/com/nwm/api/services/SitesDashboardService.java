@@ -7,6 +7,8 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
@@ -112,6 +114,35 @@ public class SitesDashboardService extends DB {
 //				}
 //			}
 			return dataObj;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	/**
+	 * @description Get device status list by site
+	 * @author Hung.Bui
+	 * @since 2023-05-05
+	 * @param id_site
+	 * @return Object
+	 */
+	
+	public List getDeviceStatusListBySite(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		List<SitesDevicesEntity> deviceTableList = new ArrayList();
+		
+		try {
+			deviceTableList = queryForList("SitesDashboard.getDeviceTableListBySite", obj);
+			if (deviceTableList.size() > 0)  {
+				for (SitesDevicesEntity itemDeviceTable : deviceTableList) {
+					Map<String, Object> itemData = (Map<String, Object>) queryForObject("SitesDashboard.getDeviceStatus", itemDeviceTable);
+					if (itemData != null) {
+						dataList.add(itemData);
+					}
+				}
+			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return null;
 		}

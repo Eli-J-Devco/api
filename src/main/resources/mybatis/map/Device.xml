@@ -26,6 +26,9 @@
 		<result property="view_tablename" column="view_tablename" />
 		<result property="order_id" column="order_id" />
 		<result property="reverse_poa" column="reverse_poa" />
+		<result property="lat" column="lat" />
+		<result property="lng" column="lng" />
+		<result property="rating_ac_power" column="rating_ac_power" />
 		<result property="field_value_default" column="field_value_default" />
 		
 		
@@ -134,6 +137,9 @@
 			s.view_tablename,
 			s.order_id,
 			s.reverse_poa,
+			s.lat,
+			s.lng,
+			s.rating_ac_power,
 			s.field_value_default
 		FROM
 			device s
@@ -237,6 +243,9 @@
 			`view_tablename`,
 			`order_id`,
 			`reverse_poa`,
+			`lat`,
+			`lng`,
+			`rating_ac_power`,
 			`field_value_default`
 		)VALUES(
 			#{id_site},
@@ -256,6 +265,9 @@
 			#{view_tablename},
 			#{order_id},
 			#{reverse_poa},
+			#{lat},
+			#{lng},
+			#{rating_ac_power},
 			#{field_value_default}
 		);
 		<selectKey keyProperty="id" resultType="int">
@@ -284,6 +296,9 @@
 			view_tablename = #{view_tablename},
 			order_id = #{order_id},
 			reverse_poa = #{reverse_poa},
+			lat = #{lat},
+			lng = #{lng},
+			rating_ac_power = #{rating_ac_power},
 			field_value_default = #{field_value_default}
 		WHERE
 			`id` = #{id}
