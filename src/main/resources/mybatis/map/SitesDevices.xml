@@ -13,6 +13,10 @@
 			d.id_device_group,
 			d.devicename,
 			d.datatablename,
+			d.ssh_host,
+			d.ssh_user,
+			d.ssh_pass,
+			d.ssh_port,
 			dt.`name` AS device_type_name,
 			dt.image,
 			d.id_device_type,
@@ -23,6 +27,10 @@
 			dt.alias AS device_type_alias,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
+				
+				WHEN d.datatablename = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
+				WHEN d.datatablename = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
+				
 				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
 				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
 				
@@ -203,6 +211,11 @@
 			d.configurationchecksum,
 			d.configurationchangetime,
 			d.datatablename,
+			d.ssh_host,
+			d.ssh_user,
+			d.ssh_pass,
+			d.id_device_type,
+			d.ssh_port,
 			dt.`name` AS device_type_name,
 			dt.image,
 			s.name AS site_name,

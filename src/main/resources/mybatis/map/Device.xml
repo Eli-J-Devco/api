@@ -27,6 +27,10 @@
 		<result property="order_id" column="order_id" />
 		<result property="reverse_poa" column="reverse_poa" />
 		<result property="field_value_default" column="field_value_default" />
+		<result property="ssh_host" column="ssh_host" />
+		<result property="ssh_user" column="ssh_user" />
+		<result property="ssh_pass" column="ssh_pass" />
+		<result property="ssh_port" column="ssh_port" />
 		
 		
 		
@@ -57,7 +61,11 @@
 			t.`offset` AS timezone_offset,
 			t.`value` AS timezone_value,
 			d.reverse_poa,
-			d.field_value_default
+			d.field_value_default,
+			d.ssh_host,
+			d.ssh_user,
+			d.ssh_pass,
+			d.ssh_port
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -134,7 +142,11 @@
 			s.view_tablename,
 			s.order_id,
 			s.reverse_poa,
-			s.field_value_default
+			s.field_value_default,
+			s.ssh_host,
+			s.ssh_user,
+			s.ssh_pass,
+			s.ssh_port
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -237,7 +249,11 @@
 			`view_tablename`,
 			`order_id`,
 			`reverse_poa`,
-			`field_value_default`
+			`field_value_default`,
+			`ssh_host`,
+			`ssh_user`,
+			`ssh_pass`,
+			`ssh_port`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -256,7 +272,11 @@
 			#{view_tablename},
 			#{order_id},
 			#{reverse_poa},
-			#{field_value_default}
+			#{field_value_default},
+			#{ssh_host},
+			#{ssh_user},
+			#{ssh_pass},
+			#{ssh_port}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -284,7 +304,11 @@
 			view_tablename = #{view_tablename},
 			order_id = #{order_id},
 			reverse_poa = #{reverse_poa},
-			field_value_default = #{field_value_default}
+			field_value_default = #{field_value_default},
+			ssh_host = #{ssh_host},
+			ssh_user = #{ssh_user},
+			ssh_pass = #{ssh_pass},
+			ssh_port = #{ssh_port}
 		WHERE
 			`id` = #{id}
 	</update>

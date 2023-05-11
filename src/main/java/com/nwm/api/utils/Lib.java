@@ -2792,5 +2792,21 @@ Lib {
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
 	}
+	
+	public static String[] removeAllEmpty(String[] arr) {
+	    if (arr == null)
+	        return arr;
+
+	    String[] result = new String[arr.length];
+	    int amountOfValidStrings = 0;
+
+	    for (int i = 0; i < arr.length; i++) {
+	        if (!arr[i].equals(""))
+	            result[amountOfValidStrings++] = arr[i];
+	    }
+	    result = Arrays.copyOf(result, amountOfValidStrings);
+
+	    return result;
+	}
 
 }
