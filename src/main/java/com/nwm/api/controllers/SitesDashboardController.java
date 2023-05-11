@@ -90,4 +90,28 @@ public class SitesDashboardController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get device status list by site
+	 * @author Hung.Bui
+	 * @since 2023-05-05
+	 * @param id_site
+	 * @return data (status, message, array, total_row
+	 */
+	
+	@PostMapping("/get-list-device-status-by-site")
+	public Object getDeviceStatusListBySite(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List dataObj = service.getDeviceStatusListBySite(obj);
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

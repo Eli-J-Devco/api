@@ -95,6 +95,7 @@ public class DeviceEntity {
 	private String ssh_user;
 	private String ssh_pass;
 	private String ssh_port;
+	private Double rating_ac_power;
 	
 	
 	
@@ -603,6 +604,12 @@ public class DeviceEntity {
 	}
 	public void setCon_temp(int con_temp) {
 		this.con_temp = con_temp;
+	}
+	public Double getRating_ac_power() {
+		return rating_ac_power;
+	}
+	public void setRating_ac_power(Double rating_ac_power) {
+		this.rating_ac_power = rating_ac_power;
 	}
 	
 	

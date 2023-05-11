@@ -430,6 +430,65 @@
 					AND s.is_delete = 0;
 	</select>
 	
+	<select id="getDeviceTableListBySite" resultType="com.nwm.api.entities.SitesDevicesEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.view_tablename,
+			d.id_device_type
+		FROM device d
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1
+			AND d.is_delete = 0
+	</select>
+
+	<select id="getDeviceStatus" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.id_device_type,
+			d.lat,
+			d.lng,
+			d.rating_ac_power,
+			dt.image,
+			s.data_send_time,
+			t.active_power,
+			CASE
+			 WHEN s.data_send_time = 1 THEN IF(TIMESTAMPDIFF(MINUTE, t.time, NOW()) <![CDATA[<]]> (5 + 2), "online", "offline")
+			 WHEN s.data_send_time = 2 THEN IF(TIMESTAMPDIFF(MINUTE, t.time, NOW()) <![CDATA[<]]> (15 + 2), "online", "offline")
+			 WHEN s.data_send_time = 3 THEN IF(TIMESTAMPDIFF(MINUTE, t.time, NOW()) <![CDATA[<]]> (1 + 2), "online", "offline")
+			END AS comm_status,
+			IF ((t.active_power IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), NULL, t.active_power / d.rating_ac_power * 100) AS percent_power_status
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN (
+				SELECT
+					id_device,
+					<choose>
+						<when test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
+							nvmActivePower
+						</when>
+						<otherwise>
+							NULL
+						</otherwise>
+					</choose> AS active_power,
+					time
+				FROM
+					${view_tablename}
+				WHERE id_device = #{id}
+				ORDER BY time DESC
+				LIMIT 1
+			) t ON t.id_device = d.id
+		WHERE
+			d.id_site = #{id_site}
+			AND d.id = #{id}
+			AND d.`status` = 1
+			AND d.is_delete = 0
+	</select>
 	
 	
 </mapper>
