@@ -24,6 +24,35 @@
 		LIMIT ${limit} OFFSET ${offset}
 	</select>
 	
+	<select id="getListBySite" resultType="com.nwm.api.entities.AuditingLogsEntity" parameterType="com.nwm.api.entities.AuditingLogsEntity" >
+		SELECT 
+			al.id,
+			CONCAT_WS( ' ', e.first_name,e.last_name) AS full_name,
+			al.modified_page,
+			al.modified_date,
+			al.offset_timezone,
+			al.action_mode,
+			al.description,
+			al.backup_item
+		FROM
+			auditing_logs al
+			LEFT JOIN employee e ON e.id = al.id_employee
+		WHERE al.id_site = #{id_site}
+		ORDER BY
+        <choose>  
+            <when test="sort_column == 'id'">
+                id ${order_by}
+            </when>         
+            <when test="sort_column == 'modified_date'">
+                modified_date ${order_by}
+            </when>         
+            <otherwise>
+	            id DESC
+		    </otherwise>                                                  
+        </choose>
+		LIMIT ${limit} OFFSET ${offset}
+	</select>
+	
 	<select id="getLatestRecordsByEmployee" resultType="int" parameterType="com.nwm.api.entities.AuditingLogsEntity" >
 		SELECT id
 		FROM auditing_logs
@@ -38,6 +67,12 @@
 		WHERE id_employee = #{id_employee}
   	</select>
   	
+  	<select id="getListCountBySite" resultType="int" parameterType="com.nwm.api.entities.AuditingLogsEntity">
+    	SELECT count(*) as totalRecord
+		FROM auditing_logs
+		WHERE id_site = #{id_site}
+  	</select>
+  	
   	<insert id="insertAuditingLog" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `auditing_logs`(
 			`id_employee`,
@@ -46,7 +81,8 @@
 			`offset_timezone`,
 			`action_mode`,
 			`description`,
-			`backup_item`
+			`backup_item`,
+			`id_site`
 		)VALUES(
 			#{id_employee},
 			#{modified_page},
@@ -54,7 +90,8 @@
 			#{offset_timezone},
 			#{action_mode},
 			#{description},
-			#{backup_item}
+			#{backup_item},
+			#{id_site}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 

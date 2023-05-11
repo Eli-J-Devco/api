@@ -42,6 +42,28 @@ public class AuditingLogsController extends BaseController {
 	}
 	
 	/**
+	 * @description get list auditing logs by site
+	 * @author duy.phan
+	 * @since 2023-05-10
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-by-site")
+	public Object getListBySite(@RequestBody AuditingLogsEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			AuditingLogsService service = new AuditingLogsService();
+			List data = service.getListBySite(obj);
+			int totalRecord = service.getTotalRecordBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description save auditing log
 	 * @author Hung.Bui
 	 * @since 2023-04-25
