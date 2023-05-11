@@ -337,6 +337,6 @@ public class BatchConfig {
 	@Scheduled(cron = "0 */1 * * * *")
 	public void startBatchJobSSHDatalogger() throws Exception {
 		BatchJob job =new BatchJob(); 
-//		job.runCronJobSSHDatalogger();
+		job.runCronJobSSHDatalogger();
 	}
 }

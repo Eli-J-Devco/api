@@ -1091,10 +1091,17 @@ public class BatchJob {
 	
 	
 	public void runCronJobSSHDatalogger() throws Exception {
-//		listFolderStructure("admin", "@NextWave2022", "63.42.217.129", 8822, "get bandwidth transferred");
+		// Get list device and id_device_type = 10
+		BatchJobService service = new BatchJobService();
+		List<?> listDevice = service.getListDeviceCelModem(new DeviceEntity());
+		if (listDevice == null || listDevice.size() == 0) { return; }		
+		for (int i = 0; i < listDevice.size(); i++) {
+			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+			listFolderStructure(deviceItem.getSsh_user(), deviceItem.getSsh_pass(), deviceItem.getSsh_host(), Integer.parseInt(deviceItem.getSsh_port()), deviceItem.getId());
+		}
 	}
 	
-	public static void listFolderStructure(String username, String password, String host, int port)
+	public static void listFolderStructure(String username, String password, String host, int port, int id_device)
 			throws Exception {
 		if(host != null && username != null && password != null && port > 0) {
 			// Save device cell modem 
@@ -1386,7 +1393,7 @@ public class BatchJob {
 					celModemEntity.setConnectionStatus(ConnectionStatus != null ? ConnectionStatus.trim(): null);
 					celModemEntity.setConnectionType(ConnectionType != null ? ConnectionType.trim(): null);
 					celModemEntity.setConnectionMethod(ConnectionMethod != null ? ConnectionMethod.trim(): null);
-//					
+					
 					RSSI3 = RSSI3.replaceAll("dBm", "");
 					SINR3 = SINR3.replaceAll("dB", "");
 					RSRP3 = RSRP3.replaceAll("dBm", "");
@@ -1407,7 +1414,7 @@ public class BatchJob {
 					celModemEntity.setChannel4(Channel4 != null ? Double.parseDouble(Channel4.trim()): null);
 					celModemEntity.setCPULoad(0);
 					
-//					celModemEntity.setId_device(getDetail.getId());	
+					celModemEntity.setId_device(id_device);	
 					serviceCellModem.insertModelCellModem(celModemEntity);
 				}
 				
@@ -1586,18 +1593,6 @@ public class BatchJob {
 				
 				deviceUpdateE.setId(celModemEntity.getId_device());
 				serviceD.updateLastUpdated(deviceUpdateE);
-				
-				
-				// converting date format for US
-//				Date date = new Date();
-//		        SimpleDateFormat sdfAmerica = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss a");
-//		        TimeZone tzInAmerica = TimeZone.getTimeZone(getDetail.getTimezone());
-//		        sdfAmerica.setTimeZone(tzInAmerica);
-//				
-//				getDetail.setLast_attempt(sdfAmerica.format(date) + " " + getDetail.getAbbreviation_std());
-//				List listParameters = service.getListParameters(obj);
-//				getDetail.setList_parameters(listParameters);
-//				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
 
 			} finally {
 				if (session != null) {
@@ -1631,19 +1626,6 @@ public class BatchJob {
 					channelscs.disconnect();
 				}
 			}
-		    
-		} else {
-			// converting date format for US
-//			Date date = new Date();
-//	        SimpleDateFormat sdfAmerica = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss a");
-//	        TimeZone tzInAmerica = TimeZone.getTimeZone(getDetail.getTimezone());
-//	        sdfAmerica.setTimeZone(tzInAmerica);
-			
-//			getDetail.setLast_attempt(sdfAmerica.format(date) + " " + getDetail.getAbbreviation_std());
-//			List listParameters = service.getListParameters(obj);
-//			getDetail.setList_parameters(listParameters);
-//			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
 		}
-		
 	}
 }

@@ -313,6 +313,30 @@
 	</select>
 	
 	
+	<select id="getListDeviceCelModem" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.id_device_group,
+			d.ssh_host,
+			d.ssh_port,
+			d.ssh_user,
+			d.ssh_pass
+		FROM
+			device AS d
+			LEFT JOIN site s ON s.id = d.id_site 
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (10)
+	</select>
+	
+	
 	
 	<select id="getListMeterAndInverterBySite" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
