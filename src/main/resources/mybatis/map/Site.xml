@@ -446,13 +446,20 @@
 			s.unit_wind_speed,
 			c.name AS company,
 			sg.name AS site_group,
-			tz.name AS time_zone
+			tz.name AS time_zone,
+			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y'), DATE_FORMAT(s.built_since,'%m/%d/%Y')) AS last_modified
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+						SELECT id_site,
+						modified_date
+						FROM auditing_logs
+						GROUP BY id_site DESC
+			) al ON al.id_site = s.id
 			LEFT JOIN (
 						SELECT id_site, 
 							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,

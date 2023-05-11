@@ -31,6 +31,24 @@ public class AuditingLogsService extends DB {
 	}
 	
 	/**
+	 * @description get list auditing logs by site
+	 * @author duy.phan
+	 * @since 2023-05-10
+	 */
+
+	public List getListBySite(AuditingLogsEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("AuditingLogs.getListBySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
 	 * @description get latest records by employee
 	 * @author Hung.Bui
 	 * @since 2023-04-25
@@ -56,6 +74,19 @@ public class AuditingLogsService extends DB {
 	public int getTotalRecord(AuditingLogsEntity obj) {
 		try {
 			return (int) queryForObject("AuditingLogs.getListCount", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * @description get total record auditing logs by Site
+	 * @author duy.phan
+	 * @since 2023-05-10
+	 */
+	public int getTotalRecordBySite(AuditingLogsEntity obj) {
+		try {
+			return (int) queryForObject("AuditingLogs.getListCountBySite", obj);
 		} catch (Exception ex) {
 			return 0;
 		}

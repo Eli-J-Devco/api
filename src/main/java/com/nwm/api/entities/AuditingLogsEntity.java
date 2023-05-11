@@ -19,7 +19,22 @@ public class AuditingLogsEntity {
 	private String sort_column;
 	private String order_by;
 	private String latest_records;
+	private int id_site;
+	private String full_name;
 	
+	
+	public String getFull_name() {
+		return full_name;
+	}
+	public void setFull_name(String full_name) {
+		this.full_name = full_name;
+	}
+	public int getId_site() {
+		return id_site;
+	}
+	public void setId_site(int id_site) {
+		this.id_site = id_site;
+	}
 	public int getId() {
 		return id;
 	}
