@@ -1219,4 +1219,23 @@ public class BatchJobService extends DB {
 		return rowItem;
 	}
 	
+	
+	/**
+	 * @description get list device by id_device_type = 10
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceCelModem(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceCelModem", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 }

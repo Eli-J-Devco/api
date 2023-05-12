@@ -94,6 +94,8 @@
 		<mapper resource="mybatis/map/ModelCampellScientificMeter2.xml"/>
 		<mapper resource="mybatis/map/ModelCampellScientificMeter3.xml"/>
 		<mapper resource="mybatis/map/ModelCampellScientificMeter4.xml"/>
+		<mapper resource="mybatis/map/ModelCellModem.xml"/>
+		
 		
 		
 		

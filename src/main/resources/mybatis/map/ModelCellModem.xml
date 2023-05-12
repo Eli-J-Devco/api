@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelCellModem">
+	<resultMap id="ModelCellModemMap"
+		type="com.nwm.api.entities.ModelCellModemEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		
+		<result property="serialnumber" column="serialnumber" />
+		<result property="ConnectionName" column="ConnectionName" />
+		<result property="ConnectionStatus" column="ConnectionStatus" />
+		<result property="ConnectionType" column="ConnectionType" />
+		<result property="ConnectionMethod" column="ConnectionMethod" />
+		<result property="IPAddress" column="IPAddress" />
+		<result property="DefaultGateway" column="DefaultGateway" />
+		<result property="DNSServers" column="DNSServers" />
+		<result property="MTU" column="MTU" />
+		<result property="IMEI" column="IMEI" />
+		<result property="IMSI" column="IMSI" />
+		<result property="ICCID" column="ICCID" />
+		<result property="SIMSLOT" column="SIMSLOT" />
+		<result property="RSSI4" column="RSSI4" />
+		<result property="SINR4" column="SINR4" />
+		<result property="RSRP4" column="RSRP4" />
+		<result property="RSRQ4" column="RSRQ4" />
+		<result property="Channel4" column="Channel4" />
+		<result property="RSSI3" column="RSSI3" />
+		<result property="SINR3" column="SINR3" />
+		<result property="RSRP3" column="RSRP3" />
+		<result property="RSRQ3" column="RSRQ3" />
+		<result property="Channel3" column="Channel3" />
+		<result property="CPULoad" column="CPULoad" />
+		<result property="ALLDownload" column="ALLDownload" />
+		<result property="ALLUpload" column="ALLUpload" />
+		<result property="ALLTotal" column="ALLTotal" />
+		<result property="CellularDownload" column="CellularDownload" />
+		<result property="CellularUpload" column="CellularUpload" />
+		<result property="CellularTotal" column="CellularTotal" />
+		<result property="DeviceName" column="DeviceName" />
+		<result property="ProductModel" column="ProductModel" />
+		<result property="HardwareRevision" column="HardwareRevision" />
+		<result property="FirmwareVersion" column="FirmwareVersion" />
+		<result property="Uptime" column="Uptime" />
+		<result property="Mode" column="Mode" />
+		<result property="SystemMode" column="SystemMode" />
+		<result property="Temperature" column="Temperature" />
+		<result property="SlotA" column="SlotA" />
+		<result property="SlotB" column="SlotB" />
+	
+		
+
+	</resultMap>
+
+	<insert id="insertModelCellModem" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_cell_modem`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != null">
+				`id_device`,
+			</if>
+			<if test="serialnumber != null">
+				`serialnumber`,
+			</if>
+
+			<if test="ConnectionName != null">
+				`ConnectionName`,
+			</if>
+			<if test="ConnectionStatus != null">
+				`ConnectionStatus`,
+			</if>
+			<if test="ConnectionType != null">
+				`ConnectionType`,
+			</if>
+			<if test="ConnectionMethod != null">
+				`ConnectionMethod`,
+			</if>
+			<if test="IPAddress != null">
+				`IPAddress`,
+			</if>
+			<if test="DefaultGateway != null">
+				`DefaultGateway`,
+			</if>
+			<if test="DNSServers != null">
+				`DNSServers`,
+			</if>
+			<if test="MTU != null">
+				`MTU`,
+			</if>
+			<if test="IMEI != null">
+				`IMEI`,
+			</if>
+			<if test="IMSI != null">
+				`IMSI`,
+			</if>
+			<if test="ICCID != null">
+				`ICCID`,
+			</if>
+			<if test="SIMSLOT != null">
+				`SIMSLOT`,
+			</if>
+			<if test="RSSI4 != null">
+				`RSSI4`,
+			</if>
+			<if test="SINR4 != null">
+				`SINR4`,
+			</if>
+			<if test="RSRP4 != null">
+				`RSRP4`,
+			</if>
+			<if test="RSRQ4 != null">
+				`RSRQ4`,
+			</if>
+			<if test="Channel4 != null">
+				`Channel4`,
+			</if>
+			<if test="RSSI3 != null">
+				`RSSI3`,
+			</if>
+			<if test="SINR3 != null">
+				`SINR3`,
+			</if>
+			<if test="RSRP3 != null">
+				`RSRP3`,
+			</if>
+			<if test="RSRQ3 != null">
+				`RSRQ3`,
+			</if>
+			<if test="Channel3 != null">
+				`Channel3`,
+			</if>
+			<if test="CPULoad != null">
+				`CPULoad`,
+			</if>
+			
+
+			<if test="ALLDownload != null">
+				`ALLDownload`,
+			</if>
+
+			<if test="ALLUpload != null">
+				`ALLUpload`,
+			</if>
+
+			<if test="ALLTotal != null">
+				`ALLTotal`,
+			</if>
+
+			<if test="CellularDownload != null">
+				`CellularDownload`,
+			</if>
+
+			<if test="CellularUpload != null">
+				`CellularUpload`,
+			</if>
+	
+			<if test="CellularTotal != null">
+				`CellularTotal`,
+			</if>
+
+			<if test="DeviceName != null">
+				`DeviceName`,
+			</if>
+
+			<if test="ProductModel != null">
+				`ProductModel`,
+			</if>
+
+			<if test="HardwareRevision != null">
+				`HardwareRevision`,
+			</if>
+
+			<if test="FirmwareVersion != null">
+				`FirmwareVersion`,
+			</if>
+
+			<if test="Uptime != null">
+				`Uptime`,
+			</if>
+
+			<if test="Mode != null">
+				`Mode`,
+			</if>
+
+			<if test="SystemMode != null">
+				`SystemMode`,
+			</if>
+
+			<if test="Temperature != null">
+				`Temperature`,
+			</if>
+
+			<if test="SlotA != null">
+				`SlotA`,
+			</if>
+			<if test="SlotB != null">
+				`SlotB`,
+			</if>
+			
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != null">
+				#{id_device},
+			</if>
+			<if test="serialnumber != null">
+				#{serialnumber},
+			</if>
+
+			<if test="ConnectionName != null">
+				#{ConnectionName},
+			</if>
+			<if test="ConnectionStatus != null">
+				#{ConnectionStatus},
+			</if>
+			<if test="ConnectionType != null">
+				#{ConnectionType},
+			</if>
+			<if test="ConnectionMethod != null">
+				#{ConnectionMethod},
+			</if>
+			<if test="IPAddress != null">
+				#{IPAddress},
+			</if>
+			<if test="DefaultGateway != null">
+				#{DefaultGateway},
+			</if>
+			<if test="DNSServers != null">
+				#{DNSServers},
+			</if>
+			<if test="MTU != null">
+				#{MTU},
+			</if>
+			<if test="IMEI != null">
+				#{IMEI},
+			</if>
+			<if test="IMSI != null">
+				#{IMSI},
+			</if>
+			<if test="ICCID != null">
+				#{ICCID},
+			</if>
+			<if test="SIMSLOT != null">
+				#{SIMSLOT},
+			</if>
+			<if test="RSSI4 != null">
+				#{RSSI4},
+			</if>
+			<if test="SINR4 != null">
+				#{SINR4},
+			</if>
+			<if test="RSRP4 != null">
+				#{RSRP4},
+			</if>
+			<if test="RSRQ4 != null">
+				#{RSRQ4},
+			</if>
+			<if test="Channel4 != null">
+				#{Channel4},
+			</if>
+			<if test="RSSI3 != null">
+				#{RSSI3},
+			</if>
+			<if test="SINR3 != null">
+				#{SINR3},
+			</if>
+			<if test="RSRP3 != null">
+				#{RSRP3},
+			</if>
+			<if test="RSRQ3 != null">
+				#{RSRQ3},
+			</if>
+			<if test="Channel3 != null">
+				#{Channel3},
+			</if>
+			<if test="CPULoad != null">
+				#{CPULoad},
+			</if>
+			
+			<if test="ALLDownload != null">
+				#{ALLDownload},
+			</if>
+
+			<if test="ALLUpload != null">
+				#{ALLUpload},
+			</if>
+
+			<if test="ALLTotal != null">
+				#{ALLTotal},
+			</if>
+
+			<if test="CellularDownload != null">
+				#{CellularDownload},
+			</if>
+
+			<if test="CellularUpload != null">
+				#{CellularUpload},
+			</if>
+	
+			<if test="CellularTotal != null">
+				#{CellularTotal},
+			</if>
+
+			<if test="DeviceName != null">
+				#{DeviceName},
+			</if>
+
+			<if test="ProductModel != null">
+				#{ProductModel},
+			</if>
+
+			<if test="HardwareRevision != null">
+				#{HardwareRevision},
+			</if>
+
+			<if test="FirmwareVersion != null">
+				#{FirmwareVersion},
+			</if>
+
+			<if test="Uptime != null">
+				#{Uptime},
+			</if>
+
+			<if test="Mode != null">
+				#{Mode},
+			</if>
+
+			<if test="SystemMode != null">
+				#{SystemMode},
+			</if>
+
+			<if test="Temperature != null">
+				#{Temperature},
+			</if>
+
+			<if test="SlotA != null">
+				#{SlotA},
+			</if>
+			<if test="SlotB != null">
+				#{SlotB},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != null">
+				`id_device` = #{id_device},
+			</if>
+			
+			<if test="serialnumber != null">
+				serialnumber = #{serialnumber},
+			</if>
+
+			<if test="ConnectionName != null">
+				ConnectionName = #{ConnectionName},
+			</if>
+			<if test="ConnectionStatus != null">
+				ConnectionStatus = #{ConnectionStatus},
+			</if>
+			<if test="ConnectionType != null">
+				ConnectionType = #{ConnectionType},
+			</if>
+			<if test="ConnectionMethod != null">
+				ConnectionMethod = #{ConnectionMethod},
+			</if>
+			<if test="IPAddress != null">
+				IPAddress = #{IPAddress},
+			</if>
+			<if test="DefaultGateway != null">
+				DefaultGateway = #{DefaultGateway},
+			</if>
+			<if test="DNSServers != null">
+				DNSServers = #{DNSServers},
+			</if>
+			<if test="MTU != null">
+				MTU = #{MTU},
+			</if>
+			<if test="IMEI != null">
+				IMEI = #{IMEI},
+			</if>
+			<if test="IMSI != null">
+				IMSI = #{IMSI},
+			</if>
+			<if test="ICCID != null">
+				ICCID = #{ICCID},
+			</if>
+			<if test="SIMSLOT != null">
+				SIMSLOT = #{SIMSLOT},
+			</if>
+			<if test="RSSI4 != null">
+				RSSI4 = #{RSSI4},
+			</if>
+			<if test="SINR4 != null">
+				SINR4 = #{SINR4},
+			</if>
+			<if test="RSRP4 != null">
+				RSRP4 = #{RSRP4},
+			</if>
+			<if test="RSRQ4 != null">
+				RSRQ4 = #{RSRQ4},
+			</if>
+			<if test="Channel4 != null">
+				Channel4 = #{Channel4},
+			</if>
+			<if test="RSSI3 != null">
+				RSSI3 = #{RSSI3},
+			</if>
+			<if test="SINR3 != null">
+				SINR3 = #{SINR3},
+			</if>
+			<if test="RSRP3 != null">
+				RSRP3 = #{RSRP3},
+			</if>
+			<if test="RSRQ3 != null">
+				RSRQ3 = #{RSRQ3},
+			</if>
+			<if test="Channel3 != null">
+				Channel3 = #{Channel3},
+			</if>
+			<if test="CPULoad != null">
+				CPULoad = #{CPULoad},
+			</if>
+			
+			<if test="ALLDownload != null">
+				ALLDownload = #{ALLDownload},
+			</if>
+
+			<if test="ALLUpload != null">
+				ALLUpload = #{ALLUpload},
+			</if>
+
+			<if test="ALLTotal != null">
+				ALLTotal = #{ALLTotal},
+			</if>
+
+			<if test="CellularDownload != null">
+				CellularDownload = #{CellularDownload},
+			</if>
+
+			<if test="CellularUpload != null">
+				CellularUpload = #{CellularUpload},
+			</if>
+	
+			<if test="CellularTotal != null">
+				CellularTotal = #{CellularTotal},
+			</if>
+
+			<if test="DeviceName != null">
+				DeviceName = #{DeviceName},
+			</if>
+
+			<if test="ProductModel != null">
+				ProductModel = #{ProductModel},
+			</if>
+
+			<if test="HardwareRevision != null">
+				HardwareRevision = #{HardwareRevision},
+			</if>
+
+			<if test="FirmwareVersion != null">
+				FirmwareVersion = #{FirmwareVersion},
+			</if>
+
+			<if test="Uptime != null">
+				Uptime = #{Uptime},
+			</if>
+
+			<if test="Mode != null">
+				Mode = #{Mode},
+			</if>
+
+			<if test="SystemMode != null">
+				SystemMode = #{SystemMode},
+			</if>
+
+			<if test="Temperature != null">
+				Temperature = #{Temperature},
+			</if>
+
+			<if test="SlotA != null">
+				SlotA = #{SlotA},
+			</if>
+			<if test="SlotB != null">
+				SlotB = #{SlotB},
+			</if>
+		</trim>
+
+	</insert>
+	
+	
+	
+  	
+
+</mapper> 

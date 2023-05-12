@@ -85,11 +85,40 @@ public class SitesDevicesEntity {
 	private String date_format;
 	private int checkall;
 	
+	private String ssh_host;
+	private String ssh_user;
+	private String ssh_pass;
+	private String ssh_port;
 	
 	
 	
 	
 	
+	
+	public String getSsh_host() {
+		return ssh_host;
+	}
+	public void setSsh_host(String ssh_host) {
+		this.ssh_host = ssh_host;
+	}
+	public String getSsh_user() {
+		return ssh_user;
+	}
+	public void setSsh_user(String ssh_user) {
+		this.ssh_user = ssh_user;
+	}
+	public String getSsh_pass() {
+		return ssh_pass;
+	}
+	public void setSsh_pass(String ssh_pass) {
+		this.ssh_pass = ssh_pass;
+	}
+	public String getSsh_port() {
+		return ssh_port;
+	}
+	public void setSsh_port(String ssh_port) {
+		this.ssh_port = ssh_port;
+	}
 	public int getCheckall() {
 		return checkall;
 	}
