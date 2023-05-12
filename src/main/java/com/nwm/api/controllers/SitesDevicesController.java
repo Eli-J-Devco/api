@@ -98,9 +98,9 @@ public class SitesDevicesController extends BaseController {
 			DeviceEntity getDetail = service.getDeviceDetail(obj);
 			
 			
-			if (getDetail.getId() > 0) {
+			if (getDetail.getId() > 0 ) {
 				
-				if(getDetail.getId_device_type() == 10 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+				if(getDetail.getId_device_type() == 10 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
 					// Save device cell modem 
 					ModelCellModemService serviceCellModem = new ModelCellModemService();
 					ModelCellModemEntity celModemEntity = new ModelCellModemEntity();

@@ -96,10 +96,17 @@ public class DeviceEntity {
 	private String ssh_pass;
 	private String ssh_port;
 	private Double rating_ac_power;
+	private int reload_ssh;
 	
 	
 	
 	
+	public int getReload_ssh() {
+		return reload_ssh;
+	}
+	public void setReload_ssh(int reload_ssh) {
+		this.reload_ssh = reload_ssh;
+	}
 	public String getSsh_host() {
 		return ssh_host;
 	}
