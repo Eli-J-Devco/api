@@ -149,7 +149,7 @@
 			s.ssh_host,
 			s.ssh_user,
 			s.ssh_pass,
-			s.ssh_port
+			s.ssh_port,
 			s.lat,
 			s.lng,
 			s.rating_ac_power,
@@ -260,7 +260,7 @@
 			`ssh_host`,
 			`ssh_user`,
 			`ssh_pass`,
-			`ssh_port`
+			`ssh_port`,
 			`lat`,
 			`lng`,
 			`rating_ac_power`,
@@ -287,7 +287,7 @@
 			#{ssh_host},
 			#{ssh_user},
 			#{ssh_pass},
-			#{ssh_port}
+			#{ssh_port},
 			#{lat},
 			#{lng},
 			#{rating_ac_power},
@@ -323,7 +323,7 @@
 			ssh_host = #{ssh_host},
 			ssh_user = #{ssh_user},
 			ssh_pass = #{ssh_pass},
-			ssh_port = #{ssh_port}
+			ssh_port = #{ssh_port},
 			lat = #{lat},
 			lng = #{lng},
 			rating_ac_power = #{rating_ac_power},
