@@ -458,7 +458,7 @@
 						SELECT id_site,
 						modified_date
 						FROM auditing_logs
-						GROUP BY id_site DESC
+						GROUP BY id_site
 			) al ON al.id_site = s.id
 			LEFT JOIN (
 						SELECT id_site, 
