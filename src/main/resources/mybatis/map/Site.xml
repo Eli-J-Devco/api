@@ -447,7 +447,7 @@
 			c.name AS company,
 			sg.name AS site_group,
 			tz.name AS time_zone,
-			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y'), DATE_FORMAT(s.built_since,'%m/%d/%Y')) AS last_modified
+			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), 'N/A') AS last_modified
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
