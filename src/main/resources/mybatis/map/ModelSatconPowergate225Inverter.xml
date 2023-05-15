@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSatconPowergate225Inverter">
+	<resultMap id="ModelSatconPowergate225InverterMap"
+		type="com.nwm.api.entities.ModelSatconPowergate225InverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="Fault1" column="Fault1" />
+		<result property="Fault2" column="Fault2" />
+		<result property="Fault3" column="Fault3" />
+		<result property="Fault4" column="Fault4" />
+		<result property="GridStatus" column="GridStatus" />
+		<result property="Status6" column="Status6" />
+		<result property="Status7" column="Status7" />
+		<result property="PCSState" column="PCSState" />
+		<result property="DCInputPower" column="DCInputPower" />
+		<result property="DC_Link_Volts" column="DC_Link_Volts" />
+		<result property="DCInputVoltage" column="DCInputVoltage" />
+		<result property="DCInputCurrent" column="DCInputCurrent" />
+		<result property="OutputKVAR" column="OutputKVAR" />
+		<result property="OutputKW" column="OutputKW" />
+		<result property="OutputKVA" column="OutputKVA" />
+		<result property="Line_Volts_A_TEST" column="Line_Volts_A_TEST" />
+		<result property="Line_Volts_B_TEST" column="Line_Volts_B_TEST" />
+		<result property="Line_Volts_C_TEST" column="Line_Volts_C_TEST" />
+		<result property="Line_Amps_A_TEST" column="Line_Amps_A_TEST" />
+		<result property="Line_Amps_B_TEST" column="Line_Amps_B_TEST" />
+		<result property="Line_Amps_C_TEST" column="Line_Amps_C_TEST" />
+		<result property="NeutralCurrent" column="NeutralCurrent" />
+		<result property="StopCode" column="StopCode" />
+		<result property="KWHlow" column="KWHlow" />
+		<result property="KWH" column="KWH" />
+		<result property="PowerFactor" column="PowerFactor" />
+		<result property="LineFreq" column="LineFreq" />
+		<result property="OutputPowerLimit" column="OutputPowerLimit" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+	</resultMap>
+
+	<insert id="insertModelSatconPowergate225Inverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_satcon_powergate_225_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Fault1 != 0.001">
+				`Fault1`,
+			</if>
+			<if test="Fault2 != 0.001">
+				`Fault2`,
+			</if>
+			<if test="Fault3 != 0.001">
+				`Fault3`,
+			</if>
+			<if test="Fault4 != 0.001">
+				`Fault4`,
+			</if>
+			<if test="GridStatus != 0.001">
+				`GridStatus`,
+			</if>
+			<if test="Status6 != 0.001">
+				`Status6`,
+			</if>
+			<if test="Status7 != 0.001">
+				`Status7`,
+			</if>
+			<if test="PCSState != 0.001">
+				`PCSState`,
+			</if>
+			<if test="DCInputPower != 0.001">
+				`DCInputPower`,
+			</if>
+			<if test="DC_Link_Volts != 0.001">
+				`DC_Link_Volts`,
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				`DCInputVoltage`,
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				`DCInputCurrent`,
+			</if>
+			<if test="OutputKVAR != 0.001">
+				`OutputKVAR`,
+			</if>
+			<if test="OutputKW != 0.001">
+				`OutputKW`,
+			</if>
+			<if test="OutputKVA != 0.001">
+				`OutputKVA`,
+			</if>
+			<if test="Line_Volts_A_TEST != 0.001">
+				`Line_Volts_A_TEST`,
+			</if>
+			<if test="Line_Volts_B_TEST != 0.001">
+				`Line_Volts_B_TEST`,
+			</if>
+			<if test="Line_Volts_C_TEST != 0.001">
+				`Line_Volts_C_TEST`,
+			</if>
+			<if test="Line_Amps_A_TEST != 0.001">
+				`Line_Amps_A_TEST`,
+			</if>
+			<if test="Line_Amps_B_TEST != 0.001">
+				`Line_Amps_B_TEST`,
+			</if>
+			<if test="Line_Amps_C_TEST != 0.001">
+				`Line_Amps_C_TEST`,
+			</if>
+			<if test="NeutralCurrent != 0.001">
+				`NeutralCurrent`,
+			</if>
+			<if test="StopCode != 0.001">
+				`StopCode`,
+			</if>
+			<if test="KWHlow != 0.001">
+				`KWHlow`,
+			</if>
+			<if test="KWH != 0.001">
+				`KWH`,
+			</if>
+			<if test="PowerFactor != 0.001">
+				`PowerFactor`,
+			</if>
+			<if test="LineFreq != 0.001">
+				`LineFreq`,
+			</if>
+			<if test="OutputPowerLimit != 0.001">
+				`OutputPowerLimit`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Fault1 != 0.001">
+				#{Fault1},
+			</if>
+			<if test="Fault2 != 0.001">
+				#{Fault2},
+			</if>
+			<if test="Fault3 != 0.001">
+				#{Fault3},
+			</if>
+			<if test="Fault4 != 0.001">
+				#{Fault4},
+			</if>
+			<if test="GridStatus != 0.001">
+				#{GridStatus},
+			</if>
+			<if test="Status6 != 0.001">
+				#{Status6},
+			</if>
+			<if test="Status7 != 0.001">
+				#{Status7},
+			</if>
+			<if test="PCSState != 0.001">
+				#{PCSState},
+			</if>
+			<if test="DCInputPower != 0.001">
+				#{DCInputPower},
+			</if>
+			<if test="DC_Link_Volts != 0.001">
+				#{DC_Link_Volts},
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				#{DCInputVoltage},
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				#{DCInputCurrent},
+			</if>
+			<if test="OutputKVAR != 0.001">
+				#{OutputKVAR},
+			</if>
+			<if test="OutputKW != 0.001">
+				#{OutputKW},
+			</if>
+			<if test="OutputKVA != 0.001">
+				#{OutputKVA},
+			</if>
+			<if test="Line_Volts_A_TEST != 0.001">
+				#{Line_Volts_A_TEST},
+			</if>
+			<if test="Line_Volts_B_TEST != 0.001">
+				#{Line_Volts_B_TEST},
+			</if>
+			<if test="Line_Volts_C_TEST != 0.001">
+				#{Line_Volts_C_TEST},
+			</if>
+			<if test="Line_Amps_A_TEST != 0.001">
+				#{Line_Amps_A_TEST},
+			</if>
+			<if test="Line_Amps_B_TEST != 0.001">
+				#{Line_Amps_B_TEST},
+			</if>
+			<if test="Line_Amps_C_TEST != 0.001">
+				#{Line_Amps_C_TEST},
+			</if>
+			<if test="NeutralCurrent != 0.001">
+				#{NeutralCurrent},
+			</if>
+			<if test="StopCode != 0.001">
+				#{StopCode},
+			</if>
+			<if test="KWHlow != 0.001">
+				#{KWHlow},
+			</if>
+			<if test="KWH != 0.001">
+				#{KWH},
+			</if>
+			<if test="PowerFactor != 0.001">
+				#{PowerFactor},
+			</if>
+			<if test="LineFreq != 0.001">
+				#{LineFreq},
+			</if>
+			<if test="OutputPowerLimit != 0.001">
+				#{OutputPowerLimit},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="Fault1 != 0.001">
+				`Fault1` = #{Fault1},
+			</if>
+			<if test="Fault2 != 0.001">
+				`Fault2` = #{Fault2},
+			</if>
+			<if test="Fault3 != 0.001">
+				`Fault3` = #{Fault3},
+			</if>
+			<if test="Fault4 != 0.001">
+				`Fault4` = #{Fault4},
+			</if>
+			<if test="GridStatus != 0.001">
+				`GridStatus` = #{GridStatus},
+			</if>
+			<if test="Status6 != 0.001">
+				`Status6` = #{Status6},
+			</if>
+			<if test="Status7 != 0.001">
+				`Status7` = #{Status7},
+			</if>
+			<if test="PCSState != 0.001">
+				`PCSState` = #{PCSState},
+			</if>
+			<if test="DCInputPower != 0.001">
+				`DCInputPower` = #{DCInputPower},
+			</if>
+			<if test="DC_Link_Volts != 0.001">
+				`DC_Link_Volts` = #{DC_Link_Volts},
+			</if>
+			<if test="DCInputVoltage != 0.001">
+				`DCInputVoltage` = #{DCInputVoltage},
+			</if>
+			<if test="DCInputCurrent != 0.001">
+				`DCInputCurrent` = #{DCInputCurrent},
+			</if>
+			<if test="OutputKVAR != 0.001">
+				`OutputKVAR` = #{OutputKVAR},
+			</if>
+			<if test="OutputKW != 0.001">
+				`OutputKW` = #{OutputKW},
+			</if>
+			<if test="OutputKVA != 0.001">
+				`OutputKVA` = #{OutputKVA},
+			</if>
+			<if test="Line_Volts_A_TEST != 0.001">
+				`Line_Volts_A_TEST` = #{Line_Volts_A_TEST},
+			</if>
+			<if test="Line_Volts_B_TEST != 0.001">
+				`Line_Volts_B_TEST` = #{Line_Volts_B_TEST},
+			</if>
+			<if test="Line_Volts_C_TEST != 0.001">
+				`Line_Volts_C_TEST` = #{Line_Volts_C_TEST},
+			</if>
+			<if test="Line_Amps_A_TEST != 0.001">
+				`Line_Amps_A_TEST` = #{Line_Amps_A_TEST},
+			</if>
+			<if test="Line_Amps_B_TEST != 0.001">
+				`Line_Amps_B_TEST` = #{Line_Amps_B_TEST},
+			</if>
+			<if test="Line_Amps_C_TEST != 0.001">
+				`Line_Amps_C_TEST` = #{Line_Amps_C_TEST},
+			</if>
+			<if test="NeutralCurrent != 0.001">
+				`NeutralCurrent` = #{NeutralCurrent},
+			</if>
+			<if test="StopCode != 0.001">
+				`StopCode` = #{StopCode},
+			</if>
+			<if test="KWHlow != 0.001">
+				`KWHlow` = #{KWHlow},
+			</if>
+			<if test="KWH != 0.001">
+				`KWH` = #{KWH},
+			</if>
+			<if test="PowerFactor != 0.001">
+				`PowerFactor` = #{PowerFactor},
+			</if>
+			<if test="LineFreq != 0.001">
+				`LineFreq` = #{LineFreq},
+			</if>
+			<if test="OutputPowerLimit != 0.001">
+				`OutputPowerLimit` = #{OutputPowerLimit},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+
+	</insert>
+	
+</mapper> 
