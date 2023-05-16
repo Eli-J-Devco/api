@@ -91,8 +91,8 @@
 			s.weather_description,
 			IFNULL(t.total_error, 0) AS total_error,
 			CONCAT_WS(', ',s.city, s.state) AS address,
-			ROUND(IFNULL(m.inverter_power,0), 2) AS inverter_power,
-			ROUND(IFNULL(n.meter_power, 0), 2) AS meter_power,
+			IF(m.inverter_power IS NULL, m.inverter_power, ROUND(m.inverter_power, 2)) AS inverter_power,
+			IF(n.meter_power IS NULL, n.meter_power, ROUND(n.meter_power, 2)) AS meter_power,
 			IFNULL(low.low_error, 0) AS low_error,
 			IFNULL(med.medium_error, 0) AS medium_error,
 			IFNULL(heigh.heigh_error, 0) AS heigh_error
@@ -104,14 +104,21 @@
 				SELECT SUM(d.last_value) AS inverter_power, s.id
 				FROM site s 
 				LEFT JOIN device d ON d.id_site = s.id
-				WHERE d.id_device_type = 1
+				WHERE
+					d.id_device_type = 1
+					AND s.`status` = 1
+					AND d.`status` = 1
+				GROUP BY
+					s.id
 			)m ON m.id = s.id
 			
 			LEFT JOIN (
 				SELECT SUM(d.last_value) AS meter_power, s.id
 				FROM site s 
 				LEFT JOIN device d ON d.id_site = s.id
-				WHERE d.id_device_type = 3 AND d.`status` = 1
+				WHERE d.id_device_type = 3
+					AND s.`status` = 1
+					AND d.`status` = 1
 				<if test="id_sites != null">
 					AND s.id IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -119,6 +126,8 @@
 						</foreach>
 					)
 				</if>
+				GROUP BY
+					s.id
 			)n ON n.id = s.id
 			
 			LEFT JOIN (
