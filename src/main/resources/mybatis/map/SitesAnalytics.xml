@@ -135,6 +135,39 @@
 				IFNULL(ROUND(AVG(dv.DcMs_WattB), 2), 0.001) AS DcMs_WattB,
 			</if>
 			
+			<if test="(datatablename == 'model_satcon_powergate_225_inverter') || (datatablename == 'ViewModelSatconPowergate225Inverter')">
+				IFNULL(ROUND(AVG(dv.Fault1), 2), 0.001) AS Fault1,
+				IFNULL(ROUND(AVG(dv.Fault2), 2), 0.001) AS Fault2,
+				IFNULL(ROUND(AVG(dv.Fault3), 2), 0.001) AS Fault3,
+				IFNULL(ROUND(AVG(dv.Fault4), 2), 0.001) AS Fault4,
+				IFNULL(ROUND(AVG(dv.GridStatus), 2), 0.001) AS GridStatus,
+				IFNULL(ROUND(AVG(dv.Status6), 2), 0.001) AS Status6,
+				IFNULL(ROUND(AVG(dv.Status7), 2), 0.001) AS Status7,
+				IFNULL(ROUND(AVG(dv.PCSState), 2), 0.001) AS PCSState,
+				IFNULL(ROUND(AVG(dv.DCInputPower), 2), 0.001) AS DCInputPower,
+				IFNULL(ROUND(AVG(dv.DC_Link_Volts), 2), 0.001) AS DC_Link_Volts,
+				IFNULL(ROUND(AVG(dv.DCInputVoltage), 2), 0.001) AS DCInputVoltage,
+				IFNULL(ROUND(AVG(dv.DCInputCurrent), 2), 0.001) AS DCInputCurrent,
+				IFNULL(ROUND(AVG(dv.OutputKVAR), 2), 0.001) AS OutputKVAR,
+				IFNULL(ROUND(AVG(dv.OutputKW), 2), 0.001) AS OutputKW,
+				IFNULL(ROUND(AVG(dv.OutputKVA), 2), 0.001) AS OutputKVA,
+				IFNULL(ROUND(AVG(dv.Line_Volts_A_TEST), 2), 0.001) AS Line_Volts_A_TEST,
+				IFNULL(ROUND(AVG(dv.Line_Volts_B_TEST), 2), 0.001) AS Line_Volts_B_TEST,
+				IFNULL(ROUND(AVG(dv.Line_Volts_C_TEST), 2), 0.001) AS Line_Volts_C_TEST,
+				IFNULL(ROUND(AVG(dv.Line_Amps_A_TEST), 2), 0.001) AS Line_Amps_A_TEST,
+				IFNULL(ROUND(AVG(dv.Line_Amps_B_TEST), 2), 0.001) AS Line_Amps_B_TEST,
+				
+				IFNULL(ROUND(AVG(dv.Line_Amps_C_TEST), 2), 0.001) AS Line_Amps_C_TEST,
+				IFNULL(ROUND(AVG(dv. NeutralCurrent), 2), 0.001) AS NeutralCurrent,
+				IFNULL(ROUND(AVG(dv.StopCode), 2), 0.001) AS StopCode,
+				IFNULL(ROUND(AVG(dv.KWHlow), 2), 0.001) AS KWHlow,
+				IFNULL(ROUND(AVG(dv.KWH), 2), 0.001) AS KWH,
+				IFNULL(ROUND(AVG(dv.PowerFactor), 2), 0.001) AS PowerFactor,
+				IFNULL(ROUND(AVG(dv.LineFreq), 2), 0.001) AS LineFreq,
+				IFNULL(ROUND(AVG(dv.OutputPowerLimit), 2), 0.001) AS OutputPowerLimit,
+			</if>
+			
+			
 			<if test="(datatablename == 'model_sma_inverter_stp24ktlus10') || (datatablename == 'ViewModelSmaInverterStp24ktlus10')">
 				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
 				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
