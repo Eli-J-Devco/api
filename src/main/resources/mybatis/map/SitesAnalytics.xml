@@ -501,6 +501,38 @@
 			</if>
 			
 			
+			<if test="(datatablename == 'model_sunny_central_class9775_inverter') || (datatablename == 'ViewModelSunnyCentralClass9775Inverter')">
+				  IFNULL(ROUND(AVG(dv.Fault), 2), 0.001) AS Fault,
+			      IFNULL(ROUND(AVG(dv.OperatingState), 2), 0.001) AS OperatingState,
+			      IFNULL(ROUND(AVG(dv.Status), 2), 0.001) AS Status,
+			      IFNULL(ROUND(AVG(dv.EventNumber), 2), 0.001) AS EventNumber,
+			      IFNULL(ROUND(AVG(dv.LifekWhTotal), 2), 0.001) AS LifekWhTotal,
+			      IFNULL(ROUND(AVG(dv.PVCurrent), 2), 0.001) AS PVCurrent,
+			      IFNULL(ROUND(AVG(dv.PVVoltage), 2), 0.001) AS PVVoltage,
+			      IFNULL(ROUND(AVG(dv.PVPower), 2), 0.001) AS PVPower,
+			      IFNULL(ROUND(AVG(dv.ACPower), 2), 0.001) AS ACPower,
+			      IFNULL(ROUND(AVG(dv.ACVoltageAB), 2), 0.001) AS ACVoltageAB,
+			      IFNULL(ROUND(AVG(dv.ACVoltageBC), 2), 0.001) AS ACVoltageBC,
+			      IFNULL(ROUND(AVG(dv.ACVoltageCA), 2), 0.001) AS ACVoltageCA,
+			      IFNULL(ROUND(AVG(dv.ACCurrent), 2), 0.001) AS ACCurrent,
+			      IFNULL(ROUND(AVG(dv.ACCurrentL1), 2), 0.001) AS ACCurrentL1,
+			      IFNULL(ROUND(AVG(dv.ACCurrentL2), 2), 0.001) AS ACCurrentL2,
+			      IFNULL(ROUND(AVG(dv.ACCurrentL3), 2), 0.001) AS ACCurrentL3,
+			      IFNULL(ROUND(AVG(dv.ACFrequency), 2), 0.001) AS ACFrequency,
+			      IFNULL(ROUND(AVG(dv.ReactivePower), 2), 0.001) AS ReactivePower,
+			      IFNULL(ROUND(AVG(dv.ApparentPower), 2), 0.001) AS ApparentPower,
+			      IFNULL(ROUND(AVG(dv.PowerFactor), 2), 0.001) AS PowerFactor,
+			      IFNULL(ROUND(AVG(dv.ReactivePowerMode), 2), 0.001) AS ReactivePowerMode,
+			      IFNULL(ROUND(AVG(dv.PowerFactorFeedback), 2), 0.001) AS PowerFactorFeedback,
+			      IFNULL(ROUND(AVG(dv.OperatingMode), 2), 0.001) AS OperatingMode,
+			      IFNULL(ROUND(AVG(dv.ACPowerLimit), 2), 0.001) AS ACPowerLimit,
+			      IFNULL(ROUND(AVG(dv.ACVoltage), 2), 0.001) AS ACVoltage,
+			      IFNULL(ROUND(AVG(dv.HeatSinkTemp), 2), 0.001) AS HeatSinkTemp,
+			      IFNULL(ROUND(AVG(dv.InteriorTemperature), 2), 0.001) AS InteriorTemperature,
+			      IFNULL(ROUND(AVG(dv.ExternalTemperature), 2), 0.001) AS ExternalTemperature,
+			</if>
+			
+			
 			<if test="(datatablename == 'model_tti_tracker') || (datatablename == 'ViewModelTtiTracker')">
 				  IFNULL(ROUND(AVG(dv.Mode), 2), 0.001) AS Mode,
 			      IFNULL(ROUND(AVG(dv.SubMode), 2), 0.001) AS SubMode,

@@ -56,6 +56,7 @@ import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
+import com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity;
 import com.nwm.api.entities.ModelTTiTrackerEntity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
@@ -88,6 +89,7 @@ import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
+import com.nwm.api.services.ModelSunnyCentralClass9775InverterService;
 import com.nwm.api.services.ModelTTiTrackerService;
 import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
 import com.nwm.api.services.ModelWKippZonenRT1Service;
@@ -2660,6 +2662,97 @@ public class UploadFilesController extends BaseController {
 													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
 													dataModelSatcon225.setId_device(item.getId());
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+//															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+//														System.out.println("e1: " + e);
+														e.printStackTrace();  
+													}
+												}
+											}
+											
+											break;
+
+
+
+											case "model_sunny_central_class9775_inverter": 
+											ModelSunnyCentralClass9775InverterService serviceModelSunnyClass9775 = new ModelSunnyCentralClass9775InverterService();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ReadPower
+													if(!Lib.isBlank(words.get(17))) {
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+														
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// Line Freq
+													if(!Lib.isBlank(words.get(30))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													// DC Input Voltage
+													if(!Lib.isBlank(words.get(14))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
+													}
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
+													dataModelSunnyClass9775.setId_device(item.getId());
+													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataModelSunnyClass9775);
 													
 													try  
 													{ 
