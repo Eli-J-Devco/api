@@ -62,8 +62,22 @@ public class PortfolioEntity {
 	private int column;
 	private String value_filter;
 	private int id_employee;
+	private List inverters;
+	private List meters;
 	
 	
+	public List getInverters() {
+		return inverters;
+	}
+	public void setInverters(List inverters) {
+		this.inverters = inverters;
+	}
+	public List getMeters() {
+		return meters;
+	}
+	public void setMeters(List meters) {
+		this.meters = meters;
+	}
 	public int getId_employee() {
 		return id_employee;
 	}

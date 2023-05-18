@@ -70,6 +70,14 @@ public class PortfolioService extends DB {
 				List dataListAlert = queryForList("Portfolio.getListAlertBySite", siteItem);
 				siteItem.put("alerts", dataListAlert);
 				
+				// get inverter status  by site
+				List inverterList = queryForList("Portfolio.getInverterDeviceStatus", siteItem);
+				siteItem.put("inverters", inverterList);
+				if (inverterList.size() == 0) {
+					List meterList = queryForList("Portfolio.getMeterDeviceStatus", siteItem);
+					siteItem.put("meters", meterList);
+				}
+				
 				// Get weather API
 				newData.add(siteItem);
 			}

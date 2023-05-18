@@ -491,6 +491,30 @@
 			
   	</select>
 	
+	<select id="getInverterDeviceStatus" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			IFNULL(d.last_value, 0) as active_power,
+			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
+		FROM
+			device d
+		WHERE
+			d.id_site = #{id}
+			AND d.id_device_type = 1
+	</select>
 	
+	<select id="getMeterDeviceStatus" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			IFNULL(d.last_value, 0) as active_power,
+			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
+		FROM
+			device d
+		WHERE
+			d.id_site = #{id}
+			AND d.id_device_type = 3
+	</select>
 	
 </mapper>
