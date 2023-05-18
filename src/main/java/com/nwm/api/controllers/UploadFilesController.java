@@ -2700,11 +2700,11 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(17))) {
+													// ACPower
+													if(!Lib.isBlank(words.get(12))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0"));
 														
 													} else {
 														deviceUpdateE.setLast_updated(null);
@@ -2712,15 +2712,15 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setField_value1(null);
 													}
 													
-													// Line Freq
-													if(!Lib.isBlank(words.get(30))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
+													// ACVoltage
+													if(!Lib.isBlank(words.get(38))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(28)) ? Double.parseDouble(words.get(28)) : null);
 													} else {
 														deviceUpdateE.setField_value2(null);
 													}
-													// DC Input Voltage
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													// InteriorTemperature
+													if(!Lib.isBlank(words.get(30))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
 													} else {
 														deviceUpdateE.setField_value3(null);
 													}
