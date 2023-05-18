@@ -45,8 +45,8 @@ public class ModelSunnyCentralClass9775InverterService extends DB{
 				
 				dataModelSunnyCentralClass9775Inverter.setACPower(power);
 				dataModelSunnyCentralClass9775Inverter.setACVoltageAB(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelSunnyCentralClass9775Inverter.setACVoltageBC(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(13) : "0.001"));;
-				dataModelSunnyCentralClass9775Inverter.setACVoltageCA(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(13) : "0.001"));;
+				dataModelSunnyCentralClass9775Inverter.setACVoltageBC(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));;
+				dataModelSunnyCentralClass9775Inverter.setACVoltageCA(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));;
 				
 				dataModelSunnyCentralClass9775Inverter.setACCurrent(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelSunnyCentralClass9775Inverter.setACCurrentL1(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
