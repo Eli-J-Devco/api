@@ -249,7 +249,7 @@
 				#{ACPowerLimit},
 			</if>
 			<if test="ACVoltage != 0.001">
-				`ACVoltage`,
+				#{ACVoltage},
 			</if>
 			<if test="HeatSinkTemp != 0.001">
 				#{HeatSinkTemp},
