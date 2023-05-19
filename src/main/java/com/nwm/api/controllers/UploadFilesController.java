@@ -50,6 +50,7 @@ import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
+import com.nwm.api.entities.ModelSatconPowergate225InverterEntity;
 import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
@@ -82,6 +83,7 @@ import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
 import com.nwm.api.services.ModelRT1Class30000Service;
+import com.nwm.api.services.ModelSatconPowergate225InverterService;
 import com.nwm.api.services.ModelSatconPvs357InverterService;
 import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
@@ -2595,9 +2597,10 @@ public class UploadFilesController extends BaseController {
 											}
 											
 											break;
-
-										case "model_sunny_central_class9775_inverter": 
-											ModelSunnyCentralClass9775InverterService serviceModelSunnyClass9775 = new ModelSunnyCentralClass9775InverterService();
+											
+											
+										case "model_satcon_powergate_225_inverter": 
+											ModelSatconPowergate225InverterService serviceModelSatcon225 = new ModelSatconPowergate225InverterService();
 											// Check insert database status
 											while ((line = br.readLine()) != null) {
 												sb.append(line); // appends line to string buffer
@@ -2607,6 +2610,97 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
+													if(!Lib.isBlank(words.get(17))) {
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
+														
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// Line Freq
+													if(!Lib.isBlank(words.get(30))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													// DC Input Voltage
+													if(!Lib.isBlank(words.get(14))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
+													} else {
+														deviceUpdateE.setField_value3(null);
+													}
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
+													dataModelSatcon225.setId_device(item.getId());
+													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+//															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+//														System.out.println("e1: " + e);
+														e.printStackTrace();  
+													}
+												}
+											}
+											
+											break;
+
+
+
+											case "model_sunny_central_class9775_inverter": 
+											ModelSunnyCentralClass9775InverterService serviceModelSunnyClass9775 = new ModelSunnyCentralClass9775InverterService();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ACPower
 													if(!Lib.isBlank(words.get(12))) {
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0"));
@@ -2618,15 +2712,15 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setField_value1(null);
 													}
 													
-													// AC Frequency
-													if(!Lib.isBlank(words.get(20))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(20)) : null);
+													// ACVoltage
+													if(!Lib.isBlank(words.get(38))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(28)) ? Double.parseDouble(words.get(28)) : null);
 													} else {
 														deviceUpdateE.setField_value2(null);
 													}
-													// PV Voltage
-													if(!Lib.isBlank(words.get(10))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(10)) : null);
+													// InteriorTemperature
+													if(!Lib.isBlank(words.get(30))) {
+														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
 													} else {
 														deviceUpdateE.setField_value3(null);
 													}
@@ -2683,7 +2777,8 @@ public class UploadFilesController extends BaseController {
 												}
 											}
 											
-											break;	
+											break;
+											
 												
 										}
 										

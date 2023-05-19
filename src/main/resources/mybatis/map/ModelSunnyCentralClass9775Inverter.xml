@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSunnyCentralClass9775Inverter">
+	<resultMap id="ModelSunnyCentralClass9775InverterMap"
+		type="com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="Fault" column="Fault" />
+		<result property="OperatingState" column="OperatingState" />
+		<result property="Status" column="Status" />
+		<result property="EventNumber" column="EventNumber" />
+		<result property="LifekWhTotal" column="LifekWhTotal" />
+		<result property="PVCurrent" column="PVCurrent" />
+		<result property="PVVoltage" column="PVVoltage" />
+		<result property="PVPower" column="PVPower" />
+		<result property="ACPower" column="ACPower" />
+		<result property="ACVoltageAB" column="ACVoltageAB" />
+		<result property="ACVoltageBC" column="ACVoltageBC" />
+		<result property="ACVoltageCA" column="ACVoltageCA" />
+		<result property="ACCurrent" column="ACCurrent" />
+		<result property="ACCurrentL1" column="ACCurrentL1" />
+		<result property="ACCurrentL2" column="ACCurrentL2" />
+		<result property="ACCurrentL3" column="ACCurrentL3" />
+		<result property="ACFrequency" column="ACFrequency" />
+		<result property="ReactivePower" column="ReactivePower" />
+		
+		<result property="ApparentPower" column="ApparentPower" />
+		<result property="PowerFactor" column="PowerFactor" />
+		<result property="ReactivePowerMode" column="ReactivePowerMode" />
+		<result property="PowerFactorFeedback" column="PowerFactorFeedback" />
+		<result property="OperatingMode" column="OperatingMode" />
+		<result property="ACPowerLimit" column="ACPowerLimit" />
+		<result property="ACVoltage" column="ACVoltage" />
+		<result property="HeatSinkTemp" column="HeatSinkTemp" />
+		<result property="InteriorTemperature" column="InteriorTemperature" />
+		<result property="ExternalTemperature" column="ExternalTemperature" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		
+			
+	</resultMap>
+
+	<insert id="insertModelSunnyCentralClass9775Inverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_sunny_central_class9775_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Fault != 0.001">
+				`Fault`,
+			</if>
+			<if test="OperatingState != 0.001">
+				`OperatingState`,
+			</if>
+			<if test="Status != 0.001">
+				`Status`,
+			</if>
+			<if test="EventNumber != 0.001">
+				`EventNumber`,
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				`LifekWhTotal`,
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent`,
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage`,
+			</if>
+			<if test="PVPower != 0.001">
+				`PVPower`,
+			</if>
+			<if test="ACPower != 0.001">
+				`ACPower`,
+			</if>
+			<if test="ACVoltageAB != 0.001">
+				`ACVoltageAB`,
+			</if>
+			<if test="ACVoltageBC != 0.001">
+				`ACVoltageBC`,
+			</if>
+			<if test="ACVoltageCA != 0.001">
+				`ACVoltageCA`,
+			</if>
+			<if test="ACCurrent != 0.001">
+				`ACCurrent`,
+			</if>
+			<if test="ACCurrentL1 != 0.001">
+				`ACCurrentL1`,
+			</if>
+			<if test="ACCurrentL2 != 0.001">
+				`ACCurrentL2`,
+			</if>
+			<if test="ACCurrentL3 != 0.001">
+				`ACCurrentL3`,
+			</if>
+			<if test="ACFrequency != 0.001">
+				`ACFrequency`,
+			</if>
+			<if test="ReactivePower != 0.001">
+				`ReactivePower`,
+			</if>
+			<if test="ApparentPower != 0.001">
+				`ApparentPower`,
+			</if>
+			<if test="PowerFactor != 0.001">
+				`PowerFactor`,
+			</if>
+			
+			<if test="ReactivePowerMode != 0.001">
+				`ReactivePowerMode`,
+			</if>
+			<if test="PowerFactorFeedback != 0.001">
+				`PowerFactorFeedback`,
+			</if>
+			<if test="OperatingMode != 0.001">
+				`OperatingMode`,
+			</if>
+			<if test="ACPowerLimit != 0.001">
+				`ACPowerLimit`,
+			</if>
+			<if test="ACVoltage != 0.001">
+				`ACVoltage`,
+			</if>
+			<if test="HeatSinkTemp != 0.001">
+				`HeatSinkTemp`,
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				`InteriorTemperature`,
+			</if>
+			<if test="ExternalTemperature != 0.001">
+				`ExternalTemperature`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Fault != 0.001">
+				#{Fault},
+			</if>
+			<if test="OperatingState != 0.001">
+				#{OperatingState},
+			</if>
+			<if test="Status != 0.001">
+				#{Status},
+			</if>
+			<if test="EventNumber != 0.001">
+				#{EventNumber},
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				#{LifekWhTotal},
+			</if>
+			<if test="PVCurrent != 0.001">
+				#{PVCurrent},
+			</if>
+			<if test="PVVoltage != 0.001">
+				#{PVVoltage},
+			</if>
+			<if test="PVPower != 0.001">
+				#{PVPower},
+			</if>
+			<if test="ACPower != 0.001">
+				#{ACPower},
+			</if>
+			<if test="ACVoltageAB != 0.001">
+				#{ACVoltageAB},
+			</if>
+			<if test="ACVoltageBC != 0.001">
+				#{ACVoltageBC},
+			</if>
+			<if test="ACVoltageCA != 0.001">
+				#{ACVoltageCA},
+			</if>
+			<if test="ACCurrent != 0.001">
+				#{ACCurrent},
+			</if>
+			<if test="ACCurrentL1 != 0.001">
+				#{ACCurrentL1},
+			</if>
+			<if test="ACCurrentL2 != 0.001">
+				#{ACCurrentL2},
+			</if>
+			<if test="ACCurrentL3 != 0.001">
+				#{ACCurrentL3},
+			</if>
+			<if test="ACFrequency != 0.001">
+				#{ACFrequency},
+			</if>
+			<if test="ReactivePower != 0.001">
+				#{ReactivePower},
+			</if>
+			<if test="ApparentPower != 0.001">
+				#{ApparentPower},
+			</if>
+			<if test="PowerFactor != 0.001">
+				#{PowerFactor},
+			</if>
+			
+			<if test="ReactivePowerMode != 0.001">
+				#{ReactivePowerMode},
+			</if>
+			<if test="PowerFactorFeedback != 0.001">
+				#{PowerFactorFeedback},
+			</if>
+			<if test="OperatingMode != 0.001">
+				#{OperatingMode},
+			</if>
+			<if test="ACPowerLimit != 0.001">
+				#{ACPowerLimit},
+			</if>
+			<if test="ACVoltage != 0.001">
+				#{ACVoltage},
+			</if>
+			<if test="HeatSinkTemp != 0.001">
+				#{HeatSinkTemp},
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				#{InteriorTemperature},
+			</if>
+			<if test="ExternalTemperature != 0.001">
+				#{ExternalTemperature},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="Fault != 0.001">
+				`Fault` = #{Fault},
+			</if>
+			<if test="OperatingState != 0.001">
+				`OperatingState` = #{OperatingState},
+			</if>
+			<if test="Status != 0.001">
+				`Status` = #{Status},
+			</if>
+			<if test="EventNumber != 0.001">
+				`EventNumber` = #{EventNumber},
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				`LifekWhTotal` = #{LifekWhTotal},
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent` = #{PVCurrent},
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage` = #{PVVoltage},
+			</if>
+			<if test="PVPower != 0.001">
+				`PVPower` = #{PVPower},
+			</if>
+			<if test="ACPower != 0.001">
+				`ACPower` = #{ACPower},
+			</if>
+			<if test="ACVoltageAB != 0.001">
+				`ACVoltageAB` = #{ACVoltageAB},
+			</if>
+			<if test="ACVoltageBC != 0.001">
+				`ACVoltageBC` = #{ACVoltageBC},
+			</if>
+			<if test="ACVoltageCA != 0.001">
+				`ACVoltageCA` = #{ACVoltageCA},
+			</if>
+			<if test="ACCurrent != 0.001">
+				`ACCurrent` = #{ACCurrent},
+			</if>
+			<if test="ACCurrentL1 != 0.001">
+				`ACCurrentL1` = #{ACCurrentL1},
+			</if>
+			<if test="ACCurrentL2 != 0.001">
+				`ACCurrentL2` = #{ACCurrentL2},
+			</if>
+			<if test="ACCurrentL3 != 0.001">
+				`ACCurrentL3` = #{ACCurrentL3},
+			</if>
+			<if test="ACFrequency != 0.001">
+				`ACFrequency` = #{ACFrequency},
+			</if>
+			<if test="ReactivePower != 0.001">
+				`ReactivePower` = #{ReactivePower},
+			</if>
+			<if test="ApparentPower != 0.001">
+				`ApparentPower` = #{ApparentPower},
+			</if>
+			<if test="PowerFactor != 0.001">
+				`PowerFactor` = #{PowerFactor},
+			</if>
+			
+			<if test="ReactivePowerMode != 0.001">
+				`ReactivePowerMode` = #{ReactivePowerMode},
+			</if>
+			<if test="PowerFactorFeedback != 0.001">
+				`PowerFactorFeedback` = #{PowerFactorFeedback},
+			</if>
+			<if test="OperatingMode != 0.001">
+				`OperatingMode` = #{OperatingMode},
+			</if>
+			<if test="ACPowerLimit != 0.001">
+				`ACPowerLimit` = #{ACPowerLimit},
+			</if>
+			<if test="ACVoltage != 0.001">
+				`ACVoltage` = #{ACVoltage},
+			</if>
+			
+			<if test="HeatSinkTemp != 0.001">
+				`HeatSinkTemp` = #{HeatSinkTemp},
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				`InteriorTemperature` = #{InteriorTemperature},
+			</if>
+			<if test="ExternalTemperature != 0.001">
+				`ExternalTemperature` = #{ExternalTemperature},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			
+		</trim>
+	</insert>
+	
+
+</mapper> 

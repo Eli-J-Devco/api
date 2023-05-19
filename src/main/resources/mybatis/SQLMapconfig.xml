@@ -95,6 +95,9 @@
 		<mapper resource="mybatis/map/ModelCampellScientificMeter3.xml"/>
 		<mapper resource="mybatis/map/ModelCampellScientificMeter4.xml"/>
 		<mapper resource="mybatis/map/ModelCellModem.xml"/>
+		<mapper resource="mybatis/map/ModelSatconPowergate225Inverter.xml"/>
+		<mapper resource="mybatis/map/ModelSunnyCentralClass9775Inverter.xml"/>
+		
 		
 		
 		
