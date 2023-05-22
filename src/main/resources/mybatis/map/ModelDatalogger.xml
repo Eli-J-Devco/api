@@ -30,7 +30,9 @@
 		  `modbusdevicename`,
 		  `modbusdevicetype`,
 		  `modbusdevicetypenumber`,
-		  `modbusdeviceclass`
+		  `modbusdeviceclass`,
+		  `MemTotal`,
+		  `MemFree`
 		)VALUES(
 		  #{id_device},
 		  #{time},
@@ -42,7 +44,9 @@
 		  #{modbusdevicename},
 		  #{modbusdevicetype},
 		  #{modbusdevicetypenumber},
-		  #{modbusdeviceclass}
+		  #{modbusdeviceclass},
+		  #{MemTotal},
+		  #{MemFree}
 		)ON DUPLICATE KEY UPDATE 
 		  `time` = #{time},
 		  `serialnumber` = #{serialnumber},
@@ -53,7 +57,9 @@
 		  `modbusdevicename` = #{modbusdevicename},
 		  `modbusdevicetype` = #{modbusdevicetype},
 		  `modbusdevicetypenumber` = #{modbusdevicetypenumber},
-		  `modbusdeviceclass` = #{modbusdeviceclass}
+		  `modbusdeviceclass` = #{modbusdeviceclass},
+		  `MemTotal` = #{MemTotal},
+		  `MemFree` = #{MemFree}
 		;
 	</insert>
 

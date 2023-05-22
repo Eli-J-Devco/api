@@ -333,7 +333,40 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 		WHERE
 			d.`status` = 1 AND d.is_delete = 0
-			AND s.`status` = 1 AND d.id_device_type IN (10)
+			AND s.`status` = 1 AND d.id_device_type IN (10) 
+			AND d.ssh_host IS NOT NULL
+			AND d.ssh_user IS NOT NULL
+			AND d.ssh_pass IS NOT NULL
+			AND d.ssh_port IS NOT NULL
+	</select>
+	
+	
+	
+	<select id="getListDeviceDatalogger" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.id_device_group,
+			d.ssh_host,
+			d.ssh_port,
+			d.ssh_user,
+			d.ssh_pass
+		FROM
+			device AS d
+			LEFT JOIN site s ON s.id = d.id_site 
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (5)
+			AND d.ssh_host IS NOT NULL
+			AND d.ssh_user IS NOT NULL
+			AND d.ssh_pass IS NOT NULL
+			AND d.ssh_port IS NOT NULL
 	</select>
 	
 	

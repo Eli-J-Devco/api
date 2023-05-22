@@ -25,10 +25,12 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
+import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
+import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.SitesDevicesService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -100,7 +102,107 @@ public class SitesDevicesController extends BaseController {
 			
 			if (getDetail.getId() > 0 ) {
 				
-				if(getDetail.getId_device_type() == 10 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			    final String utcTime = sdf.format(new Date());
+				
+				if(getDetail.getId_device_type() == 5 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+					// datalogger
+					ModelDataloggerService dataloggerModem = new ModelDataloggerService();
+					ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+					dataloggerEntity.setTime(utcTime);
+					
+					DeviceEntity deviceUpdateE = new DeviceEntity();
+					DeviceService serviceD = new DeviceService();
+					
+					 // Reading SSH info
+				    Session session = null;
+					ChannelExec channel = null;
+					String command = "cat /proc/meminfo";
+					
+					try {
+						session = new JSch().getSession(getDetail.getSsh_user(), getDetail.getSsh_host(), Integer.parseInt(getDetail.getSsh_port()) );
+						session.setPassword(getDetail.getSsh_pass());
+						session.setConfig("StrictHostKeyChecking", "no");
+						session.connect();
+
+						channel = (ChannelExec) session.openChannel("exec");
+						channel.setCommand(command);
+						ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+						channel.setOutputStream(responseStream);
+						InputStream is = channel.getInputStream();
+						channel.connect();
+						while (channel.isConnected()) { Thread.sleep(100); }
+						
+						String MemTotal = null;
+						String MemFree = null;
+
+						try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+							for (String line = br.readLine(); line != null; line = br.readLine()) {
+								
+								if (line.contains("MemTotal") && !line.contains("awk ")) {
+									MemTotal = line.split(":")[1];
+								}
+								
+								if (line.contains("MemFree") && !line.contains("awk ")) {
+									MemFree = line.split(":")[1];
+								}
+
+							}
+							String regex = "[^0-9]";
+							MemTotal = MemTotal.replaceAll(regex, "");
+							MemFree = MemFree.replaceAll(regex, "");  
+							
+							dataloggerEntity.setMemTotal(MemTotal != null ? Double.parseDouble(MemTotal.trim()): null);
+							dataloggerEntity.setMemFree(MemFree != null ? Double.parseDouble(MemFree.trim()): null);
+							dataloggerEntity.setId_device(getDetail.getId());	
+							dataloggerModem.insertModelDatalogger(dataloggerEntity);
+							
+							// CPU load
+							if(MemFree != null) {
+								deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
+								deviceUpdateE.setLast_value(Double.parseDouble(MemFree));
+								deviceUpdateE.setField_value1(Double.parseDouble(MemFree));
+							} else {
+								deviceUpdateE.setLast_updated(null);
+								deviceUpdateE.setLast_value(null);
+								deviceUpdateE.setField_value1(null);
+							}
+						}
+						
+						
+						
+						// value 3
+						deviceUpdateE.setField_value2(null);
+						deviceUpdateE.setField_value3(null);
+						
+						deviceUpdateE.setId(dataloggerEntity.getId_device());
+						serviceD.updateLastUpdated(deviceUpdateE);	
+						
+						// converting date format for US
+						Date date = new Date();
+				        SimpleDateFormat sdfAmerica = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss a");
+				        TimeZone tzInAmerica = TimeZone.getTimeZone(getDetail.getTimezone());
+				        sdfAmerica.setTimeZone(tzInAmerica);
+						
+						getDetail.setLast_attempt(sdfAmerica.format(date) + " " + getDetail.getAbbreviation_std());
+						List listParameters = service.getListParameters(obj);
+						getDetail.setList_parameters(listParameters);
+						return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
+
+					} finally {
+						if (session != null) {
+							session.disconnect();
+						}
+						if (channel != null) {
+							channel.disconnect();
+						}
+					}
+					
+				
+					
+				} else if(getDetail.getId_device_type() == 10 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+					
 					// Save device cell modem 
 					ModelCellModemService serviceCellModem = new ModelCellModemService();
 					ModelCellModemEntity celModemEntity = new ModelCellModemEntity();
@@ -108,9 +210,7 @@ public class SitesDevicesController extends BaseController {
 					DeviceEntity deviceUpdateE = new DeviceEntity();
 					DeviceService serviceD = new DeviceService();
 					
-					final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-				    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-				    final String utcTime = sdf.format(new Date());
+					
 				    celModemEntity.setTime(utcTime);
 				    
 				    // Reading SSH info

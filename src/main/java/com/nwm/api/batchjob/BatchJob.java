@@ -42,6 +42,7 @@ import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
+import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
@@ -49,6 +50,7 @@ import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
+import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
@@ -1090,7 +1092,7 @@ public class BatchJob {
 	}
 	
 	
-	public void runCronJobSSHDatalogger() throws Exception {
+	public void runCronJobSSHCellModem() throws Exception {
 		// Get list device and id_device_type = 10
 		BatchJobService service = new BatchJobService();
 		List<?> listDevice = service.getListDeviceCelModem(new DeviceEntity());
@@ -1624,6 +1626,107 @@ public class BatchJob {
 
 				if (channelscs != null) {
 					channelscs.disconnect();
+				}
+			}
+		}
+	}
+	
+	public void runCronJobSSHDatalogger() throws Exception {
+		// Get list device and id_device_type = 5
+		BatchJobService service = new BatchJobService();
+		List<?> listDevice = service.getListDeviceDatalogger(new DeviceEntity());
+		if (listDevice == null || listDevice.size() == 0) { return; }		
+		for (int i = 0; i < listDevice.size(); i++) {
+			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+			listDataloggerStructure(deviceItem.getSsh_user(), deviceItem.getSsh_pass(), deviceItem.getSsh_host(), Integer.parseInt(deviceItem.getSsh_port()), deviceItem.getId());
+		}
+	}
+	
+	public static void listDataloggerStructure(String username, String password, String host, int port, int id_device)
+			throws Exception {
+		if(host != null && username != null && password != null && port > 0) {
+			// datalogger
+			ModelDataloggerService dataloggerModem = new ModelDataloggerService();
+			ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+			final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+		    final String utcTime = sdf.format(new Date());
+		    
+			dataloggerEntity.setTime(utcTime);
+			
+			DeviceEntity deviceUpdateE = new DeviceEntity();
+			DeviceService serviceD = new DeviceService();
+			
+			 // Reading SSH info
+		    Session session = null;
+			ChannelExec channel = null;
+			String command = "cat /proc/meminfo";
+			
+			try {
+				session = new JSch().getSession( username, host, port );
+				session.setPassword(password);
+				session.setConfig("StrictHostKeyChecking", "no");
+				session.connect();
+
+				channel = (ChannelExec) session.openChannel("exec");
+				channel.setCommand(command);
+				ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+				channel.setOutputStream(responseStream);
+				InputStream is = channel.getInputStream();
+				channel.connect();
+				while (channel.isConnected()) { Thread.sleep(100); }
+				
+				String MemTotal = null;
+				String MemFree = null;
+
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+					for (String line = br.readLine(); line != null; line = br.readLine()) {
+						
+						if (line.contains("MemTotal") && !line.contains("awk ")) {
+							MemTotal = line.split(":")[1];
+						}
+						
+						if (line.contains("MemFree") && !line.contains("awk ")) {
+							MemFree = line.split(":")[1];
+						}
+
+					}
+					String regex = "[^0-9]";
+					MemTotal = MemTotal.replaceAll(regex, "");
+					MemFree = MemFree.replaceAll(regex, "");  
+					
+					System.out.println("MemFree: " + MemFree);
+					
+					dataloggerEntity.setMemTotal(MemTotal != null ? Double.parseDouble(MemTotal.trim()): null);
+					dataloggerEntity.setMemFree(MemFree != null ? Double.parseDouble(MemFree.trim()): null);
+					dataloggerEntity.setId_device(id_device);	
+					dataloggerModem.insertModelDatalogger(dataloggerEntity);
+					
+					// CPU load
+					if(MemFree != null) {
+						deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
+						deviceUpdateE.setLast_value(Double.parseDouble(MemFree));
+						deviceUpdateE.setField_value1(Double.parseDouble(MemFree));
+					} else {
+						deviceUpdateE.setLast_updated(null);
+						deviceUpdateE.setLast_value(null);
+						deviceUpdateE.setField_value1(null);
+					}
+				}
+				
+				
+				
+				// value 3
+				deviceUpdateE.setField_value2(null);
+				deviceUpdateE.setField_value3(null);
+				deviceUpdateE.setId(dataloggerEntity.getId_device());
+				serviceD.updateLastUpdated(deviceUpdateE);	
+			} finally {
+				if (session != null) {
+					session.disconnect();
+				}
+				if (channel != null) {
+					channel.disconnect();
 				}
 			}
 		}
