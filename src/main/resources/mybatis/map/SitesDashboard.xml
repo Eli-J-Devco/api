@@ -179,6 +179,10 @@
 			CASE
 				WHEN d.datatablename = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
+				WHEN d.datatablename = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				WHEN d.datatablename = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+				WHEN d.datatablename = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Degrees C" )))
+				
 				WHEN d.datatablename = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
 				WHEN d.datatablename = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "V" )))
