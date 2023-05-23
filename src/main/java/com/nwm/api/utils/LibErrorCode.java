@@ -2976,5 +2976,143 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/**
+	 * get error code from table model_satcon_powergate_225_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSatconPowergate225Inverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 820; break;
+			case 1: errorCode = 821; break;
+			case 2: errorCode = 822; break;
+			case 3: errorCode = 823; break;
+			case 4: errorCode = 824; break;
+			case 5: errorCode = 825; break;
+			case 6: errorCode = 826; break;
+			case 7: errorCode = 827; break;
+			case 8: errorCode = 828; break;
+			case 9: errorCode = 829; break; 
+			case 10: errorCode = 830; break;
+			case 11: errorCode = 831; break; 
+			case 12: errorCode = 832; break;
+			case 13: errorCode = 833; break;
+			case 14: errorCode = 834; break;
+			case 15: errorCode = 835; break;
+			}
+			break;
+			
+		
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 836; break;
+			case 1: errorCode = 837; break;
+			case 2: errorCode = 838; break;
+			case 3: errorCode = 839; break;
+			case 4: errorCode = 840; break;
+			case 5: errorCode = 841; break;
+			case 6: errorCode = 842; break;
+			case 7: errorCode = 843; break;
+			case 8: errorCode = 844; break; 
+			case 9: errorCode = 845; break;
+			case 10: errorCode = 846; break;
+			case 11: errorCode = 847; break;
+			case 12: errorCode = 848; break;
+			case 13: errorCode = 849; break;
+			case 14: errorCode = 850; break;
+			case 15: errorCode = 851; break;
+			
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 852; break;
+			case 1: errorCode = 853; break;
+			case 2: errorCode = 854; break;
+			case 3: errorCode = 855; break;
+			case 4: errorCode = 856; break;
+			case 5: errorCode = 857; break;
+			case 6: errorCode = 858; break;
+			case 7: errorCode = 859; break;
+			case 8: errorCode = 860; break;
+			case 9: errorCode = 861; break;
+			case 10: errorCode = 862; break;
+			case 11: errorCode = 863; break;
+			case 12: errorCode = 864; break;
+			case 13: errorCode = 865; break; 
+			case 14: errorCode = 866; break;
+			case 15: errorCode = 867; break;
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 868; break;
+			case 1: errorCode = 869; break;
+			case 2: errorCode = 870; break; 
+			case 3: errorCode = 871; break;
+			case 4: errorCode = 872; break;
+			case 5: errorCode = 873; break;
+			case 6: errorCode = 874; break;
+			case 7: errorCode = 875; break;
+			case 8: errorCode = 876; break;
+			case 9: errorCode = 877; break;
+			case 10: errorCode = 878; break; 
+			case 11: errorCode = 879; break;
+			case 12: errorCode = 880; break;
+			case 13: errorCode = 881; break;
+			case 14: errorCode = 882; break;
+			case 15: errorCode = 883; break;
+			}
+			break;
+		case 6: 
+			switch (bitLevel) {
+			case 0: errorCode = 884; break;
+			case 1: errorCode = 885; break;
+			case 2: errorCode = 886; break;
+			case 3: errorCode = 887; break;
+			case 4: errorCode = 888; break;
+			case 5: errorCode = 889; break;
+			case 6: errorCode = 890; break;
+			case 7: errorCode = 891; break;
+			case 8: errorCode = 892; break; 
+			case 9: errorCode = 893; break; 
+			case 10: errorCode = 894; break;
+			case 11: errorCode = 895; break;
+			case 12: errorCode = 896; break;
+			case 13: errorCode = 897; break;
+			case 14: errorCode = 898; break;
+			case 15: errorCode = 899; break;
+			}
+			break;
+		case 7: 
+			switch (bitLevel) {
+			case 0: errorCode = 900; break; 
+			case 1: errorCode = 901; break; 
+			case 2: errorCode = 902; break; 
+			case 3: errorCode = 903; break;
+			case 4: errorCode = 904; break;
+			case 5: errorCode = 905; break;
+			case 6: errorCode = 906; break;
+			case 7: errorCode = 907; break;
+			case 8: errorCode = 908; break;
+			case 9: errorCode = 909; break;
+			case 10: errorCode = 910; break;
+			case 11: errorCode = 911; break;
+			case 12: errorCode = 912; break;
+			case 13: errorCode = 913; break;
+			case 14: errorCode = 914; break;
+			case 15: errorCode = 915; break;
+			}
+			break;
+		
+		
+		}
+
+		return errorCode;
+	}
+	
 	
 }

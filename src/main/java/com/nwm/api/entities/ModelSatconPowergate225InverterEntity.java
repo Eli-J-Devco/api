@@ -42,6 +42,58 @@ public class ModelSatconPowergate225InverterEntity {
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	
+	private int totalFault1;
+	private int totalFault2;
+	private int totalFault3;
+	private int totalFault4;
+	private int totalGridStatus;
+	private int totalStatus6;
+	private int totalStatus7;
+	
+	
+	
+	public int getTotalFault1() {
+		return totalFault1;
+	}
+	public void setTotalFault1(int totalFault1) {
+		this.totalFault1 = totalFault1;
+	}
+	public int getTotalFault2() {
+		return totalFault2;
+	}
+	public void setTotalFault2(int totalFault2) {
+		this.totalFault2 = totalFault2;
+	}
+	public int getTotalFault3() {
+		return totalFault3;
+	}
+	public void setTotalFault3(int totalFault3) {
+		this.totalFault3 = totalFault3;
+	}
+	public int getTotalFault4() {
+		return totalFault4;
+	}
+	public void setTotalFault4(int totalFault4) {
+		this.totalFault4 = totalFault4;
+	}
+	public int getTotalGridStatus() {
+		return totalGridStatus;
+	}
+	public void setTotalGridStatus(int totalGridStatus) {
+		this.totalGridStatus = totalGridStatus;
+	}
+	public int getTotalStatus6() {
+		return totalStatus6;
+	}
+	public void setTotalStatus6(int totalStatus6) {
+		this.totalStatus6 = totalStatus6;
+	}
+	public int getTotalStatus7() {
+		return totalStatus7;
+	}
+	public void setTotalStatus7(int totalStatus7) {
+		this.totalStatus7 = totalStatus7;
+	}
 	public String getTime() {
 		return time;
 	}
