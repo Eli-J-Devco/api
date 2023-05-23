@@ -31,6 +31,16 @@ public class ModelXantrexGT100250500Entity {
 	private double IntakeAirTemperature;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	private int totalFaultCode;
+	
+	
+	
+	public int getTotalFaultCode() {
+		return totalFaultCode;
+	}
+	public void setTotalFaultCode(int totalFaultCode) {
+		this.totalFaultCode = totalFaultCode;
+	}
 	public String getTime() {
 		return time;
 	}
