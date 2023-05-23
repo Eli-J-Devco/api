@@ -1328,8 +1328,8 @@ public class BatchJob {
 							Band = line.split(":")[1];
 							Band = Band.trim();
 						}
-
-						if (Band != null && Band.equals("LTE Band 4 (AWS 1700/2100 MHz)")) {
+					
+						if (Band != null && (Band.equals("LTE Band 4 (AWS 1700/2100 MHz)") || Band.equals("LTE Band 2 (1900 MHz)"))) {
 							if (WANConnection != null && WANConnection.contains("WAN Connection [2]")
 									&& line.contains("RSSI") && !line.contains("awk ")) {
 								RSSI4 = line.split(":")[1];
@@ -1354,8 +1354,10 @@ public class BatchJob {
 									&& line.contains("Channel") && !line.contains("awk ")) {
 								Channel4 = line.split(":")[1];
 							}
+							
+							
 
-						} else if (Band != null && Band.equals("LTE Band 13 (700 MHz)")) {
+						} else if (Band != null && Band.equals("LTE Band 13 (700 MHz)") ) {
 							if (WANConnection != null && WANConnection.contains("WAN Connection [2]")
 									&& line.contains("RSSI") && !line.contains("awk ")) {
 								RSSI3 = line.split(":")[1];
@@ -1396,24 +1398,25 @@ public class BatchJob {
 					celModemEntity.setConnectionType(ConnectionType != null ? ConnectionType.trim(): null);
 					celModemEntity.setConnectionMethod(ConnectionMethod != null ? ConnectionMethod.trim(): null);
 					
-					RSSI3 = RSSI3.replaceAll("dBm", "");
-					SINR3 = SINR3.replaceAll("dB", "");
-					RSRP3 = RSRP3.replaceAll("dBm", "");
-					RSRQ3 = RSRQ3.replaceAll("dB", "");
-					celModemEntity.setRSSI3(RSSI3 != null ? Double.parseDouble(RSSI3.trim()): null);
-					celModemEntity.setSINR3(SINR3 != null ? Double.parseDouble(SINR3.trim()): null);
-					celModemEntity.setRSRP3(RSRP3 != null ? Double.parseDouble(RSRP3.trim()): null);
-					celModemEntity.setRSRQ3(RSRQ3 != null ? Double.parseDouble(RSRQ3.trim()): null);
-					celModemEntity.setChannel3(Channel3 != null ? Double.parseDouble(Channel3.trim()): null);
-					RSSI4 = RSSI4.replaceAll("dBm", "");
-					SINR4 = SINR4.replaceAll("dB", "");
-					RSRP4 = RSRP4.replaceAll("dBm", "");
-					RSRQ4 = RSRQ4.replaceAll("dB", "");
-					celModemEntity.setRSSI4(RSSI4 != null ? Double.parseDouble(RSSI4.trim()): null);
-					celModemEntity.setSINR4(SINR4 != null ? Double.parseDouble(SINR4.trim()): null);
-					celModemEntity.setRSRP4(RSRP4 != null ? Double.parseDouble(RSRP4.trim()): null);
-					celModemEntity.setRSRQ4(RSRQ4 != null ? Double.parseDouble(RSRQ4.trim()): null);
-					celModemEntity.setChannel4(Channel4 != null ? Double.parseDouble(Channel4.trim()): null);
+					RSSI3 = RSSI3 != null ? RSSI3.replaceAll("dBm", "") : null;
+					SINR3 = SINR3 != null ? SINR3.replaceAll("dB", "") : null;
+					RSRP3 = RSRP3 != null ? RSRP3.replaceAll("dBm", "") : null;
+					RSRQ3 = RSRQ3 != null ? RSRQ3.replaceAll("dB", "") : null;
+					
+					celModemEntity.setRSSI3(RSSI3 != null ? Double.parseDouble(RSSI3.trim()): 0);
+					celModemEntity.setSINR3(SINR3 != null ? Double.parseDouble(SINR3.trim()): 0);
+					celModemEntity.setRSRP3(RSRP3 != null ? Double.parseDouble(RSRP3.trim()): 0);
+					celModemEntity.setRSRQ3(RSRQ3 != null ? Double.parseDouble(RSRQ3.trim()): 0);
+					celModemEntity.setChannel3(Channel3 != null ? Double.parseDouble(Channel3.trim()): 0);
+					RSSI4 = RSSI4 != null ? RSSI4.replaceAll("dBm", "") : null;
+					SINR4 = SINR4 != null ? SINR4.replaceAll("dB", "") : null;
+					RSRP4 = RSRP4 != null ? RSRP4.replaceAll("dBm", "") : null;
+					RSRQ4 = RSSI3 != null ? RSRQ4.replaceAll("dB", "") : null;
+					celModemEntity.setRSSI4(RSSI4 != null ? Double.parseDouble(RSSI4.trim()): 0);
+					celModemEntity.setSINR4(SINR4 != null ? Double.parseDouble(SINR4.trim()): 0);
+					celModemEntity.setRSRP4(RSRP4 != null ? Double.parseDouble(RSRP4.trim()): 0);
+					celModemEntity.setRSRQ4(RSRQ4 != null ? Double.parseDouble(RSRQ4.trim()): 0);
+					celModemEntity.setChannel4(Channel4 != null ? Double.parseDouble(Channel4.trim()): 0);
 					celModemEntity.setCPULoad(0);
 					
 					celModemEntity.setId_device(id_device);	
@@ -1423,14 +1426,8 @@ public class BatchJob {
 				
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(iscpu))) {
 					for (String line = br.readLine(); line != null; line = br.readLine()) {
-						
-						if (line.contains("get wan 2 WAN Connection [2]") && !line.contains("awk ")) {
-							WANConnection = line.trim();
-						}
-						
 
-						if (WANConnection != null && WANConnection.contains("WAN Connection [2]") && line.contains("cpuload CPU Load")
-								&& !line.contains("awk ")) {
+						if (line.contains("cpuload CPU Load") && !line.contains("awk ")) {
 							CPULoad = line.split(":")[1];
 							CPULoad = CPULoad.replace("%", "");
 						}
@@ -1694,11 +1691,10 @@ public class BatchJob {
 					String regex = "[^0-9]";
 					MemTotal = MemTotal.replaceAll(regex, "");
 					MemFree = MemFree.replaceAll(regex, "");  
+
 					
-					System.out.println("MemFree: " + MemFree);
-					
-					dataloggerEntity.setMemTotal(MemTotal != null ? Double.parseDouble(MemTotal.trim()): null);
-					dataloggerEntity.setMemFree(MemFree != null ? Double.parseDouble(MemFree.trim()): null);
+					dataloggerEntity.setMemTotal(MemTotal != null ? Double.parseDouble(MemTotal.trim()): 0);
+					dataloggerEntity.setMemFree(MemFree != null ? Double.parseDouble(MemFree.trim()): 0);
 					dataloggerEntity.setId_device(id_device);	
 					dataloggerModem.insertModelDatalogger(dataloggerEntity);
 					
