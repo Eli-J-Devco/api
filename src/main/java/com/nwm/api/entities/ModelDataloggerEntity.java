@@ -20,20 +20,12 @@ public class ModelDataloggerEntity {
 	private double MemTotal;
 	private double MemFree;
 	
-	
-	
-	public double getMemTotal() {
-		return MemTotal;
-	}
-	public void setMemTotal(double memTotal) {
-		MemTotal = memTotal;
-	}
-	public double getMemFree() {
-		return MemFree;
-	}
-	public void setMemFree(double memFree) {
-		MemFree = memFree;
-	}
+	private String ipaddr;
+	private String dns1;
+	private String dns2;
+	private String gateway;
+	private String netmask;
+	private String network;
 	public String getTime() {
 		return time;
 	}
@@ -100,6 +92,57 @@ public class ModelDataloggerEntity {
 	public void setModbusdeviceclass(String modbusdeviceclass) {
 		this.modbusdeviceclass = modbusdeviceclass;
 	}
+	public double getMemTotal() {
+		return MemTotal;
+	}
+	public void setMemTotal(double memTotal) {
+		MemTotal = memTotal;
+	}
+	public double getMemFree() {
+		return MemFree;
+	}
+	public void setMemFree(double memFree) {
+		MemFree = memFree;
+	}
+	public String getIpaddr() {
+		return ipaddr;
+	}
+	public void setIpaddr(String ipaddr) {
+		this.ipaddr = ipaddr;
+	}
+	public String getDns1() {
+		return dns1;
+	}
+	public void setDns1(String dns1) {
+		this.dns1 = dns1;
+	}
+	public String getDns2() {
+		return dns2;
+	}
+	public void setDns2(String dns2) {
+		this.dns2 = dns2;
+	}
+	public String getGateway() {
+		return gateway;
+	}
+	public void setGateway(String gateway) {
+		this.gateway = gateway;
+	}
+	public String getNetmask() {
+		return netmask;
+	}
+	public void setNetmask(String netmask) {
+		this.netmask = netmask;
+	}
+	public String getNetwork() {
+		return network;
+	}
+	public void setNetwork(String network) {
+		this.network = network;
+	}
+	
+	
+	
 	
 	
 }

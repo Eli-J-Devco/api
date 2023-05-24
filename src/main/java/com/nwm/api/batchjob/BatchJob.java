@@ -1419,6 +1419,13 @@ public class BatchJob {
 					celModemEntity.setChannel4(Channel4 != null ? Double.parseDouble(Channel4.trim()): 0);
 					celModemEntity.setCPULoad(0);
 					
+					// RSSI4
+					if(RSSI4 != null) {
+						deviceUpdateE.setField_value3(RSSI4 != null ? Double.parseDouble(RSSI4.trim()): 0);
+					} else {
+						deviceUpdateE.setField_value3(null);
+					}
+					
 					celModemEntity.setId_device(id_device);	
 					serviceCellModem.insertModelCellModem(celModemEntity);
 				}
@@ -1587,8 +1594,6 @@ public class BatchJob {
 					serviceCellModem.insertModelCellModem(celModemEntity);
 				}
 				
-				// value 3
-				deviceUpdateE.setField_value3(null);
 				
 				deviceUpdateE.setId(celModemEntity.getId_device());
 				serviceD.updateLastUpdated(deviceUpdateE);
@@ -1639,6 +1644,7 @@ public class BatchJob {
 		}
 	}
 	
+	@SuppressWarnings("null")
 	public static void listDataloggerStructure(String username, String password, String host, int port, int id_device)
 			throws Exception {
 		if(host != null && username != null && password != null && port > 0) {
@@ -1659,6 +1665,9 @@ public class BatchJob {
 			ChannelExec channel = null;
 			String command = "cat /proc/meminfo";
 			
+			ChannelExec channeldns = null;
+			String commanddns = "cat /mnt/main/sysconfig/loggerconfig.ini"; 
+			
 			try {
 				session = new JSch().getSession( username, host, port );
 				session.setPassword(password);
@@ -1673,9 +1682,27 @@ public class BatchJob {
 				channel.connect();
 				while (channel.isConnected()) { Thread.sleep(100); }
 				
+				// DNS
+				channeldns = (ChannelExec) session.openChannel("exec");
+				channeldns.setCommand(commanddns);
+				ByteArrayOutputStream responseStreamdns = new ByteArrayOutputStream();
+				channeldns.setOutputStream(responseStreamdns);
+				InputStream isdns = channeldns.getInputStream();
+				channeldns.connect();
+				while (channeldns.isConnected()) { Thread.sleep(100); }
+				
 				String MemTotal = null;
 				String MemFree = null;
-
+				
+				String IPADDR = null;
+				String DNS1 = null;
+				String DNS2 = null;
+				String GATEWAY = null;
+				String NETMASK = null;
+				String NETWORK = null;
+				String LOOPNAME = null;
+				String SERIALNUMBER = null;
+				
 				try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 					for (String line = br.readLine(); line != null; line = br.readLine()) {
 						
@@ -1698,7 +1725,7 @@ public class BatchJob {
 					dataloggerEntity.setId_device(id_device);	
 					dataloggerModem.insertModelDatalogger(dataloggerEntity);
 					
-					// CPU load
+					// MemFree
 					if(MemFree != null) {
 						deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
 						deviceUpdateE.setLast_value(Double.parseDouble(MemFree));
@@ -1709,10 +1736,63 @@ public class BatchJob {
 						deviceUpdateE.setField_value1(null);
 					}
 				}
+
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(isdns))) {
+					for (String line = br.readLine(); line != null; line = br.readLine()) {
+						if (line.contains("IPADDR") && !line.contains("awk ")) {
+							IPADDR = line.split("=")[1];
+						}
+						
+						if (line.contains("DNS1") && !line.contains("awk ")) {
+							DNS1 = line.split("=")[1];
+						}
+						
+						if (line.contains("DNS2") && !line.contains("awk ")) {
+							DNS2 = line.split("=")[1];
+						}
+						
+						if (line.contains("GATEWAY") && !line.contains("awk ")) {
+							GATEWAY = line.split("=")[1];
+						}
+						
+						if (line.contains("NETMASK") && !line.contains("awk ")) {
+							NETMASK = line.split("=")[1];
+						}
+						
+						if (line.contains("NETWORK") && !line.contains("awk ")) {
+							NETWORK = line.split("=")[1];
+						}
+						
+						if (line.contains("LOOPNAME") && !line.contains("awk ")) {
+							LOOPNAME = line.split("=")[1];
+						}
+						
+						if (line.contains("SERIALNUMBER") && !line.contains("awk ")) {
+							SERIALNUMBER = line.split("=")[1];
+						}
+
+					}
+					
+					dataloggerEntity.setIpaddr(IPADDR != null ? IPADDR.trim(): null);
+					dataloggerEntity.setDns1(DNS1 != null ? DNS1.trim(): null);
+					dataloggerEntity.setDns2(DNS2 != null ? DNS2.trim(): null);
+					dataloggerEntity.setGateway(GATEWAY != null ? GATEWAY.trim(): null);
+					dataloggerEntity.setNetwork(NETMASK != null ? NETMASK.trim(): null);
+					dataloggerEntity.setNetmask(NETWORK != null ? NETWORK.trim(): null);
+					dataloggerEntity.setSerialnumber(SERIALNUMBER != null ? SERIALNUMBER.trim(): null);
+					dataloggerEntity.setLoopname(LOOPNAME != null ? LOOPNAME.trim(): null);
+					
+					dataloggerEntity.setId_device(id_device);	
+					dataloggerModem.insertModelDatalogger(dataloggerEntity);
+				}
 				
 				
 				
-				// value 3
+				
+				
+				
+				
+				// value 2,3
 				deviceUpdateE.setField_value2(null);
 				deviceUpdateE.setField_value3(null);
 				deviceUpdateE.setId(dataloggerEntity.getId_device());
@@ -1723,6 +1803,9 @@ public class BatchJob {
 				}
 				if (channel != null) {
 					channel.disconnect();
+				}
+				if (channeldns != null) {
+					channeldns.disconnect();
 				}
 			}
 		}
