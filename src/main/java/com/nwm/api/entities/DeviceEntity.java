@@ -97,10 +97,17 @@ public class DeviceEntity {
 	private String ssh_port;
 	private Double rating_ac_power;
 	private int reload_ssh;
+	private int checkallInverterDevice;
 	
 	
 	
 	
+	public int getCheckallInverterDevice() {
+		return checkallInverterDevice;
+	}
+	public void setCheckallInverterDevice(int checkallInverterDevice) {
+		this.checkallInverterDevice = checkallInverterDevice;
+	}
 	public int getReload_ssh() {
 		return reload_ssh;
 	}

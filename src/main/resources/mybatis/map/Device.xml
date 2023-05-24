@@ -297,35 +297,43 @@
 	</insert>
 	
 	<update id="updateDevice">
-		UPDATE `device`
-		SET
-			id_site = #{id_site},
-			id_vendor = #{id_vendor},
-			id_device_type = #{id_device_type},
-			id_device_group = #{id_device_group},
-			serial_number = #{serial_number},
-			serialnumber = #{serialnumber},
-			modbusdevicenumber = #{modbusdevicenumber},
-			devicename = #{devicename},
-			devicetype = #{devicetype},
-			deviceclass = #{deviceclass},
-			configuration = #{configuration},
-			configurationchangetime = #{configurationchangetime},
-			configurationchecksum = #{configurationchecksum},
-			datatablename = #{datatablename},
-			view_tablename = #{view_tablename},
-			order_id = #{order_id},
-			reverse_poa = #{reverse_poa},
-			field_value_default = #{field_value_default},
-			ssh_host = #{ssh_host},
-			ssh_user = #{ssh_user},
-			ssh_pass = #{ssh_pass},
-			ssh_port = #{ssh_port},
-			lat = #{lat},
-			lng = #{lng},
-			rating_ac_power = #{rating_ac_power}
-		WHERE
-			`id` = #{id}
+		<if test="checkallInverterDevice == 1">
+			UPDATE `device`
+			SET
+				rating_ac_power = #{rating_ac_power}
+			WHERE id_site = #{id_site} AND id_device_type = 1
+		</if>
+		<if test="checkallInverterDevice == 0">
+			UPDATE `device`
+			SET
+				id_site = #{id_site},
+				id_vendor = #{id_vendor},
+				id_device_type = #{id_device_type},
+				id_device_group = #{id_device_group},
+				serial_number = #{serial_number},
+				serialnumber = #{serialnumber},
+				modbusdevicenumber = #{modbusdevicenumber},
+				devicename = #{devicename},
+				devicetype = #{devicetype},
+				deviceclass = #{deviceclass},
+				configuration = #{configuration},
+				configurationchangetime = #{configurationchangetime},
+				configurationchecksum = #{configurationchecksum},
+				datatablename = #{datatablename},
+				view_tablename = #{view_tablename},
+				order_id = #{order_id},
+				reverse_poa = #{reverse_poa},
+				field_value_default = #{field_value_default},
+				ssh_host = #{ssh_host},
+				ssh_user = #{ssh_user},
+				ssh_pass = #{ssh_pass},
+				ssh_port = #{ssh_port},
+				lat = #{lat},
+				lng = #{lng},
+				rating_ac_power = #{rating_ac_power}
+			WHERE
+				`id` = #{id}
+		</if>
 	</update>
 	
 </mapper>
