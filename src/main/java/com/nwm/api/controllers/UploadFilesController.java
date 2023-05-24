@@ -2713,7 +2713,7 @@ public class UploadFilesController extends BaseController {
 													}
 													
 													// ACVoltage
-													if(!Lib.isBlank(words.get(38))) {
+													if(!Lib.isBlank(words.get(28))) {
 														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(28)) ? Double.parseDouble(words.get(28)) : null);
 													} else {
 														deviceUpdateE.setField_value2(null);

@@ -230,11 +230,10 @@ public class CustomerViewService extends DB {
 					calEndCustom.setTime(endDateCustom);
 					
 					switch (obj.getData_send_time()) {
-						case 4:
+						case 4: {
 							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 							
-							if (forCountYTD <= 44) {
-								List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
+							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
 							int day = 1;
 												
 							for(int t = 0; t <= forCountYTD; t++) {
@@ -244,14 +243,14 @@ public class CustomerViewService extends DB {
 								headerDate.setDownload_time(usFormatCustom.format(calCustom.getTime()));
 								headerDate.setTime_full(usFormatCustom.format(calCustom.getTime()));
 								headerDate.setTime_format(usFormatCustom.format(calCustom.getTime()));
-								headerDate.setCategories_time(catFormatCustomDay.format(calCustom.getTime()));
+								headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
 								headerDate.setChart_energy_kwh(0.001);
 								headerDate.setNvm_irradiance(0.001);
 								categories.add(headerDate);
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM = queryForList("CustomerView.getDataPowerMeterDayCustomForShortDay", obj);
+							List dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
 							if(dataPowerM.size() > 0 && categories.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories) {
 									boolean flag = false;
@@ -296,79 +295,16 @@ public class CustomerViewService extends DB {
 								deviceItemM.put("deviceType", "meter");
 								dataEnergy.add(deviceItemM);
 							}
-							} else {
-								List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
-								int dayYTD = 1;							
-								
-								for(int t = 0; t <= forCountYTD; t++) {
-									calCustom.setTime(startDateCustom);
-									
-									ClientMonthlyDateEntity headerDateYTD = new ClientMonthlyDateEntity();
-									calCustom.add(Calendar.DATE, t * dayYTD);
-									headerDateYTD.setDownload_time(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setTime_full(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setTime_format(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setCategories_time(catFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setChart_energy_kwh(0.001);
-									headerDateYTD.setNvm_irradiance(0.001);
-									categoriesYTD.add(headerDateYTD);
-								}
-								
-								List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
-								if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesYTD) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerMYTD.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
-											String categoriesTimeYTD = item.getTime_format();
-											String powerTimeYTD = itemT.get("time_format").toString();
-											if (categoriesTimeYTD.equals(powerTimeYTD)) {
-									        	flag = true;
-									        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-									        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-									        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-									        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-									        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-									        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-									        	break;
-									        }
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											dataNewYTD.add(mapItem);
-										} else {
-											dataNewYTD.add(mapItemObjYTD);
-										}
-									}
-								}
-								
-								
-								Map<String, Object> deviceItemMYTD = new HashMap<>();
-								if (dataPowerMYTD.size() > 0) {
-									deviceItemMYTD.put("data_energy", dataNewYTD);
-									deviceItemMYTD.put("type", "energy");
-									deviceItemMYTD.put("devicename", "Energy output");
-									deviceItemMYTD.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMYTD);
-								}				
-							}
 										
 							break;
+						}
 						
-						case 5:
+						case 5: {
 							LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
 							LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
 							long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-						    
+							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
+
 							List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
 							int YTD7Day = 1;
 							
@@ -386,7 +322,7 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
+							List dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeter7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
 							
 							if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
@@ -432,11 +368,13 @@ public class CustomerViewService extends DB {
 								dataEnergy.add(deviceItemMYTD7Day);
 							}							
 							break;
+						}
 
-						case 6:
+						case 6: {
 							YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 							YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 							long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
+							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 					        
 							List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
 							int monthYTD = 1;
@@ -455,7 +393,7 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
+							List dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
 							if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
 									boolean flag = false;
@@ -502,11 +440,13 @@ public class CustomerViewService extends DB {
 							}
 							
 							break;
+						}
 
-						case 7:
+						case 7: {
 							YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 							YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 							long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
+							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 
 							if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
 									forCountLTYear += 1;
@@ -529,7 +469,7 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
+							List dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterYearCustomAtMost5Days", obj) :  queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
 							
 							if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesLTYear) {
@@ -575,10 +515,9 @@ public class CustomerViewService extends DB {
 								dataEnergy.add(deviceItemMLTYear);
 							}
 							break;
+						}
 					}
 					break;
-				case "this_week":
-				case "last_week":
 				case "3_day":
 					switch (obj.getData_send_time()) {
 						case 1:
@@ -726,6 +665,57 @@ public class CustomerViewService extends DB {
 								}
 							}
 							break;
+						}
+					break;
+				case "this_week":
+				case "last_week":
+						Map<String, Object> deviceItem5 = new HashMap<>();
+						obj.setGroupMeter(dataListDeviceMeter);
+						List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
+						if (dataPower5.size() > 0) {
+							deviceItem5.put("data_energy", dataPower5);
+							deviceItem5.put("type", "energy");
+							deviceItem5.put("devicename", "Energy output");
+							deviceItem5.put("deviceType", "meter");
+							dataEnergy.add(deviceItem5);
+						}
+						
+						// Get Irradiance
+						
+						if (dataListDeviceIrr.size() > 0) {
+							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+								Map<String, Object> deviceIrrItem5 = new HashMap<>();
+								
+								List dataListAIrrDevice = new ArrayList<>();
+								
+								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+								dataListAIrrDevice.add(item);
+								
+								obj.setGroupMeter(dataListAIrrDevice);
+								
+								List dataIrradianceDevice = new ArrayList<>();
+								switch (obj.getData_send_time()) {
+									case 1:
+										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+										break;
+									case 2:
+										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+										break;
+									case 3:
+										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+										break;
+									case 4: 
+										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+										break;
+								}
+
+								if(dataIrradianceDevice.size() > 0 ) {
+									deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+									deviceIrrItem5.put("type", "irradiance");
+									deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+									dataEnergy.add(deviceIrrItem5);
+								}
+							}
 						}
 					break;
 				case "last_month":
@@ -1610,8 +1600,7 @@ public class CustomerViewService extends DB {
 							case 4:
 							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 							
-							if (forCountYTD <= 44) {
-								List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
+							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
 							int day = 1;
 												
 							for(int t = 0; t <= forCountYTD; t++) {
@@ -1621,14 +1610,14 @@ public class CustomerViewService extends DB {
 								headerDate.setDownload_time(usFormatCustom.format(calCustom.getTime()));
 								headerDate.setTime_full(usFormatCustom.format(calCustom.getTime()));
 								headerDate.setTime_format(usFormatCustom.format(calCustom.getTime()));
-								headerDate.setCategories_time(catFormatCustomDay.format(calCustom.getTime()));
+								headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
 								headerDate.setChart_energy_kwh(0.001);
 								headerDate.setNvm_irradiance(0.001);
 								categories.add(headerDate);
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM = queryForList("CustomerView.getDataPowerMeterDayCustomForShortDay", obj);
+							List dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
 							if(dataPowerM.size() > 0 && categories.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories) {
 									boolean flag = false;
@@ -1672,71 +1661,6 @@ public class CustomerViewService extends DB {
 								deviceItemM.put("devicename", "Energy output");
 								deviceItemM.put("deviceType", "meter");
 								dataEnergy.add(deviceItemM);
-							}
-							} else {
-								List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
-								int dayYTD = 1;							
-								
-								for(int t = 0; t <= forCountYTD; t++) {
-									calCustom.setTime(startDateCustom);
-									
-									ClientMonthlyDateEntity headerDateYTD = new ClientMonthlyDateEntity();
-									calCustom.add(Calendar.DATE, t * dayYTD);
-									headerDateYTD.setDownload_time(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setTime_full(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setTime_format(usFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setCategories_time(catFormatCustom.format(calCustom.getTime()));
-									headerDateYTD.setChart_energy_kwh(0.001);
-									headerDateYTD.setNvm_irradiance(0.001);
-									categoriesYTD.add(headerDateYTD);
-								}
-								
-								List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
-								if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesYTD) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerMYTD.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
-											String categoriesTimeYTD = item.getTime_format();
-											String powerTimeYTD = itemT.get("time_format").toString();
-											if (categoriesTimeYTD.equals(powerTimeYTD)) {
-									        	flag = true;
-									        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-									        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-									        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-									        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-									        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-									        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-									        	break;
-									        }
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											dataNewYTD.add(mapItem);
-										} else {
-											dataNewYTD.add(mapItemObjYTD);
-										}
-									}
-								}
-								
-								
-								Map<String, Object> deviceItemMYTD = new HashMap<>();
-								if (dataPowerMYTD.size() > 0) {
-									deviceItemMYTD.put("data_energy", dataNewYTD);
-									deviceItemMYTD.put("type", "energy");
-									deviceItemMYTD.put("devicename", "Energy output");
-									deviceItemMYTD.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMYTD);
-								}				
 							}
 										
 							break;
@@ -1955,8 +1879,6 @@ public class CustomerViewService extends DB {
 						}
 						break;
 						case "3_day":
-						case "this_week":
-						case "last_week":
 							switch (obj.getData_send_time()) {
 							case 1:
 								Map<String, Object> deviceItem55 = new HashMap<>();
@@ -2101,6 +2023,57 @@ public class CustomerViewService extends DB {
 								}
 								
 							}
+							break;
+						case "this_week":
+						case "last_week":
+								Map<String, Object> deviceItem5 = new HashMap<>();
+								obj.setGroupMeter(dataListInverter);
+								List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
+								if (dataPower5.size() > 0) {
+									deviceItem5.put("data_energy", dataPower5);
+									deviceItem5.put("type", "energy");
+									deviceItem5.put("devicename", "Energy output");
+									deviceItem5.put("deviceType", "inverter");
+									dataEnergy.add(deviceItem5);
+								}
+								
+								// Get Irradiance
+								
+								if (dataListDeviceIrr.size() > 0) {
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem5 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = new ArrayList<>();
+										switch (obj.getData_send_time()) {
+											case 1:
+												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+												break;
+											case 2:
+												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+												break;
+											case 3:
+												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+												break;
+											case 4: 
+												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+												break;
+										}
+
+										if(dataIrradianceDevice.size() > 0 ) {
+											deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem5.put("type", "irradiance");
+											deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem5);
+										}
+									}
+								}
 							break;
 						case "last_month":
 						case "this_month":

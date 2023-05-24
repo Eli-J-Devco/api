@@ -328,15 +328,17 @@ public class BatchConfig {
 	}
 	
 	/**
-	 * @description batch job get run ssh
+	 * @description batch job get run ssh cell modem and datalogger
 	 * @author long.pham
 	 * @since 2023-05-08
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
-	public void startBatchJobSSHDatalogger() throws Exception {
+	@Scheduled(cron = "0 */3 * * * *")
+	public void startBatchJobSSHCellModem() throws Exception {
 		BatchJob job =new BatchJob(); 
+		job.runCronJobSSHCellModem();
 		job.runCronJobSSHDatalogger();
 	}
+
 }

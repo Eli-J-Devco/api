@@ -17,7 +17,23 @@ public class ModelDataloggerEntity {
 	private String modbusdevicetype;
 	private String modbusdevicetypenumber;
 	private String modbusdeviceclass;
+	private double MemTotal;
+	private double MemFree;
 	
+	
+	
+	public double getMemTotal() {
+		return MemTotal;
+	}
+	public void setMemTotal(double memTotal) {
+		MemTotal = memTotal;
+	}
+	public double getMemFree() {
+		return MemFree;
+	}
+	public void setMemFree(double memFree) {
+		MemFree = memFree;
+	}
 	public String getTime() {
 		return time;
 	}

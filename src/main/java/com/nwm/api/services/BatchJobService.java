@@ -1238,4 +1238,25 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	
+	
+	
+	/**
+	 * @description get list device by id_device_type = 5
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceDatalogger(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceDatalogger", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 }

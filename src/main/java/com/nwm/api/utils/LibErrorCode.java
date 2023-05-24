@@ -2977,6 +2977,144 @@ LibErrorCode {
 	}
 	
 	/**
+	 * get error code from table model_satcon_powergate_225_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSatconPowergate225Inverter(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 820; break;
+			case 1: errorCode = 821; break;
+			case 2: errorCode = 822; break;
+			case 3: errorCode = 823; break;
+			case 4: errorCode = 824; break;
+			case 5: errorCode = 825; break;
+			case 6: errorCode = 826; break;
+			case 7: errorCode = 827; break;
+			case 8: errorCode = 828; break;
+			case 9: errorCode = 829; break; 
+			case 10: errorCode = 830; break;
+			case 11: errorCode = 831; break; 
+			case 12: errorCode = 832; break;
+			case 13: errorCode = 833; break;
+			case 14: errorCode = 834; break;
+			case 15: errorCode = 835; break;
+			}
+			break;
+			
+		
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 836; break;
+			case 1: errorCode = 837; break;
+			case 2: errorCode = 838; break;
+			case 3: errorCode = 839; break;
+			case 4: errorCode = 840; break;
+			case 5: errorCode = 841; break;
+			case 6: errorCode = 842; break;
+			case 7: errorCode = 843; break;
+			case 8: errorCode = 844; break; 
+			case 9: errorCode = 845; break;
+			case 10: errorCode = 846; break;
+			case 11: errorCode = 847; break;
+			case 12: errorCode = 848; break;
+			case 13: errorCode = 849; break;
+			case 14: errorCode = 850; break;
+			case 15: errorCode = 851; break;
+			
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 852; break;
+			case 1: errorCode = 853; break;
+			case 2: errorCode = 854; break;
+			case 3: errorCode = 855; break;
+			case 4: errorCode = 856; break;
+			case 5: errorCode = 857; break;
+			case 6: errorCode = 858; break;
+			case 7: errorCode = 859; break;
+			case 8: errorCode = 860; break;
+			case 9: errorCode = 861; break;
+			case 10: errorCode = 862; break;
+			case 11: errorCode = 863; break;
+			case 12: errorCode = 864; break;
+			case 13: errorCode = 865; break; 
+			case 14: errorCode = 866; break;
+			case 15: errorCode = 867; break;
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 868; break;
+			case 1: errorCode = 869; break;
+			case 2: errorCode = 870; break; 
+			case 3: errorCode = 871; break;
+			case 4: errorCode = 872; break;
+			case 5: errorCode = 873; break;
+			case 6: errorCode = 874; break;
+			case 7: errorCode = 875; break;
+			case 8: errorCode = 876; break;
+			case 9: errorCode = 877; break;
+			case 10: errorCode = 878; break; 
+			case 11: errorCode = 879; break;
+			case 12: errorCode = 880; break;
+			case 13: errorCode = 881; break;
+			case 14: errorCode = 882; break;
+			case 15: errorCode = 883; break;
+			}
+			break;
+		case 6: 
+			switch (bitLevel) {
+			case 0: errorCode = 884; break;
+			case 1: errorCode = 885; break;
+			case 2: errorCode = 886; break;
+			case 3: errorCode = 887; break;
+			case 4: errorCode = 888; break;
+			case 5: errorCode = 889; break;
+			case 6: errorCode = 890; break;
+			case 7: errorCode = 891; break;
+			case 8: errorCode = 892; break; 
+			case 9: errorCode = 893; break; 
+			case 10: errorCode = 894; break;
+			case 11: errorCode = 895; break;
+			case 12: errorCode = 896; break;
+			case 13: errorCode = 897; break;
+			case 14: errorCode = 898; break;
+			case 15: errorCode = 899; break;
+			}
+			break;
+		case 7: 
+			switch (bitLevel) {
+			case 0: errorCode = 900; break; 
+			case 1: errorCode = 901; break; 
+			case 2: errorCode = 902; break; 
+			case 3: errorCode = 903; break;
+			case 4: errorCode = 904; break;
+			case 5: errorCode = 905; break;
+			case 6: errorCode = 906; break;
+			case 7: errorCode = 907; break;
+			case 8: errorCode = 908; break;
+			case 9: errorCode = 909; break;
+			case 10: errorCode = 910; break;
+			case 11: errorCode = 911; break;
+			case 12: errorCode = 912; break;
+			case 13: errorCode = 913; break;
+			case 14: errorCode = 914; break;
+			case 15: errorCode = 915; break;
+			}
+			break;
+		
+		
+		}
+
+		return errorCode;
+	}
+	
+	/*
 	 * get PVMStatusCodes from table xantrex gt100 250 500
 	 * 
 	 * @return
@@ -2984,200 +3122,200 @@ LibErrorCode {
 	public static int GetAlertModelXantrexGT100250500(int bitLevel) {
 		int errorCode = 0;
 		switch (bitLevel) {
-		case 16:
-			// AC Frequency Low
-			errorCode = 772;
-			break;
-		case 17:
-			// AC Frequency High
-			errorCode = 773;
-			break;
-		case 18:
-			// AC Voltage Low
-			errorCode = 774;
-			break;
-		case 19:
-			// AC Voltage High
-			errorCode = 775;
-			break;
-		case 21:
-			// Grid Disconnection
-			errorCode = 776;
-			break;
-		case 24:
-			// AC Contactor Open
-			errorCode = 777;
-			break;
-		case 33:
-			// PV Over-Voltage
-			errorCode = 778;
-			break;
-		case 35:
-			// Bus Voltage High
-			errorCode = 779;
-			break;
-		case 305:
-			// Left Matrix Over
-			errorCode = 780;
-			break;
-		case 561:
-			// Left Matrix Over
-			errorCode = 781;
-			break;
-		case 1073:
-			// Left Matrix Over
-			errorCode = 782;
-			break;
-		case 2098:
-			// Right Matrix Over
-			errorCode = 783;
-			break;
-		case 4146:
-			// Right Matrix Over
-			errorCode = 784;
-			break;
-		case 8242:
-			// Right Matrix Over
-			errorCode = 785;
-			break;
-		case 51:
-			// Ground Over
-			errorCode = 786;
-			break;
-		case 64:
-			// Programming
-			errorCode = 787;
-			break;
-		case 65:
-			// State Invalid
-			errorCode = 788;
-			break;
-		case 66:
-			// Serial EEPROM Write Error
-			errorCode = 789;
-			break;
-		case 67:
-			// Serial EEPROM Timeout
-			errorCode = 790;
-			break;
-		case 68:
-			// Bad NOVRAM Memory
-			errorCode = 791;
-			break;
-		case 69:
-			// Interrupt 2 Timeout
-			errorCode = 792;
-			break;
-		case 71:
-			// Software Test
-			errorCode = 793;
-			break;
-		case 72:
-			// Bad Memory
-			errorCode = 794;
-			break;
-		case 336:
-			// Left Matrix Gate
-			errorCode = 795;
-			break;
-		case 592:
-			// Left Matrix Gate
-			errorCode = 796;
-			break;
-		case 1104:
-			// Left Matrix Gate
-			errorCode = 797;
-			break;
-		case 2128:
-			// Left Matrix Gate
-			errorCode = 798;
-			break;
-		case 4176:
-			// Left Matrix Gate
-			errorCode = 799;
-			break;
-		case 8272:
-			// Left Matrix Gate
-			errorCode = 800;
-			break;
-		case 339:
-			// Right Matrix Gate
-			errorCode = 801;
-			break;
-		case 595:
-			// Right Matrix Gate
-			errorCode = 802;
-			break;
-		case 1107:
-			// Right Matrix Gate
-			errorCode = 803;
-			break;
-		case 2131:
-			// Right Matrix Gate
-			errorCode = 804;
-			break;
-		case 4179:
-			// Right Matrix Gate
-			errorCode = 805;
-			break;
-		case 8275:
-			// Right Matrix Gate
-			errorCode = 806;
-			break;
-		case 96:
-			// Left Matrix Temperature
-			errorCode = 807;
-			break;
-		case 97:
-			// Right Matrix Temperature
-			errorCode = 808;
-			break;
-		case 113:
-			// PV Switch Open
-			errorCode = 809;
-			break;
-		case 115:
-			// Remote Emergency Stop
-			errorCode = 810;
-			break;
-		case 117:
-			// Shutdown Remotely
-			errorCode = 811;
-			break;
-		case 128:
-			// Left Matrix Not ON
-			errorCode = 812;
-			break;
-		case 129:
-			// Right Matrix Not ON
-			errorCode = 813;
-			break;
-		case 132:
-			// Left Matrix Not OFF
-			errorCode = 814;
-			break;
-		case 133:
-			// Right Matrix Not OFF
-			errorCode = 815;
-			break;
-		case 144:
-			// Fast AC Freq Low
-			errorCode = 816;
-			break;
-		case 146:
-			// Fast AC Voltage Low
-			errorCode = 817;
-			break;
-		case 147:
-			// Fast AC Voltage High
-			errorCode = 818;
-			break;
-		case 148:
-			// Ambient Temperature
-			errorCode = 819;
-			break;
+			case 16:
+				// AC Frequency Low
+				errorCode = 772;
+				break;
+			case 17:
+				// AC Frequency High
+				errorCode = 773;
+				break;
+			case 18:
+				// AC Voltage Low
+				errorCode = 774;
+				break;
+			case 19:
+				// AC Voltage High
+				errorCode = 775;
+				break;
+			case 21:
+				// Grid Disconnection
+				errorCode = 776;
+				break;
+			case 24:
+				// AC Contactor Open
+				errorCode = 777;
+				break;
+			case 33:
+				// PV Over-Voltage
+				errorCode = 778;
+				break;
+			case 35:
+				// Bus Voltage High
+				errorCode = 779;
+				break;
+			case 305:
+				// Left Matrix Over
+				errorCode = 780;
+				break;
+			case 561:
+				// Left Matrix Over
+				errorCode = 781;
+				break;
+			case 1073:
+				// Left Matrix Over
+				errorCode = 782;
+				break;
+			case 2098:
+				// Right Matrix Over
+				errorCode = 783;
+				break;
+			case 4146:
+				// Right Matrix Over
+				errorCode = 784;
+				break;
+			case 8242:
+				// Right Matrix Over
+				errorCode = 785;
+				break;
+			case 51:
+				// Ground Over
+				errorCode = 786;
+				break;
+			case 64:
+				// Programming
+				errorCode = 787;
+				break;
+			case 65:
+				// State Invalid
+				errorCode = 788;
+				break;
+			case 66:
+				// Serial EEPROM Write Error
+				errorCode = 789;
+				break;
+			case 67:
+				// Serial EEPROM Timeout
+				errorCode = 790;
+				break;
+			case 68:
+				// Bad NOVRAM Memory
+				errorCode = 791;
+				break;
+			case 69:
+				// Interrupt 2 Timeout
+				errorCode = 792;
+				break;
+			case 71:
+				// Software Test
+				errorCode = 793;
+				break;
+			case 72:
+				// Bad Memory
+				errorCode = 794;
+				break;
+			case 336:
+				// Left Matrix Gate
+				errorCode = 795;
+				break;
+			case 592:
+				// Left Matrix Gate
+				errorCode = 796;
+				break;
+			case 1104:
+				// Left Matrix Gate
+				errorCode = 797;
+				break;
+			case 2128:
+				// Left Matrix Gate
+				errorCode = 798;
+				break;
+			case 4176:
+				// Left Matrix Gate
+				errorCode = 799;
+				break;
+			case 8272:
+				// Left Matrix Gate
+				errorCode = 800;
+				break;
+			case 339:
+				// Right Matrix Gate
+				errorCode = 801;
+				break;
+			case 595:
+				// Right Matrix Gate
+				errorCode = 802;
+				break;
+			case 1107:
+				// Right Matrix Gate
+				errorCode = 803;
+				break;
+			case 2131:
+				// Right Matrix Gate
+				errorCode = 804;
+				break;
+			case 4179:
+				// Right Matrix Gate
+				errorCode = 805;
+				break;
+			case 8275:
+				// Right Matrix Gate
+				errorCode = 806;
+				break;
+			case 96:
+				// Left Matrix Temperature
+				errorCode = 807;
+				break;
+			case 97:
+				// Right Matrix Temperature
+				errorCode = 808;
+				break;
+			case 113:
+				// PV Switch Open
+				errorCode = 809;
+				break;
+			case 115:
+				// Remote Emergency Stop
+				errorCode = 810;
+				break;
+			case 117:
+				// Shutdown Remotely
+				errorCode = 811;
+				break;
+			case 128:
+				// Left Matrix Not ON
+				errorCode = 812;
+				break;
+			case 129:
+				// Right Matrix Not ON
+				errorCode = 813;
+				break;
+			case 132:
+				// Left Matrix Not OFF
+				errorCode = 814;
+				break;
+			case 133:
+				// Right Matrix Not OFF
+				errorCode = 815;
+				break;
+			case 144:
+				// Fast AC Freq Low
+				errorCode = 816;
+				break;
+			case 146:
+				// Fast AC Voltage Low
+				errorCode = 817;
+				break;
+			case 147:
+				// Fast AC Voltage High
+				errorCode = 818;
+				break;
+			case 148:
+				// Ambient Temperature
+				errorCode = 819;
+				break;
 		}
-		
+
 		return errorCode;
 	}
 	
