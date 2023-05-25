@@ -16,6 +16,7 @@
 			d.id AS id_device,
 			d.id_device_type,
 			1 AS is_paramerter_expand,
+			1 AS is_calculation_expand,
 			0 AS is_checked
 		FROM
 			device d
@@ -1353,14 +1354,20 @@
 			      IFNULL(ROUND(AVG(dv.IntakeAirTemperature), 2), 0.001) AS IntakeAirTemperature,
 			</if>
 			
-			<choose>
-				<when test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and data_send_time == 4">
-					IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)) AS MeasuredProduction,
-				</when>
-				<when test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and data_send_time != 4">
-					IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS MeasuredProduction,
-				</when>
-			</choose>
+			<!-- Measured Production calculation field -->
+			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
+				<choose>
+					<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
+						IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001)
+					</when>
+					<when test="data_send_time == 4">
+						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)), 2), 0.001)
+					</when>
+					<when test="data_send_time != 4">
+						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy), 2), 0.001)
+					</when>
+				</choose> AS MeasuredProduction,
+			</if>
 			
 			
 			<if test="(filterBy == 'today') and data_send_time == 1">
@@ -1539,59 +1546,61 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			<choose>
-				<when test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and data_send_time == 1">
-					LEFT JOIN (
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
-							MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
-					  	FROM
-					  		${datatablename} dv
-					    	LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							dv.id_device = #{id}
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:5:0') AND SUBTIME(#{end_date}, '0:5:0'))
-						GROUP BY time_format
-					) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:5:0'), '+00:00', t.`offset` )) DIV 300
-				</when>
-				<when test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and data_send_time == 2">
-					LEFT JOIN (
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
-							MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
-					  	FROM
-					  		${datatablename} dv
-					    	LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							dv.id_device = #{id}
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:15:0') AND SUBTIME(#{end_date}, '0:15:0'))
-						GROUP BY time_format
-					) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 900 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:15:0'), '+00:00', t.`offset` )) DIV 900
-				</when>
-				<when test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and data_send_time == 3">
-					LEFT JOIN (
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
-							MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
-					  	FROM
-					  		${datatablename} dv
-					    	LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							dv.id_device = #{id}
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '1:0:0') AND SUBTIME(#{end_date}, '1:0:0'))
-						GROUP BY time_format
-					) dv1 ON DATE_FORMAT( CONVERT_TZ( dv1.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) = DATE_FORMAT( CONVERT_TZ( SUBTIME(dv.time, '1:0:0'), '+00:00', t.`offset` ), '%m-%d-%Y %H:00' )
-				</when>
-			</choose>
+			<if test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and (filterBy != 'today' and filterBy != '3_day' and !(filterBy == 'custom' and diff5Days))">
+				<choose>
+					<when test="data_send_time == 1">
+						LEFT JOIN (
+							SELECT
+								dv.time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
+								MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
+						  	FROM
+						  		${datatablename} dv
+						    	LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								dv.id_device = #{id}
+								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:5:0') AND SUBTIME(#{end_date}, '0:5:0'))
+							GROUP BY time_format
+						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:5:0'), '+00:00', t.`offset` )) DIV 300
+					</when>
+					<when test="data_send_time == 2">
+						LEFT JOIN (
+							SELECT
+								dv.time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
+								MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
+						  	FROM
+						  		${datatablename} dv
+						    	LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								dv.id_device = #{id}
+								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:15:0') AND SUBTIME(#{end_date}, '0:15:0'))
+							GROUP BY time_format
+						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 900 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:15:0'), '+00:00', t.`offset` )) DIV 900
+					</when>
+					<when test="data_send_time == 3">
+						LEFT JOIN (
+							SELECT
+								dv.time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
+								MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
+						  	FROM
+						  		${datatablename} dv
+						    	LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								dv.id_device = #{id}
+								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '1:0:0') AND SUBTIME(#{end_date}, '1:0:0'))
+							GROUP BY time_format
+						) dv1 ON DATE_FORMAT( CONVERT_TZ( dv1.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) = DATE_FORMAT( CONVERT_TZ( SUBTIME(dv.time, '1:0:0'), '+00:00', t.`offset` ), '%m-%d-%Y %H:00' )
+					</when>
+				</choose>
+			</if>
 		WHERE
 			dv.id_device = #{id}
 			AND (CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))

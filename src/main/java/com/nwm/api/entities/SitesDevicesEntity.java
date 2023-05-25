@@ -63,6 +63,7 @@ public class SitesDevicesEntity {
 	private String times_ago_unit;
 	private int id_device_type;
 	private int is_paramerter_expand;
+	private int is_calculation_expand;
 	private int is_checked;
 	private String timezone_value;
 	private String timezone_offset;
@@ -575,6 +576,12 @@ public class SitesDevicesEntity {
 	}
 	public void setCf_email_subscribers(String cf_email_subscribers) {
 		this.cf_email_subscribers = cf_email_subscribers;
+	}
+	public int getIs_calculation_expand() {
+		return is_calculation_expand;
+	}
+	public void setIs_calculation_expand(int is_calculation_expand) {
+		this.is_calculation_expand = is_calculation_expand;
 	}
 	
 	
