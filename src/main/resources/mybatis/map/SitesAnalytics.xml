@@ -1403,7 +1403,7 @@
 						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)), 2), 0.001)
 					</when>
 					<when test="data_send_time != 4">
-						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy), 2), 0.001)
+						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)), 2), 0.001)
 					</when>
 				</choose> AS MeasuredProduction,
 			</if>
