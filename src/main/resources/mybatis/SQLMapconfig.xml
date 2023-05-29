@@ -97,7 +97,7 @@
 		<mapper resource="mybatis/map/ModelCellModem.xml"/>
 		<mapper resource="mybatis/map/ModelSatconPowergate225Inverter.xml"/>
 		<mapper resource="mybatis/map/ModelSunnyCentralClass9775Inverter.xml"/>
-		
+		<mapper resource="mybatis/map/ModelVerisIndustriesE50c2a.xml"/>
 		
 		
 		
