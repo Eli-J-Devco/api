@@ -223,6 +223,10 @@
 				WHEN d.datatablename = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
 				WHEN d.datatablename = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
 				
+				WHEN d.datatablename = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				WHEN d.datatablename = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+				WHEN d.datatablename = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
+				
 				WHEN d.datatablename = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 				WHEN d.datatablename = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
