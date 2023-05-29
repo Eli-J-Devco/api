@@ -70,6 +70,27 @@ public class SiteConfigService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update pv model setting
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @param id
+	 */
+	public boolean updatePVModelSetting(SitesDevicesEntity obj){
+		
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("SiteConfig.updatePVModelSetting", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("SiteConfig.updatePVModelSetting", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
 	
 	/**
 	 * @description get list site config

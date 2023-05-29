@@ -79,6 +79,7 @@ public class CustomerViewService extends DB {
 						if (dataListDeviceIrr.size() > 0) {
 							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 								Map<String, Object> deviceIrrItem1 = new HashMap<>();
+								Map<String, Object> deviceExpectedPowerItem1 = new HashMap<>();
 								
 								List dataListAIrrDevice = new ArrayList<>();
 								
@@ -89,6 +90,13 @@ public class CustomerViewService extends DB {
 								
 								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
 								if(dataIrradianceDevice.size() > 0 ) {
+									// Get Expected Power
+									deviceExpectedPowerItem1.put("data_energy", dataIrradianceDevice);
+									deviceExpectedPowerItem1.put("type", "expected_power");
+									deviceExpectedPowerItem1.put("devicename", "Expected Power");
+									dataEnergy.add(deviceExpectedPowerItem1);
+									
+									// Get Irradiance
 									deviceIrrItem1.put("data_energy", dataIrradianceDevice);
 									deviceIrrItem1.put("type", "irradiance");
 									deviceIrrItem1.put("devicename", dataListDeviceIrr.get(i));
@@ -115,6 +123,7 @@ public class CustomerViewService extends DB {
 						if (dataListDeviceIrr.size() > 0) {
 							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 								Map<String, Object> deviceIrrItem2 = new HashMap<>();
+								Map<String, Object> deviceExpectedPowerItem2 = new HashMap<>();
 								
 								List dataListAIrrDevice = new ArrayList<>();
 								
@@ -125,6 +134,13 @@ public class CustomerViewService extends DB {
 								
 								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
 								if(dataIrradianceDevice.size() > 0 ) {
+									// Get Expected Power
+									deviceExpectedPowerItem2.put("data_energy", dataIrradianceDevice);
+									deviceExpectedPowerItem2.put("type", "expected_power");
+									deviceExpectedPowerItem2.put("devicename", "Expected Power");
+									dataEnergy.add(deviceExpectedPowerItem2);
+									
+									// Get Irradiance
 									deviceIrrItem2.put("data_energy", dataIrradianceDevice);
 									deviceIrrItem2.put("type", "irradiance");
 									deviceIrrItem2.put("devicename", dataListDeviceIrr.get(i));
@@ -151,6 +167,7 @@ public class CustomerViewService extends DB {
 						if (dataListDeviceIrr.size() > 0) {
 							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 								Map<String, Object> deviceIrrItem3 = new HashMap<>();
+								Map<String, Object> deviceExpectedPowerItem3 = new HashMap<>();
 								
 								List dataListAIrrDevice = new ArrayList<>();
 								
@@ -161,6 +178,13 @@ public class CustomerViewService extends DB {
 								
 								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
 								if(dataIrradianceDevice.size() > 0 ) {
+									// Get Expected Power
+									deviceExpectedPowerItem3.put("data_energy", dataIrradianceDevice);
+									deviceExpectedPowerItem3.put("type", "expected_power");
+									deviceExpectedPowerItem3.put("devicename", "Expected Power");
+									dataEnergy.add(deviceExpectedPowerItem3);
+									
+									// Get Irradiance
 									deviceIrrItem3.put("data_energy", dataIrradianceDevice);
 									deviceIrrItem3.put("type", "irradiance");
 									deviceIrrItem3.put("devicename", dataListDeviceIrr.get(i));
@@ -186,6 +210,7 @@ public class CustomerViewService extends DB {
 						if (dataListDeviceIrr.size() > 0) {
 							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 								Map<String, Object> deviceIrrItem4 = new HashMap<>();
+								Map<String, Object> deviceExpectedPowerItem4 = new HashMap<>();
 								
 								List dataListAIrrDevice = new ArrayList<>();
 								
@@ -196,6 +221,13 @@ public class CustomerViewService extends DB {
 								
 								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
 								if(dataIrradianceDevice.size() > 0 ) {
+									// Get Expected Power
+									deviceExpectedPowerItem4.put("data_energy", dataIrradianceDevice);
+									deviceExpectedPowerItem4.put("type", "expected_power");
+									deviceExpectedPowerItem4.put("devicename", "Expected Power");
+									dataEnergy.add(deviceExpectedPowerItem4);
+									
+									// Get Irradiance
 									deviceIrrItem4.put("data_energy", dataIrradianceDevice);
 									deviceIrrItem4.put("type", "irradiance");
 									deviceIrrItem4.put("devicename", dataListDeviceIrr.get(i));
@@ -246,6 +278,7 @@ public class CustomerViewService extends DB {
 								headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
 								headerDate.setChart_energy_kwh(0.001);
 								headerDate.setNvm_irradiance(0.001);
+								headerDate.setExpected_power(0.001);
 								categories.add(headerDate);
 							}
 							
@@ -267,6 +300,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	mapItemObj.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 								        	break;
 								        }
 									}
@@ -279,6 +313,7 @@ public class CustomerViewService extends DB {
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										mapItem.setExpected_power(item.getExpected_power());
 										dataNew.add(mapItem);
 									} else {
 										dataNew.add(mapItemObj);
@@ -318,6 +353,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
+								headerDateLT.setExpected_power(0.001);
 								categoriesYTD7Day.add(headerDateLT);
 							}
 							
@@ -340,6 +376,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	mapItemObjYTD.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 								        	break;
 								        }
 									}
@@ -352,6 +389,7 @@ public class CustomerViewService extends DB {
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										mapItem.setExpected_power(item.getExpected_power());
 										dataNewYTD7Day.add(mapItem);
 									} else {
 										dataNewYTD7Day.add(mapItemObjYTD);
@@ -389,6 +427,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
+								headerDateLT.setExpected_power(0.001);
 								categoriesYTDMonth.add(headerDateLT);
 							}
 							
@@ -410,6 +449,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 								        	break;
 								        }
 									}
@@ -422,6 +462,7 @@ public class CustomerViewService extends DB {
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										mapItem.setExpected_power(item.getExpected_power());
 										dataNewYTDMonth.add(mapItem);
 									} else {
 										dataNewYTDMonth.add(mapItemObjLT);
@@ -465,6 +506,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
+								headerDateLT.setExpected_power(0.001);
 								categoriesLTYear.add(headerDateLT);
 							}
 							
@@ -487,6 +529,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 								        	break;
 								        }
 									}
@@ -499,6 +542,7 @@ public class CustomerViewService extends DB {
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										mapItem.setExpected_power(item.getExpected_power());
 										dataNewLTYear.add(mapItem);
 									} else {
 										dataNewLTYear.add(mapItemObjLT);
@@ -537,6 +581,7 @@ public class CustomerViewService extends DB {
 							if (dataListDeviceIrr.size() > 0) {
 								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 									Map<String, Object> deviceIrrItem5 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem5 = new HashMap<>();
 
 									List dataListAIrrDevice = new ArrayList<>();
 									
@@ -547,6 +592,13 @@ public class CustomerViewService extends DB {
 									
 									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
 									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem5.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem5.put("type", "expected_power");
+										deviceExpectedPowerItem5.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem5);
+										
+										// Get Irradiance
 										deviceIrrItem5.put("data_energy", dataIrradianceDevice);
 										deviceIrrItem5.put("type", "irradiance");
 										deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
@@ -574,6 +626,7 @@ public class CustomerViewService extends DB {
 							if (dataListDeviceIrr.size() > 0) {
 								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 									Map<String, Object> deviceIrrItem6 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem6 = new HashMap<>();
 									
 									List dataListAIrrDevice = new ArrayList<>();
 										
@@ -584,6 +637,13 @@ public class CustomerViewService extends DB {
 									
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem6.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem6.put("type", "expected_power");
+											deviceExpectedPowerItem6.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem6);
+											
+											// Get Irradiance
 											deviceIrrItem6.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem6.put("type", "irradiance");
 											deviceIrrItem6.put("devicename", dataListDeviceIrr.get(i));
@@ -611,6 +671,7 @@ public class CustomerViewService extends DB {
 							if (dataListDeviceIrr.size() > 0) {
 								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 									Map<String, Object> deviceIrrItem7 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem7 = new HashMap<>();
 									
 									List dataListAIrrDevice = new ArrayList<>();
 									
@@ -621,6 +682,13 @@ public class CustomerViewService extends DB {
 									
 									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
 									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem7.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem7.put("type", "expected_power");
+										deviceExpectedPowerItem7.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem7);
+										
+										// Get Irradiance
 										deviceIrrItem7.put("data_energy", dataIrradianceDevice);
 										deviceIrrItem7.put("type", "irradiance");
 										deviceIrrItem7.put("devicename", dataListDeviceIrr.get(i));
@@ -647,6 +715,7 @@ public class CustomerViewService extends DB {
 							if (dataListDeviceIrr.size() > 0) {
 								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 									Map<String, Object> deviceIrrItem8 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem8 = new HashMap<>();
 									
 									List dataListAIrrDevice = new ArrayList<>();
 									
@@ -657,6 +726,13 @@ public class CustomerViewService extends DB {
 									
 									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
 									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem8.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem8.put("type", "expected_power");
+										deviceExpectedPowerItem8.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem8);
+										
+										// Get Irradiance
 										deviceIrrItem8.put("data_energy", dataIrradianceDevice);
 										deviceIrrItem8.put("type", "irradiance");
 										deviceIrrItem8.put("devicename", dataListDeviceIrr.get(i));
@@ -1446,6 +1522,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem11 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem11 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1456,6 +1533,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem11.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem11.put("type", "expected_power");
+											deviceExpectedPowerItem11.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem11);
+											
+											// Get Irradiance
 											deviceIrrItem11.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem11.put("type", "irradiance");
 											deviceIrrItem11.put("devicename", dataListDeviceIrr.get(i));
@@ -1482,6 +1566,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem22 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem22 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1492,6 +1577,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem22.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem22.put("type", "expected_power");
+											deviceExpectedPowerItem22.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem22);
+											
+											// Get Irradiance
 											deviceIrrItem22.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem22.put("type", "irradiance");
 											deviceIrrItem22.put("devicename", dataListDeviceIrr.get(i));
@@ -1517,7 +1609,8 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem33 = new HashMap<>();
-										
+										Map<String, Object> deviceExpectedPowerItem33 = new HashMap<>();
+
 										List dataListAIrrDevice = new ArrayList<>();
 										
 										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
@@ -1527,6 +1620,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem33.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem33.put("type", "expected_power");
+											deviceExpectedPowerItem33.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem33);
+											
+											// Get Irradiance
 											deviceIrrItem33.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem33.put("type", "irradiance");
 											deviceIrrItem33.put("devicename", dataListDeviceIrr.get(i));
@@ -1552,6 +1652,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem44 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem44 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1562,6 +1663,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem44.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem44.put("type", "expected_power");
+											deviceExpectedPowerItem44.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem44);
+											
+											// Get Irradiance
 											deviceIrrItem44.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem44.put("type", "irradiance");
 											deviceIrrItem44.put("devicename", dataListDeviceIrr.get(i));
@@ -1597,7 +1705,7 @@ public class CustomerViewService extends DB {
 						calEndCustom.setTime(endDateCustom);
 						
 						switch (obj.getData_send_time()) {
-							case 4:
+							case 4: {
 							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 							
 							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
@@ -1613,6 +1721,7 @@ public class CustomerViewService extends DB {
 								headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
 								headerDate.setChart_energy_kwh(0.001);
 								headerDate.setNvm_irradiance(0.001);
+								headerDate.setExpected_power(0.001);
 								categories.add(headerDate);
 							}
 							
@@ -1633,6 +1742,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObj.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1646,6 +1756,7 @@ public class CustomerViewService extends DB {
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										mapItem.setExpected_power(item.getExpected_power());
 										dataNew.add(mapItem);
 									} else {
 										dataNew.add(mapItemObj);
@@ -1663,12 +1774,13 @@ public class CustomerViewService extends DB {
 								dataEnergy.add(deviceItemM);
 							}
 										
-							break;
+							break;}
 						
-							case 5:
+							case 5: {
 								LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
 								LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
 								long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
+								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 									
 								List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
 								int YTD7Day = 1;
@@ -1683,11 +1795,12 @@ public class CustomerViewService extends DB {
 									headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
 									headerDateLT.setChart_energy_kwh(0.001);
 									headerDateLT.setNvm_irradiance(0.001);
+									headerDateLT.setExpected_power(0.001);
 									categoriesYTD7Day.add(headerDateLT);
 								}
 								
 								List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
+								List dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeter7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
 								
 								if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
 									for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
@@ -1705,6 +1818,7 @@ public class CustomerViewService extends DB {
 														mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+											        	mapItemObjYTD.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 														break;
 													}
 										}
@@ -1717,6 +1831,7 @@ public class CustomerViewService extends DB {
 											mapItem.setDownload_time(item.getDownload_time());
 											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											mapItem.setExpected_power(item.getExpected_power());
 											dataNewYTD7Day.add(mapItem);
 										} else {
 											dataNewYTD7Day.add(mapItemObjYTD);
@@ -1733,11 +1848,13 @@ public class CustomerViewService extends DB {
 									dataEnergy.add(deviceItemMYTD7Day);
 								}							
 								break;
+							}
 
-							case 6:
+							case 6: {
 								YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 								YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 								long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
+								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 										
 								List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
 								int monthYTD = 1;
@@ -1752,11 +1869,12 @@ public class CustomerViewService extends DB {
 									headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
 									headerDateLT.setChart_energy_kwh(0.001);
 									headerDateLT.setNvm_irradiance(0.001);
+									headerDateLT.setExpected_power(0.001);
 									categoriesYTDMonth.add(headerDateLT);
 								}
 								
 								List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
+								List dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
 								if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
 									for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
 										boolean flag = false;
@@ -1773,6 +1891,7 @@ public class CustomerViewService extends DB {
 														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+											        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 														break;
 													}
 										}
@@ -1785,6 +1904,7 @@ public class CustomerViewService extends DB {
 											mapItem.setDownload_time(item.getDownload_time());
 											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											mapItem.setExpected_power(item.getExpected_power());
 											dataNewYTDMonth.add(mapItem);
 										} else {
 											dataNewYTDMonth.add(mapItemObjLT);
@@ -1803,11 +1923,13 @@ public class CustomerViewService extends DB {
 								}
 								
 								break;
+							}
 
-							case 7:
+							case 7: {
 								YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 								YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 								long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
+								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 
 								if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
 										forCountLTYear += 1;
@@ -1826,11 +1948,12 @@ public class CustomerViewService extends DB {
 									headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
 									headerDateLT.setChart_energy_kwh(0.001);
 									headerDateLT.setNvm_irradiance(0.001);
+									headerDateLT.setExpected_power(0.001);
 									categoriesLTYear.add(headerDateLT);
 								}
 								
 								List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
+								List dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterYearCustomAtMost5Days", obj) :  queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
 								
 								if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
 									for (ClientMonthlyDateEntity item : categoriesLTYear) {
@@ -1848,6 +1971,7 @@ public class CustomerViewService extends DB {
 														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+											        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
 														break;
 													}
 										}
@@ -1860,6 +1984,7 @@ public class CustomerViewService extends DB {
 											mapItem.setDownload_time(item.getDownload_time());
 											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
 											mapItem.setNvm_irradiance(item.getNvm_irradiance());
+											mapItem.setExpected_power(item.getExpected_power());
 											dataNewLTYear.add(mapItem);
 										} else {
 											dataNewLTYear.add(mapItemObjLT);
@@ -1876,6 +2001,7 @@ public class CustomerViewService extends DB {
 									dataEnergy.add(deviceItemMLTYear);
 								}
 								break;
+							}
 						}
 						break;
 						case "3_day":
@@ -1897,6 +2023,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem55 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem55 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1907,6 +2034,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem55.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem55.put("type", "expected_power");
+											deviceExpectedPowerItem55.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem55);
+											
+											// Get Irradiance
 											deviceIrrItem55.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem55.put("type", "irradiance");
 											deviceIrrItem55.put("devicename", dataListDeviceIrr.get(i));
@@ -1934,6 +2068,7 @@ public class CustomerViewService extends DB {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										List dataListSensor = new ArrayList<>();
 										Map<String, Object> deviceIrrItem66 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem66 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1944,6 +2079,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem66.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem66.put("type", "expected_power");
+											deviceExpectedPowerItem66.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem66);
+											
+											// Get Irradiance
 											deviceIrrItem66.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem66.put("type", "irradiance");
 											deviceIrrItem66.put("devicename", dataListDeviceIrr.get(i));
@@ -1969,6 +2111,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem77 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem77 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -1979,6 +2122,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem77.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem77.put("type", "expected_power");
+											deviceExpectedPowerItem77.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem77);
+											
+											// Get Irradiance
 											deviceIrrItem77.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem77.put("type", "irradiance");
 											deviceIrrItem77.put("devicename", dataListDeviceIrr.get(i));
@@ -2004,6 +2154,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem88 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem88 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -2014,6 +2165,13 @@ public class CustomerViewService extends DB {
 										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem88.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem88.put("type", "expected_power");
+											deviceExpectedPowerItem88.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem88);
+											
+											// Get Irradiance
 											deviceIrrItem88.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem88.put("type", "irradiance");
 											deviceIrrItem88.put("devicename", dataListDeviceIrr.get(i));

@@ -805,6 +805,28 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.PowerTodayAVG, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.PowerTodayAVG, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.PowerTodayAVG, 0)), 1) ) AS chart_energy_kwh,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						CASE
+							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
+							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
+							ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+						END,
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						CASE
+							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
+							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
+							ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+						END,
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.PowerTodayAVG, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.PowerTodayAVG, 0)), 0.001) AS inverterEnergy
@@ -919,6 +941,7 @@
 			time_full,
 			categories_time,
 			IF( SUM(IF(id_device_type = 3, meterEnergy, 0)) > 0, ROUND(SUM(IF(id_device_type = 3, meterEnergy, 0)), 1), ROUND(SUM(IF(id_device_type = 3, inverterEnergy, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(id_device_type = 4, expected_power, NULL)), 1), 0.001  ) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(id_device_type = 4, nvm_irradiance, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(  SUM(IF(id_device_type = 3, meterEnergy, NULL)), 0.001  ) AS meterEnergy,
 			IFNULL(  SUM(IF(id_device_type = 1, inverterEnergy, NULL)), 0.001  ) AS inverterEnergy
@@ -932,6 +955,28 @@
 					FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+					<choose>
+						<when test="pv_model == 1">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</when>
+						<otherwise>
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</otherwise>
+					</choose> AS expected_power,
 					ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1) AS nvm_irradiance,
 					ROUND(AVG(IF(d.id_device_type = 3, sdr.PowerTodayAVG, NULL)), 1) AS meterEnergy,
 					ROUND(AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)), 1) AS inverterEnergy
@@ -1006,6 +1051,7 @@
 			time_full,
 			categories_time,
 			IF( SUM(IF(id_device_type = 3, meterEnergy, 0)) > 0, ROUND(SUM(IF(id_device_type = 3, meterEnergy, 0)), 1), ROUND(SUM(IF(id_device_type = 3, inverterEnergy, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(id_device_type = 4, expected_power, NULL)), 1), 0.001  ) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(id_device_type = 4, nvm_irradiance, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(  SUM(IF(id_device_type = 3, meterEnergy, NULL)), 0.001  ) AS meterEnergy,
 			IFNULL(  SUM(IF(id_device_type = 1, inverterEnergy, NULL)), 0.001  ) AS inverterEnergy
@@ -1019,6 +1065,28 @@
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+					<choose>
+						<when test="pv_model == 1">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</when>
+						<otherwise>
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</otherwise>
+					</choose> AS expected_power,
 					ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1) AS nvm_irradiance,
 					ROUND(AVG(IF(d.id_device_type = 3, sdr.PowerTodayAVG, NULL)), 1) AS meterEnergy,
 					ROUND(AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)), 1) AS inverterEnergy
@@ -1092,6 +1160,7 @@
 			time_full,
 			categories_time,
 			IF( SUM(IF(id_device_type = 3, meterEnergy, 0)) > 0, ROUND(SUM(IF(id_device_type = 3, meterEnergy, 0)), 1), ROUND(SUM(IF(id_device_type = 3, inverterEnergy, 0)), 1) ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(IF(id_device_type = 4, expected_power, NULL)), 1), 0.001  ) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(id_device_type = 4, nvm_irradiance, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(  SUM(IF(id_device_type = 3, meterEnergy, NULL)), 0.001  ) AS meterEnergy,
 			IFNULL(  SUM(IF(id_device_type = 1, inverterEnergy, NULL)), 0.001  ) AS inverterEnergy
@@ -1105,6 +1174,28 @@
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
+					<choose>
+						<when test="pv_model == 1">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</when>
+						<otherwise>
+							ROUND(AVG(IF(d.id_device_type = 4,
+								CASE
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
+									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+								END,
+								NULL
+							)), 1)
+						</otherwise>
+					</choose> AS expected_power,
 					ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1) AS nvm_irradiance,
 					ROUND(AVG(IF(d.id_device_type = 3, sdr.PowerTodayAVG, NULL)), 1) AS meterEnergy,
 					ROUND(AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)), 1) AS inverterEnergy
@@ -1475,19 +1566,20 @@
 			t.time,
 			t.time_format,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1496,7 +1588,35 @@
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1514,7 +1634,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1527,20 +1646,21 @@
 			t.time_format,
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.categories_time,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1550,7 +1670,35 @@
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
 							FLOOR(UNIX_TIMESTAMP(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) ) / (15 * 60)) AS time_key,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1568,7 +1716,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1580,19 +1727,20 @@
 			t.time,
 			t.time_format,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1600,7 +1748,35 @@
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance ,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1618,7 +1794,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1632,20 +1807,21 @@
 			t.time_format,
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.categories_time,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1654,7 +1830,35 @@
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
 							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
-							IFNULL(dv.nvm_irradiance, 0) AS nvm_irradiance 
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1672,7 +1876,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1685,19 +1888,20 @@
 			t.time,
 			t.time_format,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1705,7 +1909,35 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS download_time,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1723,7 +1955,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1735,19 +1966,20 @@
 			t.time,
 			t.time_format,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1755,7 +1987,35 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1773,7 +2033,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1787,20 +2046,21 @@
 			t.time_format,
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.categories_time,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1809,7 +2069,35 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1827,7 +2115,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY
@@ -1840,20 +2127,21 @@
 			t.time_format,
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
 			t.time_full,
 			t.download_time
 			
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
 					SELECT
 						m.time,
 						m.time_format,
 						m.time_full,
 						m.categories_time,
 						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
+						SUM(m.nvm_irradiance) AS nvm_irradiance,
+						AVG(m.expected_power) AS expected_power
 					FROM
 						(
 						SELECT
@@ -1862,7 +2150,35 @@
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance
+							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+							<choose>
+								<when test="pv_model == 1">
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</when>
+								<otherwise>
+									<choose>
+									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+									    </when>
+									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+									    </when>
+									    <otherwise>
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+									    </otherwise>
+									</choose>
+								</otherwise>
+							</choose> AS expected_power
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
@@ -1880,7 +2196,6 @@
 						) m 
 					GROUP BY
 						m.time_format
-					]]>
 		      </foreach>
 			) t 
 		GROUP BY

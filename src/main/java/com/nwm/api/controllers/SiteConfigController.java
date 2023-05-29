@@ -11,7 +11,10 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.SiteConfigService;
 import com.nwm.api.utils.Constants;
@@ -72,6 +75,28 @@ public class SiteConfigController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description update pv model setting
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @param  {}
+	 */
+	
+	@PostMapping("/update-pv-model-setting")
+	public Object updatePVModelSetting(@Valid @RequestBody SitesDevicesEntity obj) {
+		try {
+			SiteConfigService service = new SiteConfigService();
+			boolean insert = service.updatePVModelSetting(obj);
+			if (insert == true) {
+				return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+			} else {
+				return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
 	
 	/**
 	 * @description Get list site for page employee manage site
