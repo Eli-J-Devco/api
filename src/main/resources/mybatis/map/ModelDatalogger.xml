@@ -19,48 +19,243 @@
 	</resultMap>
 
 	<insert id="insertModelDatalogger" useGeneratedKeys="true" keyProperty="id_device">
-		INSERT INTO `model_datalogger`(
-		  `id_device`,
-		  `time`,
-		  `serialnumber`,
-		  `loopname`,
-		  `modbusip`,
-		  `modbusport`,
-		  `modbusdevice`,
-		  `modbusdevicename`,
-		  `modbusdevicetype`,
-		  `modbusdevicetypenumber`,
-		  `modbusdeviceclass`,
-		  `MemTotal`,
-		  `MemFree`
-		)VALUES(
-		  #{id_device},
-		  #{time},
-		  #{serialnumber},
-		  #{loopname},
-		  #{modbusip},
-		  #{modbusport},
-		  #{modbusdevice},
-		  #{modbusdevicename},
-		  #{modbusdevicetype},
-		  #{modbusdevicetypenumber},
-		  #{modbusdeviceclass},
-		  #{MemTotal},
-		  #{MemFree}
-		)ON DUPLICATE KEY UPDATE 
-		  `time` = #{time},
-		  `serialnumber` = #{serialnumber},
-		  `loopname` = #{loopname},
-		  `modbusip` = #{modbusip},
-		  `modbusport` = #{modbusport},
-		  `modbusdevice` = #{modbusdevice},
-		  `modbusdevicename` = #{modbusdevicename},
-		  `modbusdevicetype` = #{modbusdevicetype},
-		  `modbusdevicetypenumber` = #{modbusdevicetypenumber},
-		  `modbusdeviceclass` = #{modbusdeviceclass},
-		  `MemTotal` = #{MemTotal},
-		  `MemFree` = #{MemFree}
-		;
+		INSERT INTO `model_datalogger`
+		  <trim prefix="(" suffix=")" suffixOverrides=",">
+
+			  <if test="id_device != null">
+					`id_device`,
+			   </if>
+			  
+			  <if test="time != null">
+					`time`,
+			   </if>
+
+			  <if test="serialnumber != null">
+					`serialnumber`,
+			   </if>
+			  <if test="loopname != null">
+					`loopname`,
+			   </if>
+
+			  <if test="modbusip != null">
+					`modbusip`,
+			   </if>
+			  <if test="modbusport != null">
+					`modbusport`,
+			   </if>
+
+			  <if test="modbusdevice != null">
+					`modbusdevice`,
+			   </if>
+			  <if test="modbusdevicename != null">
+					`modbusdevicename`,
+			   </if>
+			  
+			  <if test="modbusdevicetype != null">
+					`modbusdevicetype`,
+			   </if>
+			  
+			  <if test="modbusdevicetypenumber != null">
+					`modbusdevicetypenumber`,
+			   </if>
+
+			  <if test="modbusdeviceclass != null">
+					`modbusdeviceclass`,
+			   </if>
+			   
+			  <if test="MemTotal != null">
+					`MemTotal`,
+			   </if>
+
+			  <if test="MemFree != null">
+					`MemFree`,
+			   </if>
+
+			  <if test="ipaddr != null">
+					`ipaddr`,
+			   </if>
+
+			  <if test="dns1 != null">
+					`dns1`,
+			   </if>
+			   
+			  <if test="dns2 != null">
+					`dns2`,
+			   </if>
+
+			  <if test="gateway != null">
+					`gateway`,
+			   </if>
+			   
+			  <if test="netmask != null">
+					`netmask`,
+			   </if>
+
+			  <if test="network != null">
+					`network`,
+			   </if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			
+			<if test="id_device != null">
+					#{id_device},
+			   </if>
+			  
+			  <if test="time != null">
+					#{time},
+			   </if>
+
+			  <if test="serialnumber != null">
+					#{serialnumber},
+			   </if>
+			  <if test="loopname != null">
+					#{loopname},
+			   </if>
+
+			  <if test="modbusip != null">
+					#{modbusip},
+			   </if>
+			  <if test="modbusport != null">
+					#{modbusport},
+			   </if>
+
+			  <if test="modbusdevice != null">
+					#{modbusdevice},
+			   </if>
+			  <if test="modbusdevicename != null">
+					#{modbusdevicename},
+			   </if>
+			  
+			  <if test="modbusdevicetype != null">
+					#{modbusdevicetype},
+			   </if>
+			  
+			  <if test="modbusdevicetypenumber != null">
+					#{modbusdevicetypenumber},
+			   </if>
+
+			  <if test="modbusdeviceclass != null">
+					#{modbusdeviceclass},
+			   </if>
+			   
+			  <if test="MemTotal != null">
+					#{MemTotal},
+			   </if>
+
+			  <if test="MemFree != null">
+					#{MemFree},
+			   </if>
+
+			  <if test="ipaddr != null">
+					#{ipaddr},
+			   </if>
+
+			  <if test="dns1 != null">
+					#{dns1},
+			   </if>
+			   
+			  <if test="dns2 != null">
+					#{dns2},
+			   </if>
+
+			  <if test="gateway != null">
+					#{gateway},
+			   </if>
+			   
+			  <if test="netmask != null">
+					#{netmask},
+			   </if>
+
+			  <if test="network != null">
+					#{network},
+			   </if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != null">
+					`id_device` = #{id_device},
+			   </if>
+			  
+			  <if test="time != null">
+					`time` = #{time},
+			   </if>
+
+			  <if test="serialnumber != null">
+					`serialnumber` = #{serialnumber},
+			   </if>
+			  <if test="loopname != null">
+					`loopname` = #{loopname},
+			   </if>
+
+			  <if test="modbusip != null">
+					`modbusip` = #{modbusip},
+			   </if>
+			  <if test="modbusport != null">
+					`modbusport` = #{modbusport},
+			   </if>
+
+			  <if test="modbusdevice != null">
+					`modbusdevice` = #{modbusdevice},
+			   </if>
+			  <if test="modbusdevicename != null">
+					`modbusdevicename` = #{modbusdevicename},
+			   </if>
+			  
+			  <if test="modbusdevicetype != null">
+					`modbusdevicetype` = #{modbusdevicetype},
+			   </if>
+			  
+			  <if test="modbusdevicetypenumber != null">
+					`modbusdevicetypenumber` = #{modbusdevicetypenumber},
+			   </if>
+
+			  <if test="modbusdeviceclass != null">
+					`modbusdeviceclass` = #{modbusdeviceclass},
+			   </if>
+			   
+			  <if test="MemTotal != null">
+					`MemTotal` = #{MemTotal},
+			   </if>
+
+			  <if test="MemFree != null">
+					`MemFree` = #{MemFree},
+			   </if>
+
+			  <if test="ipaddr != null">
+					`ipaddr` = #{ipaddr},
+			   </if>
+
+			  <if test="dns1 != null">
+					`dns1` = #{dns1},
+			   </if>
+			   
+			  <if test="dns2 != null">
+					`dns2` = #{dns2},
+			   </if>
+
+			  <if test="gateway != null">
+					`gateway` = #{gateway},
+			   </if>
+			   
+			  <if test="netmask != null">
+					`netmask` = #{netmask},
+			   </if>
+
+			  <if test="network != null">
+					`network` = #{network},
+			   </if>
+			
+		</trim>
 	</insert>
+	
+	
+	
+	
+	
+	
 
 </mapper> 

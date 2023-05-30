@@ -41,6 +41,7 @@
 				
 				WHEN d.datatablename = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
 				WHEN d.datatablename = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
+				WHEN d.datatablename = 'model_cell_modem' AND d.field_value_default = 'RSSI4' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", ROUND(d.field_value3, 2)))
 				
 				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
 				WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))

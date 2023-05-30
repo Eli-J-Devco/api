@@ -62,6 +62,7 @@ public class SitesAnalyticsService extends DB {
 		try {
 			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			if(dataDevice.size() > 0) {
 				for(int i =0; i< dataDevice.size(); i++) {
 					ObjectMapper oMapper = new ObjectMapper();
@@ -70,6 +71,8 @@ public class SitesAnalyticsService extends DB {
 					maps.put("filterBy", obj.getFilterBy());
 					maps.put("start_date", obj.getStart_date());
 					maps.put("end_date", obj.getEnd_date());
+					int diff5Days = (int) (dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1;
+					maps.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 					maps.put("data_send_time", obj.getData_send_time());
 					Date dt = new Date();
 					Calendar c = Calendar.getInstance(); 
