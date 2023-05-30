@@ -116,7 +116,8 @@
 			s.id_site_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
-			s.unit_wind_speed
+			s.unit_wind_speed,
+			sg.order_id
 			
 		FROM
 			site AS s

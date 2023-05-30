@@ -30,6 +30,15 @@ public class GroupEntity{
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
+	private int order_id;
+	
+	
+	public int getOrder_id() {
+		return order_id;
+	}
+	public void setOrder_id(int order_id) {
+		this.order_id = order_id;
+	}
 	public int getId() {
 		return id;
 	}
