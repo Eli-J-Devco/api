@@ -34,9 +34,31 @@ public class ImportOldDataEntity{
 	private String year;
 	private int id_device_type;
 	private int row; 
+	private String file_upload;
+	private String filename;
 	
 	
 	
+	
+	
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getFile_upload() {
+		return file_upload;
+	}
+	public void setFile_upload(String file_upload) {
+		this.file_upload = file_upload;
+	}
+	public String getFilename() {
+		return filename;
+	}
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
 	public int getRow() {
 		return row;
 	}

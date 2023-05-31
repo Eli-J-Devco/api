@@ -82,7 +82,7 @@ public class ImportOldDataService extends DB {
 			case "model_shark100":
 				obj.setId_device_type(3);
 				for (int i = 0; i < dataList.size(); i++) {
-					this.getTime(set, dataList.get(i));
+					this.getTime(set, (Object)dataList.get(i));
 					if(set.isEmpty()) {
 						obj.setRow(i + 2);
 						break;

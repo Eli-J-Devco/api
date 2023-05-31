@@ -87,7 +87,7 @@ public class DB {
 				encryptedPassword = readProperty(resourceBundle, "test_password", "");
 				isEnscrypt = readProperty(resourceBundle, "test_encrypt", "");
 				mysql_maximum_active_connections = readProperty(resourceBundle, "test_mysql_maximum_active_connections",
-						"50");
+						"500000");
 				break;
 			case "prod":
 				driver = readProperty(resourceBundle, "prod_driver", "com.mysql.jdbc.Driver");
@@ -96,7 +96,7 @@ public class DB {
 				encryptedPassword = readProperty(resourceBundle, "prod_password", "");
 				isEnscrypt = readProperty(resourceBundle, "prod_encrypt", "");
 				mysql_maximum_active_connections = readProperty(resourceBundle, "prod_mysql_maximum_active_connections",
-						"50");
+						"500000");
 				break;
 				
 			case "staging":
@@ -106,7 +106,7 @@ public class DB {
 				encryptedPassword = readProperty(resourceBundle, "staging_password", "");
 				isEnscrypt = readProperty(resourceBundle, "staging_encrypt", "");
 				mysql_maximum_active_connections = readProperty(resourceBundle, "staging_mysql_maximum_active_connections",
-						"50");
+						"500000");
 				break;
 			default:
 				driver = readProperty(resourceBundle, "dev_driver", "com.mysql.jdbc.Driver");
@@ -115,7 +115,7 @@ public class DB {
 				encryptedPassword = readProperty(resourceBundle, "dev_password", "");
 				isEnscrypt = readProperty(resourceBundle, "dev_encrypt", "");
 				mysql_maximum_active_connections = readProperty(resourceBundle, "dev_mysql_maximum_active_connections",
-						"50");
+						"500000");
 			}
 
 			if (!"0".equals(mysql_maximum_active_connections)) {
