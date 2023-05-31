@@ -40,7 +40,8 @@
 			s.`name`,
 			s.`description`,
 			s.`status`,
-			s.is_delete
+			s.is_delete,
+			s.order_id
 		FROM
 			site_group s 
 		WHERE s.is_delete = 0
@@ -58,6 +59,9 @@
 	            
 	            <when test="sort_column == 'status'">
 	                `status` ${order_by}
+	            </when>
+	            <when test="sort_column == 'order_id'">
+	                s.order_id ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -111,10 +115,12 @@
 	<insert id="insertGroup" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `site_group`(
 			`name`,
-			`description`
+			`description`,
+			`order_id`
 		)VALUES(
 			#{name},
-			#{description}
+			#{description},
+			#{order_id}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -126,7 +132,8 @@
 		UPDATE `site_group`
 		SET
 			`name` = #{name},
-			`description` = #{description}
+			`description` = #{description},
+			`order_id` = #{order_id}
 		WHERE
 			`id` = #{id}
 	</update>
