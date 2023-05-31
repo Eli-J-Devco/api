@@ -71,6 +71,7 @@
 			d.view_tablename,
 			d.id AS id_device,
 			d.id_device_type,
+			dt.name AS device_type_name,
 			
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
@@ -99,6 +100,7 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
 			
 			LEFT JOIN (
 				SELECT 
@@ -186,6 +188,9 @@
 			      ORDER BY l.start_date ${order_by}
 			    </when>
 			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
+			    </when>
 			    
 			    
 			    <otherwise>
