@@ -45,6 +45,7 @@
 			d.id_device_type,
 			d.id_device_group,
 			dp.is_checked,
+			dp.is_calculation,
 			dp.menu_order
 		FROM
 			device d
@@ -1403,9 +1404,39 @@
 						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)), 2), 0.001)
 					</when>
 					<when test="data_send_time != 4">
-						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy), 2), 0.001)
+						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)), 2), 0.001)
 					</when>
 				</choose> AS MeasuredProduction,
+			</if>
+			
+			<!-- Expected Power calculation field -->
+			<if test="id_device_type == 4">
+				CASE
+					WHEN s.pv_model = 1 THEN
+						<choose>
+						    <when test="datatablename == 'model_w_kipp_zonen_rt1'">
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )), 2), 0.001)
+						    </when>
+						    <when test="datatablename == 'model_imtsolar_class8000'">
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 )), 2), 0.001)
+						    </when>
+						    <otherwise>
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))), 2), 0.001)
+						    </otherwise>
+						</choose>
+					ELSE
+						<choose>
+						    <when test="datatablename == 'model_w_kipp_zonen_rt1'">
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )), 2), 0.001)
+						    </when>
+						    <when test="datatablename == 'model_imtsolar_class8000'">
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 )), 2), 0.001)
+						    </when>
+						    <otherwise>
+								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))), 2), 0.001)
+						    </otherwise>
+						</choose>
+				END AS ExpectedPower,
 			</if>
 			
 			

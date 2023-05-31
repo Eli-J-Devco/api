@@ -13,6 +13,7 @@ public class ClientMonthlyDateEntity{
 	private String categories_time;
 	private Double chart_energy_kwh;
 	private Double nvm_irradiance;
+	private Double expected_power;
 	public String getDownload_time() {
 		return download_time;
 	}
@@ -48,6 +49,12 @@ public class ClientMonthlyDateEntity{
 	}
 	public void setNvm_irradiance(Double nvm_irradiance) {
 		this.nvm_irradiance = nvm_irradiance;
+	}
+	public Double getExpected_power() {
+		return expected_power;
+	}
+	public void setExpected_power(Double expected_power) {
+		this.expected_power = expected_power;
 	}
 	
 	
