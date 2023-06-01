@@ -42,7 +42,8 @@
 			s.`status`,
 			s.is_delete,
 			i.icon AS icon_alert,
-			s.id_icon
+			s.id_icon,
+			s.color
 		FROM
 			error_level s 
 		LEFT JOIN icon i ON i.id = s.id_icon	
@@ -102,11 +103,13 @@
 		INSERT INTO `error_level`(
 			`name`,
 			`description`,
-			`id_icon`
+			`id_icon`,
+			`color`
 		)VALUES(
 			#{name},
 			#{description},
-			#{id_icon}
+			#{id_icon},
+			#{color}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -119,7 +122,8 @@
 		SET
 			`name` = #{name},
 			`description` = #{description},
-			`id_icon` = #{id_icon}
+			`id_icon` = #{id_icon},
+			`color` = #{color}
 		WHERE
 			`id` = #{id}
 	</update>

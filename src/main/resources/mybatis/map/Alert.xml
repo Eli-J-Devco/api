@@ -72,6 +72,7 @@
 			d.id AS id_device,
 			d.id_device_type,
 			dt.name AS device_type_name,
+			el.color AS color_error_level,
 			
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
