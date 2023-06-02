@@ -62,6 +62,8 @@
 			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
 			
 			d.id_device_type,
 			d.datatablename,
@@ -101,6 +103,7 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
 			
 			LEFT JOIN (
 				SELECT 
@@ -181,6 +184,10 @@
 			    
 			    <when test="sort_column == 'open_period'">
 			      ORDER BY l.start_date ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
 			    </when>
 			    
 			    
