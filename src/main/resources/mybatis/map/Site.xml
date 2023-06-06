@@ -69,6 +69,12 @@
 		<result property="unit_type_temp" column="unit_type_temp" />
 		<result property="unit_wind_speed" column="unit_wind_speed" />
 		
+		<result property="ftp_server" column="ftp_server" />
+		<result property="ftp_user" column="ftp_user" />
+		<result property="ftp_pass" column="ftp_pass" />
+		<result property="ftp_port" column="ftp_port" />
+		<result property="ftp_folder" column="ftp_folder" />
+		
 		
 		
 		
@@ -212,7 +218,12 @@
 			s.id_site_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
-			s.unit_wind_speed
+			s.unit_wind_speed,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -323,7 +334,12 @@
 			`id_site_group`,
 			`timezone_datalogger`,
 			`unit_type_temp`,
-			`unit_wind_speed`
+			`unit_wind_speed`,
+			`ftp_server`,
+			`ftp_user`,
+			`ftp_pass`,
+			`ftp_port`,
+			`ftp_folder`
 		)VALUES(
 			#{id_company},
 			#{id_country},
@@ -356,7 +372,12 @@
 			#{id_site_group},
 			#{timezone_datalogger},
 			#{unit_type_temp},
-			#{unit_wind_speed}
+			#{unit_wind_speed},
+			#{ftp_server},
+			#{ftp_user},
+			#{ftp_pass},
+			#{ftp_port},
+			#{ftp_folder}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -398,7 +419,12 @@
 			`id_site_group` = #{id_site_group},
 			`timezone_datalogger` = #{timezone_datalogger},
 			`unit_type_temp` = #{unit_type_temp},
-			`unit_wind_speed` = #{unit_wind_speed}
+			`unit_wind_speed` = #{unit_wind_speed},
+			`ftp_server` = #{ftp_server},
+			`ftp_user` = #{ftp_user},
+			`ftp_pass` = #{ftp_pass},
+			`ftp_port` = #{ftp_port},
+			`ftp_folder` = #{ftp_folder}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -448,7 +474,12 @@
 			c.name AS company,
 			sg.name AS site_group,
 			tz.name AS time_zone,
-			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), 'N/A') AS last_modified
+			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), 'N/A') AS last_modified,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -600,7 +631,12 @@
 			s.id_site_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
-			s.unit_wind_speed
+			s.unit_wind_speed,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder
 		FROM
 			site AS s
 		WHERE
@@ -654,7 +690,12 @@
 			s.id_site_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
-			s.unit_wind_speed
+			s.unit_wind_speed,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder
 		FROM
 			site AS s
 		WHERE s.is_delete = 0;
