@@ -3223,6 +3223,8 @@
 			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
+			dt.name AS device_type_name,
+			el.color AS color_error_level,
 			el.level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
@@ -3259,6 +3261,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN site_employee_map scm ON s.id = scm.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
 			WHERE e.`status` = 1 AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND s.status = 1
@@ -3328,6 +3331,10 @@
 			    
 			    <when test="sort_column == 'open_period'">
 			      ORDER BY `open_period` ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'device_type_name'">
+			      ORDER BY dt.name ${order_by}
 			    </when>
 			    
 			    
