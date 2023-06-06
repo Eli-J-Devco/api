@@ -85,6 +85,8 @@ public class SitesDevicesEntity {
 	private int display_date_format;
 	private String date_format;
 	private int checkall;
+	private int pv_model;
+	private Double t_avg_nrel;
 	
 	private String ssh_host;
 	private String ssh_user;
@@ -582,6 +584,18 @@ public class SitesDevicesEntity {
 	}
 	public void setIs_calculation_expand(int is_calculation_expand) {
 		this.is_calculation_expand = is_calculation_expand;
+	}
+	public int getPv_model() {
+		return pv_model;
+	}
+	public void setPv_model(int pv_model) {
+		this.pv_model = pv_model;
+	}
+	public Double getT_avg_nrel() {
+		return t_avg_nrel;
+	}
+	public void setT_avg_nrel(Double t_avg_nrel) {
+		this.t_avg_nrel = t_avg_nrel;
 	}
 	
 	

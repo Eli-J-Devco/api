@@ -106,6 +106,14 @@
 		
 	</update>
 	
+	<update id="updatePVModelSetting">
+		UPDATE `site`
+		SET
+			pv_model = #{pv_model},
+			t_avg_nrel = #{t_avg_nrel}
+		WHERE
+			`id` = #{id}
+	</update>
 	
 	<update id="updateDeviceResetDisableAlert">
 		UPDATE `device`

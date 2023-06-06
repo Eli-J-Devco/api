@@ -33,6 +33,7 @@ public class DeviceParameterEntity{
 	private String value_chart_tool;
 	private int is_checked;
 	private int menu_order;
+	private int is_calculation;
 	
 	
 	
@@ -179,6 +180,12 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_checked(int is_checked) {
 		this.is_checked = is_checked;
+	}
+	public int getIs_calculation() {
+		return is_calculation;
+	}
+	public void setIs_calculation(int is_calculation) {
+		this.is_calculation = is_calculation;
 	}
 	
 

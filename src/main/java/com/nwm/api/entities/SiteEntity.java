@@ -155,6 +155,7 @@ public class SiteEntity {
 	private String gu_id;
 	private int unit_type_temp;
 	private int unit_wind_speed;
+	private int pv_model;
 	
 
 	
@@ -999,6 +1000,12 @@ public class SiteEntity {
 	}
 	public void setId_site_group(int id_site_group) {
 		this.id_site_group = id_site_group;
+	}
+	public int getPv_model() {
+		return pv_model;
+	}
+	public void setPv_model(int pv_model) {
+		this.pv_model = pv_model;
 	}
 	
 	

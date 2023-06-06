@@ -235,6 +235,7 @@
 			d.ssh_user,
 			d.ssh_pass,
 			d.id_device_type,
+			d.id_device_group,
 			d.ssh_port,
 			dt.`name` AS device_type_name,
 			dt.image,
@@ -292,6 +293,7 @@
   	<select id="getListDeviceParameter" resultType="com.nwm.api.entities.DeviceParameterEntity" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			dp.id,
+			dg.id AS id_device_group,
 			dp.`name`,
 			dp.slug,
 			dp.unit,

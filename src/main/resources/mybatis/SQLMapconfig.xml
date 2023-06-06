@@ -18,10 +18,10 @@
 				<property name="username" value="${database.username}" />
 				<property name="password" value="${database.password}" />
 				
-				<property name="poolMaximumActiveConnections" value="50000" />
-				<property name="poolMaximumIdleConnections" value="10000" />
-				<property name="poolMaximumCheckoutTime" value="120000" />
-				<property name="poolTimeToWait" value="500" />
+				<property name="poolMaximumActiveConnections" value="50000000" />
+				<property name="poolMaximumIdleConnections" value="10000000" />
+				<property name="poolMaximumCheckoutTime" value="120000000" />
+				<property name="poolTimeToWait" value="50000" />
 				
 				
 				<property name="poolPingQuery" value="select 1" />

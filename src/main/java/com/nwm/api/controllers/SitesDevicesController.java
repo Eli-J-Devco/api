@@ -105,8 +105,67 @@ public class SitesDevicesController extends BaseController {
 				final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 			    final String utcTime = sdf.format(new Date());
-				
-				if(getDetail.getId_device_type() == 5 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+			    
+//			    if(getDetail.getId_device_group() == 45 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+//			    	// datalogger
+//					ModelDataloggerService dataloggerModem = new ModelDataloggerService();
+//					ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
+//					dataloggerEntity.setTime(utcTime);
+//					
+//					DeviceEntity deviceUpdateE = new DeviceEntity();
+//					DeviceService serviceD = new DeviceService();
+//					
+//					 // Reading SSH info
+//				    Session session = null;
+//					ChannelExec channeldns1 = null;
+//					String commanddns1 = "AT*DNS1?";
+//					
+//					try {
+//						session = new JSch().getSession(getDetail.getSsh_user(), getDetail.getSsh_host(), Integer.parseInt(getDetail.getSsh_port()) );
+//						session.setPassword(getDetail.getSsh_pass());
+//						session.setConfig("StrictHostKeyChecking", "no");
+//						session.connect(1000);
+//
+//						channeldns1 = (ChannelExec) session.openChannel("exec");
+//						channeldns1.setCommand(commanddns1);
+//						channeldns1.setInputStream(null);
+//						
+//						ByteArrayOutputStream responseStreamdns1 = new ByteArrayOutputStream();
+//						channeldns1.setOutputStream(responseStreamdns1);
+//						InputStream isdns1 = channeldns1.getInputStream();
+//						channeldns1.connect();
+//
+////						while (channeldns1.isConnected()) { Thread.sleep(1000); }
+//						
+//						System.out.println("Connect: " + channeldns1.isConnected());
+//						
+//				
+//						try (BufferedReader br = new BufferedReader(new InputStreamReader(isdns1))) {
+//							for (String line = br.readLine(); line != null; line = br.readLine()) {
+//								System.out.println("Line: " + line);
+//							}
+//						}
+//						
+//						return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
+//
+//					} 
+//					catch(Exception e){
+//					      System.out.println(e);
+//					      return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
+//					    }
+//					finally {
+//						if (session != null) {
+//							session.disconnect();
+//						}
+//						if (channeldns1 != null) {
+//							channeldns1.disconnect();
+//						}
+//					}
+//					
+//			    } else 
+			    	
+			    	
+			    	if(getDetail.getId_device_group() == 19 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
 					// datalogger
 					ModelDataloggerService dataloggerModem = new ModelDataloggerService();
 					ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
@@ -276,7 +335,7 @@ public class SitesDevicesController extends BaseController {
 					
 				
 					
-				} else if(getDetail.getId_device_type() == 10 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
+				} else if(getDetail.getId_device_group() == 40 && obj.getReload_ssh() == 1 && getDetail.getSsh_host() != null && getDetail.getSsh_user() != null && getDetail.getSsh_pass() != null && getDetail.getSsh_port() != null) {
 					
 					// Save device cell modem 
 					ModelCellModemService serviceCellModem = new ModelCellModemService();

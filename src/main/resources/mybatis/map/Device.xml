@@ -297,13 +297,13 @@
 	</insert>
 	
 	<update id="updateDevice">
-		<if test="checkallInverterDevice == 1">
+		<if test="checkAll == 1">
 			UPDATE `device`
 			SET
 				rating_ac_power = #{rating_ac_power}
-			WHERE id_site = #{id_site} AND id_device_type = 1
+			WHERE id_site = #{id_site} AND id_device_type = #{id_device_type}
 		</if>
-		<if test="checkallInverterDevice == 0">
+		<if test="checkAll == 0">
 			UPDATE `device`
 			SET
 				id_site = #{id_site},

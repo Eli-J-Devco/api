@@ -55,7 +55,9 @@
 			g.total_error,
 			s.display_time_format,
 			s.display_date_format,
-			d.name AS date_format
+			d.name AS date_format,
+			s.pv_model,
+			s.t_avg_nrel
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

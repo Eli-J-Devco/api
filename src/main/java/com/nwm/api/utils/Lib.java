@@ -2808,5 +2808,29 @@ Lib {
 
 	    return result;
 	}
+	
+	
+	
+	
+	/**
+	 * This method is validate date
+	 * 
+	 * @author Long.Pham
+	 * @date 2023-05-31
+	 * 
+	 * @return
+	 */
+	
+	final static String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static boolean isDateValid(String date) {
+		try {
+            DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+            df.setLenient(false);
+            df.parse(date);
+            return true;
+        } catch (ParseException e) {
+            return false;
+        }
+	}
 
 }
