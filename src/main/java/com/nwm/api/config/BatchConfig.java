@@ -118,8 +118,12 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 */30 * * * *")
 	public void startBatchJobGetNoProduction() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobGetNoProduction();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (!env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGetNoProduction();
+		}
 	}
 	
 	/**
@@ -131,8 +135,12 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 */20 * * * *")
 	public void startBatchJobGetNoCommunication() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobGetNoCommunication();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (!env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGetNoCommunication();
+		}
 	}
 	
 	
