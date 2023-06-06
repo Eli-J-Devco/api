@@ -1,0 +1,1336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAE1000NXClass9644">
+	<resultMap id="ModelAE1000NXClass9644Map"
+		type="com.nwm.api.entities.ModelAE1000NXClass9644Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="LastRestart" column="LastRestart" />
+		<result property="Uptime" column="Uptime" />
+		<result property="Year" column="Year" />
+		<result property="Month" column="Month" />
+		<result property="Day" column="Day" />
+		<result property="Hour" column="Hour" />
+		<result property="Minutes" column="Minutes" />
+		<result property="Seconds" column="Seconds" />
+		<result property="CurrentTime" column="CurrentTime" />
+		<result property="ACPower" column="ACPower" />
+		<result property="ACFrequency" column="ACFrequency" />
+		<result property="PVVoltage" column="PVVoltage" />
+		<result property="PVCurrent" column="PVCurrent" />
+		<result property="CommonMode" column="CommonMode" />
+		<result property="AmbientTemperature" column="AmbientTemperature" />
+		<result property="CoolantTemperature" column="CoolantTemperature" />
+		<result property="ReactorTemperature" column="ReactorTemperature" />
+		<result property="CabinetTemperature" column="CabinetTemperature" />
+		<result property="BusVoltage" column="BusVoltage" />
+		<result property="GroundCurrent" column="GroundCurrent" />
+		<result property="ReactivePower" column="ReactivePower" />
+		<result property="ACCurrent" column="ACCurrent" />
+		<result property="TodaykWh" column="TodaykWh" />
+		<result property="YTDkWhTotal" column="YTDkWhTotal" />
+		<result property="LifekWhTotal" column="LifekWhTotal" />
+		<result property="YTDkWh" column="YTDkWh" />
+		<result property="LifekWh" column="LifekWh" />
+		<result property="Last15MinkWh" column="Last15MinkWh" />
+		<result property="TimeStamp15Minutes" column="TimeStamp15Minutes" />
+		<result property="State" column="State" />
+		<result property="Limits" column="Limits" />
+		<result property="MasterFault" column="MasterFault" />
+		<result property="MasterWarning" column="MasterWarning" />
+		<result property="ArrayFault" column="ArrayFault" />
+		<result property="ArrayWarning" column="ArrayWarning" />
+		<result property="GridFault" column="GridFault" />
+		<result property="GridWarning" column="GridWarning" />
+		<result property="SystemFault" column="SystemFault" />
+		<result property="SystemWarning" column="SystemWarning" />
+		<result property="DriveFault" column="DriveFault" />
+		<result property="DriveWarning" column="DriveWarning" />
+		<result property="TemperatureFault" column="TemperatureFault" />
+		<result property="TemperatureWarning" column="TemperatureWarning" />
+		<result property="CoolingSystemFault" column="CoolingSystemFault" />
+		<result property="CoolingSystemWarning" column="CoolingSystemWarning" />
+		<result property="ElectricInterlockFault" column="ElectricInterlockFault" />
+		<result property="ElectricInterlockWarning" column="ElectricInterlockWarning" />
+		<result property="PowerSupplyFault" column="PowerSupplyFault" />
+		<result property="PowerSupplyWarning" column="PowerSupplyWarning" />
+		<result property="RequestSetACPowerLimit" column="RequestSetACPowerLimit" />
+		<result property="LowerRangeOfACPowerLimit" column="LowerRangeOfACPowerLimit" />
+		<result property="UpperRangeOfACPowerLimit" column="UpperRangeOfACPowerLimit" />
+		<result property="RequestSetInstantaneousReactivePowerSetPoint" column="RequestSetInstantaneousReactivePowerSetPoint" />
+		<result property="LowerRangeOfInstantaneousReactivePowerSetPoint" column="LowerRangeOfInstantaneousReactivePowerSetPoint" />
+		<result property="UpperRangeOfInstantaneousReactivePowerSetPoint" column="UpperRangeOfInstantaneousReactivePowerSetPoint" />
+		<result property="EnableDisableTheUnit" column="EnableDisableTheUnit" />
+		<result property="SetReadReactivePowerMode" column="SetReadReactivePowerMode" />
+		<result property="SetReadPACLimit" column="SetReadPACLimit" />
+		<result property="SetReadInstantaneousReactivePowerSetPoint" column="SetReadInstantaneousReactivePowerSetPoint" />
+		<result property="SetReadPowerFactorSetPoint" column="SetReadPowerFactorSetPoint" />
+		<result property="ACPowerRampRate" column="ACPowerRampRate" />
+		<result property="ReactivePowerRampRate" column="ReactivePowerRampRate" />
+		<result property="PowerFactorRampRate" column="PowerFactorRampRate" />
+		<result property="ReactivePowerSignConvention" column="ReactivePowerSignConvention" />
+		<result property="DCS_N" column="DCS_N" />
+		<result property="DCS_StCtcr" column="DCS_StCtcr" />
+		<result property="DCS_StCpt" column="DCS_StCpt" />
+		<result property="DCS_EvtFlt" column="DCS_EvtFlt" />
+		<result property="DCS_EvtWrn" column="DCS_EvtWrn" />
+		<result property="DCS_StVnd" column="DCS_StVnd" />
+		<result property="DCS_DCA" column="DCS_DCA" />
+		<result property="DCS_DCADif" column="DCS_DCADif" />
+		<result property="DCS_DCV" column="DCS_DCV" />
+		<result property="DCS_Tmp" column="DCS_Tmp" />
+		<result property="DCS_InId01" column="DCS_InId01" />
+		<result property="DCS_InFlt01" column="DCS_InFlt01" />
+		<result property="DCS_InWrn01" column="DCS_InWrn01" />
+		<result property="DCS_InPDCA01" column="DCS_InPDCA01" />
+		<result property="DCS_InNDCA01" column="DCS_InNDCA01" />
+		<result property="DCS_InId02" column="DCS_InId02" />
+		<result property="DCS_InFlt02" column="DCS_InFlt02" />
+		<result property="DCS_InWrn02" column="DCS_InWrn02" />
+		<result property="DCS_InPDCA02" column="DCS_InPDCA02" />
+		<result property="DCS_InNDCA02" column="DCS_InNDCA02" />
+		<result property="DCS_InId03" column="DCS_InId03" />
+		<result property="DCS_InFlt03" column="DCS_InFlt03" />
+		<result property="DCS_InWrn03" column="DCS_InWrn03" />
+		<result property="DCS_InPDCA03" column="DCS_InPDCA03" />
+		<result property="DCS_InNDCA03" column="DCS_InNDCA03" />
+		<result property="DCS_InId04" column="DCS_InId04" />
+		<result property="DCS_InFlt04" column="DCS_InFlt04" />
+		<result property="DCS_InWrn04" column="DCS_InWrn04" />
+		<result property="DCS_InPDCA04" column="DCS_InPDCA04" />
+		<result property="DCS_InNDCA04" column="DCS_InNDCA04" />
+		<result property="DCS_InId05" column="DCS_InId05" />
+		<result property="DCS_InFlt05" column="DCS_InFlt05" />
+		<result property="DCS_InWrn05" column="DCS_InWrn05" />
+		<result property="DCS_InPDCA05" column="DCS_InPDCA05" />
+		<result property="DCS_InNDCA05" column="DCS_InNDCA05" />
+		<result property="DCS_InId06" column="DCS_InId06" />
+		<result property="DCS_InFlt06" column="DCS_InFlt06" />
+		<result property="DCS_InWrn06" column="DCS_InWrn06" />
+		<result property="DCS_InPDCA06" column="DCS_InPDCA06" />
+		<result property="DCS_InNDCA06" column="DCS_InNDCA06" />
+		<result property="DCS_InId07" column="DCS_InId07" />
+		<result property="DCS_InFlt07" column="DCS_InFlt07" />
+		<result property="DCS_InWrn07" column="DCS_InWrn07" />
+		<result property="DCS_InPDCA07" column="DCS_InPDCA07" />
+		<result property="DCS_InNDCA07" column="DCS_InNDCA07" />
+		<result property="DCS_InId08" column="DCS_InId08" />
+		<result property="DCS_InFlt08" column="DCS_InFlt08" />
+		<result property="DCS_InWrn08" column="DCS_InWrn08" />
+		<result property="DCS_InPDCA08" column="DCS_InPDCA08" />
+		<result property="DCS_InNDCA08" column="DCS_InNDCA08" />
+		<result property="DCS_InId09" column="DCS_InId09" />
+		<result property="DCS_InFlt09" column="DCS_InFlt09" />
+		<result property="DCS_InWrn09" column="DCS_InWrn09" />
+		<result property="DCS_InPDCA09" column="DCS_InPDCA09" />
+		<result property="DCS_InNDCA09" column="DCS_InNDCA09" />
+		<result property="DCS_InId10" column="DCS_InId10" />
+		<result property="DCS_InFlt10" column="DCS_InFlt10" />
+		<result property="DCS_InWrn10" column="DCS_InWrn10" />
+		<result property="DCS_InPDCA10" column="DCS_InPDCA10" />
+		<result property="DCS_InNDCA10" column="DCS_InNDCA10" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+	
+	<insert id="insertModelAE1000NXClass9644" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_ae1000nx_class9644`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="LastRestart != 0.001">
+				`LastRestart`,
+			</if>
+			<if test="Uptime != 0.001">
+				`Uptime`,
+			</if>
+			<if test="Year != 0.001">
+				`Year`,
+			</if>
+			<if test="Month != 0.001">
+				`Month`,
+			</if>
+			<if test="Day != 0.001">
+				`Day`,
+			</if>
+			<if test="Hour != 0.001">
+				`Hour`,
+			</if>
+			<if test="Minutes != 0.001">
+				`Minutes`,
+			</if>
+			<if test="Seconds != 0.001">
+				`Seconds`,
+			</if>
+			<if test="CurrentTime != 0.001">
+				`CurrentTime`,
+			</if>
+			<if test="ACPower != 0.001">
+				`ACPower`,
+			</if>
+			<if test="ACFrequency != 0.001">
+				`ACFrequency`,
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage`,
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent`,
+			</if>
+			<if test="CommonMode != 0.001">
+				`CommonMode`,
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				`AmbientTemperature`,
+			</if>
+			<if test="CoolantTemperature != 0.001">
+				`CoolantTemperature`,
+			</if>
+			<if test="ReactorTemperature != 0.001">
+				`ReactorTemperature`,
+			</if>
+			<if test="CabinetTemperature != 0.001">
+				`CabinetTemperature`,
+			</if>
+			<if test="BusVoltage != 0.001">
+				`BusVoltage`,
+			</if>
+			<if test="GroundCurrent != 0.001">
+				`GroundCurrent`,
+			</if>
+			<if test="ReactivePower != 0.001">
+				`ReactivePower`,
+			</if>
+			<if test="ACCurrent != 0.001">
+				`ACCurrent`,
+			</if>
+			<if test="TodaykWh != 0.001">
+				`TodaykWh`,
+			</if>
+			<if test="YTDkWhTotal != 0.001">
+				`YTDkWhTotal`,
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				`LifekWhTotal`,
+			</if>
+			<if test="YTDkWh != 0.001">
+				`YTDkWh`,
+			</if>
+			<if test="LifekWh != 0.001">
+				`LifekWh`,
+			</if>
+			<if test="Last15MinkWh != 0.001">
+				`Last15MinkWh`,
+			</if>
+			<if test="TimeStamp15Minutes != 0.001">
+				`TimeStamp15Minutes`,
+			</if>
+			<if test="State != 0.001">
+				`State`,
+			</if>
+			<if test="Limits != 0.001">
+				`Limits`,
+			</if>
+			<if test="MasterFault != 0.001">
+				`MasterFault`,
+			</if>
+			<if test="MasterWarning != 0.001">
+				`MasterWarning`,
+			</if>
+			<if test="ArrayFault != 0.001">
+				`ArrayFault`,
+			</if>
+			<if test="ArrayWarning != 0.001">
+				`ArrayWarning`,
+			</if>
+			<if test="GridFault != 0.001">
+				`GridFault`,
+			</if>
+			<if test="GridWarning != 0.001">
+				`GridWarning`,
+			</if>
+			<if test="SystemFault != 0.001">
+				`SystemFault`,
+			</if>
+			<if test="SystemWarning != 0.001">
+				`SystemWarning`,
+			</if>
+			<if test="DriveFault != 0.001">
+				`DriveFault`,
+			</if>
+			<if test="DriveWarning != 0.001">
+				`DriveWarning`,
+			</if>
+			<if test="TemperatureFault != 0.001">
+				`TemperatureFault`,
+			</if>
+			<if test="TemperatureWarning != 0.001">
+				`TemperatureWarning`,
+			</if>
+			<if test="CoolingSystemFault != 0.001">
+				`CoolingSystemFault`,
+			</if>
+			<if test="CoolingSystemWarning != 0.001">
+				`CoolingSystemWarning`,
+			</if>
+			<if test="ElectricInterlockFault != 0.001">
+				`ElectricInterlockFault`,
+			</if>
+			<if test="ElectricInterlockWarning != 0.001">
+				`ElectricInterlockWarning`,
+			</if>
+			<if test="PowerSupplyFault != 0.001">
+				`PowerSupplyFault`,
+			</if>
+			<if test="PowerSupplyWarning != 0.001">
+				`PowerSupplyWarning`,
+			</if>
+			<if test="RequestSetACPowerLimit != 0.001">
+				`RequestSetACPowerLimit`,
+			</if>
+			<if test="LowerRangeOfACPowerLimit != 0.001">
+				`LowerRangeOfACPowerLimit`,
+			</if>
+			<if test="UpperRangeOfACPowerLimit != 0.001">
+				`UpperRangeOfACPowerLimit`,
+			</if>
+			<if test="RequestSetInstantaneousReactivePowerSetPoint != 0.001">
+				`RequestSetInstantaneousReactivePowerSetPoint`,
+			</if>
+			<if test="LowerRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				`LowerRangeOfInstantaneousReactivePowerSetPoint`,
+			</if>
+			<if test="UpperRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				`UpperRangeOfInstantaneousReactivePowerSetPoint`,
+			</if>
+			<if test="EnableDisableTheUnit != 0.001">
+				`EnableDisableTheUnit`,
+			</if>
+			<if test="SetReadReactivePowerMode != 0.001">
+				`SetReadReactivePowerMode`,
+			</if>
+			<if test="SetReadPACLimit != 0.001">
+				`SetReadPACLimit`,
+			</if>
+			<if test="SetReadInstantaneousReactivePowerSetPoint != 0.001">
+				`SetReadInstantaneousReactivePowerSetPoint`,
+			</if>
+			<if test="SetReadPowerFactorSetPoint != 0.001">
+				`SetReadPowerFactorSetPoint`,
+			</if>
+			<if test="ACPowerRampRate != 0.001">
+				`ACPowerRampRate`,
+			</if>
+			<if test="ReactivePowerRampRate != 0.001">
+				`ReactivePowerRampRate`,
+			</if>
+			<if test="PowerFactorRampRate != 0.001">
+				`PowerFactorRampRate`,
+			</if>
+			<if test="ReactivePowerSignConvention != 0.001">
+				`ReactivePowerSignConvention`,
+			</if>
+			<if test="DCS_N != 0.001">
+				`DCS_N`,
+			</if>
+			<if test="DCS_StCtcr != 0.001">
+				`DCS_StCtcr`,
+			</if>
+			<if test="DCS_StCpt != 0.001">
+				`DCS_StCpt`,
+			</if>
+			<if test="DCS_EvtFlt != 0.001">
+				`DCS_EvtFlt`,
+			</if>
+			<if test="DCS_EvtWrn != 0.001">
+				`DCS_EvtWrn`,
+			</if>
+			<if test="DCS_StVnd != 0.001">
+				`DCS_StVnd`,
+			</if>
+			<if test="DCS_DCA != 0.001">
+				`DCS_DCA`,
+			</if>
+			<if test="DCS_DCADif != 0.001">
+				`DCS_DCADif`,
+			</if>
+			<if test="DCS_DCV != 0.001">
+				`DCS_DCV`,
+			</if>
+			<if test="DCS_Tmp != 0.001">
+				`DCS_Tmp`,
+			</if>
+			<if test="DCS_InId01 != 0.001">
+				`DCS_InId01`,
+			</if>
+			<if test="DCS_InFlt01 != 0.001">
+				`DCS_InFlt01`,
+			</if>
+			<if test="DCS_InWrn01 != 0.001">
+				`DCS_InWrn01`,
+			</if>
+			<if test="DCS_InPDCA01 != 0.001">
+				`DCS_InPDCA01`,
+			</if>
+			<if test="DCS_InNDCA01 != 0.001">
+				`DCS_InNDCA01`,
+			</if>
+			<if test="DCS_InId02 != 0.001">
+				`DCS_InId02`,
+			</if>
+			<if test="DCS_InFlt02 != 0.001">
+				`DCS_InFlt02`,
+			</if>
+			<if test="DCS_InWrn02 != 0.001">
+				`DCS_InWrn02`,
+			</if>
+			<if test="DCS_InPDCA02 != 0.001">
+				`DCS_InPDCA02`,
+			</if>
+			<if test="DCS_InNDCA02 != 0.001">
+				`DCS_InNDCA02`,
+			</if>
+			<if test="DCS_InId03 != 0.001">
+				`DCS_InId03`,
+			</if>
+			<if test="DCS_InFlt03 != 0.001">
+				`DCS_InFlt03`,
+			</if>
+			<if test="DCS_InWrn03 != 0.001">
+				`DCS_InWrn03`,
+			</if>
+			<if test="DCS_InPDCA03 != 0.001">
+				`DCS_InPDCA03`,
+			</if>
+			<if test="DCS_InNDCA03 != 0.001">
+				`DCS_InNDCA03`,
+			</if>
+			<if test="DCS_InId04 != 0.001">
+				`DCS_InId04`,
+			</if>
+			<if test="DCS_InFlt04 != 0.001">
+				`DCS_InFlt04`,
+			</if>
+			<if test="DCS_InWrn04 != 0.001">
+				`DCS_InWrn04`,
+			</if>
+			<if test="DCS_InPDCA04 != 0.001">
+				`DCS_InPDCA04`,
+			</if>
+			<if test="DCS_InNDCA04 != 0.001">
+				`DCS_InNDCA04`,
+			</if>
+			<if test="DCS_InId05 != 0.001">
+				`DCS_InId05`,
+			</if>
+			<if test="DCS_InFlt05 != 0.001">
+				`DCS_InFlt05`,
+			</if>
+			<if test="DCS_InWrn05 != 0.001">
+				`DCS_InWrn05`,
+			</if>
+			<if test="DCS_InPDCA05 != 0.001">
+				`DCS_InPDCA05`,
+			</if>
+			<if test="DCS_InNDCA05 != 0.001">
+				`DCS_InNDCA05`,
+			</if>
+			<if test="DCS_InId06 != 0.001">
+				`DCS_InId06`,
+			</if>
+			<if test="DCS_InFlt06 != 0.001">
+				`DCS_InFlt06`,
+			</if>
+			<if test="DCS_InWrn06 != 0.001">
+				`DCS_InWrn06`,
+			</if>
+			<if test="DCS_InPDCA06 != 0.001">
+				`DCS_InPDCA06`,
+			</if>
+			<if test="DCS_InNDCA06 != 0.001">
+				`DCS_InNDCA06`,
+			</if>
+			<if test="DCS_InId07 != 0.001">
+				`DCS_InId07`,
+			</if>
+			<if test="DCS_InFlt07 != 0.001">
+				`DCS_InFlt07`,
+			</if>
+			<if test="DCS_InWrn07 != 0.001">
+				`DCS_InWrn07`,
+			</if>
+			<if test="DCS_InPDCA07 != 0.001">
+				`DCS_InPDCA07`,
+			</if>
+			<if test="DCS_InNDCA07 != 0.001">
+				`DCS_InNDCA07`,
+			</if>
+			<if test="DCS_InId08 != 0.001">
+				`DCS_InId08`,
+			</if>
+			<if test="DCS_InFlt08 != 0.001">
+				`DCS_InFlt08`,
+			</if>
+			<if test="DCS_InWrn08 != 0.001">
+				`DCS_InWrn08`,
+			</if>
+			<if test="DCS_InPDCA08 != 0.001">
+				`DCS_InPDCA08`,
+			</if>
+			<if test="DCS_InNDCA08 != 0.001">
+				`DCS_InNDCA08`,
+			</if>
+			<if test="DCS_InId09 != 0.001">
+				`DCS_InId09`,
+			</if>
+			<if test="DCS_InFlt09 != 0.001">
+				`DCS_InFlt09`,
+			</if>
+			<if test="DCS_InWrn09 != 0.001">
+				`DCS_InWrn09`,
+			</if>
+			<if test="DCS_InPDCA09 != 0.001">
+				`DCS_InPDCA09`,
+			</if>
+			<if test="DCS_InNDCA09 != 0.001">
+				`DCS_InNDCA09`,
+			</if>
+			<if test="DCS_InId10 != 0.001">
+				`DCS_InId10`,
+			</if>
+			<if test="DCS_InFlt10 != 0.001">
+				`DCS_InFlt10`,
+			</if>
+			<if test="DCS_InWrn10 != 0.001">
+				`DCS_InWrn10`,
+			</if>
+			<if test="DCS_InPDCA10 != 0.001">
+				`DCS_InPDCA10`,
+			</if>
+			<if test="DCS_InNDCA10 != 0.001">
+				`DCS_InNDCA10`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="LastRestart != 0.001">
+				#{LastRestart},
+			</if>
+			<if test="Uptime != 0.001">
+				#{Uptime},
+			</if>
+			<if test="Year != 0.001">
+				#{Year},
+			</if>
+			<if test="Month != 0.001">
+				#{Month},
+			</if>
+			<if test="Day != 0.001">
+				#{Day},
+			</if>
+			<if test="Hour != 0.001">
+				#{Hour},
+			</if>
+			<if test="Minutes != 0.001">
+				#{Minutes},
+			</if>
+			<if test="Seconds != 0.001">
+				#{Seconds},
+			</if>
+			<if test="CurrentTime != 0.001">
+				#{CurrentTime},
+			</if>
+			<if test="ACPower != 0.001">
+				#{ACPower},
+			</if>
+			<if test="ACFrequency != 0.001">
+				#{ACFrequency},
+			</if>
+			<if test="PVVoltage != 0.001">
+				#{PVVoltage},
+			</if>
+			<if test="PVCurrent != 0.001">
+				#{PVCurrent},
+			</if>
+			<if test="CommonMode != 0.001">
+				#{CommonMode},
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				#{AmbientTemperature},
+			</if>
+			<if test="CoolantTemperature != 0.001">
+				#{CoolantTemperature},
+			</if>
+			<if test="ReactorTemperature != 0.001">
+				#{ReactorTemperature},
+			</if>
+			<if test="CabinetTemperature != 0.001">
+				#{CabinetTemperature},
+			</if>
+			<if test="BusVoltage != 0.001">
+				#{BusVoltage},
+			</if>
+			<if test="GroundCurrent != 0.001">
+				#{GroundCurrent},
+			</if>
+			<if test="ReactivePower != 0.001">
+				#{ReactivePower},
+			</if>
+			<if test="ACCurrent != 0.001">
+				#{ACCurrent},
+			</if>
+			<if test="TodaykWh != 0.001">
+				#{TodaykWh},
+			</if>
+			<if test="YTDkWhTotal != 0.001">
+				#{YTDkWhTotal},
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				#{LifekWhTotal},
+			</if>
+			<if test="YTDkWh != 0.001">
+				#{YTDkWh},
+			</if>
+			<if test="LifekWh != 0.001">
+				#{LifekWh},
+			</if>
+			<if test="Last15MinkWh != 0.001">
+				#{Last15MinkWh},
+			</if>
+			<if test="TimeStamp15Minutes != 0.001">
+				#{TimeStamp15Minutes},
+			</if>
+			<if test="State != 0.001">
+				#{State},
+			</if>
+			<if test="Limits != 0.001">
+				#{Limits},
+			</if>
+			<if test="MasterFault != 0.001">
+				#{MasterFault},
+			</if>
+			<if test="MasterWarning != 0.001">
+				#{MasterWarning},
+			</if>
+			<if test="ArrayFault != 0.001">
+				#{ArrayFault},
+			</if>
+			<if test="ArrayWarning != 0.001">
+				#{ArrayWarning},
+			</if>
+			<if test="GridFault != 0.001">
+				#{GridFault},
+			</if>
+			<if test="GridWarning != 0.001">
+				#{GridWarning},
+			</if>
+			<if test="SystemFault != 0.001">
+				#{SystemFault},
+			</if>
+			<if test="SystemWarning != 0.001">
+				#{SystemWarning},
+			</if>
+			<if test="DriveFault != 0.001">
+				#{DriveFault},
+			</if>
+			<if test="DriveWarning != 0.001">
+				#{DriveWarning},
+			</if>
+			<if test="TemperatureFault != 0.001">
+				#{TemperatureFault},
+			</if>
+			<if test="TemperatureWarning != 0.001">
+				#{TemperatureWarning},
+			</if>
+			<if test="CoolingSystemFault != 0.001">
+				#{CoolingSystemFault},
+			</if>
+			<if test="CoolingSystemWarning != 0.001">
+				#{CoolingSystemWarning},
+			</if>
+			<if test="ElectricInterlockFault != 0.001">
+				#{ElectricInterlockFault},
+			</if>
+			<if test="ElectricInterlockWarning != 0.001">
+				#{ElectricInterlockWarning},
+			</if>
+			<if test="PowerSupplyFault != 0.001">
+				#{PowerSupplyFault},
+			</if>
+			<if test="PowerSupplyWarning != 0.001">
+				#{PowerSupplyWarning},
+			</if>
+			<if test="RequestSetACPowerLimit != 0.001">
+				#{RequestSetACPowerLimit},
+			</if>
+			<if test="LowerRangeOfACPowerLimit != 0.001">
+				#{LowerRangeOfACPowerLimit},
+			</if>
+			<if test="UpperRangeOfACPowerLimit != 0.001">
+				#{UpperRangeOfACPowerLimit},
+			</if>
+			<if test="RequestSetInstantaneousReactivePowerSetPoint != 0.001">
+				#{RequestSetInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="LowerRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				#{LowerRangeOfInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="UpperRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				#{UpperRangeOfInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="EnableDisableTheUnit != 0.001">
+				#{EnableDisableTheUnit},
+			</if>
+			<if test="SetReadReactivePowerMode != 0.001">
+				#{SetReadReactivePowerMode},
+			</if>
+			<if test="SetReadPACLimit != 0.001">
+				#{SetReadPACLimit},
+			</if>
+			<if test="SetReadInstantaneousReactivePowerSetPoint != 0.001">
+				#{SetReadInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="SetReadPowerFactorSetPoint != 0.001">
+				#{SetReadPowerFactorSetPoint},
+			</if>
+			<if test="ACPowerRampRate != 0.001">
+				#{ACPowerRampRate},
+			</if>
+			<if test="ReactivePowerRampRate != 0.001">
+				#{ReactivePowerRampRate},
+			</if>
+			<if test="PowerFactorRampRate != 0.001">
+				#{PowerFactorRampRate},
+			</if>
+			<if test="ReactivePowerSignConvention != 0.001">
+				#{ReactivePowerSignConvention},
+			</if>
+			<if test="DCS_N != 0.001">
+				#{DCS_N},
+			</if>
+			<if test="DCS_StCtcr != 0.001">
+				#{DCS_StCtcr},
+			</if>
+			<if test="DCS_StCpt != 0.001">
+				#{DCS_StCpt},
+			</if>
+			<if test="DCS_EvtFlt != 0.001">
+				#{DCS_EvtFlt},
+			</if>
+			<if test="DCS_EvtWrn != 0.001">
+				#{DCS_EvtWrn},
+			</if>
+			<if test="DCS_StVnd != 0.001">
+				#{DCS_StVnd},
+			</if>
+			<if test="DCS_DCA != 0.001">
+				#{DCS_DCA},
+			</if>
+			<if test="DCS_DCADif != 0.001">
+				#{DCS_DCADif},
+			</if>
+			<if test="DCS_DCV != 0.001">
+				#{DCS_DCV},
+			</if>
+			<if test="DCS_Tmp != 0.001">
+				#{DCS_Tmp},
+			</if>
+			<if test="DCS_InId01 != 0.001">
+				#{DCS_InId01},
+			</if>
+			<if test="DCS_InFlt01 != 0.001">
+				#{DCS_InFlt01},
+			</if>
+			<if test="DCS_InWrn01 != 0.001">
+				#{DCS_InWrn01},
+			</if>
+			<if test="DCS_InPDCA01 != 0.001">
+				#{DCS_InPDCA01},
+			</if>
+			<if test="DCS_InNDCA01 != 0.001">
+				#{DCS_InNDCA01},
+			</if>
+			<if test="DCS_InId02 != 0.001">
+				#{DCS_InId02},
+			</if>
+			<if test="DCS_InFlt02 != 0.001">
+				#{DCS_InFlt02},
+			</if>
+			<if test="DCS_InWrn02 != 0.001">
+				#{DCS_InWrn02},
+			</if>
+			<if test="DCS_InPDCA02 != 0.001">
+				#{DCS_InPDCA02},
+			</if>
+			<if test="DCS_InNDCA02 != 0.001">
+				#{DCS_InNDCA02},
+			</if>		
+			<if test="DCS_InId03 != 0.001">
+				#{DCS_InId03},
+			</if>
+			<if test="DCS_InFlt03 != 0.001">
+				#{DCS_InFlt03},
+			</if>
+			<if test="DCS_InWrn03 != 0.001">
+				#{DCS_InWrn03},
+			</if>
+			<if test="DCS_InPDCA03 != 0.001">
+				#{DCS_InPDCA03},
+			</if>
+			<if test="DCS_InNDCA03 != 0.001">
+				#{DCS_InNDCA03},
+			</if>
+			<if test="DCS_InId04 != 0.001">
+				#{DCS_InId04},
+			</if>
+			<if test="DCS_InFlt04 != 0.001">
+				#{DCS_InFlt04},
+			</if>
+			<if test="DCS_InWrn04 != 0.001">
+				#{DCS_InWrn04},
+			</if>
+			<if test="DCS_InPDCA04 != 0.001">
+				#{DCS_InPDCA04},
+			</if>
+			<if test="DCS_InNDCA04 != 0.001">
+				#{DCS_InNDCA04},
+			</if>
+			<if test="DCS_InId05 != 0.001">
+				#{DCS_InId05},
+			</if>
+			<if test="DCS_InFlt05 != 0.001">
+				#{DCS_InFlt05},
+			</if>
+			<if test="DCS_InWrn05 != 0.001">
+				#{DCS_InWrn05},
+			</if>
+			<if test="DCS_InPDCA05 != 0.001">
+				#{DCS_InPDCA05},
+			</if>
+			<if test="DCS_InNDCA05 != 0.001">
+				#{DCS_InNDCA05},
+			</if>
+			<if test="DCS_InId06 != 0.001">
+				#{DCS_InId06},
+			</if>
+			<if test="DCS_InFlt06 != 0.001">
+				#{DCS_InFlt06},
+			</if>
+			<if test="DCS_InWrn06 != 0.001">
+				#{DCS_InWrn06},
+			</if>
+			<if test="DCS_InPDCA06 != 0.001">
+				#{DCS_InPDCA06},
+			</if>
+			<if test="DCS_InNDCA06 != 0.001">
+				#{DCS_InNDCA06},
+			</if>
+			<if test="DCS_InId07 != 0.001">
+				#{DCS_InId07},
+			</if>
+			<if test="DCS_InFlt07 != 0.001">
+				#{DCS_InFlt07},
+			</if>
+			<if test="DCS_InWrn07 != 0.001">
+				#{DCS_InWrn07},
+			</if>
+			<if test="DCS_InPDCA07 != 0.001">
+				#{DCS_InPDCA07},
+			</if>
+			<if test="DCS_InNDCA07 != 0.001">
+				#{DCS_InNDCA07},
+			</if>
+			<if test="DCS_InId08 != 0.001">
+				#{DCS_InId08},
+			</if>
+			<if test="DCS_InFlt08 != 0.001">
+				#{DCS_InFlt08},
+			</if>
+			<if test="DCS_InWrn08 != 0.001">
+				#{DCS_InWrn08},
+			</if>
+			<if test="DCS_InPDCA08 != 0.001">
+				#{DCS_InPDCA08},
+			</if>
+			<if test="DCS_InNDCA08 != 0.001">
+				#{DCS_InNDCA08},
+			</if>
+			<if test="DCS_InId09 != 0.001">
+				#{DCS_InId09},
+			</if>
+			<if test="DCS_InFlt09 != 0.001">
+				#{DCS_InFlt09},
+			</if>
+			<if test="DCS_InWrn09 != 0.001">
+				#{DCS_InWrn09},
+			</if>
+			<if test="DCS_InPDCA09 != 0.001">
+				#{DCS_InPDCA09},
+			</if>
+			<if test="DCS_InNDCA09 != 0.001">
+				#{DCS_InNDCA09},
+			</if>
+			<if test="DCS_InId10 != 0.001">
+				#{DCS_InId04},
+			</if>
+			<if test="DCS_InFlt10 != 0.001">
+				#{DCS_InFlt04},
+			</if>
+			<if test="DCS_InWrn10 != 0.001">
+				#{DCS_InWrn04},
+			</if>
+			<if test="DCS_InPDCA10 != 0.001">
+				#{DCS_InPDCA04},
+			</if>
+			<if test="DCS_InNDCA10 != 0.001">
+				#{DCS_InNDCA04},
+			</if>		
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="LastRestart != 0.001">
+				`LastRestart` = #{LastRestart},
+			</if>
+			<if test="Uptime != 0.001">
+				`Uptime` = #{Uptime},
+			</if>
+			<if test="Year != 0.001">
+				`Year` = #{Year},
+			</if>
+			<if test="Month != 0.001">
+				`Month` = #{Month},
+			</if>
+			<if test="Day != 0.001">
+				`Day` = #{Day},
+			</if>
+			<if test="Hour != 0.001">
+				`Hour` = #{Hour},
+			</if>
+			<if test="Minutes != 0.001">
+				`Minutes` = #{Minutes},
+			</if>
+			<if test="Seconds != 0.001">
+				`Seconds` = #{Seconds},
+			</if>
+			<if test="CurrentTime != 0.001">
+				`CurrentTime` = #{CurrentTime},
+			</if>
+			<if test="ACPower != 0.001">
+				`ACPower` = #{ACPower},
+			</if>
+			<if test="ACFrequency != 0.001">
+				`ACFrequency` = #{ACFrequency},
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage` = #{PVVoltage},
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent` = #{PVCurrent},
+			</if>
+			<if test="CommonMode != 0.001">
+				`CommonMode` = #{CommonMode},
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				`AmbientTemperature` = #{AmbientTemperature},
+			</if>
+			<if test="CoolantTemperature != 0.001">
+				`CoolantTemperature` = #{CoolantTemperature},
+			</if>
+			<if test="ReactorTemperature != 0.001">
+				`ReactorTemperature` = #{ReactorTemperature},
+			</if>
+			<if test="CabinetTemperature != 0.001">
+				`CabinetTemperature` = #{CabinetTemperature},
+			</if>
+			<if test="BusVoltage != 0.001">
+				`BusVoltage` = #{BusVoltage},
+			</if>
+			<if test="GroundCurrent != 0.001">
+				`GroundCurrent` = #{GroundCurrent},
+			</if>
+			<if test="ReactivePower != 0.001">
+				`ReactivePower` = #{ReactivePower},
+			</if>
+			<if test="ACCurrent != 0.001">
+				`ACCurrent` = #{ACCurrent},
+			</if>	
+			<if test="TodaykWh != 0.001">
+				`TodaykWh` = #{TodaykWh},
+			</if>
+			<if test="YTDkWhTotal != 0.001">
+				`YTDkWhTotal` = #{YTDkWhTotal},
+			</if>
+			<if test="LifekWhTotal != 0.001">
+				`LifekWhTotal` = #{LifekWhTotal},
+			</if>
+			<if test="YTDkWh != 0.001">
+				`YTDkWh` = #{YTDkWh},
+			</if>
+			<if test="LifekWh != 0.001">
+				`LifekWh` = #{LifekWh},
+			</if>
+			<if test="Last15MinkWh != 0.001">
+				`Last15MinkWh` = #{Last15MinkWh},
+			</if>
+			<if test="TimeStamp15Minutes != 0.001">
+				`TimeStamp15Minutes` = #{TimeStamp15Minutes},
+			</if>
+			<if test="State != 0.001">
+				`State` = #{State},
+			</if>
+			<if test="Limits != 0.001">
+				`Limits` = #{Limits},
+			</if>
+			<if test="MasterFault != 0.001">
+				`MasterFault` = #{MasterFault},
+			</if>
+			<if test="MasterWarning != 0.001">
+				`MasterWarning` = #{MasterWarning},
+			</if>
+			<if test="ArrayFault != 0.001">
+				`ArrayFault` = #{ArrayFault},
+			</if>
+			<if test="ArrayWarning != 0.001">
+				`ArrayWarning` = #{ArrayWarning},
+			</if>
+			<if test="GridFault != 0.001">
+				`GridFault` = #{GridFault},
+			</if>
+			<if test="GridWarning != 0.001">
+				`GridWarning` = #{GridWarning},
+			</if>
+			<if test="SystemFault != 0.001">
+				`SystemFault` = #{SystemFault},
+			</if>
+			<if test="SystemWarning != 0.001">
+				`SystemWarning` = #{SystemWarning},
+			</if>
+			<if test="DriveFault != 0.001">
+				`DriveFault` = #{DriveFault},
+			</if>
+			<if test="DriveWarning != 0.001">
+				`DriveWarning` = #{DriveWarning},
+			</if>
+			<if test="TemperatureFault != 0.001">
+				`TemperatureFault` = #{TemperatureFault},
+			</if>
+			<if test="TemperatureWarning != 0.001">
+				`TemperatureWarning` = #{TemperatureWarning},
+			</if>
+			<if test="CoolingSystemFault != 0.001">
+				`CoolingSystemFault` = #{CoolingSystemFault},
+			</if>
+			<if test="CoolingSystemWarning != 0.001">
+				`CoolingSystemWarning` = #{CoolingSystemWarning},
+			</if>
+			<if test="ElectricInterlockFault != 0.001">
+				`ElectricInterlockFault` = #{ElectricInterlockFault},
+			</if>
+			<if test="ElectricInterlockWarning != 0.001">
+				`ElectricInterlockWarning` = #{ElectricInterlockWarning},
+			</if>
+			<if test="PowerSupplyFault != 0.001">
+				`PowerSupplyFault` = #{PowerSupplyFault},
+			</if>
+			<if test="PowerSupplyWarning != 0.001">
+				`PowerSupplyWarning` = #{PowerSupplyWarning},
+			</if>
+			<if test="RequestSetACPowerLimit != 0.001">
+				`RequestSetACPowerLimit` = #{RequestSetACPowerLimit},
+			</if>
+			<if test="LowerRangeOfACPowerLimit != 0.001">
+				`LowerRangeOfACPowerLimit` = #{LowerRangeOfACPowerLimit},
+			</if>
+			<if test="UpperRangeOfACPowerLimit != 0.001">
+				`UpperRangeOfACPowerLimit` = #{UpperRangeOfACPowerLimit},
+			</if>
+			<if test="RequestSetInstantaneousReactivePowerSetPoint != 0.001">
+				`RequestSetInstantaneousReactivePowerSetPoint` = #{RequestSetInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="LowerRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				`LowerRangeOfInstantaneousReactivePowerSetPoint` = #{LowerRangeOfInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="UpperRangeOfInstantaneousReactivePowerSetPoint != 0.001">
+				`UpperRangeOfInstantaneousReactivePowerSetPoint` = #{UpperRangeOfInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="EnableDisableTheUnit != 0.001">
+				`EnableDisableTheUnit` = #{EnableDisableTheUnit},
+			</if>
+			<if test="SetReadReactivePowerMode != 0.001">
+				`SetReadReactivePowerMode` = #{SetReadReactivePowerMode},
+			</if>
+			<if test="SetReadPACLimit != 0.001">
+				`SetReadPACLimit` = #{SetReadPACLimit},
+			</if>
+			<if test="SetReadInstantaneousReactivePowerSetPoint != 0.001">
+				`SetReadInstantaneousReactivePowerSetPoint` = #{SetReadInstantaneousReactivePowerSetPoint},
+			</if>
+			<if test="SetReadPowerFactorSetPoint != 0.001">
+				`SetReadPowerFactorSetPoint` = #{SetReadPowerFactorSetPoint},
+			</if>
+			<if test="ACPowerRampRate != 0.001">
+				`ACPowerRampRate` = #{ACPowerRampRate},
+			</if>
+			<if test="ReactivePowerRampRate != 0.001">
+				`ReactivePowerRampRate` = #{ReactivePowerRampRate},
+			</if>
+			<if test="PowerFactorRampRate != 0.001">
+				`PowerFactorRampRate` = #{PowerFactorRampRate},
+			</if>
+			<if test="ReactivePowerSignConvention != 0.001">
+				`ReactivePowerSignConvention` = #{ReactivePowerSignConvention},
+			</if>
+			<if test="DCS_N != 0.001">
+				`DCS_N` = #{DCS_N},
+			</if>
+			<if test="DCS_StCtcr != 0.001">
+				`DCS_StCtcr` = #{DCS_StCtcr},
+			</if>
+			<if test="DCS_StCtcr != 0.001">
+				`DCS_StCtcr` = #{DCS_StCtcr},
+			</if>
+			<if test="DCS_EvtFlt != 0.001">
+				`DCS_EvtFlt` = #{DCS_EvtFlt},
+			</if>
+			<if test="DCS_EvtWrn != 0.001">
+				`DCS_EvtWrn` = #{DCS_EvtWrn},
+			</if>
+			<if test="DCS_StVnd != 0.001">
+				`DCS_StVnd` = #{DCS_StVnd},
+			</if>
+			<if test="DCS_DCA != 0.001">
+				`DCS_DCA` = #{DCS_DCA},
+			</if>
+			<if test="DCS_DCADif != 0.001">
+				`DCS_DCADif` = #{DCS_DCADif},
+			</if>
+			<if test="DCS_DCV != 0.001">
+				`DCS_DCV` = #{DCS_DCV},
+			</if>
+			<if test="DCS_Tmp != 0.001">
+				`DCS_Tmp` = #{DCS_Tmp},
+			</if>
+			<if test="DCS_InId01 != 0.001">
+				`DCS_InId01` = #{DCS_InId01},
+			</if>
+			<if test="DCS_InFlt01 != 0.001">
+				`DCS_InFlt01` = #{DCS_InFlt01},
+			</if>
+			<if test="DCS_InWrn01 != 0.001">
+				`DCS_InWrn01` = #{DCS_InWrn01},
+			</if>
+			<if test="DCS_InPDCA01 != 0.001">
+				`DCS_InPDCA01` = #{DCS_InPDCA01},
+			</if>
+			<if test="DCS_InNDCA01 != 0.001">
+				`DCS_InNDCA01` = #{DCS_InNDCA01},
+			</if>
+			<if test="DCS_InId02 != 0.001">
+				`DCS_InId02` = #{DCS_InId02},
+			</if>
+			<if test="DCS_InFlt02 != 0.001">
+				`DCS_InFlt02` = #{DCS_InFlt02},
+			</if>
+			<if test="DCS_InWrn02 != 0.001">
+				`DCS_InWrn02` = #{DCS_InWrn02},
+			</if>
+			<if test="DCS_InPDCA02 != 0.001">
+				`DCS_InPDCA02` = #{DCS_InPDCA02},
+			</if>
+			<if test="DCS_InNDCA02 != 0.001">
+				`DCS_InNDCA02` = #{DCS_InNDCA02},
+			</if>
+			<if test="DCS_InId03 != 0.001">
+				`DCS_InId03` = #{DCS_InId03},
+			</if>
+			<if test="DCS_InFlt03 != 0.001">
+				`DCS_InFlt03` = #{DCS_InFlt03},
+			</if>
+			<if test="DCS_InWrn03 != 0.001">
+				`DCS_InWrn03` = #{DCS_InWrn03},
+			</if>
+			<if test="DCS_InPDCA03 != 0.001">
+				`DCS_InPDCA03` = #{DCS_InPDCA03},
+			</if>
+			<if test="DCS_InNDCA03 != 0.001">
+				`DCS_InNDCA03` = #{DCS_InNDCA03},
+			</if>
+			<if test="DCS_InId04 != 0.001">
+				`DCS_InId04` = #{DCS_InId04},
+			</if>
+			<if test="DCS_InFlt04 != 0.001">
+				`DCS_InFlt04` = #{DCS_InFlt04},
+			</if>
+			<if test="DCS_InWrn04 != 0.001">
+				`DCS_InWrn04` = #{DCS_InWrn04},
+			</if>
+			<if test="DCS_InPDCA04 != 0.001">
+				`DCS_InPDCA04` = #{DCS_InPDCA04},
+			</if>
+			<if test="DCS_InNDCA04 != 0.001">
+				`DCS_InNDCA04` = #{DCS_InNDCA04},
+			</if>
+			<if test="DCS_InId05 != 0.001">
+				`DCS_InId05` = #{DCS_InId05},
+			</if>
+			<if test="DCS_InFlt05 != 0.001">
+				`DCS_InFlt05` = #{DCS_InFlt05},
+			</if>
+			<if test="DCS_InWrn05 != 0.001">
+				`DCS_InWrn05` = #{DCS_InWrn05},
+			</if>
+			<if test="DCS_InPDCA05 != 0.001">
+				`DCS_InPDCA05` = #{DCS_InPDCA05},
+			</if>
+			<if test="DCS_InNDCA05 != 0.001">
+				`DCS_InNDCA05` = #{DCS_InNDCA05},
+			</if>
+			<if test="DCS_InId06 != 0.001">
+				`DCS_InId06` = #{DCS_InId06},
+			</if>
+			<if test="DCS_InFlt06 != 0.001">
+				`DCS_InFlt06` = #{DCS_InFlt06},
+			</if>
+			<if test="DCS_InWrn06 != 0.001">
+				`DCS_InWrn06` = #{DCS_InWrn06},
+			</if>
+			<if test="DCS_InPDCA06 != 0.001">
+				`DCS_InPDCA06` = #{DCS_InPDCA06},
+			</if>
+			<if test="DCS_InNDCA06 != 0.001">
+				`DCS_InNDCA06` = #{DCS_InNDCA06},
+			</if>
+			<if test="DCS_InId07 != 0.001">
+				`DCS_InId07` = #{DCS_InId07},
+			</if>
+			<if test="DCS_InFlt07 != 0.001">
+				`DCS_InFlt07` = #{DCS_InFlt07},
+			</if>
+			<if test="DCS_InWrn07 != 0.001">
+				`DCS_InWrn07` = #{DCS_InWrn07},
+			</if>
+			<if test="DCS_InPDCA07 != 0.001">
+				`DCS_InPDCA07` = #{DCS_InPDCA07},
+			</if>
+			<if test="DCS_InNDCA07 != 0.001">
+				`DCS_InNDCA07` = #{DCS_InNDCA07},
+			</if>
+			<if test="DCS_InId08 != 0.001">
+				`DCS_InId08` = #{DCS_InId08},
+			</if>
+			<if test="DCS_InFlt08 != 0.001">
+				`DCS_InFlt08` = #{DCS_InFlt08},
+			</if>
+			<if test="DCS_InWrn08 != 0.001">
+				`DCS_InWrn08` = #{DCS_InWrn08},
+			</if>
+			<if test="DCS_InPDCA08 != 0.001">
+				`DCS_InPDCA08` = #{DCS_InPDCA08},
+			</if>
+			<if test="DCS_InNDCA08 != 0.001">
+				`DCS_InNDCA08` = #{DCS_InNDCA08},
+			</if>
+			<if test="DCS_InId09 != 0.001">
+				`DCS_InId09` = #{DCS_InId09},
+			</if>
+			<if test="DCS_InFlt09 != 0.001">
+				`DCS_InFlt09` = #{DCS_InFlt09},
+			</if>
+			<if test="DCS_InWrn09 != 0.001">
+				`DCS_InWrn09` = #{DCS_InWrn09},
+			</if>
+			<if test="DCS_InPDCA09 != 0.001">
+				`DCS_InPDCA09` = #{DCS_InPDCA09},
+			</if>
+			<if test="DCS_InNDCA09 != 0.001">
+				`DCS_InNDCA09` = #{DCS_InNDCA09},
+			</if>
+			<if test="DCS_InId10 != 0.001">
+				`DCS_InId10` = #{DCS_InId10},
+			</if>
+			<if test="DCS_InFlt10 != 0.001">
+				`DCS_InFlt10` = #{DCS_InFlt10},
+			</if>
+			<if test="DCS_InWrn10 != 0.001">
+				`DCS_InWrn10` = #{DCS_InWrn10},
+			</if>
+			<if test="DCS_InPDCA10 != 0.001">
+				`DCS_InPDCA10` = #{DCS_InPDCA10},
+			</if>
+			<if test="DCS_InNDCA10 != 0.001">
+				`DCS_InNDCA10` = #{DCS_InNDCA10},
+			</if>	
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+	
+</mapper> 
