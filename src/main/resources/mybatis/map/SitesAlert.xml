@@ -68,6 +68,7 @@
 			d.id_device_type,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			d.id AS id_device,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,

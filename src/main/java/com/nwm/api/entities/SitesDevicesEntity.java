@@ -92,12 +92,21 @@ public class SitesDevicesEntity {
 	private String ssh_user;
 	private String ssh_pass;
 	private String ssh_port;
+	private String job_tablename;
 	
 	
 	
 	
 	
 	
+	
+	
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	public String getSsh_host() {
 		return ssh_host;
 	}

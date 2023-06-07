@@ -540,7 +540,13 @@ public class BatchJob {
 										bathJobEntity.setCurrent_time(CurrentDate);
 										bathJobEntity.setStart_date_time(obj.getStart_date_time());
 										bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
-										bathJobEntity.setDatatablename(obj.getDatatablename());
+
+										if(obj.getJob_tablename() != null) {
+											bathJobEntity.setDatatablename(obj.getJob_tablename());
+										} else {
+											bathJobEntity.setDatatablename(obj.getDatatablename());
+										}
+										
 										bathJobEntity.setId_device(obj.getId());
 										
 										int noProduction = 0;
@@ -562,6 +568,16 @@ public class BatchJob {
 											case "model_campell_scientific_meter3": noProduction = 766; break;
 											case "model_campell_scientific_meter4": noProduction = 767; break;
 											case "model_xantrex_gt100_250_500": noProduction = 762; break;
+											case "model_veris_industries_e50c2a": noProduction = 920; break;
+											case "model_sunny_central_class9775_inverter": noProduction = 922; break;
+											case "model_satcon_powergate_225_inverter": noProduction = 924; break;
+											case "model_solaredge_inverter": noProduction = 926; break;
+											case "model_sma_inverter_stp1200tlus10": noProduction = 928; break;
+											case "model_sma_inverter_stp24ktlus10": noProduction = 930; break;
+											case "model_sungrow_sg50cx": noProduction = 932; break;
+											case "model_sungrow_sg110cx": noProduction = 934; break;
+											
+											
 										}
 										
 										
@@ -686,8 +702,8 @@ public class BatchJob {
 										bathJobEntity.setCurrent_time(CurrentDate);
 										bathJobEntity.setStart_date_time(obj.getStart_date_time());
 										bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
-										if(obj.getView_tablename() != null) {
-											bathJobEntity.setDatatablename(obj.getView_tablename());
+										if(obj.getJob_tablename() != null) {
+											bathJobEntity.setDatatablename(obj.getJob_tablename());
 										} else {
 											bathJobEntity.setDatatablename(obj.getDatatablename());
 										}
@@ -713,6 +729,15 @@ public class BatchJob {
 											case "model_campell_scientific_meter2": noCommunication = 770; break;
 											case "model_campell_scientific_meter3": noCommunication = 769; break;
 											case "model_campell_scientific_meter4": noCommunication = 768; break;
+											case "model_veris_industries_e50c2a": noCommunication = 919; break;
+											case "model_sunny_central_class9775_inverter": noCommunication = 921; break;
+											case "model_satcon_powergate_225_inverter": noCommunication = 924; break;
+											case "model_solaredge_inverter": noCommunication = 925; break;
+											case "model_sma_inverter_stp1200tlus10": noCommunication = 927; break;
+											case "model_sma_inverter_stp24ktlus10": noCommunication = 929; break;
+											case "model_sungrow_sg50cx": noCommunication = 931; break;
+											case "model_sungrow_sg110cx": noCommunication = 933; break;
+											
 										}
 										
 										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);

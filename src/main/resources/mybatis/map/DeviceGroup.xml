@@ -17,6 +17,8 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="code_prefix" column="code_prefix" />
 		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+		
 	</resultMap>
 	
 
@@ -26,7 +28,8 @@
 		SELECT
 			t.*,
 			t.group_name AS text,
-			t.view_tablename
+			t.view_tablename,
+			t.job_tablename
 		FROM
 			device_group AS t
 		WHERE
