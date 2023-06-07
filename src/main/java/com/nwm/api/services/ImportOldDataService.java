@@ -240,6 +240,17 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelLufftClass8020.insertModelLufftClass8020", dataList.get(i));
 				}
 				break;
+			case "model_lufft_ws501_umb_weather":
+				obj.setId_device_type(4);
+				for (int i = 0; i < dataList.size(); i++) {
+					this.getTime(set, dataList.get(i));
+					if(set.isEmpty()) {
+						obj.setRow(i + 2);
+						break;
+					}
+					session.insert("ModelLufftWS501UMBWeather.insertModelLufftWS501UMBWeather", dataList.get(i));
+				}
+				break;
 			case "model_pv_powered_35_50_260_500kw_inverter":
 				obj.setId_device_type(1);
 				for (int i = 0; i < dataList.size(); i++) {

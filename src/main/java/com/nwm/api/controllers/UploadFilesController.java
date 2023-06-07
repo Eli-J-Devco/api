@@ -48,6 +48,7 @@ import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
 import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
 import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
+import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
@@ -83,6 +84,7 @@ import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
 import com.nwm.api.services.ModelIVTSolaronEXTService;
 import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
 import com.nwm.api.services.ModelLufftClass8020Service;
+import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
 import com.nwm.api.services.ModelRT1Class30000Service;
@@ -1803,6 +1805,90 @@ public class UploadFilesController extends BaseController {
 													dataModelLufft.setId_device(item.getId());
 
 													serviceModelLufft.insertModelLufftClass8020(dataModelLufft);
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+//															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+												}
+											}
+											
+											break;
+											
+										// Model weather station
+										case "model_lufft_ws501_umb_weather":
+											ModelLufftWS501UMBWeatherService serviceModelLufftWS501 = new ModelLufftWS501UMBWeatherService();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// AirTemperatureActual
+													if(!Lib.isBlank(words.get(25))) {
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													// GlobalRadiation
+													if(!Lib.isBlank(words.get(21))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
+													} else {
+														deviceUpdateE.setField_value2(null);
+													}
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
+													dataModelLufft.setId_device(item.getId());
+													
+													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataModelLufft);
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());

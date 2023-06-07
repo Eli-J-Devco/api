@@ -1686,6 +1686,7 @@
 									WHEN d.datatablename = 'model_imtsolar_class8000' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
 									WHEN d.datatablename = 'model_kippzonen_rt1_class8009' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
 									WHEN d.datatablename = 'model_lufft_class8020' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
+									WHEN d.datatablename = 'model_lufft_ws501_umb_weather' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
 									WHEN d.datatablename = 'model_rt1_class30000' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
 									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' THEN AVG( IFNULL(dv.nvm_irradiance, 0) )
 									ELSE 0
@@ -1697,6 +1698,7 @@
 									WHEN d.datatablename = 'model_imtsolar_class8000' THEN AVG( IFNULL((dv.nvm_temperature * 0.1 - 25), 0) )
 									WHEN d.datatablename = 'model_kippzonen_rt1_class8009' THEN AVG( IFNULL(dv.nvm_temperature, 0) )
 									WHEN d.datatablename = 'model_lufft_class8020' THEN AVG( IFNULL(dv.nvm_temperature * 0.1, 0) )
+									WHEN d.datatablename = 'model_lufft_ws501_umb_weather' THEN AVG( IFNULL(dv.nvm_temperature, 0) )
 									WHEN d.datatablename = 'model_rt1_class30000' THEN AVG( IFNULL(dv.nvm_temperature, 0) )
 									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' THEN AVG( IFNULL(dv.nvm_temperature, 0) )
 									ELSE 0

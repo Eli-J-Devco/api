@@ -106,6 +106,7 @@
 					CASE
 						WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190'  THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_lufft_class8020' THEN ROUND( SUM(d.last_value), 2)
+						WHEN d.datatablename = 'model_lufft_ws501_umb_weather' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_imtsolar_class8000' THEN ROUND( SUM(d.last_value) * 0.01, 2)
 						WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' THEN ROUND( SUM(d.last_value), 2)
