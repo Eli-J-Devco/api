@@ -604,28 +604,28 @@
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_full,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%d. %b %H:%i' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 2">
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS download_time,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_full,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%d. %b %H:%i' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 3">
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b %H:00' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 4">
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-								IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)) AS nvmActiveEnergy
+								IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) IS NULL OR MAX(dv.nvmActiveEnergy) = 0 OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) = 0, NULL, MAX(dv.nvmActiveEnergy) - MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy))) AS nvmActiveEnergy
 							</when>
 						</choose>
 					FROM
