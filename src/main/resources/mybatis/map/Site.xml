@@ -123,7 +123,11 @@
 			s.timezone_datalogger,
 			s.unit_type_temp,
 			s.unit_wind_speed,
-			sg.order_id
+			sg.order_id,
+			s.street,
+			s.city,
+			s.postal_code,
+			s.state
 			
 		FROM
 			site AS s
@@ -131,7 +135,7 @@
 			LEFT JOIN employee em ON em.id = sem.id_employee
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			
-			<if test="keyword != null and keyword != '' and sort_column == 'hardware_id'">
+			<if test="keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')">
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
 			
@@ -142,6 +146,22 @@
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'name'">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'street'">
+				AND s.street LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'city'">
+				AND s.city LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'state'">
+				AND s.state LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'postal_code'">
+				AND s.postal_code LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'site_id'">
@@ -156,7 +176,15 @@
 				AND d.id = #{keyword}
 			</if>
 			
+			<if test="keyword != null and keyword != '' and sort_column == 'device_name'">
+				AND d.devicename LIKE CONCAT("%",#{keyword}, "%")
+			</if>
 			
+			<if test="keyword != null and keyword != '' and sort_column == 'serial_number'">
+				AND d.serial_number LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
 			 
 	</select>
