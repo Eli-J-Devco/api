@@ -157,10 +157,46 @@ public class SiteEntity {
 	private int unit_wind_speed;
 	private int pv_model;
 	
+	private String ftp_server;
+	private String ftp_user;
+	private String ftp_pass;
+	private String ftp_port;
+	private String ftp_folder;
+	
 
 	
 	
 	
+	public String getFtp_server() {
+		return ftp_server;
+	}
+	public void setFtp_server(String ftp_server) {
+		this.ftp_server = ftp_server;
+	}
+	public String getFtp_user() {
+		return ftp_user;
+	}
+	public void setFtp_user(String ftp_user) {
+		this.ftp_user = ftp_user;
+	}
+	public String getFtp_pass() {
+		return ftp_pass;
+	}
+	public void setFtp_pass(String ftp_pass) {
+		this.ftp_pass = ftp_pass;
+	}
+	public String getFtp_port() {
+		return ftp_port;
+	}
+	public void setFtp_port(String ftp_port) {
+		this.ftp_port = ftp_port;
+	}
+	public String getFtp_folder() {
+		return ftp_folder;
+	}
+	public void setFtp_folder(String ftp_folder) {
+		this.ftp_folder = ftp_folder;
+	}
 	public int getUnit_wind_speed() {
 		return unit_wind_speed;
 	}

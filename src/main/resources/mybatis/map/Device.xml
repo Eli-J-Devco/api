@@ -24,6 +24,7 @@
 		<result property="keyword" column="keyword" />
 		<result property="device_type_name" column="device_type_name" />
 		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 		<result property="order_id" column="order_id" />
 		<result property="reverse_poa" column="reverse_poa" />
 		<result property="lat" column="lat" />
@@ -143,6 +144,7 @@
 			s.is_delete,
 			dt.name AS device_type_name,
 			s.view_tablename,
+			s.job_tablename,
 			s.order_id,
 			s.reverse_poa,
 			s.field_value_default,
@@ -253,6 +255,7 @@
 			`configurationchecksum`,
 			`datatablename`,
 			`view_tablename`,
+			`job_tablename`,
 			`order_id`,
 			`reverse_poa`,
 			`field_value_default`,
@@ -279,6 +282,7 @@
 			#{configurationchecksum},
 			#{datatablename},
 			#{view_tablename},
+			#{job_tablename},
 			#{order_id},
 			#{reverse_poa},
 			#{field_value_default},
@@ -321,6 +325,7 @@
 				configurationchecksum = #{configurationchecksum},
 				datatablename = #{datatablename},
 				view_tablename = #{view_tablename},
+				job_tablename = #{job_tablename},
 				order_id = #{order_id},
 				reverse_poa = #{reverse_poa},
 				field_value_default = #{field_value_default},

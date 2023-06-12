@@ -296,6 +296,7 @@
 			d.devicename,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			dg.code_prefix,
 			s.start_date_time,
 			s.end_date_time,
@@ -323,6 +324,7 @@
 			d.devicename,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			d.id_device_group,
 			d.ssh_host,
 			d.ssh_port,
@@ -352,6 +354,7 @@
 			d.devicename,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			d.id_device_group,
 			d.ssh_host,
 			d.ssh_port,
@@ -381,13 +384,15 @@
 			d.devicename,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			dg.code_prefix,
 			s.start_date_time,
 			s.end_date_time,
 			t.`offset` AS timezone_offset,
 			t.`value` AS timezone_value,
 			d.id_device_group,
-			d.last_updated
+			d.last_updated,
+			d.job_tablename
 		FROM
 			device AS d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
@@ -410,13 +415,15 @@
 			d.devicename,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			dg.code_prefix,
 			s.start_date_time,
 			s.end_date_time,
 			t.`offset` AS timezone_offset,
 			t.`value` AS timezone_value,
 			d.id_device_group,
-			d.id_device_type
+			d.id_device_type,
+			d.job_tablename
 		FROM
 			device AS d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group

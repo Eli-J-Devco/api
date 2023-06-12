@@ -98,8 +98,16 @@ public class DeviceEntity {
 	private Double rating_ac_power;
 	private int reload_ssh;
 	private int checkAll;
+	private String job_tablename;
 	
 	
+	
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	public int getReload_ssh() {
 		return reload_ssh;
 	}

@@ -459,6 +459,7 @@
 			d.id,
 			d.id_site,
 			d.view_tablename,
+			d.job_tablename,
 			d.id_device_type
 		FROM device d
 		WHERE

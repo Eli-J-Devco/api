@@ -11,6 +11,7 @@
 			d.id_device_group,
 			d.devicename,
 			d.view_tablename,
+			d.job_tablename,
 			d.datatablename AS datatablename, 
 			dg.group_name,
 			d.id AS id_device,
@@ -63,6 +64,7 @@
 			0 AS is_checked,
 			d.datatablename,
 			d.view_tablename,
+			d.job_tablename,
 			d.id_device_group,
 			
 			

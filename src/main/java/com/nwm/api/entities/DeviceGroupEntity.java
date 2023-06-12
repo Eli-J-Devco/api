@@ -21,9 +21,16 @@ public class DeviceGroupEntity{
 	private int id_device_type;
 	private String view_tablename;
 	private int id_site;
+	private String job_tablename;
 	
 	
 	
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	public int getId_site() {
 		return id_site;
 	}

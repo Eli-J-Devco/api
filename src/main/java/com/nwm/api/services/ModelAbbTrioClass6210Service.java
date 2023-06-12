@@ -139,7 +139,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 		int StatesByte0 = (obj.getStatesByte0() > 0 && obj.getStatesByte0() != 0.001) ? (int) obj.getStatesByte0() : 0;
 		int StatesByte1 = (obj.getStatesByte1() > 0 && obj.getStatesByte1() != 0.001) ? (int) obj.getStatesByte1() : 0;
 		int StatesByte2 = (obj.getStatesByte2() > 0 && obj.getStatesByte2() != 0.001) ? (int) obj.getStatesByte2() : 0;
-		int StatesByte3 = (obj.getStatesByte3() > 0 && obj.getStatesByte3() != 0.001) ? (int) obj.getStatesByte3() : 0;
+//		int StatesByte3 = (obj.getStatesByte3() > 0 && obj.getStatesByte3() != 0.001) ? (int) obj.getStatesByte3() : 0;
 		int StatesByte4 = (obj.getStatesByte4() > 0 && obj.getStatesByte4() != 0.001) ? (int) obj.getStatesByte4() : 0;
 
 		ModelAbbTrioClass6210Entity rowItem = (ModelAbbTrioClass6210Entity) checkAlertWriteCode(
@@ -296,54 +296,54 @@ public class ModelAbbTrioClass6210Service extends DB {
 			}
 		}
 		
-		if (StatesByte3 > 0 && rowItem.getTotalStatesByte3() >= 4) {
-			try {
-				int errorId = LibErrorCode.GetStatesByte3ModelABB(StatesByte3);
-				System.out.println("status errorId: " + errorId);
-				if (errorId > 0) {
-					AlertEntity alertDeviceItem = new AlertEntity();
-					alertDeviceItem.setId_device(obj.getId_device());
-					alertDeviceItem.setStart_date(obj.getTime());
-					alertDeviceItem.setId_error(errorId);
-					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-							alertDeviceItem) > 0;
-					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-					if (!checkAlertDeviceExist && errorExits) {
-						insert("BatchJob.insertAlert", alertDeviceItem);
-					}
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		} else {
-			// Close StatesByte3
-			try {
-				if(rowItem.getTotalStatesByte3() == 0) {
-					AlertEntity alertItemClose = new AlertEntity();
-					alertItemClose.setId_device(obj.getId_device());
-					// type 4 is StatesByte3
-					alertItemClose.setFaultCodeLevel(4);
-					List dataListStatusCode = new ArrayList();
-					dataListStatusCode = queryForList("ModelAbbTrioClass6210.getListTriggerFaultCode",
-							alertItemClose);
-					if (dataListStatusCode.size() > 0) {
-						for (int i = 0; i < dataListStatusCode.size(); i++) {
-							Map<String, Object> itemFault = (Map<String, Object>) dataListStatusCode.get(i);
-							int id = Integer.parseInt(itemFault.get("id").toString());
-							int idError = Integer.parseInt(itemFault.get("id_error").toString());
-							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-							alertItemClose.setId(id);
-							alertItemClose.setId_error(idError);
-							update("Alert.UpdateErrorRow", alertItemClose);
-						}
-					}
-				}
-				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		if (StatesByte3 > 0 && rowItem.getTotalStatesByte3() >= 4) {
+//			try {
+//				int errorId = LibErrorCode.GetStatesByte3ModelABB(StatesByte3);
+//				System.out.println("status errorId: " + errorId);
+//				if (errorId > 0) {
+//					AlertEntity alertDeviceItem = new AlertEntity();
+//					alertDeviceItem.setId_device(obj.getId_device());
+//					alertDeviceItem.setStart_date(obj.getTime());
+//					alertDeviceItem.setId_error(errorId);
+//					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+//							alertDeviceItem) > 0;
+//					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+//					if (!checkAlertDeviceExist && errorExits) {
+//						insert("BatchJob.insertAlert", alertDeviceItem);
+//					}
+//				}
+//			} catch (SQLException e) {
+//				e.printStackTrace();
+//			}
+//		} else {
+//			// Close StatesByte3
+//			try {
+//				if(rowItem.getTotalStatesByte3() == 0) {
+//					AlertEntity alertItemClose = new AlertEntity();
+//					alertItemClose.setId_device(obj.getId_device());
+//					// type 4 is StatesByte3
+//					alertItemClose.setFaultCodeLevel(4);
+//					List dataListStatusCode = new ArrayList();
+//					dataListStatusCode = queryForList("ModelAbbTrioClass6210.getListTriggerFaultCode",
+//							alertItemClose);
+//					if (dataListStatusCode.size() > 0) {
+//						for (int i = 0; i < dataListStatusCode.size(); i++) {
+//							Map<String, Object> itemFault = (Map<String, Object>) dataListStatusCode.get(i);
+//							int id = Integer.parseInt(itemFault.get("id").toString());
+//							int idError = Integer.parseInt(itemFault.get("id_error").toString());
+//							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+//							alertItemClose.setId(id);
+//							alertItemClose.setId_error(idError);
+//							update("Alert.UpdateErrorRow", alertItemClose);
+//						}
+//					}
+//				}
+//				
+//			} catch (SQLException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 		
 		
 		if (StatesByte4 > 0 && rowItem.getTotalStatesByte4() >= 4) {
