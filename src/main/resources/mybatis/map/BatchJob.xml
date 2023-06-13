@@ -344,6 +344,7 @@
 	
 	
 	
+	
 	<select id="getListDeviceDatalogger" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
 			d.id,
@@ -371,6 +372,7 @@
 			AND d.ssh_pass IS NOT NULL
 			AND d.ssh_port IS NOT NULL
 	</select>
+	
 	
 	
 	
@@ -1890,5 +1892,76 @@
 			AND d.is_delete = 0
 			LIMIT 1
 	</select>
+	
+	<select id="getListSiteByDataloggerType" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			s.timezone_datalogger,
+			s.display_timezone,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			t.`value` AS time_zone_value
+		FROM
+			site s 
+			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger
+		WHERE
+			s.datalogger_type = 1 
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			AND s.ftp_server IS NOT NULL
+			AND s.ftp_user IS NOT NULL
+			AND s.ftp_pass IS NOT NULL
+			AND s.ftp_folder IS NOT NULL
+	</select>
+	
+	
+	
+	<select id="getDeviceDetailByModbus" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.*
+		FROM
+			device d
+		WHERE
+			d.`status` = 1
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
+			AND d.id_site = #{id_site}
+			AND d.is_delete = 0
+			LIMIT 1
+	</select>
+	
+	<select id="getListDeviceSMABySite" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id_device_group,
+			d.ssh_host,
+			d.ssh_port,
+			d.ssh_user,
+			d.ssh_pass
+		FROM
+			device AS d
+			LEFT JOIN site s ON s.id = d.id_site 
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_site = #{id_site}
+	</select>
+	
+	
+	
+	
   	
 </mapper>

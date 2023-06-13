@@ -14,6 +14,7 @@ public class BatchJobTableEntity{
 	private int error;
 	private String datatablename;
 	private String view_tablename;
+	private String job_tablename;
 	private String end_date;
 	private int status;
 	private int id;
@@ -28,6 +29,12 @@ public class BatchJobTableEntity{
 	private int id_device_group;
 	
 	
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	public String getView_tablename() {
 		return view_tablename;
 	}

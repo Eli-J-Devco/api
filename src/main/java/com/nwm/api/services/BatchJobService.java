@@ -1259,4 +1259,63 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	
+	/**
+	 * @description get list site by datalogger_type = 1
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListSiteByDataloggerType(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListSiteByDataloggerType", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get device detail by id_site and modbusdevicenumber
+	 * @author long.pham
+	 * @since 2023-06-09
+	 * @param id_site and modbusdevicenumber
+	 * @return Object
+	 */
+
+	public DeviceEntity getDeviceDetailByModbus(DeviceEntity obj) {
+		DeviceEntity device = new DeviceEntity();
+		try {
+			device = (DeviceEntity) queryForObject("BatchJob.getDeviceDetailByModbus", obj);
+			if (device == null)
+				return new DeviceEntity();
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return device;
+	}
+	
+	
+	/**
+	 * @description get list device sma by site_id
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListDeviceSMABySite(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceSMABySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 }

@@ -348,5 +348,33 @@ public class BatchConfig {
 		job.runCronJobSSHCellModem();
 		job.runCronJobSSHDatalogger();
 	}
+	
+	
+	/**
+	 * @description batch job get run ftp get data from datalogger SMA DATA MANAGER
+	 * @author long.pham
+	 * @since 2023-05-08
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
+	public void startBatchJobSMADataManager() throws Exception {
+		BatchJob job =new BatchJob();
+		job.runCronJobSMADataManager();
+	}
+	
+	
+	/**
+	 * @description batch job read file xml from datalogger SMA DATA MANAGER
+	 * @author long.pham
+	 * @since 2023-05-08
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
+	public void startBatchJobReadXMLDataManager() throws Exception {
+		BatchJob job =new BatchJob(); 
+		job.runCronJobReadXMLDataManager();
+	}
 
 }
