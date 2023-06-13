@@ -1,0 +1,1150 @@
+<?xml version="1.0" encoding="UTF-8"?><EDMM>
+  <Info>
+    <Created>2023-06-12T12:01:03</Created>
+    <Culture>en</Culture>
+    <UtcOffset>-07:00</UtcOffset>
+    <DST>True</DST>
+    <FW-Version>1.14.16.R</FW-Version>
+  </Info>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>223980668</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2876</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2534</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2601</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237651689</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234888027</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>224010661</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2937</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>213295449</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67756785</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68825718</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>65085295</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>69119816</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68000114</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68425694</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>69049542</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>240230340</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>232457428</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235868513</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>230995533</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235446899</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2748</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238538201</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68914648</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2828</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68054599</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68488060</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237212164</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67604211</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>69138420</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238456765</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2744</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68256100</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68884103</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2803</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238808333</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>231324265</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68863728</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>226217006</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68333072</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68733094</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>232872851</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68407951</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67956128</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68007385</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>223141039</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2598</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>223141039</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>220859136</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237989870</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2826</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2618</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234157989</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234151101</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2585</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2850</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>209735867</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>65865473</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>220859136</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>64418512</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68577327</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68826977</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67936401</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67113975</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>232872851</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>64850228</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2825</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>226217006</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2677</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67944110</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>3047</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234157989</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>209735867</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238224644</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234151101</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237989870</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>62140029</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67995591</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68014296</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914380:1900914380:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2867</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914405:1900914405:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>65245953</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914457:1900914457:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68745650</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238456765</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2807</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237212164</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2848</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>231324265</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2426</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238808333</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67661226</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2889</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>69037045</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235446899</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>240230340</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68841399</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68344551</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68849801</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68769688</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2796</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>213295449</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>::Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>449648901</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2836</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238538201</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>230995533</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235868513</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>232457428</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>238224644</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914248:1900914248:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67695288</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914466:1900914466:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68111073</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2697</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>223980668</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914264:1900914264:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68108776</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914397:1900914397:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68415137</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914415:1900914415:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>69184570</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900907344:1900907344:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>65589116</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900910105:1900910105:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68337387</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235100935</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234945003</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914652:1900914652:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2673</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Metering.TotWhOut</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>215978113</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>237651689</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914462:1900914462:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>2619</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>224010661</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234888027</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914452:1900914452:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>215978113</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914401:1900914401:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>67596302</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914399:1900914399:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68830254</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914411:1900914411:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914304:1900914304:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68312579</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914450:1900914450:Measurement.Operation.GriSwCnt</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>3032</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914395:1900914395:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>235100935</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914371:1900914371:Measurement.Metering.TotWhOut.Pv</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>234945003</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914338:1900914338:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914235:1900914235:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68317990</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914251:1900914251:Measurement.Metering.TotFeedTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68012043</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914319:1900914319:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68526806</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914394:1900914394:Measurement.Operation.Health</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>Ok</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914404:1900914404:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>68833320</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 1900914456:1900914456:Measurement.Metering.TotOpTms</Key>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Mean>62932806</Mean>
+    <Timestamp>2023-06-12T11:30:00</Timestamp>
+  </CurrentPublic>
+</EDMM>
