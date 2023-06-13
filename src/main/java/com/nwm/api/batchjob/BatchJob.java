@@ -2279,7 +2279,6 @@ public class BatchJob {
 															}
 														}
 														
-														System.out.println(key);
 
 														if (device.getId() > 0) {
 															// Insert to datatable

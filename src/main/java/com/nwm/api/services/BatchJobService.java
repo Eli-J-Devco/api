@@ -809,8 +809,8 @@ public class BatchJobService extends DB {
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -10);
-			int setTime = 10;
+			calCurrent.add(Calendar.DATE, -2);
+			int setTime = 2;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
@@ -819,7 +819,7 @@ public class BatchJobService extends DB {
 			// Case 1: inverter, meter, weather
 			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
 				// Create list date 
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -880,7 +880,7 @@ public class BatchJobService extends DB {
 			else if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
 				// Create list date 
 				
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -925,7 +925,7 @@ public class BatchJobService extends DB {
 			// Case 3: inverter, weather
 			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -968,7 +968,7 @@ public class BatchJobService extends DB {
 			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -1011,7 +1011,7 @@ public class BatchJobService extends DB {
 			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));
@@ -1036,7 +1036,7 @@ public class BatchJobService extends DB {
 			else if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
 				// Create list date 
 				
-				for(int t = 0; t < setTime; t++) {
+				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					System.out.println(dateFormat.format(cal.getTime()));

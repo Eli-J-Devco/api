@@ -1497,7 +1497,7 @@
 			      IFNULL(ROUND(AVG(dv.Seconds), 2), 0.001) AS Seconds,
 			      IFNULL(ROUND(AVG(dv.CurrentTime), 2), 0.001) AS CurrentTime,
 			      
-			      IFNULL(ROUND(IF(AVG(dv.ACPower) <![CDATA[<]]> 0, 0, AVG(dv.ac_power)), 2), 0.001) AS ACPower,
+			      IFNULL(ROUND(IF(AVG(dv.ACPower) <![CDATA[<]]> 0, 0, AVG(dv.ACPower)), 2), 0.001) AS ACPower,
 			      
 			      IFNULL(ROUND(AVG(dv.ACFrequency), 2), 0.001) AS ACFrequency,
 			      IFNULL(ROUND(AVG(dv.PVVoltage), 2), 0.001) AS PVVoltage,
