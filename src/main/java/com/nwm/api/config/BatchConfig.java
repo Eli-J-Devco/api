@@ -357,7 +357,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */10 * * * *")
 	public void startBatchJobSMADataManager() throws Exception {
 		BatchJob job =new BatchJob();
 		job.runCronJobSMADataManager();
@@ -371,7 +371,7 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */5 * * * *")
 	public void startBatchJobReadXMLDataManager() throws Exception {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobReadXMLDataManager();
