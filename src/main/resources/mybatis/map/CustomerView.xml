@@ -717,7 +717,7 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 0.001) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
