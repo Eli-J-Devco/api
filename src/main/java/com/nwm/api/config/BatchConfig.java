@@ -359,8 +359,14 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 */10 * * * *")
 	public void startBatchJobSMADataManager() throws Exception {
-		BatchJob job =new BatchJob();
-		job.runCronJobSMADataManager();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (!env.equals("dev")) {
+			BatchJob job =new BatchJob();
+			job.runCronJobSMADataManager();
+		}
+		
+		
 	}
 	
 	
@@ -373,8 +379,13 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 */5 * * * *")
 	public void startBatchJobReadXMLDataManager() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobReadXMLDataManager();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobReadXMLDataManager();
+		}
+		
 	}
 
 }
