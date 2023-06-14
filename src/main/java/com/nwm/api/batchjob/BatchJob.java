@@ -2094,7 +2094,12 @@ public class BatchJob {
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site);
 				} else {
 					// download the file
+					
 					File f = new File(newDirPath);
+					// create the directory in saveDir
+					File fDir = new File(saveDir + parentDir);
+					if(fDir.mkdirs()) { System.out.println("Full directory structure created ... ");
+					} else { System.out.println("Oops!!! Folder exits."); }
 
 					if (!f.exists()) {
 						// do something
