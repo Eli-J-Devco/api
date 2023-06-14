@@ -2480,10 +2480,10 @@ public class BatchJob {
 
 																serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
 																
-																if (entitySMA3000.getGridMs_TotW() >= 0) {
+																if (entitySMA3000.getGridMs_TotW() > 0) {
 																	deviceUpdateE.setLast_updated(formatterUtcDateTime);
-																	deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
-																	deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
+																	deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
+																	deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
 																} else {
 																	deviceUpdateE.setLast_updated(null);
 																	deviceUpdateE.setLast_value(null);
@@ -2760,10 +2760,10 @@ public class BatchJob {
 
 																serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 																
-																if (entitySMA62.getGridMs_TotW() >= 0) {
+																if (entitySMA62.getGridMs_TotW() > 0) {
 																	deviceUpdateE.setLast_updated(formatterUtcDateTime);
-																	deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
-																	deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
+																	deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
+																	deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
 																} else {
 																	deviceUpdateE.setLast_updated(null);
 																	deviceUpdateE.setLast_value(null);
