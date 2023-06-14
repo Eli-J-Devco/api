@@ -74,6 +74,7 @@ import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
+import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
 import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
 import com.nwm.api.entities.ModelSungrowSg110cxEntity;
 import com.nwm.api.entities.ModelSungrowSg50cxEntity;
@@ -87,6 +88,7 @@ import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
+import com.nwm.api.services.ModelSmaInverterStp62us41Service;
 import com.nwm.api.services.ModelSungrowSg110cxService;
 import com.nwm.api.services.ModelSungrowSg50cxService;
 import com.nwm.api.services.ModelSungrowUmg604Service;
@@ -2198,6 +2200,8 @@ public class BatchJob {
 		// Get list device and id_device_type = 10
 		BatchJobService service = new BatchJobService();
 		ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
+		ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
+		
 		DeviceService serviceD = new DeviceService();
 
 		List<?> listSites = service.getListSiteByDataloggerType(new SiteEntity());
@@ -2257,6 +2261,8 @@ public class BatchJob {
 														String key = element.getElementsByTagName("Key").item(0).getTextContent();
 														
 														key = key.replace("SN: ", "").trim();
+														key = key.replace("SN ", "").trim();
+														
 														String[] keyArr = key.split("\\:", 0);
 														if (keyArr.length > 0) {
 															modbusdevicenumber = keyArr[0];
@@ -2286,6 +2292,7 @@ public class BatchJob {
 														
 
 														if (device.getId() > 0) {
+															DeviceEntity deviceUpdateE = new DeviceEntity();
 															// Insert to datatable
 															switch (device.getDatatablename()) {
 															case "model_sma_inverter_stp30000tlus10":
@@ -2472,12 +2479,291 @@ public class BatchJob {
 																}
 
 																serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
-																DeviceEntity deviceUpdateE = new DeviceEntity();
 																
 																if (entitySMA3000.getGridMs_TotW() >= 0) {
 																	deviceUpdateE.setLast_updated(formatterUtcDateTime);
 																	deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
 																	deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
+																} else {
+																	deviceUpdateE.setLast_updated(null);
+																	deviceUpdateE.setLast_value(null);
+																	deviceUpdateE.setField_value1(null);
+																}
+																
+																deviceUpdateE.setField_value2(null);
+																deviceUpdateE.setField_value3(null);
+																
+																deviceUpdateE.setId(device.getId());
+																serviceD.updateLastUpdated(deviceUpdateE);
+																break;
+																
+															case "model_sma_inverter_stp62us41":
+																// Insert data
+																ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
+																entitySMA62.setId_device(device.getId());
+																entitySMA62.setError(0);
+																entitySMA62.setHigh_alarm(0);
+																entitySMA62.setLow_alarm(0);
+																entitySMA62.setTime(formatterUtcDateTime);
+																entitySMA62.setVA_phsA(0.001);
+																entitySMA62.setVA_phsB(0.001);
+																entitySMA62.setDcMs_Vol0(0.001);
+																entitySMA62.setDcMs_Vol1(0.001);
+																entitySMA62.setDcMs_Vol2(0.001);
+																entitySMA62.setDcMs_Vol3(0.001);
+																entitySMA62.setDcMs_Vol4(0.001);
+																entitySMA62.setDcMs_Vol5(0.001);
+																entitySMA62.setTotW_Pv(0.001);
+																entitySMA62.setIsolation_LeakRis(0.001);
+																entitySMA62.setPhV_phsC(0.001);
+																entitySMA62.setGridMs_Hz(0.001);
+																entitySMA62.setW_phsB(0.001);
+																entitySMA62.setGridMs_TotW(0.001);
+																entitySMA62.setW_phsC(0.001);
+																entitySMA62.setVAr_phsC(0.001);
+																entitySMA62.setDcMs_Watt0(0.001);
+																entitySMA62.setDcMs_Watt1(0.001);
+																entitySMA62.setDcMs_Watt2(0.001);
+																entitySMA62.setDcMs_Watt3(0.001);
+																entitySMA62.setDcMs_Watt4(0.001);
+																entitySMA62.setDcMs_Watt5(0.001);
+																entitySMA62.setW_phsA(0.001);
+																entitySMA62.setVAr_phsB(0.001);
+																entitySMA62.setTotVAr_Pv(0.001);
+																entitySMA62.setPhV_phsA2B(0.001);
+																entitySMA62.setVAr_phsA(0.001);
+																entitySMA62.setGridMs_TotVA(0.001);
+																entitySMA62.setGridMs_TotVAr(0.001);
+																entitySMA62.setDcMs_Amp0(0.001);
+																entitySMA62.setDcMs_Amp1(0.001);
+																entitySMA62.setDcMs_Amp2(0.001);
+																entitySMA62.setDcMs_Amp3(0.001);
+																entitySMA62.setDcMs_Amp4(0.001);
+																entitySMA62.setDcMs_Amp5(0.001);
+																entitySMA62.setPhV_phsB2C(0.001);
+																entitySMA62.setPhV_phsB(0.001);
+																entitySMA62.setA_phsA(0.001);
+																entitySMA62.setPhV_phsC2A(0.001);
+																entitySMA62.setA_phsB(0.001);
+																entitySMA62.setPhV_phsA(0.001);
+																entitySMA62.setVA_phsC(0.001);
+																entitySMA62.setA_phsC(0.001);
+																entitySMA62.setMetering_TotWhOut(0.001);
+																entitySMA62.setOperation_Health(null);
+																entitySMA62.setOperation_GriSwCnt(0.001);
+																entitySMA62.setTotWhOut_Pv(0.001);
+																entitySMA62.setMetering_TotFeedTms(0.001);
+																entitySMA62.setMetering_TotOpTms(0.001);
+																entitySMA62.setNvmActiveEnergy(0.001);
+																entitySMA62.setNvmActivePower(0.001);
+																
+																
+																if (field.equals("Measurement.GridMs.VA.phsA")) {
+																	entitySMA62.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.VA.phsB")) {
+																	entitySMA62.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.DcMs.Vol[0]")) {
+																	entitySMA62.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Vol[1]")) {
+																	entitySMA62.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Vol[2]")) {
+																	entitySMA62.setDcMs_Vol2(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Vol[3]")) {
+																	entitySMA62.setDcMs_Vol3(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Vol[4]")) {
+																	entitySMA62.setDcMs_Vol4(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Vol[5]")) {
+																	entitySMA62.setDcMs_Vol5(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.TotW.Pv")) {
+																	entitySMA62.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Isolation.LeakRis")) {
+																	entitySMA62.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsC")) {
+																	entitySMA62.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.Hz")) {
+																	entitySMA62.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.W.phsB")) {
+																	entitySMA62.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.TotW")) {
+																	entitySMA62.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) : 0.001);
+																	entitySMA62.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.W.phsC")) {
+																	entitySMA62.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.VAr.phsC")) {
+																	entitySMA62.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.DcMs.Watt[0]")) {
+																	entitySMA62.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Watt[1]")) {
+																	entitySMA62.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Watt[2]")) {
+																	entitySMA62.setDcMs_Watt2(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Watt[3]")) {
+																	entitySMA62.setDcMs_Watt3(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Watt[4]")) {
+																	entitySMA62.setDcMs_Watt4(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Watt[5]")) {
+																	entitySMA62.setDcMs_Watt5(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.W.phsA")) {
+																	entitySMA62.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.VAr.phsB")) {
+																	entitySMA62.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.TotVAr.Pv")) {
+																	entitySMA62.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsA2B")) {
+																	entitySMA62.setPhV_phsA2B(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.VAr.phsA")) {
+																	entitySMA62.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.TotVA")) {
+																	entitySMA62.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.TotVAr")) {
+																	entitySMA62.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.DcMs.Amp[0]")) {
+																	entitySMA62.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Amp[1]")) {
+																	entitySMA62.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Amp[2]")) {
+																	entitySMA62.setDcMs_Amp2(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Amp[3]")) {
+																	entitySMA62.setDcMs_Amp3(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Amp[4]")) {
+																	entitySMA62.setDcMs_Amp4(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+														
+																else if (field.equals("Measurement.DcMs.Amp[5]")) {
+																	entitySMA62.setDcMs_Amp5(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsB2C")) {
+																	entitySMA62.setPhV_phsB2C(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsB")) {
+																	entitySMA62.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.A.phsA")) {
+																	entitySMA62.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsC2A")) {
+																	entitySMA62.setPhV_phsC2A(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.A.phsB")) {
+																	entitySMA62.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.PhV.phsA")) {
+																	entitySMA62.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.VA.phsC")) {
+																	entitySMA62.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.GridMs.A.phsC")) {
+																	entitySMA62.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Metering.TotWhOut")) {
+																	entitySMA62.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
+																	entitySMA62.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Operation.Health")) {
+																	entitySMA62.setOperation_Health(mean != null  ? mean : null);
+																}
+																
+																else if (field.equals("Measurement.Operation.GriSwCnt")) {
+																	entitySMA62.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Metering.TotWhOut.Pv")) {
+																	entitySMA62.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Metering.TotFeedTms")) {
+																	entitySMA62.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																else if (field.equals("Measurement.Metering.TotOpTms")) {
+																	entitySMA62.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
+																}
+																
+																
+
+																serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
+																
+																if (entitySMA62.getGridMs_TotW() >= 0) {
+																	deviceUpdateE.setLast_updated(formatterUtcDateTime);
+																	deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
+																	deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
 																} else {
 																	deviceUpdateE.setLast_updated(null);
 																	deviceUpdateE.setLast_value(null);

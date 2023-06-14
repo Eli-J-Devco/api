@@ -179,6 +179,8 @@
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %H:%i %p') AS last_updated,
 			p.totalError,
 			CASE
+				WHEN d.datatablename = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				WHEN d.datatablename = 'model_sma_inverter_stp30000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN d.datatablename = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))

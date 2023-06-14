@@ -1919,7 +1919,7 @@
 			AND s.ftp_server IS NOT NULL
 			AND s.ftp_user IS NOT NULL
 			AND s.ftp_pass IS NOT NULL
-			AND s.ftp_folder IS NOT NULL
+			AND s.ftp_folder IS NOT NULL AND s.id IN(149)
 	</select>
 	
 	

@@ -1,0 +1,610 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmaInverterStp62us41">
+	<resultMap id="ModelSmaInverterStp62us41Map"
+		type="com.nwm.api.entities.ModelSmaInverterStp62us41Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="VA_phsA" column="VA_phsA" />
+		<result property="VA_phsB" column="VA_phsB" />
+		<result property="DcMs_Vol0" column="DcMs_Vol0" />
+		<result property="DcMs_Vol1" column="DcMs_Vol1" />
+		<result property="DcMs_Vol2" column="DcMs_Vol2" />
+	  <result property="DcMs_Vol3" column="DcMs_Vol3" />
+	  <result property="DcMs_Vol4" column="DcMs_Vol4" />
+	  <result property="DcMs_Vol5" column="DcMs_Vol5" />
+	  <result property="TotW_Pv" column="TotW_Pv" />
+	  <result property="Isolation_LeakRis" column="Isolation_LeakRis" />
+	  <result property="PhV_phsC" column="PhV_phsC" />
+	  <result property="GridMs_Hz" column="GridMs_Hz" />
+	  <result property="W_phsB" column="W_phsB" />
+	  <result property="GridMs_TotW" column="GridMs_TotW" />
+	  <result property="W_phsC" column="W_phsC" />
+	  <result property="VAr_phsC" column="VAr_phsC" />
+	  <result property="DcMs_Watt0" column="DcMs_Watt0" />
+	  <result property="DcMs_Watt1" column="DcMs_Watt1" />
+	  <result property="DcMs_Watt2" column="DcMs_Watt2" />
+	  <result property="DcMs_Watt3" column="DcMs_Watt3" />
+	  <result property="DcMs_Watt4" column="DcMs_Watt4" />
+	  <result property="DcMs_Watt5" column="DcMs_Watt5" />
+	  <result property="W_phsA" column="W_phsA" />
+	  <result property="VAr_phsB" column="VAr_phsB" />
+	  <result property="TotVAr_Pv" column="TotVAr_Pv" />
+	  <result property="PhV_phsA2B" column="PhV_phsA2B" />
+	  <result property="VAr_phsA" column="VAr_phsA" />
+	  <result property="GridMs_TotVA" column="GridMs_TotVA" />
+	  <result property="GridMs_TotVAr" column="GridMs_TotVAr" />
+	  <result property="DcMs_Amp0" column="DcMs_Amp0" />
+	  <result property="DcMs_Amp1" column="DcMs_Amp1" />
+	  <result property="DcMs_Amp2" column="DcMs_Amp2" />
+	  <result property="DcMs_Amp3" column="DcMs_Amp3" />
+	  <result property="DcMs_Amp4" column="DcMs_Amp4" />
+	  <result property="DcMs_Amp5" column="DcMs_Amp5" />
+	  
+	  <result property="PhV_phsB" column="PhV_phsB" />
+	  <result property="A_phsA" column="A_phsA" />
+	  <result property="PhV_phsC2A" column="PhV_phsC2A" />
+	  <result property="A_phsB" column="A_phsB" />
+	  <result property="PhV_phsA" column="PhV_phsA" />
+	  <result property="VA_phsC" column="VA_phsC" />
+	  <result property="A_phsC" column="A_phsC" />
+	  <result property="Metering_TotWhOut" column="Metering_TotWhOut" />
+	  <result property="Operation_Health" column="Operation_Health" />
+	  <result property="Operation_GriSwCnt" column="Operation_GriSwCnt" />
+	  <result property="TotWhOut_Pv" column="TotWhOut_Pv" />
+	  <result property="Metering_TotFeedTms" column="Metering_TotFeedTms" />
+	  <result property="Metering_TotOpTms" column="Metering_TotOpTms" />
+	  <result property="nvmActivePower" column="nvmActivePower" />
+	  <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+
+	</resultMap>
+
+	<insert id="insertModelSmaInverterStp62us41" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_sma_inverter_stp62us41`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="VA_phsA != 0.001">
+			`VA_phsA`,
+			</if>
+			<if test="VA_phsB != 0.001">
+			  `VA_phsB`,
+			  </if>
+			<if test="DcMs_Vol0 != 0.001">
+			  `DcMs_Vol0`,
+			  </if>
+
+			<if test="DcMs_Vol1 != 0.001">
+			  `DcMs_Vol1`,
+			  </if>
+			<if test="DcMs_Vol2 != 0.001">
+			  `DcMs_Vol2`,
+			  </if>
+			<if test="DcMs_Vol3 != 0.001">
+			  `DcMs_Vol3`,
+			  </if>
+			<if test="DcMs_Vol4 != 0.001">
+			  `DcMs_Vol4`,
+			  </if>
+			<if test="DcMs_Vol5 != 0.001">
+			  `DcMs_Vol5`,
+			  </if>
+			<if test="TotW_Pv != 0.001">
+			  `TotW_Pv`,
+			  </if>
+			<if test="Isolation_LeakRis != 0.001">
+			  `Isolation_LeakRis`,
+			  </if>
+			<if test="PhV_phsC != 0.001">
+			  `PhV_phsC`,
+			  </if>
+			<if test="GridMs_Hz != 0.001">
+			  `GridMs_Hz`,
+			  </if>
+			<if test="W_phsB != 0.001">
+			  `W_phsB`,
+			  </if>
+			<if test="GridMs_TotW != 0.001">
+			  `GridMs_TotW`,
+			  </if>
+			<if test="W_phsC != 0.001">
+			  `W_phsC`,
+			  </if>
+			<if test="VAr_phsC != 0.001">
+			  `VAr_phsC`,
+			  </if>
+			<if test="DcMs_Watt0 != 0.001">
+			  `DcMs_Watt0`,
+			  </if>
+			<if test="DcMs_Watt1 != 0.001">
+			  `DcMs_Watt1`,
+			  </if>
+			<if test="DcMs_Watt2 != 0.001">
+			  `DcMs_Watt2`,
+			  </if>
+			<if test="DcMs_Watt3 != 0.001">
+			  `DcMs_Watt3`,
+			  </if>
+			<if test="DcMs_Watt4 != 0.001">
+			  `DcMs_Watt4`,
+			  </if>
+			<if test="DcMs_Watt5 != 0.001">
+			  `DcMs_Watt5`,
+			  </if>
+			<if test="W_phsA != 0.001">
+			  `W_phsA`,
+			  </if>
+			<if test="VAr_phsB != 0.001">
+			  `VAr_phsB`,
+			  </if>
+			<if test="TotVAr_Pv != 0.001">
+			  `TotVAr_Pv`,
+			  </if>
+			<if test="PhV_phsA2B != 0.001">
+			  `PhV_phsA2B`,
+			  </if>
+			<if test="VAr_phsA != 0.001">
+			  `VAr_phsA`,
+			  </if>
+			<if test="GridMs_TotVA != 0.001">
+			  `GridMs_TotVA`,
+			  </if>
+			<if test="GridMs_TotVAr != 0.001">
+			  `GridMs_TotVAr`,
+			  </if>
+			<if test="DcMs_Amp0 != 0.001">
+			  `DcMs_Amp0`,
+			  </if>
+			<if test="DcMs_Amp1 != 0.001">
+			  `DcMs_Amp1`,
+			  </if>
+			<if test="DcMs_Amp2 != 0.001">
+			  `DcMs_Amp2`,
+			  </if>
+			<if test="DcMs_Amp3 != 0.001">
+			  `DcMs_Amp3`,
+			  </if>
+			<if test="DcMs_Amp4 != 0.001">
+			  `DcMs_Amp4`,
+			  </if>
+			  
+			  <if test="DcMs_Amp5 != 0.001">
+			  `DcMs_Amp5`,
+			  </if>
+			  
+			  <if test="PhV_phsB2C != 0.001">
+			  `PhV_phsB2C`,
+			  </if>
+			  <if test="PhV_phsB != 0.001">
+			  `PhV_phsB`,
+			  </if>
+			  <if test="A_phsA != 0.001">
+			  `A_phsA`,
+			  </if>
+			  <if test="PhV_phsC2A != 0.001">
+			  `PhV_phsC2A`,
+			  </if>
+			  <if test="A_phsB != 0.001">
+			  `A_phsB`,
+			  </if>
+			  <if test="PhV_phsA != 0.001">
+			  `PhV_phsA`,
+			  </if>
+			  <if test="VA_phsC != 0.001">
+			  `VA_phsC`,
+			  </if>
+			  <if test="A_phsC != 0.001">
+			  `A_phsC`,
+			  </if>
+			  <if test="Metering_TotWhOut != 0.001">
+			  `Metering_TotWhOut`,
+			  </if>
+			  <if test="Operation_Health != null">
+			  `Operation_Health`,
+			  </if>
+			  <if test="Operation_GriSwCnt != 0.001">
+			  `Operation_GriSwCnt`,
+			  </if>
+			  <if test="TotWhOut_Pv != 0.001">
+			  `TotWhOut_Pv`,
+			  </if>
+			  <if test="Metering_TotFeedTms != 0.001">
+			  `Metering_TotFeedTms`,
+			  </if>
+			  <if test="Metering_TotOpTms != 0.001">
+			  `Metering_TotOpTms`,
+			  </if>
+			  
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="VA_phsA != 0.001">
+			#{VA_phsA},
+			</if>
+			<if test="VA_phsB != 0.001">
+			  #{VA_phsB},
+			  </if>
+			<if test="DcMs_Vol0 != 0.001">
+			  #{DcMs_Vol0},
+			  </if>
+
+			<if test="DcMs_Vol1 != 0.001">
+			  #{DcMs_Vol1},
+			  </if>
+			<if test="DcMs_Vol2 != 0.001">
+			  #{DcMs_Vol2},
+			  </if>
+			<if test="DcMs_Vol3 != 0.001">
+			  #{DcMs_Vol3},
+			  </if>
+			<if test="DcMs_Vol4 != 0.001">
+			  #{DcMs_Vol4},
+			  </if>
+			<if test="DcMs_Vol5 != 0.001">
+			  #{DcMs_Vol5},
+			  </if>
+			<if test="TotW_Pv != 0.001">
+			  #{TotW_Pv},
+			  </if>
+			<if test="Isolation_LeakRis != 0.001">
+			  #{Isolation_LeakRis},
+			  </if>
+			<if test="PhV_phsC != 0.001">
+			  #{PhV_phsC},
+			  </if>
+			<if test="GridMs_Hz != 0.001">
+			  #{GridMs_Hz},
+			  </if>
+			<if test="W_phsB != 0.001">
+			  #{W_phsB},
+			  </if>
+			<if test="GridMs_TotW != 0.001">
+			  #{GridMs_TotW},
+			  </if>
+			<if test="W_phsC != 0.001">
+			  #{W_phsC},
+			  </if>
+			<if test="VAr_phsC != 0.001">
+			  #{VAr_phsC},
+			  </if>
+			<if test="DcMs_Watt0 != 0.001">
+			  #{DcMs_Watt0},
+			  </if>
+			<if test="DcMs_Watt1 != 0.001">
+			  #{DcMs_Watt1},
+			  </if>
+			<if test="DcMs_Watt2 != 0.001">
+			  #{DcMs_Watt2},
+			  </if>
+			<if test="DcMs_Watt3 != 0.001">
+			  #{DcMs_Watt3},
+			  </if>
+			<if test="DcMs_Watt4 != 0.001">
+			  #{DcMs_Watt4},
+			  </if>
+			<if test="DcMs_Watt5 != 0.001">
+			  #{DcMs_Watt5},
+			  </if>
+			<if test="W_phsA != 0.001">
+			  #{W_phsA},
+			  </if>
+			<if test="VAr_phsB != 0.001">
+			  #{VAr_phsB},
+			  </if>
+			<if test="TotVAr_Pv != 0.001">
+			  #{TotVAr_Pv},
+			  </if>
+			<if test="PhV_phsA2B != 0.001">
+			  #{PhV_phsA2B},
+			  </if>
+			<if test="VAr_phsA != 0.001">
+			  #{VAr_phsA},
+			  </if>
+			<if test="GridMs_TotVA != 0.001">
+			  #{GridMs_TotVA},
+			  </if>
+			<if test="GridMs_TotVAr != 0.001">
+			  #{GridMs_TotVAr},
+			  </if>
+			<if test="DcMs_Amp0 != 0.001">
+			  #{DcMs_Amp0},
+			  </if>
+			<if test="DcMs_Amp1 != 0.001">
+			  #{DcMs_Amp1},
+			  </if>
+			<if test="DcMs_Amp2 != 0.001">
+			  #{DcMs_Amp2},
+			  </if>
+			<if test="DcMs_Amp3 != 0.001">
+			  #{DcMs_Amp3},
+			  </if>
+			<if test="DcMs_Amp4 != 0.001">
+			  #{DcMs_Amp4},
+			  </if>
+			  
+			  <if test="DcMs_Amp5 != 0.001">
+			  #{DcMs_Amp5},
+			  </if>
+			  
+			  <if test="PhV_phsB2C != 0.001">
+			  #{PhV_phsB2C},
+			  </if>
+			  <if test="PhV_phsB != 0.001">
+			  #{PhV_phsB},
+			  </if>
+			  <if test="A_phsA != 0.001">
+			  #{A_phsA},
+			  </if>
+			  <if test="PhV_phsC2A != 0.001">
+			  #{PhV_phsC2A},
+			  </if>
+			  <if test="A_phsB != 0.001">
+			  #{A_phsB},
+			  </if>
+			  <if test="PhV_phsA != 0.001">
+			  #{PhV_phsA},
+			  </if>
+			  <if test="VA_phsC != 0.001">
+			  #{VA_phsC},
+			  </if>
+			  <if test="A_phsC != 0.001">
+			  #{A_phsC},
+			  </if>
+			  <if test="Metering_TotWhOut != 0.001">
+			  #{Metering_TotWhOut},
+			  </if>
+			  <if test="Operation_Health != null">
+			  #{Operation_Health},
+			  </if>
+			  <if test="Operation_GriSwCnt != 0.001">
+			  #{Operation_GriSwCnt},
+			  </if>
+			  <if test="TotWhOut_Pv != 0.001">
+			  #{TotWhOut_Pv},
+			  </if>
+			  <if test="Metering_TotFeedTms != 0.001">
+			  #{Metering_TotFeedTms},
+			  </if>
+			  <if test="Metering_TotOpTms != 0.001">
+			  #{Metering_TotOpTms},
+			  </if>
+
+			<if test="nvmActivePower != 0.001">
+			  ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  #{nvmActiveEnergy},
+			  </if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="VA_phsA != 0.001">
+			 `VA_phsA` = #{VA_phsA},
+			</if>
+			<if test="VA_phsB != 0.001">
+			  `VA_phsB` = #{VA_phsB},
+			  </if>
+			<if test="DcMs_Vol0 != 0.001">
+			  `DcMs_Vol0` = #{DcMs_Vol0},
+			  </if>
+
+			<if test="DcMs_Vol1 != 0.001">
+			  `DcMs_Vol1` = #{DcMs_Vol1},
+			  </if>
+			<if test="DcMs_Vol2 != 0.001">
+			  `DcMs_Vol2` = #{DcMs_Vol2},
+			  </if>
+			<if test="DcMs_Vol3 != 0.001">
+			  `DcMs_Vol3` = #{DcMs_Vol3},
+			  </if>
+			<if test="DcMs_Vol4 != 0.001">
+			  `DcMs_Vol4` = #{DcMs_Vol4},
+			  </if>
+			<if test="DcMs_Vol5 != 0.001">
+			  `DcMs_Vol5` = #{DcMs_Vol5},
+			  </if>
+			<if test="TotW_Pv != 0.001">
+			  `TotW_Pv` = #{TotW_Pv},
+			  </if>
+			<if test="Isolation_LeakRis != 0.001">
+			  `Isolation_LeakRis` = #{Isolation_LeakRis},
+			  </if>
+			<if test="PhV_phsC != 0.001">
+			  `PhV_phsC` = #{PhV_phsC},
+			  </if>
+			<if test="GridMs_Hz != 0.001">
+			  `GridMs_Hz` = #{GridMs_Hz},
+			  </if>
+			<if test="W_phsB != 0.001">
+			  `W_phsB` = #{W_phsB},
+			  </if>
+			<if test="GridMs_TotW != 0.001">
+			  `GridMs_TotW` = #{GridMs_TotW},
+			  </if>
+			<if test="W_phsC != 0.001">
+			  `W_phsC` = #{W_phsC},
+			  </if>
+			<if test="VAr_phsC != 0.001">
+			  `VAr_phsC` = #{VAr_phsC},
+			  </if>
+			<if test="DcMs_Watt0 != 0.001">
+			  `DcMs_Watt0` = #{DcMs_Watt0},
+			  </if>
+			<if test="DcMs_Watt1 != 0.001">
+			  `DcMs_Watt1` = #{DcMs_Watt1},
+			  </if>
+			<if test="DcMs_Watt2 != 0.001">
+			  `DcMs_Watt2` = #{DcMs_Watt2},
+			  </if>
+			<if test="DcMs_Watt3 != 0.001">
+			  `DcMs_Watt3` = #{DcMs_Watt3},
+			  </if>
+			<if test="DcMs_Watt4 != 0.001">
+			  `DcMs_Watt4` = #{DcMs_Watt4},
+			  </if>
+			<if test="DcMs_Watt5 != 0.001">
+			  `DcMs_Watt5` = #{DcMs_Watt5},
+			  </if>
+			<if test="W_phsA != 0.001">
+			  `W_phsA` = #{W_phsA},
+			  </if>
+			<if test="VAr_phsB != 0.001">
+			  `VAr_phsB` = #{VAr_phsB},
+			  </if>
+			<if test="TotVAr_Pv != 0.001">
+			  `TotVAr_Pv` = #{TotVAr_Pv},
+			  </if>
+			<if test="PhV_phsA2B != 0.001">
+			  `PhV_phsA2B` = #{PhV_phsA2B},
+			  </if>
+			<if test="VAr_phsA != 0.001">
+			  `VAr_phsA` = #{VAr_phsA},
+			  </if>
+			<if test="GridMs_TotVA != 0.001">
+			  `GridMs_TotVA` = #{GridMs_TotVA},
+			  </if>
+			<if test="GridMs_TotVAr != 0.001">
+			  `GridMs_TotVAr` = #{GridMs_TotVAr},
+			  </if>
+			<if test="DcMs_Amp0 != 0.001">
+			  `DcMs_Amp0` = #{DcMs_Amp0},
+			  </if>
+			<if test="DcMs_Amp1 != 0.001">
+			  `DcMs_Amp1` = #{DcMs_Amp1},
+			  </if>
+			<if test="DcMs_Amp2 != 0.001">
+			  `DcMs_Amp2` = #{DcMs_Amp2},
+			  </if>
+			<if test="DcMs_Amp3 != 0.001">
+			  `DcMs_Amp3` = #{DcMs_Amp3},
+			  </if>
+			<if test="DcMs_Amp4 != 0.001">
+			  `DcMs_Amp4` = #{DcMs_Amp4},
+			  </if>
+			  
+			  <if test="DcMs_Amp5 != 0.001">
+			  `DcMs_Amp5` = #{DcMs_Amp5},
+			  </if>
+			  
+			  <if test="PhV_phsB2C != 0.001">
+			  `PhV_phsB2C` = #{PhV_phsB2C},
+			  </if>
+			  <if test="PhV_phsB != 0.001">
+			  `PhV_phsB` = #{PhV_phsB},
+			  </if>
+			  <if test="A_phsA != 0.001">
+			  `A_phsA` = #{A_phsA},
+			  </if>
+			  <if test="PhV_phsC2A != 0.001">
+			  `PhV_phsC2A` = #{PhV_phsC2A},
+			  </if>
+			  <if test="A_phsB != 0.001">
+			  `A_phsB` = #{A_phsB},
+			  </if>
+			  <if test="PhV_phsA != 0.001">
+			  `PhV_phsA` = #{PhV_phsA},
+			  </if>
+			  <if test="VA_phsC != 0.001">
+			  `VA_phsC` = #{VA_phsC},
+			  </if>
+			  <if test="A_phsC != 0.001">
+			  `A_phsC` = #{A_phsC},
+			  </if>
+			  <if test="Metering_TotWhOut != 0.001">
+			  `Metering_TotWhOut` = #{Metering_TotWhOut},
+			  </if>
+			  <if test="Operation_Health != null">
+			  `Operation_Health` = #{Operation_Health},
+			  </if>
+			  <if test="Operation_GriSwCnt != 0.001">
+			  `Operation_GriSwCnt` = #{Operation_GriSwCnt},
+			  </if>
+			  <if test="TotWhOut_Pv != 0.001">
+			  `TotWhOut_Pv` = #{TotWhOut_Pv},
+			  </if>
+			  <if test="Metering_TotFeedTms != 0.001">
+			  `Metering_TotFeedTms` = #{Metering_TotFeedTms},
+			  </if>
+			  <if test="Metering_TotOpTms != 0.001">
+			  `Metering_TotOpTms` = #{Metering_TotOpTms},
+			  </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = #{nvmActiveEnergy},
+			  </if>
+			
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+
+</mapper> 
