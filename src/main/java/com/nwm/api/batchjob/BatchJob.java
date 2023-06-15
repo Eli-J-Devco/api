@@ -2254,7 +2254,7 @@ public class BatchJob {
 											
 											
 											for (int v = 0; v < listDevice.size(); v++) {
-												DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+												DeviceEntity deviceItem = (DeviceEntity) listDevice.get(v);
 												DeviceEntity deviceUpdateE = new DeviceEntity();
 												
 												String[] itemXML = {"MeanPublic", "CurrentPublic"};
@@ -2717,10 +2717,10 @@ public class BatchJob {
 										}
 										
 										// Delete file from server
-										File logFile = new File(fileXML);
-										if(logFile.delete()){  
-											System.out.println("Delete file: " + fileXML);  
-										}
+//										File logFile = new File(fileXML);
+//										if(logFile.delete()){  
+//											System.out.println("Delete file: " + fileXML);  
+//										}
 									}
 								}
 							}
