@@ -2006,10 +2006,10 @@ public class BatchJob {
 				String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
-				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
-				if(siteItem.getId() == 147) {
-					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
-				}
+//				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
+//				if(siteItem.getId() == 147) {
+//					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
+//				}
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
@@ -2722,10 +2722,10 @@ public class BatchJob {
 										}
 										
 										// Delete file from server
-//										File logFile = new File(fileXML);
-//										if(logFile.delete()){  
-//											System.out.println("Delete file: " + fileXML);  
-//										}
+										File logFile = new File(fileXML);
+										if(logFile.delete()){  
+											System.out.println("Delete file: " + fileXML);  
+										}
 									}
 								}
 							}
