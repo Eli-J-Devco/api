@@ -113,6 +113,10 @@
     			CONCAT_WS(" ", ROUND(IFNULL(u.IrradianceActual, 0 ),2), "W/m²" ) AS key_indicator,
     		</if>
     		
+    		<if test="datatablename == 'model_lufft_ws501_umb_weather'">
+    			CONCAT_WS(" ", ROUND(IFNULL(u.GlobalRadiation, 0 ),2), "W/m²" ) AS key_indicator,
+    		</if>
+    		
     		<if test="datatablename == 'model_abb_trio_class6210'">
     			CONCAT_WS(" ", ROUND(IFNULL(u.GridPower * 0.001, 0 ),2), "kW" ) AS key_indicator,
     		</if>

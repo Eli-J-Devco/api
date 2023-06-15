@@ -67,6 +67,100 @@
 			d.job_tablename,
 			d.id_device_group,
 			
+			<if test="(datatablename == 'model_sma_inverter_stp62us41') || (datatablename == 'ViewModelSmaInverterStp62us41')">
+				IFNULL(ROUND(AVG(dv.VA_phsA), 2), 0.001) AS VA_phsA,
+				IFNULL(ROUND(AVG(dv.VA_phsB), 2), 0.001) AS VA_phsB,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol0), 2), 0.001) AS DcMs_Vol0,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol1), 2), 0.001) AS DcMs_Vol1,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol2), 2), 0.001) AS DcMs_Vol2,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol3), 2), 0.001) AS DcMs_Vol3,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol4), 2), 0.001) AS DcMs_Vol4,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol5), 2), 0.001) AS DcMs_Vol5,
+				IFNULL(ROUND(AVG(dv.TotW_Pv), 2), 0.001) AS TotW_Pv,
+				IFNULL(ROUND(AVG(dv.Isolation_LeakRis), 2), 0.001) AS Isolation_LeakRis,
+				IFNULL(ROUND(AVG(dv.PhV_phsC), 2), 0.001) AS PhV_phsC,
+				IFNULL(ROUND(AVG(dv.GridMs_Hz), 2), 0.001) AS GridMs_Hz,
+				IFNULL(ROUND(AVG(dv.W_phsB), 2), 0.001) AS W_phsB,
+				IFNULL(ROUND(AVG(dv.GridMs_TotW), 2), 0.001) AS GridMs_TotW,
+				IFNULL(ROUND(AVG(dv.W_phsC), 2), 0.001) AS W_phsC,
+				IFNULL(ROUND(AVG(dv.VAr_phsC), 2), 0.001) AS VAr_phsC,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt0), 2), 0.001) AS DcMs_Watt0,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt1), 2), 0.001) AS DcMs_Watt1,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt2), 2), 0.001) AS DcMs_Watt2,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt3), 2), 0.001) AS DcMs_Watt3,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt4), 2), 0.001) AS DcMs_Watt4,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt5), 2), 0.001) AS DcMs_Watt5,
+				IFNULL(ROUND(AVG(dv.W_phsA), 2), 0.001) AS W_phsA,
+				IFNULL(ROUND(AVG(dv.VAr_phsB), 2), 0.001) AS VAr_phsB,
+				IFNULL(ROUND(AVG(dv.TotVAr_Pv), 2), 0.001) AS TotVAr_Pv,
+				IFNULL(ROUND(AVG(dv.PhV_phsA2B), 2), 0.001) AS PhV_phsA2B,
+				IFNULL(ROUND(AVG(dv.VAr_phsA), 2), 0.001) AS VAr_phsA,
+				IFNULL(ROUND(AVG(dv.GridMs_TotVA), 2), 0.001) AS GridMs_TotVA,
+				IFNULL(ROUND(AVG(dv.GridMs_TotVAr), 2), 0.001) AS GridMs_TotVAr,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp0), 2), 0.001) AS DcMs_Amp0,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp1), 2), 0.001) AS DcMs_Amp1,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp2), 2), 0.001) AS DcMs_Amp2,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp3), 2), 0.001) AS DcMs_Amp3,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp4), 2), 0.001) AS DcMs_Amp4,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp5), 2), 0.001) AS DcMs_Amp5,
+				IFNULL(ROUND(AVG(dv.PhV_phsB2C), 2), 0.001) AS PhV_phsB2C,
+				IFNULL(ROUND(AVG(dv.PhV_phsB), 2), 0.001) AS PhV_phsB,
+				IFNULL(ROUND(AVG(dv.A_phsA), 2), 0.001) AS A_phsA,
+				
+				IFNULL(ROUND(AVG(dv.PhV_phsC2A), 2), 0.001) AS PhV_phsC2A,
+				IFNULL(ROUND(AVG(dv.A_phsB), 2), 0.001) AS A_phsB,
+				IFNULL(ROUND(AVG(dv.PhV_phsA), 2), 0.001) AS PhV_phsA,
+				IFNULL(ROUND(AVG(dv.VA_phsC), 2), 0.001) AS VA_phsC,
+				IFNULL(ROUND(AVG(dv.A_phsC), 2), 0.001) AS A_phsC,
+				IFNULL(ROUND(AVG(dv.Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
+				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
+				IFNULL(ROUND(AVG(dv.TotWhOut_Pv), 2), 0.001) AS TotWhOut_Pv,
+				IFNULL(ROUND(AVG(dv.Metering_TotFeedTms), 2), 0.001) AS Metering_TotFeedTms,
+				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
+				
+			</if>
+			
+			
+			<if test="(datatablename == 'model_sma_inverter_stp30000tlus10') || (datatablename == 'ViewModelSmaInverterStp30000tlus10')">
+				IFNULL(ROUND(AVG(dv.GridMs_TotVAr), 2), 0.001) AS GridMs_TotVAr,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt0), 2), 0.001) AS DcMs_Watt0,
+				IFNULL(ROUND(AVG(dv.DcMs_Watt1), 2), 0.001) AS DcMs_Watt1,
+				IFNULL(ROUND(AVG(dv.W_phsA), 2), 0.001) AS W_phsA,
+				IFNULL(ROUND(AVG(dv.W_phsB), 2), 0.001) AS W_phsB,
+				IFNULL(ROUND(AVG(dv.W_phsC), 2), 0.001) AS W_phsC,
+				IFNULL(ROUND(AVG(dv.GridMs_TotW), 2), 0.001) AS GridMs_TotW,
+				IFNULL(ROUND(AVG(dv.GridMs_TotVA), 2), 0.001) AS GridMs_TotVA,
+				IFNULL(ROUND(AVG(dv.A_phsA), 2), 0.001) AS A_phsA,
+				IFNULL(ROUND(AVG(dv.A_phsB), 2), 0.001) AS A_phsB,
+				IFNULL(ROUND(AVG(dv.A_phsC), 2), 0.001) AS A_phsC,
+				IFNULL(ROUND(AVG(dv.GridMs_Hz), 2), 0.001) AS GridMs_Hz,
+				IFNULL(ROUND(AVG(dv.Isolation_LeakRis), 2), 0.001) AS Isolation_LeakRis,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol0), 2), 0.001) AS DcMs_Vol0,
+				IFNULL(ROUND(AVG(dv.DcMs_Vol1), 2), 0.001) AS DcMs_Vol1,
+				IFNULL(ROUND(AVG(dv.PhV_phsA), 2), 0.001) AS PhV_phsA,
+				IFNULL(ROUND(AVG(dv.PhV_phsB), 2), 0.001) AS PhV_phsB,
+				IFNULL(ROUND(AVG(dv.PhV_phsC), 2), 0.001) AS PhV_phsC,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp0), 2), 0.001) AS DcMs_Amp0,
+				IFNULL(ROUND(AVG(dv.DcMs_Amp1), 2), 0.001) AS DcMs_Amp1,
+				
+				IFNULL(ROUND(AVG(dv.TotVAr_Pv), 2), 0.001) AS TotVAr_Pv,
+				IFNULL(ROUND(AVG(dv. VAr_phsA), 2), 0.001) AS VAr_phsA,
+				IFNULL(ROUND(AVG(dv.VAr_phsB), 2), 0.001) AS VAr_phsB,
+				IFNULL(ROUND(AVG(dv.VAr_phsC), 2), 0.001) AS VAr_phsC,
+				IFNULL(ROUND(AVG(dv.VA_phsA), 2), 0.001) AS VA_phsA,
+				IFNULL(ROUND(AVG(dv.VA_phsB), 2), 0.001) AS VA_phsB,
+				IFNULL(ROUND(AVG(dv.VA_phsC), 2), 0.001) AS VA_phsC,
+				IFNULL(ROUND(AVG(dv.TotW_Pv), 2), 0.001) AS TotW_Pv,
+				
+				
+				IFNULL(ROUND(AVG(dv.Metering_TotFeedTms), 2), 0.001) AS Metering_TotFeedTms,
+				IFNULL(ROUND(AVG(dv.Operation_GriSwCnt), 2), 0.001) AS Operation_GriSwCnt,
+				IFNULL(ROUND(AVG(dv.Metering_TotOpTms), 2), 0.001) AS Metering_TotOpTms,
+				IFNULL(ROUND(AVG(dv. Metering_TotWhOut), 2), 0.001) AS Metering_TotWhOut,
+				IFNULL(ROUND(AVG(dv.TotWhOut_Pv), 2), 0.001) AS TotWhOut_Pv,
+				
+			</if>
+			
 			
 			<if test="(datatablename == 'model_campell_scientific_meter1') || (datatablename == 'ViewModelCampellScientificMeter1')">
 				
@@ -1352,7 +1446,57 @@
 			      IFNULL(ROUND(AVG(dv.ExternalTemperature), 2), 0.001) AS ExternalTemperature,
 			      IFNULL(ROUND(AVG(dv.WindValueQualityFast), 2), 0.001) AS WindValueQualityFast,
 			</if>
-			
+			<if test="(datatablename == 'model_lufft_ws501_umb_weather') || (datatablename == 'ViewModelLufftWS501UMBWeather')">
+				  IFNULL(ROUND(AVG(dv.RelativeHumidityActual), 2), 0.001) AS RelativeHumidityActual,
+			      IFNULL(ROUND(AVG(dv.RelativeHumidityMin), 2), 0.001) AS RelativeHumidityMin,
+			      IFNULL(ROUND(AVG(dv.RelativeHumidityMax), 2), 0.001) AS RelativeHumidityMax,
+			      IFNULL(ROUND(AVG(dv.RelativeHumidityAvg), 2), 0.001) AS RelativeHumidityAvg,
+			      IFNULL(ROUND(AVG(dv.RelativeAirPressureActual), 2), 0.001) AS RelativeAirPressureActual,
+			      IFNULL(ROUND(AVG(dv.RelativeAirPressureMin), 2), 0.001) AS RelativeAirPressureMin,
+			      IFNULL(ROUND(AVG(dv.RelativeAirPressureMax), 2), 0.001) AS RelativeAirPressureMax,
+			      IFNULL(ROUND(AVG(dv.RelativeAirPressureAvg), 2), 0.001) AS RelativeAirPressureAvg,
+			      IFNULL(ROUND(AVG(dv.WindDirectionActual), 2), 0.001) AS WindDirectionActual,
+			      IFNULL(ROUND(AVG(dv.WindDirectionMin), 2), 0.001) AS WindDirectionMin,
+			      IFNULL(ROUND(AVG(dv.WindDirectionMax), 2), 0.001) AS WindDirectionMax,
+			      IFNULL(ROUND(AVG(dv.WindDirectionVct), 2), 0.001) AS WindDirectionVct,
+			      IFNULL(ROUND(AVG(dv.WindDirectionFast), 2), 0.001) AS WindDirectionFast,
+			      IFNULL(ROUND(AVG(dv.WindDirectionCompassCorrected), 2), 0.001) AS WindDirectionCompassCorrected,
+			      IFNULL(ROUND(AVG(dv.Compass), 2), 0.001) AS Compass,
+			      IFNULL(ROUND(AVG(dv.WindMeasurementQuality), 2), 0.001) AS WindMeasurementQuality,
+			      IFNULL(ROUND(AVG(dv.PrecipitationType), 2), 0.001) AS PrecipitationType,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.GlobalRadiation) <![CDATA[<]]> 0, 0, AVG(dv.GlobalRadiation)), 2), 0.001) AS GlobalRadiation,
+			      
+			      IFNULL(ROUND(AVG(dv.GlobalRadiation2), 2), 0.001) AS GlobalRadiation2,
+			      IFNULL(ROUND(AVG(dv.GlobalRadiation3), 2), 0.001) AS GlobalRadiation3,
+			      IFNULL(ROUND(AVG(dv.GlobalRadiation4), 2), 0.001) AS GlobalRadiation4,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureCActual), 2), 0.001) AS AirTemperatureCActual,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureCMin), 2), 0.001) AS AirTemperatureCMin,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureCMax), 2), 0.001) AS AirTemperatureCMax,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureCAvg), 2), 0.001) AS AirTemperatureCAvg,
+			      IFNULL(ROUND(AVG(dv.DewPointActual), 2), 0.001) AS DewPointActual,
+			      IFNULL(ROUND(AVG(dv.DewPointMin), 2), 0.001) AS DewPointMin,
+			      IFNULL(ROUND(AVG(dv.DewPointMax), 2), 0.001) AS DewPointMax,
+			      IFNULL(ROUND(AVG(dv.DewPointAvg), 2), 0.001) AS DewPointAvg,
+			      IFNULL(ROUND(AVG(dv.WindChillTemperature), 2), 0.001) AS WindChillTemperature,
+			      IFNULL(ROUND(AVG(dv.HeatingTemperatureWind), 2), 0.001) AS HeatingTemperatureWind,
+			      IFNULL(ROUND(AVG(dv.HeatingTemperatureR2S), 2), 0.001) AS HeatingTemperatureR2S,
+			      IFNULL(ROUND(AVG(dv.WindSpeedActual), 2), 0.001) AS WindSpeedActual,
+			      IFNULL(ROUND(AVG(dv.WindSpeedMin), 2), 0.001) AS WindSpeedMin,
+			      IFNULL(ROUND(AVG(dv.WindSpeedMax), 2), 0.001) AS WindSpeedMax,
+			      IFNULL(ROUND(AVG(dv.WindSpeedAvg), 2), 0.001) AS WindSpeedAvg,
+			      IFNULL(ROUND(AVG(dv.WindSpeedVct), 2), 0.001) AS WindSpeedVct,
+			      IFNULL(ROUND(AVG(dv.WindSpeedFast), 2), 0.001) AS WindSpeedFast,
+			      IFNULL(ROUND(AVG(dv.PrecipitationAbsolute), 2), 0.001) AS PrecipitationAbsolute,
+			      IFNULL(ROUND(AVG(dv.PrecipitationDifferential), 2), 0.001) AS PrecipitationDifferential,
+			      IFNULL(ROUND(AVG(dv.PrecipitationIntensity), 2), 0.001) AS PrecipitationIntensity,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureFActual), 2), 0.001) AS AirTemperatureFActual,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureFMin), 2), 0.001) AS AirTemperatureFMin,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureFMax), 2), 0.001) AS AirTemperatureFMax,
+			      IFNULL(ROUND(AVG(dv.AirTemperatureFAvg), 2), 0.001) AS AirTemperatureFAvg,
+			      IFNULL(ROUND(AVG(dv.ExternalTemperatureC), 2), 0.001) AS ExternalTemperatureC,
+			      IFNULL(ROUND(AVG(dv.ExternalTemperatureF), 2), 0.001) AS ExternalTemperatureF,
+			</if>
 			<if test="(datatablename == 'model_solectria_sgi_226ivt') || (datatablename == 'ViewModelSolectriaSgi226ivt')">
 				  IFNULL(ROUND(AVG(dv.DCVoltage), 2), 0.001) AS DCVoltage,
 			      
@@ -1407,7 +1551,7 @@
 			      IFNULL(ROUND(AVG(dv.Seconds), 2), 0.001) AS Seconds,
 			      IFNULL(ROUND(AVG(dv.CurrentTime), 2), 0.001) AS CurrentTime,
 			      
-			      IFNULL(ROUND(IF(AVG(dv.ACPower) <![CDATA[<]]> 0, 0, AVG(dv.ac_power)), 2), 0.001) AS ACPower,
+			      IFNULL(ROUND(IF(AVG(dv.ACPower) <![CDATA[<]]> 0, 0, AVG(dv.ACPower)), 2), 0.001) AS ACPower,
 			      
 			      IFNULL(ROUND(AVG(dv.ACFrequency), 2), 0.001) AS ACFrequency,
 			      IFNULL(ROUND(AVG(dv.PVVoltage), 2), 0.001) AS PVVoltage,
@@ -1533,10 +1677,10 @@
 						IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001)
 					</when>
 					<when test="data_send_time == 4">
-						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)), 2), 0.001)
+						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) IS NULL OR MAX(dv.nvmActiveEnergy) = 0 OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) = 0, NULL, MAX(dv.nvmActiveEnergy) - MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy))), 2), 0.001)
 					</when>
 					<when test="data_send_time != 4">
-						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)), 2), 0.001)
+						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)), 2), 0.001)
 					</when>
 				</choose> AS MeasuredProduction,
 			</if>

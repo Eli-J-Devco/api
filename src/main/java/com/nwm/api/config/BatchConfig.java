@@ -317,7 +317,7 @@ public class BatchConfig {
 			break;
 		case "staging":
 		case "prod":
-			job.readFolderSMAFTP();
+//			job.readFolderSMAFTP();
 			break;
 		}
 	}
@@ -347,6 +347,45 @@ public class BatchConfig {
 		BatchJob job =new BatchJob(); 
 		job.runCronJobSSHCellModem();
 		job.runCronJobSSHDatalogger();
+	}
+	
+	
+	/**
+	 * @description batch job get run ftp get data from datalogger SMA DATA MANAGER
+	 * @author long.pham
+	 * @since 2023-05-08
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
+	public void startBatchJobSMADataManager() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (env.equals("staging")) {
+			BatchJob job =new BatchJob();
+			job.runCronJobSMADataManager();
+//		}
+		
+		
+	}
+	
+	
+	/**
+	 * @description batch job read file xml from datalogger SMA DATA MANAGER
+	 * @author long.pham
+	 * @since 2023-05-08
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
+	public void startBatchJobReadXMLDataManager() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobReadXMLDataManager();
+//		}
+		
 	}
 
 }

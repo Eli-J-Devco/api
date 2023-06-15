@@ -53,7 +53,7 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-		GROUP BY d.id_device_type
+		<!-- GROUP BY d.id_device_type -->
 	</select>
 	
 	
@@ -409,7 +409,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -604,28 +604,28 @@
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_full,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%d. %b %H:%i' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 2">
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS download_time,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_full,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%d. %b %H:%i' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 3">
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b %H:00' ) AS categories_time,
-								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL, NULL, MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy) AS nvmActiveEnergy
+								IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) = 0 OR dv1.nvmActiveEnergy = 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS nvmActiveEnergy
 							</when>
 							<when test="data_send_time == 4">
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
-								IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(dv.nvmActiveEnergy) IS NULL, NULL, MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)) AS nvmActiveEnergy
+								IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) IS NULL OR MAX(dv.nvmActiveEnergy) = 0 OR MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy)) = 0, NULL, MAX(dv.nvmActiveEnergy) - MIN(IF(dv.nvmActiveEnergy = 0, NULL, dv.nvmActiveEnergy))) AS nvmActiveEnergy
 							</when>
 						</choose>
 					FROM
@@ -2699,7 +2699,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -2749,7 +2749,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
@@ -2802,7 +2802,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
@@ -2855,7 +2855,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
-							s.id = #{item.id_site}
+							d.id = #{item.id}
 							AND d.id_device_type = 1
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
@@ -2872,6 +2872,57 @@
 			t.time_format
 	</select>
 	
+	<select id="getDataEnergyDayInverter3Day" resultType="Map" >
+		SELECT
+			t.time,
+			t.time_format,
+			t.categories_time,
+			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
+			t.time_full,
+			t.download_time
+			
+		FROM
+			(
+				<foreach collection="groupMeter" item="item" index="index" separator="union all">
+				<![CDATA[
+					SELECT
+						m.time,
+						m.time_format,
+						m.time_full,
+						m.categories_time,
+						m.download_time,
+						SUM(m.nvmActivePower) AS nvmActivePower
+					FROM
+						(
+						SELECT
+							dv.time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							d.id = #{item.id}
+							AND d.id_device_type = 1
+							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+							AND s.`status` = 1 
+							AND d.`status` = 1 
+						GROUP BY
+							d.id, time_format
+						) m 
+					GROUP BY
+						m.time_format
+					]]>
+		      </foreach>
+			) t 
+		GROUP BY
+			t.time_format
+	</select>
 	
 	
 	<select id="getDataEnergyInverterThisMonth" resultType="Map" >

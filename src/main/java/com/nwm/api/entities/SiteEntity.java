@@ -162,11 +162,16 @@ public class SiteEntity {
 	private String ftp_pass;
 	private String ftp_port;
 	private String ftp_folder;
-	
-
-	
+	private int datalogger_type;
 	
 	
+	
+	public int getDatalogger_type() {
+		return datalogger_type;
+	}
+	public void setDatalogger_type(int datalogger_type) {
+		this.datalogger_type = datalogger_type;
+	}
 	public String getFtp_server() {
 		return ftp_server;
 	}

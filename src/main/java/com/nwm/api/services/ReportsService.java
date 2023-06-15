@@ -315,7 +315,7 @@ public class ReportsService extends DB {
 					case  2: expecValue = expec.getFeb(); break;
 					case  3: expecValue = expec.getMar(); break;
 					case  4: expecValue = expec.getApr(); break;
-					case  5: expecValue = expec.getMar(); break;
+					case  5: expecValue = expec.getMay(); break;
 					case  6: expecValue = expec.getJun(); break;
 					case  7: expecValue = expec.getJul(); break;
 					case  8: expecValue = expec.getAug(); break;
@@ -659,7 +659,7 @@ public class ReportsService extends DB {
 				    case  2: expecValue = expec.getFeb(); break;
 				    case  3: expecValue = expec.getMar(); break;
 				    case  4: expecValue = expec.getApr(); break;
-				    case  5: expecValue = expec.getMar(); break;
+				    case  5: expecValue = expec.getMay(); break;
 				    case  6: expecValue = expec.getJun(); break;
 				    case  7: expecValue = expec.getJul(); break;
 				    case  8: expecValue = expec.getAug(); break;

@@ -2142,11 +2142,12 @@ public class CustomerViewService extends DB {
 							case 4: 
 								Map<String, Object> deviceItem88 = new HashMap<>();
 								obj.setGroupMeter(dataListInverter);
-								List dataPower88 = queryForList("CustomerView.getDataEnergyInverterHourDay", obj);								if (dataPower88.size() > 0) {
+								List dataPower88 = queryForList("CustomerView.getDataEnergyDayInverter3Day", obj);
+								if (dataPower88.size() > 0) {
 									deviceItem88.put("data_energy", dataPower88);
 									deviceItem88.put("type", "energy");
 									deviceItem88.put("devicename", "Power");
-									deviceItem88.put("deviceType", "meter");
+									deviceItem88.put("deviceType", "inverter");
 									dataEnergy.add(deviceItem88);
 								}
 								
