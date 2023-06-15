@@ -2007,7 +2007,7 @@ public class BatchJob {
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
 				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
-				if(siteItem.getId() == 149) {
+				if(siteItem.getId() == 147) {
 					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
 				}
 
