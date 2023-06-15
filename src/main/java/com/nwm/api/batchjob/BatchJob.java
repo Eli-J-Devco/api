@@ -2006,7 +2006,7 @@ public class BatchJob {
 				String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
-				remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
+				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
@@ -2457,6 +2457,7 @@ public class BatchJob {
 																	break;
 																	
 																case "model_sma_inverter_stp62us41":
+																	entitySMA62.setTime(formatterUtcDateTime);
 																	// Insert data
 																	if (field.equals("Measurement.GridMs.VA.phsA")) {
 																		entitySMA62.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
