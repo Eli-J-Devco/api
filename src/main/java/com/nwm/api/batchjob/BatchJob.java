@@ -2007,6 +2007,9 @@ public class BatchJob {
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
 				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
+				if(siteItem.getId() == 149) {
+					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
+				}
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
