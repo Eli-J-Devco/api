@@ -2141,7 +2141,7 @@ public class BatchJob {
 									
 									File logFile = new File(fileZip);
 									if(logFile.delete()){  
-										System.out.println("Delete file: " + fileZip);  
+										System.out.println("Delete file zip: " + fileZip);  
 									}
 									
 								}
