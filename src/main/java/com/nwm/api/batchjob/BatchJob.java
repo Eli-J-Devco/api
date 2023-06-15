@@ -2138,6 +2138,12 @@ public class BatchJob {
 										fos.write(buffer, 0, len);
 									}
 									fos.close();
+									
+									File logFile = new File(fileZip);
+									if(logFile.delete()){  
+										System.out.println("Delete file: " + fileZip);  
+									}
+									
 								}
 								zipEntry = zis.getNextEntry();
 							}
@@ -2249,52 +2255,15 @@ public class BatchJob {
 											
 											for (int v = 0; v < listDevice.size(); v++) {
 												DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
-												
+												DeviceEntity deviceUpdateE = new DeviceEntity();
 												
 												String[] itemXML = {"MeanPublic", "CurrentPublic"};
 												ModelSmaInverterStp3000ktlus10Entity entitySMA3000 = new ModelSmaInverterStp3000ktlus10Entity();
-												ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
 												entitySMA3000.setId_device(deviceItem.getId());
-												entitySMA3000.setError(0);
-												entitySMA3000.setHigh_alarm(0);
-												entitySMA3000.setLow_alarm(0);
-												entitySMA3000.setTime(null);
-												entitySMA3000.setGridMs_TotVAr(0.001);
-												entitySMA3000.setDcMs_Watt0(0.001);
-												entitySMA3000.setDcMs_Watt1(0.001);
-												entitySMA3000.setW_phsA(0.001);
-												entitySMA3000.setW_phsB(0.001);
-												entitySMA3000.setW_phsC(0.001);
-												entitySMA3000.setGridMs_TotW(0.001);
-												entitySMA3000.setGridMs_TotVA(0.001);
-												entitySMA3000.setA_phsA(0.001);
-												entitySMA3000.setA_phsB(0.001);
-												entitySMA3000.setA_phsC(0.001);
-												entitySMA3000.setGridMs_Hz(0.001);
-												entitySMA3000.setIsolation_LeakRis(0.001);
-												entitySMA3000.setDcMs_Vol0(0.001);
-												entitySMA3000.setDcMs_Vol1(0.001);
-												entitySMA3000.setPhV_phsA(0.001);
-												entitySMA3000.setPhV_phsB(0.001);
-												entitySMA3000.setPhV_phsC(0.001);
-												entitySMA3000.setDcMs_Amp0(0.001);
-												entitySMA3000.setDcMs_Amp1(0.001);
-												entitySMA3000.setTotVAr_Pv(0.001);
-												entitySMA3000.setVAr_phsA(0.001);
-												entitySMA3000.setVAr_phsB(0.001);
-												entitySMA3000.setVAr_phsC(0.001);
-												entitySMA3000.setVA_phsA(0.001);
-												entitySMA3000.setVA_phsB(0.001);
-												entitySMA3000.setVA_phsC(0.001);
-												entitySMA3000.setTotW_Pv(0.001);
-												entitySMA3000.setMetering_TotFeedTms(0.001);
-												entitySMA3000.setOperation_GriSwCnt(0.001);
-												entitySMA3000.setMetering_TotOpTms(0.001);
-												entitySMA3000.setOperation_Health(null);
-												entitySMA3000.setMetering_TotWhOut(0.001);
-												entitySMA3000.setTotWhOut_Pv(0.001);
-												entitySMA3000.setNvmActivePower(0.001);
-												entitySMA3000.setNvmActiveEnergy(0.001);
+												
+												ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
+												entitySMA62.setId_device(deviceItem.getId());
+												
 												for (int k = 0; k < itemXML.length; k++) {
 												  NodeList list = doc.getElementsByTagName(itemXML[k]);
 													for (int temp = 0; temp < list.getLength(); temp++) {
@@ -2489,64 +2458,6 @@ public class BatchJob {
 																	
 																case "model_sma_inverter_stp62us41":
 																	// Insert data
-//																	entitySMA62.setId_device(device.getId());
-//																	entitySMA62.setError(0);
-//																	entitySMA62.setHigh_alarm(0);
-//																	entitySMA62.setLow_alarm(0);
-//																	entitySMA62.setTime(formatterUtcDateTime);
-//																	entitySMA62.setVA_phsA(0.001);
-//																	entitySMA62.setVA_phsB(0.001);
-//																	entitySMA62.setDcMs_Vol0(0.001);
-//																	entitySMA62.setDcMs_Vol1(0.001);
-//																	entitySMA62.setDcMs_Vol2(0.001);
-//																	entitySMA62.setDcMs_Vol3(0.001);
-//																	entitySMA62.setDcMs_Vol4(0.001);
-//																	entitySMA62.setDcMs_Vol5(0.001);
-//																	entitySMA62.setTotW_Pv(0.001);
-//																	entitySMA62.setIsolation_LeakRis(0.001);
-//																	entitySMA62.setPhV_phsC(0.001);
-//																	entitySMA62.setGridMs_Hz(0.001);
-//																	entitySMA62.setW_phsB(0.001);
-//																	entitySMA62.setGridMs_TotW(0.001);
-//																	entitySMA62.setW_phsC(0.001);
-//																	entitySMA62.setVAr_phsC(0.001);
-//																	entitySMA62.setDcMs_Watt0(0.001);
-//																	entitySMA62.setDcMs_Watt1(0.001);
-//																	entitySMA62.setDcMs_Watt2(0.001);
-//																	entitySMA62.setDcMs_Watt3(0.001);
-//																	entitySMA62.setDcMs_Watt4(0.001);
-//																	entitySMA62.setDcMs_Watt5(0.001);
-//																	entitySMA62.setW_phsA(0.001);
-//																	entitySMA62.setVAr_phsB(0.001);
-//																	entitySMA62.setTotVAr_Pv(0.001);
-//																	entitySMA62.setPhV_phsA2B(0.001);
-//																	entitySMA62.setVAr_phsA(0.001);
-//																	entitySMA62.setGridMs_TotVA(0.001);
-//																	entitySMA62.setGridMs_TotVAr(0.001);
-//																	entitySMA62.setDcMs_Amp0(0.001);
-//																	entitySMA62.setDcMs_Amp1(0.001);
-//																	entitySMA62.setDcMs_Amp2(0.001);
-//																	entitySMA62.setDcMs_Amp3(0.001);
-//																	entitySMA62.setDcMs_Amp4(0.001);
-//																	entitySMA62.setDcMs_Amp5(0.001);
-//																	entitySMA62.setPhV_phsB2C(0.001);
-//																	entitySMA62.setPhV_phsB(0.001);
-//																	entitySMA62.setA_phsA(0.001);
-//																	entitySMA62.setPhV_phsC2A(0.001);
-//																	entitySMA62.setA_phsB(0.001);
-//																	entitySMA62.setPhV_phsA(0.001);
-//																	entitySMA62.setVA_phsC(0.001);
-//																	entitySMA62.setA_phsC(0.001);
-//																	entitySMA62.setMetering_TotWhOut(0.001);
-//																	entitySMA62.setOperation_Health(null);
-//																	entitySMA62.setOperation_GriSwCnt(0.001);
-//																	entitySMA62.setTotWhOut_Pv(0.001);
-//																	entitySMA62.setMetering_TotFeedTms(0.001);
-//																	entitySMA62.setMetering_TotOpTms(0.001);
-//																	entitySMA62.setNvmActiveEnergy(0.001);
-//																	entitySMA62.setNvmActivePower(0.001);
-//																	
-//																	
 																	if (field.equals("Measurement.GridMs.VA.phsA")) {
 																		entitySMA62.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
@@ -2744,26 +2655,7 @@ public class BatchJob {
 																	else if (field.equals("Measurement.Metering.TotOpTms")) {
 																		entitySMA62.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
-//																	
-//																	
-//
-//																	serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
-																	
-//																	if (entitySMA62.getGridMs_TotW() > 0) {
-//																		deviceUpdateE.setLast_updated(formatterUtcDateTime);
-//																		deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
-//																		deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
-//																	} else {
-//																		deviceUpdateE.setLast_updated(null);
-//																		deviceUpdateE.setLast_value(null);
-//																		deviceUpdateE.setField_value1(null);
-//																	}
-//																	
-//																	deviceUpdateE.setField_value2(null);
-//																	deviceUpdateE.setField_value3(null);
-//																	
-//																	deviceUpdateE.setId(device.getId());
-//																	serviceD.updateLastUpdated(deviceUpdateE);
+
 																	break;
 																default:
 																	
@@ -2777,28 +2669,44 @@ public class BatchJob {
 												switch (deviceItem.getDatatablename()) {
 												case "model_sma_inverter_stp30000tlus10":
 													serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
+													if (entitySMA3000.getGridMs_TotW() > 0) {
+														deviceUpdateE.setLast_updated(entitySMA3000.getTime());
+														deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
+														deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+//												
+//													
+													deviceUpdateE.setField_value2(null);
+													deviceUpdateE.setField_value3(null);
+//													
+													deviceUpdateE.setId(entitySMA3000.getId_device());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													break;
 												case "model_sma_inverter_stp62us41":
+													
+													serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
+													
+													if (entitySMA62.getGridMs_TotW() > 0) {
+														deviceUpdateE.setLast_updated(entitySMA62.getTime());
+														deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
+														deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
+													} else {
+														deviceUpdateE.setLast_updated(null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+													}
+													
+													deviceUpdateE.setField_value2(null);
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(entitySMA62.getId_device());
+													serviceD.updateLastUpdated(deviceUpdateE);
 													break;
 												}
-												
-												System.out.println(entitySMA3000.getGridMs_TotW());
-												
-												
-//												if (entitySMA3000.getGridMs_TotW() > 0) {
-//													deviceUpdateE.setLast_updated(formatterUtcDateTime);
-//													deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
-//													deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
-//												} else {
-//													deviceUpdateE.setLast_updated(null);
-//													deviceUpdateE.setLast_value(null);
-//													deviceUpdateE.setField_value1(null);
-//											
-//												
-//												deviceUpdateE.setField_value2(null);
-//												deviceUpdateE.setField_value3(null);
-//												
-//												deviceUpdateE.setId(device.getId());
-//												serviceD.updateLastUpdated(deviceUpdateE);
 												
 											}
 											
@@ -2808,10 +2716,10 @@ public class BatchJob {
 										}
 										
 										// Delete file from server
-//										File logFile = new File(fileXML);
-//										if(logFile.delete()){  
-//											System.out.println("Delete file: " + fileXML);  
-//										}
+										File logFile = new File(fileXML);
+										if(logFile.delete()){  
+											System.out.println("Delete file: " + fileXML);  
+										}
 									}
 								}
 							}
