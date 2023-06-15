@@ -2719,10 +2719,10 @@ public class BatchJob {
 										}
 										
 										// Delete file from server
-										File logFile = new File(fileXML);
-										if(logFile.delete()){  
-											System.out.println("Delete file: " + fileXML);  
-										}
+//										File logFile = new File(fileXML);
+//										if(logFile.delete()){  
+//											System.out.println("Delete file: " + fileXML);  
+//										}
 									}
 								}
 							}
