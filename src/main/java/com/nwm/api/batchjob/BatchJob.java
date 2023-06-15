@@ -2006,7 +2006,7 @@ public class BatchJob {
 				String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
-				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
+//				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
