@@ -2006,10 +2006,10 @@ public class BatchJob {
 				String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
-//				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
-//				if(siteItem.getId() == 147) {
-//					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
-//				}
+				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230613";
+				if(siteItem.getId() == 147) {
+					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230613";
+				}
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
@@ -2153,6 +2153,15 @@ public class BatchJob {
 
 							zis.closeEntry();
 							zis.close();
+							
+							
+							boolean deleted = ftpClient.deleteFile(filePath);
+						    if (deleted) {
+						        System.out.println("The file was deleted successfully.");
+						    } else {
+						        System.out.println("Could not delete the file.");
+						    }
+						    
 
 						} else {
 							 System.out.println("COULD NOT download the file: " + filePath);
@@ -2208,7 +2217,6 @@ public class BatchJob {
 
 	public void runCronJobReadXMLDataManager() throws Exception {
 
-		// Get list device and id_device_type = 10
 		BatchJobService service = new BatchJobService();
 		ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
 		ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();

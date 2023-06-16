@@ -363,7 +363,7 @@ public class BatchConfig {
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 //		if (env.equals("staging")) {
 			BatchJob job =new BatchJob();
-			job.runCronJobSMADataManager();
+//			job.runCronJobSMADataManager();
 //		}
 	}
 	
@@ -381,7 +381,7 @@ public class BatchConfig {
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 //		if (env.equals("staging")) {
 			BatchJob job =new BatchJob(); 
-			job.runCronJobReadXMLDataManager();
+//			job.runCronJobReadXMLDataManager();
 //		}
 		
 	}
