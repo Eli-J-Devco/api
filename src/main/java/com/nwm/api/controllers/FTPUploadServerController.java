@@ -620,42 +620,42 @@ public class FTPUploadServerController extends BaseController {
 													switch (deviceItem.getDatatablename()) {
 													case "model_sma_inverter_stp30000tlus10":
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
-//														if (entitySMA3000.getGridMs_TotW() > 0) {
+														if (entitySMA3000.getGridMs_TotW() > 0) {
 //															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
-//															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
-//															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
-//														} else {
-//															deviceUpdateE.setLast_updated(null);
-//															deviceUpdateE.setLast_value(null);
-//															deviceUpdateE.setField_value1(null);
-//														}
-////													
-////														
-//														deviceUpdateE.setField_value2(null);
-//														deviceUpdateE.setField_value3(null);
-////														
-//														deviceUpdateE.setId(entitySMA3000.getId_device());
-//														serviceD.updateLastUpdated(deviceUpdateE);
+															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
+															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+//													
+//														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+//														
+														deviceUpdateE.setId(entitySMA3000.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
 													case "model_sma_inverter_stp62us41":
 														
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
-//														if (entitySMA62.getGridMs_TotW() > 0) {
+														if (entitySMA62.getGridMs_TotW() > 0) {
 //															deviceUpdateE.setLast_updated(entitySMA62.getTime());
-//															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
-//															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
-//														} else {
-//															deviceUpdateE.setLast_updated(null);
-//															deviceUpdateE.setLast_value(null);
-//															deviceUpdateE.setField_value1(null);
-//														}
-//														
-//														deviceUpdateE.setField_value2(null);
-//														deviceUpdateE.setField_value3(null);
-//														
-//														deviceUpdateE.setId(entitySMA62.getId_device());
-//														serviceD.updateLastUpdated(deviceUpdateE);
+															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
+															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(entitySMA62.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
 													}
 													
