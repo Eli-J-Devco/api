@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><EDMM>
   <Info>
-    <Created>2023-06-14T20:01:01</Created>
+    <Created>2023-06-15T20:01:01</Created>
     <Culture>en</Culture>
     <UtcOffset>-07:00</UtcOffset>
     <DST>True</DST>
@@ -10,2779 +10,2779 @@
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17961.45</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18404.28</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.69</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.27</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>376152</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>247276</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>614.04</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>621.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>615.55</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>621.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>613.99</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>620.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>611.48</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>616.98</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>558.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>560.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>558.93</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>555.8</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.69</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>382.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1027.53</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18537.55</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19129.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.69</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.15</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>186.02</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11182.9</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11507.6</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11240.35</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11467.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11193.43</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11448.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5693.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5849.7</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9492.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9711.47</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9579.93</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9824.33</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18550.75</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19033.18</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.34</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.51</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.83</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>16.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.31</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>8.63</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>8.86</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.5</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>300.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>935.45</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18064.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18505.53</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55312.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56714.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>627.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>641.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>619.96</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>627.19</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>553.11</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>563.29</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>624.75</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>629.07</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>621.79</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>629.14</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>627.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>626.24</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.14</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.56</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9942.05</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10219.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9944.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10278.85</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11090.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11428.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11085.45</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11450.85</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11144.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11495.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5619.33</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5759.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>300.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>935.45</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55475.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57210.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>164.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>407.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18547.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19005.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9690.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10056.85</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9755.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10124.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>10955.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11359.63</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11037.68</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11390.85</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11063.45</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11434.7</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5538.78</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5708.28</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55809.12</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57769.65</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.19</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>336.28</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>950</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>-9.32</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>156.95</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54114.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>55448.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>618.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>624.11</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>618.2</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>625.74</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>612.8</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>619.64</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>633.12</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>640.49</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>557.35</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>564.49</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>556.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>563.8</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18476.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18931.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.4</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.54</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.6</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>431678</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>274800</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>413915</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>277284</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>131.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>370.98</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.71</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>495.21</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>382.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1027.53</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18688.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19250.95</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55475.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57210.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55212.57</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56692.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>128.45</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>366.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.47</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.55</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.04</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>::Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>443715.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>456097.6</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18357.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18815.97</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.17</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.34</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.34</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.28</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.93</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18552.32</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19002.08</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>488.23</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.8</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.2</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.36</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>-5.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>167.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18533.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19106.02</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>353.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>979.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.92</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18828.97</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19390.6</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18673.85</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19338.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.54</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>282.89</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.54</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.24</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>431898</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>275923</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.51</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.39</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.89</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>393737</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>263341</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>56365.12</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>58071.32</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.45</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18064</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18504.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18486.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18980.7</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18405.47</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18980.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>181.83</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>412.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.26</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.34</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.76</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18847.93</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19429.77</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.2</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>616.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>620.69</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>616.93</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>616.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>614.86</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>616.27</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>626.39</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>626.31</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>557.79</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>563.72</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>556.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>561.81</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>336.28</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>950</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54114.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>55448.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.59</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>68.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.16</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.92</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.29</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9.04</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.21</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.32</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.69</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.73</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.18</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.8</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.39</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18090.48</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18545.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.71</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>618.04</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>624.31</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>621.29</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>625.07</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>579.48</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>586.91</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>621.77</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>624.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>543.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>548.96</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>557.4</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>552.54</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.29</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18507.6</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19163</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.38</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>::Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>443715.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>456097.6</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55941.53</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57310.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.24</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>56366.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>58079.33</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>223.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>439.92</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.04</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.75</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18539.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19135.57</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.86</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.16</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.78</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.98</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.59</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.37</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.19</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.47</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9.15</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18631.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19272.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>281.94</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>12551.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>12819.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5632.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5809.07</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9990.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10338.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11324.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11580.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11387.28</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11652.27</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5747.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5857.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.79</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.5</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17960.4</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18397.77</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>33.33</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>206.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55518.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56912.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11013.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11353.32</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>10908.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11243.93</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11099.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11411.82</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5441.57</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5577.48</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9598.17</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9779.5</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9714.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9877.7</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>423.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1056.17</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>485.68</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>489.65</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18436.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18923.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>21.63</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>189.83</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.05</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>618.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>625.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>620.85</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>622.47</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>621.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>622.46</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>634.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>640.09</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>560.04</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>560.29</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>556.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>559.46</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18689.78</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19255.28</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55808</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57761.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>166.6</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>409.82</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.72</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55314.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56723.7</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>342.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1009.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>485.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>489.75</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18421.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18880.95</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>144.53</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>372.95</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.36</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.05</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.44</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.12</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.47</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>8.9</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.06</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.06</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.19</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.59</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18464.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18974.53</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18552.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19006.37</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>56365.12</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>58071.32</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>418370</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>276709</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18547.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19004.35</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54116.73</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>55458.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.15</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.46</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>342.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1009.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18850.2</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19434.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.56</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.03</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>149.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>392.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.71</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>68.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18630.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19271.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.15</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.18</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55518.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56912.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.35</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.37</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18685.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19136.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>353.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>979.25</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18549.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19026.83</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.49</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.03</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18313.28</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18799.82</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>423.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1056.17</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>197.72</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>420.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55476.78</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57219.07</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.VA.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18829.8</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19391.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11149.37</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11391.45</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11133.37</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11368.88</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11138.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11378.9</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5576.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5673.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9515.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9824.47</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9566.8</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9881.82</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>543.86</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>553.75</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>546</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>558.63</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>611.42</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>621.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>617.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>622.66</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>616.27</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>628.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>612.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>619.69</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>68.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>383841</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>265441</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18671.48</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19332.62</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55808</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57761.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>20</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.36</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.41</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.32</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9.17</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.36</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.TotW.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55211.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56683.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18704.7</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19179.83</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>489.74</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18355.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18811.03</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>204.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>445.5</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>122.27</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>351.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.99</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.33</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.01</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.34</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.01</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>8.9</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.61</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>::Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>2833.19</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>7938.88</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18462.37</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18967.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>283.13</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.73</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>180.4</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>407.77</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>281.75</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.2</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>64.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>65.11</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55519.63</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56921</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18685.63</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19135.17</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55211.22</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56683.1</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>208.33</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>441.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.96</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>491.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55941.53</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57310.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.59</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>-11.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>171.28</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.44</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.51</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18474.85</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18930.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18505.65</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19157.68</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.66</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.73</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>3.02</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>154.72</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>64.11</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>65.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.PhV.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>280.29</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>282.69</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.A.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>66.24</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>67.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18703.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19173.15</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.VA.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18092.52</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18553.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.Isolation.LeakRis</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>400119</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>268874</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11105.32</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11372.92</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11192.3</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11462.37</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>10142.82</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>10465.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11111.07</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11410.63</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9212.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9502.08</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>4810.13</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>4893.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>199.15</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>425.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.94</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.26</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.73</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.09</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>8.9</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.04</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.46</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.38</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.78</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.W.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18482.72</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18973.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18404.93</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18976.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.73</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>285.41</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.86</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.45</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.W.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18312.67</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18794.15</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>334.42</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>980</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088429:3009088429:Measurement.GridMs.VAr.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>152.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>387.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.VA.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18422.47</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18885.52</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.23</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.75</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>363.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>983.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.61</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.59</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>::Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>2833.19</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>7938.88</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009088443:3009088443:Measurement.GridMs.A.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>64.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>65.12</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.PhV.phsA2B</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>486.58</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>490.59</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.Hz</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>59.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>60.01</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.TotVAr</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>363.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>983.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.VAr.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>32.08</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>202.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18533.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>19104.72</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>556.85</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>562.85</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>559.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>571.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>608.89</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>614.87</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>612.48</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>623.44</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>612.84</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>622.38</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.DcMs.Vol[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>613.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>619.11</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.TotVAr.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>334.42</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>980</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.VAr.phsC</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>206.88</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>434.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667410:3010667410:Measurement.GridMs.PhV.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>282.25</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>284.67</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667407:3010667407:Measurement.GridMs.TotW</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55312.87</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>56714.3</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.PhV.phsB2C</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>490.41</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>494.94</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN: 3009088414:3009088414:Measurement.GridMs.W.phsB</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18436.18</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18921.43</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.GridMs.TotVA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>55941.38</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>57319.22</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.A.phsA</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>65.66</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>66.73</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667375:3010667375:Measurement.GridMs.PhV.phsC2A</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>487.5</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>492.11</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.09</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.41</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.11</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.42</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>18.03</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>18.4</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>8.98</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9.14</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>16.95</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.34</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3009867245:3009867245:Measurement.DcMs.Amp[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>17.23</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>17.56</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[0]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11129.1</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11441.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[1]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11134.05</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11475.48</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[2]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>11034.75</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>11310.82</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[3]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>5632.78</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>5826.28</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[4]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9527.33</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9838.73</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <MeanPublic>
     <Key>SN 3010667409:3010667409:Measurement.DcMs.Watt[5]</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>9574.55</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>9928.05</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </MeanPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>204432338</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>204899300</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54421498</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>54501258</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>201547439</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>202009492</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>220718516</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>221188754</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>53657916</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>53737676</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>::Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1630672238</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1634407954</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>34827890</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>34883575</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>35386675</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>35442334</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>221139054</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>221606438</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1236</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1237</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1182</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1183</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>201547439</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>202009492</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>218781876</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>219248597</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>28783249</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>28835882</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>220718516</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>221188754</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54177894</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>54257654</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1349</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1350</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>53162507</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>53242268</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>222262255</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>222730465</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>222262255</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>222730465</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>29753369</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>29805991</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>218781876</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>219248597</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>221139054</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>221606438</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1317</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1318</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>27872240</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>27924907</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>27497472</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>27550107</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>54721350</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>54801111</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1285</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1286</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009867245:3009867245:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>29853756</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>29906406</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>29741700</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>29794303</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088429:3009088429:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3009088443:3009088443:Measurement.Metering.TotOpTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>51780810</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>51853565</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>29887815</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>29940469</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>199053782</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>199516971</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1091</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1092</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>223583865</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>224054824</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Metering.TotFeedTms</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>30023277</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>30075953</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667407:3010667407:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1232</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1233</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667410:3010667410:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>223583865</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>224054824</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667409:3010667409:Measurement.Operation.Health</Key>
     <Base>1</Base>
     <Period>300</Period>
     <Mean>Ok</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Operation.GriSwCnt</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>1399</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>1400</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN: 3009088414:3009088414:Measurement.Metering.TotWhOut.Pv</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>199053782</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>199516971</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
   <CurrentPublic>
     <Key>SN 3010667375:3010667375:Measurement.Metering.TotWhOut</Key>
     <Base>1</Base>
     <Period>300</Period>
-    <Mean>204432338</Mean>
-    <Timestamp>2023-06-14T19:25:00</Timestamp>
+    <Mean>204899300</Mean>
+    <Timestamp>2023-06-15T19:25:00</Timestamp>
   </CurrentPublic>
 </EDMM>
