@@ -255,7 +255,7 @@ public class FTPUploadServerController extends BaseController {
 																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 																entitySMA3000.setTime(formatterUtcDateTime);
 																
-																System.out.println("modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
+																System.out.println("Cron job modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 
 																if (deviceItem.getId() > 0) {
