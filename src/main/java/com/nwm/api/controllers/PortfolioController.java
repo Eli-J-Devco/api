@@ -71,4 +71,23 @@ public class PortfolioController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description update a note of a site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-note")
+	public Object updateIsColor(@RequestBody PortfolioEntity obj) {
+		try {
+			PortfolioService service = new PortfolioService();
+			service.updateNote(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 }

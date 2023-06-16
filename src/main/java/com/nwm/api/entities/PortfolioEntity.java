@@ -64,8 +64,15 @@ public class PortfolioEntity {
 	private int id_employee;
 	private List inverters;
 	private List meters;
+	private String note;
 	
 	
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
 	public List getInverters() {
 		return inverters;
 	}

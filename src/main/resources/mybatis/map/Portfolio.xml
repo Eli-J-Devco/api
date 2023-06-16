@@ -92,7 +92,8 @@
 			IFNULL(p.unix_time, 0) AS unix_time,
 			IFNULL(eerm.EERLastMonth, 0) AS EERLastMonth,
 			IFNULL(eerthism.EERThisMonth, 0) AS EERThisMonth,
-			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday
+			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
+			s.note
 			
 				
 		FROM
@@ -517,5 +518,13 @@
 			d.id_site = #{id}
 			AND d.id_device_type = 3
 	</select>
+	
+	<update id="updateNote">
+		UPDATE `site`
+		SET
+			`note` = #{note}
+		WHERE
+			`id` = #{id}
+	</update>
 	
 </mapper>
