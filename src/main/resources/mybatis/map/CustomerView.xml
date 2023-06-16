@@ -357,6 +357,7 @@
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
 							s.id = #{item.id_site}
+							AND d.id = #{item.id}
 							AND d.id_device_type = 3
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 							AND s.`status` = 1 
