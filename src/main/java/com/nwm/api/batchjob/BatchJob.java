@@ -2006,7 +2006,10 @@ public class BatchJob {
 				String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 				
-				remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
+				remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230613";
+				if(siteItem.getId() == 147) {
+					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230613";
+				}
 
 				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
@@ -2150,6 +2153,15 @@ public class BatchJob {
 
 							zis.closeEntry();
 							zis.close();
+							
+							
+							boolean deleted = ftpClient.deleteFile(filePath);
+						    if (deleted) {
+						        System.out.println("The file was deleted successfully.");
+						    } else {
+						        System.out.println("Could not delete the file.");
+						    }
+						    
 
 						} else {
 							 System.out.println("COULD NOT download the file: " + filePath);
@@ -2205,7 +2217,6 @@ public class BatchJob {
 
 	public void runCronJobReadXMLDataManager() throws Exception {
 
-		// Get list device and id_device_type = 10
 		BatchJobService service = new BatchJobService();
 		ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
 		ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
@@ -2254,7 +2265,7 @@ public class BatchJob {
 											
 											
 											for (int v = 0; v < listDevice.size(); v++) {
-												DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+												DeviceEntity deviceItem = (DeviceEntity) listDevice.get(v);
 												DeviceEntity deviceUpdateE = new DeviceEntity();
 												
 												String[] itemXML = {"MeanPublic", "CurrentPublic"};
@@ -2299,6 +2310,8 @@ public class BatchJob {
 															ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
 															String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 															entitySMA3000.setTime(formatterUtcDateTime);
+															
+															System.out.println("modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 //															DeviceEntity device = new DeviceEntity();
 //															for(int j = 0; j < listDevice.size(); j++ ) {
@@ -2457,202 +2470,203 @@ public class BatchJob {
 																	break;
 																	
 																case "model_sma_inverter_stp62us41":
+																	entitySMA62.setTime(formatterUtcDateTime);
 																	// Insert data
-																	if (field.equals("Measurement.GridMs.VA.phsA")) {
+																	if (field.equals("Measurement.GridMs.VA.phsA")&& modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.VA.phsB")) {
+																	else if (field.equals("Measurement.GridMs.VA.phsB")&& modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.DcMs.Vol[0]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Vol[1]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[1]")  && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Vol[2]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[2]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol2(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Vol[3]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[3]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol3(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Vol[4]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[4]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol4(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Vol[5]")) {
+																	else if (field.equals("Measurement.DcMs.Vol[5]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Vol5(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.TotW.Pv")) {
+																	else if (field.equals("Measurement.GridMs.TotW.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Isolation.LeakRis")) {
+																	else if (field.equals("Measurement.Isolation.LeakRis") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsC")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.Hz")) {
+																	else if (field.equals("Measurement.GridMs.Hz") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.W.phsB")) {
+																	else if (field.equals("Measurement.GridMs.W.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.TotW")) {
+																	else if (field.equals("Measurement.GridMs.TotW") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		entitySMA62.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.W.phsC")) {
+																	else if (field.equals("Measurement.GridMs.W.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.VAr.phsC")) {
+																	else if (field.equals("Measurement.GridMs.VAr.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.DcMs.Watt[0]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Watt[1]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[1]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Watt[2]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[2]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt2(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Watt[3]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[3]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt3(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Watt[4]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[4]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt4(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Watt[5]")) {
+																	else if (field.equals("Measurement.DcMs.Watt[5]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Watt5(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.W.phsA")) {
+																	else if (field.equals("Measurement.GridMs.W.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.VAr.phsB")) {
+																	else if (field.equals("Measurement.GridMs.VAr.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.TotVAr.Pv")) {
+																	else if (field.equals("Measurement.GridMs.TotVAr.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsA2B")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsA2B") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsA2B(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.VAr.phsA")) {
+																	else if (field.equals("Measurement.GridMs.VAr.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.TotVA")) {
+																	else if (field.equals("Measurement.GridMs.TotVA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.TotVAr")) {
+																	else if (field.equals("Measurement.GridMs.TotVAr") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.DcMs.Amp[0]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Amp[1]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[1]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Amp[2]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[2]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp2(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Amp[3]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[3]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp3(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Amp[4]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[4]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp4(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 															
-																	else if (field.equals("Measurement.DcMs.Amp[5]")) {
+																	else if (field.equals("Measurement.DcMs.Amp[5]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setDcMs_Amp5(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsB2C")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsB2C") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsB2C(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsB")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.A.phsA")) {
+																	else if (field.equals("Measurement.GridMs.A.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsC2A")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsC2A") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsC2A(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.A.phsB")) {
+																	else if (field.equals("Measurement.GridMs.A.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.PhV.phsA")) {
+																	else if (field.equals("Measurement.GridMs.PhV.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.VA.phsC")) {
+																	else if (field.equals("Measurement.GridMs.VA.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.GridMs.A.phsC")) {
+																	else if (field.equals("Measurement.GridMs.A.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Metering.TotWhOut")) {
+																	else if (field.equals("Measurement.Metering.TotWhOut") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		entitySMA62.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Operation.Health")) {
+																	else if (field.equals("Measurement.Operation.Health") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setOperation_Health(mean != null  ? mean : null);
 																	}
 																	
-																	else if (field.equals("Measurement.Operation.GriSwCnt")) {
+																	else if (field.equals("Measurement.Operation.GriSwCnt") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Metering.TotWhOut.Pv")) {
+																	else if (field.equals("Measurement.Metering.TotWhOut.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Metering.TotFeedTms")) {
+																	else if (field.equals("Measurement.Metering.TotFeedTms") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 																	
-																	else if (field.equals("Measurement.Metering.TotOpTms")) {
+																	else if (field.equals("Measurement.Metering.TotOpTms") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																		entitySMA62.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
 																	}
 
