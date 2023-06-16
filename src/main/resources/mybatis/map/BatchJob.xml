@@ -1964,6 +1964,47 @@
 	
 	
 	
+	<select id="getListDeviceUpdateLastUpdate" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id_device_group
+		FROM
+			device AS d
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	
+	<select id="getLastRowItemUpdateDate" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT
+    		`time`, 
+    		id_device, 
+    		d.devicename
+		FROM ${datatablename} u
+		LEFT JOIN device d ON d.id = u.id_device
+		WHERE u.id_device = #{id_device}
+		ORDER BY u.`time` DESC LIMIT 1;
+  	</select>
+	
+	
+	<update id="updateLastUpdatedCronJob">
+		UPDATE `device`
+		SET
+			 `last_updated` = #{last_updated}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
 	
   	
 </mapper>

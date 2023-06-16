@@ -1318,4 +1318,73 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	
+	/**
+	 * @description get list device update last updated
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListDeviceUpdateLastUpdate(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceUpdateLastUpdate", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get last updated
+	 * @author long.pham
+	 * @since 2023-06-08
+	 * @param {}
+	 */
+	
+	public BatchJobTableEntity getLastRowItemUpdateDate(BatchJobTableEntity obj) {
+		BatchJobTableEntity rowItem = new BatchJobTableEntity();
+		try {
+			rowItem = (BatchJobTableEntity) queryForObject("BatchJob.getLastRowItemUpdateDate", obj);
+			if (rowItem == null)
+				return new BatchJobTableEntity();
+		} catch (Exception ex) {
+			log.error("BatchJob.getLastRowItem", ex);
+			return new BatchJobTableEntity();
+		}
+		return rowItem;
+	}
+	
+
+	
+	/**
+	 * @description update time last_updated
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param id, last_updated
+	 */
+	public boolean updateLastUpdatedCronJob(DeviceEntity obj) {
+		try {
+			return update("BatchJob.updateLastUpdatedCronJob", obj) > 0;
+		} catch (Exception ex) {
+			log.error("BatchJob.updateLastUpdatedCronJob", ex);
+			return false;
+		}
+	}
+	
+//	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueLifetime", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
+	
 }
