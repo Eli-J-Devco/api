@@ -1901,17 +1901,21 @@
 			s.`name`,
 			s.id_time_zone,
 			s.timezone_datalogger,
-			s.display_timezone,
 			s.ftp_server,
 			s.ftp_user,
 			s.ftp_pass,
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
-			t.`value` AS time_zone_value
+			t.`value` AS time_zone_value,
+			tz.`value` AS display_timezone
 		FROM
 			site s 
 			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger
+			
+			LEFT JOIN (
+				SELECT * FROM time_zone tz
+			) tz ON tz.id = s.id_time_zone
 		WHERE
 			s.datalogger_type = 1 
 			AND s.`status` = 1 

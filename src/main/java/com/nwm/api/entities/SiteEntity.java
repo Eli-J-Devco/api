@@ -164,8 +164,18 @@ public class SiteEntity {
 	private String ftp_folder;
 	private int datalogger_type;
 	
+	private String display_timezone;
 	
 	
+	
+	
+	
+	public String getDisplay_timezone() {
+		return display_timezone;
+	}
+	public void setDisplay_timezone(String display_timezone) {
+		this.display_timezone = display_timezone;
+	}
 	public int getDatalogger_type() {
 		return datalogger_type;
 	}
