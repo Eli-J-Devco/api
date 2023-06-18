@@ -107,6 +107,8 @@ public class FTPUploadServerController extends BaseController {
 					String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 							Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 					
+					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
+					
 //					remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230615";
 //					if(siteItem.getId() == 147) {
 //						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
