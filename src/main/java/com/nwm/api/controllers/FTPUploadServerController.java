@@ -50,6 +50,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
@@ -95,7 +96,7 @@ public class FTPUploadServerController extends BaseController {
 					/// converting date format for US
 					Date date = new Date();
 					SimpleDateFormat sdfAmerica = new SimpleDateFormat("yyyyMMdd");
-					TimeZone tzInAmerica = TimeZone.getTimeZone(siteItem.getTime_zone_value());
+					TimeZone tzInAmerica = TimeZone.getTimeZone(siteItem.getDisplay_timezone());
 					sdfAmerica.setTimeZone(tzInAmerica);
 					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(siteItem.getTime_zone_value()));
 					
@@ -106,9 +107,11 @@ public class FTPUploadServerController extends BaseController {
 					String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 							Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 					
-//					remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230614";
+					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
+					
+//					remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230615";
 //					if(siteItem.getId() == 147) {
-//						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230614";
+//						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
 //					}
 
 					System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
@@ -255,7 +258,7 @@ public class FTPUploadServerController extends BaseController {
 																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 																entitySMA3000.setTime(formatterUtcDateTime);
 																
-																System.out.println("modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
+																System.out.println("Cron job modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 
 																if (deviceItem.getId() > 0) {
@@ -620,7 +623,7 @@ public class FTPUploadServerController extends BaseController {
 													case "model_sma_inverter_stp30000tlus10":
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
 														if (entitySMA3000.getGridMs_TotW() > 0) {
-															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
+//															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
 															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
 															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
 														} else {
@@ -641,7 +644,7 @@ public class FTPUploadServerController extends BaseController {
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
 														if (entitySMA62.getGridMs_TotW() > 0) {
-															deviceUpdateE.setLast_updated(entitySMA62.getTime());
+//															deviceUpdateE.setLast_updated(entitySMA62.getTime());
 															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
 															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
 														} else {
@@ -862,4 +865,48 @@ public class FTPUploadServerController extends BaseController {
 			}
 		}
 	}
+	
+	
+	
+	/**
+	 * @description get last_updated device
+	 * @author long.pham
+	 * @since 2023-06-16
+	 * @return {}
+	 */
+	@GetMapping("/update-last-time-device")
+	public Object updateLastTimeDevice() {
+		try {
+			BatchJobService service = new BatchJobService();
+			List<?> listDevice = service.getListDeviceUpdateLastUpdate(new DeviceEntity());
+			if (listDevice == null || listDevice.size() == 0) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			for (int i = 0; i < listDevice.size(); i++) {
+				DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+				BatchJobTableEntity obj = new BatchJobTableEntity();
+				obj.setId_device(deviceItem.getId());
+				obj.setDatatablename(deviceItem.getView_tablename());
+				
+				BatchJobTableEntity lastRow = service.getLastRowItemUpdateDate(obj);
+				DeviceEntity deviceUpdateE = new DeviceEntity();
+				if(lastRow.getNvmActivePower() >= 0) {
+					System.out.println("Last_updated: " + lastRow.getTime());
+					deviceUpdateE.setId(deviceItem.getId());
+					deviceUpdateE.setLast_updated(lastRow.getTime());
+				} else {
+					deviceUpdateE.setLast_updated(null);
+				}
+				
+				service.updateLastUpdatedCronJob(deviceUpdateE);
+				
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

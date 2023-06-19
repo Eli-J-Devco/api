@@ -1901,17 +1901,21 @@
 			s.`name`,
 			s.id_time_zone,
 			s.timezone_datalogger,
-			s.display_timezone,
 			s.ftp_server,
 			s.ftp_user,
 			s.ftp_pass,
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
-			t.`value` AS time_zone_value
+			t.`value` AS time_zone_value,
+			tz.`value` AS display_timezone
 		FROM
 			site s 
 			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger
+			
+			LEFT JOIN (
+				SELECT * FROM time_zone tz
+			) tz ON tz.id = s.id_time_zone
 		WHERE
 			s.datalogger_type = 1 
 			AND s.`status` = 1 
@@ -1962,6 +1966,47 @@
 			AND d.id_site = #{id_site}
 	</select>
 	
+	
+	
+	<select id="getListDeviceUpdateLastUpdate" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			d.id_device_group
+		FROM
+			device AS d
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	
+	<select id="getLastRowItemUpdateDate" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT
+    		`time`, 
+    		id_device, 
+    		d.devicename
+		FROM ${datatablename} u
+		LEFT JOIN device d ON d.id = u.id_device
+		WHERE u.id_device = #{id_device}
+		ORDER BY u.`time` DESC LIMIT 1;
+  	</select>
+	
+	
+	<update id="updateLastUpdatedCronJob">
+		UPDATE `device`
+		SET
+			 `last_updated` = #{last_updated}
+		WHERE
+			`id` = #{id}
+	</update>
 	
 	
 	
