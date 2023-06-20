@@ -810,9 +810,24 @@
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						CASE
-							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
-							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
-							ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
+									s.ac_capacity
+								)
+							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
+									s.ac_capacity
+								)
+							ELSE
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
+									s.ac_capacity
+								)
 						END,
 						NULL
 					)), 1), 0.001)
@@ -820,9 +835,24 @@
 				<otherwise>
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						CASE
-							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
-							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
-							ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
+									s.ac_capacity
+								)
+							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
+									s.ac_capacity
+								)
+							ELSE
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
+									s.ac_capacity
+								)
 						END,
 						NULL
 					)), 1), 0.001)
@@ -960,9 +990,24 @@
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -970,9 +1015,24 @@
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -1070,9 +1130,24 @@
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -1080,9 +1155,24 @@
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -1179,9 +1269,24 @@
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -1189,9 +1294,24 @@
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
 								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 ))
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25 ))
-									ELSE s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG))
+									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
+											s.ac_capacity
+										)
+									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
+											s.ac_capacity
+										)
+									ELSE
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
+											s.ac_capacity
+										)
 								END,
 								NULL
 							)), 1)
@@ -1594,26 +1714,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -1676,26 +1820,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -1754,26 +1922,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -1836,26 +2028,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -1915,26 +2131,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -1993,26 +2233,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -2075,26 +2339,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>
@@ -2156,26 +2444,50 @@
 								<when test="pv_model == 1">
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 ))
-									    </when>
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)		
+										</when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</when>
 								<otherwise>
 									<choose>
 									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 ))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+												s.ac_capacity
+											)
 									    </when>
 									    <otherwise>
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)))
+											IF(
+												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
+												s.ac_capacity
+											)
 									    </otherwise>
 									</choose>
 								</otherwise>

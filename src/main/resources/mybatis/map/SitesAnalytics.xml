@@ -1690,26 +1690,86 @@
 				CASE
 					WHEN s.pv_model = 1 THEN
 						<choose>
-						    <when test="datatablename == 'model_w_kipp_zonen_rt1'">
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )), 2), 0.001)
+						    <when test="(datatablename == 'model_w_kipp_zonen_rt1') || (datatablename == 'ViewModelWKippZonenRt1')">
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </when>
-						    <when test="datatablename == 'model_imtsolar_class8000'">
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25 )), 2), 0.001)
+						    <when test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </when>
 						    <otherwise>
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))), 2), 0.001)
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </otherwise>
 						</choose>
 					ELSE
 						<choose>
-						    <when test="datatablename == 'model_w_kipp_zonen_rt1'">
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )), 2), 0.001)
+						    <when test="(datatablename == 'model_w_kipp_zonen_rt1') || (datatablename == 'ViewModelWKippZonenRt1')">
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </when>
-						    <when test="datatablename == 'model_imtsolar_class8000'">
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25 )), 2), 0.001)
+						    <when test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </when>
 						    <otherwise>
-								IFNULL(ROUND(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))), 2), 0.001)
+								IFNULL(
+									ROUND(
+										IF(
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)) * 0.98,
+											s.ac_capacity
+										),
+										2
+									),
+									0.001
+								)
 						    </otherwise>
 						</choose>
 				END AS ExpectedPower,
