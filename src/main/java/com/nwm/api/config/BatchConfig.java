@@ -357,15 +357,15 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
-	public void startBatchJobSMADataManager() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-//		if (env.equals("staging")) {
-			BatchJob job =new BatchJob();
-//			job.runCronJobSMADataManager();
-//		}
-	}
+//	@Scheduled(cron = "0 */1 * * * *")
+//	public void startBatchJobSMADataManager() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+////		if (env.equals("staging")) {
+//			BatchJob job =new BatchJob();
+////			job.runCronJobSMADataManager();
+////		}
+//	}
 	
 	
 	/**
@@ -375,15 +375,15 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
-	public void startBatchJobReadXMLDataManager() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-//		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
-//			job.runCronJobReadXMLDataManager();
-//		}
-		
-	}
+//	@Scheduled(cron = "0 */1 * * * *")
+//	public void startBatchJobReadXMLDataManager() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+////		if (env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+////			job.runCronJobReadXMLDataManager();
+////		}
+//		
+//	}
 
 }

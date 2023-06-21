@@ -198,4 +198,24 @@ public class SitesDevicesService extends DB {
 		}
 	}
 	
+	
+	/**
+	 * @description get list summary device by id_site
+	 * @author long.pham
+	 * @since 2023-06-20
+	 * @param id_site
+	 */
+	
+
+	public List getListSummaryDevice(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		
+	}
+	
 }

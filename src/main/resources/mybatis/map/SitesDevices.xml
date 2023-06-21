@@ -318,6 +318,95 @@
 	</select>
 	
 	
+	<select id="getListSummaryDevice" resultType="Map">
+		SELECT 
+			t.id_device_type,
+			t.device_group_name,
+			COUNT(IF(t.id_device_type = 1, 1, NULL)) AS totalInverter,
+			COUNT(IF(t.id_device_type = 1 AND t.totalNoCom > 0, 1, NULL)) AS noComInverter,
+			COUNT(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionInverter,
+			COUNT(IF(t.id_device_type = 1 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyInverter,
+			COUNT(IF(t.id_device_type = 1, 1, NULL)) - (COUNT(IF(t.id_device_type = 1 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.percent_power >= 50 AND t.percent_power IS NOT NULL, 1, NULL )) ) AS lowInverter,
+			
+
+			COUNT(IF(t.id_device_type = 2, 1, NULL)) AS totalTracker,
+			COUNT(IF(t.id_device_type = 2 AND t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyTracker,
+			COUNT(IF(t.id_device_type = 2, 1, NULL)) - COUNT(IF(t.id_device_type = 2 AND t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL, 1, NULL )) AS noComTracker,
+			
+			
+			COUNT(IF(t.id_device_type = 3, 1, NULL)) AS totalMeter,
+			COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0, 1, NULL)) AS noComMeter,
+			COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionMeter,
+			COUNT(IF(t.id_device_type = 3 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyMeter,
+			COUNT(IF(t.id_device_type = 3, 1, NULL)) - (COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.percent_power >= 50 AND t.percent_power IS NOT NULL, 1, NULL )) ) AS lowMeter,
+		
+			COUNT(IF(t.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
+			COUNT(IF(t.id_device_type = 4 AND t.totalNoCom > 0, 1, NULL)) AS noComWeatherStation,
+			COUNT(IF(t.id_device_type = 4, 1, NULL)) - COUNT(IF(t.id_device_type = 4 AND t.totalNoCom > 0, 1, NULL)) AS healthyWeatherStation
+			
+			
+			
+		FROM (
+			SELECT
+			d.id,
+			d.id_device_group,
+			dt.`name` AS device_group_name,
+			d.devicename,
+			IFNULL(noc.totalNoProuduction, 0) AS totalNoProuduction,
+			IFNULL(com.totalNoCom, 0) AS totalNoCom,
+			pp.percent_power,
+			dt.id as id_device_type
+		
+			FROM
+				device d 
+				LEFT JOIN device_type dt ON dt.id = d.id_device_type
+				LEFT JOIN (
+					SELECT a.id_device, COUNT(a.id) AS totalNoProuduction 
+					FROM alert a 
+					LEFT JOIN device d ON d.id = a.id_device
+					LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level = 32
+					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 
+					AND d.`status` = 1 AND d.id_site = #{id_site}
+					AND d.id_device_type IN (1,2,3,4)
+					GROUP BY a.id_device
+				)noc ON d.id = noc.id_device
+				
+				LEFT JOIN (
+					SELECT a.id_device, COUNT(a.id) AS totalNoCom 
+					FROM alert a 
+					LEFT JOIN device d ON d.id = a.id_device
+					LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level = 33
+					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 
+					AND d.`status` = 1 AND d.id_site = #{id_site}
+					AND d.id_device_type IN (1,2,3,4)
+					GROUP BY a.id_device
+				)com ON d.id = com.id_device
+				
+				
+				LEFT JOIN(
+					SELECT
+						d.id,
+						d.devicename,
+						IFNULL(d.last_value, 0) as active_power,
+						IF(d.last_value IS NOT NULL, ROUND(IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100),2), NULL) AS percent_power
+					FROM
+						device d
+					WHERE
+						d.id_site = #{id_site}
+						AND d.`status`  = 1 
+						AND d.is_delete = 0
+						AND d.id_device_type IN (1,2,3,4)
+				)pp ON pp.id = d.id
+				
+			WHERE
+				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+				AND d.id_device_type IN (1,2,3,4)
+		)t
+		 GROUP BY t.id_device_group ORDER BY t.id_device_type ASC;
+ 
+	</select>
+	
+	
   	
   	
 	
