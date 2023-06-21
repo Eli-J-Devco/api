@@ -171,6 +171,18 @@ public class SitesAlertController extends BaseController {
 								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 //								String mailTo = "vanlong200880@gmail.com";
 								String mailTo = detailObj.getCf_email_subscribers();
+								
+								// Remove email employees who hide a site
+								List emails = service.getEmployeeHidingSite(obj);
+								if(emails != null && emails.size() > 0) {
+									for(int i = 0; i < emails.size(); i++) {
+										Map<String, Object> itemT = (Map<String, Object>) emails.get(i);
+										String email = itemT.get("email").toString();
+
+										mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+									}
+								}
+								
 								String subject = " Next Wave Alert - ".concat(detailObj.getSite_name());
 								String tags = "run_cron_job";
 								String fromName = "NEXT WAVE ENERGY MONITORING INC";
