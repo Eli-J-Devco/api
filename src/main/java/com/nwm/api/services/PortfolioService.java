@@ -176,4 +176,19 @@ public class PortfolioService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update a note of a site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 */
+	public boolean updateNote(PortfolioEntity obj) {
+		try {
+			return update("Portfolio.updateNote", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Portfolio.updateNote", ex);
+			return false;
+		}
+	}
+	
 }

@@ -115,6 +115,7 @@ public class SiteEntity {
 	private String label;
 	private int value;
 	private double totalGeneration;
+	private int is_hiding;
 	
 	private double view_lat;
 	private double view_lng;
@@ -170,6 +171,12 @@ public class SiteEntity {
 	
 	
 	
+	public int getIs_hiding() {
+		return is_hiding;
+	}
+	public void setIs_hiding(int is_hiding) {
+		this.is_hiding = is_hiding;
+	}
 	public String getDisplay_timezone() {
 		return display_timezone;
 	}

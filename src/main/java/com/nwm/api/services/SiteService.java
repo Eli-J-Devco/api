@@ -255,6 +255,8 @@ public class SiteService extends DB {
 				EmployeeSiteMapEntity siteCustomerMaptItem = this._buildSiteEmployeeMapItem(obj.getId(), id_employee);
 				session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
 			}
+			
+			session.update("Site.updateHidingSite", obj);
 
 			session.commit();
 			return true;

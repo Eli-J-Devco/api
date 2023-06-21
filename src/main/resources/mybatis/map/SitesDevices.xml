@@ -25,6 +25,8 @@
 			s.unit_type_temp,
 			s.unit_wind_speed,
 			dt.alias AS device_type_alias,
+			dt.color AS color,
+			dt.is_color AS is_color,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
 				WHEN d.datatablename = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))

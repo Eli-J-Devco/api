@@ -142,7 +142,8 @@
 			</if>
 			
 		WHERE
-			s.is_delete = 0 
+			s.is_delete = 0
+			AND sem.is_hiding = 0
 			AND s.`status` = 1 
 			AND sem.id_employee = #{id_employee}
 			
@@ -319,6 +320,15 @@
 	        LAST_INSERT_ID() as id
         </selectKey>
 	</insert>
+	
+	<update id="updateHidingSite">
+		UPDATE `site_employee_map`
+		SET
+			`is_hiding` = #{is_hiding}
+		WHERE
+			`id_site` = #{id}
+			AND `id_employee` = #{id_employee}
+	</update>
   	
   	
   	
@@ -514,7 +524,8 @@
 			s.ftp_pass,
 			s.ftp_port,
 			s.ftp_folder,
-			s.datalogger_type
+			s.datalogger_type,
+			sem.is_hiding
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

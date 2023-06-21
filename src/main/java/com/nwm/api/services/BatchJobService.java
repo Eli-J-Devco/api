@@ -1374,6 +1374,25 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get list employees hiding a site
+	 * @author duy.phan
+	 * @since 2023-06-21
+	 * @param id
+	 */
+
+	public List getEmployeeHidingSite(SiteEntity obj) {
+		try {
+			List rs = queryForList("BatchJob.getEmployeeHidingSite", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 //	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
 //		DeviceEntity rowItem = new DeviceEntity();
 //		try {

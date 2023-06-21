@@ -16,7 +16,93 @@ public class DeviceTypeEntity{
 	private String created_by;
 	private String updated_date;
 	private String updated_by;
+	private int limit;
+	private int offset;
+	private int totalRecord;
+	private String keyword;
+	private String order_by;
+	private String sort_column;
+	private int screen_mode;
 	private String text;
+	private String alias;
+	private String color;
+	private String image;
+	private int is_color;
+	private int checkAll;
+	
+	
+	public int getCheckAll() {
+		return checkAll;
+	}
+	public void setCheckAll(int checkAll) {
+		this.checkAll = checkAll;
+	}
+	public int getIs_color() {
+		return is_color;
+	}
+	public void setIs_color(int is_color) {
+		this.is_color = is_color;
+	}
+	public String getImage() {
+		return image;
+	}
+	public void setImage(String image) {
+		this.image = image;
+	}
+	public int getScreen_mode() {
+		return screen_mode;
+	}
+	public void setScreen_mode(int screen_mode) {
+		this.screen_mode = screen_mode;
+	}
+	public String getOrder_by() {
+		return order_by;
+	}
+	public void setOrder_by(String order_by) {
+		this.order_by = order_by;
+	}
+	public String getSort_column() {
+		return sort_column;
+	}
+	public void setSort_column(String sort_column) {
+		this.sort_column = sort_column;
+	}
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public int getTotalRecord() {
+		return totalRecord;
+	}
+	public void setTotalRecord(int totalRecord) {
+		this.totalRecord = totalRecord;
+	}
+	public String getAlias() {
+		return alias;
+	}
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
 	/**
 	 * @return the id
 	 */

@@ -246,8 +246,9 @@
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN site_employee_map sem ON sem.id_employee = #{id_employee}
 			WHERE e.`status` = 1 AND e.is_delete = 0
-			AND l.is_delete = 0
+			AND l.is_delete = 0 AND sem.is_hiding = 0
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
 				AND l.resolved = 0
@@ -345,8 +346,9 @@
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN site_employee_map sem ON sem.id_employee = #{id_employee}
 			WHERE  e.`status` = 1 AND e.is_delete = 0
-			AND l.is_delete = 0
+			AND l.is_delete = 0 AND sem.is_hiding = 0
 			<if test="view_history == 'active'">
 				AND l.status = 1
 				AND l.resolved = 0
@@ -1214,6 +1216,7 @@
 			AND d.is_delete = 0
 			AND totalAlert > 0
 			AND sem.id_employee = #{id_employee}
+			AND sem.is_hiding = 0
 			
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
@@ -1285,6 +1288,7 @@
 			s.`status` = 1 
 			AND s.is_delete = 0 
 			AND sem.id_employee = #{id_employee}
+			AND sem.is_hiding = 0
 			AND totalAlert > 0
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
@@ -1574,5 +1578,16 @@
 				`id` = #{id};
 		
 	</update>
+	
+	<select id="getEmployeeHidingSite" resultType="Map" >
+  		SELECT
+			e.email
+		FROM 
+			site_employee_map sem
+			LEFT JOIN employee e ON e.id = sem.id_employee
+		WHERE
+			sem.id_site = #{id_site}
+			AND sem.is_hiding = 1
+	</select>
 
 </mapper>

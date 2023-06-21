@@ -14,6 +14,8 @@
 		<result property="created_date" column="created_date" />
 		<result property="created_by" column="created_by" />
 		<result property="updated_date" column="updated_by" />
+		<result property="alias" column="alias" />
+		<result property="color" column="color" />
 	</resultMap>
 	
 
@@ -28,5 +30,108 @@
 		WHERE
 			t.`status` = 1 AND t.is_delete = 0;
 	</select>
+	
+	<select id="getListManage" resultType="Map">
+		SELECT
+			s.id,
+			s.`name`,
+			s.`description`,
+			s.`status`,
+			s.image,
+			s.is_delete,
+			s.alias,
+			s.color,
+			s.is_color
+			
+		FROM
+			device_type AS s
+		WHERE
+			s.`status` = 1 AND s.is_delete = 0
+			<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                s.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'alias'">
+	                `alias` ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.DeviceTypeEntity">
+    	SELECT count(*) as totalRow
+		FROM device_type s WHERE s.`status` = 1 AND s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	<update id="delete">
+		UPDATE `device_type`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+  	
+  	<insert id="insertDeviceType" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_type`(
+			`name`,
+			`image`,
+			`description`,
+			`alias`,
+			`color`
+		)VALUES(
+			#{name},
+			#{image},
+			#{description},
+			#{alias},
+			#{color}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateDeviceType">
+		UPDATE `device_type`
+		SET
+			`name` = #{name},
+			`image` = #{image},
+			`description` = #{description},
+			`alias` = #{alias},
+			`color` = #{color}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateIsColor">
+		<if test="checkAll == 1">
+			UPDATE `device_type`
+			SET
+				is_color = #{is_color}
+		</if>
+		<if test="checkAll == 0">
+			UPDATE `device_type`
+			SET
+				is_color = #{is_color}
+			WHERE
+				`id` = #{id}
+		</if>
+	</update>
 	
 </mapper>

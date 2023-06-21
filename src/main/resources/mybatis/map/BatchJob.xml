@@ -2008,7 +2008,16 @@
 			`id` = #{id}
 	</update>
 	
-	
+	<select id="getEmployeeHidingSite" resultType="Map" >
+  		SELECT
+			e.email
+		FROM 
+			site_employee_map sem
+			LEFT JOIN employee e ON e.id = sem.id_employee
+		WHERE
+			sem.id_site = #{id}
+			AND sem.is_hiding = 1
+	</select>
 	
   	
 </mapper>

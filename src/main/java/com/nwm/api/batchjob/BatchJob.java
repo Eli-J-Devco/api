@@ -440,6 +440,18 @@ public class BatchJob {
 							Constants.mailFromContact);
 //					String mailTo = "vanlong200880@gmail.com,lpham@phoenixrs.com";
 					String mailTo = siteObj.getCf_email_subscribers();
+					
+					// Remove email employees who hide a site
+					List emails = service.getEmployeeHidingSite(siteObj);
+					if(emails != null && emails.size() > 0) {
+						for(int j = 0; j < emails.size(); j++) {
+							Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
+							String email = itemT.get("email").toString();
+
+							mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+						}
+					}
+					
 					String subject = " Next Wave Alert - ".concat(siteObj.getName());
 					String tags = "run_cron_job";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
