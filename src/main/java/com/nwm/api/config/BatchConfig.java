@@ -336,17 +336,40 @@ public class BatchConfig {
 	}
 	
 	/**
-	 * @description batch job get run ssh cell modem and datalogger
+	 * @description batch job get run ssh cell modem 
 	 * @author long.pham
 	 * @since 2023-05-08
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */3 * * * *")
+	@Scheduled(cron = "* */3 * * * *")
 	public void startBatchJobSSHCellModem() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobSSHCellModem();
-		job.runCronJobSSHDatalogger();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("prod")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobSSHCellModem();
+		}
+		
+	}
+	
+	
+	/**
+	 * @description batch job get run ssh  datalogger
+	 * @author long.pham
+	 * @since 2023-05-08
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "* */5 * * * *")
+	public void startBatchJobSSHDatalogger() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("prod")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobSSHDatalogger();
+		}
+		
 	}
 	
 	

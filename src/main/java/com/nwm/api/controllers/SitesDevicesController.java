@@ -588,8 +588,8 @@ public class SitesDevicesController extends BaseController {
 							
 							
 							// RSSI4
-							if(RSSI4 != null) {
-								deviceUpdateE.setField_value3(RSSI4 != null ? Double.parseDouble(RSSI4.trim()): 0 );
+							if(RSSI3 != null) {
+								deviceUpdateE.setField_value3(RSSI3 != null ? Double.parseDouble(RSSI3.trim()): 0 );
 							} else {
 								deviceUpdateE.setField_value3(null);
 							}

@@ -1592,9 +1592,10 @@ public class BatchJob {
 					celModemEntity.setRSRQ3(RSRQ3 != null ? Double.parseDouble(RSRQ3.trim()) : 0);
 					celModemEntity.setChannel3(Channel3 != null ? Double.parseDouble(Channel3.trim()) : 0);
 					RSSI4 = RSSI4 != null ? RSSI4.replaceAll("dBm", "") : null;
+					
 					SINR4 = SINR4 != null ? SINR4.replaceAll("dB", "") : null;
 					RSRP4 = RSRP4 != null ? RSRP4.replaceAll("dBm", "") : null;
-					RSRQ4 = RSSI3 != null ? RSRQ4.replaceAll("dB", "") : null;
+					RSRQ4 = RSRQ4 != null ? RSRQ4.replaceAll("dB", "") : null;
 					celModemEntity.setRSSI4(RSSI4 != null ? Double.parseDouble(RSSI4.trim()) : 0);
 					celModemEntity.setSINR4(SINR4 != null ? Double.parseDouble(SINR4.trim()) : 0);
 					celModemEntity.setRSRP4(RSRP4 != null ? Double.parseDouble(RSRP4.trim()) : 0);
@@ -1603,8 +1604,8 @@ public class BatchJob {
 					celModemEntity.setCPULoad(0);
 
 					// RSSI4
-					if (RSSI4 != null) {
-						deviceUpdateE.setField_value3(RSSI4 != null ? Double.parseDouble(RSSI4.trim()) : 0);
+					if (RSSI3 != null) {
+						deviceUpdateE.setField_value3(RSSI3 != null ? Double.parseDouble(RSSI3.trim()) : 0);
 					} else {
 						deviceUpdateE.setField_value3(null);
 					}
@@ -1903,6 +1904,7 @@ public class BatchJob {
 					dataloggerModem.insertModelDatalogger(dataloggerEntity);
 
 					// MemFree
+					System.out.println("MemFree: " + MemFree);
 					if (MemFree != null) {
 						deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
 						deviceUpdateE.setLast_value(Double.parseDouble(MemFree));
