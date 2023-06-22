@@ -296,7 +296,7 @@ public class FTPUploadServerController extends BaseController {
 																		}
 																		
 																		else if (field.equals("Measurement.GridMs.TotW") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																			entitySMA3000.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) : 0.001);
+																			entitySMA3000.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
 																			entitySMA3000.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
 																		}
 																		
@@ -464,7 +464,7 @@ public class FTPUploadServerController extends BaseController {
 																		}
 																		
 																		else if (field.equals("Measurement.GridMs.TotW") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																			entitySMA62.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) : 0.001);
+																			entitySMA62.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
 																			entitySMA62.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
 																		}
 																		
