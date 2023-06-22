@@ -1720,8 +1720,8 @@
 								IFNULL(
 									ROUND(
 										IF(
-											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature)) * 0.98,
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
 											s.ac_capacity
 										),
 										2
@@ -1762,8 +1762,8 @@
 								IFNULL(
 									ROUND(
 										IF(
-											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature)) * 0.98,
+											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
 											s.ac_capacity
 										),
 										2
