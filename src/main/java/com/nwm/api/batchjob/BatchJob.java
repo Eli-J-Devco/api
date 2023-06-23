@@ -1814,6 +1814,7 @@ public class BatchJob {
 		}
 		for (int i = 0; i < listDevice.size(); i++) {
 			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+			System.out.println("id site: " + deviceItem.getId_site());
 			listDataloggerStructure(deviceItem.getSsh_user(), deviceItem.getSsh_pass(), deviceItem.getSsh_host(),
 					Integer.parseInt(deviceItem.getSsh_port()), deviceItem.getId());
 		}
@@ -1855,6 +1856,7 @@ public class BatchJob {
 				channel.setOutputStream(responseStream);
 				InputStream is = channel.getInputStream();
 				channel.connect();
+				System.out.println("channel.isConnected(): " + channel.isConnected());
 				while (channel.isConnected()) {
 					Thread.sleep(100);
 				}
@@ -1905,6 +1907,7 @@ public class BatchJob {
 
 					// MemFree
 					System.out.println("MemFree: " + MemFree);
+					
 					if (MemFree != null) {
 						deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
 						deviceUpdateE.setLast_value(Double.parseDouble(MemFree));
@@ -1964,13 +1967,17 @@ public class BatchJob {
 					dataloggerEntity.setId_device(id_device);
 					dataloggerModem.insertModelDatalogger(dataloggerEntity);
 				}
-
 				// value 2,3
 				deviceUpdateE.setField_value2(null);
 				deviceUpdateE.setField_value3(null);
 				deviceUpdateE.setId(dataloggerEntity.getId_device());
 				serviceD.updateLastUpdated(deviceUpdateE);
-			} finally {
+			} 
+			catch (Exception ex) {
+				System.out.println(ex);
+			} 
+			
+			finally {
 				if (session != null) {
 					session.disconnect();
 				}
@@ -1980,7 +1987,8 @@ public class BatchJob {
 				if (channeldns != null) {
 					channeldns.disconnect();
 				}
-			}
+			} 
+			
 		}
 	}
 

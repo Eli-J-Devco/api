@@ -230,6 +230,17 @@
 	</update>
 	
 	
+	
+	<update id="updateSshStatus">
+		UPDATE `device`
+		SET
+			`ssh_status` = #{ssh_status},
+			`ssh_last_connect` = #{ssh_last_connect}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
 	<update id="deleteDevice">
 		UPDATE `device`
 		SET
@@ -340,5 +351,85 @@
 				`id` = #{id}
 		</if>
 	</update>
+	
+	
+	
+	
+	<select id="getListSshDataloggerCellModem" resultType="Map" >
+		SELECT
+			s.`name` AS site_name,
+			dt.`name` AS device_type_name,
+			d.id,
+			d.devicename,
+			d.ssh_host,
+			d.ssh_user,
+			d.ssh_pass,
+			d.ssh_port,
+			d.ssh_status,
+			DATE_FORMAT(d.ssh_last_connect, "%m-%d-%Y %H:%m:%s") AS ssh_last_connect,
+			d.`status`,
+			d.is_delete
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON s.id = d.id_site 
+		WHERE d.`status` = 1 
+		AND d.is_delete = 0
+		AND s.`status` = 1
+		AND s.is_delete = 0
+		AND d.ssh_host IS NOT NULL
+		AND d.ssh_pass IS NOT NULL
+		AND d.ssh_user IS NOT NULL
+		AND d.ssh_port IS NOT NULL
+
+		<if test="keyword != null">
+			 AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>  
+	                   
+	            <when test="sort_column == 'site_name'">
+	                s.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'name'">
+	                d.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'ssh_status'">
+	                d.ssh_status ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      d.id_device_group DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+  	
+	
+	<select id="getTotalSshDataloggerCellModem"  resultType="int" parameterType="com.nwm.api.entities.DeviceEntity">
+    	SELECT count(*) as totalRow
+		FROM
+			device d
+			LEFT JOIN site s ON s.id = d.id_site 
+		WHERE d.`status` = 1 
+		AND d.is_delete = 0
+		AND s.`status` = 1
+		AND s.is_delete = 0
+		AND d.ssh_host IS NOT NULL
+		AND d.ssh_pass IS NOT NULL
+		AND d.ssh_user IS NOT NULL
+		AND d.ssh_port IS NOT NULL
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
 	
 </mapper>

@@ -141,6 +141,24 @@ public class DeviceService extends DB {
 	}
 	
 	
+	
+	
+	/**
+	 * @description update ssh status
+	 * @author long.pham
+	 * @since 2022-02-09
+	 * @param {}
+	 */
+	public boolean updateSshStatus(DeviceEntity obj) {
+		try {
+			return update("Device.updateSshStatus", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateSshStatus", ex);
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * @description delete site
 	 * @author long.pham
@@ -194,5 +212,36 @@ public class DeviceService extends DB {
 		}
 	}
 	
+	
+	/**
+	 * @description get list site for page employee manage site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+
+	public List getListSshDataloggerCellModem(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListSshDataloggerCellModem", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description get total device by id_site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	public int getTotalSshDataloggerCellModem(DeviceEntity obj) {
+		try {
+			return (int) queryForObject("Device.getTotalSshDataloggerCellModem", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 
 }
