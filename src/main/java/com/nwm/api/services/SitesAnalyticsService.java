@@ -63,42 +63,77 @@ public class SitesAnalyticsService extends DB {
 			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			
+			Date dt = new Date();
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(dt); 
+			c.add(Calendar.MONTH, -3);
+			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+			Date d1 = dateFor.parse(obj.getStart_date());
+			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+			
 			if(dataDevice.size() > 0) {
 				for(int i =0; i< dataDevice.size(); i++) {
 					ObjectMapper oMapper = new ObjectMapper();
 					Map<String, Object> map = oMapper.convertValue(dataDevice.get(i), Map.class);
 					Map<Object, Object> maps = new HashMap<>();
+					int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
+					
 					maps.put("filterBy", obj.getFilterBy());
 					maps.put("start_date", obj.getStart_date());
 					maps.put("end_date", obj.getEnd_date());
-					int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
-					maps.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 					maps.put("data_send_time", obj.getData_send_time());
-					Date dt = new Date();
-					Calendar c = Calendar.getInstance(); 
-					c.setTime(dt); 
-					c.add(Calendar.MONTH, -3);
-					SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-					Date d1 = dateFor.parse(obj.getStart_date());
-					Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-					if(d1.compareTo(d2) < 0) {
-						maps.put("datatablename", map.get("datatablename"));
-					} else {
-						maps.put("datatablename", map.get("view_tablename"));
-					}
-					
-					
-					
-					
 					maps.put("id", map.get("id"));
 					maps.put("device_name", map.get("devicename"));
 					maps.put("id_device_group", map.get("id_device_group"));
 					maps.put("id_device_type", map.get("id_device_type"));
+					maps.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 					
-					
-					List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
-					
-					maps.put("data", getDataChartParameter);
+					if ((int) map.get("id_device_type") == 11) {
+						List devices = new ArrayList<>();
+						// calculation for whole site's Measured Production
+						List meters = queryForList("SitesAnalytics.getMetersBySite", obj);
+						if (meters.size() > 0) {
+							devices.addAll(meters);
+						} else {
+							List inverters = queryForList("SitesAnalytics.getInvertersBySite", obj);
+							devices.addAll(inverters);
+						}
+						// calculation for whole site's Expected Power
+						List weatherStations = queryForList("SitesAnalytics.getWeatherStationsBySite", obj);
+						if (weatherStations.size() > 0) {
+							devices.addAll(weatherStations);
+						}
+						
+						if (devices.size() > 0) {
+							for (int j = 0; j < devices.size(); j++) {
+								ObjectMapper oDeviceMapper = new ObjectMapper();
+								Map<String, Object> device = oDeviceMapper.convertValue(devices.get(j), Map.class);
+								
+								if(d1.compareTo(d2) < 0) {
+									device.put("datatablename", device.get("datatablename"));
+								} else {
+									device.put("datatablename", device.get("view_tablename"));
+								}
+								devices.set(j, device);
+							}
+							
+							maps.put("devices", devices);
+							List systemParameter = queryForList("SitesAnalytics.getChartSystemParameter", maps);
+							
+							maps.put("data", systemParameter);
+						}
+					} else {
+						if(d1.compareTo(d2) < 0) {
+							maps.put("datatablename", map.get("datatablename"));
+						} else {
+							maps.put("datatablename", map.get("view_tablename"));
+						}
+						
+						List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
+						
+						maps.put("data", getDataChartParameter);
+					}
 					dataList.add(maps);
 				}
 			}
