@@ -342,7 +342,7 @@
 			) p ON p.id_device = d.id
 			
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
 			
 		ORDER BY
 	        <choose> 
