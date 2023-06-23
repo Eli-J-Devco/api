@@ -89,7 +89,7 @@ public class SitesAnalyticsService extends DB {
 					maps.put("id_device_type", map.get("id_device_type"));
 					maps.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 					
-					if ((int) map.get("id_device_type") == 11) {
+					if ((int) map.get("id_device_type") == 12) {
 						List devices = new ArrayList<>();
 						// calculation for whole site's Measured Production
 						List meters = queryForList("SitesAnalytics.getMetersBySite", obj);
