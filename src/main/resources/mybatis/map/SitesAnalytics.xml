@@ -81,6 +81,7 @@
 		SELECT
 			dp.id,
 			dp.`name`,
+			dp.standard_name,
 			dp.slug,
 			dp.unit,
 			dp.value_chart_tool,

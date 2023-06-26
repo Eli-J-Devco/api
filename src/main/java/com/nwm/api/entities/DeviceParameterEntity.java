@@ -34,6 +34,14 @@ public class DeviceParameterEntity{
 	private int is_checked;
 	private int menu_order;
 	private int is_calculation;
+	private String standard_name;
+	private int limit;
+	private int offset;
+	private int totalRecord;
+	private int screen_mode;
+	private String keyword;
+	private String order_by;
+	private String sort_column;
 	
 	
 	
@@ -186,6 +194,54 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_calculation(int is_calculation) {
 		this.is_calculation = is_calculation;
+	}
+	public int getLimit() {
+		return limit;
+	}
+	public void setLimit(int limit) {
+		this.limit = limit;
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public int getTotalRecord() {
+		return totalRecord;
+	}
+	public void setTotalRecord(int totalRecord) {
+		this.totalRecord = totalRecord;
+	}
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+	public String getOrder_by() {
+		return order_by;
+	}
+	public void setOrder_by(String order_by) {
+		this.order_by = order_by;
+	}
+	public String getSort_column() {
+		return sort_column;
+	}
+	public void setSort_column(String sort_column) {
+		this.sort_column = sort_column;
+	}
+	public String getStandard_name() {
+		return standard_name;
+	}
+	public void setStandard_name(String standard_name) {
+		this.standard_name = standard_name;
+	}
+	public int getScreen_mode() {
+		return screen_mode;
+	}
+	public void setScreen_mode(int screen_mode) {
+		this.screen_mode = screen_mode;
 	}
 	
 
