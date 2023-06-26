@@ -262,7 +262,15 @@ public class SitesDevicesController extends BaseController {
 						getDetail.setList_parameters(listParameters);
 						return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
 
-					} finally {
+					} 
+					catch (Exception ex) {
+						deviceUpdateE.setSsh_status(1);
+						deviceUpdateE.setSsh_last_connect(utcTime);
+						deviceUpdateE.setId(getDetail.getId());
+						serviceD.updateSshStatus(deviceUpdateE);
+						return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0); 
+					}
+					finally {
 						if (session != null) {
 							session.disconnect();
 						}
@@ -588,8 +596,8 @@ public class SitesDevicesController extends BaseController {
 							
 							
 							// RSSI4
-							if(RSSI4 != null) {
-								deviceUpdateE.setField_value3(RSSI4 != null ? Double.parseDouble(RSSI4.trim()): 0 );
+							if(RSSI3 != null) {
+								deviceUpdateE.setField_value3(RSSI3 != null ? Double.parseDouble(RSSI3.trim()): 0 );
 							} else {
 								deviceUpdateE.setField_value3(null);
 							}
@@ -780,7 +788,15 @@ public class SitesDevicesController extends BaseController {
 						getDetail.setList_parameters(listParameters);
 						return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
 
-					} finally {
+					} 
+					catch (Exception ex) {
+						deviceUpdateE.setSsh_status(1);
+						deviceUpdateE.setSsh_last_connect(utcTime);
+						deviceUpdateE.setId(getDetail.getId());
+						serviceD.updateSshStatus(deviceUpdateE);
+						return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+					}
+					finally {
 						if (session != null) {
 							session.disconnect();
 						}

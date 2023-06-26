@@ -99,9 +99,22 @@ public class DeviceEntity {
 	private int reload_ssh;
 	private int checkAll;
 	private String job_tablename;
+	private int ssh_status;
+	private String ssh_last_connect;
 	
 	
-	
+	public int getSsh_status() {
+		return ssh_status;
+	}
+	public void setSsh_status(int ssh_status) {
+		this.ssh_status = ssh_status;
+	}
+	public String getSsh_last_connect() {
+		return ssh_last_connect;
+	}
+	public void setSsh_last_connect(String ssh_last_connect) {
+		this.ssh_last_connect = ssh_last_connect;
+	}
 	public String getJob_tablename() {
 		return job_tablename;
 	}
