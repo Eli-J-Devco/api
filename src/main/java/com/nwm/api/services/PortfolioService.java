@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -189,6 +191,48 @@ public class PortfolioService extends DB {
 			log.error("Portfolio.updateNote", ex);
 			return false;
 		}
+	}
+	
+	/**
+	 * @description get list site for page employee manage site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+
+	public List getListDeviceBySite(PortfolioEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Portfolio.getListDeviceBySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description update a note of a site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 */
+	public boolean updateDefaultDevice(PortfolioEntity obj) {
+			SqlSession session = this.beginTransaction();
+			try {
+				update("Portfolio.updateAllDevicesBySite", obj);
+				update("Portfolio.updateDefaultDevice", obj);
+				session.commit();
+				return true;
+			} catch (Exception ex) {
+				session.rollback();
+				log.error("Portfolio.updateNote", ex);
+				return false;
+			} finally {
+				session.close();
+			}
+			
+		
 	}
 	
 }
