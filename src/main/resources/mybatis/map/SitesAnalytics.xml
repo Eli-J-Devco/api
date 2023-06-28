@@ -1670,6 +1670,12 @@
 
 			</if>
 			
+			<!-- virtual device -->
+			<if test="(datatablename == 'model_virtual_meter_or_inverter') || (datatablename == 'ViewModelVirtualMeterOrInverter')">
+				IFNULL(ROUND(IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0, 0, AVG(dv.nvmActivePower)), 2), 0.001) AS Power,
+		    	IFNULL(ROUND(SUM(dv.nvmActiveEnergy), 2), 0.001) AS Energy,
+			</if>
+			
 			<!-- Energy calculation field -->
 			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
 				<choose>
