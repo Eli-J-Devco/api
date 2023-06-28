@@ -101,6 +101,7 @@ public class DeviceEntity {
 	private String job_tablename;
 	private int ssh_status;
 	private String ssh_last_connect;
+	private int hidden;
 	
 	
 	public int getSsh_status() {
@@ -643,6 +644,12 @@ public class DeviceEntity {
 	}
 	public void setCheckAll(int checkAll) {
 		this.checkAll = checkAll;
+	}
+	public int getHidden() {
+		return hidden;
+	}
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
 	}
 	
 	

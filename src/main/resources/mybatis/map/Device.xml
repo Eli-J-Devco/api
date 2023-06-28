@@ -154,7 +154,8 @@
 			s.ssh_port,
 			s.lat,
 			s.lng,
-			s.rating_ac_power
+			s.rating_ac_power,
+			s.hidden
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -303,7 +304,8 @@
 			#{ssh_port},
 			#{lat},
 			#{lng},
-			#{rating_ac_power}
+			#{rating_ac_power},
+			#{hidden}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -346,7 +348,8 @@
 				ssh_port = #{ssh_port},
 				lat = #{lat},
 				lng = #{lng},
-				rating_ac_power = #{rating_ac_power}
+				rating_ac_power = #{rating_ac_power},
+				hidden = #{hidden}
 			WHERE
 				`id` = #{id}
 		</if>

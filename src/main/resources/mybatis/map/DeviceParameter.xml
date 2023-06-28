@@ -28,4 +28,114 @@
 			dp.id
 	</select>
 	
+	<select id="getListDeviceGroup" resultType="Map">
+		SELECT
+			dg.id,
+			dg.group_name AS name,
+			dt.name AS device_type,
+			dg.`status`,
+			dg.is_delete
+		FROM
+			device_group AS dg
+			LEFT JOIN device_type dt ON dt.id = dg.id_device_type
+		WHERE
+			dg.`status` = 1 AND dg.is_delete = 0
+			<if test="keyword != null">
+				AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+	    ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                dg.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                dg.group_name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'device_type'">
+	                dt.name ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      dg.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalRecordDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT count(*) as totalRow
+		FROM device_group dg
+		WHERE dg.`status` = 1 AND dg.is_delete = 0
+		<if test="keyword != null">
+			AND dg.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+	
+	<select id="getListParameterByDeviceGroup" resultType="Map">
+		SELECT
+			dp.id,
+			dp.name,
+			dp.standard_name,
+			dp.`status`,
+			dp.is_delete
+		FROM
+			device_parameters AS dp
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+	    ORDER BY
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                dp.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'register_name'">
+	                dp.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'standard_name'">
+	                dp.standard_name ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      dp.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT count(*) as totalRow
+		FROM device_parameters dp
+		WHERE
+			dp.id_device_group = #{id_device_group}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+  	</select>
+  	
+  	<insert id="insertDeviceParameter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `device_parameters`(
+			`name`,
+			`id_device_group`,
+			`standard_name`
+		)VALUES(
+			#{name},
+			#{id_device_group},
+			#{standard_name}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateDeviceParameter">
+		UPDATE `device_parameters`
+		SET
+			`standard_name` = #{standard_name}
+		WHERE
+			`id` = #{id}
+	</update>
+	
 </mapper>
