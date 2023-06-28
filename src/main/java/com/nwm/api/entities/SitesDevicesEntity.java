@@ -87,6 +87,12 @@ public class SitesDevicesEntity {
 	private int checkall;
 	private int pv_model;
 	private Double t_avg_nrel;
+	private Double pv_module_temperature_coeff;
+	private Double global_solar_irradiance_at_stc;
+	private Double stc_temperature;
+	private Double inverter_efficiency;
+	private Double t_avg;
+	private Double system_loss;
 	
 	private String ssh_host;
 	private String ssh_user;
@@ -101,6 +107,42 @@ public class SitesDevicesEntity {
 	
 	
 	
+	public Double getPv_module_temperature_coeff() {
+		return pv_module_temperature_coeff;
+	}
+	public void setPv_module_temperature_coeff(Double pv_module_temperature_coeff) {
+		this.pv_module_temperature_coeff = pv_module_temperature_coeff;
+	}
+	public Double getGlobal_solar_irradiance_at_stc() {
+		return global_solar_irradiance_at_stc;
+	}
+	public void setGlobal_solar_irradiance_at_stc(Double global_solar_irradiance_at_stc) {
+		this.global_solar_irradiance_at_stc = global_solar_irradiance_at_stc;
+	}
+	public Double getStc_temperature() {
+		return stc_temperature;
+	}
+	public void setStc_temperature(Double stc_temperature) {
+		this.stc_temperature = stc_temperature;
+	}
+	public Double getInverter_efficiency() {
+		return inverter_efficiency;
+	}
+	public void setInverter_efficiency(Double inverter_efficiency) {
+		this.inverter_efficiency = inverter_efficiency;
+	}
+	public Double getT_avg() {
+		return t_avg;
+	}
+	public void setT_avg(Double t_avg) {
+		this.t_avg = t_avg;
+	}
+	public Double getSystem_loss() {
+		return system_loss;
+	}
+	public void setSystem_loss(Double system_loss) {
+		this.system_loss = system_loss;
+	}
 	public String getJob_tablename() {
 		return job_tablename;
 	}
