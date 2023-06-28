@@ -10,6 +10,8 @@ package com.nwm.api.utils;
  * @version 1.0
  */
 public class Constants {
+	public static final String privateKey="private_key";
+	
 	public static final String FTPSGServer="ftpSG.server";
 	public static final String FTPSGUser="ftpSG.user";
 	public static final String FTPSGPass="ftpSG.pass";

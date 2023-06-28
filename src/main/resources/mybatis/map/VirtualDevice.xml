@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="VirtualDevice">
+	
+	
+	<select id="getListSiteVirtualDevice" resultType="com.nwm.api.entities.VirtualDeviceEntity">
+		SELECT
+			s.id,
+			s.id AS id_site,
+			s.`name`,
+			s.id_time_zone,
+			s.timezone_datalogger,
+			t.`value` AS time_zone_value,
+			tz.`value` AS display_timezone,
+			d.virtual_device_type,
+			d.id_device_type,
+			d.id_device_group,
+			s.data_send_time,
+			null AS time,
+			d.id AS id_device,
+			null AS nvmActivePower,
+			null AS datatablename,
+			null AS devicename,
+			null AS devices,
+			null AS nvmActiveEnergy,
+			null AS nvm_temperature,
+			null AS nvm_irradiance
+	
+		FROM
+			site s 
+			LEFT JOIN time_zone t ON t.id = s.timezone_datalogger
+			LEFT JOIN device d ON d.id_site = s.id 
+			LEFT JOIN (
+				SELECT * FROM time_zone tz
+			) tz ON tz.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
+			AND d.`status` = 1 AND d.is_delete = 0
+			AND d.virtual_device_type IS NOT NULL
+			AND d.virtual_device_type != ''
+			
+	</select>
+	
+	<select id="getListDevice" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			
+			<if test="virtual_device_type == 'inverter'">
+				AND d.id_device_type = 1
+			</if>
+			
+			<if test="virtual_device_type == 'meter'">
+				AND d.id_device_type = 3
+			</if>
+			
+	</select>
+	
+	
+	
+	<select id="getListDeviceWeather" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_type = 4
+	</select>
+	
+	
+	
+	<!--<select id="getDataPower" resultType="Map" >
+		SELECT
+			t.time,
+			t.time_format,
+			ROUND(( SUM( t.power ) ), 1 ) AS power,
+			ROUND(( SUM( t.energy ) ), 1 ) AS energy
+			
+		FROM
+			(
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						m.time,
+						m.time_format,
+						SUM(m.power) AS power,
+						SUM(m.energy) AS energy
+					FROM
+						(
+						SELECT
+							dv.time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
+							IFNULL(dv.nvmActivePower, 0) AS power,
+							IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) <![CDATA[<=]]> 0 OR dv1.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS energy
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							
+							LEFT JOIN (
+								SELECT
+									dv.time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
+									MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
+							  	FROM
+							  		${item.datatablename} dv
+							    	LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									dv.id_device = #{item.id}
+									AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:5:0') AND SUBTIME(#{end_date}, '0:5:0'))
+								GROUP BY time_format
+							) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:5:0'), '+00:00', t.`offset` )) DIV 300
+							
+						WHERE
+							d.id = #{item.id}
+							AND d.id_device_type = #{item.id_device_type}
+							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+							AND s.`status` = 1 
+							AND d.`status` = 1 
+						GROUP BY
+							d.id, time_format
+						) m 
+					GROUP BY
+						m.time_format
+		      </foreach>
+			) t 
+		GROUP BY
+			t.time_format
+	</select>
+	
+	-->
+	
+	<select id="getDataPower" resultType="Map">
+		SELECT
+			t.time,
+			t.time_format,
+			ROUND(( SUM( t.power ) ), 1 ) AS power,
+			ROUND(( SUM( t.energy ) ), 1 ) AS energy,
+			ROUND(( SUM( t.irradiance ) ), 1 ) AS irradiance,
+			ROUND(( SUM( t.temperature ) ), 1 ) AS temperature
+		FROM
+			(
+			<foreach collection="devices" item="item" index="index" separator="union all">
+			SELECT
+				DATE_FORMAT(m.time,'%Y-%m-%d %H:%i:00') AS time,
+				m.time_format,
+				SUM( m.power ) AS power,
+				SUM( m.energy ) AS energy,
+				NULL AS irradiance,
+				NULL AS temperature
+			FROM
+				(
+				SELECT
+					dv.time,
+					FROM_UNIXTIME(((
+								UNIX_TIMESTAMP(
+								CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
+								)* 300 
+							),
+						'%m-%d-%Y %H:%i' 
+					) AS time_format,
+					IFNULL( dv.nvmActivePower, 0 ) AS power,
+				IF
+					(
+						MIN( dv.nvmActiveEnergy ) IS NULL 
+						OR dv1.nvmActiveEnergy IS NULL 
+						OR MIN( dv.nvmActiveEnergy ) <![CDATA[<=]]> 0 
+						OR dv1.nvmActiveEnergy <![CDATA[<=]]> 0,
+						NULL,
+						GREATEST(
+							MIN( dv.nvmActiveEnergy ) - dv1.nvmActiveEnergy,
+							0 
+						)) AS energy 
+				FROM
+					${item.datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					LEFT JOIN (
+					SELECT
+						dv.time,
+						FROM_UNIXTIME(((
+									UNIX_TIMESTAMP(
+									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
+									)* 300 
+								),
+							'%m-%d-%Y %H:%i' 
+						) AS time_format,
+						MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
+					FROM
+						${item.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+					WHERE
+						dv.id_device = #{item.id}
+						AND (
+							CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME( #{start_date}, '0:5:0' ) 
+						AND SUBTIME( #{end_date}, '0:5:0' )) 
+					GROUP BY
+						time_format 
+						) dv1 ON UNIX_TIMESTAMP(
+						CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(
+						CONVERT_TZ(
+							SUBTIME( dv.time, '0:5:0' ),
+							'+00:00',
+							t.`offset` 
+						)) DIV 300 
+				WHERE
+					d.id = #{item.id}
+					AND d.id_device_type = #{item.id_device_type}
+					AND DATE_FORMAT(
+						CONVERT_TZ( dv.time, '+00:00', t.`offset` ),
+						'%Y-%m-%d' 
+					) = DATE_FORMAT( #{end_date}, '%Y-%m-%d' ) 
+					AND s.`status` = 1 
+					AND d.`status` = 1 
+				GROUP BY
+					d.id,
+					time_format 
+				) m 
+			GROUP BY
+				m.time_format
+			</foreach>
+			
+			
+			
+			<if test="weathers != null and !weathers.isEmpty()">
+				UNION ALL
+				<foreach collection="weathers" item="v" index="index" separator="union all">
+						SELECT
+							DATE_FORMAT(m.time,'%Y-%m-%d %H:%i:00') AS time,
+							m.time_format,
+							0 AS power,
+							0 AS energy,
+							AVG(m.nvm_irradiance) AS irradiance,
+							AVG(m.nvm_temperature) AS temperature
+						FROM
+							(
+							SELECT
+								dv.time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
+								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
+							FROM
+								${v.datatablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site 
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{id}
+								AND d.id_device_type IN(4)
+								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+								AND s.`status` = 1 
+								AND d.`status` = 1
+								AND d.id = #{v.id}
+							GROUP BY
+								d.id, time_format
+							) m 
+						GROUP BY
+							m.time_format
+				</foreach>
+			
+			</if>
+		
+		
+				
+			) t 
+		GROUP BY
+			t.time_format
+	
+	</select>
+	
+	
+	
+	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
+	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_temperature, nvm_irradiance)
+	        VALUES
+	        <foreach collection="data" item="item" index="" separator=",">
+	            (#{item.time}, #{id_device}, #{item.power}, #{item.energy}, #{item.temperature}, #{item.irradiance})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        
+	        id_device = VALUES(id_device),
+	        nvmActivePower = VALUES(nvmActivePower),
+	        nvmActiveEnergy = VALUES(nvmActiveEnergy),
+	        nvm_temperature = VALUES(nvm_temperature),
+	        nvm_irradiance = VALUES(nvm_irradiance)
+</insert>
+	
+  	
+</mapper>

@@ -147,6 +147,7 @@
 		 <mapper resource="mybatis/map/AccountStatus.xml" />
 		 <mapper resource="mybatis/map/AuditingLogs.xml" />
 		 <mapper resource="mybatis/map/FieldValueDefault.xml" />
+		 <mapper resource="mybatis/map/VirtualDevice.xml" />
 		 
 		 
 		 
