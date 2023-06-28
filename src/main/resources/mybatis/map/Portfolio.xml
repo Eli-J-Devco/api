@@ -93,13 +93,24 @@
 			IFNULL(eerm.EERLastMonth, 0) AS EERLastMonth,
 			IFNULL(eerthism.EERThisMonth, 0) AS EERThisMonth,
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
-			s.note
+			s.note,
+			(
+				SELECT 
+					d.id
+				FROM
+					device d
+				WHERE
+					d.id_site = s.id AND
+					d.is_default = 1
+				GROUP BY d.is_default
+			) AS id_default_device
 			
 				
 		FROM
 			site s
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
 			
 			LEFT JOIN (
 				SELECT
@@ -498,6 +509,25 @@
 			d.id,
 			d.devicename,
 			IFNULL(d.last_value, 0) as active_power,
+			(
+				SELECT 
+					IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+				FROM
+					device d
+				WHERE
+					d.id_site = #{id}
+					AND d.id_device_type = 1
+			) AS optimal_radio,
+			(
+				SELECT 
+					d.last_value / d.rating_ac_power * 100
+				FROM
+					device d
+				WHERE
+					d.id_site = #{id}
+					AND d.is_default = 1
+				GROUP BY d.is_default
+			) AS default_optimal_radio,
 			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
 		FROM
 			device d
@@ -511,6 +541,25 @@
 			d.id,
 			d.devicename,
 			IFNULL(d.last_value, 0) as active_power,
+			(
+				SELECT 
+					IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+				FROM
+					device d
+				WHERE
+					d.id_site = #{id}
+					AND d.id_device_type = 3
+			) AS optimal_radio,
+			(
+				SELECT 
+					d.last_value / d.rating_ac_power * 100
+				FROM
+					device d
+				WHERE
+					d.id_site = #{id}
+					AND d.is_default = 1
+				GROUP BY d.is_default
+			) AS default_optimal_radio,
 			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
 		FROM
 			device d
@@ -525,6 +574,38 @@
 			`note` = #{note}
 		WHERE
 			`id` = #{id}
+	</update>
+	
+	<select id="getListDeviceBySite" resultType="Map" >
+		SELECT
+			s.devicename,
+			dt.name AS device_type_name,
+			s.is_default,
+			s.id,
+			s.devicename as text
+		FROM
+			device s
+			LEFT JOIN device_type dt ON dt.id = s.id_device_type
+		WHERE s.id_site = #{id}
+		AND s.id_device_type IN (1,3)
+		    order by s.id DESC
+		 	 
+	</select>
+	
+	<update id="updateAllDevicesBySite">
+		UPDATE `device`
+		SET
+			`is_default` = 0
+		WHERE
+			`id_site` = #{id}
+	</update>
+	
+	<update id="updateDefaultDevice">
+		UPDATE `device`
+		SET
+			`is_default` = 1
+		WHERE
+			`id` = #{id_device}
 	</update>
 	
 </mapper>

@@ -90,4 +90,45 @@ public class PortfolioController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description Get list device by id_site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id_site
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-device-by-site")
+	public Object getListDeviceBySite(@RequestBody PortfolioEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			PortfolioService service = new PortfolioService();
+			List data = service.getListDeviceBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update a note of a site
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-default-device")
+	public Object updateDefaultDevice(@RequestBody PortfolioEntity obj) {
+		try {
+			PortfolioService service = new PortfolioService();
+			service.updateDefaultDevice(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 }
