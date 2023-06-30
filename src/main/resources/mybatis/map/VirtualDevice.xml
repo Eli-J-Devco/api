@@ -18,6 +18,8 @@
 			d.id_device_type,
 			d.id_device_group,
 			s.data_send_time,
+			s.dc_capacity,
+			s.ac_capacity,
 			null AS time,
 			d.id AS id_device,
 			null AS nvmActivePower,
@@ -99,8 +101,13 @@
 			t.time_format,
 			ROUND(( SUM( t.power ) ), 1 ) AS power,
 			ROUND(( SUM( t.energy ) ), 1 ) AS energy,
-			ROUND(( SUM( t.irradiance ) ), 1 ) AS irradiance,
-			ROUND(( SUM( t.temperature ) ), 1 ) AS temperature
+			ROUND(( AVG( t.irradiance ) ), 1 ) AS irradiance,
+			ROUND(( AVG( t.temperature ) ), 1 ) AS temperature,
+			
+			IF(
+				IFNULL(#{dc_capacity} * (AVG(t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 0) <![CDATA[<]]> #{ac_capacity},
+				ROUND(#{dc_capacity} * (AVG(dv.t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 2), #{ac_capacity}
+			) AS expected_power
 		FROM
 			(
 			<foreach collection="devices" item="item" index="index" separator="union all">
@@ -237,10 +244,10 @@
 	
 	
 	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
-	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_temperature, nvm_irradiance)
+	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_temperature, nvm_irradiance, expected_power)
 	        VALUES
 	        <foreach collection="data" item="item" index="" separator=",">
-	            (#{item.time}, #{id_device}, #{item.power}, #{item.energy}, #{item.temperature}, #{item.irradiance})
+	            (#{item.time}, #{id_device}, #{item.power}, #{item.energy}, #{item.temperature}, #{item.irradiance}, #{item.expected_power})
 	        </foreach>
 	        ON DUPLICATE KEY UPDATE
 	        
@@ -248,7 +255,10 @@
 	        nvmActivePower = VALUES(nvmActivePower),
 	        nvmActiveEnergy = VALUES(nvmActiveEnergy),
 	        nvm_temperature = VALUES(nvm_temperature),
-	        nvm_irradiance = VALUES(nvm_irradiance)
+	        nvm_irradiance = VALUES(nvm_irradiance),
+	        expected_power = VALUES(expected_power)
+	        
+	        
 </insert>
 	
   	

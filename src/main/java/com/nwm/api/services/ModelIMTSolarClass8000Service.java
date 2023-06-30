@@ -37,7 +37,8 @@ public class ModelIMTSolarClass8000Service extends DB {
 				
 				// set custom field nvm_irradiance
 				dataModelIMTSolarClass.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelIMTSolarClass.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				double temperature = !Lib.isBlank(words.get(5)) ? ((Double.parseDouble(words.get(5)) / 10) - 25) : 0.001;
+				dataModelIMTSolarClass.setNvm_temperature(temperature);
 				
 				return dataModelIMTSolarClass;
 				

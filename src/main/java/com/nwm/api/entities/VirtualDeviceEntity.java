@@ -31,6 +31,23 @@ public class VirtualDeviceEntity {
 	private List weathers;
 	private double nvm_temperature;
 	private double nvm_irradiance;
+	private double dc_capacity = 0;
+	private double ac_capacity = 0;
+	
+	
+	
+	public double getDc_capacity() {
+		return dc_capacity;
+	}
+	public void setDc_capacity(double dc_capacity) {
+		this.dc_capacity = dc_capacity;
+	}
+	public double getAc_capacity() {
+		return ac_capacity;
+	}
+	public void setAc_capacity(double ac_capacity) {
+		this.ac_capacity = ac_capacity;
+	}
 	public String getTime() {
 		return time;
 	}
