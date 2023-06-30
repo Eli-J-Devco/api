@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +36,7 @@ public class VirtualDeviceController extends BaseController {
 	 */
 	@GetMapping("/render-data")
 	@ResponseBody
-	public Object downloadFileFromFTP(@RequestParam Map<String, Object> params) {
+	public Object renderDataVirtualDevice(@RequestParam Map<String, Object> params) {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			
@@ -51,9 +50,18 @@ public class VirtualDeviceController extends BaseController {
 				setTime = Integer.parseInt(totalDay);
 			}
 		    
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+			
+			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+				id_site = Integer.parseInt(idSite);
+			}
+			
+			VirtualDeviceEntity entity = new VirtualDeviceEntity();
+			entity.setId_site(id_site);
 		    
 			VirtualDeviceService service = new VirtualDeviceService();
-			List<?> listSites = service.getListSiteVirtualDevice(new VirtualDeviceEntity());
+			List<?> listSites = service.getListSiteVirtualDevice(entity);
 
 			if (listSites == null || listSites.size() == 0) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);

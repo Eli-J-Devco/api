@@ -41,6 +41,9 @@
 			AND d.`status` = 1 AND d.is_delete = 0
 			AND d.virtual_device_type IS NOT NULL
 			AND d.virtual_device_type != ''
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
 			
 	</select>
 	
@@ -89,69 +92,6 @@
 	</select>
 	
 	
-	
-	<!--<select id="getDataPower" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.power ) ), 1 ) AS power,
-			ROUND(( SUM( t.energy ) ), 1 ) AS energy
-			
-		FROM
-			(
-				<foreach collection="devices" item="item" index="index" separator="union all">
-					SELECT
-						m.time,
-						m.time_format,
-						SUM(m.power) AS power,
-						SUM(m.energy) AS energy
-					FROM
-						(
-						SELECT
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							IFNULL(dv.nvmActivePower, 0) AS power,
-							IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) <![CDATA[<=]]> 0 OR dv1.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)) AS energy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							
-							LEFT JOIN (
-								SELECT
-									dv.time,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
-									MIN(dv.nvmActiveEnergy) as nvmActiveEnergy
-							  	FROM
-							  		${item.datatablename} dv
-							    	LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site
-									LEFT JOIN time_zone t ON t.id = s.id_time_zone
-								WHERE
-									dv.id_device = #{item.id}
-									AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME(#{start_date}, '0:5:0') AND SUBTIME(#{end_date}, '0:5:0'))
-								GROUP BY time_format
-							) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ( SUBTIME(dv.time, '0:5:0'), '+00:00', t.`offset` )) DIV 300
-							
-						WHERE
-							d.id = #{item.id}
-							AND d.id_device_type = #{item.id_device_type}
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	-->
 	
 	<select id="getDataPower" resultType="Map">
 		SELECT
