@@ -94,6 +94,7 @@
 			IFNULL(eerthism.EERThisMonth, 0) AS EERThisMonth,
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
+			ROUND(t.expected_power,2) AS expected_power,
 			(
 				SELECT 
 					d.id
@@ -127,7 +128,53 @@
 						WHEN d.datatablename = 'model_rt1_class30000' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
 						ELSE "N/A"
-				 	END AS irradiance
+				 	END AS irradiance,
+				 	
+				 	(CASE
+				 		WHEN s.pv_model = 1
+				 		THEN CASE 
+			 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' 
+			 				THEN IF(
+									IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 )) * 0.98,
+									s.ac_capacity
+								)
+							WHEN d.datatablename = 'model_imtsolar_class8000'
+							THEN IF(
+									IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 - 25)) * 0.98,
+									s.ac_capacity
+								)
+							ELSE IF(
+								IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+								s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2))) * 0.98,
+								s.ac_capacity
+							)
+							END
+								
+							WHEN s.pv_model != 1
+				 			THEN CASE 
+				 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' 
+				 				THEN IF(
+										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 )) * 0.98,
+										s.ac_capacity
+									)
+								WHEN d.datatablename = 'model_imtsolar_class8000'
+								THEN IF(
+										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 - 25)) * 0.98,
+										s.ac_capacity
+									)
+								ELSE IF(
+										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2))) * 0.98,
+										s.ac_capacity
+									)
+								END
+						
+						END) AS expected_power
+						
 				FROM
 					site s
 					LEFT JOIN device d ON d.id_site = s.id 
