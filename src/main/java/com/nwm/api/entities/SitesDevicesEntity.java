@@ -99,14 +99,15 @@ public class SitesDevicesEntity {
 	private String ssh_pass;
 	private String ssh_port;
 	private String job_tablename;
+	private int enable_virtual_device; 
 	
 	
-	
-	
-	
-	
-	
-	
+	public int getEnable_virtual_device() {
+		return enable_virtual_device;
+	}
+	public void setEnable_virtual_device(int enable_virtual_device) {
+		this.enable_virtual_device = enable_virtual_device;
+	}
 	public Double getPv_module_temperature_coeff() {
 		return pv_module_temperature_coeff;
 	}

@@ -63,7 +63,8 @@
 			s.stc_temperature,
 			s.inverter_efficiency,
 			s.t_avg,
-			s.system_loss
+			s.system_loss,
+			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -92,6 +93,17 @@
 					AND e.`status` = 1 
 					AND e.is_delete = 0
 			)g ON g.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
+				WHERE d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.hidden = 0
+				AND d.virtual_device_type IS NOT NULL
+				AND d.virtual_device_type != ''
+				AND SHA1(d.id_site) = #{hash_id}
+			)v ON v.id_site = s.id
+			
 		WHERE
 			SHA1(s.id) = #{hash_id}
 			AND sem.id_employee = #{id_employee}
