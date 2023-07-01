@@ -65,42 +65,109 @@ public class CustomerViewService extends DB {
 					switch (obj.getData_send_time()) {
 					case 1:
 						Map<String, Object> deviceItem1 = new HashMap<>();
-						obj.setGroupMeter(dataListDeviceMeter);
-						List dataPower1 = queryForList("CustomerView.getDataPowerMeterFiveMinutes", obj);
-						if (dataPower1.size() > 0) {
-							deviceItem1.put("data_energy", dataPower1);
-							deviceItem1.put("type", "energy");
-							deviceItem1.put("devicename", "Power");
-							deviceItem1.put("deviceType", "meter");
-							dataEnergy.add(deviceItem1);
-						}
-						
-						// Get Irradiance
-						if (dataListDeviceIrr.size() > 0) {
-							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-								Map<String, Object> deviceIrrItem1 = new HashMap<>();
-								Map<String, Object> deviceExpectedPowerItem1 = new HashMap<>();
+						if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutesToday", obj);
+							if (dataList.size() > 0) {
+								Map<String, Object> powerItem = new HashMap<>();
+								Map<String, Object> expectedPowerItem = new HashMap<>();
+								Map<String, Object> irradianceItem = new HashMap<>();
+								List powerList = new ArrayList<>();
+								List expectedPowerList = new ArrayList<>();
+								List irradianceList = new ArrayList<>();
 								
-								List dataListAIrrDevice = new ArrayList<>();
-								
-								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-								dataListAIrrDevice.add(item);
-								
-								obj.setGroupMeter(dataListAIrrDevice);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									// Get Expected Power
-									deviceExpectedPowerItem1.put("data_energy", dataIrradianceDevice);
-									deviceExpectedPowerItem1.put("type", "expected_power");
-									deviceExpectedPowerItem1.put("devicename", "Expected Power");
-									dataEnergy.add(deviceExpectedPowerItem1);
+								for (int i = 0; i < dataList.size(); i++) {
+									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+									Map<String, Object> powerListItem = new HashMap<>();
+									Map<String, Object> expectedPowerListItem = new HashMap<>();
+									Map<String, Object> irradianceListItem = new HashMap<>();
 									
-									// Get Irradiance
-									deviceIrrItem1.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem1.put("type", "irradiance");
-									deviceIrrItem1.put("devicename", dataListDeviceIrr.get(i));
-									dataEnergy.add(deviceIrrItem1);
+									powerListItem.put("time", dataListItem.get("time"));
+									powerListItem.put("download_time", dataListItem.get("download_time"));
+									powerListItem.put("time_format", dataListItem.get("time_format"));
+									powerListItem.put("time_full", dataListItem.get("time_full"));
+									powerListItem.put("categories_time", dataListItem.get("categories_time"));
+									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+									powerList.add(powerListItem);
+
+									expectedPowerListItem.put("time", dataListItem.get("time"));
+									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+									expectedPowerList.add(expectedPowerListItem);
+
+									irradianceListItem.put("time", dataListItem.get("time"));
+									irradianceListItem.put("download_time", dataListItem.get("download_time"));
+									irradianceListItem.put("time_format", dataListItem.get("time_format"));
+									irradianceListItem.put("time_full", dataListItem.get("time_full"));
+									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+									irradianceList.add(irradianceListItem);
+								}
+								
+								powerItem.put("data_energy", powerList);
+								powerItem.put("type", "energy");
+								powerItem.put("devicename", "Power");
+								powerItem.put("deviceType", "meter");
+								dataEnergy.add(powerItem);
+								
+								if (dataListDeviceIrr.size() > 0) {
+									expectedPowerItem.put("data_energy", expectedPowerList);
+									expectedPowerItem.put("type", "expected_power");
+									expectedPowerItem.put("devicename", "Expected Power");
+									dataEnergy.add(expectedPowerItem);
+									
+									irradianceItem.put("data_energy", irradianceList);
+									irradianceItem.put("type", "irradiance");
+									irradianceItem.put("devicename", "Irradiance");
+									dataEnergy.add(irradianceItem);
+								}
+							}
+						} else {
+							obj.setGroupMeter(dataListDeviceMeter);
+							List dataPower1 = queryForList("CustomerView.getDataPowerMeterFiveMinutes", obj);
+							if (dataPower1.size() > 0) {
+								deviceItem1.put("data_energy", dataPower1);
+								deviceItem1.put("type", "energy");
+								deviceItem1.put("devicename", "Power");
+								deviceItem1.put("deviceType", "meter");
+								dataEnergy.add(deviceItem1);
+							}
+							
+							// Get Irradiance
+							if (dataListDeviceIrr.size() > 0) {
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem1 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem1 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem1.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem1.put("type", "expected_power");
+										deviceExpectedPowerItem1.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem1);
+										
+										// Get Irradiance
+										deviceIrrItem1.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem1.put("type", "irradiance");
+										deviceIrrItem1.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem1);
+									}
 								}
 							}
 						}
@@ -108,43 +175,110 @@ public class CustomerViewService extends DB {
 						break;
 					case 2:
 						Map<String, Object> deviceItem2 = new HashMap<>();
-						obj.setGroupMeter(dataListDeviceMeter);
-						List dataPower2 = queryForList("CustomerView.getDataEnergyFifteenMinutes", obj);
-						if (dataPower2.size() > 0) {
-							deviceItem2.put("data_energy", dataPower2);
-							deviceItem2.put("type", "energy");
-							deviceItem2.put("devicename", "Power");
-							deviceItem2.put("deviceType", "meter");
-							dataEnergy.add(deviceItem2);
-						}
-						
-						
-						// Get Irradiance
-						if (dataListDeviceIrr.size() > 0) {
-							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-								Map<String, Object> deviceIrrItem2 = new HashMap<>();
-								Map<String, Object> deviceExpectedPowerItem2 = new HashMap<>();
+						if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutesToday", obj);
+							if (dataList.size() > 0) {
+								Map<String, Object> powerItem = new HashMap<>();
+								Map<String, Object> expectedPowerItem = new HashMap<>();
+								Map<String, Object> irradianceItem = new HashMap<>();
+								List powerList = new ArrayList<>();
+								List expectedPowerList = new ArrayList<>();
+								List irradianceList = new ArrayList<>();
 								
-								List dataListAIrrDevice = new ArrayList<>();
-								
-								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-								dataListAIrrDevice.add(item);
-								
-								obj.setGroupMeter(dataListAIrrDevice);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									// Get Expected Power
-									deviceExpectedPowerItem2.put("data_energy", dataIrradianceDevice);
-									deviceExpectedPowerItem2.put("type", "expected_power");
-									deviceExpectedPowerItem2.put("devicename", "Expected Power");
-									dataEnergy.add(deviceExpectedPowerItem2);
+								for (int i = 0; i < dataList.size(); i++) {
+									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+									Map<String, Object> powerListItem = new HashMap<>();
+									Map<String, Object> expectedPowerListItem = new HashMap<>();
+									Map<String, Object> irradianceListItem = new HashMap<>();
 									
-									// Get Irradiance
-									deviceIrrItem2.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem2.put("type", "irradiance");
-									deviceIrrItem2.put("devicename", dataListDeviceIrr.get(i));
-									dataEnergy.add(deviceIrrItem2);
+									powerListItem.put("time", dataListItem.get("time"));
+									powerListItem.put("download_time", dataListItem.get("download_time"));
+									powerListItem.put("time_format", dataListItem.get("time_format"));
+									powerListItem.put("time_full", dataListItem.get("time_full"));
+									powerListItem.put("categories_time", dataListItem.get("categories_time"));
+									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+									powerList.add(powerListItem);
+
+									expectedPowerListItem.put("time", dataListItem.get("time"));
+									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+									expectedPowerList.add(expectedPowerListItem);
+
+									irradianceListItem.put("time", dataListItem.get("time"));
+									irradianceListItem.put("download_time", dataListItem.get("download_time"));
+									irradianceListItem.put("time_format", dataListItem.get("time_format"));
+									irradianceListItem.put("time_full", dataListItem.get("time_full"));
+									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+									irradianceList.add(irradianceListItem);
+								}
+								
+								powerItem.put("data_energy", powerList);
+								powerItem.put("type", "energy");
+								powerItem.put("devicename", "Power");
+								powerItem.put("deviceType", "meter");
+								dataEnergy.add(powerItem);
+								
+								if (dataListDeviceIrr.size() > 0) {
+									expectedPowerItem.put("data_energy", expectedPowerList);
+									expectedPowerItem.put("type", "expected_power");
+									expectedPowerItem.put("devicename", "Expected Power");
+									dataEnergy.add(expectedPowerItem);
+									
+									irradianceItem.put("data_energy", irradianceList);
+									irradianceItem.put("type", "irradiance");
+									irradianceItem.put("devicename", "Irradiance");
+									dataEnergy.add(irradianceItem);
+								}
+							}
+						} else {
+							obj.setGroupMeter(dataListDeviceMeter);
+							List dataPower2 = queryForList("CustomerView.getDataEnergyFifteenMinutes", obj);
+							if (dataPower2.size() > 0) {
+								deviceItem2.put("data_energy", dataPower2);
+								deviceItem2.put("type", "energy");
+								deviceItem2.put("devicename", "Power");
+								deviceItem2.put("deviceType", "meter");
+								dataEnergy.add(deviceItem2);
+							}
+							
+							
+							// Get Irradiance
+							if (dataListDeviceIrr.size() > 0) {
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem2 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem2 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem2.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem2.put("type", "expected_power");
+										deviceExpectedPowerItem2.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem2);
+										
+										// Get Irradiance
+										deviceIrrItem2.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem2.put("type", "irradiance");
+										deviceIrrItem2.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem2);
+									}
 								}
 							}
 						}
@@ -153,42 +287,109 @@ public class CustomerViewService extends DB {
 						
 					case 3:
 						Map<String, Object> deviceItem3 = new HashMap<>();
-						obj.setGroupMeter(dataListDeviceMeter);
-						List dataPower3 = queryForList("CustomerView.getDataEnergyHour", obj);
-						if (dataPower3.size() > 0) {
-							deviceItem3.put("data_energy", dataPower3);
-							deviceItem3.put("type", "energy");
-							deviceItem3.put("devicename", "Power");
-							deviceItem3.put("deviceType", "meter");
-							dataEnergy.add(deviceItem3);
-						}
-						
-						// Get Irradiance
-						if (dataListDeviceIrr.size() > 0) {
-							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-								Map<String, Object> deviceIrrItem3 = new HashMap<>();
-								Map<String, Object> deviceExpectedPowerItem3 = new HashMap<>();
+						if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceHourToday", obj);
+							if (dataList.size() > 0) {
+								Map<String, Object> powerItem = new HashMap<>();
+								Map<String, Object> expectedPowerItem = new HashMap<>();
+								Map<String, Object> irradianceItem = new HashMap<>();
+								List powerList = new ArrayList<>();
+								List expectedPowerList = new ArrayList<>();
+								List irradianceList = new ArrayList<>();
 								
-								List dataListAIrrDevice = new ArrayList<>();
-								
-								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-								dataListAIrrDevice.add(item);
-								
-								obj.setGroupMeter(dataListAIrrDevice);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									// Get Expected Power
-									deviceExpectedPowerItem3.put("data_energy", dataIrradianceDevice);
-									deviceExpectedPowerItem3.put("type", "expected_power");
-									deviceExpectedPowerItem3.put("devicename", "Expected Power");
-									dataEnergy.add(deviceExpectedPowerItem3);
+								for (int i = 0; i < dataList.size(); i++) {
+									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+									Map<String, Object> powerListItem = new HashMap<>();
+									Map<String, Object> expectedPowerListItem = new HashMap<>();
+									Map<String, Object> irradianceListItem = new HashMap<>();
 									
-									// Get Irradiance
-									deviceIrrItem3.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem3.put("type", "irradiance");
-									deviceIrrItem3.put("devicename", dataListDeviceIrr.get(i));
-									dataEnergy.add(deviceIrrItem3);
+									powerListItem.put("time", dataListItem.get("time"));
+									powerListItem.put("download_time", dataListItem.get("download_time"));
+									powerListItem.put("time_format", dataListItem.get("time_format"));
+									powerListItem.put("time_full", dataListItem.get("time_full"));
+									powerListItem.put("categories_time", dataListItem.get("categories_time"));
+									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+									powerList.add(powerListItem);
+
+									expectedPowerListItem.put("time", dataListItem.get("time"));
+									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+									expectedPowerList.add(expectedPowerListItem);
+
+									irradianceListItem.put("time", dataListItem.get("time"));
+									irradianceListItem.put("download_time", dataListItem.get("download_time"));
+									irradianceListItem.put("time_format", dataListItem.get("time_format"));
+									irradianceListItem.put("time_full", dataListItem.get("time_full"));
+									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+									irradianceList.add(irradianceListItem);
+								}
+								
+								powerItem.put("data_energy", powerList);
+								powerItem.put("type", "energy");
+								powerItem.put("devicename", "Power");
+								powerItem.put("deviceType", "meter");
+								dataEnergy.add(powerItem);
+								
+								if (dataListDeviceIrr.size() > 0) {
+									expectedPowerItem.put("data_energy", expectedPowerList);
+									expectedPowerItem.put("type", "expected_power");
+									expectedPowerItem.put("devicename", "Expected Power");
+									dataEnergy.add(expectedPowerItem);
+									
+									irradianceItem.put("data_energy", irradianceList);
+									irradianceItem.put("type", "irradiance");
+									irradianceItem.put("devicename", "Irradiance");
+									dataEnergy.add(irradianceItem);
+								}
+							}
+						} else {
+							obj.setGroupMeter(dataListDeviceMeter);
+							List dataPower3 = queryForList("CustomerView.getDataEnergyHour", obj);
+							if (dataPower3.size() > 0) {
+								deviceItem3.put("data_energy", dataPower3);
+								deviceItem3.put("type", "energy");
+								deviceItem3.put("devicename", "Power");
+								deviceItem3.put("deviceType", "meter");
+								dataEnergy.add(deviceItem3);
+							}
+							
+							// Get Irradiance
+							if (dataListDeviceIrr.size() > 0) {
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem3 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem3 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem3.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem3.put("type", "expected_power");
+										deviceExpectedPowerItem3.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem3);
+										
+										// Get Irradiance
+										deviceIrrItem3.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem3.put("type", "irradiance");
+										deviceIrrItem3.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem3);
+									}
 								}
 							}
 						}
@@ -196,42 +397,109 @@ public class CustomerViewService extends DB {
 						
 					case 4:
 						Map<String, Object> deviceItem4 = new HashMap<>();
-						obj.setGroupMeter(dataListDeviceMeter);
-						List dataPower4 = queryForList("CustomerView.getDataEnergyHourDay", obj);
-						if (dataPower4.size() > 0) {
-							deviceItem4.put("data_energy", dataPower4);
-							deviceItem4.put("type", "energy");
-							deviceItem4.put("devicename", "Power");
-							deviceItem4.put("deviceType", "meter");
-							dataEnergy.add(deviceItem4);
-						}
-						
-						// Get Irradiance
-						if (dataListDeviceIrr.size() > 0) {
-							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-								Map<String, Object> deviceIrrItem4 = new HashMap<>();
-								Map<String, Object> deviceExpectedPowerItem4 = new HashMap<>();
+						if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceDayToday", obj);
+							if (dataList.size() > 0) {
+								Map<String, Object> powerItem = new HashMap<>();
+								Map<String, Object> expectedPowerItem = new HashMap<>();
+								Map<String, Object> irradianceItem = new HashMap<>();
+								List powerList = new ArrayList<>();
+								List expectedPowerList = new ArrayList<>();
+								List irradianceList = new ArrayList<>();
 								
-								List dataListAIrrDevice = new ArrayList<>();
-								
-								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-								dataListAIrrDevice.add(item);
-								
-								obj.setGroupMeter(dataListAIrrDevice);
-								
-								List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-								if(dataIrradianceDevice.size() > 0 ) {
-									// Get Expected Power
-									deviceExpectedPowerItem4.put("data_energy", dataIrradianceDevice);
-									deviceExpectedPowerItem4.put("type", "expected_power");
-									deviceExpectedPowerItem4.put("devicename", "Expected Power");
-									dataEnergy.add(deviceExpectedPowerItem4);
+								for (int i = 0; i < dataList.size(); i++) {
+									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+									Map<String, Object> powerListItem = new HashMap<>();
+									Map<String, Object> expectedPowerListItem = new HashMap<>();
+									Map<String, Object> irradianceListItem = new HashMap<>();
 									
-									// Get Irradiance
-									deviceIrrItem4.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem4.put("type", "irradiance");
-									deviceIrrItem4.put("devicename", dataListDeviceIrr.get(i));
-									dataEnergy.add(deviceIrrItem4);
+									powerListItem.put("time", dataListItem.get("time"));
+									powerListItem.put("download_time", dataListItem.get("download_time"));
+									powerListItem.put("time_format", dataListItem.get("time_format"));
+									powerListItem.put("time_full", dataListItem.get("time_full"));
+									powerListItem.put("categories_time", dataListItem.get("categories_time"));
+									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+									powerList.add(powerListItem);
+
+									expectedPowerListItem.put("time", dataListItem.get("time"));
+									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+									expectedPowerList.add(expectedPowerListItem);
+
+									irradianceListItem.put("time", dataListItem.get("time"));
+									irradianceListItem.put("download_time", dataListItem.get("download_time"));
+									irradianceListItem.put("time_format", dataListItem.get("time_format"));
+									irradianceListItem.put("time_full", dataListItem.get("time_full"));
+									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+									irradianceList.add(irradianceListItem);
+								}
+								
+								powerItem.put("data_energy", powerList);
+								powerItem.put("type", "energy");
+								powerItem.put("devicename", "Power");
+								powerItem.put("deviceType", "meter");
+								dataEnergy.add(powerItem);
+								
+								if (dataListDeviceIrr.size() > 0) {
+									expectedPowerItem.put("data_energy", expectedPowerList);
+									expectedPowerItem.put("type", "expected_power");
+									expectedPowerItem.put("devicename", "Expected Power");
+									dataEnergy.add(expectedPowerItem);
+									
+									irradianceItem.put("data_energy", irradianceList);
+									irradianceItem.put("type", "irradiance");
+									irradianceItem.put("devicename", "Irradiance");
+									dataEnergy.add(irradianceItem);
+								}
+							}
+						} else {
+							obj.setGroupMeter(dataListDeviceMeter);
+							List dataPower4 = queryForList("CustomerView.getDataEnergyHourDay", obj);
+							if (dataPower4.size() > 0) {
+								deviceItem4.put("data_energy", dataPower4);
+								deviceItem4.put("type", "energy");
+								deviceItem4.put("devicename", "Power");
+								deviceItem4.put("deviceType", "meter");
+								dataEnergy.add(deviceItem4);
+							}
+							
+							// Get Irradiance
+							if (dataListDeviceIrr.size() > 0) {
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem4 = new HashMap<>();
+									Map<String, Object> deviceExpectedPowerItem4 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
+									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Power
+										deviceExpectedPowerItem4.put("data_energy", dataIrradianceDevice);
+										deviceExpectedPowerItem4.put("type", "expected_power");
+										deviceExpectedPowerItem4.put("devicename", "Expected Power");
+										dataEnergy.add(deviceExpectedPowerItem4);
+										
+										// Get Irradiance
+										deviceIrrItem4.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem4.put("type", "irradiance");
+										deviceIrrItem4.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem4);
+									}
 								}
 							}
 						}
@@ -566,43 +834,110 @@ public class CustomerViewService extends DB {
 					switch (obj.getData_send_time()) {
 						case 1:
 							Map<String, Object> deviceItem5 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower5 = queryForList("CustomerView.getDataPowerMeterFiveMinutes3Day", obj);
-							if (dataPower5.size() > 0) {
-								deviceItem5.put("data_energy", dataPower5);
-								deviceItem5.put("type", "energy");
-								deviceItem5.put("devicename", "Power");
-								deviceItem5.put("deviceType", "meter");
-								dataEnergy.add(deviceItem5);
-							}
-							
-							// Get Irradiance
-							
-							if (dataListDeviceIrr.size() > 0) {
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem5 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem5 = new HashMap<>();
-
-									List dataListAIrrDevice = new ArrayList<>();
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								
+								List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutes3Day", obj);
+								if (dataList.size() > 0) {
+									Map<String, Object> powerItem = new HashMap<>();
+									Map<String, Object> expectedPowerItem = new HashMap<>();
+									Map<String, Object> irradianceItem = new HashMap<>();
+									List powerList = new ArrayList<>();
+									List expectedPowerList = new ArrayList<>();
+									List irradianceList = new ArrayList<>();
 									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										deviceExpectedPowerItem5.put("data_energy", dataIrradianceDevice);
-										deviceExpectedPowerItem5.put("type", "expected_power");
-										deviceExpectedPowerItem5.put("devicename", "Expected Power");
-										dataEnergy.add(deviceExpectedPowerItem5);
+									for (int i = 0; i < dataList.size(); i++) {
+										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+										Map<String, Object> powerListItem = new HashMap<>();
+										Map<String, Object> expectedPowerListItem = new HashMap<>();
+										Map<String, Object> irradianceListItem = new HashMap<>();
 										
-										// Get Irradiance
-										deviceIrrItem5.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem5.put("type", "irradiance");
-										deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem5);
+										powerListItem.put("time", dataListItem.get("time"));
+										powerListItem.put("download_time", dataListItem.get("download_time"));
+										powerListItem.put("time_format", dataListItem.get("time_format"));
+										powerListItem.put("time_full", dataListItem.get("time_full"));
+										powerListItem.put("categories_time", dataListItem.get("categories_time"));
+										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+										powerList.add(powerListItem);
+
+										expectedPowerListItem.put("time", dataListItem.get("time"));
+										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+										expectedPowerList.add(expectedPowerListItem);
+
+										irradianceListItem.put("time", dataListItem.get("time"));
+										irradianceListItem.put("download_time", dataListItem.get("download_time"));
+										irradianceListItem.put("time_format", dataListItem.get("time_format"));
+										irradianceListItem.put("time_full", dataListItem.get("time_full"));
+										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+										irradianceList.add(irradianceListItem);
+									}
+									
+									powerItem.put("data_energy", powerList);
+									powerItem.put("type", "energy");
+									powerItem.put("devicename", "Power");
+									powerItem.put("deviceType", "meter");
+									dataEnergy.add(powerItem);
+									
+									if (dataListDeviceIrr.size() > 0) {
+										expectedPowerItem.put("data_energy", expectedPowerList);
+										expectedPowerItem.put("type", "expected_power");
+										expectedPowerItem.put("devicename", "Expected Power");
+										dataEnergy.add(expectedPowerItem);
+										
+										irradianceItem.put("data_energy", irradianceList);
+										irradianceItem.put("type", "irradiance");
+										irradianceItem.put("devicename", "Irradiance");
+										dataEnergy.add(irradianceItem);
+									}
+								}
+							} else {
+								obj.setGroupMeter(dataListDeviceMeter);
+								List dataPower5 = queryForList("CustomerView.getDataPowerMeterFiveMinutes3Day", obj);
+								if (dataPower5.size() > 0) {
+									deviceItem5.put("data_energy", dataPower5);
+									deviceItem5.put("type", "energy");
+									deviceItem5.put("devicename", "Power");
+									deviceItem5.put("deviceType", "meter");
+									dataEnergy.add(deviceItem5);
+								}
+								
+								// Get Irradiance
+								
+								if (dataListDeviceIrr.size() > 0) {
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem5 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem5 = new HashMap<>();
+	
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem5.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem5.put("type", "expected_power");
+											deviceExpectedPowerItem5.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem5);
+											
+											// Get Irradiance
+											deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem5.put("type", "irradiance");
+											deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem5);
+										}
 									}
 								}
 							}
@@ -610,31 +945,97 @@ public class CustomerViewService extends DB {
 							break;
 						case 2:
 							Map<String, Object> deviceItem6 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower6 = queryForList("CustomerView.getDataEnergyFifteenMinutes3Day", obj);
-							if (dataPower6.size() > 0) {
-								deviceItem6.put("data_energy", dataPower6);
-								deviceItem6.put("type", "energy");
-								deviceItem6.put("devicename", "Power");
-								deviceItem6.put("deviceType", "meter");
-								dataEnergy.add(deviceItem6);
-							}
-							
-							
-							// Get Irradiance
-							
-							if (dataListDeviceIrr.size() > 0) {
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem6 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem6 = new HashMap<>();
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								
+								List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutes3Day", obj);
+								if (dataList.size() > 0) {
+									Map<String, Object> powerItem = new HashMap<>();
+									Map<String, Object> expectedPowerItem = new HashMap<>();
+									Map<String, Object> irradianceItem = new HashMap<>();
+									List powerList = new ArrayList<>();
+									List expectedPowerList = new ArrayList<>();
+									List irradianceList = new ArrayList<>();
 									
-									List dataListAIrrDevice = new ArrayList<>();
+									for (int i = 0; i < dataList.size(); i++) {
+										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+										Map<String, Object> powerListItem = new HashMap<>();
+										Map<String, Object> expectedPowerListItem = new HashMap<>();
+										Map<String, Object> irradianceListItem = new HashMap<>();
 										
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-										
-									obj.setGroupMeter(dataListAIrrDevice);
+										powerListItem.put("time", dataListItem.get("time"));
+										powerListItem.put("download_time", dataListItem.get("download_time"));
+										powerListItem.put("time_format", dataListItem.get("time_format"));
+										powerListItem.put("time_full", dataListItem.get("time_full"));
+										powerListItem.put("categories_time", dataListItem.get("categories_time"));
+										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+										powerList.add(powerListItem);
+
+										expectedPowerListItem.put("time", dataListItem.get("time"));
+										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+										expectedPowerList.add(expectedPowerListItem);
+
+										irradianceListItem.put("time", dataListItem.get("time"));
+										irradianceListItem.put("download_time", dataListItem.get("download_time"));
+										irradianceListItem.put("time_format", dataListItem.get("time_format"));
+										irradianceListItem.put("time_full", dataListItem.get("time_full"));
+										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+										irradianceList.add(irradianceListItem);
+									}
 									
+									powerItem.put("data_energy", powerList);
+									powerItem.put("type", "energy");
+									powerItem.put("devicename", "Power");
+									powerItem.put("deviceType", "meter");
+									dataEnergy.add(powerItem);
+									
+									if (dataListDeviceIrr.size() > 0) {
+										expectedPowerItem.put("data_energy", expectedPowerList);
+										expectedPowerItem.put("type", "expected_power");
+										expectedPowerItem.put("devicename", "Expected Power");
+										dataEnergy.add(expectedPowerItem);
+										
+										irradianceItem.put("data_energy", irradianceList);
+										irradianceItem.put("type", "irradiance");
+										irradianceItem.put("devicename", "Irradiance");
+										dataEnergy.add(irradianceItem);
+									}
+								}
+							} else {
+								obj.setGroupMeter(dataListDeviceMeter);
+								List dataPower6 = queryForList("CustomerView.getDataEnergyFifteenMinutes3Day", obj);
+								if (dataPower6.size() > 0) {
+									deviceItem6.put("data_energy", dataPower6);
+									deviceItem6.put("type", "energy");
+									deviceItem6.put("devicename", "Power");
+									deviceItem6.put("deviceType", "meter");
+									dataEnergy.add(deviceItem6);
+								}
+								
+								
+								// Get Irradiance
+								
+								if (dataListDeviceIrr.size() > 0) {
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem6 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem6 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+											
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+											
+										obj.setGroupMeter(dataListAIrrDevice);
+										
 										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
 											// Get Expected Power
@@ -649,6 +1050,7 @@ public class CustomerViewService extends DB {
 											deviceIrrItem6.put("devicename", dataListDeviceIrr.get(i));
 											dataEnergy.add(deviceIrrItem6);
 										}
+									}
 								}
 							}
 	
@@ -656,43 +1058,110 @@ public class CustomerViewService extends DB {
 						
 						case 3:
 							Map<String, Object> deviceItem7 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower7 = queryForList("CustomerView.getDataEnergyHour3Day", obj);
-							if (dataPower7.size() > 0) {
-								deviceItem7.put("data_energy", dataPower7);
-								deviceItem7.put("type", "energy");
-								deviceItem7.put("devicename", "Power");
-								deviceItem7.put("deviceType", "meter");
-								dataEnergy.add(deviceItem7);
-							}
-							
-							// Get Irradiance
-
-							if (dataListDeviceIrr.size() > 0) {
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem7 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem7 = new HashMap<>();
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								
+								List dataList = queryForList("CustomerView.getDataVirtualDeviceHour3Day", obj);
+								if (dataList.size() > 0) {
+									Map<String, Object> powerItem = new HashMap<>();
+									Map<String, Object> expectedPowerItem = new HashMap<>();
+									Map<String, Object> irradianceItem = new HashMap<>();
+									List powerList = new ArrayList<>();
+									List expectedPowerList = new ArrayList<>();
+									List irradianceList = new ArrayList<>();
 									
-									List dataListAIrrDevice = new ArrayList<>();
-									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										deviceExpectedPowerItem7.put("data_energy", dataIrradianceDevice);
-										deviceExpectedPowerItem7.put("type", "expected_power");
-										deviceExpectedPowerItem7.put("devicename", "Expected Power");
-										dataEnergy.add(deviceExpectedPowerItem7);
+									for (int i = 0; i < dataList.size(); i++) {
+										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+										Map<String, Object> powerListItem = new HashMap<>();
+										Map<String, Object> expectedPowerListItem = new HashMap<>();
+										Map<String, Object> irradianceListItem = new HashMap<>();
 										
-										// Get Irradiance
-										deviceIrrItem7.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem7.put("type", "irradiance");
-										deviceIrrItem7.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem7);
+										powerListItem.put("time", dataListItem.get("time"));
+										powerListItem.put("download_time", dataListItem.get("download_time"));
+										powerListItem.put("time_format", dataListItem.get("time_format"));
+										powerListItem.put("time_full", dataListItem.get("time_full"));
+										powerListItem.put("categories_time", dataListItem.get("categories_time"));
+										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+										powerList.add(powerListItem);
+
+										expectedPowerListItem.put("time", dataListItem.get("time"));
+										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+										expectedPowerList.add(expectedPowerListItem);
+
+										irradianceListItem.put("time", dataListItem.get("time"));
+										irradianceListItem.put("download_time", dataListItem.get("download_time"));
+										irradianceListItem.put("time_format", dataListItem.get("time_format"));
+										irradianceListItem.put("time_full", dataListItem.get("time_full"));
+										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+										irradianceList.add(irradianceListItem);
+									}
+									
+									powerItem.put("data_energy", powerList);
+									powerItem.put("type", "energy");
+									powerItem.put("devicename", "Power");
+									powerItem.put("deviceType", "meter");
+									dataEnergy.add(powerItem);
+									
+									if (dataListDeviceIrr.size() > 0) {
+										expectedPowerItem.put("data_energy", expectedPowerList);
+										expectedPowerItem.put("type", "expected_power");
+										expectedPowerItem.put("devicename", "Expected Power");
+										dataEnergy.add(expectedPowerItem);
+										
+										irradianceItem.put("data_energy", irradianceList);
+										irradianceItem.put("type", "irradiance");
+										irradianceItem.put("devicename", "Irradiance");
+										dataEnergy.add(irradianceItem);
+									}
+								}
+							} else {
+								obj.setGroupMeter(dataListDeviceMeter);
+								List dataPower7 = queryForList("CustomerView.getDataEnergyHour3Day", obj);
+								if (dataPower7.size() > 0) {
+									deviceItem7.put("data_energy", dataPower7);
+									deviceItem7.put("type", "energy");
+									deviceItem7.put("devicename", "Power");
+									deviceItem7.put("deviceType", "meter");
+									dataEnergy.add(deviceItem7);
+								}
+								
+								// Get Irradiance
+	
+								if (dataListDeviceIrr.size() > 0) {
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem7 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem7 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem7.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem7.put("type", "expected_power");
+											deviceExpectedPowerItem7.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem7);
+											
+											// Get Irradiance
+											deviceIrrItem7.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem7.put("type", "irradiance");
+											deviceIrrItem7.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem7);
+										}
 									}
 								}
 							}
@@ -701,42 +1170,109 @@ public class CustomerViewService extends DB {
 							// 4 day
 						case 4: 
 							Map<String, Object> deviceItem8 = new HashMap<>();
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower8 = queryForList("CustomerView.getDataEnergyDay3Day", obj);
-							if (dataPower8.size() > 0) {
-								deviceItem8.put("data_energy", dataPower8);
-								deviceItem8.put("type", "energy");
-								deviceItem8.put("devicename", "Power");
-								deviceItem8.put("deviceType", "meter");
-								dataEnergy.add(deviceItem8);
-							}
-							
-							// Get Irradiance
-							if (dataListDeviceIrr.size() > 0) {
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem8 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem8 = new HashMap<>();
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								
+								List dataList = queryForList("CustomerView.getDataVirtualDeviceDay3Day", obj);
+								if (dataList.size() > 0) {
+									Map<String, Object> powerItem = new HashMap<>();
+									Map<String, Object> expectedPowerItem = new HashMap<>();
+									Map<String, Object> irradianceItem = new HashMap<>();
+									List powerList = new ArrayList<>();
+									List expectedPowerList = new ArrayList<>();
+									List irradianceList = new ArrayList<>();
 									
-									List dataListAIrrDevice = new ArrayList<>();
-									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										deviceExpectedPowerItem8.put("data_energy", dataIrradianceDevice);
-										deviceExpectedPowerItem8.put("type", "expected_power");
-										deviceExpectedPowerItem8.put("devicename", "Expected Power");
-										dataEnergy.add(deviceExpectedPowerItem8);
+									for (int i = 0; i < dataList.size(); i++) {
+										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+										Map<String, Object> powerListItem = new HashMap<>();
+										Map<String, Object> expectedPowerListItem = new HashMap<>();
+										Map<String, Object> irradianceListItem = new HashMap<>();
 										
-										// Get Irradiance
-										deviceIrrItem8.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem8.put("type", "irradiance");
-										deviceIrrItem8.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem8);
+										powerListItem.put("time", dataListItem.get("time"));
+										powerListItem.put("download_time", dataListItem.get("download_time"));
+										powerListItem.put("time_format", dataListItem.get("time_format"));
+										powerListItem.put("time_full", dataListItem.get("time_full"));
+										powerListItem.put("categories_time", dataListItem.get("categories_time"));
+										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+										powerList.add(powerListItem);
+
+										expectedPowerListItem.put("time", dataListItem.get("time"));
+										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+										expectedPowerList.add(expectedPowerListItem);
+
+										irradianceListItem.put("time", dataListItem.get("time"));
+										irradianceListItem.put("download_time", dataListItem.get("download_time"));
+										irradianceListItem.put("time_format", dataListItem.get("time_format"));
+										irradianceListItem.put("time_full", dataListItem.get("time_full"));
+										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+										irradianceList.add(irradianceListItem);
+									}
+									
+									powerItem.put("data_energy", powerList);
+									powerItem.put("type", "energy");
+									powerItem.put("devicename", "Power");
+									powerItem.put("deviceType", "meter");
+									dataEnergy.add(powerItem);
+									
+									if (dataListDeviceIrr.size() > 0) {
+										expectedPowerItem.put("data_energy", expectedPowerList);
+										expectedPowerItem.put("type", "expected_power");
+										expectedPowerItem.put("devicename", "Expected Power");
+										dataEnergy.add(expectedPowerItem);
+										
+										irradianceItem.put("data_energy", irradianceList);
+										irradianceItem.put("type", "irradiance");
+										irradianceItem.put("devicename", "Irradiance");
+										dataEnergy.add(irradianceItem);
+									}
+								}
+							} else {
+								obj.setGroupMeter(dataListDeviceMeter);
+								List dataPower8 = queryForList("CustomerView.getDataEnergyDay3Day", obj);
+								if (dataPower8.size() > 0) {
+									deviceItem8.put("data_energy", dataPower8);
+									deviceItem8.put("type", "energy");
+									deviceItem8.put("devicename", "Power");
+									deviceItem8.put("deviceType", "meter");
+									dataEnergy.add(deviceItem8);
+								}
+								
+								// Get Irradiance
+								if (dataListDeviceIrr.size() > 0) {
+									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+										Map<String, Object> deviceIrrItem8 = new HashMap<>();
+										Map<String, Object> deviceExpectedPowerItem8 = new HashMap<>();
+										
+										List dataListAIrrDevice = new ArrayList<>();
+										
+										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										dataListAIrrDevice.add(item);
+										
+										obj.setGroupMeter(dataListAIrrDevice);
+										
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Power
+											deviceExpectedPowerItem8.put("data_energy", dataIrradianceDevice);
+											deviceExpectedPowerItem8.put("type", "expected_power");
+											deviceExpectedPowerItem8.put("devicename", "Expected Power");
+											dataEnergy.add(deviceExpectedPowerItem8);
+											
+											// Get Irradiance
+											deviceIrrItem8.put("data_energy", dataIrradianceDevice);
+											deviceIrrItem8.put("type", "irradiance");
+											deviceIrrItem8.put("devicename", dataListDeviceIrr.get(i));
+											dataEnergy.add(deviceIrrItem8);
+										}
 									}
 								}
 							}
@@ -746,50 +1282,101 @@ public class CustomerViewService extends DB {
 				case "this_week":
 				case "last_week":
 						Map<String, Object> deviceItem5 = new HashMap<>();
-						obj.setGroupMeter(dataListDeviceMeter);
-						List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
-						if (dataPower5.size() > 0) {
-							deviceItem5.put("data_energy", dataPower5);
-							deviceItem5.put("type", "energy");
-							deviceItem5.put("devicename", "Energy output");
-							deviceItem5.put("deviceType", "meter");
-							dataEnergy.add(deviceItem5);
-						}
-						
-						// Get Irradiance
-						
-						if (dataListDeviceIrr.size() > 0) {
-							for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-								Map<String, Object> deviceIrrItem5 = new HashMap<>();
+						if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
+							if (dataList.size() > 0) {
+								Map<String, Object> energyItem = new HashMap<>();
+								Map<String, Object> irradianceItem = new HashMap<>();
+								List energyList = new ArrayList<>();
+								List irradianceList = new ArrayList<>();
 								
-								List dataListAIrrDevice = new ArrayList<>();
-								
-								Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-								dataListAIrrDevice.add(item);
-								
-								obj.setGroupMeter(dataListAIrrDevice);
-								
-								List dataIrradianceDevice = new ArrayList<>();
-								switch (obj.getData_send_time()) {
-									case 1:
-										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-										break;
-									case 2:
-										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-										break;
-									case 3:
-										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-										break;
-									case 4: 
-										dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-										break;
-								}
+								for (int i = 0; i < dataList.size(); i++) {
+									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+									Map<String, Object> energyListItem = new HashMap<>();
+									Map<String, Object> irradianceListItem = new HashMap<>();
+									
+									energyListItem.put("time", dataListItem.get("time"));
+									energyListItem.put("download_time", dataListItem.get("download_time"));
+									energyListItem.put("time_format", dataListItem.get("time_format"));
+									energyListItem.put("time_full", dataListItem.get("time_full"));
+									energyListItem.put("categories_time", dataListItem.get("categories_time"));
+									energyListItem.put("chart_energy_kwh", dataListItem.get("nvmActiveEnergy"));
+									energyList.add(energyListItem);
 
-								if(dataIrradianceDevice.size() > 0 ) {
-									deviceIrrItem5.put("data_energy", dataIrradianceDevice);
-									deviceIrrItem5.put("type", "irradiance");
-									deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
-									dataEnergy.add(deviceIrrItem5);
+									irradianceListItem.put("time", dataListItem.get("time"));
+									irradianceListItem.put("download_time", dataListItem.get("download_time"));
+									irradianceListItem.put("time_format", dataListItem.get("time_format"));
+									irradianceListItem.put("time_full", dataListItem.get("time_full"));
+									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+									irradianceList.add(irradianceListItem);
+								}
+								
+								energyItem.put("data_energy", energyList);
+								energyItem.put("type", "energy");
+								energyItem.put("devicename", "Energy output");
+								energyItem.put("deviceType", "meter");
+								dataEnergy.add(energyItem);
+								
+								if (dataListDeviceIrr.size() > 0) {
+									irradianceItem.put("data_energy", irradianceList);
+									irradianceItem.put("type", "irradiance");
+									irradianceItem.put("devicename", "Irradiance");
+									dataEnergy.add(irradianceItem);
+								}
+							}
+						} else {
+							obj.setGroupMeter(dataListDeviceMeter);
+							List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
+							if (dataPower5.size() > 0) {
+								deviceItem5.put("data_energy", dataPower5);
+								deviceItem5.put("type", "energy");
+								deviceItem5.put("devicename", "Energy output");
+								deviceItem5.put("deviceType", "meter");
+								dataEnergy.add(deviceItem5);
+							}
+							
+							// Get Irradiance
+							
+							if (dataListDeviceIrr.size() > 0) {
+								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+									Map<String, Object> deviceIrrItem5 = new HashMap<>();
+									
+									List dataListAIrrDevice = new ArrayList<>();
+									
+									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									dataListAIrrDevice.add(item);
+									
+									obj.setGroupMeter(dataListAIrrDevice);
+									
+									List dataIrradianceDevice = new ArrayList<>();
+									switch (obj.getData_send_time()) {
+										case 1:
+											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+											break;
+										case 2:
+											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+											break;
+										case 3:
+											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+											break;
+										case 4: 
+											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+											break;
+									}
+	
+									if(dataIrradianceDevice.size() > 0 ) {
+										deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+										deviceIrrItem5.put("type", "irradiance");
+										deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+										dataEnergy.add(deviceIrrItem5);
+									}
 								}
 							}
 						}
@@ -1507,43 +2094,110 @@ public class CustomerViewService extends DB {
 							switch (obj.getData_send_time()) {
 							case 1:
 								Map<String, Object> deviceItem11 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower11 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter", obj);
-								if (dataPower11.size() > 0) {
-									deviceItem11.put("data_energy", dataPower11);
-									deviceItem11.put("type", "energy");
-									deviceItem11.put("devicename", "Power");
-									deviceItem11.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem11);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem11 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem11 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutesToday", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem11.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem11.put("type", "expected_power");
-											deviceExpectedPowerItem11.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem11);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem11.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem11.put("type", "irradiance");
-											deviceIrrItem11.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem11);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower11 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter", obj);
+									if (dataPower11.size() > 0) {
+										deviceItem11.put("data_energy", dataPower11);
+										deviceItem11.put("type", "energy");
+										deviceItem11.put("devicename", "Power");
+										deviceItem11.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem11);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem11 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem11 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem11.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem11.put("type", "expected_power");
+												deviceExpectedPowerItem11.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem11);
+												
+												// Get Irradiance
+												deviceIrrItem11.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem11.put("type", "irradiance");
+												deviceIrrItem11.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem11);
+											}
 										}
 									}
 								}
@@ -1551,86 +2205,220 @@ public class CustomerViewService extends DB {
 								break;
 							case 2:
 								Map<String, Object> deviceItem22 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower22 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter", obj);
-								if (dataPower22.size() > 0) {
-									deviceItem22.put("data_energy", dataPower22);
-									deviceItem22.put("type", "energy");
-									deviceItem22.put("devicename", "Power");
-									deviceItem22.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem22);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem22 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem22 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutesToday", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem22.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem22.put("type", "expected_power");
-											deviceExpectedPowerItem22.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem22);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem22.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem22.put("type", "irradiance");
-											deviceIrrItem22.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem22);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower22 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter", obj);
+									if (dataPower22.size() > 0) {
+										deviceItem22.put("data_energy", dataPower22);
+										deviceItem22.put("type", "energy");
+										deviceItem22.put("devicename", "Power");
+										deviceItem22.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem22);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem22 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem22 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem22.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem22.put("type", "expected_power");
+												deviceExpectedPowerItem22.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem22);
+												
+												// Get Irradiance
+												deviceIrrItem22.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem22.put("type", "irradiance");
+												deviceIrrItem22.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem22);
+											}
 										}
 									}
 								}
 								break;
 							case 3:
 								Map<String, Object> deviceItem33 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower33 = queryForList("CustomerView.getDataEnergyHourInverter", obj);
-								if (dataPower33.size() > 0) {
-									deviceItem33.put("data_energy", dataPower33);
-									deviceItem33.put("type", "energy");
-									deviceItem33.put("devicename", "Power");
-									deviceItem33.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem33);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem33 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem33 = new HashMap<>();
-
-										List dataListAIrrDevice = new ArrayList<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceHourToday", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem33.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem33.put("type", "expected_power");
-											deviceExpectedPowerItem33.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem33);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem33.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem33.put("type", "irradiance");
-											deviceIrrItem33.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem33);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower33 = queryForList("CustomerView.getDataEnergyHourInverter", obj);
+									if (dataPower33.size() > 0) {
+										deviceItem33.put("data_energy", dataPower33);
+										deviceItem33.put("type", "energy");
+										deviceItem33.put("devicename", "Power");
+										deviceItem33.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem33);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem33 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem33 = new HashMap<>();
+	
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem33.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem33.put("type", "expected_power");
+												deviceExpectedPowerItem33.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem33);
+												
+												// Get Irradiance
+												deviceIrrItem33.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem33.put("type", "irradiance");
+												deviceIrrItem33.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem33);
+											}
 										}
 									}
 								}
@@ -1638,42 +2426,109 @@ public class CustomerViewService extends DB {
 								
 							case 4:
 								Map<String, Object> deviceItem44 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower44 = queryForList("CustomerView.getDataEnergyInverterHourDay", obj);
-								if (dataPower44.size() > 0) {
-									deviceItem44.put("data_energy", dataPower44);
-									deviceItem44.put("type", "energy");
-									deviceItem44.put("devicename", "Power");
-									deviceItem44.put("deviceType", "meter");
-									dataEnergy.add(deviceItem44);
-								}
-								
-								// Get Irradiance
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem44 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem44 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceDayToday", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem44.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem44.put("type", "expected_power");
-											deviceExpectedPowerItem44.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem44);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem44.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem44.put("type", "irradiance");
-											deviceIrrItem44.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem44);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower44 = queryForList("CustomerView.getDataEnergyInverterHourDay", obj);
+									if (dataPower44.size() > 0) {
+										deviceItem44.put("data_energy", dataPower44);
+										deviceItem44.put("type", "energy");
+										deviceItem44.put("devicename", "Power");
+										deviceItem44.put("deviceType", "meter");
+										dataEnergy.add(deviceItem44);
+									}
+									
+									// Get Irradiance
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem44 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem44 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem44.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem44.put("type", "expected_power");
+												deviceExpectedPowerItem44.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem44);
+												
+												// Get Irradiance
+												deviceIrrItem44.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem44.put("type", "irradiance");
+												deviceIrrItem44.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem44);
+											}
 										}
 									}
 								}
@@ -2008,43 +2863,110 @@ public class CustomerViewService extends DB {
 							switch (obj.getData_send_time()) {
 							case 1:
 								Map<String, Object> deviceItem55 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower55 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter3Day", obj);
-								if (dataPower55.size() > 0) {
-									deviceItem55.put("data_energy", dataPower55);
-									deviceItem55.put("type", "energy");
-									deviceItem55.put("devicename", "Power");
-									deviceItem55.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem55);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem55 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem55 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutes3Day", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem55.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem55.put("type", "expected_power");
-											deviceExpectedPowerItem55.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem55);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem55.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem55.put("type", "irradiance");
-											deviceIrrItem55.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem55);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower55 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter3Day", obj);
+									if (dataPower55.size() > 0) {
+										deviceItem55.put("data_energy", dataPower55);
+										deviceItem55.put("type", "energy");
+										deviceItem55.put("devicename", "Power");
+										deviceItem55.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem55);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem55 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem55 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem55.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem55.put("type", "expected_power");
+												deviceExpectedPowerItem55.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem55);
+												
+												// Get Irradiance
+												deviceIrrItem55.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem55.put("type", "irradiance");
+												deviceIrrItem55.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem55);
+											}
 										}
 									}
 								}
@@ -2052,87 +2974,221 @@ public class CustomerViewService extends DB {
 								break;
 							case 2:
 								Map<String, Object> deviceItem66 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower66 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter3Day", obj);
-								if (dataPower66.size() > 0) {
-									deviceItem66.put("data_energy", dataPower66);
-									deviceItem66.put("type", "energy");
-									deviceItem66.put("devicename", "Power");
-									deviceItem66.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem66);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										List dataListSensor = new ArrayList<>();
-										Map<String, Object> deviceIrrItem66 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem66 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutes3Day", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem66.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem66.put("type", "expected_power");
-											deviceExpectedPowerItem66.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem66);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem66.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem66.put("type", "irradiance");
-											deviceIrrItem66.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem66);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower66 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter3Day", obj);
+									if (dataPower66.size() > 0) {
+										deviceItem66.put("data_energy", dataPower66);
+										deviceItem66.put("type", "energy");
+										deviceItem66.put("devicename", "Power");
+										deviceItem66.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem66);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											List dataListSensor = new ArrayList<>();
+											Map<String, Object> deviceIrrItem66 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem66 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem66.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem66.put("type", "expected_power");
+												deviceExpectedPowerItem66.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem66);
+												
+												// Get Irradiance
+												deviceIrrItem66.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem66.put("type", "irradiance");
+												deviceIrrItem66.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem66);
+											}
 										}
 									}
 								}
 								break;
 							case 3:
 								Map<String, Object> deviceItem77 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower77 = queryForList("CustomerView.getDataEnergyHourInverter3Day", obj);
-								if (dataPower77.size() > 0) {
-									deviceItem77.put("data_energy", dataPower77);
-									deviceItem77.put("type", "energy");
-									deviceItem77.put("devicename", "Power");
-									deviceItem77.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem77);
-								}
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem77 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem77 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceHour3Day", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem77.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem77.put("type", "expected_power");
-											deviceExpectedPowerItem77.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem77);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem77.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem77.put("type", "irradiance");
-											deviceIrrItem77.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem77);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower77 = queryForList("CustomerView.getDataEnergyHourInverter3Day", obj);
+									if (dataPower77.size() > 0) {
+										deviceItem77.put("data_energy", dataPower77);
+										deviceItem77.put("type", "energy");
+										deviceItem77.put("devicename", "Power");
+										deviceItem77.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem77);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem77 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem77 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem77.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem77.put("type", "expected_power");
+												deviceExpectedPowerItem77.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem77);
+												
+												// Get Irradiance
+												deviceIrrItem77.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem77.put("type", "irradiance");
+												deviceIrrItem77.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem77);
+											}
 										}
 									}
 								}
@@ -2141,42 +3197,109 @@ public class CustomerViewService extends DB {
 								// 4 day
 							case 4: 
 								Map<String, Object> deviceItem88 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower88 = queryForList("CustomerView.getDataEnergyDayInverter3Day", obj);
-								if (dataPower88.size() > 0) {
-									deviceItem88.put("data_energy", dataPower88);
-									deviceItem88.put("type", "energy");
-									deviceItem88.put("devicename", "Power");
-									deviceItem88.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem88);
-								}
-								
-								// Get Irradiance
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem88 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem88 = new HashMap<>();
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceDay3Day", obj);
+									if (dataList.size() > 0) {
+										Map<String, Object> powerItem = new HashMap<>();
+										Map<String, Object> expectedPowerItem = new HashMap<>();
+										Map<String, Object> irradianceItem = new HashMap<>();
+										List powerList = new ArrayList<>();
+										List expectedPowerList = new ArrayList<>();
+										List irradianceList = new ArrayList<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											deviceExpectedPowerItem88.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem88.put("type", "expected_power");
-											deviceExpectedPowerItem88.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem88);
+										for (int i = 0; i < dataList.size(); i++) {
+											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+											Map<String, Object> powerListItem = new HashMap<>();
+											Map<String, Object> expectedPowerListItem = new HashMap<>();
+											Map<String, Object> irradianceListItem = new HashMap<>();
 											
-											// Get Irradiance
-											deviceIrrItem88.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem88.put("type", "irradiance");
-											deviceIrrItem88.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem88);
+											powerListItem.put("time", dataListItem.get("time"));
+											powerListItem.put("download_time", dataListItem.get("download_time"));
+											powerListItem.put("time_format", dataListItem.get("time_format"));
+											powerListItem.put("time_full", dataListItem.get("time_full"));
+											powerListItem.put("categories_time", dataListItem.get("categories_time"));
+											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
+											powerList.add(powerListItem);
+
+											expectedPowerListItem.put("time", dataListItem.get("time"));
+											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
+											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
+											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
+											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
+											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
+											expectedPowerList.add(expectedPowerListItem);
+
+											irradianceListItem.put("time", dataListItem.get("time"));
+											irradianceListItem.put("download_time", dataListItem.get("download_time"));
+											irradianceListItem.put("time_format", dataListItem.get("time_format"));
+											irradianceListItem.put("time_full", dataListItem.get("time_full"));
+											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+											irradianceList.add(irradianceListItem);
+										}
+										
+										powerItem.put("data_energy", powerList);
+										powerItem.put("type", "energy");
+										powerItem.put("devicename", "Power");
+										powerItem.put("deviceType", "meter");
+										dataEnergy.add(powerItem);
+										
+										if (dataListDeviceIrr.size() > 0) {
+											expectedPowerItem.put("data_energy", expectedPowerList);
+											expectedPowerItem.put("type", "expected_power");
+											expectedPowerItem.put("devicename", "Expected Power");
+											dataEnergy.add(expectedPowerItem);
+											
+											irradianceItem.put("data_energy", irradianceList);
+											irradianceItem.put("type", "irradiance");
+											irradianceItem.put("devicename", "Irradiance");
+											dataEnergy.add(irradianceItem);
+										}
+									}
+								} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower88 = queryForList("CustomerView.getDataEnergyDayInverter3Day", obj);
+									if (dataPower88.size() > 0) {
+										deviceItem88.put("data_energy", dataPower88);
+										deviceItem88.put("type", "energy");
+										deviceItem88.put("devicename", "Power");
+										deviceItem88.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem88);
+									}
+									
+									// Get Irradiance
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem88 = new HashMap<>();
+											Map<String, Object> deviceExpectedPowerItem88 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Power
+												deviceExpectedPowerItem88.put("data_energy", dataIrradianceDevice);
+												deviceExpectedPowerItem88.put("type", "expected_power");
+												deviceExpectedPowerItem88.put("devicename", "Expected Power");
+												dataEnergy.add(deviceExpectedPowerItem88);
+												
+												// Get Irradiance
+												deviceIrrItem88.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem88.put("type", "irradiance");
+												deviceIrrItem88.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem88);
+											}
 										}
 									}
 								}
