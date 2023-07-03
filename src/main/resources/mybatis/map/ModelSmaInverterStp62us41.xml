@@ -397,7 +397,7 @@
 			  #{A_phsC},
 			  </if>
 			  <if test="Metering_TotWhOut != 0.001">
-			  #{Metering_TotWhOut},
+			  ROUND(#{Metering_TotWhOut}, 2),
 			  </if>
 			  <if test="Operation_Health != null">
 			  #{Operation_Health},
@@ -419,7 +419,7 @@
 			  ROUND(#{nvmActivePower}, 2),
 			  </if>
 			<if test="nvmActiveEnergy != 0.001">
-			  #{nvmActiveEnergy},
+			  ROUND(#{nvmActiveEnergy}, 2),
 			  </if>
 			
 			
@@ -573,7 +573,7 @@
 			  `A_phsC` = #{A_phsC},
 			  </if>
 			  <if test="Metering_TotWhOut != 0.001">
-			  `Metering_TotWhOut` = #{Metering_TotWhOut},
+			  `Metering_TotWhOut` = ROUND(#{Metering_TotWhOut}, 2),
 			  </if>
 			  <if test="Operation_Health != null">
 			  `Operation_Health` = #{Operation_Health},
@@ -596,7 +596,8 @@
 			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
 			  </if>
 			<if test="nvmActiveEnergy != 0.001">
-			  `nvmActiveEnergy` = #{nvmActiveEnergy},
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
 			  </if>
 			
 			
