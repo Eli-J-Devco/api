@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelVirtualMeterOrInverterEntity;
 import com.nwm.api.entities.VirtualDeviceEntity;
 import com.nwm.api.services.VirtualDeviceService;
@@ -103,6 +105,32 @@ public class VirtualDeviceController extends BaseController {
 							service.insertVirtualDevice(deviceItem);
 						}
 					}
+					
+					// Updated last data
+					VirtualDeviceEntity lastItem = new VirtualDeviceEntity();
+					lastItem.setId_device(siteItem.getId_device());
+					lastItem = service.getLastRowVirtualDevice(lastItem);
+					
+					DeviceEntity deviceEntity = new DeviceEntity();
+					deviceEntity.setId(siteItem.getId_device());
+					
+					if(lastItem.getId_device() > 0) {
+						deviceEntity.setLast_updated(lastItem.getTime());
+						deviceEntity.setLast_value(lastItem.getNvmActivePower());
+						deviceEntity.setField_value1(lastItem.getNvmActivePower());
+						deviceEntity.setField_value2(lastItem.getNvmActiveEnergy());
+						deviceEntity.setField_value3(lastItem.getNvm_irradiance());
+					} else {
+						deviceEntity.setLast_updated(null);
+						deviceEntity.setLast_value(null);
+						deviceEntity.setField_value1(null);
+						deviceEntity.setField_value2(null);
+						deviceEntity.setField_value3(null);
+					}
+					
+					service.updateDeviceVirtualDevice(deviceEntity);
+					
+					
 				}
 			}
 

@@ -257,9 +257,36 @@
 	        nvm_temperature = VALUES(nvm_temperature),
 	        nvm_irradiance = VALUES(nvm_irradiance),
 	        expected_power = VALUES(expected_power)
-	        
-	        
-</insert>
+	</insert>
+	
+	
+	
+	
+	
+	<select id="getLastRowVirtualDevice" resultType="com.nwm.api.entities.VirtualDeviceEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelVirtualMeterOrInverter v 
+		WHERE
+			v.id_device = #{id_device} 
+		ORDER BY
+			time DESC 
+			LIMIT 1;
+	</select>
+	
+	
+	<update id="updateDeviceVirtualDevice">
+		UPDATE `device`
+		SET
+		    `last_updated` = #{last_updated},
+			`last_value` = #{last_value},
+			`field_value1` = #{field_value1},
+			`field_value2` = #{field_value2},
+			`field_value3` = #{field_value3}
+		WHERE
+			`id` = #{id}
+	</update>
 	
   	
 </mapper>
