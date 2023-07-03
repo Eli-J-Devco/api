@@ -101,9 +101,17 @@ public class DeviceEntity {
 	private String job_tablename;
 	private int ssh_status;
 	private String ssh_last_connect;
-	private int hidden;
+	private int hidden = 0;
+	private String virtual_device_type = null;
 	
 	
+	
+	public String getVirtual_device_type() {
+		return virtual_device_type;
+	}
+	public void setVirtual_device_type(String virtual_device_type) {
+		this.virtual_device_type = virtual_device_type;
+	}
 	public int getSsh_status() {
 		return ssh_status;
 	}

@@ -35,6 +35,9 @@
 		<result property="ssh_user" column="ssh_user" />
 		<result property="ssh_pass" column="ssh_pass" />
 		<result property="ssh_port" column="ssh_port" />
+		<result property="hidden" column="hidden" />
+		<result property="virtual_device_type" column="virtual_device_type" />
+		
 		
 		
 		
@@ -69,7 +72,9 @@
 			d.ssh_host,
 			d.ssh_user,
 			d.ssh_pass,
-			d.ssh_port
+			d.ssh_port,
+			d.hidden,
+			d.virtual_device_type
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -155,7 +160,8 @@
 			s.lat,
 			s.lng,
 			s.rating_ac_power,
-			s.hidden
+			s.hidden,
+			s.virtual_device_type
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -277,7 +283,9 @@
 			`ssh_port`,
 			`lat`,
 			`lng`,
-			`rating_ac_power`
+			`rating_ac_power`,
+			`hidden`,
+			`virtual_device_type`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -305,7 +313,8 @@
 			#{lat},
 			#{lng},
 			#{rating_ac_power},
-			#{hidden}
+			#{hidden},
+			#{virtual_device_type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -349,7 +358,8 @@
 				lat = #{lat},
 				lng = #{lng},
 				rating_ac_power = #{rating_ac_power},
-				hidden = #{hidden}
+				`hidden` = #{hidden},
+				virtual_device_type = #{virtual_device_type}
 			WHERE
 				`id` = #{id}
 		</if>
