@@ -47,6 +47,7 @@
 			d.id_device_group,
 			dp.is_checked,
 			dp.is_calculation,
+			dp.is_common,
 			dp.menu_order
 		FROM
 			device d

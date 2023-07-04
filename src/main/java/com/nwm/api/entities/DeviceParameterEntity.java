@@ -34,6 +34,7 @@ public class DeviceParameterEntity{
 	private int is_checked;
 	private int menu_order;
 	private int is_calculation;
+	private int is_common;
 	private String standard_name;
 	private int limit;
 	private int offset;
@@ -242,6 +243,12 @@ public class DeviceParameterEntity{
 	}
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
+	}
+	public int getIs_common() {
+		return is_common;
+	}
+	public void setIs_common(int is_common) {
+		this.is_common = is_common;
 	}
 	
 
