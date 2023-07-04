@@ -1690,9 +1690,6 @@
 			<!-- Energy calculation field -->
 			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
 				<choose>
-					<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
-						IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001)
-					</when>
 					<when test="data_send_time == 5 or data_send_time == 6 or data_send_time == 7 or data_send_time == 8">
 						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy)) IS NULL OR MAX(dv.nvmActiveEnergy) <![CDATA[<=]]> 0 OR MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy)) <![CDATA[<=]]> 0, NULL, MAX(dv.nvmActiveEnergy) - MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy))), 2), 0.001)
 					</when>
@@ -1703,6 +1700,19 @@
 			</if>
 			
 			<!-- Measured Production calculation field -->
+			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
+				<choose>
+					<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
+						IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001)
+					</when>
+					<when test="data_send_time == 5 or data_send_time == 6 or data_send_time == 7 or data_send_time == 8">
+						IFNULL(ROUND(IF(MAX(dv.nvmActiveEnergy) IS NULL OR MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy)) IS NULL OR MAX(dv.nvmActiveEnergy) <![CDATA[<=]]> 0 OR MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy)) <![CDATA[<=]]> 0, NULL, MAX(dv.nvmActiveEnergy) - MIN(IF(dv.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, dv.nvmActiveEnergy))), 2), 0.001)
+					</when>
+					<otherwise>
+						IFNULL(ROUND(IF(MIN(dv.nvmActiveEnergy) IS NULL OR dv1.nvmActiveEnergy IS NULL OR MIN(dv.nvmActiveEnergy) <![CDATA[<=]]> 0 OR dv1.nvmActiveEnergy <![CDATA[<=]]> 0, NULL, GREATEST(MIN(dv.nvmActiveEnergy) - dv1.nvmActiveEnergy, 0)), 2), 0.001)
+					</otherwise>
+				</choose> AS MeasuredProduction,
+			</if>
 			<if test="id_device_type == 12">
 				<choose>
 					<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
@@ -1962,7 +1972,7 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			<if test="(id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9) and (filterBy != 'today' and filterBy != '3_day')">
+			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
 				<choose>
 					<when test="data_send_time == 1">
 						LEFT JOIN (
