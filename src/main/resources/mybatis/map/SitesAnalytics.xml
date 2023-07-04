@@ -47,6 +47,7 @@
 			d.id_device_group,
 			dp.is_checked,
 			dp.is_calculation,
+			dp.is_common,
 			dp.menu_order
 		FROM
 			device d
@@ -66,6 +67,16 @@
 			d.view_tablename,
 			d.job_tablename,
 			d.id_device_group,
+			
+			<if test="(datatablename == 'model_virtual_meter_or_inverter') || (datatablename == 'ViewModelVirtualMeterOrInverter')">
+				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
+				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
+				IFNULL(ROUND(AVG(dv.nvm_temperature), 2), 0.001) AS nvm_temperature,
+				IFNULL(ROUND(AVG(dv.nvm_irradiance), 2), 0.001) AS nvm_irradiance,
+				IFNULL(ROUND(AVG(dv.expected_power), 2), 0.001) AS expected_power,
+				
+				
+			</if>
 			
 			<if test="(datatablename == 'model_sma_inverter_stp62us41') || (datatablename == 'ViewModelSmaInverterStp62us41')">
 				IFNULL(ROUND(AVG(dv.VA_phsA), 2), 0.001) AS VA_phsA,

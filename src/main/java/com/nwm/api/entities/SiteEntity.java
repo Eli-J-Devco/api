@@ -166,6 +166,7 @@ public class SiteEntity {
 	private int datalogger_type;
 	
 	private String display_timezone;
+	private int enable_virtual_device;
 	
 	
 	
@@ -1064,6 +1065,12 @@ public class SiteEntity {
 	}
 	public void setPv_model(int pv_model) {
 		this.pv_model = pv_model;
+	}
+	public int getEnable_virtual_device() {
+		return enable_virtual_device;
+	}
+	public void setEnable_virtual_device(int enable_virtual_device) {
+		this.enable_virtual_device = enable_virtual_device;
 	}
 	
 	

@@ -397,8 +397,8 @@ public class FTPUploadServerController extends BaseController {
 																		}
 																		
 																		else if (field.equals("Measurement.Metering.TotWhOut") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																			entitySMA3000.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
-																			entitySMA3000.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
+																			entitySMA3000.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
+																			entitySMA3000.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean)/1000 : 0.001);
 																		}
 																		
 																		else if (field.equals("Measurement.Metering.TotWhOut.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
@@ -585,8 +585,8 @@ public class FTPUploadServerController extends BaseController {
 																		}
 																		
 																		else if (field.equals("Measurement.Metering.TotWhOut") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																			entitySMA62.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
-																			entitySMA62.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
+																			entitySMA62.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) /1000 : 0.001);
+																			entitySMA62.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) / 1000 : 0.001);
 																		}
 																		
 																		else if (field.equals("Measurement.Operation.Health") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {

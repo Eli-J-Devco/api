@@ -296,7 +296,7 @@
 			  #{Operation_Health},
 			  </if>
 			<if test="Metering_TotWhOut != 0.001">
-			  #{Metering_TotWhOut},
+			  ROUND(#{Metering_TotWhOut}, 2),
 			  </if>
 			<if test="TotWhOut_Pv != 0.001">
 			  #{TotWhOut_Pv},
@@ -305,7 +305,7 @@
 			  ROUND(#{nvmActivePower}, 2),
 			  </if>
 			<if test="nvmActiveEnergy != 0.001">
-			  #{nvmActiveEnergy},
+			  ROUND(#{nvmActiveEnergy}, 2),
 			  </if>
 			
 			
@@ -423,7 +423,7 @@
 			  `Operation_Health` = #{Operation_Health},
 			  </if>
 			<if test="Metering_TotWhOut != 0.001">
-			  `Metering_TotWhOut` = #{Metering_TotWhOut},
+			  `Metering_TotWhOut` = ROUND(#{Metering_TotWhOut}, 2),
 			  </if>
 			<if test="TotWhOut_Pv != 0.001">
 			  `TotWhOut_Pv` = #{TotWhOut_Pv},
@@ -432,7 +432,7 @@
 			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
 			  </if>
 			<if test="nvmActiveEnergy != 0.001">
-			  `nvmActiveEnergy` = #{nvmActiveEnergy},
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
 			  </if>
 			
 			
