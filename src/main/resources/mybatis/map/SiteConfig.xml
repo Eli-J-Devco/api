@@ -110,13 +110,13 @@
 		UPDATE `site`
 		SET
 			pv_model = #{pv_model},
-			t_avg_nrel = #{t_avg_nrel},
 			pv_module_temperature_coeff = #{pv_module_temperature_coeff},
-			global_solar_irradiance_at_stc = #{global_solar_irradiance_at_stc},
 			stc_temperature = #{stc_temperature},
 			inverter_efficiency = #{inverter_efficiency},
 			t_avg = #{t_avg},
-			system_loss = #{system_loss}
+			system_loss = #{system_loss},
+			clip = #{clip},
+			bifaciality_factor = #{bifaciality_factor}
 		WHERE
 			`id` = #{id}
 	</update>
