@@ -75,8 +75,20 @@ public class VirtualDeviceController extends BaseController {
 				// Get list device by virtual device
 				List<?> listDevice = service.getListDevice(siteItem);
 				List<?> listWeather = service.getListDeviceWeather(siteItem);
+				
+				List<?> listSensorAT = service.getListDeviceSensorAmbientTemp(siteItem);
+				
+//				
+				
+				
+				siteItem.setReverse_poa(1);
+				List<?> listRPOA = service.getListDeviceWeather(siteItem);
+				
+				
 				siteItem.setDevices(listDevice);
 				siteItem.setWeathers(listWeather);
+				siteItem.setWeatherRPOA(listRPOA);
+				siteItem.setSensorAmbientTemp(listSensorAT);
 				
 				if(listDevice.size() > 0) {
 					Date now = new Date();
@@ -96,6 +108,8 @@ public class VirtualDeviceController extends BaseController {
 						
 						siteItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
 						siteItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
+						
+						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
 						if(dataPower.size() > 0){

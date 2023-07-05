@@ -34,8 +34,101 @@ public class VirtualDeviceEntity {
 	private double dc_capacity = 0;
 	private double ac_capacity = 0;
 	
+	private double pv_module_temperature_coeff;
+	private double global_solar_irradiance_at_stc;
+	private double stc_temperature;
+	private double inverter_efficiency;
+	private double t_avg;
+	private double system_loss;
+	private double pv_model;
+	private double min_irradiance_limit;
+	private double clip;
+	private double bifaciality_factor;
+	private int reverse_poa = 0;
+	
+	private List weatherRPOA;
+	private List sensorAmbientTemp;
 	
 	
+	
+	public List getSensorAmbientTemp() {
+		return sensorAmbientTemp;
+	}
+	public void setSensorAmbientTemp(List sensorAmbientTemp) {
+		this.sensorAmbientTemp = sensorAmbientTemp;
+	}
+	public List getWeatherRPOA() {
+		return weatherRPOA;
+	}
+	public void setWeatherRPOA(List weatherRPOA) {
+		this.weatherRPOA = weatherRPOA;
+	}
+	public int getReverse_poa() {
+		return reverse_poa;
+	}
+	public void setReverse_poa(int reverse_poa) {
+		this.reverse_poa = reverse_poa;
+	}
+	public double getMin_irradiance_limit() {
+		return min_irradiance_limit;
+	}
+	public void setMin_irradiance_limit(double min_irradiance_limit) {
+		this.min_irradiance_limit = min_irradiance_limit;
+	}
+	public double getClip() {
+		return clip;
+	}
+	public void setClip(double clip) {
+		this.clip = clip;
+	}
+	public double getBifaciality_factor() {
+		return bifaciality_factor;
+	}
+	public void setBifaciality_factor(double bifaciality_factor) {
+		this.bifaciality_factor = bifaciality_factor;
+	}
+	public double getPv_module_temperature_coeff() {
+		return pv_module_temperature_coeff;
+	}
+	public void setPv_module_temperature_coeff(double pv_module_temperature_coeff) {
+		this.pv_module_temperature_coeff = pv_module_temperature_coeff;
+	}
+	public double getGlobal_solar_irradiance_at_stc() {
+		return global_solar_irradiance_at_stc;
+	}
+	public void setGlobal_solar_irradiance_at_stc(double global_solar_irradiance_at_stc) {
+		this.global_solar_irradiance_at_stc = global_solar_irradiance_at_stc;
+	}
+	public double getStc_temperature() {
+		return stc_temperature;
+	}
+	public void setStc_temperature(double stc_temperature) {
+		this.stc_temperature = stc_temperature;
+	}
+	public double getInverter_efficiency() {
+		return inverter_efficiency;
+	}
+	public void setInverter_efficiency(double inverter_efficiency) {
+		this.inverter_efficiency = inverter_efficiency;
+	}
+	public double getT_avg() {
+		return t_avg;
+	}
+	public void setT_avg(double t_avg) {
+		this.t_avg = t_avg;
+	}
+	public double getSystem_loss() {
+		return system_loss;
+	}
+	public void setSystem_loss(double system_loss) {
+		this.system_loss = system_loss;
+	}
+	public double getPv_model() {
+		return pv_model;
+	}
+	public void setPv_model(double pv_model) {
+		this.pv_model = pv_model;
+	}
 	public double getDc_capacity() {
 		return dc_capacity;
 	}

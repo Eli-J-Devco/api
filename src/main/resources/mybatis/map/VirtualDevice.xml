@@ -20,6 +20,16 @@
 			s.data_send_time,
 			s.dc_capacity,
 			s.ac_capacity,
+			s.pv_module_temperature_coeff,
+			s.global_solar_irradiance_at_stc,
+			s.stc_temperature,
+			s.inverter_efficiency,
+			s.t_avg,
+			s.system_loss,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
+			s.pv_model,
 			null AS time,
 			d.id AS id_device,
 			null AS nvmActivePower,
@@ -91,44 +101,126 @@
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND d.id_device_type = 4
+			
+			<if test="reverse_poa == 1">
+				AND d.reverse_poa = 1
+			</if>
+			
+			<if test="reverse_poa == 0">
+				AND d.reverse_poa = 0
+			</if>
+			
+			
+	</select>
+	
+	
+	<select id="getListDeviceSensorAmbientTemp" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_type = 6
+			AND d.id_device_group IN(18)
 	</select>
 	
 	
 	
 	<select id="getDataPower" resultType="Map">
 		SELECT
-			t.time,
-			t.time_format,
-			ROUND(( SUM( t.power ) ), 1 ) AS power,
-			ROUND(( SUM( t.energy ) ), 1 ) AS energy,
-			ROUND(( AVG( t.irradiance ) ), 1 ) AS irradiance,
-			ROUND(( AVG( t.temperature ) ), 1 ) AS temperature,
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time,
+			ROUND(( SUM( t.power ) ), 2 ) AS nvmActivePower,
+			ROUND(( SUM( t.energy ) ), 2 ) AS nvmActiveEnergy,
+			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
+			ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
 			
-			IF(
+			
+			<!--IF(
 				IFNULL(#{dc_capacity} * (AVG(t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 0) <![CDATA[<]]> #{ac_capacity},
 				ROUND(#{dc_capacity} * (AVG(dv.t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 2), #{ac_capacity}
-			) AS expected_power
+			) AS expected_power, -->
+			
+			<!-- CASE
+			    WHEN #{pv_model} = 2 THEN 
+			    IF(
+					IFNULL(#{dc_capacity} * (AVG(t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 0) <![CDATA[<]]> #{ac_capacity},
+					ROUND(#{dc_capacity} * (AVG(dv.t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 2), #{ac_capacity}
+				)
+				
+			    WHEN #{pv_model} = 3 THEN 
+			    2
+			    ELSE 1
+			    
+			END AS expected_power_ac, -->
+
+			0 AS expected_power_dc,
+			ROUND(IF( ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2)  <![CDATA[>=]]> #{min_irradiance_limit} AND 
+			(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
+			
+			(
+			((IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc} ) *
+			#{dc_capacity} * 
+			(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - ( ROUND(( SUM( t.temperature ) ), 2 ) + (IF(ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND #{clip}/100 = 0 , ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)/ #{global_solar_irradiance_at_stc}) * 3 ))) * 100/100
+			)
+			, null), 2) AS expected_power_ac,
+			
+			
+			ROUND((IF( ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2)  <![CDATA[>=]]> #{min_irradiance_limit} AND 
+			(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
+			
+			(
+			((IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc} ) *
+			#{dc_capacity} * 
+			(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - ( ROUND(( SUM( t.temperature ) ), 2 ) + (IF(ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND #{clip}/100 = 0 , ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)/ #{global_solar_irradiance_at_stc}) * 3 ))) * 100/100
+			)
+			, null)) * 5/60, 2) AS expected_energy,
+			
+			
+			ROUND(( SUM( t.rpoa ) ), 2 ) AS r_irradiance,
+			ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) AS total_poa,
+			0 AS panel_temp,
+			ROUND(SUM( t.ambient_temp ), 2 ) AS ambient_temp,
+			ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) AS calculation_poa,
+			ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2) AS calculation_temp,
+			IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) AS calculation_clipping 
+			
+			
 		FROM
 			(
+			
 			<foreach collection="devices" item="item" index="index" separator="union all">
 			SELECT
-				DATE_FORMAT(m.time,'%Y-%m-%d %H:%i:00') AS time,
+				m.`offset`,
 				m.time_format,
 				SUM( m.power ) AS power,
 				SUM( m.energy ) AS energy,
-				NULL AS irradiance,
-				NULL AS temperature
+				0 AS irradiance,
+				0 AS temperature,
+				0 AS rpoa,
+				0 AS panel_temp,
+				0 AS ambient_temp,
+				0 AS calculation_poa,
+				0 AS calculation_temp,
+				0 AS calculation_clipping
 			FROM
 				(
 				SELECT
-					dv.time,
+					t.`offset`,
 					FROM_UNIXTIME(((
-								UNIX_TIMESTAMP(
-								CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
-								)* 300 
-							),
-						'%m-%d-%Y %H:%i' 
-					) AS time_format,
+									UNIX_TIMESTAMP(
+									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
+									)* 300 
+								),
+							'%Y-%m-%d %H:%i:00' 
+						) AS time_format,
 					IFNULL( dv.nvmActivePower, 0 ) AS power,
 				IF
 					(
@@ -147,35 +239,24 @@
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					LEFT JOIN (
-					SELECT
-						dv.time,
-						FROM_UNIXTIME(((
-									UNIX_TIMESTAMP(
-									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
-									)* 300 
-								),
-							'%m-%d-%Y %H:%i' 
-						) AS time_format,
-						MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
-					FROM
-						${item.datatablename} dv
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-					WHERE
-						dv.id_device = #{item.id}
-						AND (
-							CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME( #{start_date}, '0:5:0' ) 
-						AND SUBTIME( #{end_date}, '0:5:0' )) 
-					GROUP BY
-						time_format 
-						) dv1 ON UNIX_TIMESTAMP(
-						CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(
-						CONVERT_TZ(
-							SUBTIME( dv.time, '0:5:0' ),
-							'+00:00',
-							t.`offset` 
-						)) DIV 300 
+						SELECT
+							t.`offset`,
+							dv.time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 )* 300 ),'%Y-%m-%d %H:%i:00' ) AS time_format,
+							MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+						WHERE
+							dv.id_device = #{item.id}
+							AND (
+								CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME( #{start_date}, '0:5:0' ) 
+							AND SUBTIME( #{end_date}, '0:5:0' )) 
+						GROUP BY
+							time_format 
+						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ(SUBTIME( dv.time, '0:5:0' ),'+00:00',t.`offset` )) DIV 300 
 				WHERE
 					d.id = #{item.id}
 					AND d.id_device_type = #{item.id_device_type}
@@ -191,7 +272,7 @@
 				) m 
 			GROUP BY
 				m.time_format
-			</foreach>
+			</foreach> 
 			
 			
 			
@@ -199,17 +280,23 @@
 				UNION ALL
 				<foreach collection="weathers" item="v" index="index" separator="union all">
 						SELECT
-							DATE_FORMAT(m.time,'%Y-%m-%d %H:%i:00') AS time,
+							m.`offset`,
 							m.time_format,
 							0 AS power,
 							0 AS energy,
 							AVG(m.nvm_irradiance) AS irradiance,
-							AVG(m.nvm_temperature) AS temperature
+							AVG(m.nvm_temperature) AS temperature,
+							0 AS rpoa,
+							0 AS panel_temp,
+							0 AS ambient_temp,
+							0 AS calculation_poa,
+							0 AS calculation_temp,
+							0 AS calculation_clipping
 						FROM
 							(
 							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
+								t.`offset`,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
 								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
 							FROM
@@ -232,8 +319,102 @@
 				</foreach>
 			
 			</if>
+			
+			
+			
+			<if test="weatherRPOA != null and !weatherRPOA.isEmpty()">
+				UNION ALL
+				<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
+						SELECT
+							m.`offset`,
+							m.time_format,
+							0 AS power,
+							0 AS energy,
+							0 AS irradiance,
+							AVG(m.nvm_temperature) AS temperature,
+							AVG(m.nvm_irradiance) AS rpoa,
+							0 AS panel_temp,
+							0 AS ambient_temp,
+							0 AS calculation_poa,
+							0 AS calculation_temp,
+							0 AS calculation_clipping
+						FROM
+							(
+							SELECT
+								t.`offset`,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
+							FROM
+								${ritem.datatablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site 
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{id}
+								AND d.id_device_type IN(4)
+								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+								AND s.`status` = 1 
+								AND d.`status` = 1
+								AND d.id = #{ritem.id}
+							GROUP BY
+								d.id, time_format
+							) m 
+						GROUP BY
+							m.time_format
+				</foreach>
+				
+			
+			</if>
+			
+			
+			<if test="sensorAmbientTemp != null and !sensorAmbientTemp.isEmpty()">
+				UNION ALL
+				<foreach collection="sensorAmbientTemp" item="sitem" index="index" separator="union all">
+						SELECT
+							m.`offset`,
+							m.time_format,
+							0 AS power,
+							0 AS energy,
+							0 AS irradiance,
+							0 AS temperature,
+							0 AS rpoa,
+							0 AS panel_temp,
+							AVG(m.nvm_temperature) AS ambient_temp,
+							0 AS calculation_poa,
+							0 AS calculation_temp,
+							0 AS calculation_clipping
+						FROM
+							(
+							SELECT
+								t.`offset`,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
+								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
+							FROM
+								${sitem.datatablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site 
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								s.id = #{id}
+								AND d.id_device_type IN(6)
+								AND d.id_device_group IN(18)
+								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+								AND s.`status` = 1 
+								AND d.`status` = 1
+								AND d.id = #{sitem.id}
+							GROUP BY
+								d.id, time_format
+							) m 
+						GROUP BY
+							m.time_format
+				</foreach>
+				
+			
+			</if>
 		
-		
+		 
 				
 			) t 
 		GROUP BY
@@ -244,19 +425,31 @@
 	
 	
 	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
-	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_temperature, nvm_irradiance, expected_power)
+	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_dc, expected_power_ac, expected_energy, r_irradiance, total_poa, panel_temp, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
 	        VALUES
 	        <foreach collection="data" item="item" index="" separator=",">
-	            (#{item.time}, #{id_device}, #{item.power}, #{item.energy}, #{item.temperature}, #{item.irradiance}, #{item.expected_power})
+	            (#{item.time}, #{id_device}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.nvm_irradiance}, #{item.nvm_temperature}, #{item.expected_power_dc}, #{item.expected_power_ac}, #{item.expected_energy}, #{item.r_irradiance}, #{item.total_poa}, #{item.panel_temp}, #{item.ambient_temp}, #{item.calculation_poa}, #{item.calculation_temp}, #{item.calculation_clipping})
 	        </foreach>
 	        ON DUPLICATE KEY UPDATE
 	        
 	        id_device = VALUES(id_device),
 	        nvmActivePower = VALUES(nvmActivePower),
 	        nvmActiveEnergy = VALUES(nvmActiveEnergy),
-	        nvm_temperature = VALUES(nvm_temperature),
 	        nvm_irradiance = VALUES(nvm_irradiance),
-	        expected_power = VALUES(expected_power)
+	        nvm_temperature = VALUES(nvm_temperature),
+	        expected_power_dc = VALUES(expected_power_dc),
+	        expected_power_ac = VALUES(expected_power_ac),
+	        expected_energy = VALUES(expected_energy),
+	        r_irradiance = VALUES(r_irradiance),
+	        total_poa = VALUES(total_poa),
+	        panel_temp = VALUES(panel_temp),
+	        ambient_temp = VALUES(ambient_temp),
+	        calculation_poa = VALUES(calculation_poa),
+	        calculation_temp = VALUES(calculation_temp),
+	        calculation_clipping = VALUES(calculation_clipping)
+	        
+	        
+	        
 	</insert>
 	
 	

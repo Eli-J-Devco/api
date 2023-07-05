@@ -77,6 +77,29 @@ public class VirtualDeviceService extends DB {
 		return dataList;
 	}
 	
+	
+	
+	
+	/**
+	 * @description get list device sensor for virtual device.
+	 * @author long.pham
+	 * @since 2023-06-27
+	 */
+	
+	public List getListDeviceSensorAmbientTemp(VirtualDeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("VirtualDevice.getListDeviceSensorAmbientTemp", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		
+		return dataList;
+	}
+	
+	
 	/**
 	 * @description get data device
 	 * @author long.pham
