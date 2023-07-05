@@ -568,7 +568,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObj.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	break;
 								        }
 									}
@@ -644,7 +644,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjYTD.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	break;
 								        }
 									}
@@ -717,7 +717,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	break;
 								        }
 									}
@@ -797,7 +797,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	break;
 								        }
 									}
@@ -1347,6 +1347,7 @@ public class CustomerViewService extends DB {
 							if (dataListDeviceIrr.size() > 0) {
 								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 									Map<String, Object> deviceIrrItem5 = new HashMap<>();
+									Map<String, Object> deviceExpectedEnergyItem5 = new HashMap<>();
 									
 									List dataListAIrrDevice = new ArrayList<>();
 									
@@ -1372,6 +1373,13 @@ public class CustomerViewService extends DB {
 									}
 	
 									if(dataIrradianceDevice.size() > 0 ) {
+										// Get Expected Energy
+										deviceExpectedEnergyItem5.put("data_energy", dataIrradianceDevice);
+										deviceExpectedEnergyItem5.put("type", "expected_energy");
+										deviceExpectedEnergyItem5.put("devicename", "Expected Energy");
+										dataEnergy.add(deviceExpectedEnergyItem5);
+										
+										// Get Irradiance
 										deviceIrrItem5.put("data_energy", dataIrradianceDevice);
 										deviceIrrItem5.put("type", "irradiance");
 										deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
@@ -1408,6 +1416,7 @@ public class CustomerViewService extends DB {
 						headerDate.setTime_format(usFormat.format(cal.getTime()));
 						headerDate.setCategories_time(catFormat.format(cal.getTime()));
 						headerDate.setChart_energy_kwh(0.001);
+						headerDate.setExpected_power(0.001);
 						headerDate.setNvm_irradiance(0.001);
 						categories.add(headerDate);
 					}
@@ -1429,6 +1438,7 @@ public class CustomerViewService extends DB {
 						        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 						        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 						        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+						        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 						        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 						        	break;
 						        }
@@ -1441,6 +1451,7 @@ public class CustomerViewService extends DB {
 								mapItem.setTime_full(item.getTime_full());
 								mapItem.setDownload_time(item.getDownload_time());
 								mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+								mapItem.setExpected_power(item.getExpected_power());
 								mapItem.setNvm_irradiance(item.getNvm_irradiance());
 								dataNew.add(mapItem);
 							} else {
@@ -1495,6 +1506,7 @@ public class CustomerViewService extends DB {
 								headerDateYTD.setTime_format(usFormatYTD.format(calYTD.getTime()));
 								headerDateYTD.setCategories_time(catFormatYTD.format(calYTD.getTime()));
 								headerDateYTD.setChart_energy_kwh(0.001);
+								headerDateYTD.setExpected_power(0.001);
 								headerDateYTD.setNvm_irradiance(0.001);
 								categoriesYTD.add(headerDateYTD);
 							}
@@ -1516,6 +1528,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1528,6 +1541,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNewYTD.add(mapItem);
 									} else {
@@ -1563,6 +1577,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setTime_full(usFormatYTD.format(calYTD.getTime()));
 								headerDateLT.setCategories_time(catFormatYTD.format(calYTD.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								categoriesYTD7Day.add(headerDateLT);
 							}
@@ -1585,6 +1600,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1597,6 +1613,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNewYTD7Day.add(mapItem);
 									} else {
@@ -1631,6 +1648,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setTime_format(usFormatYTDMonth.format(calYTD.getTime()));
 								headerDateLT.setCategories_time(catFormatYTDMonth.format(calYTD.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								categoriesYTDMonth.add(headerDateLT);
 							}
@@ -1652,6 +1670,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1664,6 +1683,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNewYTDMonth.add(mapItem);
 									} else {
@@ -1724,6 +1744,7 @@ public class CustomerViewService extends DB {
 								headerDate12MonthDay.setTime_format(usFormat12MonthDay.format(cal12.getTime()));
 								headerDate12MonthDay.setCategories_time(catFormat12MonthDay.format(cal12.getTime()));
 								headerDate12MonthDay.setChart_energy_kwh(0.001);
+								headerDate12MonthDay.setExpected_power(0.001);
 								headerDate12MonthDay.setNvm_irradiance(0.001);
 								categories12MonthDay.add(headerDate12MonthDay);
 							}
@@ -1745,6 +1766,7 @@ public class CustomerViewService extends DB {
 													mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
 													mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
 													mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+										        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 													mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 													break;
 												}
@@ -1757,6 +1779,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNew12MonthDay.add(mapItem);
 									} else {
@@ -1792,6 +1815,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setTime_full(usFormat12Month7Day.format(cal12.getTime()));
 								headerDateLT.setCategories_time(catFormat12Month7Day.format(cal12.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								categories12Month7Day.add(headerDateLT);
 							}
@@ -1814,6 +1838,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1826,6 +1851,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNew12Month7Day.add(mapItem);
 									} else {
@@ -1862,6 +1888,7 @@ public class CustomerViewService extends DB {
 								headerDate12.setTime_format(usFormat12.format(cal12.getTime()));
 								headerDate12.setCategories_time(catFormat12.format(cal12.getTime()));
 								headerDate12.setChart_energy_kwh(0.001);
+								headerDate12.setExpected_power(0.001);
 								headerDate12.setNvm_irradiance(0.001);
 								categories12.add(headerDate12);
 							}
@@ -1883,6 +1910,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj12.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj12.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj12.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObj12.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObj12.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1895,6 +1923,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNew12.add(mapItem);
 									} else {
@@ -1948,6 +1977,7 @@ public class CustomerViewService extends DB {
 								headerDateLT.setTime_format(usFormatLTMonth.format(calLT.getTime()));
 								headerDateLT.setCategories_time(catFormatLTMonth.format(calLT.getTime()));
 								headerDateLT.setChart_energy_kwh(0.001);
+								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								categoriesLT.add(headerDateLT);
 							}
@@ -1969,6 +1999,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -1981,6 +2012,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNewLT.add(mapItem);
 									} else {
@@ -2019,6 +2051,7 @@ public class CustomerViewService extends DB {
 									headerDateLT.setTime_format(usFormatLTYear.format(calLT.getTime()));
 									headerDateLT.setCategories_time(catFormatLTYear.format(calLT.getTime()));
 									headerDateLT.setChart_energy_kwh(0.001);
+									headerDateLT.setExpected_power(0.001);
 									headerDateLT.setNvm_irradiance(0.001);
 									categoriesLTYear.add(headerDateLT);
 								}
@@ -2041,6 +2074,7 @@ public class CustomerViewService extends DB {
 									        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 									        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 									        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+									        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 									        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 									        	break;
 									        }
@@ -2053,6 +2087,7 @@ public class CustomerViewService extends DB {
 											mapItem.setTime_full(item.getTime_full());
 											mapItem.setDownload_time(item.getDownload_time());
 											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+											mapItem.setExpected_power(item.getExpected_power());
 											mapItem.setNvm_irradiance(item.getNvm_irradiance());
 											dataNewLTYear.add(mapItem);
 										} else {
@@ -2597,7 +2632,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObj.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -2673,7 +2708,7 @@ public class CustomerViewService extends DB {
 														mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjYTD.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+											        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 														break;
 													}
 										}
@@ -2746,7 +2781,7 @@ public class CustomerViewService extends DB {
 														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+											        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 														break;
 													}
 										}
@@ -2826,7 +2861,7 @@ public class CustomerViewService extends DB {
 														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjLT.setExpected_power(forCountYTD + 1 <= 5 ? Double.parseDouble(itemT.get("expected_power").toString()) : 0.001);
+											        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 														break;
 													}
 										}
@@ -3324,6 +3359,7 @@ public class CustomerViewService extends DB {
 								if (dataListDeviceIrr.size() > 0) {
 									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
 										Map<String, Object> deviceIrrItem5 = new HashMap<>();
+										Map<String, Object> deviceExpectedEnergyItem5 = new HashMap<>();
 										
 										List dataListAIrrDevice = new ArrayList<>();
 										
@@ -3349,6 +3385,13 @@ public class CustomerViewService extends DB {
 										}
 
 										if(dataIrradianceDevice.size() > 0 ) {
+											// Get Expected Energy
+											deviceExpectedEnergyItem5.put("data_energy", dataIrradianceDevice);
+											deviceExpectedEnergyItem5.put("type", "expected_energy");
+											deviceExpectedEnergyItem5.put("devicename", "Expected Energy");
+											dataEnergy.add(deviceExpectedEnergyItem5);
+											
+											// Get Irradiance
 											deviceIrrItem5.put("data_energy", dataIrradianceDevice);
 											deviceIrrItem5.put("type", "irradiance");
 											deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
@@ -3384,6 +3427,7 @@ public class CustomerViewService extends DB {
 								headerDate.setTime_format(usFormat.format(cal.getTime()));
 								headerDate.setCategories_time(catFormat.format(cal.getTime()));
 								headerDate.setChart_energy_kwh(0.001);
+								headerDate.setExpected_power(0.001);
 								headerDate.setNvm_irradiance(0.001);
 								categories.add(headerDate);
 							}
@@ -3405,6 +3449,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("inverterEnergy").toString()) );
+								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
 								        }
@@ -3417,6 +3462,7 @@ public class CustomerViewService extends DB {
 										mapItem.setTime_full(item.getTime_full());
 										mapItem.setDownload_time(item.getDownload_time());
 										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
 										mapItem.setNvm_irradiance(item.getNvm_irradiance());
 										dataNew.add(mapItem);
 									} else {
@@ -3471,6 +3517,7 @@ public class CustomerViewService extends DB {
 										headerDateYTD.setTime_format(usFormatYTD.format(calYTD.getTime()));
 										headerDateYTD.setCategories_time(catFormatYTD.format(calYTD.getTime()));
 										headerDateYTD.setChart_energy_kwh(0.001);
+										headerDateYTD.setExpected_power(0.001);
 										headerDateYTD.setNvm_irradiance(0.001);
 										categoriesYTD.add(headerDateYTD);
 									}
@@ -3492,6 +3539,7 @@ public class CustomerViewService extends DB {
 															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3504,6 +3552,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNewYTD.add(mapItem);
 											} else {
@@ -3539,6 +3588,7 @@ public class CustomerViewService extends DB {
 										headerDateLT.setTime_full(usFormatYTD.format(calYTD.getTime()));
 										headerDateLT.setCategories_time(catFormatYTD.format(calYTD.getTime()));
 										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
 										categoriesYTD7Day.add(headerDateLT);
 									}
@@ -3561,6 +3611,7 @@ public class CustomerViewService extends DB {
 															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3573,6 +3624,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNewYTD7Day.add(mapItem);
 											} else {
@@ -3607,6 +3659,7 @@ public class CustomerViewService extends DB {
 										headerDateLT.setTime_format(usFormatYTDMonth.format(calYTD.getTime()));
 										headerDateLT.setCategories_time(catFormatYTDMonth.format(calYTD.getTime()));
 										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
 										categoriesYTDMonth.add(headerDateLT);
 									}
@@ -3628,6 +3681,7 @@ public class CustomerViewService extends DB {
 															mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 															mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 															mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3640,6 +3694,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNewYTDMonth.add(mapItem);
 											} else {
@@ -3699,6 +3754,7 @@ public class CustomerViewService extends DB {
 										headerDate12MonthDay.setTime_format(usFormat12MonthDay.format(cal12.getTime()));
 										headerDate12MonthDay.setCategories_time(catFormat12MonthDay.format(cal12.getTime()));
 										headerDate12MonthDay.setChart_energy_kwh(0.001);
+										headerDate12MonthDay.setExpected_power(0.001);
 										headerDate12MonthDay.setNvm_irradiance(0.001);
 										categories12MonthDay.add(headerDate12MonthDay);
 									}
@@ -3720,6 +3776,7 @@ public class CustomerViewService extends DB {
 															mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
 															mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
 															mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3732,6 +3789,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNew12MonthDay.add(mapItem);
 											} else {
@@ -3767,6 +3825,7 @@ public class CustomerViewService extends DB {
 										headerDateLT.setTime_full(usFormat12Month7Day.format(cal12.getTime()));
 										headerDateLT.setCategories_time(catFormat12Month7Day.format(cal12.getTime()));
 										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
 										categories12Month7Day.add(headerDateLT);
 									}
@@ -3789,6 +3848,7 @@ public class CustomerViewService extends DB {
 															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
 															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
 															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3801,6 +3861,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNew12Month7Day.add(mapItem);
 											} else {
@@ -3833,6 +3894,7 @@ public class CustomerViewService extends DB {
 										headerDate12.setTime_format(usFormat12.format(cal12.getTime()));
 										headerDate12.setCategories_time(catFormat12.format(cal12.getTime()));
 										headerDate12.setChart_energy_kwh(0.001);
+										headerDate12.setExpected_power(0.001);
 										headerDate12.setNvm_irradiance(0.001);
 										categories12.add(headerDate12);
 									}
@@ -3854,6 +3916,7 @@ public class CustomerViewService extends DB {
 															mapItemObj12.setTime_full(itemT.get("time_full").toString());
 															mapItemObj12.setDownload_time(itemT.get("download_time").toString());
 															mapItemObj12.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObj12.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObj12.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3866,6 +3929,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNew12.add(mapItem);
 											} else {
@@ -3919,6 +3983,7 @@ public class CustomerViewService extends DB {
 										headerDateLT.setTime_format(usFormatLTMonth.format(calLT.getTime()));
 										headerDateLT.setCategories_time(catFormatLTMonth.format(calLT.getTime()));
 										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
 										categoriesLT.add(headerDateLT);
 									}
@@ -3940,6 +4005,7 @@ public class CustomerViewService extends DB {
 															mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 															mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 															mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+												        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 															mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 															break;
 														}
@@ -3952,6 +4018,7 @@ public class CustomerViewService extends DB {
 												mapItem.setTime_full(item.getTime_full());
 												mapItem.setDownload_time(item.getDownload_time());
 												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+												mapItem.setExpected_power(item.getExpected_power());
 												mapItem.setNvm_irradiance(item.getNvm_irradiance());
 												dataNewLT.add(mapItem);
 											} else {
@@ -3990,6 +4057,7 @@ public class CustomerViewService extends DB {
 											headerDateLT.setTime_format(usFormatLTYear.format(calLT.getTime()));
 											headerDateLT.setCategories_time(catFormatLTYear.format(calLT.getTime()));
 											headerDateLT.setChart_energy_kwh(0.001);
+											headerDateLT.setExpected_power(0.001);
 											headerDateLT.setNvm_irradiance(0.001);
 											categoriesLTYear.add(headerDateLT);
 										}
@@ -4012,6 +4080,7 @@ public class CustomerViewService extends DB {
 																mapItemObjLT.setTime_full(itemT.get("time_full").toString());
 																mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
 																mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+													        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 																mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 																break;
 															}
@@ -4024,6 +4093,7 @@ public class CustomerViewService extends DB {
 													mapItem.setTime_full(item.getTime_full());
 													mapItem.setDownload_time(item.getDownload_time());
 													mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+													mapItem.setExpected_power(item.getExpected_power());
 													mapItem.setNvm_irradiance(item.getNvm_irradiance());
 													dataNewLTYear.add(mapItem);
 												} else {

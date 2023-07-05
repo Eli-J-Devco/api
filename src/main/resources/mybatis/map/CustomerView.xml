@@ -118,7 +118,7 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -196,7 +196,7 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%e. %b %H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -272,7 +272,7 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -353,7 +353,7 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%e. %b %H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -428,7 +428,7 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -506,7 +506,7 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -637,7 +637,7 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -714,7 +714,7 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power ), 1 ) AS expected_power,
+			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
 		FROM
 			${datatablename} dv
@@ -962,6 +962,38 @@
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1005,31 +1037,45 @@
 				ELSE DATE_FORMAT( sdr.time, '%b. %Y' )
 			END AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			site_data_report sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
@@ -1037,8 +1083,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-			ORDER BY sdr.time
+		GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
 	</select>
 	
 	<select id="getDataPowerMeterDayCustomAtMost5Days" resultType="Map" >
@@ -1052,51 +1097,31 @@
 			<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
-						CASE
-							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
-									s.ac_capacity
-								)
-							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
-									s.ac_capacity
-								)
-							ELSE
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
-									s.ac_capacity
-								)
-						END,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
 						NULL
 					)), 1), 0.001)
 				</when>
 				<otherwise>
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
-						CASE
-							WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
-									s.ac_capacity
-								)
-							WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
-									s.ac_capacity
-								)
-							ELSE
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
-									s.ac_capacity
-								)
-						END,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
 						NULL
 					)), 1), 0.001)
 				</otherwise>
@@ -1170,31 +1195,45 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * 7 AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			site_data_report sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
@@ -1202,9 +1241,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY sdr.time
-		
+		GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
 	</select>
 	
 	<select id="getDataPowerMeter7DayCustomAtMost5Days" resultType="Map" >
@@ -1232,51 +1269,31 @@
 					<choose>
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
+								NULL
+							)), 1)
+						</when>
+						<when test="pv_model == 2">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
 								NULL
 							)), 1)
 						</when>
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+									NULL,
+									sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+								),
 								NULL
 							)), 1)
 						</otherwise>
@@ -1311,31 +1328,45 @@
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			site_data_report sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
@@ -1343,8 +1374,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-			ORDER BY sdr.time
+		GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
 	</select>
 
 	<select id="getDataPowerMeterMonthCustomAtMost5Days" resultType="Map" >
@@ -1372,51 +1402,31 @@
 					<choose>
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
+								NULL
+							)), 1)
+						</when>
+						<when test="pv_model == 2">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
 								NULL
 							)), 1)
 						</when>
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+									NULL,
+									sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+								),
 								NULL
 							)), 1)
 						</otherwise>
@@ -1450,31 +1460,45 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			site_data_report sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
@@ -1482,8 +1506,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%Y' )
-			ORDER BY sdr.time
+		GROUP BY DATE_FORMAT( sdr.time, '%Y' )
 		</select>
 		
 	<select id="getDataPowerMeterYearCustomAtMost5Days" resultType="Map" >
@@ -1511,51 +1534,31 @@
 					<choose>
 						<when test="pv_model == 1">
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (25 - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
+								NULL
+							)), 1)
+						</when>
+						<when test="pv_model == 2">
+							ROUND(AVG(IF(d.id_device_type = 4,
+								IF(
+									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									s.ac_capacity
+								),
 								NULL
 							)), 1)
 						</when>
 						<otherwise>
 							ROUND(AVG(IF(d.id_device_type = 4,
-								CASE
-									WHEN d.datatablename = 'model_w_kipp_zonen_rt1' OR d.view_tablename = 'ViewModelWKippZonenRt1' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 )) * 0.98,
-											s.ac_capacity
-										)
-									WHEN d.datatablename = 'model_imtsolar_class8000' OR d.view_tablename = 'ViewModelImtsolarClass8000' THEN
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG / 10 - 25)) * 0.98,
-											s.ac_capacity
-										)
-									ELSE
-										IF(
-											IFNULL(s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (sdr.POAAVG / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - sdr.TCellAVG)) * 0.98,
-											s.ac_capacity
-										)
-								END,
+								IF(
+									s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+									NULL,
+									sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+								),
 								NULL
 							)), 1)
 						</otherwise>
@@ -1590,8 +1593,38 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1634,8 +1667,38 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * 7 AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1680,8 +1743,38 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1725,8 +1818,38 @@
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1769,8 +1892,38 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * 7 AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1815,8 +1968,38 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			
-			
+			<choose>
+				<when test="pv_model == 1">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<when test="pv_model == 2">
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						),
+						NULL
+					)), 1), 0.001)
+				</when>
+				<otherwise>
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+						),
+						NULL
+					)), 1), 0.001)
+				</otherwise>
+			</choose> * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1955,54 +2138,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2035,6 +2189,7 @@
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
 			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
+			ROUND(( AVG( t.expected_power ) / 4 ), 1 ) AS expected_energy,
 			t.time_full,
 			t.download_time
 			
@@ -2061,54 +2216,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2163,54 +2289,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance ,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2244,6 +2341,7 @@
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
 			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
+			ROUND(( AVG( t.expected_power ) * 5 / 60 ), 1 ) AS expected_energy,
 			t.time_full,
 			t.download_time
 			
@@ -2269,54 +2367,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2372,54 +2441,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2474,54 +2514,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2555,6 +2566,7 @@
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
 			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
+			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_energy,
 			t.time_full,
 			t.download_time
 			
@@ -2580,54 +2592,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
@@ -2660,6 +2643,7 @@
 			t.categories_time,
 			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
 			ROUND(( AVG( t.expected_power ) ), 1 ) AS expected_power,
+			ROUND(( AVG( t.expected_power ) * 24 ), 1 ) AS expected_energy,
 			t.time_full,
 			t.download_time
 			
@@ -2685,54 +2669,25 @@
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							<choose>
 								<when test="pv_model == 1">
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)		
-										</when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(
+										IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									)
 								</when>
 								<otherwise>
-									<choose>
-									    <when test="item.datatablename == 'model_w_kipp_zonen_rt1' or item.datatablename == 'ViewModelWKippZonenRt1'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 )) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <when test="item.datatablename == 'model_imtsolar_class8000' or item.datatablename == 'ViewModelImtsolarClass8000'">
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature) / 10 - 25)) * 0.98,
-												s.ac_capacity
-											)
-									    </when>
-									    <otherwise>
-											IF(
-												IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-												s.dc_capacity * (AVG(dv.nvm_irradiance) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(dv.nvm_temperature))) * 0.98,
-												s.ac_capacity
-											)
-									    </otherwise>
-									</choose>
+									IF(
+										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
+										NULL,
+										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+									)
 								</otherwise>
 							</choose> AS expected_power
 						FROM
