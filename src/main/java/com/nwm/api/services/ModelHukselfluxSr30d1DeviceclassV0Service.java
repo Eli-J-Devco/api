@@ -28,11 +28,15 @@ public class ModelHukselfluxSr30d1DeviceclassV0Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = new ModelHukselfluxSr30d1DeviceclassV0Entity();
+				
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				if(irradiance < 0) { irradiance = 0.0; };
+				
 				dataModelHukselfluxSr30d1DeviceclassV0.setTime(words.get(0).replace("'", ""));
 				dataModelHukselfluxSr30d1DeviceclassV0.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelHukselfluxSr30d1DeviceclassV0.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelHukselfluxSr30d1DeviceclassV0.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
-				dataModelHukselfluxSr30d1DeviceclassV0.setIrradianceTcs(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelHukselfluxSr30d1DeviceclassV0.setIrradianceTcs(irradiance);
 				dataModelHukselfluxSr30d1DeviceclassV0.setIrradianceUs(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelHukselfluxSr30d1DeviceclassV0.setSensorBodyTemperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelHukselfluxSr30d1DeviceclassV0.setSensorElectricalResistance(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -49,7 +53,7 @@ public class ModelHukselfluxSr30d1DeviceclassV0Service extends DB {
 				dataModelHukselfluxSr30d1DeviceclassV0.setFanCurrent(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				
 				// set custom field nvm_irradiance
-				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(irradiance);
 				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.0"));
 				return dataModelHukselfluxSr30d1DeviceclassV0;
 				

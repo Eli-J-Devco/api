@@ -27,6 +27,9 @@ public class ModelRT1Class30000Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelRT1Class30000Entity dataModelRTC30000 = new ModelRT1Class30000Entity();
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001");
+				if(irradiance < 0) { irradiance = 0.0; };
+				
 				dataModelRTC30000.setTime(words.get(0).replace("'", ""));
 				dataModelRTC30000.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelRTC30000.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -36,7 +39,7 @@ public class ModelRT1Class30000Service extends DB {
 				dataModelRTC30000.setData_model_version(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelRTC30000.setOperational_mode(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelRTC30000.setStatus_flags(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataModelRTC30000.setSensor1_data(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModelRTC30000.setSensor1_data(irradiance);
 				dataModelRTC30000.setPanel_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModelRTC30000.setExternal_power_sensor(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModelRTC30000.setCalibration_date(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
@@ -50,7 +53,7 @@ public class ModelRT1Class30000Service extends DB {
 				
 
 				// set custom field nvm_irradiance
-				dataModelRTC30000.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModelRTC30000.setNvm_irradiance(irradiance);
 				dataModelRTC30000.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				

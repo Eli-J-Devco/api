@@ -27,6 +27,8 @@ public class ModelKippZonenRT1Class8009Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelKippZonenRT1Class8009Entity dataKippZonen = new ModelKippZonenRT1Class8009Entity();
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001");
+				if(irradiance < 0) { irradiance = 0.0; };
 				
 				dataKippZonen.setTime(words.get(0).replace("'", ""));
 				dataKippZonen.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -36,7 +38,7 @@ public class ModelKippZonenRT1Class8009Service extends DB {
 				dataKippZonen.setData_model_version(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataKippZonen.setOperational_mode(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataKippZonen.setStatus_flags(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataKippZonen.setSensor1_data(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataKippZonen.setSensor1_data(irradiance);
 				dataKippZonen.setPanel_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataKippZonen.setExternal_power_sensor(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataKippZonen.setCalibration_date(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
@@ -49,7 +51,7 @@ public class ModelKippZonenRT1Class8009Service extends DB {
 				dataKippZonen.setNode_id(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				
 				// set custom field nvm_irradiance
-				dataKippZonen.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataKippZonen.setNvm_irradiance(irradiance);
 				dataKippZonen.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				return dataKippZonen;

@@ -30,6 +30,10 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 			
 			if (words.size() > 0) {
 				ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = new ModelAdam4017WSClass8110Nelis190Entity();
+				
+				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001");
+				if(irradiance < 0) { irradiance = 0.0; };
+				
 				dataModelAdam4017.setTime(words.get(0).replace("'", ""));
 				dataModelAdam4017.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				
@@ -54,7 +58,7 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 				
 				
 				// set custom field nvm_irradiance
-				dataModelAdam4017.setNvm_irradiance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModelAdam4017.setNvm_irradiance(irradiance);
 				dataModelAdam4017.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				
 				

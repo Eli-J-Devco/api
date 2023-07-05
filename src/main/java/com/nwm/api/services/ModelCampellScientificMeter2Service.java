@@ -33,7 +33,7 @@ public class ModelCampellScientificMeter2Service extends DB {
 				dataModelCSM2.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelCSM2.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelCSM2.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
-				dataModelCSM2.setMeter2_ACPower(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelCSM2.setMeter2_ACPower(power);
 				dataModelCSM2.setTotal_Energy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
