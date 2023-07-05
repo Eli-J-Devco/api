@@ -57,13 +57,15 @@
 			s.display_date_format,
 			d.name AS date_format,
 			s.pv_model,
-			s.t_avg_nrel,
 			s.pv_module_temperature_coeff,
 			s.global_solar_irradiance_at_stc,
 			s.stc_temperature,
 			s.inverter_efficiency,
 			s.t_avg,
 			s.system_loss,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
 			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device
 		FROM
 			site s 

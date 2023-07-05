@@ -86,13 +86,15 @@ public class SitesDevicesEntity {
 	private String date_format;
 	private int checkall;
 	private int pv_model;
-	private Double t_avg_nrel;
 	private Double pv_module_temperature_coeff;
 	private Double global_solar_irradiance_at_stc;
 	private Double stc_temperature;
 	private Double inverter_efficiency;
 	private Double t_avg;
 	private Double system_loss;
+	private Double clip;
+	private	Double bifaciality_factor;
+	private int min_irradiance_limit;
 	
 	private String ssh_host;
 	private String ssh_user;
@@ -102,6 +104,24 @@ public class SitesDevicesEntity {
 	private int enable_virtual_device; 
 	
 	
+	public Double getClip() {
+		return clip;
+	}
+	public void setClip(Double clip) {
+		this.clip = clip;
+	}
+	public Double getBifaciality_factor() {
+		return bifaciality_factor;
+	}
+	public void setBifaciality_factor(Double bifaciality_factor) {
+		this.bifaciality_factor = bifaciality_factor;
+	}
+	public int getMin_irradiance_limit() {
+		return min_irradiance_limit;
+	}
+	public void setMin_irradiance_limit(int min_irradiance_limit) {
+		this.min_irradiance_limit = min_irradiance_limit;
+	}
 	public int getEnable_virtual_device() {
 		return enable_virtual_device;
 	}
@@ -642,12 +662,6 @@ public class SitesDevicesEntity {
 	}
 	public void setPv_model(int pv_model) {
 		this.pv_model = pv_model;
-	}
-	public Double getT_avg_nrel() {
-		return t_avg_nrel;
-	}
-	public void setT_avg_nrel(Double t_avg_nrel) {
-		this.t_avg_nrel = t_avg_nrel;
 	}
 	
 	
