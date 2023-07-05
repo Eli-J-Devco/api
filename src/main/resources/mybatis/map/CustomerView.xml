@@ -118,8 +118,36 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  NULL,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -196,8 +224,36 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%e. %b %H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  0,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -272,8 +328,36 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  NULL,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -353,8 +437,37 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%e. %b %H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+      <choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  0,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -428,8 +541,36 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  NULL,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -506,8 +647,36 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  NULL,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -637,8 +806,36 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  0,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -714,8 +911,36 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			<choose>
+        <when test="pv_model == 1">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <when test="pv_model == 2">
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        </when>
+        <otherwise>
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  0,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+        </otherwise>
+      </choose> AS expected_power
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -937,7 +1162,48 @@
 				</when>
 			</choose>
 			ROUND(SUM( dv.nvmActiveEnergy ), 1 ) AS nvmActiveEnergy,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
+			CASE
+					WHEN s.pv_model = 1 THEN
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        WHEN s.pv_model = 2 THEN
+            ROUND(IF(
+							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+							s.ac_capacity
+						), 1)
+        ELSE
+            IFNULL(
+              ROUND(
+                IF(
+                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
+                  0,
+                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
+                ),
+                1
+              ),
+              0
+            )
+       END
+			 <choose>
+					<when test="data_send_time == 1">
+						* 5 / 60
+					</when>
+					<when test="data_send_time == 2">
+						/ 4
+					</when>
+					<when test="data_send_time == 3">
+						* 1
+					</when>
+					<when test="data_send_time == 4">
+						/ 60
+					</when>
+				</choose> AS expected_energy
+
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device

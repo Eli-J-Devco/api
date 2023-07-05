@@ -1293,12 +1293,15 @@ public class CustomerViewService extends DB {
 							if (dataList.size() > 0) {
 								Map<String, Object> energyItem = new HashMap<>();
 								Map<String, Object> irradianceItem = new HashMap<>();
+								Map<String, Object> expectedEnergyItem = new HashMap<>();
 								List energyList = new ArrayList<>();
 								List irradianceList = new ArrayList<>();
+								List expectedEnergyList = new ArrayList<>();
 								
 								for (int i = 0; i < dataList.size(); i++) {
 									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
 									Map<String, Object> energyListItem = new HashMap<>();
+									Map<String, Object> expectedEnergyListItem = new HashMap<>();
 									Map<String, Object> irradianceListItem = new HashMap<>();
 									
 									energyListItem.put("time", dataListItem.get("time"));
@@ -1308,6 +1311,14 @@ public class CustomerViewService extends DB {
 									energyListItem.put("categories_time", dataListItem.get("categories_time"));
 									energyListItem.put("chart_energy_kwh", dataListItem.get("nvmActiveEnergy"));
 									energyList.add(energyListItem);
+
+									expectedEnergyListItem.put("time", dataListItem.get("time"));
+									expectedEnergyListItem.put("download_time", dataListItem.get("download_time"));
+									expectedEnergyListItem.put("time_format", dataListItem.get("time_format"));
+									expectedEnergyListItem.put("time_full", dataListItem.get("time_full"));
+									expectedEnergyListItem.put("categories_time", dataListItem.get("categories_time"));
+									expectedEnergyListItem.put("expected_energy", dataListItem.get("expected_energy"));
+									expectedEnergyList.add(expectedEnergyListItem);
 
 									irradianceListItem.put("time", dataListItem.get("time"));
 									irradianceListItem.put("download_time", dataListItem.get("download_time"));
@@ -1325,6 +1336,11 @@ public class CustomerViewService extends DB {
 								dataEnergy.add(energyItem);
 								
 								if (dataListDeviceIrr.size() > 0) {
+									expectedEnergyItem.put("data_energy", expectedEnergyList);
+									expectedEnergyItem.put("type", "expected_energy");
+									expectedEnergyItem.put("devicename", "Expected Energy");
+									dataEnergy.add(expectedEnergyItem);
+									
 									irradianceItem.put("data_energy", irradianceList);
 									irradianceItem.put("type", "irradiance");
 									irradianceItem.put("devicename", "Irradiance");
