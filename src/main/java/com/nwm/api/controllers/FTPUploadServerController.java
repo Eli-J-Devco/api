@@ -624,8 +624,8 @@ public class FTPUploadServerController extends BaseController {
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
 														if (entitySMA3000.getGridMs_TotW() > 0) {
 //															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
-															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() / 1000 : null);
-															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW()/ 1000 : null);
+															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
@@ -645,8 +645,8 @@ public class FTPUploadServerController extends BaseController {
 														
 														if (entitySMA62.getGridMs_TotW() > 0) {
 //															deviceUpdateE.setLast_updated(entitySMA62.getTime());
-															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() / 1000 : null);
-															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW()/ 1000 : null);
+															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
