@@ -1082,7 +1082,7 @@
 			</choose>
 			ROUND(SUM( dv.nvmActiveEnergy ), 1 ) AS nvmActiveEnergy,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
-			CASE
+			ROUND(CASE
 					WHEN s.pv_model = 1 THEN
             ROUND(IF(
 							IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
@@ -1111,7 +1111,7 @@
 					<when test="data_send_time == 4">
 						* 24
 					</when>
-				</choose> AS expected_energy
+				</choose>, 1) AS expected_energy
 
 		FROM
 			${datatablename} dv
