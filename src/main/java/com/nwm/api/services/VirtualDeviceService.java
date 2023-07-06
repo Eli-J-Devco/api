@@ -80,6 +80,28 @@ public class VirtualDeviceService extends DB {
 	
 	
 	
+	
+	/**
+	 * @description get list device weather "POA" for virtual device.
+	 * @author long.pham
+	 * @since 2023-06-27
+	 */
+	
+	public List getListDevicePoa(VirtualDeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("VirtualDevice.getListDevicePoa", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		
+		return dataList;
+	}
+	
+	
+	
 	/**
 	 * @description get list device sensor for virtual device.
 	 * @author long.pham

@@ -85,10 +85,14 @@ public class VirtualDeviceController extends BaseController {
 				List<?> listRPOA = service.getListDeviceWeather(siteItem);
 				
 				
+				List<?> listPOA = service.getListDevicePoa(siteItem);
+				
 				siteItem.setDevices(listDevice);
 				siteItem.setWeathers(listWeather);
 				siteItem.setWeatherRPOA(listRPOA);
 				siteItem.setSensorAmbientTemp(listSensorAT);
+				siteItem.setWeatherPOA(listPOA);
+				
 				
 				if(listDevice.size() > 0) {
 					Date now = new Date();

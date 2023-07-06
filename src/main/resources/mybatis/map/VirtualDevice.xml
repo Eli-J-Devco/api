@@ -100,18 +100,40 @@
 			d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND d.id_device_type = 4
+			
 			
 			<if test="reverse_poa == 1">
+				AND d.id_device_type = 4
 				AND d.reverse_poa = 1
 			</if>
 			
 			<if test="reverse_poa == 0">
+				AND d.id_device_type = 6
+				AND d.id_device_group IN(24)
 				AND d.reverse_poa = 0
 			</if>
-			
-			
 	</select>
+	
+	
+	<select id="getListDevicePoa" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename AS datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_type = 4
+			AND d.id_device_group IN(25)
+			AND d.reverse_poa = 0
+	</select>
+	
 	
 	
 	<select id="getListDeviceSensorAmbientTemp" resultType="Map">
@@ -186,7 +208,6 @@
 			
 			ROUND(( SUM( t.rpoa ) ), 2 ) AS r_irradiance,
 			ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) AS total_poa,
-			0 AS panel_temp,
 			ROUND(SUM( t.ambient_temp ), 2 ) AS ambient_temp,
 			ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) AS calculation_poa,
 			ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2) AS calculation_temp,
@@ -205,7 +226,6 @@
 				0 AS irradiance,
 				0 AS temperature,
 				0 AS rpoa,
-				0 AS panel_temp,
 				0 AS ambient_temp,
 				0 AS calculation_poa,
 				0 AS calculation_temp,
@@ -277,45 +297,35 @@
 			
 			
 			<if test="weathers != null and !weathers.isEmpty()">
-				UNION ALL
+				UNION ALL 
 				<foreach collection="weathers" item="v" index="index" separator="union all">
-						SELECT
-							m.`offset`,
-							m.time_format,
-							0 AS power,
-							0 AS energy,
-							AVG(m.nvm_irradiance) AS irradiance,
-							AVG(m.nvm_temperature) AS temperature,
-							0 AS rpoa,
-							0 AS panel_temp,
-							0 AS ambient_temp,
-							0 AS calculation_poa,
-							0 AS calculation_temp,
-							0 AS calculation_clipping
-						FROM
-							(
-							SELECT
-								t.`offset`,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
-								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
-								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
-							FROM
-								${v.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{id}
-								AND d.id_device_type IN(4)
-								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-								AND s.`status` = 1 
-								AND d.`status` = 1
-								AND d.id = #{v.id}
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
+					SELECT
+						t.`offset`,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						0 AS power,
+						0 AS energy,
+						0 AS irradiance,
+						IFNULL(dv.nvm_temperature, 0) AS temperature,
+						0 AS rpoa,
+						0 AS ambient_temp,
+						0 AS calculation_poa,
+						0 AS calculation_temp,
+						0 AS calculation_clipping
+					FROM
+						${v.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(6)
+						AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{v.id}
+					GROUP BY
+						d.id, time_format
+								
 				</foreach>
 			
 			</if>
@@ -325,43 +335,69 @@
 			<if test="weatherRPOA != null and !weatherRPOA.isEmpty()">
 				UNION ALL
 				<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
-						SELECT
-							m.`offset`,
-							m.time_format,
-							0 AS power,
-							0 AS energy,
-							0 AS irradiance,
-							AVG(m.nvm_temperature) AS temperature,
-							AVG(m.nvm_irradiance) AS rpoa,
-							0 AS panel_temp,
-							0 AS ambient_temp,
-							0 AS calculation_poa,
-							0 AS calculation_temp,
-							0 AS calculation_clipping
-						FROM
-							(
-							SELECT
-								t.`offset`,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
-								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
-								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
-							FROM
-								${ritem.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{id}
-								AND d.id_device_type IN(4)
-								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-								AND s.`status` = 1 
-								AND d.`status` = 1
-								AND d.id = #{ritem.id}
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
+					SELECT
+						t.`offset`,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						0 AS power,
+						0 AS energy,
+						0 AS irradiance,
+						0 AS temperature,
+						IFNULL(dv.nvm_irradiance, 0) AS rpoa,
+						0 AS ambient_temp,
+						0 AS calculation_poa,
+						0 AS calculation_temp,
+						0 AS calculation_clipping
+					FROM
+						${ritem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(4)
+						AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{ritem.id}
+					GROUP BY
+						d.id, time_format
+								
+				</foreach>
+				
+			
+			</if>
+			
+			
+			<if test="weatherPOA != null and !weatherPOA.isEmpty()">
+				UNION ALL
+				<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
+					SELECT
+						t.`offset`,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						0 AS power,
+						0 AS energy,
+						IFNULL(dv.nvm_irradiance, 0) AS irradiance,
+						0 AS temperature,
+						0 AS rpoa,
+						0 AS ambient_temp,
+						0 AS calculation_poa,
+						0 AS calculation_temp,
+						0 AS calculation_clipping
+					FROM
+						${pitem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(4)
+						AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{pitem.id}
+					GROUP BY
+						d.id, time_format
+								
 				</foreach>
 				
 			
@@ -371,44 +407,35 @@
 			<if test="sensorAmbientTemp != null and !sensorAmbientTemp.isEmpty()">
 				UNION ALL
 				<foreach collection="sensorAmbientTemp" item="sitem" index="index" separator="union all">
-						SELECT
-							m.`offset`,
-							m.time_format,
-							0 AS power,
-							0 AS energy,
-							0 AS irradiance,
-							0 AS temperature,
-							0 AS rpoa,
-							0 AS panel_temp,
-							AVG(m.nvm_temperature) AS ambient_temp,
-							0 AS calculation_poa,
-							0 AS calculation_temp,
-							0 AS calculation_clipping
-						FROM
-							(
-							SELECT
-								t.`offset`,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
-								AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
-								AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
-							FROM
-								${sitem.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{id}
-								AND d.id_device_type IN(6)
-								AND d.id_device_group IN(18)
-								AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-								AND s.`status` = 1 
-								AND d.`status` = 1
-								AND d.id = #{sitem.id}
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
+				
+					SELECT
+						t.`offset`,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						0 AS power,
+						0 AS energy,
+						0 AS irradiance,
+						0 AS temperature,
+						0 AS rpoa,
+						IFNULL(dv.nvm_temperature, 0) AS ambient_temp,
+						0 AS calculation_poa,
+						0 AS calculation_temp,
+						0 AS calculation_clipping
+							
+					FROM
+						${sitem.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.id = #{id}
+						AND d.id_device_type IN(6)
+						AND d.id_device_group IN(18)
+						AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+						AND s.`status` = 1 
+						AND d.`status` = 1
+						AND d.id = #{sitem.id}
+					GROUP BY
+						d.id, time_format
 				</foreach>
 				
 			
@@ -416,19 +443,17 @@
 		
 		 
 				
-			) t 
-		GROUP BY
-			t.time_format
+			) t GROUP BY t.time_format
 	
 	</select>
 	
 	
 	
 	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
-	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_dc, expected_power_ac, expected_energy, r_irradiance, total_poa, panel_temp, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
+	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_dc, expected_power_ac, expected_energy, r_irradiance, total_poa, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
 	        VALUES
 	        <foreach collection="data" item="item" index="" separator=",">
-	            (#{item.time}, #{id_device}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.nvm_irradiance}, #{item.nvm_temperature}, #{item.expected_power_dc}, #{item.expected_power_ac}, #{item.expected_energy}, #{item.r_irradiance}, #{item.total_poa}, #{item.panel_temp}, #{item.ambient_temp}, #{item.calculation_poa}, #{item.calculation_temp}, #{item.calculation_clipping})
+	            (#{item.time}, #{id_device}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.nvm_irradiance}, #{item.nvm_temperature}, #{item.expected_power_dc}, #{item.expected_power_ac}, #{item.expected_energy}, #{item.r_irradiance}, #{item.total_poa}, #{item.ambient_temp}, #{item.calculation_poa}, #{item.calculation_temp}, #{item.calculation_clipping})
 	        </foreach>
 	        ON DUPLICATE KEY UPDATE
 	        
@@ -442,7 +467,6 @@
 	        expected_energy = VALUES(expected_energy),
 	        r_irradiance = VALUES(r_irradiance),
 	        total_poa = VALUES(total_poa),
-	        panel_temp = VALUES(panel_temp),
 	        ambient_temp = VALUES(ambient_temp),
 	        calculation_poa = VALUES(calculation_poa),
 	        calculation_temp = VALUES(calculation_temp),

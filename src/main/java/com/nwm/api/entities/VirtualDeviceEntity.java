@@ -48,9 +48,17 @@ public class VirtualDeviceEntity {
 	
 	private List weatherRPOA;
 	private List sensorAmbientTemp;
+	private List weatherPOA;
 	
 	
 	
+	
+	public List getWeatherPOA() {
+		return weatherPOA;
+	}
+	public void setWeatherPOA(List weatherPOA) {
+		this.weatherPOA = weatherPOA;
+	}
 	public List getSensorAmbientTemp() {
 		return sensorAmbientTemp;
 	}
