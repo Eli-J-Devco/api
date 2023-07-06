@@ -1753,17 +1753,7 @@
 							0.001
 						)
 					ELSE
-						IFNULL(
-							ROUND(
-								IF(
-									s.t_avg IS NULL OR NOT ((AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0)) >= s.min_irradiance_limit AND (IF(AVG(dv.nvmActivePower) > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
-									NULL,
-									(AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0))/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + (AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0))/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
-								),
-								2
-							),
-							0.001
-						)
+						IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001)
 				END AS expected_power,
 			</if>
 			
@@ -1795,17 +1785,7 @@
 							0.001
 						)
 					ELSE
-						IFNULL(
-							ROUND(
-								IF(
-									s.t_avg IS NULL OR NOT ((AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0)) >= s.min_irradiance_limit AND (IF(AVG(dv.nvmActivePower) > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
-									NULL,
-									(AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0))/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + (AVG(dv.nvm_irradiance) + IFNULL(AVG(dv.r_irradiance) * IFNULL(s.bifaciality_factor, 0.7), 0))/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
-								),
-								2
-							),
-							0.001
-						)
+						IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001)
 				END
 				<choose>
 					<when test="data_send_time == 1">
