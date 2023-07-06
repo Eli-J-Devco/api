@@ -135,17 +135,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  NULL,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -241,17 +231,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  0,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -345,17 +325,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  NULL,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -438,7 +408,6 @@
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%e. %b %H:%i') AS categories_time,
 			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
       <choose>
         <when test="pv_model == 1">
             ROUND(IF(
@@ -455,17 +424,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  0,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -558,17 +517,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  NULL,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -664,17 +613,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  NULL,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -823,17 +762,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  0,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -928,17 +857,7 @@
 						), 1)
         </when>
         <otherwise>
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  0,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
         </otherwise>
       </choose> AS expected_power
 		FROM
@@ -1177,17 +1096,7 @@
 							s.ac_capacity
 						), 1)
         ELSE
-            IFNULL(
-              ROUND(
-                IF(
-                  s.t_avg IS NULL OR NOT (dv.calculation_poa != 0 AND dv.calculation_clipping = 0),
-                  0,
-                  IF(dv.calculation_poa != 0 AND dv.calculation_clipping = 0, dv.calculation_poa, 0)/s.global_solar_irradiance_at_stc * s.dc_capacity * dv.calculation_temp * s.inverter_efficiency/100
-                ),
-                1
-              ),
-              0
-            )
+            ROUND(AVG( dv.expected_power_ac ), 1 )
        END
 			 <choose>
 					<when test="data_send_time == 1">
@@ -1200,7 +1109,7 @@
 						* 1
 					</when>
 					<when test="data_send_time == 4">
-						/ 60
+						* 24
 					</when>
 				</choose> AS expected_energy
 
@@ -1228,7 +1137,7 @@
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -1259,7 +1168,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 AS expected_energy,
+			</choose> * 24, 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1859,7 +1768,7 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -1890,7 +1799,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 AS expected_energy,
+			</choose> * 24, 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1933,7 +1842,7 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -1964,7 +1873,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * 7 AS expected_energy,
+			</choose> * 24 * 7, 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2009,7 +1918,7 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -2040,7 +1949,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_energy,
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2084,7 +1993,7 @@
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -2115,7 +2024,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_energy,
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)),1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2158,7 +2067,7 @@
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -2189,7 +2098,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * 7 AS expected_energy,
+			</choose> * 24 * 7, 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2234,7 +2143,7 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
@@ -2265,7 +2174,7 @@
 						NULL
 					)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')) AS expected_energy,
+			</choose> * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')), 1) AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
