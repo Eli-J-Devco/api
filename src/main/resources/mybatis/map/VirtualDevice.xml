@@ -30,6 +30,10 @@
 			s.clip,
 			s.bifaciality_factor,
 			s.pv_model,
+			s.ids_device_poa,
+			s.ids_device_rpoa,
+			s.ids_device_panel_temp,
+			s.ids_device_ambient_temp,
 			null AS time,
 			d.id AS id_device,
 			null AS nvmActivePower,
@@ -102,63 +106,19 @@
 			AND d.is_delete = 0
 			
 			
-			<if test="reverse_poa == 1">
-				AND d.id_device_type = 4
-				AND d.reverse_poa = 1
-			</if>
 			
-			<if test="reverse_poa == 0">
-				AND d.id_device_type = 6
-				AND d.id_device_group IN(24)
-				AND d.reverse_poa = 0
-			</if>
+			AND d.id IN
+		    <foreach item="item" index="index" collection="ids"
+		             open="(" separator="," close=")">
+		        #{item}
+		    </foreach>
+			
 	</select>
-	
-	
-	<select id="getListDevicePoa" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			d.datatablename AS datatablename,
-			d.id_site,
-			d.id_device_type
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-		WHERE
-			d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-			AND d.id_device_type = 4
-			AND d.id_device_group IN(25)
-			AND d.reverse_poa = 0
-	</select>
-	
-	
-	
-	<select id="getListDeviceSensorAmbientTemp" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			d.datatablename AS datatablename,
-			d.id_site,
-			d.id_device_type
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-		WHERE
-			d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-			AND d.id_device_type = 6
-			AND d.id_device_group IN(18)
-	</select>
-	
 	
 	
 	<select id="getDataPower" resultType="Map">
 		SELECT
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time,
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
 			ROUND(( SUM( t.power ) ), 2 ) AS nvmActivePower,
 			ROUND(( SUM( t.energy ) ), 2 ) AS nvmActiveEnergy,
 			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
@@ -236,8 +196,8 @@
 					t.`offset`,
 					FROM_UNIXTIME(((
 									UNIX_TIMESTAMP(
-									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 
-									)* 300 
+									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} 
+									)* #{level_sent_time} 
 								),
 							'%Y-%m-%d %H:%i:00' 
 						) AS time_format,
@@ -262,7 +222,7 @@
 						SELECT
 							t.`offset`,
 							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300 )* 300 ),'%Y-%m-%d %H:%i:00' ) AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} )* #{level_sent_time} ),'%Y-%m-%d %H:%i:00' ) AS time_format,
 							MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
 						FROM
 							${item.datatablename} dv
@@ -276,7 +236,7 @@
 							AND SUBTIME( #{end_date}, '0:5:0' )) 
 						GROUP BY
 							time_format 
-						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV 300 = UNIX_TIMESTAMP(CONVERT_TZ(SUBTIME( dv.time, '0:5:0' ),'+00:00',t.`offset` )) DIV 300 
+						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV #{level_sent_time} = UNIX_TIMESTAMP(CONVERT_TZ(SUBTIME( dv.time, '0:5:0' ),'+00:00',t.`offset` )) DIV #{level_sent_time} 
 				WHERE
 					d.id = #{item.id}
 					AND d.id_device_type = #{item.id_device_type}
@@ -301,7 +261,7 @@
 				<foreach collection="weathers" item="v" index="index" separator="union all">
 					SELECT
 						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,
@@ -337,7 +297,7 @@
 				<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
 					SELECT
 						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,
@@ -373,7 +333,7 @@
 				<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
 					SELECT
 						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						0 AS power,
 						0 AS energy,
 						IFNULL(dv.nvm_irradiance, 0) AS irradiance,
@@ -410,7 +370,7 @@
 				
 					SELECT
 						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i:00') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,

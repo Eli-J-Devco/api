@@ -24,6 +24,7 @@ public class VirtualDeviceEntity {
 	private String display_timezone;
 	private String virtual_device_type;
 	private int data_send_time;
+	private int level_sent_time = 5; // 5 minutes ~ 300, 15 minutes ~ 900, 1 hour
 	private List devices;
 	private String name;
 	private String start_date;
@@ -50,9 +51,50 @@ public class VirtualDeviceEntity {
 	private List sensorAmbientTemp;
 	private List weatherPOA;
 	
+	private String ids_device_poa = null;
+	private String ids_device_rpoa = null;
+	private String ids_device_panel_temp = null;
+	private String ids_device_ambient_temp = null;
+	
+	private List ids;
 	
 	
-	
+	public List getIds() {
+		return ids;
+	}
+	public void setIds(List ids) {
+		this.ids = ids;
+	}
+	public String getIds_device_poa() {
+		return ids_device_poa;
+	}
+	public void setIds_device_poa(String ids_device_poa) {
+		this.ids_device_poa = ids_device_poa;
+	}
+	public String getIds_device_rpoa() {
+		return ids_device_rpoa;
+	}
+	public void setIds_device_rpoa(String ids_device_rpoa) {
+		this.ids_device_rpoa = ids_device_rpoa;
+	}
+	public String getIds_device_panel_temp() {
+		return ids_device_panel_temp;
+	}
+	public void setIds_device_panel_temp(String ids_device_panel_temp) {
+		this.ids_device_panel_temp = ids_device_panel_temp;
+	}
+	public String getIds_device_ambient_temp() {
+		return ids_device_ambient_temp;
+	}
+	public void setIds_device_ambient_temp(String ids_device_ambient_temp) {
+		this.ids_device_ambient_temp = ids_device_ambient_temp;
+	}
+	public int getLevel_sent_time() {
+		return level_sent_time;
+	}
+	public void setLevel_sent_time(int level_sent_time) {
+		this.level_sent_time = level_sent_time;
+	}
 	public List getWeatherPOA() {
 		return weatherPOA;
 	}
