@@ -128,4 +128,26 @@ public class SiteConfigController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list weather station
+	 * @author Hung.Bui
+	 * @since 2023-07-07
+	 * @return data (status, message, array)
+	 */
+	@PostMapping("/ws-list-config")
+	public Object getWeatherStationListSiteConfig(@RequestBody SitesDevicesEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			SiteConfigService service = new SiteConfigService();
+			List data = service.getWeatherStationListSiteConfig(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e);
+		}
+	}
+	
 }

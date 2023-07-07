@@ -102,6 +102,10 @@ public class SitesDevicesEntity {
 	private String ssh_port;
 	private String job_tablename;
 	private int enable_virtual_device; 
+	private String ids_device_poa;
+	private String ids_device_rpoa;
+	private String ids_device_panel_temp;
+	private String ids_device_ambient_temp;
 	
 	
 	public Double getClip() {
@@ -662,6 +666,30 @@ public class SitesDevicesEntity {
 	}
 	public void setPv_model(int pv_model) {
 		this.pv_model = pv_model;
+	}
+	public String getIds_device_poa() {
+		return ids_device_poa;
+	}
+	public void setIds_device_poa(String ids_device_poa) {
+		this.ids_device_poa = ids_device_poa;
+	}
+	public String getIds_device_rpoa() {
+		return ids_device_rpoa;
+	}
+	public void setIds_device_rpoa(String ids_device_rpoa) {
+		this.ids_device_rpoa = ids_device_rpoa;
+	}
+	public String getIds_device_panel_temp() {
+		return ids_device_panel_temp;
+	}
+	public void setIds_device_panel_temp(String ids_device_panel_temp) {
+		this.ids_device_panel_temp = ids_device_panel_temp;
+	}
+	public String getIds_device_ambient_temp() {
+		return ids_device_ambient_temp;
+	}
+	public void setIds_device_ambient_temp(String ids_device_ambient_temp) {
+		this.ids_device_ambient_temp = ids_device_ambient_temp;
 	}
 	
 	
