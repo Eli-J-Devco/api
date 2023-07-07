@@ -564,7 +564,7 @@
 				WHERE
 					d.id_site = #{id}
 					AND d.id_device_type = 1
-			) AS optimal_radio,
+			) AS optimal_ratio,
 			(
 				SELECT 
 					d.last_value / d.rating_ac_power * 100
@@ -574,7 +574,7 @@
 					d.id_site = #{id}
 					AND d.is_default = 1
 				GROUP BY d.is_default
-			) AS default_optimal_radio,
+			) AS default_optimal_ratio,
 			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
 		FROM
 			device d
@@ -596,7 +596,7 @@
 				WHERE
 					d.id_site = #{id}
 					AND d.id_device_type = 3
-			) AS optimal_radio,
+			) AS optimal_ratio,
 			(
 				SELECT 
 					d.last_value / d.rating_ac_power * 100
@@ -606,7 +606,7 @@
 					d.id_site = #{id}
 					AND d.is_default = 1
 				GROUP BY d.is_default
-			) AS default_optimal_radio,
+			) AS default_optimal_ratio,
 			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
 		FROM
 			device d
