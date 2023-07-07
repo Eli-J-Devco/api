@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -71,27 +73,62 @@ public class VirtualDeviceController extends BaseController {
 
 			for (int i = 0; i < listSites.size(); i++) {
 				VirtualDeviceEntity siteItem = (VirtualDeviceEntity) listSites.get(i);
+				if(siteItem.getData_send_time() == 1) {
+					siteItem.setLevel_sent_time(300);
+				} else if(siteItem.getData_send_time() == 2) {
+					siteItem.setLevel_sent_time(900);
+				} else {
+					siteItem.setLevel_sent_time(300);
+				}
+				
+				
 				
 				// Get list device by virtual device
 				List<?> listDevice = service.getListDevice(siteItem);
-				List<?> listWeather = service.getListDeviceWeather(siteItem);
-				
-				List<?> listSensorAT = service.getListDeviceSensorAmbientTemp(siteItem);
-				
-//				
-				
-				
-				siteItem.setReverse_poa(1);
-				List<?> listRPOA = service.getListDeviceWeather(siteItem);
-				
-				
-				List<?> listPOA = service.getListDevicePoa(siteItem);
-				
 				siteItem.setDevices(listDevice);
-				siteItem.setWeathers(listWeather);
-				siteItem.setWeatherRPOA(listRPOA);
-				siteItem.setSensorAmbientTemp(listSensorAT);
-				siteItem.setWeatherPOA(listPOA);
+				
+				// get panel_temp
+				String listIdsPenelTemp = siteItem.getIds_device_panel_temp();
+				if(listIdsPenelTemp != null) {
+					List<String> idsPenelTemp = new ArrayList<String>(Arrays.asList(listIdsPenelTemp.split(",")));
+					siteItem.setIds(idsPenelTemp);
+					List<?> listWeather = service.getListDeviceWeather(siteItem);
+					siteItem.setWeathers(listWeather);
+				}
+				
+				
+				
+				// get ambient temp
+				String listIdsAmbientTemp = siteItem.getIds_device_panel_temp();
+				if(listIdsAmbientTemp != null) {
+					List<String> idsAmbientTemp = new ArrayList<String>(Arrays.asList(listIdsAmbientTemp.split(",")));
+					siteItem.setIds(idsAmbientTemp);
+					List<?> listSensorAT = service.getListDeviceWeather(siteItem);
+					siteItem.setSensorAmbientTemp(listSensorAT);
+				}
+				
+				
+				
+				
+				String listIdsRPOA = siteItem.getIds_device_panel_temp();
+				if(listIdsRPOA != null) {
+					List<String> idsRPOA = new ArrayList<String>(Arrays.asList(listIdsRPOA.split(",")));
+					siteItem.setIds(idsRPOA);
+					List<?> listRPOA = service.getListDeviceWeather(siteItem);
+					siteItem.setWeatherRPOA(listRPOA);
+					
+				}
+				
+				
+				
+				String listIdsPOA = siteItem.getIds_device_poa();
+				if(listIdsPOA != null) {
+					List<String> idsPOA = new ArrayList<String>(Arrays.asList(listIdsPOA.split(",")));
+					siteItem.setIds(idsPOA);
+					List<?> listPOA = service.getListDeviceWeather(siteItem);
+					siteItem.setWeatherPOA(listPOA);
+				}
+				
 				
 				
 				if(listDevice.size() > 0) {

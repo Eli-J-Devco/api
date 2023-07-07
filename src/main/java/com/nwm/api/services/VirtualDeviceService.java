@@ -8,7 +8,6 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelVirtualMeterOrInverterEntity;
 import com.nwm.api.entities.VirtualDeviceEntity;
@@ -87,39 +86,21 @@ public class VirtualDeviceService extends DB {
 	 * @since 2023-06-27
 	 */
 	
-	public List getListDevicePoa(VirtualDeviceEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("VirtualDevice.getListDevicePoa", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		
-		return dataList;
-	}
+//	public List getListDevicePoa(VirtualDeviceEntity obj) {
+//		List dataList = new ArrayList();
+//		try {
+//			dataList = queryForList("VirtualDevice.getListDevicePoa", obj);
+//			if (dataList == null)
+//				return new ArrayList();
+//		} catch (Exception ex) {
+//			return new ArrayList();
+//		}
+//		
+//		return dataList;
+//	}
 	
 	
 	
-	/**
-	 * @description get list device sensor for virtual device.
-	 * @author long.pham
-	 * @since 2023-06-27
-	 */
-	
-	public List getListDeviceSensorAmbientTemp(VirtualDeviceEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("VirtualDevice.getListDeviceSensorAmbientTemp", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		
-		return dataList;
-	}
 	
 	
 	/**

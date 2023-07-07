@@ -109,6 +109,24 @@ public class SiteConfigService extends DB {
 		}
 		return dataList;
 	}
+		
+	/**
+	 * @description Get list weather station
+	 * @author Hung.Bui
+	 * @since 2023-07-07
+	 */
+	
+	public List getWeatherStationListSiteConfig(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("SiteConfig.getWeatherStationListSiteConfig", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 
 	/**
 	 * @description get total site config
