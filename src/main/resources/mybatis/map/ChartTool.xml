@@ -390,7 +390,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -1170,7 +1170,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -1948,7 +1948,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -2727,7 +2727,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -3505,7 +3505,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -4282,7 +4282,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
@@ -5063,7 +5063,7 @@
 				    
 				    <when test="datatablename == 'model_imtsolar_class8000'">
 				      ROUND(AVG(iv.irradiance * 0.1), 2) AS irradiance,
-				      ROUND(AVG(iv.tcell * 0.1 - 25), 2) AS tcell,
+				      ROUND(AVG(iv.tcell), 2) AS tcell,
 				    </when>
 				    
 				    
