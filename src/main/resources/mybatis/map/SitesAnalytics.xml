@@ -942,7 +942,7 @@
 				
 				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance * 0.1 )), 2), 0.001) AS irradiance,
 				
-		      	IFNULL(ROUND(AVG(dv.tcell * 0.1 - 25), 2), 0.001) AS tcell,
+		      	IFNULL(ROUND(AVG(dv.tcell), 2), 0.001) AS tcell,
 			</if>
 			<if test="(datatablename == 'model_advanced_energy_solaron') || (datatablename == 'ViewModelAdvancedEnergySolaron')">
 				  IFNULL(ROUND(AVG(dv.today_kwh), 2), 0.001) AS today_kwh,

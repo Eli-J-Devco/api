@@ -289,7 +289,7 @@
 		SELECT
 			<if test="datatablename == 'model_imtsolar_class8000'">
     			ROUND((u.irradiance * 0.1), 2) AS irradiance,
-		        ROUND((u.tcell * 0.1 - 25), 2) AS tcell,
+		      ROUND(u.tcell, 2) AS tcell,
     		</if>
 			u.*,
 			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( u.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication
