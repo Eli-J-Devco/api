@@ -1436,6 +1436,14 @@ public class CustomerViewService extends DB {
 						headerDate.setNvm_irradiance(0.001);
 						categories.add(headerDate);
 					}
+
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+					}
 					
 					List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
 					List dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
@@ -1505,6 +1513,14 @@ public class CustomerViewService extends DB {
 					Date endDateYTD = dateFormatYTD.parse(obj.getEnd_date() + " PM");
 					Calendar calEndYTD = Calendar.getInstance();
 					calEndYTD.setTime(endDateYTD);
+
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+					}					
 					
 					switch (obj.getData_send_time()) {
 						case 4:
@@ -1743,6 +1759,14 @@ public class CustomerViewService extends DB {
 					Date endDate12 = dateFormat12.parse(obj.getEnd_date() + " PM");
 					Calendar calEnd12 = Calendar.getInstance();
 					calEnd12.setTime(endDate12);
+
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+					}
 					
 					switch (obj.getData_send_time()) {
 						case 4:
@@ -1974,6 +1998,14 @@ public class CustomerViewService extends DB {
 					Date endDateLT = dateFormatLT.parse(obj.getEnd_date() + " PM");
 					Calendar calEndLT = Calendar.getInstance();
 					calEndLT.setTime(endDateLT);
+
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+					}
 					
 					YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
 			        YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
