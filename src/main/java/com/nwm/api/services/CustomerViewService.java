@@ -528,6 +528,14 @@ public class CustomerViewService extends DB {
 					Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
 					Calendar calEndCustom = Calendar.getInstance();
 					calEndCustom.setTime(endDateCustom);
+
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+					}
 					
 					switch (obj.getData_send_time()) {
 						case 4: {
