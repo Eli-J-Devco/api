@@ -11,6 +11,7 @@ package com.nwm.api.utils;
  */
 public class Constants {
 	public static final String privateKey="private_key";
+	public static final String domainCronJob="domain_cronjob_api";
 	
 	public static final String FTPSGServer="ftpSG.server";
 	public static final String FTPSGUser="ftpSG.user";

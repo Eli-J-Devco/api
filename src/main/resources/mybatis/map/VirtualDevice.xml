@@ -54,7 +54,8 @@
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0
-			AND d.`status` = 1 AND d.is_delete = 0
+			AND d.`status` = 1 
+			AND d.is_delete = 0
 			AND d.virtual_device_type IS NOT NULL
 			AND d.virtual_device_type != ''
 			<if test="id_site != null and id_site != 0">
@@ -123,32 +124,8 @@
 			ROUND(( SUM( t.energy ) ), 2 ) AS nvmActiveEnergy,
 			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
 			ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
-			
-			
-			<!--IF(
-				IFNULL(#{dc_capacity} * (AVG(t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 0) <![CDATA[<]]> #{ac_capacity},
-				ROUND(#{dc_capacity} * (AVG(dv.t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 2), #{ac_capacity}
-			) AS expected_power, -->
-			
-			<!-- CASE
-			    WHEN #{pv_model} = 2 THEN 
-			    IF(
-					IFNULL(#{dc_capacity} * (AVG(t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 0) <![CDATA[<]]> #{ac_capacity},
-					ROUND(#{dc_capacity} * (AVG(dv.t.irradiance) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(t.temperature))) * 0.98, 2), #{ac_capacity}
-				)
-				
-			    WHEN #{pv_model} = 3 THEN 
-			    2
-			    ELSE 1
-			    
-			END AS expected_power_ac, -->
-			
-			
-
 			0 AS expected_power_dc,
 			
-			
-								
 			<if test="pv_model == 1">
 				IF(
 					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100), 0) <![CDATA[<]]> #{ac_capacity},
