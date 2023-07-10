@@ -97,7 +97,7 @@ public class SiteConfigController extends BaseController {
 	public Object updatePVModelSetting(@Valid @RequestBody SitesDevicesEntity obj) throws ParseException {
 		String domainCronJob = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.domainCronJob);
 		String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
-		int total_day = 90;
+		int total_day = 10;
 		String url = domainCronJob + "/api-server/virtual-device/render-data?token=" + privateKey + "&id_site="+ obj.getId();
 		try {
 			SiteConfigService service = new SiteConfigService();
