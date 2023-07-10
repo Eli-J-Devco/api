@@ -133,12 +133,16 @@
 					#{ac_capacity}
 				) AS expected_power_ac,
 				
+				
 				ROUND(
 				IF(
 					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100), 0) <![CDATA[<]]> #{ac_capacity},
 					#{dc_capacity} * (SUM( t.irradiance )/ #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (#{stc_temperature} - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100,
 					#{ac_capacity}
 				)
+				
+				
+				
 				<choose>
 					<when test="data_send_time == 1">
 						* 5 / 60
@@ -334,7 +338,7 @@
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,
-						IFNULL(dv.nvm_temperature, 0) AS temperature,
+						IFNULL(AVG(dv.nvm_temperature), 0) AS temperature,
 						0 AS rpoa,
 						0 AS ambient_temp,
 						0 AS calculation_poa,
