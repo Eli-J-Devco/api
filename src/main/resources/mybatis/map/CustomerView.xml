@@ -1224,7 +1224,7 @@
 				ELSE DATE_FORMAT( sdr.time, '%b. %Y' )
 			END AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
 						IF(
@@ -1248,7 +1248,7 @@
 				<otherwise>
 					IFNULL(mm.expected_power_ac, 0.001)
 				</otherwise>
-			</choose> * 24 AS expected_power,
+			</choose> * 24, 1) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
@@ -1563,7 +1563,7 @@
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			<choose>
+			ROUND(<choose>
 				<when test="pv_model == 1">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
 						IF(
@@ -1587,7 +1587,7 @@
 				<otherwise>
 					IFNULL(mm.expected_power_ac, 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)) AS expected_power,
+			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
