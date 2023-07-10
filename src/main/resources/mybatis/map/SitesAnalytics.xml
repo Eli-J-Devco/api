@@ -940,7 +940,7 @@
 			</if>
 			<if test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
 				
-				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance * 0.1 )), 2), 0.001) AS irradiance,
+				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance)), 2), 0.001) AS irradiance,
 				
 		      	IFNULL(ROUND(AVG(dv.tcell), 2), 0.001) AS tcell,
 			</if>
@@ -1732,7 +1732,7 @@
 						IFNULL(
 							ROUND(
 								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 									s.ac_capacity
 								),
@@ -1744,7 +1744,7 @@
 						IFNULL(
 							ROUND(
 								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 									s.ac_capacity
 								),
@@ -1764,7 +1764,7 @@
 						IFNULL(
 							ROUND(
 								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
 									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 									s.ac_capacity
 								),
@@ -1776,7 +1776,7 @@
 						IFNULL(
 							ROUND(
 								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
 									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 									s.ac_capacity
 								),
