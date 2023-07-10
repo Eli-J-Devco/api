@@ -338,7 +338,7 @@
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,
-						IFNULL(AVG(dv.nvm_temperature), 0) AS temperature,
+						IF(IFNULL(dv.nvm_temperature, 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_temperature), 0), 0) AS temperature,
 						0 AS rpoa,
 						0 AS ambient_temp,
 						0 AS calculation_poa,
@@ -375,7 +375,8 @@
 						0 AS energy,
 						0 AS irradiance,
 						0 AS temperature,
-						IFNULL(dv.nvm_irradiance, 0) AS rpoa,
+						IF(IFNULL(AVG(dv.nvm_irradiance), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS rpoa,
+						
 						0 AS ambient_temp,
 						0 AS calculation_poa,
 						0 AS calculation_temp,
@@ -409,7 +410,8 @@
 						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						0 AS power,
 						0 AS energy,
-						IFNULL(dv.nvm_irradiance, 0) AS irradiance,
+						IF(IFNULL(AVG(dv.nvm_irradiance), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS irradiance,
+						
 						0 AS temperature,
 						0 AS rpoa,
 						0 AS ambient_temp,
