@@ -529,12 +529,10 @@ public class CustomerViewService extends DB {
 					Calendar calEndCustom = Calendar.getInstance();
 					calEndCustom.setTime(endDateCustom);
 
-					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+					if (obj.getRead_data_all() == "all_data") {
+						obj.setDatatablename("model_virtual_meter_or_inverter");
+					} else {
+						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 					}
 					
 					switch (obj.getData_send_time()) {
@@ -1445,13 +1443,13 @@ public class CustomerViewService extends DB {
 						categories.add(headerDate);
 					}
 
-					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+					
+					if (obj.getRead_data_all() == "all_data") {
+						obj.setDatatablename("model_virtual_meter_or_inverter");
+					} else {
+						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 					}
+					
 					
 					List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
 					List dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
@@ -1522,13 +1520,11 @@ public class CustomerViewService extends DB {
 					Calendar calEndYTD = Calendar.getInstance();
 					calEndYTD.setTime(endDateYTD);
 
-					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
-					}					
+					if (obj.getRead_data_all() == "all_data") {
+						obj.setDatatablename("model_virtual_meter_or_inverter");
+					} else {
+						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+					}				
 					
 					switch (obj.getData_send_time()) {
 						case 4:
@@ -1768,12 +1764,10 @@ public class CustomerViewService extends DB {
 					Calendar calEnd12 = Calendar.getInstance();
 					calEnd12.setTime(endDate12);
 
-					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+					if (obj.getRead_data_all() == "all_data") {
+						obj.setDatatablename("model_virtual_meter_or_inverter");
+					} else {
+						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 					}
 					
 					switch (obj.getData_send_time()) {
@@ -2007,12 +2001,10 @@ public class CustomerViewService extends DB {
 					Calendar calEndLT = Calendar.getInstance();
 					calEndLT.setTime(endDateLT);
 
-					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+					if (obj.getRead_data_all() == "all_data") {
+						obj.setDatatablename("model_virtual_meter_or_inverter");
+					} else {
+						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 					}
 					
 					YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
@@ -2649,6 +2641,12 @@ public class CustomerViewService extends DB {
 						Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
 						Calendar calEndCustom = Calendar.getInstance();
 						calEndCustom.setTime(endDateCustom);
+
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
 						
 						switch (obj.getData_send_time()) {
 							case 4: {
@@ -3400,61 +3398,128 @@ public class CustomerViewService extends DB {
 						case "this_week":
 						case "last_week":
 								Map<String, Object> deviceItem5 = new HashMap<>();
-								obj.setGroupMeter(dataListInverter);
-								List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
-								if (dataPower5.size() > 0) {
-									deviceItem5.put("data_energy", dataPower5);
-									deviceItem5.put("type", "energy");
-									deviceItem5.put("devicename", "Energy output");
-									deviceItem5.put("deviceType", "inverter");
-									dataEnergy.add(deviceItem5);
+								if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 								}
 								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem5 = new HashMap<>();
-										Map<String, Object> deviceExpectedEnergyItem5 = new HashMap<>();
+								List dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
+								if (dataList.size() > 0) {
+									Map<String, Object> energyItem = new HashMap<>();
+									Map<String, Object> irradianceItem = new HashMap<>();
+									Map<String, Object> expectedEnergyItem = new HashMap<>();
+									List energyList = new ArrayList<>();
+									List irradianceList = new ArrayList<>();
+									List expectedEnergyList = new ArrayList<>();
+									
+									for (int i = 0; i < dataList.size(); i++) {
+										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
+										Map<String, Object> energyListItem = new HashMap<>();
+										Map<String, Object> expectedEnergyListItem = new HashMap<>();
+										Map<String, Object> irradianceListItem = new HashMap<>();
 										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = new ArrayList<>();
-										switch (obj.getData_send_time()) {
-											case 1:
-												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-												break;
-											case 2:
-												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-												break;
-											case 3:
-												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-												break;
-											case 4: 
-												dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-												break;
-										}
+										energyListItem.put("time", dataListItem.get("time"));
+										energyListItem.put("download_time", dataListItem.get("download_time"));
+										energyListItem.put("time_format", dataListItem.get("time_format"));
+										energyListItem.put("time_full", dataListItem.get("time_full"));
+										energyListItem.put("categories_time", dataListItem.get("categories_time"));
+										energyListItem.put("chart_energy_kwh", dataListItem.get("nvmActiveEnergy"));
+										energyList.add(energyListItem);
 
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Energy
-											deviceExpectedEnergyItem5.put("data_energy", dataIrradianceDevice);
-											deviceExpectedEnergyItem5.put("type", "expected_energy");
-											deviceExpectedEnergyItem5.put("devicename", "Expected Energy");
-											dataEnergy.add(deviceExpectedEnergyItem5);
-											
-											// Get Irradiance
-											deviceIrrItem5.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem5.put("type", "irradiance");
-											deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem5);
-										}
+										expectedEnergyListItem.put("time", dataListItem.get("time"));
+										expectedEnergyListItem.put("download_time", dataListItem.get("download_time"));
+										expectedEnergyListItem.put("time_format", dataListItem.get("time_format"));
+										expectedEnergyListItem.put("time_full", dataListItem.get("time_full"));
+										expectedEnergyListItem.put("categories_time", dataListItem.get("categories_time"));
+										expectedEnergyListItem.put("expected_energy", dataListItem.get("expected_energy"));
+										expectedEnergyList.add(expectedEnergyListItem);
+
+										irradianceListItem.put("time", dataListItem.get("time"));
+										irradianceListItem.put("download_time", dataListItem.get("download_time"));
+										irradianceListItem.put("time_format", dataListItem.get("time_format"));
+										irradianceListItem.put("time_full", dataListItem.get("time_full"));
+										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
+										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
+										irradianceList.add(irradianceListItem);
+									}
+									
+									energyItem.put("data_energy", energyList);
+									energyItem.put("type", "energy");
+									energyItem.put("devicename", "Energy output");
+									energyItem.put("deviceType", "meter");
+									dataEnergy.add(energyItem);
+									
+									if (dataListDeviceIrr.size() > 0) {
+										expectedEnergyItem.put("data_energy", expectedEnergyList);
+										expectedEnergyItem.put("type", "expected_energy");
+										expectedEnergyItem.put("devicename", "Expected Energy");
+										dataEnergy.add(expectedEnergyItem);
+										
+										irradianceItem.put("data_energy", irradianceList);
+										irradianceItem.put("type", "irradiance");
+										irradianceItem.put("devicename", "Irradiance");
+										dataEnergy.add(irradianceItem);
 									}
 								}
+							} else {
+									obj.setGroupMeter(dataListInverter);
+									List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
+									if (dataPower5.size() > 0) {
+										deviceItem5.put("data_energy", dataPower5);
+										deviceItem5.put("type", "energy");
+										deviceItem5.put("devicename", "Energy output");
+										deviceItem5.put("deviceType", "inverter");
+										dataEnergy.add(deviceItem5);
+									}
+									
+									// Get Irradiance
+									
+									if (dataListDeviceIrr.size() > 0) {
+										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
+											Map<String, Object> deviceIrrItem5 = new HashMap<>();
+											Map<String, Object> deviceExpectedEnergyItem5 = new HashMap<>();
+											
+											List dataListAIrrDevice = new ArrayList<>();
+											
+											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											dataListAIrrDevice.add(item);
+											
+											obj.setGroupMeter(dataListAIrrDevice);
+											
+											List dataIrradianceDevice = new ArrayList<>();
+											switch (obj.getData_send_time()) {
+												case 1:
+													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+													break;
+												case 2:
+													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
+													break;
+												case 3:
+													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
+													break;
+												case 4: 
+													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
+													break;
+											}
+
+											if(dataIrradianceDevice.size() > 0 ) {
+												// Get Expected Energy
+												deviceExpectedEnergyItem5.put("data_energy", dataIrradianceDevice);
+												deviceExpectedEnergyItem5.put("type", "expected_energy");
+												deviceExpectedEnergyItem5.put("devicename", "Expected Energy");
+												dataEnergy.add(deviceExpectedEnergyItem5);
+												
+												// Get Irradiance
+												deviceIrrItem5.put("data_energy", dataIrradianceDevice);
+												deviceIrrItem5.put("type", "irradiance");
+												deviceIrrItem5.put("devicename", dataListDeviceIrr.get(i));
+												dataEnergy.add(deviceIrrItem5);
+											}
+										}
+									}
+								}							
 							break;
 						case "last_month":
 						case "this_month":
@@ -3486,6 +3551,12 @@ public class CustomerViewService extends DB {
 								headerDate.setExpected_power(0.001);
 								headerDate.setNvm_irradiance(0.001);
 								categories.add(headerDate);
+							}
+
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
@@ -3556,6 +3627,12 @@ public class CustomerViewService extends DB {
 							Date endDateYTD = dateFormatYTD.parse(obj.getEnd_date() + " PM");
 							Calendar calEndYTD = Calendar.getInstance();
 							calEndYTD.setTime(endDateYTD);
+
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
 							
 							switch (obj.getData_send_time()) {
 								case 4:
@@ -3788,7 +3865,13 @@ public class CustomerViewService extends DB {
 							
 							Date startDate12 = dateFormat12.parse(obj.getStart_date() + " AM");
 							Calendar cal12 = Calendar.getInstance();
-							cal12.setTime(startDate12);					
+							cal12.setTime(startDate12);
+
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}					
 							
 							Date endDate12 = dateFormat12.parse(obj.getEnd_date() + " PM");
 							Calendar calEnd12 = Calendar.getInstance();
@@ -4020,6 +4103,12 @@ public class CustomerViewService extends DB {
 							Date endDateLT = dateFormatLT.parse(obj.getEnd_date() + " PM");
 							Calendar calEndLT = Calendar.getInstance();
 							calEndLT.setTime(endDateLT);
+
+							if (obj.getRead_data_all() == "all_data") {
+								obj.setDatatablename("model_virtual_meter_or_inverter");
+							} else {
+								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+							}
 							
 							YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
 									YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
