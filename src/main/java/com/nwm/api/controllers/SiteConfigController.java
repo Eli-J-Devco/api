@@ -126,7 +126,8 @@ public class SiteConfigController extends BaseController {
 					date2 = simpleDateFormat.parse(endDate);
 					long getDiff = date2.getTime() - date1.getTime();
 					long getDaysDiff = getDiff / (24 * 60 * 60 * 1000);
-					total_day = Integer.parseInt(String.valueOf(getDaysDiff));
+//					total_day = Integer.parseInt(String.valueOf(getDaysDiff));
+					total_day = 10;
 					String commandUpdate = "curl -X GET " + url + "&total_day=" + total_day;
 					Runtime.getRuntime().exec(commandUpdate);
 				}
