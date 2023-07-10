@@ -452,6 +452,7 @@
 						0 AS temperature,
 						0 AS rpoa,
 						IFNULL(dv.nvm_temperature, 0) AS ambient_temp,
+						
 						0 AS calculation_poa,
 						0 AS calculation_temp,
 						0 AS calculation_clipping
