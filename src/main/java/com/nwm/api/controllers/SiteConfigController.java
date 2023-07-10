@@ -128,8 +128,8 @@ public class SiteConfigController extends BaseController {
 					long getDaysDiff = getDiff / (24 * 60 * 60 * 1000);
 //					total_day = Integer.parseInt(String.valueOf(getDaysDiff));
 					total_day = 10;
-					String commandUpdate = "curl -X GET " + url + "&total_day=" + total_day;
-					Runtime.getRuntime().exec(commandUpdate);
+//					String commandUpdate = "curl -X GET " + url + "&total_day=" + total_day;
+//					Runtime.getRuntime().exec(commandUpdate);
 				}
 			} catch (Exception e) {
 				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
