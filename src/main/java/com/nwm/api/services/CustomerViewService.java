@@ -1443,16 +1443,20 @@ public class CustomerViewService extends DB {
 						categories.add(headerDate);
 					}
 
-					
-					if (obj.getRead_data_all() == "all_data") {
-						obj.setDatatablename("model_virtual_meter_or_inverter");
+					List dataPowerM = null;
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+						 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 					} else {
-						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						 dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
 					}
 					
 					
 					List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
-					List dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
 					if(dataPowerM.size() > 0 && categories.size() > 0) {
 						for (ClientMonthlyDateEntity item : categories) {
 							boolean flag = false;
