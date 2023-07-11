@@ -99,7 +99,7 @@ public class VirtualDeviceController extends BaseController {
 				
 				
 				// get ambient temp
-				String listIdsAmbientTemp = siteItem.getIds_device_panel_temp();
+				String listIdsAmbientTemp = siteItem.getIds_device_ambient_temp();
 				if(listIdsAmbientTemp != null) {
 					List<String> idsAmbientTemp = new ArrayList<String>(Arrays.asList(listIdsAmbientTemp.split(",")));
 					siteItem.setIds(idsAmbientTemp);
@@ -110,7 +110,7 @@ public class VirtualDeviceController extends BaseController {
 				
 				
 				
-				String listIdsRPOA = siteItem.getIds_device_panel_temp();
+				String listIdsRPOA = siteItem.getIds_device_rpoa();
 				if(listIdsRPOA != null) {
 					List<String> idsRPOA = new ArrayList<String>(Arrays.asList(listIdsRPOA.split(",")));
 					siteItem.setIds(idsRPOA);
