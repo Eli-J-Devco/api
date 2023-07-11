@@ -189,8 +189,6 @@
 				</choose>
 				, 2) AS expected_energy,
 				
-				
-				
 			</if>
 			
 								
@@ -199,22 +197,24 @@
 				(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
 				
 				(
-				((IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc} ) *
-				#{dc_capacity} * 
-				(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - ( ROUND(( SUM( t.temperature ) ), 2 ) + (IF(ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND #{clip}/100 = 0 , ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)/ #{global_solar_irradiance_at_stc}) * 3 ))) * 100/100
+					(ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) / #{global_solar_irradiance_at_stc} ) *
+					#{dc_capacity}  * 
+					(ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2)) * 
+					(#{inverter_efficiency}/100)
 				)
-				, null), 2) AS expected_power_ac,
+				, 0), 2) AS expected_power_ac,
 				
+			
 				
 				ROUND((IF( ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2)  <![CDATA[>=]]> #{min_irradiance_limit} AND 
 				(IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), 
-				
 				(
-				((IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc} ) *
-				#{dc_capacity} * 
-				(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - ( ROUND(( SUM( t.temperature ) ), 2 ) + (IF(ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND #{clip}/100 = 0 , ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)/ #{global_solar_irradiance_at_stc}) * 3 ))) * 100/100
+					(ROUND(IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0), 2) / #{global_solar_irradiance_at_stc} ) *
+					#{dc_capacity}  * 
+					(ROUND(1 - (#{pv_module_temperature_coeff}/100) * (#{t_avg} - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2) <![CDATA[>=]]> #{min_irradiance_limit} AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> (#{ac_capacity} * #{clip}/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * #{bifaciality_factor} )), 2), 0)) / #{global_solar_irradiance_at_stc}) * 3)), 2)) * 
+					(#{inverter_efficiency}/100)
 				)
-				, null)) 
+				, 0)) 
 				
 				<choose>
 					<when test="data_send_time == 1">

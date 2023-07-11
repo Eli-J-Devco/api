@@ -789,9 +789,12 @@ public class UploadFilesController extends BaseController {
 													
 													// irradiance
 													if(!Lib.isBlank(words.get(4))) {
+														Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+														if(irradiance < 0) { irradiance = 0.0; };
+														
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? irradiance : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? irradiance : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
@@ -799,8 +802,9 @@ public class UploadFilesController extends BaseController {
 													}
 													
 													// tcell
+													double temperature = !Lib.isBlank(words.get(5)) ? ((Double.parseDouble(words.get(5)) / 10) - 25) : 0.001;
 													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(5)) ? temperature : null);
 													} else {
 														deviceUpdateE.setField_value2(null);
 													}
