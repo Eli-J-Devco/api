@@ -1524,12 +1524,6 @@ public class CustomerViewService extends DB {
 					Calendar calEndYTD = Calendar.getInstance();
 					calEndYTD.setTime(endDateYTD);
 
-					if (obj.getRead_data_all() == "all_data") {
-						obj.setDatatablename("model_virtual_meter_or_inverter");
-					} else {
-						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-					}				
-					
 					switch (obj.getData_send_time()) {
 						case 4:
 							List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
@@ -1552,7 +1546,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+							List dataPowerMYTD = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
+							} else {
+								dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+							}
+							
 							if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesYTD) {
 									boolean flag = false;
@@ -1623,7 +1628,17 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+							List dataPowerYTD7Day = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerYTD7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
+							} else {
+								dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+							}
 							
 							if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
@@ -1694,7 +1709,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
+							List dataPowerMLT = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonthYear", obj);
+							} else {
+								dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
+							}
+							
 							if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
 									boolean flag = false;
@@ -1768,12 +1794,6 @@ public class CustomerViewService extends DB {
 					Calendar calEnd12 = Calendar.getInstance();
 					calEnd12.setTime(endDate12);
 
-					if (obj.getRead_data_all() == "all_data") {
-						obj.setDatatablename("model_virtual_meter_or_inverter");
-					} else {
-						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-					}
-					
 					switch (obj.getData_send_time()) {
 						case 4:
 							List<ClientMonthlyDateEntity> categories12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
@@ -1796,7 +1816,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+							List dataPowerM12MonthDay = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
+							} else {
+								dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+							}
+							
 							if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories12MonthDay) {
 									boolean flag = false;
@@ -1867,7 +1898,17 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7Day12Month", obj);
+							List dataPower12Month7Day = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPower12Month7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
+							} else {
+								dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+							}
 							
 							if(dataPower12Month7Day.size() > 0 && categories12Month7Day.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories12Month7Day) {
@@ -1940,7 +1981,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew12 = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+							List dataPowerM12 = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerM12 = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
+							} else {
+								dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+							}
+							
 							if(dataPowerM12.size() > 0 && categories12.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories12) {
 									boolean flag = false;
@@ -2005,12 +2057,6 @@ public class CustomerViewService extends DB {
 					Calendar calEndLT = Calendar.getInstance();
 					calEndLT.setTime(endDateLT);
 
-					if (obj.getRead_data_all() == "all_data") {
-						obj.setDatatablename("model_virtual_meter_or_inverter");
-					} else {
-						obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-					}
-					
 					YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
 			        YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
 					switch (obj.getData_send_time()) {
@@ -2035,7 +2081,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+							List dataPowerMLT = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
+							} else {
+								dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+							}
+							
 							if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
 								for (ClientMonthlyDateEntity item : categoriesLT) {
 									boolean flag = false;
@@ -2109,7 +2166,17 @@ public class CustomerViewService extends DB {
 								}
 								
 								List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
+								List dataPowerMLTYear = null;
+								if (obj.getEnable_virtual_device() == 1) {
+									if (obj.getRead_data_all() == "all_data") {
+										obj.setDatatablename("model_virtual_meter_or_inverter");
+									} else {
+										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+									}
+									dataPowerMLTYear = queryForList("CustomerView.getDataVirtualDeviceYearLifetime", obj);
+								} else {
+									dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
+								}
 								
 								if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
 									for (ClientMonthlyDateEntity item : categoriesLTYear) {
@@ -3557,14 +3624,19 @@ public class CustomerViewService extends DB {
 								categories.add(headerDate);
 							}
 
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
+							List dataPowerM = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								 dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
 							if(dataPowerM.size() > 0 && categories.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories) {
 									boolean flag = false;
@@ -3632,12 +3704,6 @@ public class CustomerViewService extends DB {
 							Calendar calEndYTD = Calendar.getInstance();
 							calEndYTD.setTime(endDateYTD);
 
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
-							
 							switch (obj.getData_send_time()) {
 								case 4:
 									List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
@@ -3660,7 +3726,18 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+									List dataPowerMYTD = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
+									} else {
+										dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+									}
+									
 									if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
 										for (ClientMonthlyDateEntity item : categoriesYTD) {
 											boolean flag = false;
@@ -3731,7 +3808,17 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+									List dataPowerYTD7Day = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerYTD7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
+									} else {
+										dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+									}
 									
 									if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
 										for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
@@ -3802,7 +3889,18 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
+									List dataPowerMLT = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonthYear", obj);
+									} else {
+										dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
+									}
+									
 									if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
 										for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
 											boolean flag = false;
@@ -3871,12 +3969,6 @@ public class CustomerViewService extends DB {
 							Calendar cal12 = Calendar.getInstance();
 							cal12.setTime(startDate12);
 
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}					
-							
 							Date endDate12 = dateFormat12.parse(obj.getEnd_date() + " PM");
 							Calendar calEnd12 = Calendar.getInstance();
 							calEnd12.setTime(endDate12);
@@ -3903,7 +3995,18 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+									List dataPowerM12MonthDay = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
+									} else {
+										dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
+									}
+									
 									if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
 										for (ClientMonthlyDateEntity item : categories12MonthDay) {
 											boolean flag = false;
@@ -3974,7 +4077,17 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNew12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7Day12Month", obj);
+									List dataPower12Month7Day = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPower12Month7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
+									} else {
+										dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
+									}
 									
 									if(dataPower12Month7Day.size() > 0 && categories12Month7Day.size() > 0) {
 										for (ClientMonthlyDateEntity item : categories12Month7Day) {
@@ -4043,7 +4156,18 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNew12 = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+									List dataPowerM12 = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerM12 = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
+									} else {
+										dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+									}
+									
 									if(dataPowerM12.size() > 0 && categories12.size() > 0) {
 										for (ClientMonthlyDateEntity item : categories12) {
 											boolean flag = false;
@@ -4108,12 +4232,6 @@ public class CustomerViewService extends DB {
 							Calendar calEndLT = Calendar.getInstance();
 							calEndLT.setTime(endDateLT);
 
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
-							
 							YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
 									YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
 							switch (obj.getData_send_time()) {
@@ -4138,7 +4256,18 @@ public class CustomerViewService extends DB {
 									}
 									
 									List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+									List dataPowerMLT = null;
+									if (obj.getEnable_virtual_device() == 1) {
+										if (obj.getRead_data_all() == "all_data") {
+											obj.setDatatablename("model_virtual_meter_or_inverter");
+										} else {
+											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+										}
+										dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
+									} else {
+										dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
+									}
+									
 									if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
 										for (ClientMonthlyDateEntity item : categoriesLT) {
 											boolean flag = false;
@@ -4212,7 +4341,17 @@ public class CustomerViewService extends DB {
 										}
 										
 										List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-										List dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
+										List dataPowerMLTYear = null;
+										if (obj.getEnable_virtual_device() == 1) {
+											if (obj.getRead_data_all() == "all_data") {
+												obj.setDatatablename("model_virtual_meter_or_inverter");
+											} else {
+												obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+											}
+											dataPowerMLTYear = queryForList("CustomerView.getDataVirtualDeviceYearLifetime", obj);
+										} else {
+											dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
+										}
 										
 										if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
 											for (ClientMonthlyDateEntity item : categoriesLTYear) {
