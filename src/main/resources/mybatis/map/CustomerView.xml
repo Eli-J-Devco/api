@@ -973,62 +973,27 @@
 	<select id="getDataVirtualDeviceThisMonth" resultType="Map" >
 		SELECT
 			s.id,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(AVG(IFNULL(mm.expected_power_ac, 0.001)) * 24, 1) AS expected_energy,
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24, 1), 0.001  ) AS expected_energy
 		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00' ) AS time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_format,
-					AVG( dv.expected_power_ac ) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					time_format
-					) mm ON mm.time = sdr.time
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 3
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
 			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
 			AND s.is_delete = 0
 			AND d.is_delete = 0
-			AND DATE_FORMAT( sdr.time , '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-			GROUP BY sdr.time
+			AND DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) , '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
+		GROUP BY time_format
 	</select>
 	
 	<select id="getDataPowerMeterThisMonth" resultType="Map" >
@@ -1039,39 +1004,39 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
 							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24, 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
 							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24, 1), 0.001)
 				</when>
 				<otherwise>
-				IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
 							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
 							NULL,
-							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24, 1), 0.001)
 				</otherwise>
-			</choose> * 24, 1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1100,7 +1065,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND DATE_FORMAT( sdr.time , '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-			GROUP BY sdr.time
+		GROUP BY sdr.time
 	</select>
 	
 	<select id="getDataPowerMeterDayCustom" resultType="Map" >
@@ -1752,32 +1717,39 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24, 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24, 1), 0.001)
 				</when>
 				<otherwise>
-					IFNULL(mm.expected_power_ac, 0.001)
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+						),
+						NULL
+					)) * 24, 1), 0.001)
 				</otherwise>
-			</choose> * 24, 1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1789,27 +1761,6 @@
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-
-			LEFT JOIN (
-				SELECT
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00' ) AS time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_format,
-					ROUND(AVG( dv.expected_power_ac ), 1) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					time_format
-					) mm ON mm.time = sdr.time
-			
 			LEFT JOIN (
 				SELECT de.id_site, COUNT(de.id) AS totalMeter 
 				FROM site_data_report sd
@@ -1827,45 +1778,76 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%d/%Y' )
-		
+		GROUP BY time_format
+	</select>
+	
+	<select id="getDataVirtualDeviceDayYear" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24, 1), 0.001  ) AS expected_energy
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY time_format
 	</select>
 	
 	<select id="getDataPowerMeter7DayYear" resultType="Map" >
 		SELECT
 			s.id,
-			sdr.time,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
 			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * 7, 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * 7, 1), 0.001)
 				</when>
 				<otherwise>
-					IFNULL(mm.expected_power_ac, 0.001)
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+						),
+						NULL
+					)) * 24 * 7, 1), 0.001)
 				</otherwise>
-			</choose> * 24 * 7, 1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1877,25 +1859,6 @@
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					dv.time,
-					ROUND(AVG( dv.expected_power_ac ), 1) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					FLOOR(DATEDIFF(dv.time,  #{start_date}) / 7)
-					) mm ON mm.time = sdr.time
-			
 			LEFT JOIN (
 				SELECT de.id_site, COUNT(de.id) AS totalMeter 
 				FROM site_data_report sd
@@ -1913,47 +1876,77 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY time
-		
+		GROUP BY time_format
+	</select>
+	
+	<select id="getDataVirtualDevice7DayYear" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
+			FLOOR(DATEDIFF( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}) / 7) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * 7, 1), 0.001  ) AS expected_energy
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY time_format
 	</select>
 	
 	
 	<select id="getDataPowerMeterMonthYear" resultType="Map" >
 		SELECT
 			s.id,
-			sdr.time,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</when>
 				<otherwise>
-					IFNULL(mm.expected_power_ac, 0.001)
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+						),
+						NULL
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -1965,25 +1958,6 @@
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					dv.time,
-					ROUND(AVG( dv.expected_power_ac ), 1) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					DATE_FORMAT( dv.time, '%m/%Y' )
-					) mm ON mm.time = sdr.time
-			
 			LEFT JOIN (
 				SELECT de.id_site, COUNT(de.id) AS totalMeter 
 				FROM site_data_report sd
@@ -2001,10 +1975,34 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-		
+		GROUP BY time_format
 	</select>
 	
+	<select id="getDataVirtualDeviceMonthYear" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( dv.time, '+00:00', t.`offset` ))), 1), 0.001  ) AS expected_energy
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY time_format
+	</select>
 	
 	<select id="getDataPowerMeterMonth12Month" resultType="Map" >
 		SELECT
@@ -2015,32 +2013,39 @@
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</when>
 				<otherwise>
-					IFNULL(mm.expected_power_ac, 0.001)
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
+						IF(
+							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+							NULL,
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+						),
+						NULL
+					)) * 24 * DAYOFMONTH(LAST_DAY(sdr.time)), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFMONTH(LAST_DAY(sdr.time)),1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2052,25 +2057,6 @@
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					dv.time,
-					ROUND(AVG( dv.expected_power_ac ), 1) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					DATE_FORMAT( dv.time, '%m/%Y' )
-					) mm ON mm.time = sdr.time
-			
 			LEFT JOIN (
 				SELECT de.id_site, COUNT(de.id) AS totalMeter 
 				FROM site_data_report sd
@@ -2088,97 +2074,34 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%m/%Y' )
-			ORDER BY sdr.time
+		GROUP BY time_format
 	</select>
 	
-	<select id="getDataPowerMeter7Day12Month" resultType="Map" >
+	<select id="getDataVirtualDeviceMonth12Month" resultType="Map" >
 		SELECT
 			s.id,
-			sdr.time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-			FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
-				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
-						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
-							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-							s.ac_capacity
-						),
-						NULL
-					)), 1), 0.001)
-				</when>
-				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
-						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
-							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-							s.ac_capacity
-						),
-						NULL
-					)), 1), 0.001)
-				</when>
-				<otherwise>
-					IFNULL(mm.expected_power_ac, 0.001)
-				</otherwise>
-			</choose> * 24 * 7, 1) AS expected_energy,
-			CASE
-				WHEN mt.totalMeter > 0 THEN "meter"
-				ELSE "inverter"
-			END AS deviceType,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( dv.time, '+00:00', t.`offset` ))), 1), 0.001  ) AS expected_energy
 		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					dv.time,
-					ROUND(AVG( dv.expected_power_ac ), 1) AS expected_power_ac
-				FROM
-					${datatablename} dv
-					LEFT JOIN device d ON d.id = dv.id_device
-					LEFT JOIN site s ON s.id = d.id_site 
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.id = #{id_site}
-					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					GROUP BY
-					FLOOR(DATEDIFF(dv.time,  #{start_date}) / 7)
-					) mm ON mm.time = sdr.time
-			
-			LEFT JOIN (
-				SELECT de.id_site, COUNT(de.id) AS totalMeter 
-				FROM site_data_report sd
-				LEFT JOIN device de ON de.id = sd.id_device
-				WHERE de.`status` = 1 
-				AND de.is_delete = 0
-				AND de.id_device_type = 4
-				AND SHA1( de.id_site ) = #{id_site}
-			)mt ON mt.id_site = s.id
-			
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
 			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
 			AND s.is_delete = 0
 			AND d.is_delete = 0
-			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7)
-			ORDER BY time
+			AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY time_format
 	</select>
-	
-	
 	
 	<select id="getDataPowerMeterYearLifetime" resultType="Map" >
 		SELECT
@@ -2188,39 +2111,39 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
-			ROUND(<choose>
+			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance,
+			<choose>
 				<when test="pv_model == 1">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')), 1), 0.001)
 				</when>
 				<when test="pv_model == 2">
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) <![CDATA[<]]> s.ac_capacity,
+							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
 							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 							s.ac_capacity
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')), 1), 0.001)
 				</when>
 				<otherwise>
-					IFNULL(ROUND(AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0,
+					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
 						IF(
 							s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
 							NULL,
-							sdr.POAAVG/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 						),
 						NULL
-					)), 1), 0.001)
+					)) * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')), 1), 0.001)
 				</otherwise>
-			</choose> * 24 * DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31')), 1) AS expected_energy,
+			</choose> AS expected_energy,
 			CASE
 				WHEN mt.totalMeter > 0 THEN "meter"
 				ELSE "inverter"
@@ -2250,7 +2173,7 @@
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY DATE_FORMAT( sdr.time, '%Y' )
+		GROUP BY time_format
 		<!-- SELECT
 			t.time,
 			t.time_format,
@@ -2303,6 +2226,31 @@
 			t.time_format -->
 	</select>
 	
+	<select id="getDataVirtualDeviceYearLifetime" resultType="Map" >
+		SELECT
+			s.id,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
+			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
+			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * DAYOFYEAR(DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-12-31')), 1), 0.001  ) AS expected_energy
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id_site = #{id_site}
+			AND d.id_device_type = 12
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY time_format
+	</select>
 	
 	<select id="getListDeviceTypeIrradiance" resultType="Map">
 		SELECT
@@ -2376,7 +2324,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2454,7 +2402,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2527,7 +2475,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2605,7 +2553,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2679,7 +2627,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2752,7 +2700,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2830,7 +2778,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
@@ -2907,7 +2855,7 @@
 									IF(
 										s.t_avg IS NULL OR NOT (AVG(dv.nvm_irradiance) >= s.min_irradiance_limit),
 										NULL,
-										AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * s.dc_capacity * (1 - IFNULL(s.pv_module_temperature_coeff, -0.43)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 96)/100
+										s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 									)
 								</otherwise>
 							</choose> AS expected_power
