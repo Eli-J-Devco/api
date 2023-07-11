@@ -1727,66 +1727,12 @@
 			
 			<!-- Expected Power calculation field -->
 			<if test="id_device_type == 12">
-				CASE
-					WHEN s.pv_model = 1 THEN
-						IFNULL(
-							ROUND(
-								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
-								2
-							),
-							0.001
-						)
-					WHEN s.pv_model = 2 THEN
-						IFNULL(
-							ROUND(
-								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
-								2
-							),
-							0.001
-						)
-					ELSE
-						IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001)
-				END AS expected_power,
+				IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001) AS expected_power,
 			</if>
 			
 			<!-- Expected Energy calculation field -->
 			<if test="id_device_type == 12">
-				CASE
-					WHEN s.pv_model = 1 THEN
-						IFNULL(
-							ROUND(
-								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
-								2
-							),
-							0.001
-						)
-					WHEN s.pv_model = 2 THEN
-						IFNULL(
-							ROUND(
-								IF(
-									IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
-								2
-							),
-							0.001
-						)
-					ELSE
-						IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001)
-				END
+				IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001)
 				<choose>
 					<when test="data_send_time == 1">
 						* 5 / 60
