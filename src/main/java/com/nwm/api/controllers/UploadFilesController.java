@@ -793,8 +793,8 @@ public class UploadFilesController extends BaseController {
 														if(irradiance < 0) { irradiance = 0.0; };
 														
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? irradiance : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? irradiance : null);
+														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? irradiance * 0.1 : null);
+														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? irradiance * 0.1 : null);
 													} else {
 														deviceUpdateE.setLast_updated(null);
 														deviceUpdateE.setLast_value(null);
