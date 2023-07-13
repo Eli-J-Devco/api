@@ -822,7 +822,7 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
+					System.out.println("Generate Report: " + dateFormat.format(cal.getTime()));
 					// inverter 
 					for (int i = 0; i < dataListInverter.size(); i++) {
 						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
