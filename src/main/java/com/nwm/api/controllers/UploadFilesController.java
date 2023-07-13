@@ -1505,7 +1505,7 @@ public class UploadFilesController extends BaseController {
 
 													// PanelTemperature
 													if(!Lib.isBlank(words.get(9))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? ((Double.parseDouble(words.get(9)) * 0.1)) : null);
 													} else {
 														deviceUpdateE.setField_value2(null);
 													}
