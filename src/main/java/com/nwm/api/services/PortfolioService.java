@@ -80,6 +80,11 @@ public class PortfolioService extends DB {
 					siteItem.put("meters", meterList);
 				}
 				
+				if (Integer.parseInt((String) siteItem.get("enable_virtual_device")) == 1) {
+					double expected_power = (double) queryForObject("Portfolio.getExpectedPowerByVirtualDevice", siteItem);
+					siteItem.put("expected_power", expected_power);
+				}
+				
 				// Get weather API
 				newData.add(siteItem);
 			}

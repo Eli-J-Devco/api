@@ -95,6 +95,7 @@
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
 			ROUND(t.expected_power,2) AS expected_power,
+			IF(v.enable_virtual_device > 0 ,"1","0") AS enable_virtual_device,
 			(
 				SELECT 
 					d.id
@@ -111,6 +112,18 @@
 			site s
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM device d 
+				WHERE d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY d.id_site
+			)v ON v.id_site = s.id
 			
 			
 			LEFT JOIN (
@@ -120,7 +133,7 @@
 						WHEN d.datatablename = 'model_adam4017ws_class8110_nelis190'  THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_lufft_class8020' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_lufft_ws501_umb_weather' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename = 'model_imtsolar_class8000' THEN ROUND( SUM(d.last_value) * 0.01, 2)
+						WHEN d.datatablename = 'model_imtsolar_class8000' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_hukseflux_sr30d1_deviceclass_v0' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_imtsolar_tmodul_class8006' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_w_kipp_zonen_rt1' THEN ROUND( SUM(d.last_value), 2)
@@ -129,52 +142,26 @@
 						WHEN d.datatablename = 'model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
 						ELSE "N/A"
 				 	END AS irradiance,
-				 	
-				 	(CASE
-				 		WHEN s.pv_model = 1
-				 		THEN CASE 
-			 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' 
-			 				THEN IF(
-									IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 )) * 0.98,
-									s.ac_capacity
-								)
-							WHEN d.datatablename = 'model_imtsolar_class8000'
-							THEN IF(
-									IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2) / 10 - 25)) * 0.98,
-									s.ac_capacity
-								)
-							ELSE IF(
-								IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-								s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (25 - AVG(d.field_value2))) * 0.98,
+				 	CASE
+				 		WHEN s.pv_model = 1 THEN
+							IF(
+								IFNULL(s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 								s.ac_capacity
 							)
-							END
-								
-							WHEN s.pv_model != 1
-				 			THEN CASE 
-				 				WHEN d.datatablename = 'model_w_kipp_zonen_rt1' 
-				 				THEN IF(
-										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 )) * 0.98,
-										s.ac_capacity
-									)
-								WHEN d.datatablename = 'model_imtsolar_class8000'
-								THEN IF(
-										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 - 25)) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2) / 10 - 25)) * 0.98,
-										s.ac_capacity
-									)
-								ELSE IF(
-										IFNULL(s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2))) * 0.98, 0) <![CDATA[<]]> s.ac_capacity,
-										s.dc_capacity * (AVG(d.last_value) / 1000) * (1 - (-0.43/100/100) * (s.t_avg_nrel - AVG(d.field_value2))) * 0.98,
-										s.ac_capacity
-									)
-								END
-						
-						END) AS expected_power
-						
+						WHEN s.pv_model = 2 THEN
+							IF(
+								IFNULL(s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+								s.ac_capacity
+							)
+						ELSE
+							IF(
+								s.t_avg IS NULL OR NOT (AVG(d.last_value) >= s.min_irradiance_limit),
+								NULL,
+								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(d.field_value2) + AVG(d.last_value)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+							)
+					END AS expected_power
 				FROM
 					site s
 					LEFT JOIN device d ON d.id_site = s.id 
@@ -414,6 +401,10 @@
 	                s.PerformanceRatioYesterday ${order_by}
 	            </when>
 	            
+	            <when test="sort_column == 'PerformanceIndexNow'">
+	               IF( ivt.activePower IS NULL, m.activePower, ivt.activePower) / t.expected_power ${order_by}
+	            </when>
+	            
 	       		<when test="sort_column == 'total_error'">
 	                total_error ${order_by}
 	            </when>
@@ -613,6 +604,20 @@
 		WHERE
 			d.id_site = #{id}
 			AND d.id_device_type = 3
+	</select>
+	
+	<select id="getExpectedPowerByVirtualDevice" resultType="double">
+		SELECT v.expected_power_ac
+		FROM
+			model_virtual_meter_or_inverter v
+			LEFT JOIN device d ON d.id = v.id_device
+		WHERE
+			d.id_site = #{id}
+			AND d.id_device_type = 12
+			AND d.status = 1
+			AND d.is_delete = 0
+		ORDER BY v.time DESC
+		LIMIT 1
 	</select>
 	
 	<update id="updateNote">
