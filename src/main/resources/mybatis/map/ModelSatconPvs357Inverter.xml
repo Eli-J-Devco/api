@@ -1438,19 +1438,6 @@
 	</insert>
 
 
-	<select id="getLastRow"
-		resultType="com.nwm.api.entities.ModelSatconPvs357InverterEntity"
-		parameterType="com.nwm.api.entities.ModelSatconPvs357InverterEntity">
-		SELECT
-		dv.*
-		FROM
-		model_satcon_pvs357_inverter dv
-		WHERE
-		dv.id_device = #{id_device}
-		ORDER BY
-		dv.time DESC
-		LIMIT 1
-	</select>
 	
 	
 	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
