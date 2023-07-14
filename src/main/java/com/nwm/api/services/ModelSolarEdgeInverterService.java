@@ -107,6 +107,14 @@ public class ModelSolarEdgeInverterService extends DB {
 	
 	public boolean insertModelSolarEdgeInverter(ModelSolarEdgeInverterEntity obj) {
 		try {
+			ModelSolarEdgeInverterEntity dataObj = (ModelSolarEdgeInverterEntity) queryForObject("ModelSolarEdgeInverter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelSolarEdgeInverter.insertModelSolarEdgeInverter", obj);
 		        if(insertId == null ) {
 		        	return false;

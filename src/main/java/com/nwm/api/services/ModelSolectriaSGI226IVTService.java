@@ -73,6 +73,14 @@ public class ModelSolectriaSGI226IVTService extends DB {
 	
 	public boolean insertModelSolectriaSGI226IVT(ModelSolectriaSGI226IVTEntity obj) {
 		try {
+			ModelSolectriaSGI226IVTEntity dataObj = (ModelSolectriaSGI226IVTEntity) queryForObject("ModelSolectriaSGI226IVT.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);
 		        if(insertId == null ) {
 		        	return false;

@@ -85,6 +85,14 @@ public class ModelVerisIndustriesE51c2PowerMeterEntity {
 	private double CurrentPhaseC;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	private double MeasuredProduction;
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
 	public String getTime() {
 		return time;
 	}

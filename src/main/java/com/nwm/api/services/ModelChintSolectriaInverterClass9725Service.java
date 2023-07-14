@@ -18,7 +18,6 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
@@ -125,6 +124,14 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 	public boolean insertModelChintSolectriaInverterClass9725(ModelChintSolectriaInverterClass9725Entity obj) {
 		try {
+			ModelChintSolectriaInverterClass9725Entity dataObj = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			Object insertId = insert("ModelChintSolectriaInverterClass9725.insertModelChintSolectriaInverterClass9725",
 					obj);
 			if (insertId == null) {

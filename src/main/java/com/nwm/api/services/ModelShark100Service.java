@@ -190,6 +190,14 @@ public class ModelShark100Service extends DB {
 	
 	public boolean insertModelShark100(ModelShark100Entity obj) {
 		try {
+			 ModelShark100Entity dataObj = (ModelShark100Entity) queryForObject("ModelShark100.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelShark100.insertModelShark100", obj);
 		        if(insertId == null ) {
 		        	return false;

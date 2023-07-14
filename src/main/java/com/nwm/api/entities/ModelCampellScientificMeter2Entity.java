@@ -16,6 +16,19 @@ public class ModelCampellScientificMeter2Entity {
 	private double nvmActiveEnergy;
 	private double Total_Energy;
 	
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
+	
 	public double getTotal_Energy() {
 		return Total_Energy;
 	}

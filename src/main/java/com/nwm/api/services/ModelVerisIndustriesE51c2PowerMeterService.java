@@ -11,8 +11,6 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.utils.Lib;
 
@@ -137,6 +135,14 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 	
 	public boolean insertModelVerisIndustriesE51c2PowerMeter(ModelVerisIndustriesE51c2PowerMeterEntity obj) {
 		try {
+			ModelVerisIndustriesE51c2PowerMeterEntity dataObj = (ModelVerisIndustriesE51c2PowerMeterEntity) queryForObject("ModelVerisIndustriesE51c2PowerMeter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);
 		        if(insertId == null ) {
 		        	return false;

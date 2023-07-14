@@ -106,6 +106,7 @@
 		<result property="R_ISO" column="R_ISO" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -407,6 +408,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy`,
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -704,6 +708,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
@@ -999,6 +1006,9 @@
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
 			</if>
 		</trim>
 		

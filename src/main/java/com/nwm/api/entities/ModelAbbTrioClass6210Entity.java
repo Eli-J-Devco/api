@@ -42,6 +42,18 @@ public class ModelAbbTrioClass6210Entity {
 	private int totalStatesByte3;
 	private int totalStatesByte4;
 	
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	
 	
 	public int getTotalStatesByte0() {

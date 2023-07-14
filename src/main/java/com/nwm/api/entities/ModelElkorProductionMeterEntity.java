@@ -93,6 +93,19 @@ public class ModelElkorProductionMeterEntity {
 	private double Q4ReactiveEnergyC;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	/**
 	 * @return the time
 	 */

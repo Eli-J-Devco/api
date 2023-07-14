@@ -20,6 +20,14 @@ public class ModelSmaClusterControllerService extends DB {
 	
 	public boolean insertModelSmaClusterController(ModelSmaClusterControllerEntity obj) {
 		try {
+			ModelSmaClusterControllerEntity dataObj = (ModelSmaClusterControllerEntity) queryForObject("ModelSmaClusterController.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelSmaClusterController.insertModelSmaClusterController", obj);
 		        if(insertId == null ) {
 		        	return false;

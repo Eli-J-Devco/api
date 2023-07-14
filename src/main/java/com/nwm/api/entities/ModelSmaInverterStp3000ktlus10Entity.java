@@ -48,6 +48,17 @@ public class ModelSmaInverterStp3000ktlus10Entity {
 	private double TotWhOut_Pv = 0.001;
 	private double nvmActivePower = 0.001;
 	private double nvmActiveEnergy = 0.001;
+	private double MeasuredProduction = 0.001;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
 	
 	public String getTime() {
 		return time;

@@ -56,6 +56,18 @@ public class ModelAdvancedEnergySolaronEntity {
 	private int totalWarning;
 	private int totalStatus;
 	
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	
 	
 	

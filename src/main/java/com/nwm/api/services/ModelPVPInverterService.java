@@ -83,6 +83,14 @@ public class ModelPVPInverterService extends DB {
 	
 	public boolean insertModelPVPInverter(ModelPVPInverterEntity obj) {
 		try {
+			ModelPVPInverterEntity dataObj = (ModelPVPInverterEntity) queryForObject("ModelPVPInverter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelPVPInverter.insertModelPVPInverter", obj);
 		        if(insertId == null ) {
 		        	return false;

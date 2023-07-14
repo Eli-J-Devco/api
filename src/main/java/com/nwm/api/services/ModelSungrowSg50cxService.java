@@ -20,6 +20,14 @@ public class ModelSungrowSg50cxService extends DB {
 	
 	public boolean insertModelSungrowSg50cx(ModelSungrowSg50cxEntity obj) {
 		try {
+			ModelSungrowSg50cxEntity dataObj = (ModelSungrowSg50cxEntity) queryForObject("ModelSungrowSg50cx.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelSungrowSg50cx.insertModelSungrowSg50cx", obj);
 		        if(insertId == null ) {
 		        	return false;

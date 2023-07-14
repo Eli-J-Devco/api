@@ -71,6 +71,18 @@ public class ModelChintSolectriaInverterClass9725Entity {
 	private int totalFaultCode0;
 	private int totalFaultCode1;
 	private int totalFaultCode2;
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	
 	
 	public int getTotalPermanentFaultCode() {

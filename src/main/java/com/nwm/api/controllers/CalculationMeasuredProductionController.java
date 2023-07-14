@@ -5,8 +5,6 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -19,11 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ModelVirtualMeterOrInverterEntity;
-import com.nwm.api.entities.VirtualDeviceEntity;
 import com.nwm.api.services.CalculationMeasureProductionService;
-import com.nwm.api.services.VirtualDeviceService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
