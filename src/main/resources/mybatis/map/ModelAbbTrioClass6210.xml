@@ -399,4 +399,16 @@
 			)t
   	</select>
   	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAbbTrioClass6210Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelAbbTrioClass6210 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+  	
 </mapper> 

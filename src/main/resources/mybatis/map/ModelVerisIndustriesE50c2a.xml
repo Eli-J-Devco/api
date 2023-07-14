@@ -527,6 +527,19 @@
 
 	</insert>
 	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelVerisIndustriesE50c2aEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelVerisIndustriesE50c2a dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
   
   
   </mapper>

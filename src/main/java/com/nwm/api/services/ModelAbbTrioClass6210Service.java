@@ -91,9 +91,13 @@ public class ModelAbbTrioClass6210Service extends DB {
 		try {
 			ModelAbbTrioClass6210Entity dataObj = (ModelAbbTrioClass6210Entity) queryForObject("ModelAbbTrioClass6210.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
 			 }
 			 obj.setMeasuredProduction(measuredProduction);
 			 

@@ -1279,7 +1279,7 @@
 		SELECT
 			* 
 		FROM
-			model_shark100 dv 
+			ViewModelShark100 dv 
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY

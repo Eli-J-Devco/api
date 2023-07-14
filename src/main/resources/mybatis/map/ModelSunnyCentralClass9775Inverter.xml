@@ -389,5 +389,18 @@
 		</trim>
 	</insert>
 	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelSunnyCentralClass9775Inverter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
 
 </mapper> 

@@ -1551,5 +1551,18 @@
 			)t
   	</select>
   	
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSatconPvs357InverterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelSatconPvs357Inverter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+  	
 
 </mapper> 

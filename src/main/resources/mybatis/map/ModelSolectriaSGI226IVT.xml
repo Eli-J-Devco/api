@@ -252,5 +252,18 @@
 			</if>
 		</trim>
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSolectriaSGI226IVTEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelSolectriaSgi226ivt dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

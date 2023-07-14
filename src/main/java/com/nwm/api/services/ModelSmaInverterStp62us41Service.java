@@ -22,9 +22,13 @@ public class ModelSmaInverterStp62us41Service extends DB {
 		try {
 			ModelSmaInverterStp62us41Entity dataObj = (ModelSmaInverterStp62us41Entity) queryForObject("ModelSmaInverterStp62us41.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
 			 }
 			 obj.setMeasuredProduction(measuredProduction);
 			 

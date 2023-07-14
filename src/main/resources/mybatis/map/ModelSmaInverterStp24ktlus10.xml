@@ -374,5 +374,18 @@
 		
 		
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelSmaInverterStp24ktlus10 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

@@ -327,5 +327,18 @@
 			LIMIT 4 
 			)t
   	</select> 
+  	
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelXantrexGT100250500Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelXantrexGt100250500 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

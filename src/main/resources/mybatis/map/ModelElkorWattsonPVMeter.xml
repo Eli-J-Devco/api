@@ -418,5 +418,17 @@
 		</trim>
 
 	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelElkorWattsonPVMeterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelElkorWattsonPvMeter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 
