@@ -103,9 +103,16 @@ public class DeviceEntity {
 	private String ssh_last_connect;
 	private int hidden = 0;
 	private String virtual_device_type = null;
+	private String ip_address;
 	
 	
 	
+	public String getIp_address() {
+		return ip_address;
+	}
+	public void setIp_address(String ip_address) {
+		this.ip_address = ip_address;
+	}
 	public String getVirtual_device_type() {
 		return virtual_device_type;
 	}
