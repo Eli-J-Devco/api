@@ -228,10 +228,10 @@
 			LEFT JOIN (
 				SELECT *
 				FROM account_status
-				WHERE (id_employee, CONVERT_TZ(last_login,offset_timezone, "+00:00")) IN (
+				WHERE (id_employee, id) IN (
 					SELECT 
 						id_employee,
-						MAX(CONVERT_TZ(last_login,offset_timezone, "+00:00")) AS last_login
+						MAX(id) AS id
 					FROM account_status
 					GROUP BY id_employee
 				)
