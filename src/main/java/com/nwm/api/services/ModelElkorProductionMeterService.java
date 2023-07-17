@@ -148,6 +148,18 @@ public class ModelElkorProductionMeterService extends DB {
 	
 	public boolean insertModelElkorProductionMeter(ModelElkorProductionMeterEntity obj) {
 		try {
+			ModelElkorProductionMeterEntity dataObj = (ModelElkorProductionMeterEntity) queryForObject("ModelElkorProductionMeter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelElkorProductionMeter.insertModelElkorProductionMeter", obj);
 		        if(insertId == null ) {
 		        	return false;

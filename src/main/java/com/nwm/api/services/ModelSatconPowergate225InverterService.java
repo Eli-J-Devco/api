@@ -17,7 +17,6 @@ import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSatconPowergate225InverterEntity;
-import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.LibErrorCode;
 
@@ -95,6 +94,18 @@ public class ModelSatconPowergate225InverterService extends DB {
 
 	public boolean insertModelSatconPowergate225Inverter(ModelSatconPowergate225InverterEntity obj) {
 		try {
+			ModelSatconPowergate225InverterEntity dataObj = (ModelSatconPowergate225InverterEntity) queryForObject("ModelSatconPowergate225Inverter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			Object insertId = insert("ModelSatconPowergate225Inverter.insertModelSatconPowergate225Inverter", obj);
 			if (insertId == null) {
 				return false;

@@ -123,10 +123,22 @@ public class ModelIVTSolaronEXTService extends DB {
 	
 	public boolean insertModelIVTSolaronEXT(ModelIVTSolaronEXTEntity obj) {
 		try {
-//		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
-//	        if(insertId == null ) {
-//	        	return false;
-//	        }
+			ModelIVTSolaronEXTEntity dataObj = (ModelIVTSolaronEXTEntity) queryForObject("ModelIVTSolaronEXT.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
+		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
 //	        
 	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);

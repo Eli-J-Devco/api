@@ -107,6 +107,18 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 	public boolean insertModelAdvancedEnergySolaron(ModelAdvancedEnergySolaronEntity obj) {
 		try {
+			ModelAdvancedEnergySolaronEntity dataObj = (ModelAdvancedEnergySolaronEntity) queryForObject("ModelAdvancedEnergySolaron.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			Object insertId = insert("ModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron", obj);
 			if (insertId == null) {
 				return false;

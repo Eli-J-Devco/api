@@ -14,6 +14,7 @@
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="Total_Energy" column="Total_Energy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -50,6 +51,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -82,6 +86,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
@@ -111,7 +118,23 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelCampellScientificMeter3Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelCampellScientificMeter3 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

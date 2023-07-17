@@ -101,6 +101,18 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 	
 	public boolean insertModelVerisIndustriesE50c2a(ModelVerisIndustriesE50c2aEntity obj) {
 		try {
+			ModelVerisIndustriesE50c2aEntity dataObj = (ModelVerisIndustriesE50c2aEntity) queryForObject("ModelVerisIndustriesE50c2a.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelVerisIndustriesE50c2a.insertModelVerisIndustriesE50c2a", obj);
 		        if(insertId == null ) {
 		        	return false;

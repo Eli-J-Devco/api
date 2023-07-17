@@ -96,6 +96,18 @@ public class ModelElkorWattsonPVMeterService extends DB {
 	
 	public boolean insertModelElkorWattsonPVMeter(ModelElkorWattsonPVMeterEntity obj) {
 		try {
+			ModelElkorWattsonPVMeterEntity dataObj = (ModelElkorWattsonPVMeterEntity) queryForObject("ModelElkorWattsonPVMeter.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelElkorWattsonPVMeter.insertModelElkorWattsonPVMeter", obj);
 		        if(insertId == null ) {
 		        	return false;

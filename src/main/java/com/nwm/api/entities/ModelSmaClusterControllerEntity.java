@@ -42,6 +42,18 @@ public class ModelSmaClusterControllerEntity {
 	private double Env_ExInsol;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	public String getTime() {
 		return time;
 	}

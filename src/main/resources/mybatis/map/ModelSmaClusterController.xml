@@ -43,6 +43,7 @@
 		<result property="Env_ExInsol" column="Env_ExInsol" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -159,6 +160,10 @@
 			`nvmActiveEnergy`,
 			</if>
 			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -270,6 +275,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
@@ -380,10 +388,26 @@
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
 		
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaClusterControllerEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelSmaClusterController dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

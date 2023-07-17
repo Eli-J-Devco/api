@@ -189,6 +189,18 @@ public class ModelAE1000NXClass9644Service extends DB {
 	
 	public boolean insertModelAE1000NXClass9644(ModelAE1000NXClass9644Entity obj) {
 		try {
+			ModelAE1000NXClass9644Entity dataObj = (ModelAE1000NXClass9644Entity) queryForObject("ModelAE1000NXClass9644.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			 Object insertId = insert("ModelAE1000NXClass9644.insertModelAE1000NXClass9644", obj);
 		        if(insertId == null ) {
 		        	return false;

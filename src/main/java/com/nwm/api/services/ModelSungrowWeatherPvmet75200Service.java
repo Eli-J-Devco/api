@@ -7,7 +7,6 @@ package com.nwm.api.services;
 
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.ModelSungrowUmg604Entity;
 import com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity;
 
 public class ModelSungrowWeatherPvmet75200Service extends DB {
@@ -21,6 +20,7 @@ public class ModelSungrowWeatherPvmet75200Service extends DB {
 	
 	public boolean insertModelSungrowWeatherPvmet75200(ModelSungrowWeatherPvmet75200Entity obj) {
 		try {
+			
 			 Object insertId = insert("ModelSungrowWeatherPvmet75200.insertModelSungrowWeatherPvmet75200", obj);
 		        if(insertId == null ) {
 		        	return false;

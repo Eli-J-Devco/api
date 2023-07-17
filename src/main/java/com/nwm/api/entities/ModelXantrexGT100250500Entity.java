@@ -32,9 +32,16 @@ public class ModelXantrexGT100250500Entity {
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private int totalFaultCode;
+	private double MeasuredProduction;
 	
 	
 	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
 	public int getTotalFaultCode() {
 		return totalFaultCode;
 	}

@@ -90,6 +90,19 @@ public class ModelXantrexGT100250500Service extends DB {
 
 	public boolean insertModelXantrexGT100250500(ModelXantrexGT100250500Entity obj) {
 		try {
+			ModelXantrexGT100250500Entity dataObj = (ModelXantrexGT100250500Entity) queryForObject("ModelXantrexGT100250500.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			Object insertId = insert("ModelXantrexGT100250500.insertModelXantrexGT100250500", obj);
 			if (insertId == null) {
 				return false;

@@ -71,6 +71,18 @@ public class ModelPVPowered3550260500kwInverterEntity {
 	private int totalSystemWarnings;
 	private int totalPVMStatusCodes;
 	
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	
 	
 	
 	

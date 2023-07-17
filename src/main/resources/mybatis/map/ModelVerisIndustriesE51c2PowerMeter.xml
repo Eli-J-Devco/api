@@ -135,6 +135,7 @@
 		<result property="CurrentPhaseC" column="CurrentPhaseC" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -379,6 +380,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 		</trim>
 
 
@@ -619,6 +623,9 @@
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
 			</if>
 		</trim>
 
@@ -897,8 +904,24 @@
 			<if test="nvmActiveEnergy != 0.001">
 				nvmActiveEnergy = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelVerisIndustriesE51c2PowerMeter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

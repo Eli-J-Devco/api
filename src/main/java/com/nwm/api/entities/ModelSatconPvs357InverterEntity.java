@@ -151,6 +151,17 @@ public class ModelSatconPvs357InverterEntity {
 	private int totalFaultWord5;
 	private int totalFaultWord6;
 	private int totalFaultWord7;
+	private double MeasuredProduction;
+	
+	
+	
+	
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
 	
 	
 	

@@ -41,6 +41,7 @@
 		<result property="Operation_Evt_Dsc" column="Operation_Evt_Dsc" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -151,6 +152,10 @@
 			`nvmActiveEnergy`,
 			</if>
 			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -253,6 +258,9 @@
 			</if>
 			<if test="nvmActiveEnergy != 0.001">
 			#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
 			</if>
 		</trim>
 		
@@ -358,10 +366,26 @@
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
 		
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelSmaInverterStp24ktlus10 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

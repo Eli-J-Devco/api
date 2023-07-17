@@ -37,6 +37,7 @@
 			column="IslolationResistance" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -131,6 +132,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy`,
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -221,6 +225,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
@@ -309,6 +316,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
@@ -388,5 +398,17 @@
 			LIMIT 4 
 			)t
   	</select>
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAbbTrioClass6210Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelAbbTrioClass6210 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
   	
 </mapper> 

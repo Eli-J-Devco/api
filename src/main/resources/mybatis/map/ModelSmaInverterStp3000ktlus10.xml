@@ -45,6 +45,7 @@
 	  <result property="TotWhOut_Pv" column="TotWhOut_Pv" />
 	  <result property="nvmActivePower" column="nvmActivePower" />
 	  <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+	  <result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -178,7 +179,9 @@
 			  `nvmActiveEnergy`,
 			  </if>
 			
-			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 			
 		</trim>
 
@@ -307,6 +310,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			  ROUND(#{nvmActiveEnergy}, 2),
 			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 			
 			
 		</trim>
@@ -434,6 +440,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
 			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 			
 			
 			
@@ -442,5 +451,18 @@
 		
 		
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelSmaInverterStp30000tlus10 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
 </mapper> 

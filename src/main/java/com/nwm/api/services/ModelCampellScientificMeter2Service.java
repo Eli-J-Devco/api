@@ -61,6 +61,18 @@ public class ModelCampellScientificMeter2Service extends DB {
 
 	public boolean insertModelCampellScientificMeter2(ModelCampellScientificMeter2Entity obj) {
 		try {
+			ModelCampellScientificMeter2Entity dataObj = (ModelCampellScientificMeter2Entity) queryForObject("ModelCampellScientificMeter2.getLastRow", obj);
+			 double measuredProduction = 0;
+			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
+				 if(measuredProduction < 0 ) { measuredProduction = 0;}
+				 
+				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 }
+			 }
+			 obj.setMeasuredProduction(measuredProduction);
+			 
 			Object insertId = insert("ModelCampellScientificMeter2.insertModelCampellScientificMeter2", obj);
 			if (insertId == null) {
 				return false;

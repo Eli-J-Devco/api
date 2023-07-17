@@ -39,6 +39,7 @@
 		<result property="M_AC_E_IMP" column="M_AC_E_IMP" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
 
 	</resultMap>
 
@@ -145,6 +146,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy`,
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
 			
 		</trim>
 
@@ -249,6 +253,9 @@
 			<if test="nvmActiveEnergy != 0.001">
 			#{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
@@ -350,11 +357,27 @@
 			<if test="nvmActiveEnergy != 0.001">
 			`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
 		</trim>
 		
 		
 		
 	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSungrowUmg604Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelSungrowUmg604 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
   	
 </mapper> 
