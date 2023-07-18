@@ -531,11 +531,10 @@
 							n.calculation_temp * 
 							0.25 * 4 * (n.clip / 100) * (n.inverter_efficiency /100) <![CDATA[<]]> m.rating_ac_power,
 							
-							(
-							(n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
+							((n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
 							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
 							n.calculation_temp * 
-							(n.data_interval_factor * (1/n.data_interval_factor)) * 
+							( (n.data_interval_factor/100) * (1/n.data_interval_factor/100)) * 
 							(n.clip / 100) *
 							(n.inverter_efficiency / 100)
 							, m.rating_ac_power )
@@ -556,7 +555,7 @@
 							(n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
 							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
 							n.calculation_temp * 
-							(n.data_interval_factor * (1/n.data_interval_factor)) * 
+							( (n.data_interval_factor/100) * (1/ (n.data_interval_factor/100))) * 
 							(n.clip / 100) *
 							(n.inverter_efficiency / 100)
 							, m.rating_ac_power )
@@ -637,9 +636,10 @@
 												ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2) AS total_poa,
 												ROUND(SUM( t.ambient_temp ), 2 ) AS ambient_temp,
 												
-												IF((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor)) >= t.min_irradiance_limit, (SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor)), 0 ) AS calculation_poa,
-												ROUND(1 - (t.pv_module_temperature_coeff/100) * (t.t_avg - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2) >= t.min_irradiance_limit AND IF( ROUND(( SUM( t.power ) ), 2 ) > ( t.ac_capacity * t.clip/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2), 0)) / t.global_solar_irradiance_at_stc) * 3)), 3) AS calculation_temp,
-												IF( ROUND(( SUM( t.power ) ), 2 ) > ( t.ac_capacity * t.clip/100), 1, 0) AS calculation_clipping 
+												IF((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )) <![CDATA[>=]]> t.min_irradiance_limit, (SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 0 ) AS calculation_poa,
+												
+												ROUND(1 - (t.pv_module_temperature_coeff/100) * (t.t_avg - (ROUND(SUM( t.temperature ), 2 ) + ( (IF( (ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2) <![CDATA[>=]]> t.min_irradiance_limit AND IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> ( t.ac_capacity * t.clip/100), 1, 0) = 0), ROUND((SUM( t.irradiance ) + ( SUM( t.rpoa ) * t.bifaciality_factor )), 2), 0)) / t.global_solar_irradiance_at_stc) * 3)), 3) AS calculation_temp,
+												IF( ROUND(( SUM( t.power ) ), 2 ) <![CDATA[>]]> ( t.ac_capacity * (t.clip/100)), 1, 0) AS calculation_clipping 
 													
 										FROM(
 											<if test="weathers != null and !weathers.isEmpty()">
