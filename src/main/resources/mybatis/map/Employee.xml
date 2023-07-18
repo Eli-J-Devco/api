@@ -256,6 +256,9 @@
 	            <when test="sort_column == 'last_name'">
 	                e.last_name ${order_by}
 	            </when>
+	            <when test="sort_column == 'roles'">
+	                t.group_roles ${order_by}
+	            </when>
 	            <when test="sort_column == 'phone'">
 	                e.phone ${order_by}
 	            </when>
