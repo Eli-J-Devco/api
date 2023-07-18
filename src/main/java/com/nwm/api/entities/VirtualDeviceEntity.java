@@ -25,6 +25,7 @@ public class VirtualDeviceEntity {
 	private String virtual_device_type;
 	private int data_send_time;
 	private int level_sent_time = 5; // 5 minutes ~ 300, 15 minutes ~ 900, 1 hour
+	private int data_inverval; // 5 minutes ~ 5, 15 minutes ~ 15, 1 hour ~ 60
 	private List devices;
 	private String name;
 	private String start_date;
@@ -59,6 +60,13 @@ public class VirtualDeviceEntity {
 	private List ids;
 	
 	
+	
+	public int getData_inverval() {
+		return data_inverval;
+	}
+	public void setData_inverval(int data_inverval) {
+		this.data_inverval = data_inverval;
+	}
 	public List getIds() {
 		return ids;
 	}

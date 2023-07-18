@@ -534,7 +534,7 @@
 							((n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
 							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
 							n.calculation_temp * 
-							( (n.data_interval_factor/100) * (1/n.data_interval_factor/100)) * 
+							( (#{data_inverval}/60) * (1/(#{data_inverval}/60))) * 
 							(n.clip / 100) *
 							(n.inverter_efficiency / 100)
 							, m.rating_ac_power )
@@ -555,11 +555,11 @@
 							(n.number_of_strings * n.modules_per_string) * n.kwp_dc_for_each_solar_module) * 
 							(n.calculation_poa/n.global_solar_irradiance_at_stc) * 
 							n.calculation_temp * 
-							( (n.data_interval_factor/100) * (1/ (n.data_interval_factor/100))) * 
+							( (#{data_inverval}/60) * (1/ (#{data_inverval}/60))) * 
 							(n.clip / 100) *
 							(n.inverter_efficiency / 100)
 							, m.rating_ac_power )
-							, 0) * (n.data_interval_factor / 100)  AS kWhacEstimated
+							, 0) * (#{data_inverval}/60)  AS kWhacEstimated
 							
 						FROM
 							(
