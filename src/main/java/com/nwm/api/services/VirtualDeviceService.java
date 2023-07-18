@@ -114,7 +114,12 @@ public class VirtualDeviceService extends DB {
 	public List getDataPower(VirtualDeviceEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("VirtualDevice.getDataPower", obj);
+			if(obj.getPv_model() == 3) {
+				dataList = queryForList("VirtualDevice.getDataPowerNREL", obj);
+			} else {
+				dataList = queryForList("VirtualDevice.getDataPower", obj);
+			}
+			
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {

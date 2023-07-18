@@ -107,7 +107,38 @@ public class SitesDevicesEntity {
 	private String ids_device_panel_temp;
 	private String ids_device_ambient_temp;
 	
+	private int modules_per_string;
+	private int number_of_strings;
+	private double kwp_dc_for_each_solar_module;
+	private double data_interval_factor;
 	
+	
+	
+	
+	public int getModules_per_string() {
+		return modules_per_string;
+	}
+	public void setModules_per_string(int modules_per_string) {
+		this.modules_per_string = modules_per_string;
+	}
+	public int getNumber_of_strings() {
+		return number_of_strings;
+	}
+	public void setNumber_of_strings(int number_of_strings) {
+		this.number_of_strings = number_of_strings;
+	}
+	public double getKwp_dc_for_each_solar_module() {
+		return kwp_dc_for_each_solar_module;
+	}
+	public void setKwp_dc_for_each_solar_module(double kwp_dc_for_each_solar_module) {
+		this.kwp_dc_for_each_solar_module = kwp_dc_for_each_solar_module;
+	}
+	public double getData_interval_factor() {
+		return data_interval_factor;
+	}
+	public void setData_interval_factor(double data_interval_factor) {
+		this.data_interval_factor = data_interval_factor;
+	}
 	public Double getClip() {
 		return clip;
 	}
