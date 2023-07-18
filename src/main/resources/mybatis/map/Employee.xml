@@ -228,10 +228,10 @@
 			LEFT JOIN (
 				SELECT *
 				FROM account_status
-				WHERE (id_employee, CONVERT_TZ(last_login,offset_timezone, "+00:00")) IN (
+				WHERE (id_employee, id) IN (
 					SELECT 
 						id_employee,
-						MAX(CONVERT_TZ(last_login,offset_timezone, "+00:00")) AS last_login
+						MAX(id) AS id
 					FROM account_status
 					GROUP BY id_employee
 				)
@@ -255,6 +255,9 @@
 	            </when>
 	            <when test="sort_column == 'last_name'">
 	                e.last_name ${order_by}
+	            </when>
+	            <when test="sort_column == 'roles'">
+	                t.group_roles ${order_by}
 	            </when>
 	            <when test="sort_column == 'phone'">
 	                e.phone ${order_by}
