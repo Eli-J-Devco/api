@@ -183,7 +183,7 @@ public class VirtualDeviceController extends BaseController {
 						deviceEntity.setField_value3(null);
 					}
 					
-					service.updateDeviceVirtualDevice(deviceEntity);
+//					service.updateDeviceVirtualDevice(deviceEntity);
 					
 					
 				}

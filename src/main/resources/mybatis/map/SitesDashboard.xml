@@ -70,7 +70,11 @@
 			s.ids_device_rpoa,
 			s.ids_device_panel_temp,
 			s.ids_device_ambient_temp,
-			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device
+			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device,
+			s.modules_per_string,
+			s.number_of_strings,
+			s.kwp_dc_for_each_solar_module,
+			s.data_interval_factor
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

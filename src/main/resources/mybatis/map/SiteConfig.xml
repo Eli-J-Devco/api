@@ -120,7 +120,11 @@
 			ids_device_poa = #{ids_device_poa},
 			ids_device_rpoa = #{ids_device_rpoa},
 			ids_device_panel_temp = #{ids_device_panel_temp},
-			ids_device_ambient_temp = #{ids_device_ambient_temp}
+			ids_device_ambient_temp = #{ids_device_ambient_temp},
+			modules_per_string = #{modules_per_string},
+			number_of_strings = #{number_of_strings},
+			kwp_dc_for_each_solar_module = #{kwp_dc_for_each_solar_module},
+			data_interval_factor = #{data_interval_factor}
 		WHERE
 			`id` = #{id}
 	</update>

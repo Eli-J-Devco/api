@@ -15,7 +15,6 @@ public class ModelVirtualMeterOrInverterEntity {
 	private List data;
 	private double nvm_temperature;
 	private double nvm_irradiance;
-	private double expected_power_dc;
 	private double expected_power_ac;
 	private double expected_energy;
 	private double r_irradiance;
@@ -70,12 +69,7 @@ public class ModelVirtualMeterOrInverterEntity {
 	public void setNvm_irradiance(double nvm_irradiance) {
 		this.nvm_irradiance = nvm_irradiance;
 	}
-	public double getExpected_power_dc() {
-		return expected_power_dc;
-	}
-	public void setExpected_power_dc(double expected_power_dc) {
-		this.expected_power_dc = expected_power_dc;
-	}
+
 	public double getExpected_power_ac() {
 		return expected_power_ac;
 	}
