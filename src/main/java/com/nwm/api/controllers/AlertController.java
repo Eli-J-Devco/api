@@ -20,10 +20,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
+import com.nwm.api.entities.ConfigurationEntity;
+import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.AlertService;
+import com.nwm.api.services.ConfigurationService;
+import com.nwm.api.services.SitesAnalyticsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -473,6 +478,90 @@ public class AlertController extends BaseController {
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get save name alert filter
+	 * @author duy.phan
+	 * @since 2023-07-17
+	 * @param id_employee
+	 * @return data (status, message, object, total_row
+	 */	
+	@PostMapping("/save-alert-filter")
+	public Object insertAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			AlertFilterEntity data = service.saveAlertFilter(obj);
+			if (data != null) {
+				
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, "Please Add a Name for This Alert Filter", null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-alert-filter")
+	public Object getListAlertFilter(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			List data = service.getListAlertFilter(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-alert-filter")
+	public Object deleteAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		AlertService service = new AlertService();
+		try {
+			boolean result = service.deleteAlertFilter(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-all-alert-filter")
+	public Object deleteAllAlertFilter(@Valid @RequestBody AlertFilterEntity obj) {
+		AlertService service = new AlertService();
+		try {
+			boolean result = service.deleteAllAlertFilter(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
 }
