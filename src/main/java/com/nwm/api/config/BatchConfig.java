@@ -116,15 +116,15 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */30 * * * *")
-	public void startBatchJobGetNoProduction() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (!env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
-			job.runCronJobGetNoProduction();
-		}
-	}
+//	@Scheduled(cron = "0 */30 * * * *")
+//	public void startBatchJobGetNoProduction() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (!env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+////			job.runCronJobGetNoProduction();
+//		}
+//	}
 	
 	/**
 	 * @description batch job get alert for device no communication
@@ -133,15 +133,15 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */20 * * * *")
-	public void startBatchJobGetNoCommunication() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (!env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
-			job.runCronJobGetNoCommunication();
-		}
-	}
+//	@Scheduled(cron = "0 */20 * * * *")
+//	public void startBatchJobGetNoCommunication() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (!env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+////			job.runCronJobGetNoCommunication();
+//		}
+//	}
 	
 	
 	/**
@@ -151,11 +151,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */5 * * * *")
-	public void startBatchJobAutoCloseAlertFromDatalogger() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobCloseAlertFromDatalogger();
-	}
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void startBatchJobAutoCloseAlertFromDatalogger() throws Exception {
+//		BatchJob job =new BatchJob(); 
+////		job.runCronJobCloseAlertFromDatalogger();
+//	}
 	
 	
 	/**
@@ -165,11 +165,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */10 * * * *")
-	public void startBatchJobResetLastValue() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobResetLastValue();
-	}
+//	@Scheduled(cron = "0 */10 * * * *")
+//	public void startBatchJobResetLastValue() throws Exception {
+//		BatchJob job =new BatchJob(); 
+////		job.runCronJobResetLastValue();
+//	}
 	
 	
 	/**
@@ -179,11 +179,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */30 * * * *")
-	public void startBatchJobAutoSenmailAlert() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobAutoSentMailAlert();
-	}
+//	@Scheduled(cron = "0 */30 * * * *")
+//	public void startBatchJobAutoSenmailAlert() throws Exception {
+//		BatchJob job =new BatchJob(); 
+////		job.runCronJobAutoSentMailAlert();
+//	}
 	
 	
 	/**

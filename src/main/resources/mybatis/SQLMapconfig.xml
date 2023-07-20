@@ -59,6 +59,8 @@
 		<mapper resource="mybatis/map/CustomerViewTypeG.xml" />
 		<mapper resource="mybatis/map/CustomerViewTypeH.xml" />
 		<mapper resource="mybatis/map/CustomerViewTypeI.xml" />
+		<mapper resource="mybatis/map/CronJobAlert.xml" />
+		
 		
 		
 		<mapper resource="mybatis/map/ModelIMTSolarClass8000.xml" />
