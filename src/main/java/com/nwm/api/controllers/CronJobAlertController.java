@@ -23,7 +23,6 @@ import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.CronJobAlertService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -633,7 +632,7 @@ public class CronJobAlertController extends BaseController {
 	
 	
 	/**
-	 * @description get no communication
+	 * @description get auto sent mail alert
 	 * @author long.pham
 	 * @since 2023-07-20
 	 * @return {}
