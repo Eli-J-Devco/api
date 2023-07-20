@@ -97,6 +97,12 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 				dataModelChint.setFaultCode1(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelChint.setFaultCode2(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
 				
+				// this field can or can't be included in uploaded file
+				try {
+					dataModelChint.setSerialNumber(!Lib.isBlank(words.get(56)) ? words.get(56) : null);
+				} catch (IndexOutOfBoundsException e) {
+					dataModelChint.setSerialNumber(null);
+				}
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelChint.setNvmActivePower(power);

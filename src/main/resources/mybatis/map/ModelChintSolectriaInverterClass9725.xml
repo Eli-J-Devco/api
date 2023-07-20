@@ -69,6 +69,7 @@
 		<result property="FaultCode0" column="FaultCode0" />
 		<result property="FaultCode1" column="FaultCode1" />
 		<result property="FaultCode2" column="FaultCode2" />
+		<result property="SerialNumber" column="SerialNumber" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
@@ -248,6 +249,9 @@
 			</if>
 			<if test="FaultCode2 != 0.001">
 				`FaultCode2`,
+			</if>
+			<if test="SerialNumber != null">
+				`SerialNumber`,
 			</if>
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower`,
@@ -432,6 +436,9 @@
 			<if test="FaultCode2 != 0.001">
 				#{FaultCode2},
 			</if>
+			<if test="SerialNumber != null">
+				#{SerialNumber},
+			</if>
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
 			</if>
@@ -612,6 +619,9 @@
 			</if>
 			<if test="FaultCode2 != 0.001">
 				`FaultCode2` = #{FaultCode2},
+			</if>
+			<if test="SerialNumber != null">
+				`SerialNumber` = #{SerialNumber},
 			</if>
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower` = #{nvmActivePower},
