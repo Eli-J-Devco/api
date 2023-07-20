@@ -16,9 +16,12 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.ChartAlertDateEntity;
+import com.nwm.api.entities.ConfigurationEntity;
 import com.nwm.api.entities.DailyDateEntity;
+import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.ErrorLevelEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
@@ -559,4 +562,74 @@ public class AlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description insert error level
+	 * @author duy.phan
+	 * @since 2023-07-17
+	 */
+	public AlertFilterEntity saveAlertFilter(AlertFilterEntity obj) {
+		try {
+			// Save
+			Object insertId = insert("AlertFilter.saveAlertFilter", obj);
+			if (insertId != null && insertId instanceof Integer) {
+				Object total = queryForObject("AlertFilter.getListCount", obj);
+				if((int)total > 10) {
+					// Delete one row
+					delete("AlertFilter.deleteAlertFilter", obj);
+				}
+				return obj;
+			} else {
+				return null;
+			}
+
+		} catch (Exception ex) {
+			log.error("insert", ex);
+			return null;
+		}
+	}
+	
+	/**
+	 * @description get list favorites by id_site
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @param id_site
+	 */
+	public List getListAlertFilter(AlertFilterEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("AlertFilter.getListAlertFilter", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	 /** @description delete a alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 */
+	public boolean deleteAlertFilter(AlertFilterEntity obj) {
+		try {
+			return delete("AlertFilter.deleteAlertFilterById", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AlertFilter.deleteAlertFilterById", ex);
+			return false;
+		}
+	}
+	
+	/** @description delete all alert filter
+	 * @author duy.phan
+	 * @since 2023-07-19
+	 * @param id
+	 */
+	public boolean deleteAllAlertFilter(AlertFilterEntity obj) {
+		try {
+			return delete("AlertFilter.deleteAllAlertFilterById", obj) > 0;
+		} catch (Exception ex) {
+			log.error("AlertFilter.deleteAllAlertFilterById", ex);
+			return false;
+		}
+	}
 }

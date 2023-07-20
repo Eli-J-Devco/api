@@ -48,6 +48,7 @@
 		<mapper resource="mybatis/map/DeviceType.xml" />
 		<mapper resource="mybatis/map/DeviceParameter.xml" />
 		<mapper resource="mybatis/map/Alert.xml" />
+		<mapper resource="mybatis/map/AlertFilter.xml" />
 		<mapper resource="mybatis/map/CustomerView.xml" />
 		<mapper resource="mybatis/map/CustomerViewTypeA.xml" />
 		<mapper resource="mybatis/map/CustomerViewTypeB.xml" />

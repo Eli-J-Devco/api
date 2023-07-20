@@ -281,6 +281,36 @@
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
 			
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_device_type != null and !id_device_type.isEmpty()">
+				AND d.id_device_type IN  (
+					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			
+			<if test="date_from != null and date_to != null and view_history == 'filter'">
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+			</if>
+			
 			
 			GROUP BY l.id 
 			
@@ -350,17 +380,17 @@
 			WHERE  e.`status` = 1 AND e.is_delete = 0
 			AND l.is_delete = 0 
 			<if test="view_history == 'active'">
-				AND l.status = 1
+				AND l.`status` = 1
 				AND l.resolved = 0
 			</if>
-			<if test="view_history != 'active'">
-				AND l.status = 0
-			</if>
+			
+			<if test="view_history == 'review'">
+				AND l.`status` = 0
+			</if> 
 			
 			<if test="date_from != null and date_to != null and view_history == 'review'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i') 
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
 			</if>
-
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -383,6 +413,36 @@
 			
 			<if test="view_notification == 'active'">
 				AND l.is_notification = 0
+			</if>
+			
+			<if test="id_status != null and !id_status.isEmpty()">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_device_type != null and !id_device_type.isEmpty()">
+				AND d.id_device_type IN  (
+					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			
+			
+			<if test="date_from != null and date_to != null and view_history == 'filter'">
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
 			</if>
 			
   	</select>

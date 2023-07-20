@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AlertFilter">
+	<resultMap id="AlertFilterMap"
+		type="com.nwm.api.entities.AlertFilterEntity">
+		<result property="id" column="id" />
+		<result property="id_employee" column="id_employee" />
+		<result property="name" column="name" />
+		<result property="alert_filter" column="alert_filter" />
+		<result property="created_date" column="created_date" />
+	</resultMap>
+	
+	<insert id="saveAlertFilter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert_filter`(
+			`id_employee`,
+			`name`,
+			`alert_filter`,
+			`is_default`,
+			`created_date`
+		)VALUES(
+			#{id_employee},
+			#{name},
+			#{alert_filter},
+			#{is_default},
+			#{created_date}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.AlertFilterEntity">
+    	SELECT count(*) as totalRow
+		FROM `alert_filter` s WHERE s.id_employee = #{id_employee}
+  	</select>
+  	
+  	<delete id="deleteAlertFilter">
+  		DELETE FROM `alert_filter`
+	 	WHERE id_employee = #{id_employee} ORDER BY id ASC LIMIT 1;
+	</delete>
+	
+	<delete id="deleteAlertFilterById">
+  		DELETE FROM `alert_filter`
+	 	WHERE id = #{id} AND id_employee = #{id_employee} ORDER BY id ASC LIMIT 1;
+	</delete>
+	
+	<delete id="deleteAllAlertFilterById">
+  		DELETE FROM `alert_filter`
+	 	WHERE id_employee = #{id_employee};
+	</delete>
+	
+	<select id="getListAlertFilter" resultType="Map" >
+		SELECT
+			s.id,
+			s.alert_filter,
+			s.is_default,
+			s.name,
+			DATE_FORMAT(s.created_date, "%d/%m/%Y %H:%i %p") AS created_date
+		FROM
+			`alert_filter` s 
+		WHERE s.id_employee = #{id_employee} ORDER BY id DESC
+		 LIMIT 10;
+	</select>
+	
+	
+</mapper>

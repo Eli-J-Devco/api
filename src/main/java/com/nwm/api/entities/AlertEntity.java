@@ -79,9 +79,15 @@ public class AlertEntity {
 	private int is_notification;
 	private String view_notification;
 	private List alerts;
+	private List id_device_type;
 	
 	
-	
+	public List getId_device_type() {
+		return id_device_type;
+	}
+	public void setId_device_type(List id_device_type) {
+		this.id_device_type = id_device_type;
+	}
 	public List getAlerts() {
 		return alerts;
 	}
