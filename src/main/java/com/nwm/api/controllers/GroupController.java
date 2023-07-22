@@ -98,7 +98,7 @@ public class GroupController extends BaseController {
 			if(totalSite > 0) {
 				return this.jsonResult(false, Constants.USING_SUCCESS_MSG, null, 0);
 			}
-			boolean result = service.delete(obj);
+			boolean result = obj.isSubGroup() ? service.deleteSubGroup(obj) : service.delete(obj);
 			if (result) {
 				if (obj.getIs_delete() == 0) {
 					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
@@ -125,7 +125,7 @@ public class GroupController extends BaseController {
 			GroupService service = new GroupService();
 			
 			if (obj.getScreen_mode() == 1) {
-				GroupEntity data = service.insertGroup(obj);
+				GroupEntity data = obj.isSubGroup() ? service.insertSubGroup(obj) : service.insertGroup(obj);
 				if (data != null) {
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 				} else {
@@ -133,7 +133,7 @@ public class GroupController extends BaseController {
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
-					boolean insert = service.updateGroup(obj);
+					boolean insert = obj.isSubGroup() ? service.updateSubGroup(obj) : service.updateGroup(obj);
 					if (insert == true) {
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 					} else {

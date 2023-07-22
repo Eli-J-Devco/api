@@ -41,7 +41,8 @@
 			s.`description`,
 			s.`status`,
 			s.is_delete,
-			s.order_id
+			s.order_id,
+			0 AS is_expand
 		FROM
 			site_group s 
 		WHERE s.is_delete = 0
@@ -70,6 +71,28 @@
 	        </choose>  
 		 	 
 		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getSubGroupByGroup" resultType="Map" >
+		SELECT
+			ssg.id,
+			ssg.id_site_group,
+			ssg.`name`,
+			ssg.`name` AS text,
+			ssg.`description`,
+			ssg.`status`,
+			ssg.is_delete,
+			ssg.order_id
+		FROM
+			site_sub_group ssg
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+		WHERE 
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND ssg.id_site_group = #{id}
+	    ORDER BY ssg.id DESC
 	</select>
 	
   	
@@ -111,6 +134,14 @@
 			`id` = #{id}
 	</update>
 	
+	<update id="deleteSubGroup">
+		UPDATE `site_sub_group`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
 	
 	<insert id="insertGroup" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `site_group`(
@@ -128,8 +159,37 @@
         </selectKey>
 	</insert>
 	
+	<insert id="insertSubGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `site_sub_group`(
+			`name`,
+			`id_site_group`,
+			`description`,
+			`order_id`
+			
+		)VALUES(
+			#{name},
+			#{id},
+			#{description},
+			#{order_id}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
 	<update id="updateGroup">
 		UPDATE `site_group`
+		SET
+			`name` = #{name},
+			`description` = #{description},
+			`order_id` = #{order_id}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateSubGroup">
+		UPDATE `site_sub_group`
 		SET
 			`name` = #{name},
 			`description` = #{description},

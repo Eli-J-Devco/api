@@ -122,6 +122,7 @@
 			em.last_name,
 			sg.name AS site_group,
 			s.id_site_group,
+			s.id_site_sub_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
 			s.unit_wind_speed,
@@ -129,7 +130,8 @@
 			s.street,
 			s.city,
 			s.postal_code,
-			s.state
+			s.state,
+			0 AS is_expand
 			
 		FROM
 			site AS s
@@ -212,6 +214,53 @@
 			 
 	</select>
 	
+	<select id="getSiteGroupByEmployee" resultType="Map" >
+		SELECT
+			sg.id,
+			sg.`name`,
+			sg.order_id,
+			1 AS is_expand
+		FROM
+			site s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+		WHERE
+			s.is_delete = 0
+			AND s.status = 1
+			AND sg.is_delete = 0
+			AND sg.status = 1
+			AND sem.id_employee = #{id_employee}
+		GROUP BY sg.id
+	    ORDER BY sg.order_id ASC
+		 	 
+	</select>
+	
+	<select id="getSubGroupByGroup" resultType="Map" >
+		SELECT
+			ssg.id,
+			ssg.id_site_group,
+			ssg.`name`,
+			ssg.order_id,
+			1 AS is_expand
+		FROM
+			site_sub_group ssg
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS totalSites,
+					id_site_sub_group
+				FROM site
+				GROUP BY id_site_sub_group
+			) t ON t.id_site_sub_group = ssg.id
+		WHERE 
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND ssg.id_site_group = #{id}
+			AND t.totalSites > 0
+	    ORDER BY ssg.id ASC
+	</select>
 	
 	<select id="getListEmployeeManageSite" resultType="Map" >
 		SELECT
@@ -373,6 +422,7 @@
 			`kiosk_view`,
 			`site_logo`,
 			`id_site_group`,
+			`id_site_sub_group`,
 			`timezone_datalogger`,
 			`unit_type_temp`,
 			`unit_wind_speed`,
@@ -412,6 +462,7 @@
 			#{kiosk_view},
 			#{site_logo},
 			#{id_site_group},
+			#{id_site_sub_group},
 			#{timezone_datalogger},
 			#{unit_type_temp},
 			#{unit_wind_speed},
@@ -460,6 +511,7 @@
 			`kiosk_view` = #{kiosk_view},
 			`site_logo` = #{site_logo},
 			`id_site_group` = #{id_site_group},
+			`id_site_sub_group` = #{id_site_sub_group},
 			`timezone_datalogger` = #{timezone_datalogger},
 			`unit_type_temp` = #{unit_type_temp},
 			`unit_wind_speed` = #{unit_wind_speed},
@@ -473,7 +525,7 @@
 			`id` = #{id}
 	</update>
   	
-  	<select id="getList" resultType="Map" >
+  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
@@ -512,6 +564,7 @@
 			s.kiosk_view,
 			s.site_logo,
 			s.id_site_group,
+			s.id_site_sub_group,
 			s.timezone_datalogger,
 			s.unit_type_temp,
 			s.unit_wind_speed,
@@ -534,9 +587,10 @@
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN (
 						SELECT id_site,
-						modified_date
+						MAX(modified_date) AS modified_date
 						FROM auditing_logs
 						GROUP BY id_site
+						
 			) al ON al.id_site = s.id
 			LEFT JOIN (
 						SELECT id_site, 

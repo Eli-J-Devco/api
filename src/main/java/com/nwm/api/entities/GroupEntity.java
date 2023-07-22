@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -30,13 +32,15 @@ public class GroupEntity{
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
-	private int order_id;
+	private Integer order_id;
+	private boolean isSubGroup;
+	private List sub_group_list;
 	
 	
-	public int getOrder_id() {
+	public Integer getOrder_id() {
 		return order_id;
 	}
-	public void setOrder_id(int order_id) {
+	public void setOrder_id(Integer order_id) {
 		this.order_id = order_id;
 	}
 	public int getId() {
@@ -146,6 +150,18 @@ public class GroupEntity{
 	}
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
+	}
+	public boolean isSubGroup() {
+		return isSubGroup;
+	}
+	public void setIsSubGroup(boolean isSubGroup) {
+		this.isSubGroup = isSubGroup;
+	}
+	public List getSub_group_list() {
+		return sub_group_list;
+	}
+	public void setSub_group_list(List sub_group_list) {
+		this.sub_group_list = sub_group_list;
 	}
 	
 	

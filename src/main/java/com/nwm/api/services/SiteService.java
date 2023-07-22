@@ -79,6 +79,31 @@ public class SiteService extends DB {
 		return dataList;
 	}
 	
+	/**
+	 * @description Get all site group by id employee
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 * @param id_employee
+	 */
+	public List getSiteGroupByEmployee(SiteEntity obj) {
+		List dataList = new ArrayList();
+		List newDataList = new ArrayList<>();
+		try {
+			dataList = queryForList("Site.getSiteGroupByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> dataItem = (Map<String, Object>) dataList.get(i);
+				List subGroupList = queryForList("Site.getSubGroupByGroup", dataItem);
+				dataItem.put("sub_group_list", subGroupList);
+				newDataList.add(dataItem);
+			}
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	/**
 	 * @description get list site for page employee manage site

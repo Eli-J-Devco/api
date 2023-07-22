@@ -92,6 +92,26 @@ public class SiteController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get all site group by id_customer
+	 * @author Hung.Bui
+	 * @since 2023-07-21
+	 * @param id_employee
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/site-group-by-employee")
+	public Object getSiteGroupByEmployee(@RequestBody SiteEntity site) {
+		try {
+			SiteService service = new SiteService();
+			List data = service.getSiteGroupByEmployee(site);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description Get list site for page employee manage site

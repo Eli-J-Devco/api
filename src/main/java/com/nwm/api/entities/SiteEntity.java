@@ -38,6 +38,7 @@ public class SiteEntity {
 	private String order_by;
 	private String sort_by;
 	private String address_short;
+	private String address;
 	private double watts_3ph_total;
 	private double sensor1_data;
 	private double w_hours_total;
@@ -88,6 +89,7 @@ public class SiteEntity {
 	private String start_date;
 	private String end_date;
 	private int device_type;
+	private int site_default;
 	private int id_site;
 	private int id_device;
 	private String localization_format;
@@ -124,6 +126,12 @@ public class SiteEntity {
 	private String datatablename;
 	private List groupMeter;
 	private String note;
+	private String customer_name;
+	private String ids_employee;
+	private String company;
+	private String site_group;
+	private String time_zone;
+	private String last_modified;
 	
 	private String weather_icon;
 	private String weather_description;
@@ -150,6 +158,7 @@ public class SiteEntity {
 	private double actualPower;
 	private double nvm_temperature;
 	private int id_site_group;
+	private Integer id_site_sub_group;
 	private int timezone_datalogger;
 	private String read_data_all;
 	private List devices;
@@ -436,6 +445,12 @@ public class SiteEntity {
 	public void setAddress_short(String address_short) {
 		this.address_short = address_short;
 	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
 	public double getWatts_3ph_total() {
 		return watts_3ph_total;
 	}
@@ -706,6 +721,12 @@ public class SiteEntity {
 	public void setDevice_type(int device_type) {
 		this.device_type = device_type;
 	}
+	public int getSite_default() {
+		return site_default;
+	}
+	public void setSite_default(int site_default) {
+		this.site_default = site_default;
+	}
 	public int getId_site() {
 		return id_site;
 	}
@@ -910,6 +931,12 @@ public class SiteEntity {
 	public void setNote(String note) {
 		this.note = note;
 	}
+	public String getCustomer_name() {
+		return customer_name;
+	}
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
+	}
 	public String getWeather_icon() {
 		return weather_icon;
 	}
@@ -1060,6 +1087,12 @@ public class SiteEntity {
 	public void setId_site_group(int id_site_group) {
 		this.id_site_group = id_site_group;
 	}
+	public Integer getId_site_sub_group() {
+		return id_site_sub_group;
+	}
+	public void setId_site_sub_group(Integer id_site_sub_group) {
+		this.id_site_sub_group = id_site_sub_group;
+	}
 	public int getPv_model() {
 		return pv_model;
 	}
@@ -1071,6 +1104,36 @@ public class SiteEntity {
 	}
 	public void setEnable_virtual_device(int enable_virtual_device) {
 		this.enable_virtual_device = enable_virtual_device;
+	}
+	public String getIds_employee() {
+		return ids_employee;
+	}
+	public void setIds_employee(String ids_employee) {
+		this.ids_employee = ids_employee;
+	}
+	public String getCompany() {
+		return company;
+	}
+	public void setCompany(String company) {
+		this.company = company;
+	}
+	public String getSite_group() {
+		return site_group;
+	}
+	public void setSite_group(String site_group) {
+		this.site_group = site_group;
+	}
+	public String getTime_zone() {
+		return time_zone;
+	}
+	public void setTime_zone(String time_zone) {
+		this.time_zone = time_zone;
+	}
+	public String getLast_modified() {
+		return last_modified;
+	}
+	public void setLast_modified(String last_modified) {
+		this.last_modified = last_modified;
 	}
 	
 	
