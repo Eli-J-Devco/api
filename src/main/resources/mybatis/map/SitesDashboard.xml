@@ -207,6 +207,7 @@
 			d.ip_address,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %H:%i %p') AS last_updated,
 			p.totalError,
+			d.hidden,
 			CASE
 				WHEN d.datatablename = 'model_virtual_meter_or_inverter' AND d.field_value_default = 'nvmActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_virtual_meter_or_inverter' AND d.field_value_default = 'nvmActiveEnergy' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kWh" )))
@@ -375,7 +376,7 @@
 			) p ON p.id_device = d.id
 			
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
 			
 		ORDER BY
 	        <choose> 

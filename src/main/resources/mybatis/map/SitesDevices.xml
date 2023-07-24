@@ -28,6 +28,7 @@
 			dt.color AS color,
 			dt.is_color AS is_color,
 			d.ip_address,
+			d.hidden,
 			d.modbusdevicenumber,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
