@@ -379,6 +379,7 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
+			0 AS is_edit,
 			
 			CASE
 			    WHEN DATE_FORMAT( sdr.time, '%m' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00', t.`offset`), '%m') THEN FORMAT( (ROUND( (IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) )) / 1000, 2 ) - ROUND( (IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) )) / 1000, 2 ) * 0.03) , 2) 

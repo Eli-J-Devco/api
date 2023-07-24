@@ -63,6 +63,7 @@ public class ModelChintSolectriaInverterClass9725Entity {
 	private double FaultCode0;
 	private double FaultCode1;
 	private double FaultCode2;
+	private String SerialNumber;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	
@@ -822,6 +823,12 @@ public class ModelChintSolectriaInverterClass9725Entity {
 	 */
 	public void setNvmActiveEnergy(double nvmActiveEnergy) {
 		this.nvmActiveEnergy = nvmActiveEnergy;
+	}
+	public String getSerialNumber() {
+		return SerialNumber;
+	}
+	public void setSerialNumber(String serialNumber) {
+		SerialNumber = serialNumber;
 	}
 	
 	
