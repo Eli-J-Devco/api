@@ -369,5 +369,20 @@ public class EmployeeService extends DB {
 		}
 		return employee;
 	}
+	
+	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 */
+	public boolean updateAlertPerPage(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateAlertPerPage", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateAlertPerPage", ex);
+			return false;
+		}
+	}
 
 }

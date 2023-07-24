@@ -528,6 +528,50 @@ public class AlertController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, object, total_row
+	 */
+	@PostMapping("/get-alert-per-page")
+	public Object getAlertPerPage(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			Object detailObj = service.getAlertPerPage(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-alert-filter-default")
+	public Object getAlertFilterDefault(@RequestBody AlertFilterEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			Object detailObj = service.getAlertFilterDefault(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description delete a alert filter
 	 * @author duy.phan
 	 * @since 2023-07-19

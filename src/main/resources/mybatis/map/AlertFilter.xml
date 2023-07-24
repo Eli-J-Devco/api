@@ -34,8 +34,18 @@
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.AlertFilterEntity">
     	SELECT count(*) as totalRow
-		FROM `alert_filter` s WHERE s.id_employee = #{id_employee}
+		FROM `alert_filter` s WHERE s.id_employee = #{id_employee} AND is_default = 0
   	</select>
+  	
+  	<select id="getListCountDefault"  resultType="int" parameterType="com.nwm.api.entities.AlertFilterEntity">
+    	SELECT count(*) as totalRow
+		FROM `alert_filter` s WHERE s.id_employee = #{id_employee} AND is_default = 1
+  	</select>
+  	
+  	<delete id="deleteAlertFilterDefault">
+  		DELETE FROM `alert_filter`
+	 	WHERE id_employee = #{id_employee} AND is_default = 1;
+	</delete>
   	
   	<delete id="deleteAlertFilter">
   		DELETE FROM `alert_filter`
@@ -44,7 +54,7 @@
 	
 	<delete id="deleteAlertFilterById">
   		DELETE FROM `alert_filter`
-	 	WHERE id = #{id} AND id_employee = #{id_employee} ORDER BY id ASC LIMIT 1;
+	 	WHERE id = #{id} AND id_employee = #{id_employee} AND is_default = 0 ORDER BY id ASC LIMIT 1;
 	</delete>
 	
 	<delete id="deleteAllAlertFilterById">
@@ -61,8 +71,20 @@
 			DATE_FORMAT(s.created_date, "%d/%m/%Y %H:%i %p") AS created_date
 		FROM
 			`alert_filter` s 
-		WHERE s.id_employee = #{id_employee} ORDER BY id DESC
+		WHERE s.id_employee = #{id_employee} AND is_default = 0 ORDER BY id DESC
 		 LIMIT 10;
+	</select>
+	
+	<select id="getAlertFilterDeafult" resultType="Map" >
+		SELECT
+			s.id,
+			s.alert_filter,
+			s.is_default,
+			s.name,
+			DATE_FORMAT(s.created_date, "%d/%m/%Y %H:%i %p") AS created_date
+		FROM
+			`alert_filter` s 
+		WHERE s.id_employee = #{id_employee} AND is_default = 1 ORDER BY id DESC
 	</select>
 	
 	

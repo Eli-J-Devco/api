@@ -28,6 +28,7 @@
 			dt.color AS color,
 			dt.is_color AS is_color,
 			d.ip_address,
+			d.hidden,
 			d.modbusdevicenumber,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %H:%i %p') AS last_updated,
 			CASE
@@ -401,7 +402,7 @@
 						d.devicename,
 						IFNULL(d.last_value, 0) as active_power,
 						IF(d.last_value IS NOT NULL, ROUND(IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100),2), NULL) AS percent_power_last_value,
-						IF(d.energy_today IS NOT NULL, ROUND(IF ((d.energy_today IS NULL) OR (d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0) OR (HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6 = 0), 0,
+						IF(d.energy_today IS NOT NULL, ROUND(IF ((d.energy_today IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0) OR (HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6 = 0), 0,
 															 (d.energy_today / IF(HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 06:00:00'))) <![CDATA[<]]> 13,
 																			IF(HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6 <![CDATA[<=]]> 0, 1, HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6), 12)) / d.rating_ac_power * 100), 2), 0) AS percent_power_energy_today
 					FROM

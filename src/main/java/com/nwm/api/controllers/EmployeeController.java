@@ -344,5 +344,24 @@ public class EmployeeController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-alert-per-page")
+	public Object updateAlertPerPage(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			service.updateAlertPerPage(obj);
+			return this.jsonResult(true, "Update alert per page complete.", obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
 }
