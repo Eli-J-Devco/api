@@ -65,6 +65,10 @@
 		<result property="cf_end_time" column="cf_end_time" />
 		<result property="cf_alert_threshold" column="cf_alert_threshold" />
 		<result property="cf_email_subscribers" column="cf_email_subscribers" />
+		<result property="alert_mail_bcc" column="alert_mail_bcc" />
+		<result property="alert_mail_cc" column="alert_mail_cc" />
+		
+		
 		
 		
 	</resultMap>
@@ -75,7 +79,9 @@
 			`cf_start_time` = #{cf_start_time},
 			`cf_end_time` = #{cf_end_time},
 			`cf_alert_threshold` = #{cf_alert_threshold},
-			`cf_email_subscribers` = #{cf_email_subscribers}
+			`cf_email_subscribers` = #{cf_email_subscribers},
+			`alert_mail_bcc` = #{alert_mail_bcc},
+			`alert_mail_cc` = #{alert_mail_cc}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -187,7 +193,9 @@
 			s.cf_end_time,
 			s.cf_alert_threshold,
 			s.cf_email_subscribers,
-			s.id AS id_site
+			s.id AS id_site,
+			s.alert_mail_bcc,
+			s.alert_mail_cc
 			
 		FROM
 			site s

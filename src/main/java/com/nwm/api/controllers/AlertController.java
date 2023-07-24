@@ -354,6 +354,8 @@ public class AlertController extends BaseController {
 								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 //								String mailTo = "vanlong200880@gmail.com";
 								String mailTo = detailObj.getCf_email_subscribers();
+								String mailToBCC = detailObj.getAlert_mail_bcc();
+								String mailToCC = detailObj.getAlert_mail_cc();
 								// Remove email employees who hide a site
 								List emails = service.getEmployeeHidingSite(obj);
 								if(emails != null && emails.size() > 0) {
@@ -368,8 +370,10 @@ public class AlertController extends BaseController {
 								String subject = " Next Wave Alert - ".concat(detailObj.getSite_name());
 								String tags = "run_cron_job";
 								String fromName = "NEXT WAVE ENERGY MONITORING INC";
+								
+								
 								if(mailTo != null && !mailTo.trim().isEmpty() ) {
-									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, bodyHtml.toString(), tags);
+									boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, bodyHtml.toString(), tags);
 									
 									if (!flagSent) {
 										throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));

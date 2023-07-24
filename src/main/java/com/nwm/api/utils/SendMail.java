@@ -74,7 +74,7 @@ public class SendMail {
         return flg;
 	}
 	 
-	public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String subject, String body, String tags) throws Exception {
+	public static boolean SendGmailTLS(String mail_from, String from_name, String mail_to, String mail_to_cc, String mail_to_bcc, String subject, String body, String tags) throws Exception {
         String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
         int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
         String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
@@ -99,10 +99,28 @@ public class SendMail {
 
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(mail_from));
-            message.setRecipients(
-                    Message.RecipientType.BCC,
-                    InternetAddress.parse(mail_to)
-            );
+            
+            if(mail_to != null) {
+            	message.addRecipients(
+                        Message.RecipientType.TO,
+                        InternetAddress.parse(mail_to)
+                );
+            }
+            
+            if(mail_to_cc != null) {
+            	message.addRecipients(
+                        Message.RecipientType.CC,
+                        InternetAddress.parse(mail_to_cc)
+                );
+            }
+            
+            if(mail_to_bcc != null) {
+            	message.addRecipients(
+                        Message.RecipientType.BCC,
+                        InternetAddress.parse(mail_to_bcc)
+                );
+            }
+            
             message.setSubject(subject);
             message.setContent(body, "text/html");
             

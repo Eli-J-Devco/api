@@ -177,10 +177,25 @@ public class SiteEntity {
 	private String display_timezone;
 	private int enable_virtual_device;
 	
+	private String alert_mail_cc;
+	private String alert_mail_bcc;
 	
 	
 	
 	
+	
+	public String getAlert_mail_cc() {
+		return alert_mail_cc;
+	}
+	public void setAlert_mail_cc(String alert_mail_cc) {
+		this.alert_mail_cc = alert_mail_cc;
+	}
+	public String getAlert_mail_bcc() {
+		return alert_mail_bcc;
+	}
+	public void setAlert_mail_bcc(String alert_mail_bcc) {
+		this.alert_mail_bcc = alert_mail_bcc;
+	}
 	public int getIs_hiding() {
 		return is_hiding;
 	}

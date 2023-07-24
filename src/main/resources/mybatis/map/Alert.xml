@@ -1179,7 +1179,9 @@
 			s.cf_email_subscribers,
 			a.`status`,
 			a.note,
-			s.id AS id_site
+			s.id AS id_site,
+			s.alert_mail_bcc,
+			s.alert_mail_cc
 		FROM
 			alert a
 			LEFT JOIN error e ON e.id = a.id_error

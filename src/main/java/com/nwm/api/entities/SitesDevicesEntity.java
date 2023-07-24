@@ -112,9 +112,23 @@ public class SitesDevicesEntity {
 	private double kwp_dc_for_each_solar_module;
 	private double data_interval_factor;
 	
+	private String alert_mail_cc;
+	private String alert_mail_bcc;
 	
 	
 	
+	public String getAlert_mail_cc() {
+		return alert_mail_cc;
+	}
+	public void setAlert_mail_cc(String alert_mail_cc) {
+		this.alert_mail_cc = alert_mail_cc;
+	}
+	public String getAlert_mail_bcc() {
+		return alert_mail_bcc;
+	}
+	public void setAlert_mail_bcc(String alert_mail_bcc) {
+		this.alert_mail_bcc = alert_mail_bcc;
+	}
 	public int getModules_per_string() {
 		return modules_per_string;
 	}

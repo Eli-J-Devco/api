@@ -74,7 +74,9 @@
 			s.modules_per_string,
 			s.number_of_strings,
 			s.kwp_dc_for_each_solar_module,
-			s.data_interval_factor
+			s.data_interval_factor,
+			s.alert_mail_bcc,
+			s.alert_mail_cc
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

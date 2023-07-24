@@ -762,8 +762,10 @@ public class CronJobAlertController extends BaseController {
 					// Sent mail
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 							Constants.mailFromContact);
-//								String mailTo = "vanlong200880@gmail.com,lpham@phoenixrs.com";
+//								String mailTo = "vanlong200880@gmail.com";
 					String mailTo = siteObj.getCf_email_subscribers();
+					String mailToBCC = siteObj.getAlert_mail_bcc();
+					String mailToCC = siteObj.getAlert_mail_cc();
 					
 					// Remove email employees who hide a site
 					List emails = service.getEmployeeHidingSite(siteObj);
@@ -780,7 +782,7 @@ public class CronJobAlertController extends BaseController {
 					String tags = "run_cron_job";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
 					if (mailTo != null && !mailTo.isEmpty()) {
-						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject,
+						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject,
 								bodyHtml.toString(), tags);
 
 						if (!flagSent) {

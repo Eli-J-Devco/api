@@ -55,8 +55,10 @@ public class UserController extends BaseController {
 
 				String tags = "reset_password";
 				String fromName = "Forgot password";
+				String mailToBCC = "";
+				String mailToCC = "";
 //				boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 				
 
 				if (!flagSent) {

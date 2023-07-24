@@ -145,8 +145,10 @@ public class EmployeeController extends BaseController {
 
 					String tags = "sent_password";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = "";
 //					boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+					boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 					if (!flagSent) {
 						throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
 					}
@@ -242,8 +244,10 @@ public class EmployeeController extends BaseController {
 
 				String tags = "sent_password";
 				String fromName = "NEXT WAVE ENERGY MONITORING INC";
+				String mailToBCC = "";
+				String mailToCC = "";
 //				boolean flagSent = SendMail.mailSMTPAmazon(mailFromContact, fromName, mailTo, subject, body, tags);
-				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, subject, body, tags);
+				boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 
 				if (!flagSent) {
 					throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
