@@ -48,8 +48,15 @@ public class EmployeeManageEntity{
 	private String last_login;
 	private String offset_timezone;
 	private String page_login;
+	private int alert_per_page;
 	
 	
+	public int getAlert_per_page() {
+		return alert_per_page;
+	}
+	public void setAlert_per_page(int alert_per_page) {
+		this.alert_per_page = alert_per_page;
+	}
 	public String getTable_column() {
 		return table_column;
 	}

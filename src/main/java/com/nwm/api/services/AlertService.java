@@ -569,6 +569,14 @@ public class AlertService extends DB {
 	 */
 	public AlertFilterEntity saveAlertFilter(AlertFilterEntity obj) {
 		try {
+			// Check Filter is_default and delete all default filter
+			if (obj.getIs_default() == 1) {
+				Object total = queryForObject("AlertFilter.getListCountDefault", obj);
+				if((int)total > 0) {
+					delete("AlertFilter.deleteAlertFilterDefault", obj);
+				}
+			}
+			
 			// Save
 			Object insertId = insert("AlertFilter.saveAlertFilter", obj);
 			if (insertId != null && insertId instanceof Integer) {
@@ -599,6 +607,44 @@ public class AlertService extends DB {
 		try {
 			dataList = queryForList("AlertFilter.getListAlertFilter", obj);
 			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	/**
+	 * @description get detail alert
+	 * @author long.pham
+	 * @since 2020-11-24
+	 * @param id_site, id_alert, id_customer, current_time
+	 * @return Object
+	 */
+
+	public Object getAlertPerPage(AlertFilterEntity obj) {
+		Object dataObj = null;
+		try {
+			dataObj = queryForObject("Alert.getAlertPerPage", obj);
+			if (dataObj == null)
+				return new AlertEntity();
+		} catch (Exception ex) {
+			return new AlertEntity();
+		}
+		return dataObj;
+
+	}
+	
+	/**
+	 * @description get list favorites by id_site
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @param id_site
+	 */
+	public Object getAlertFilterDefault(AlertFilterEntity obj) {
+		Object dataObj = null;
+		try {
+			dataObj = queryForObject("AlertFilter.getAlertFilterDeafult", obj);
+			return dataObj;
 				
 		} catch (Exception ex) {
 			return new ArrayList();

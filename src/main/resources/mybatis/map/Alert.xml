@@ -1649,5 +1649,17 @@
 			sem.id_site = #{id_site}
 			AND sem.is_hiding = 1
 	</select>
+	
+	<select id="getAlertPerPage" resultType="Map">
+		SELECT
+			e.alert_per_page
+			
+		FROM
+			employee e
+			
+		WHERE 
+			e.id = #{id_employee}
+			LIMIT 1;
+  	</select>
 
 </mapper>

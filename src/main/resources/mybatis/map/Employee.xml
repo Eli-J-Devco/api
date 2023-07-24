@@ -448,4 +448,12 @@
 		WHERE u.id = #{value};
   	</select>
   	
+  	<update id="updateAlertPerPage">
+		UPDATE `employee`
+		SET
+			`alert_per_page` = #{alert_per_page}
+		WHERE
+			`id` = #{id}
+	</update>
+  	
 </mapper>

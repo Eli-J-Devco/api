@@ -15,9 +15,16 @@ public class AlertFilterEntity {
 	private int totalRecord;
 	private String created_date;
 	private int is_default;
+	private int alert_per_page;
 
 	
 	
+	public int getAlert_per_page() {
+		return alert_per_page;
+	}
+	public void setAlert_per_page(int alert_per_page) {
+		this.alert_per_page = alert_per_page;
+	}
 	public int getIs_default() {
 		return is_default;
 	}
