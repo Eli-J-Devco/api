@@ -550,13 +550,11 @@ public class ReportsService extends DB {
 			session.insert("Reports.insertReports", obj);
 			int insertLastId = obj.getId();
 			
-			if (obj.getType_report() == 2 && obj.getType_option() == 2) {
-				List dataSite = obj.getDataSite();
-				if (insertLastId > 0 && dataSite.size() > 0) {
-					session.insert("Reports.insertReportSiteMap", obj);
-				} else {
-					return null;
-				}
+			List dataSite = obj.getDataSite();
+			if (insertLastId > 0 && dataSite.size() > 0) {
+				session.insert("Reports.insertReportSiteMap", obj);
+			} else {
+				return null;
 			}
 			
 			session.commit();
@@ -583,15 +581,13 @@ public class ReportsService extends DB {
 		try {
 			session.update("Reports.updateReports", obj);
 			
-			if (obj.getType_report() == 2 && obj.getType_option() == 2) {
-				List dataSite = obj.getDataSite();
-				if (dataSite.size() <= 0) {
-					throw new Exception();
-				}
-				
-				session.delete("Reports.deleteReportSiteMap", obj);
-				session.insert("Reports.insertReportSiteMap", obj);
+			List dataSite = obj.getDataSite();
+			if (dataSite.size() <= 0) {
+				throw new Exception();
 			}
+			
+			session.delete("Reports.deleteReportSiteMap", obj);
+			session.insert("Reports.insertReportSiteMap", obj);
 			
 			session.commit();
 			return true;
@@ -638,11 +634,18 @@ public class ReportsService extends DB {
 	 * @param id
 	 */
 	public boolean deleteReports(ReportsEntity obj) {
+		SqlSession session = this.beginTransaction();
 		try {
-			return update("Reports.deleteReports", obj) > 0;
+			session.delete("Reports.deleteReportSiteMap", obj);
+			int rowDelete = session.delete("Reports.deleteReports", obj);
+			session.commit();
+			return rowDelete > 0;
 		} catch (Exception ex) {
+			session.rollback();
 			log.error("Reports.deleteReports", ex);
 			return false;
+		} finally {
+			session.close();
 		}
 	}
 	
