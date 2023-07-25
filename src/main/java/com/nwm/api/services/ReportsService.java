@@ -521,6 +521,23 @@ public class ReportsService extends DB {
 		}
 		return dataList;
 	}
+	/**
+	 * @description Get list site sub-group by employee
+	 * @author Hung.Bui
+	 * @since 2023-07-24
+	 */
+	
+	public List getListSiteSubGroupByEmployee(ReportsEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Reports.getListSiteSubGroupByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 
 	/**
 	 * @description insert report
@@ -531,6 +548,17 @@ public class ReportsService extends DB {
 		SqlSession session = this.beginTransaction();
 		try {
 			session.insert("Reports.insertReports", obj);
+			int insertLastId = obj.getId();
+			
+			if (obj.getType_report() == 2 && obj.getType_option() == 2) {
+				List dataSite = obj.getDataSite();
+				if (insertLastId > 0 && dataSite.size() > 0) {
+					session.insert("Reports.insertReportSiteMap", obj);
+				} else {
+					return null;
+				}
+			}
+			
 			session.commit();
 			return obj;
 		} catch (Exception ex) {
@@ -553,8 +581,18 @@ public class ReportsService extends DB {
 
 		SqlSession session = this.beginTransaction();
 		try {
-
 			session.update("Reports.updateReports", obj);
+			
+			if (obj.getType_report() == 2 && obj.getType_option() == 2) {
+				List dataSite = obj.getDataSite();
+				if (dataSite.size() <= 0) {
+					throw new Exception();
+				}
+				
+				session.delete("Reports.deleteReportSiteMap", obj);
+				session.insert("Reports.insertReportSiteMap", obj);
+			}
+			
 			session.commit();
 			return true;
 		} catch (Exception ex) {

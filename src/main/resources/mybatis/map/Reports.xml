@@ -24,7 +24,9 @@
 	<select id="getListSiteByEmployee" resultType="Map">
 		SELECT
 			s.id,
-			s.`name` AS text
+			s.id AS value,
+			s.`name` AS text,
+			s.`name` AS label
 		FROM
 			site AS s
 		WHERE
@@ -37,6 +39,31 @@
 				)
 			</if>
 		ORDER BY s.`name` ASC
+	</select>
+	
+	<select id="getListSiteSubGroupByEmployee" resultType="Map" >
+		SELECT
+			ssg.id,
+			ssg.id_site_group,
+			ssg.`name` AS text
+		FROM
+			site s
+			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+		WHERE 
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			<if test="id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+		GROUP BY ssg.id
+	    ORDER BY ssg.id ASC
 	</select>
 	
 	<insert id="insertReports" useGeneratedKeys="true" keyProperty="id">
@@ -52,7 +79,9 @@
 			`file_type`,
 			`status`,
 			`created_date`,
-			`updated_date`
+			`updated_date`,
+			`id_sub_group`,
+			`type_option`
 		)VALUES(
 			#{id_site},
 			#{id_employee},
@@ -65,7 +94,9 @@
 			#{file_type},
 			#{status},
 			NOW(),
-			NOW()
+			NOW(),
+			#{id_sub_group},
+			#{type_option}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -86,7 +117,9 @@
 			`data_intervals` = #{data_intervals},
 			`file_type` = #{file_type},
 			`status` = #{status},
-			`updated_date` = NOW()
+			`updated_date` = NOW(),
+			`id_sub_group` = #{id_sub_group},
+			`type_option` = #{type_option}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -96,16 +129,23 @@
 		SELECT
 			s.`name` AS site_name,
 			CASE
-		    WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
-		    ELSE s.`name`
+		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
+		    	WHEN r.type_report = 2 THEN
+		    		CASE
+		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
+		    		END
+		    	ELSE s.`name`
 			END	AS report_name,
 			
 			CASE
-		    WHEN r.cadence_range = 1 THEN "Daily"
+		    	WHEN r.cadence_range = 1 THEN "Daily"
 				WHEN r.cadence_range = 2 THEN "Monthly"
 				WHEN r.cadence_range = 3 THEN "Quarterly"
 				WHEN r.cadence_range = 4 THEN "Annually"
-		    ELSE "Custom"
+				WHEN r.cadence_range = 6 THEN "Weekly"
+		    	ELSE "Custom"
 			END	AS cadence_range_name,
 			
 			
@@ -131,6 +171,9 @@
 			r.data_intervals,
 			r.subscribers,
 			r.file_type,
+			r.type_option,
+			r.id_sub_group,
+			t.ids_site,
 			DATE_FORMAT(r.date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
 			DATE_FORMAT(r.date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
 			r.`status`,
@@ -139,6 +182,17 @@
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
+			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
+			LEFT JOIN (
+				SELECT
+					rsm.id_report,
+					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ', ') AS ids_site
+				FROM
+					report_site_map rsm
+					LEFT JOIN site s ON s.id = rsm.id_site
+				GROUP BY rsm.id_report
+			) t ON t.id_report = r.id
 		WHERE r.status = 1 AND r.id_employee = #{id_employee} 
 		GROUP BY r.id 
 		    order by
@@ -1155,9 +1209,22 @@
   	</select>
 	
 	
+	<insert id="insertReportSiteMap">
+		INSERT INTO `report_site_map`(
+			id_report,
+			id_site
+		)VALUES
+			<foreach item="item" collection="dataSite" separator=",">
+				(#{id}, #{item.id})
+			</foreach>
+	</insert>
 	
 	
 	
+	<delete id = "deleteReportSiteMap" parameterType = "com.nwm.api.entities.ReportsEntity">
+		DELETE FROM `report_site_map`
+		WHERE id_report = #{id};
+	</delete>
   	
 	
 </mapper>
