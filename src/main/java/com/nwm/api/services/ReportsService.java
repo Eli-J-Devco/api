@@ -8,8 +8,10 @@ package com.nwm.api.services;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -665,110 +667,165 @@ public class ReportsService extends DB {
 			if (dataObj == null) {
 				return null;
 			}
-			List dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
-			if (dataEnergy.size() > 0) {
-				dataObj.setDataReports(dataEnergy);
-			}
 			
-			
-			EnergyExpectationsEntity expec = (EnergyExpectationsEntity) queryForObject("Reports.getExpectationsRow", obj);
-			
-			
-			// Create list date 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
-			
-			SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-			
-			Date startDate = dateFormat.parse(obj.getStart_date() + " AM");
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			
-			cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-			
-			List<MonthlyDateEntity> categories = new ArrayList<MonthlyDateEntity> ();
-			int day = 1;
-			int forCount = Integer.parseInt(dayFormat.format(cal.getTime()).toString());
-			
-			int month = Integer.parseInt(monthFormat.format(cal.getTime()).toString());
-			
-			int expecValue = 0;
-			if(expec != null) {
-				switch ( month ) {
-				    case  1: expecValue = expec.getJan(); break;
-				    case  2: expecValue = expec.getFeb(); break;
-				    case  3: expecValue = expec.getMar(); break;
-				    case  4: expecValue = expec.getApr(); break;
-				    case  5: expecValue = expec.getMay(); break;
-				    case  6: expecValue = expec.getJun(); break;
-				    case  7: expecValue = expec.getJul(); break;
-				    case  8: expecValue = expec.getAug(); break;
-				    case  9: expecValue = expec.getSep(); break;
-				    case  10: expecValue = expec.getOct(); break;
-				    case  11: expecValue = expec.getNov(); break;
-				    case  12: expecValue = expec.getDec(); break;
-				    default:
-				    	expecValue = 0;
-			}
-			
-		}
-			
-			for(int t = 0; t < forCount; t++) {
+			if (dataObj.getType_report() == 1) {
+				List dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+				if (dataEnergy.size() > 0) {
+					dataObj.setDataReports(dataEnergy);
+				}
+				
+				EnergyExpectationsEntity expec = (EnergyExpectationsEntity) queryForObject("Reports.getExpectationsRow", obj);
+				
+				// Create list date 
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+				SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
+				
+				SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
+				SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
+				
+				Date startDate = dateFormat.parse(obj.getStart_date() + " AM");
+				Calendar cal = Calendar.getInstance();
 				cal.setTime(startDate);
-				MonthlyDateEntity headerDate = new MonthlyDateEntity();
-				cal.add(Calendar.DATE, t * day);
-				headerDate.setTime_format(dateFormat.format(cal.getTime()));
-				headerDate.setCategories_time(catFormat.format(cal.getTime()));
-				headerDate.setActual(0.0);
-				headerDate.setEstimated((double) expecValue / forCount);
-				headerDate.setPercent( expecValue > 0 ? (0.0 / expecValue) : 0);
-				categories.add(headerDate);
-			}
-			
-			
-			
-			List data = dataObj.getDataReports();
-			List<MonthlyDateEntity> dataNew = new ArrayList<MonthlyDateEntity> ();
-			if(data.size() > 0 && categories.size() > 0) {
-				for (MonthlyDateEntity item : categories) {
-					boolean flag = false;
-					MonthlyDateEntity mapItemObj = new MonthlyDateEntity();
-					for( int v = 0; v < data.size(); v++){
-						Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-						String categoriesTime = item.getTime_format();
-						String powerTime = itemT.get("time_format").toString();
-						
-				        if (categoriesTime.equals(powerTime)) {
-				        	flag = true;
-				        	mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-				        	
-				        	mapItemObj.setTime_format(itemT.get("time_format").toString());
-				        	mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-				        	mapItemObj.setEstimated( (double) expecValue/forCount );
-				        	double energy = Double.parseDouble(itemT.get("chart_energy_kwh")!= null ? itemT.get("chart_energy_kwh").toString() : "0.0");
-				        	Double percent = (expecValue / forCount > 0) ?  ((energy /  (expecValue / forCount)) * 100) : 0;
-				        	mapItemObj.setPercent(percent);
-				        	break;
-				        }
-				    }
+				
+				cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+				
+				List<MonthlyDateEntity> categories = new ArrayList<MonthlyDateEntity> ();
+				int day = 1;
+				int forCount = Integer.parseInt(dayFormat.format(cal.getTime()).toString());
+				
+				int month = Integer.parseInt(monthFormat.format(cal.getTime()).toString());
+				
+				int expecValue = 0;
+				if(expec != null) {
+					switch ( month ) {
+					case  1: expecValue = expec.getJan(); break;
+					case  2: expecValue = expec.getFeb(); break;
+					case  3: expecValue = expec.getMar(); break;
+					case  4: expecValue = expec.getApr(); break;
+					case  5: expecValue = expec.getMay(); break;
+					case  6: expecValue = expec.getJun(); break;
+					case  7: expecValue = expec.getJul(); break;
+					case  8: expecValue = expec.getAug(); break;
+					case  9: expecValue = expec.getSep(); break;
+					case  10: expecValue = expec.getOct(); break;
+					case  11: expecValue = expec.getNov(); break;
+					case  12: expecValue = expec.getDec(); break;
+					default:
+						expecValue = 0;
+					}
 					
-					if(flag == false) {
-						MonthlyDateEntity mapItem = new MonthlyDateEntity();
-						mapItem.setCategories_time(item.getCategories_time());
-						mapItem.setActual(item.getActual());
-						mapItem.setEstimated(item.getEstimated());
-						mapItem.setPercent(item.getPercent());
-						mapItem.setTime_format(item.getTime_format());
-						dataNew.add(mapItem);
-					} else {
-						dataNew.add(mapItemObj);
+				}
+				
+				for(int t = 0; t < forCount; t++) {
+					cal.setTime(startDate);
+					MonthlyDateEntity headerDate = new MonthlyDateEntity();
+					cal.add(Calendar.DATE, t * day);
+					headerDate.setTime_format(dateFormat.format(cal.getTime()));
+					headerDate.setCategories_time(catFormat.format(cal.getTime()));
+					headerDate.setActual(0.0);
+					headerDate.setEstimated((double) expecValue / forCount);
+					headerDate.setPercent( expecValue > 0 ? (0.0 / expecValue) : 0);
+					categories.add(headerDate);
+				}
+				
+				
+				
+				List data = dataObj.getDataReports();
+				List<MonthlyDateEntity> dataNew = new ArrayList<MonthlyDateEntity> ();
+				if(data.size() > 0 && categories.size() > 0) {
+					for (MonthlyDateEntity item : categories) {
+						boolean flag = false;
+						MonthlyDateEntity mapItemObj = new MonthlyDateEntity();
+						for( int v = 0; v < data.size(); v++){
+							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get("time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+								
+								mapItemObj.setTime_format(itemT.get("time_format").toString());
+								mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								mapItemObj.setEstimated( (double) expecValue/forCount );
+								double energy = Double.parseDouble(itemT.get("chart_energy_kwh")!= null ? itemT.get("chart_energy_kwh").toString() : "0.0");
+								Double percent = (expecValue / forCount > 0) ?  ((energy /  (expecValue / forCount)) * 100) : 0;
+								mapItemObj.setPercent(percent);
+								break;
+							}
+						}
+						
+						if(flag == false) {
+							MonthlyDateEntity mapItem = new MonthlyDateEntity();
+							mapItem.setCategories_time(item.getCategories_time());
+							mapItem.setActual(item.getActual());
+							mapItem.setEstimated(item.getEstimated());
+							mapItem.setPercent(item.getPercent());
+							mapItem.setTime_format(item.getTime_format());
+							dataNew.add(mapItem);
+						} else {
+							dataNew.add(mapItemObj);
+						}
 					}
 				}
+				
+				dataObj.setDataReports(dataNew);
+			} else {
+				List siteList = new ArrayList<>();
+				
+				switch (dataObj.getType_option()) {
+					// entire portfolio
+					case 1:
+						siteList = queryForList("Reports.getListSiteByIdEmployee", dataObj);
+						break;
+					// selected site
+					case 2:
+						siteList = queryForList("Reports.getListSelectedSiteByIdSite", dataObj);
+						break;
+					// sub-group
+					case 3:
+						siteList = queryForList("Reports.getListSiteBySubGroup", dataObj);
+						break;
+					default:
+						break;
+				}
+				
+				if (dataObj.getData_intervals() == 12) {
+					List dataSiteList = new ArrayList<>();
+					
+					for (int i = 0; i < siteList.size(); i++) {
+						Map<String, Object> siteItem = (Map<String, Object>) siteList.get(i);
+						
+						SimpleDateFormat dateFromFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+						SimpleDateFormat dateToFormat = new SimpleDateFormat("MM/dd/yyyy");
+						SimpleDateFormat monthFormat = new SimpleDateFormat("MM/YYYY");
+						
+						obj.setId_site((int) siteItem.get("id"));
+						List dataEnergy = queryForList("Reports.getDataEnergyMonthlyBuiltinReport", obj);
+						
+						if (dataEnergy.size() > 0) {
+							siteItem.put("dataReport", dataEnergy);
+						} else {
+							Map<String, Object> mapItem = new HashMap<String, Object>();
+							mapItem.put("id", siteItem.get("id"));
+							mapItem.put("name", siteItem.get("name"));
+							mapItem.put("time_format", monthFormat.format(dateFromFormat.parse(obj.getStart_date())));
+							mapItem.put("chart_energy_kwh", 0.0);
+							
+							siteItem.put("dataReport", Arrays.asList(mapItem));
+						}
+						
+						siteItem.put("id", siteItem.get("id"));
+						siteItem.put("name", siteItem.get("name"));
+						siteItem.put("startDate", dateToFormat.format(dateFromFormat.parse(obj.getStart_date())));
+						siteItem.put("endDate", dateToFormat.format(dateFromFormat.parse(obj.getEnd_date())));
+						
+						dataSiteList.add(siteItem);
+					}
+					
+					dataObj.setDataSite(dataSiteList);
+				}
 			}
-			
-			dataObj.setDataReports(dataNew);
-			
 			
 			return dataObj;
 		} catch (Exception ex) {

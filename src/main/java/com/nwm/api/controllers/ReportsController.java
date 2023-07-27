@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.File;
@@ -4259,284 +4260,351 @@ public class ReportsController extends BaseController {
 				ReportsService service = new ReportsService();
 				ViewReportEntity dataObj = (ViewReportEntity) service.getMonthlyReport(obj);
 				if (dataObj != null) {
-					String chartTitle = "";
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					SimpleDateFormat dateFormatString = new SimpleDateFormat("MMMM yyyy");
-					Date convertedDate = dateFormat.parse(obj.getEnd_date());
-					Date startDate = dateFormat.parse(obj.getStart_date());
-					dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
-					dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
-					
-					chartTitle = dateFormatString.format(startDate);
-					
-					ArrayList<String> categories = new ArrayList<String>();				
-					List<?> dataExports = dataObj.getDataReports();
-					if(dataExports.size() > 0) {
-						for( int j = 0; j < dataExports.size(); j++){
-							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(j);
-							String categoriesTime = (String) item.getCategories_time();
-							categories.add( categoriesTime );
+					if (dataObj.getType_report() == 1) {
+						String chartTitle = "";
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						SimpleDateFormat dateFormatString = new SimpleDateFormat("MMMM yyyy");
+						Date convertedDate = dateFormat.parse(obj.getEnd_date());
+						Date startDate = dateFormat.parse(obj.getStart_date());
+						dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
+						dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
+						
+						chartTitle = dateFormatString.format(startDate);
+						
+						ArrayList<String> categories = new ArrayList<String>();				
+						List<?> dataExports = dataObj.getDataReports();
+						if(dataExports.size() > 0) {
+							for( int j = 0; j < dataExports.size(); j++){
+								MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(j);
+								String categoriesTime = (String) item.getCategories_time();
+								categories.add( categoriesTime );
+							}
 						}
-					}
-					
-					
-					XSSFSheet chartSheet = document.createSheet("Monthly Performance");
-					XSSFSheet dataSheet = document.createSheet("data");
-					XSSFSheet dataSheetTotal = document.createSheet("total");
-
-					// FileInputStream obtains input bytes from the image file
-					InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
-					// Get the contents of an InputStream as a byte[].
-					byte[] bytes = IOUtils.toByteArray(inputStreamImage);
-					// Adds a picture to the workbook
-					int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
-					// close the input stream
-					inputStreamImage.close();
-					
+						
+						
+						XSSFSheet chartSheet = document.createSheet("Monthly Performance");
+						XSSFSheet dataSheet = document.createSheet("data");
+						XSSFSheet dataSheetTotal = document.createSheet("total");
+						
+						// FileInputStream obtains input bytes from the image file
+						InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
+						// Get the contents of an InputStream as a byte[].
+						byte[] bytes = IOUtils.toByteArray(inputStreamImage);
+						// Adds a picture to the workbook
+						int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+						// close the input stream
+						inputStreamImage.close();
+						
+						
+						
+						// Returns an object that handles instantiating concrete classes
+						CreationHelper helper = document.getCreationHelper();
+						
+						// Creates the top-level drawing patriarch.
+						Drawing<?> drawing = chartSheet.createDrawingPatriarch();
+						
+						// Create an anchor that is attached to the worksheet
+						ClientAnchor anchor = helper.createClientAnchor();
+						anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
+						// set top-left corner for the image
+						
+						anchor.setCol1(12);
+						anchor.setRow1(1);
+//						anchor.setCol2(3);
+//						anchor.setRow2(4);
+						
+						// Creates a picture
+						Picture pict = drawing.createPicture(anchor, pictureIdx);
+						
+						// Reset the image to the original sizege
+						pict.resize(1.45, 3.50);
+						
+						
+						writeHeaderMonthlyReport(chartSheet, 0, dataObj);
+						// create the data
+						int r = 0;
+						Double totalActual = 0.0; 
+						Double totalEstimated = 0.0;
+						for (String cat : categories) {
+							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(r);
 							
-
-					// Returns an object that handles instantiating concrete classes
-					CreationHelper helper = document.getCreationHelper();
-
-					// Creates the top-level drawing patriarch.
-					Drawing<?> drawing = chartSheet.createDrawingPatriarch();
-
-					// Create an anchor that is attached to the worksheet
-					ClientAnchor anchor = helper.createClientAnchor();
-					anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-					// set top-left corner for the image
-
-					anchor.setCol1(12);
-					anchor.setRow1(1);
-//					anchor.setCol2(3);
-//					anchor.setRow2(4);
-
-					// Creates a picture
-					Picture pict = drawing.createPicture(anchor, pictureIdx);
-					
-					// Reset the image to the original sizege
-					pict.resize(1.45, 3.50);
-					
-
-					writeHeaderMonthlyReport(chartSheet, 0, dataObj);
-					// create the data
-					int r = 0;
-					Double totalActual = 0.0; 
-					Double totalEstimated = 0.0;
-					for (String cat : categories) {
-						MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(r);
+							String categoriesTime = (String) item.getCategories_time();
+							dataSheet.createRow(r).createCell(0).setCellValue(categoriesTime);
+							dataSheet.getRow(r).createCell(1).setCellValue(item.getActual());
+							dataSheet.getRow(r).createCell(2).setCellValue(item.getEstimated());
+							dataSheet.getRow(r).createCell(3).setCellValue(item.getPercent());
+							
+							totalActual = totalActual + item.getActual();
+							totalEstimated = totalEstimated + item.getEstimated();
+							r++;
+						}
 						
-						String categoriesTime = (String) item.getCategories_time();
-						dataSheet.createRow(r).createCell(0).setCellValue(categoriesTime);
-						dataSheet.getRow(r).createCell(1).setCellValue(item.getActual());
-						dataSheet.getRow(r).createCell(2).setCellValue(item.getEstimated());
-						dataSheet.getRow(r).createCell(3).setCellValue(item.getPercent());
+						dataSheetTotal.createRow(0).createCell(0).setCellValue("");
+						dataSheetTotal.getRow(0).createCell(1).setCellValue(totalActual);
+						dataSheetTotal.getRow(0).createCell(2).setCellValue(totalEstimated);
 						
-						totalActual = totalActual + item.getActual();
-						totalEstimated = totalEstimated + item.getEstimated();
-						r++;
-					}
-					
-					dataSheetTotal.createRow(0).createCell(0).setCellValue("");
-					dataSheetTotal.getRow(0).createCell(1).setCellValue(totalActual);
-					dataSheetTotal.getRow(0).createCell(2).setCellValue(totalEstimated);
-					
-					// ----------------------------------------------------------------------------------------------------
-					XSSFClientAnchor anchor1;
-					XDDFChart chart;
-				    XDDFChartLegend legend;
-				    XDDFCategoryAxis bottomAxis;
-				    XDDFValueAxis leftAxis;
-				    XDDFChartData data;
-				    XDDFChartData.Series series;
-					// create the chart 1
-					XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
-					
-					//====== first line chart============================================================
-					anchor1 = drawing1.createAnchor(5, 5, 5, 5, 5, 8, 14, 23);
-					chart = drawing1.createChart(anchor1);
-					chart.setTitleText("");
-					chart.setTitleOverlay(false);
-
-					// create data sources
-					int numOfPoints = categories.size();
-					Double[] dummyValuesForPad = new Double[numOfPoints];
-					for (int i = 0; i < numOfPoints; i++) {
-						dummyValuesForPad[i] = 0d;
-					}
-					XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 0, 0));
-					XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 1, 1));
-					XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 2, 2));
-					XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 3, 3));
-					
-					for (int i = 0; i < numOfPoints; i++) {
-						XSSFRow row = dataSheet.getRow(i);
-						if (row == null)
-							row = dataSheet.createRow(i);
-						XSSFCell cell = row.createCell(255);
-						cell.setCellValue(0);
-					}
-
-					// data source for the pad series
-					XDDFNumericalDataSource<Double> pad = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 255, 255));
-
-					// first bar chart
-					bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-					leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-					leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-					leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-					leftAxis.setTitle("GENERATION (KWH)");
-					leftAxis.setMinimum(0);
-					
-
-					data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-					XDDFBarChartData bar = (XDDFBarChartData) data;
-					bar.setBarDirection(BarDirection.COL);
-
-					CTPlotArea plotArea = chart.getCTChart().getPlotArea();
-					plotArea.getValAxArray()[0].addNewMajorGridlines();
-
-					series = data.addSeries(categoriesData, valuesData1);
-					series.setTitle("Actual Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 8, 1, true, true));
-					
-					series = data.addSeries(categoriesData, valuesData2);
-					series.setTitle("Estimated Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 8, 2, true, true));
-					chart.plot(data);
-
-					// set bar colors
-					solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
-					solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
-					
-					// second bar chart
-					// bottom axis must be there but must not be visible
-					bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-					bottomAxis.setVisible(false);
-
-					XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
-					rightAxis.setCrosses(AxisCrosses.MAX);
-					rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-					rightAxis.setTitle("PERFORMANCE INDEX (%)");
+						// ----------------------------------------------------------------------------------------------------
+						XSSFClientAnchor anchor1;
+						XDDFChart chart;
+						XDDFChartLegend legend;
+						XDDFCategoryAxis bottomAxis;
+						XDDFValueAxis leftAxis;
+						XDDFChartData data;
+						XDDFChartData.Series series;
+						// create the chart 1
+						XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
+						
+						//====== first line chart============================================================
+						anchor1 = drawing1.createAnchor(5, 5, 5, 5, 5, 8, 14, 23);
+						chart = drawing1.createChart(anchor1);
+						chart.setTitleText("");
+						chart.setTitleOverlay(false);
+						
+						// create data sources
+						int numOfPoints = categories.size();
+						Double[] dummyValuesForPad = new Double[numOfPoints];
+						for (int i = 0; i < numOfPoints; i++) {
+							dummyValuesForPad[i] = 0d;
+						}
+						XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(dataSheet,
+								new CellRangeAddress(0, numOfPoints - 1, 0, 0));
+						XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+								new CellRangeAddress(0, numOfPoints - 1, 1, 1));
+						XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+								new CellRangeAddress(0, numOfPoints - 1, 2, 2));
+						XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+								new CellRangeAddress(0, numOfPoints - 1, 3, 3));
+						
+						for (int i = 0; i < numOfPoints; i++) {
+							XSSFRow row = dataSheet.getRow(i);
+							if (row == null)
+								row = dataSheet.createRow(i);
+							XSSFCell cell = row.createCell(255);
+							cell.setCellValue(0);
+						}
+						
+						// data source for the pad series
+						XDDFNumericalDataSource<Double> pad = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
+								new CellRangeAddress(0, numOfPoints - 1, 255, 255));
+						
+						// first bar chart
+						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
+						leftAxis.setTitle("GENERATION (KWH)");
+						leftAxis.setMinimum(0);
+						
+						
+						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+						XDDFBarChartData bar = (XDDFBarChartData) data;
+						bar.setBarDirection(BarDirection.COL);
+						
+						CTPlotArea plotArea = chart.getCTChart().getPlotArea();
+						plotArea.getValAxArray()[0].addNewMajorGridlines();
+						
+						series = data.addSeries(categoriesData, valuesData1);
+						series.setTitle("Actual Generation (kWh)",
+								new CellReference(chartSheet.getSheetName(), 8, 1, true, true));
+						
+						series = data.addSeries(categoriesData, valuesData2);
+						series.setTitle("Estimated Generation (kWh)",
+								new CellReference(chartSheet.getSheetName(), 8, 2, true, true));
+						chart.plot(data);
+						
+						// set bar colors
+						solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
+						solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
+						
+						// second bar chart
+						// bottom axis must be there but must not be visible
+						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						bottomAxis.setVisible(false);
+						
+						XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
+						rightAxis.setCrosses(AxisCrosses.MAX);
+						rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
+						rightAxis.setTitle("PERFORMANCE INDEX (%)");
 //					
+						
+						// set correct cross axis
+						bottomAxis.crossAxis(rightAxis);
+						rightAxis.crossAxis(bottomAxis);
+						
+						data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
+						bar.setBarDirection(BarDirection.COL);
+						series = data.addSeries(categoriesData, valuesData3);
+						series.setTitle("Baseline Generation Index (%)",
+								new CellReference(chartSheet.getSheetName(), 8, 3, true, true));
+						chart.plot(data);
+						
+						
+						// set legend
+						legend = chart.getOrAddLegend();
+						legend.setPosition(LegendPosition.BOTTOM);
+						
+						
+						//======second line chart============================================================
+						anchor = drawing1.createAnchor(5, 5, 5, 5, 5, 25, 14, 41);
+						chart = drawing1.createChart(anchor);
+						chart.setTitleText(chartTitle);
+						chart.setTitleOverlay(false);
+						chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1200);
+						
+						// create the axes
+						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						bottomAxis.setVisible(false);
+						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
+						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
+						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
+						leftAxis.setTitle("GENERATION (KWH)");
+						leftAxis.setMinimum(0);
+						
+						// create chart data
+						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+						
+						// create data sources
+						int numOfPoints2 = 1;
+						Double[] dummyValuesForPad2 = new Double[numOfPoints2];
+						for (int i = 0; i < numOfPoints2; i++) {
+							dummyValuesForPad2[i] = 0d;
+						}
+						
+						XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromStringCellRange(dataSheetTotal,
+								new CellRangeAddress(0, numOfPoints2 - 1, 0, 0));
+						XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheetTotal,
+								new CellRangeAddress(0, numOfPoints2 - 1, 1, 1));
+						XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheetTotal,
+								new CellRangeAddress(0, numOfPoints2 - 1, 2, 2));
+						
+						for (int i = 0; i < numOfPoints2; i++) {
+							XSSFRow row2 = dataSheetTotal.getRow(i);
+							if (row2 == null)
+								row2 = dataSheetTotal.createRow(i);
+							XSSFCell cell2 = row2.createCell(255);
+							cell2.setCellValue(0);
+						}
+						
+						XDDFBarChartData bar2 = (XDDFBarChartData) data;
+						bar2.setBarDirection(BarDirection.COL);
+						bar2.setOverlap((byte) -24);
+						bar2.setGapWidth(400);
+						
+						CTPlotArea plotArea2 = chart.getCTChart().getPlotArea();
+						plotArea2.getValAxArray()[0].addNewMajorGridlines();
+						
+						series = data.addSeries(categoriesData2, valuesData12);
+						series.setTitle("Actual Generation (kWh)",
+								new CellReference(chartSheet.getSheetName(), 8, 1, true, true));
+						
+						series = data.addSeries(categoriesData2, valuesData22);
+						series.setTitle("Estimated Generation (kWh)",
+								new CellReference(chartSheet.getSheetName(), 8, 2, true, true));
+						
+						
+						chart.plot(data);
+						
+						// set bar colors
+						solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
+						solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
+						
+						// set legend
+						legend = chart.getOrAddLegend();
+						legend.setPosition(LegendPosition.BOTTOM);
+						
+						// Write the output to a file
+						String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+						String dir = uploadRootPath() + "/"
+								+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+						String fileName = dir + "/Monthly-report-" + timeStamp + ".xlsx";
+						
+						try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
+							document.write(fileOut);
+							String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+									Constants.mailFromContact);
 
-					// set correct cross axis
-					bottomAxis.crossAxis(rightAxis);
-					rightAxis.crossAxis(bottomAxis);
+							String msgTemplate = Constants.getMailTempleteByState(16);
+							String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Monthly ", "", "");
+							String mailTo = dataObj.getSubscribers();
+							String subject = Constants.getMailSubjectByState(16);
 
-					data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
-					bar.setBarDirection(BarDirection.COL);
-					series = data.addSeries(categoriesData, valuesData3);
-					series.setTitle("Baseline Generation Index (%)",
-							new CellReference(chartSheet.getSheetName(), 8, 3, true, true));
-					chart.plot(data);
-					
-					
-					// set legend
-					legend = chart.getOrAddLegend();
-					legend.setPosition(LegendPosition.BOTTOM);
-					
-					
-					//======second line chart============================================================
-					anchor = drawing1.createAnchor(5, 5, 5, 5, 5, 25, 14, 41);
-					chart = drawing1.createChart(anchor);
-					chart.setTitleText(chartTitle);
-					chart.setTitleOverlay(false);
-					chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1200);
-				    
-				    // create the axes
-				    bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-				    bottomAxis.setVisible(false);
-				    leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-				    leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-				    leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-				    leftAxis.setTitle("GENERATION (KWH)");
-				    leftAxis.setMinimum(0);
-				    
-				   // create chart data
-				    data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-
-					// create data sources
-					int numOfPoints2 = 1;
-					Double[] dummyValuesForPad2 = new Double[numOfPoints2];
-					for (int i = 0; i < numOfPoints2; i++) {
-						dummyValuesForPad2[i] = 0d;
-					}
-					
-					XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromStringCellRange(dataSheetTotal,
-							new CellRangeAddress(0, numOfPoints2 - 1, 0, 0));
-					XDDFNumericalDataSource<Double> valuesData12 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheetTotal,
-							new CellRangeAddress(0, numOfPoints2 - 1, 1, 1));
-					XDDFNumericalDataSource<Double> valuesData22 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheetTotal,
-							new CellRangeAddress(0, numOfPoints2 - 1, 2, 2));
-					
-					for (int i = 0; i < numOfPoints2; i++) {
-						XSSFRow row2 = dataSheetTotal.getRow(i);
-						if (row2 == null)
-							row2 = dataSheetTotal.createRow(i);
-						XSSFCell cell2 = row2.createCell(255);
-						cell2.setCellValue(0);
-					}
-
-					XDDFBarChartData bar2 = (XDDFBarChartData) data;
-					bar2.setBarDirection(BarDirection.COL);
-					bar2.setOverlap((byte) -24);
-					bar2.setGapWidth(400);
-
-					CTPlotArea plotArea2 = chart.getCTChart().getPlotArea();
-					plotArea2.getValAxArray()[0].addNewMajorGridlines();
-
-					series = data.addSeries(categoriesData2, valuesData12);
-					series.setTitle("Actual Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 8, 1, true, true));
-					
-					series = data.addSeries(categoriesData2, valuesData22);
-					series.setTitle("Estimated Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 8, 2, true, true));
-					
-					
-					chart.plot(data);
-
-					// set bar colors
-					solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
-					solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
-
-					// set legend
-					legend = chart.getOrAddLegend();
-				    legend.setPosition(LegendPosition.BOTTOM);
-				    
-					
-				    // ----------------------------------------------------------------------------------------------------
-
-					// Write the output to a file
-					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-					String dir = uploadRootPath() + "/"
-							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/Monthly-report-" + timeStamp + ".xlsx";
-					
-					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
-						document.write(fileOut);
-						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
-								Constants.mailFromContact);
-
-						String msgTemplate = Constants.getMailTempleteByState(16);
-						String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Monthly ", "", "");
-						String mailTo = dataObj.getSubscribers();
-						String subject = Constants.getMailSubjectByState(16);
-
-						String tags = "report_monthly";
-						String fromName = "NEXT WAVE ENERGY MONITORING INC";
-						boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
-						if (!flagSent) {
-							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+							String tags = "report_monthly";
+							String fromName = "NEXT WAVE ENERGY MONITORING INC";
+							boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+							if (!flagSent) {
+								throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+							}
+						}
+						
+						return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+						
+					} else {
+						if (dataObj.getData_intervals() == 12) {
+							XSSFSheet chartSheet = document.createSheet("Monthly (Interval)");
+							
+							// FileInputStream obtains input bytes from the image file
+							InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
+							// Get the contents of an InputStream as a byte[].
+							byte[] bytes = IOUtils.toByteArray(inputStreamImage);
+							// Adds a picture to the workbook
+							int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+							// close the input stream
+							inputStreamImage.close();
+							
+							// Returns an object that handles instantiating concrete classes
+							CreationHelper helper = document.getCreationHelper();
+							
+							// Creates the top-level drawing patriarch.
+							Drawing<?> drawing = chartSheet.createDrawingPatriarch();
+							
+							// Create an anchor that is attached to the worksheet
+							ClientAnchor anchor = helper.createClientAnchor();
+							anchor.setAnchorType(ClientAnchor.AnchorType.MOVE_DONT_RESIZE);
+							// set top-left corner for the image
+							anchor.setCol1(5);
+							anchor.setCol1(5);
+							anchor.setRow1(1);
+							anchor.setRow2(4);
+							
+							// Creates a picture
+							Picture pict = drawing.createPicture(anchor, pictureIdx);
+							// Reset the image to the original sizege
+							pict.resize(1, 1);
+							
+							writeHeaderMonthlyBuiltinReport(chartSheet, 0, dataObj);
+							
+							// Write the output to a file
+							String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+							String dir = uploadRootPath() + "/"
+									+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+							String fileName = dir + "/Monthly-portfolio-production-report-monthly-interval-" + timeStamp + ".xlsx";
+							
+							try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
+								document.write(fileOut);
+								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+										Constants.mailFromContact);
+								
+								String siteName = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("name"))).collect(Collectors.joining(", "));
+								String siteId = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("id"))).collect(Collectors.joining(", "));
+								String msgTemplate = Constants.getMailTempleteByState(17);
+								String body = String.format(msgTemplate, siteName, siteId, "Customer", "Monthly Portfolio Production Report (Monthly Interval) ", "", "");
+								String mailTo = dataObj.getSubscribers();
+								String subject = Constants.getMailSubjectByState(17);
+								
+								String tags = "report_monthly";
+								String fromName = "NEXT WAVE ENERGY MONITORING INC";
+								boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+								if (!flagSent) {
+									throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+								}
+							}
+							
+							return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+						} else {
+							return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 						}
 					}
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+					
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				}
@@ -4570,223 +4638,292 @@ public class ReportsController extends BaseController {
 				ViewReportEntity dataObj = (ViewReportEntity) service.getMonthlyReport(obj);
 				
 				if (dataObj != null) {
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					SimpleDateFormat dateFormatString = new SimpleDateFormat("MMMM yyyy");
-					Date convertedDate = dateFormat.parse(obj.getEnd_date());
-					Date startDate = dateFormat.parse(obj.getStart_date());
-					dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
-					dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
-					List<?> dataExports = dataObj.getDataReports();
-					
-					// total column: 14
-					final float[] columnWidths = {4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-					
-					Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
-					table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-					table.setFontSize(8);
-					table.setTextAlignment(TextAlignment.CENTER);
-					
-					Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-					logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
-				
-					//====== table ============================================================
-					// header and logo
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell(6, 10).add(new Paragraph("MONTHLY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-					table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-					table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
-					
-					table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
-					
-					table.addCell(new Paragraph("Date").setBold());
-					table.addCell(new Paragraph("Actual Generation (kWh)").setBold());
-					table.addCell(new Paragraph("Estimated Generation (kWh)").setBold());
-					table.addCell(new Paragraph("Estimated Generation Index (%)").setBold());
-					
-					// empty column: gap between data table and chart
-					table.addCell(new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 1).setBorder(Border.NO_BORDER));
-					
-					// chart
-					// add inner table into chart cell
-					Table innerTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
-					com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 9);
-					table.addCell(chartCell.add(innerTable).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setBorder(Border.NO_BORDER).setPadding(0));
-					
-					// data table
-					double totalActual = 0;
-					double totalEstimated = 0;
-					DecimalFormat dfa = new DecimalFormat("###,###");
-					DecimalFormat df = new DecimalFormat("###,###.0");
-					for (int i = 0; i < dataExports.size(); i++) {
-						MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+					if (dataObj.getType_report() == 1) {
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						SimpleDateFormat dateFormatString = new SimpleDateFormat("MMMM yyyy");
+						Date convertedDate = dateFormat.parse(obj.getEnd_date());
+						Date startDate = dateFormat.parse(obj.getStart_date());
+						dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
+						dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
+						List<?> dataExports = dataObj.getDataReports();
 						
-						table.addCell(item.getCategories_time());
-						table.addCell(dfa.format(item.getActual()));
-						table.addCell(dfa.format(item.getEstimated()));
-						table.addCell(df.format(item.getPercent()));
+						// total column: 14
+						final float[] columnWidths = {4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 						
-						totalActual = totalActual + item.getActual();
-						totalEstimated = totalEstimated + item.getEstimated();
-					}
-					
-					// total
-					table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
-					table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format(totalActual))).setBold().setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format(totalEstimated))).setBold().setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format((totalActual / totalEstimated) * 100))).setBold().setBorder(Border.NO_BORDER));
-					
-					//====== first chart ============================================================
-					final float tickMarkLength = 5;
-					final float tickMarkStroke = 1;
-					final double domainAxisMargin = 0.01;
-					final double domainAxisMargin2 = 0.3;
-					CategoryPlot plot = new CategoryPlot();
-					
-					// configure plot
-					plot.setRangeGridlineStroke(new BasicStroke(tickMarkStroke));
-					plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-					
-					// configure horizontal axis
-					CategoryAxis domainAxis = new CategoryAxis();
-					domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
-					domainAxis.setTickMarkInsideLength(tickMarkLength);
-					domainAxis.setTickMarkOutsideLength(tickMarkLength);
-					domainAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-					domainAxis.setLowerMargin(domainAxisMargin);
-					domainAxis.setUpperMargin(domainAxisMargin);
-					domainAxis.setCategoryMargin(0.25);
-					
-					plot.setDomainAxis(domainAxis);
-					
-					// configure bar chart
-					final DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
-					for ( int i = 0; i < dataExports.size(); i++ ) {
-						MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+						Table table = new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth();
+						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+						table.setFontSize(8);
+						table.setTextAlignment(TextAlignment.CENTER);
 						
-						barChartDataset.addValue(item.getActual(), "Actual Generation (kWh)", item.getCategories_time());
-						barChartDataset.addValue(item.getEstimated(), "Estimate Generation (kWh)", item.getCategories_time());
+						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
+						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
+					
+						//====== table ============================================================
+						// header and logo
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(6, 10).add(new Paragraph("MONTHLY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+						table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+						table.addCell(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+						
+						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Performance Reporting")).setBold().setBackgroundColor(new DeviceRgb(117, 117, 117)).setFontColor(DeviceGray.WHITE).setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.LEFT));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 13).setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 14).setHeight(14).setBorder(Border.NO_BORDER));
+						
+						table.addCell(new Paragraph("Date").setBold());
+						table.addCell(new Paragraph("Actual Generation (kWh)").setBold());
+						table.addCell(new Paragraph("Estimated Generation (kWh)").setBold());
+						table.addCell(new Paragraph("Estimated Generation Index (%)").setBold());
+						
+						// empty column: gap between data table and chart
+						table.addCell(new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 1).setBorder(Border.NO_BORDER));
+						
+						// chart
+						// add inner table into chart cell
+						Table innerTable = new Table(UnitValue.createPercentArray(1)).useAllAvailableWidth();
+						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(dataExports.size() + 3, 9);
+						table.addCell(chartCell.add(innerTable).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setBorder(Border.NO_BORDER).setPadding(0));
+						
+						// data table
+						double totalActual = 0;
+						double totalEstimated = 0;
+						DecimalFormat dfa = new DecimalFormat("###,###");
+						DecimalFormat df = new DecimalFormat("###,###.0");
+						for (int i = 0; i < dataExports.size(); i++) {
+							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+							
+							table.addCell(item.getCategories_time());
+							table.addCell(dfa.format(item.getActual()));
+							table.addCell(dfa.format(item.getEstimated()));
+							table.addCell(df.format(item.getPercent()));
+							
+							totalActual = totalActual + item.getActual();
+							totalEstimated = totalEstimated + item.getEstimated();
+						}
+						
+						// total
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
+						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setBold().setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format(totalActual))).setBold().setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format(totalEstimated))).setBold().setBorder(Border.NO_BORDER));
+						table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph(dfa.format((totalActual / totalEstimated) * 100))).setBold().setBorder(Border.NO_BORDER));
+						
+						//====== first chart ============================================================
+						final float tickMarkLength = 5;
+						final float tickMarkStroke = 1;
+						final double domainAxisMargin = 0.01;
+						final double domainAxisMargin2 = 0.3;
+						CategoryPlot plot = new CategoryPlot();
+						
+						// configure plot
+						plot.setRangeGridlineStroke(new BasicStroke(tickMarkStroke));
+						plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+						
+						// configure horizontal axis
+						CategoryAxis domainAxis = new CategoryAxis();
+						domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
+						domainAxis.setTickMarkInsideLength(tickMarkLength);
+						domainAxis.setTickMarkOutsideLength(tickMarkLength);
+						domainAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+						domainAxis.setLowerMargin(domainAxisMargin);
+						domainAxis.setUpperMargin(domainAxisMargin);
+						domainAxis.setCategoryMargin(0.25);
+						
+						plot.setDomainAxis(domainAxis);
+						
+						// configure bar chart
+						final DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
+						for ( int i = 0; i < dataExports.size(); i++ ) {
+							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+							
+							barChartDataset.addValue(item.getActual(), "Actual Generation (kWh)", item.getCategories_time());
+							barChartDataset.addValue(item.getEstimated(), "Estimate Generation (kWh)", item.getCategories_time());
+						}
+						
+						BarRenderer barRenderer = new BarRenderer();
+						barRenderer.setShadowVisible(false);
+						barRenderer.setBarPainter(new StandardBarPainter());
+						barRenderer.setSeriesPaint(0, new Color(49, 119, 168));
+						barRenderer.setSeriesPaint(1, new Color(163, 188, 215));
+						barRenderer.setItemMargin(0);
+						
+						NumberAxis leftAxis = new NumberAxis("GENERATION (KWH)");
+						leftAxis.setTickMarkInsideLength(tickMarkLength);
+						leftAxis.setTickMarkOutsideLength(tickMarkLength);
+						leftAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+						
+						plot.setRenderer(0, barRenderer);
+						plot.setRangeAxis(0, leftAxis);
+						plot.setDataset(0, barChartDataset);
+						plot.mapDatasetToRangeAxis(0, 0);
+						
+						// configure line chart
+						final DefaultCategoryDataset lineChartDataset = new DefaultCategoryDataset();
+						for ( int i = 0; i < dataExports.size(); i++ ) {
+							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
+							lineChartDataset.addValue(item.getPercent(), "Estimate Generation Index (%)", item.getCategories_time());
+						}
+						
+						LineAndShapeRenderer lineAndShapeRenderer = new LineAndShapeRenderer();
+						lineAndShapeRenderer.setSeriesPaint(0, Color.gray);
+						lineAndShapeRenderer.setSeriesShape(0, ShapeUtils.createUpTriangle(3));
+						
+						NumberAxis rightAxis = new NumberAxis("PERFORMANCE INDEX (%)");
+						rightAxis.setTickMarkInsideLength(tickMarkLength);
+						rightAxis.setTickMarkOutsideLength(tickMarkLength);
+						rightAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+						
+						plot.setRenderer(1, lineAndShapeRenderer);
+						plot.setRangeAxis(1, rightAxis);
+						plot.setDataset(1, lineChartDataset);
+						plot.mapDatasetToRangeAxis(1, 1);
+						
+						// plot and return image
+						JFreeChart chart = new JFreeChart(plot);
+						chart.setBackgroundPaint(Color.white);
+						innerTable.addCell(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 400));
+						// gap between charts
+						innerTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(18 * (dataExports.size() + 1 - 30)).setBorder(Border.NO_BORDER));
+						
+						//====== second chart ============================================================
+						CategoryPlot plot2 = new CategoryPlot();
+						
+						// configure plot
+						plot2.setRangeGridlineStroke(new BasicStroke(tickMarkStroke));
+						plot2.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+						
+						// configure horizontal axis
+						CategoryAxis domainAxis2 = new CategoryAxis();
+						domainAxis2.setTickMarkInsideLength(tickMarkLength);
+						domainAxis2.setTickMarkOutsideLength(tickMarkLength);
+						domainAxis2.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+						domainAxis2.setLowerMargin(domainAxisMargin2);
+						domainAxis2.setUpperMargin(domainAxisMargin2);
+						
+						plot2.setDomainAxis(domainAxis2);
+						
+						// configure bar chart
+						final DefaultCategoryDataset barChartDataset2 = new DefaultCategoryDataset();
+						barChartDataset2.addValue(totalActual, "Actual Generation (kWh)", "");
+						barChartDataset2.addValue(totalEstimated, "Estimate Generation (kWh)", "");
+						
+						BarRenderer barRenderer2 = new BarRenderer();
+						barRenderer2.setShadowVisible(false);
+						barRenderer2.setBarPainter(new StandardBarPainter());
+						barRenderer2.setSeriesPaint(0, new Color(49, 119, 168));
+						barRenderer2.setSeriesPaint(1, new Color(163, 188, 215));
+						barRenderer2.setItemMargin(0.05);
+						plot2.setRenderer(0, barRenderer2);
+						
+						NumberAxis leftAxis2 = new NumberAxis("GENERATION (KWH)");
+						leftAxis2.setTickMarkInsideLength(tickMarkLength);
+						leftAxis2.setTickMarkOutsideLength(tickMarkLength);
+						leftAxis2.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+						
+						plot2.setRangeAxis(0, leftAxis2);
+						plot2.setDataset(0, barChartDataset2);
+						plot2.mapDatasetToRangeAxis(0, 0);
+						
+						// plot and return image
+						JFreeChart chart2 = new JFreeChart(plot2);
+						chart2.setBackgroundPaint(Color.white);
+						chart2.setTitle(dateFormatString.format(startDate));
+						innerTable.addCell(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 350), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 350));
+	
+						// Write the output to a file
+						document.add(table);
+						// It must be closed before attach to mail
+						document.close();
+	
+					    String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+					    String msgTemplate = Constants.getMailTempleteByState(16);
+					    String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Monthly ", "", "");
+					    String mailTo = dataObj.getSubscribers();
+					    String subject = Constants.getMailSubjectByState(16);
+					    
+					    String tags = "report_monthly";
+					    String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					    boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+					    if (!flagSent) {
+					    	throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+					    }
+					    
+						return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+					} else {
+						if (dataObj.getData_intervals() == 12) {
+							List<?> dataExports = dataObj.getDataSite();
+							
+							Table table = new Table(UnitValue.createPercentArray(9)).useAllAvailableWidth();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
+							
+							Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
+							logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
+							
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 9).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 3).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 3).add(new Paragraph("MONTHLY PORTFOLIO PRODUCTION REPORT (MONTHLY INTERVAL)")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(14).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 1).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 2).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 9).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Site Name")).setBold());
+							table.addCell(new Paragraph("Start Date").setBold());
+							table.addCell(new Paragraph("End Date").setBold());
+							table.addCell(new Paragraph("Monthly Production (kWh)").setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setBorder(Border.NO_BORDER));
+							
+							// data table
+							DecimalFormat df = new DecimalFormat("###,###.#");
+							for (int i = 0; i < dataExports.size(); i++) {
+								Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
+								
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setBorder(Border.NO_BORDER));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(item.get("name").toString())));
+								table.addCell(item.get("startDate").toString());
+								table.addCell(item.get("endDate").toString());
+								List dataReport = (List) item.get("dataReport");
+								Map<String, Object> itemdataReport = (Map<String, Object>) dataReport.get(0);
+								table.addCell(df.format(itemdataReport.get("chart_energy_kwh")));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setBorder(Border.NO_BORDER));
+							}
+							
+							// Write the output to a file
+							document.add(table);
+							// It must be closed before attach to mail
+							document.close();
+							
+							String siteName = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("name"))).collect(Collectors.joining(", "));
+							String siteId = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("id"))).collect(Collectors.joining(", "));
+							String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+							String msgTemplate = Constants.getMailTempleteByState(17);
+							String body = String.format(msgTemplate, siteName, siteId, "Customer", "Monthly Portfolio Production Report (Monthly Interval) ", "", "");
+							String mailTo = dataObj.getSubscribers();
+							String subject = Constants.getMailSubjectByState(17);
+							
+							String tags = "report_monthly";
+							String fromName = "NEXT WAVE ENERGY MONITORING INC";
+							boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+							if (!flagSent) {
+								throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+							}
+							
+							return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+						} else {
+							return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+						}
 					}
-					
-					BarRenderer barRenderer = new BarRenderer();
-					barRenderer.setShadowVisible(false);
-					barRenderer.setBarPainter(new StandardBarPainter());
-					barRenderer.setSeriesPaint(0, new Color(49, 119, 168));
-					barRenderer.setSeriesPaint(1, new Color(163, 188, 215));
-					barRenderer.setItemMargin(0);
-					
-					NumberAxis leftAxis = new NumberAxis("GENERATION (KWH)");
-					leftAxis.setTickMarkInsideLength(tickMarkLength);
-					leftAxis.setTickMarkOutsideLength(tickMarkLength);
-					leftAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-					
-					plot.setRenderer(0, barRenderer);
-					plot.setRangeAxis(0, leftAxis);
-					plot.setDataset(0, barChartDataset);
-					plot.mapDatasetToRangeAxis(0, 0);
-					
-					// configure line chart
-					final DefaultCategoryDataset lineChartDataset = new DefaultCategoryDataset();
-					for ( int i = 0; i < dataExports.size(); i++ ) {
-						MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
-						lineChartDataset.addValue(item.getPercent(), "Estimate Generation Index (%)", item.getCategories_time());
-					}
-					
-					LineAndShapeRenderer lineAndShapeRenderer = new LineAndShapeRenderer();
-					lineAndShapeRenderer.setSeriesPaint(0, Color.gray);
-					lineAndShapeRenderer.setSeriesShape(0, ShapeUtils.createUpTriangle(3));
-					
-					NumberAxis rightAxis = new NumberAxis("PERFORMANCE INDEX (%)");
-					rightAxis.setTickMarkInsideLength(tickMarkLength);
-					rightAxis.setTickMarkOutsideLength(tickMarkLength);
-					rightAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-					
-					plot.setRenderer(1, lineAndShapeRenderer);
-					plot.setRangeAxis(1, rightAxis);
-					plot.setDataset(1, lineChartDataset);
-					plot.mapDatasetToRangeAxis(1, 1);
-					
-					// plot and return image
-					JFreeChart chart = new JFreeChart(plot);
-					chart.setBackgroundPaint(Color.white);
-					innerTable.addCell(new Image(ImageDataFactory.create(chart.createBufferedImage(900, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 400));
-					// gap between charts
-					innerTable.addCell(new com.itextpdf.layout.element.Cell().setHeight(18 * (dataExports.size() + 1 - 30)).setBorder(Border.NO_BORDER));
-					
-					//====== second chart ============================================================
-					CategoryPlot plot2 = new CategoryPlot();
-					
-					// configure plot
-					plot2.setRangeGridlineStroke(new BasicStroke(tickMarkStroke));
-					plot2.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
-					
-					// configure horizontal axis
-					CategoryAxis domainAxis2 = new CategoryAxis();
-					domainAxis2.setTickMarkInsideLength(tickMarkLength);
-					domainAxis2.setTickMarkOutsideLength(tickMarkLength);
-					domainAxis2.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-					domainAxis2.setLowerMargin(domainAxisMargin2);
-					domainAxis2.setUpperMargin(domainAxisMargin2);
-					
-					plot2.setDomainAxis(domainAxis2);
-					
-					// configure bar chart
-					final DefaultCategoryDataset barChartDataset2 = new DefaultCategoryDataset();
-					barChartDataset2.addValue(totalActual, "Actual Generation (kWh)", "");
-					barChartDataset2.addValue(totalEstimated, "Estimate Generation (kWh)", "");
-					
-					BarRenderer barRenderer2 = new BarRenderer();
-					barRenderer2.setShadowVisible(false);
-					barRenderer2.setBarPainter(new StandardBarPainter());
-					barRenderer2.setSeriesPaint(0, new Color(49, 119, 168));
-					barRenderer2.setSeriesPaint(1, new Color(163, 188, 215));
-					barRenderer2.setItemMargin(0.05);
-					plot2.setRenderer(0, barRenderer2);
-					
-					NumberAxis leftAxis2 = new NumberAxis("GENERATION (KWH)");
-					leftAxis2.setTickMarkInsideLength(tickMarkLength);
-					leftAxis2.setTickMarkOutsideLength(tickMarkLength);
-					leftAxis2.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-					
-					plot2.setRangeAxis(0, leftAxis2);
-					plot2.setDataset(0, barChartDataset2);
-					plot2.mapDatasetToRangeAxis(0, 0);
-					
-					// plot and return image
-					JFreeChart chart2 = new JFreeChart(plot2);
-					chart2.setBackgroundPaint(Color.white);
-					chart2.setTitle(dateFormatString.format(startDate));
-					innerTable.addCell(new Image(ImageDataFactory.create(chart2.createBufferedImage(900, 350), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(600, 350));
-
-					// Write the output to a file
-					document.add(table);
-					// It must be closed before attach to mail
-					document.close();
-
-				    String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-				    String msgTemplate = Constants.getMailTempleteByState(16);
-				    String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Monthly ", "", "");
-				    String mailTo = dataObj.getSubscribers();
-				    String subject = Constants.getMailSubjectByState(16);
-				    
-				    String tags = "report_monthly";
-				    String fromName = "NEXT WAVE ENERGY MONITORING INC";
-				    boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
-				    if (!flagSent) {
-				    	throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
-				    }
-				    
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				}
@@ -7161,6 +7298,161 @@ public class ReportsController extends BaseController {
 			System.out.println(e);
 		}
 
+	}
+	
+	// Write header with format
+	private static void writeHeaderMonthlyBuiltinReport(Sheet sheet, int rowIndex, ViewReportEntity dataObj ) {
+		try {
+			DecimalFormat df = new DecimalFormat("###,###.#");
+			
+			sheet.autoSizeColumn(12);
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 25 * 256);
+			sheet.setColumnWidth(1, 25 * 256);
+			sheet.setColumnWidth(2, 25 * 256);
+			sheet.setColumnWidth(3, 25 * 256);
+			sheet.setColumnWidth(4, 12 * 256);
+			sheet.setColumnWidth(5, 13 * 256);
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			Row row0 = sheet.createRow(0);
+			row0.setHeight((short) 600);
+			
+			// Create font
+			Font font = sheet.getWorkbook().createFont();
+			font.setFontName("Times New Roman");
+			font.setBold(true);
+			font.setFontHeightInPoints((short) 14); // font size
+			font.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleCustom = sheet.getWorkbook().createCellStyle();
+			cellStyleCustom.setFont(font);
+			cellStyleCustom.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+			cellStyleCustom.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleCustom.setAlignment(HorizontalAlignment.CENTER);
+			cellStyleCustom.setWrapText(true);
+			
+			sheet.addMergedRegion(new CellRangeAddress(0, 4, 1, 3));
+			Cell cell = row0.createCell(1);
+			cell.setCellStyle(cellStyleCustom);
+			cell.setCellValue("MONTHLY PORTFOLIO PRODUCTION REPORT\n(MONTHLY INTERVAL)");
+			
+			
+			// Create font
+			Font font11 = sheet.getWorkbook().createFont();
+			font11.setFontName("Times New Roman");
+			font11.setBold(true);
+			font11.setFontHeightInPoints((short) 12); // font size
+			font11.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleCustom11 = sheet.getWorkbook().createCellStyle();
+			cellStyleCustom11.setFont(font11);
+			
+			cellStyleCustom11.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleCustom11.setAlignment(HorizontalAlignment.CENTER);
+			cellStyleCustom11.setWrapText(true);
+			
+			cellStyleCustom11.setBorderBottom(BorderStyle.THIN);
+			cellStyleCustom11.setBorderTop(BorderStyle.THIN);
+			cellStyleCustom11.setBorderRight(BorderStyle.THIN);
+			cellStyleCustom11.setBorderLeft(BorderStyle.THIN);
+			cellStyleCustom11.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom11.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom11.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom11.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
+			// Monthly Data
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1));
+			Row row5 = sheet.createRow(5);
+			Cell cell50 = row5.createCell(0);
+			cell50.setCellStyle(cellStyleCustom11);
+			cell50.setCellValue("Site Name");
+			
+			Cell cell51 = row5.createCell(1);
+			cell51.setCellStyle(cellStyleCustom11);
+			cell51.setCellValue("");
+			
+			Cell cell52 = row5.createCell(2);
+			cell52.setCellStyle(cellStyleCustom11);
+			cell52.setCellValue("Start Date");
+			
+			Cell cell53 = row5.createCell(3);
+			cell53.setCellStyle(cellStyleCustom11);
+			cell53.setCellValue("End Date");
+			
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 4, 5));
+			Cell cell54 = row5.createCell(4);
+			cell54.setCellStyle(cellStyleCustom11);
+			cell54.setCellValue("Monthly Production (kWh)");
+			
+			Cell cell55 = row5.createCell(5);
+			cell55.setCellStyle(cellStyleCustom11);
+			cell55.setCellValue(")");
+			
+			
+			List<?> dataExports = dataObj.getDataSite();
+			if(dataExports.size() > 0) {
+				// Create font
+				Font fontR = sheet.getWorkbook().createFont();
+				fontR.setFontName("Times New Roman");
+				fontR.setBold(false);
+				fontR.setFontHeightInPoints((short) 12); // font size
+				fontR.setColor(IndexedColors.BLACK.getIndex()); // text color
+				// Create CellStyle
+				CellStyle cellStyleRow = sheet.getWorkbook().createCellStyle();
+				cellStyleRow.setFont(fontR);
+				cellStyleRow.setVerticalAlignment(VerticalAlignment.CENTER);
+				cellStyleRow.setAlignment(HorizontalAlignment.CENTER);
+				
+				
+				cellStyleRow.setBorderBottom(BorderStyle.THIN);
+				cellStyleRow.setBorderTop(BorderStyle.THIN);
+				cellStyleRow.setBorderRight(BorderStyle.THIN);
+				cellStyleRow.setBorderLeft(BorderStyle.THIN);
+				cellStyleRow.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				
+				
+				int r = 6;
+				for( int j = 0; j < dataExports.size(); j++){
+					Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
+					
+					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 0, 1));
+					Row row6f = sheet.createRow(r+j);
+					Cell cell60f = row6f.createCell(0);
+					cell60f.setCellStyle(cellStyleRow);
+					cell60f.setCellValue(item.get("name").toString());
+					
+					Cell cell61f = row6f.createCell(1);
+					cell61f.setCellStyle(cellStyleRow);
+					cell61f.setCellValue("");
+					
+					Cell cell62f = row6f.createCell(2);
+					cell62f.setCellStyle(cellStyleRow);
+					cell62f.setCellValue(item.get("startDate").toString());
+					
+					Cell cell63f = row6f.createCell(3);
+					cell63f.setCellStyle(cellStyleRow);
+					cell63f.setCellValue(item.get("endDate").toString());
+					
+					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 4, 5));
+					Cell cell64f = row6f.createCell(4);
+					cell64f.setCellStyle(cellStyleRow);
+					List dataReport = (List) item.get("dataReport");
+					Map<String, Object> itemdataReport = (Map<String, Object>) dataReport.get(0);
+					cell64f.setCellValue(df.format(itemdataReport.get("chart_energy_kwh")));
+					
+					Cell cell65f = row6f.createCell(5);
+					cell65f.setCellStyle(cellStyleRow);
+					cell65f.setCellValue("");
+				}
+			}
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 
 //	@PostMapping("/view-report")
