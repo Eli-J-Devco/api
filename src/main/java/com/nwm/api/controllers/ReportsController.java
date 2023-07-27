@@ -4115,6 +4115,27 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description Get list site sub-group by employee
+	 * @author Hung.Bui
+	 * @since 2023-07-24
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-site-sub-group-by-customer")
+	public Object getListSiteSubGroupByEmployee(@RequestBody ReportsEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			ReportsService service = new ReportsService();
+			List data = service.getListSiteSubGroupByEmployee(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
 	/**
 	 * @description save customer

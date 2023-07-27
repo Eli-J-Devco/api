@@ -521,6 +521,23 @@ public class ReportsService extends DB {
 		}
 		return dataList;
 	}
+	/**
+	 * @description Get list site sub-group by employee
+	 * @author Hung.Bui
+	 * @since 2023-07-24
+	 */
+	
+	public List getListSiteSubGroupByEmployee(ReportsEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Reports.getListSiteSubGroupByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 
 	/**
 	 * @description insert report
@@ -531,6 +548,15 @@ public class ReportsService extends DB {
 		SqlSession session = this.beginTransaction();
 		try {
 			session.insert("Reports.insertReports", obj);
+			int insertLastId = obj.getId();
+			
+			List dataSite = obj.getDataSite();
+			if (insertLastId > 0 && dataSite.size() > 0) {
+				session.insert("Reports.insertReportSiteMap", obj);
+			} else {
+				return null;
+			}
+			
 			session.commit();
 			return obj;
 		} catch (Exception ex) {
@@ -553,8 +579,16 @@ public class ReportsService extends DB {
 
 		SqlSession session = this.beginTransaction();
 		try {
-
 			session.update("Reports.updateReports", obj);
+			
+			List dataSite = obj.getDataSite();
+			if (dataSite.size() <= 0) {
+				throw new Exception();
+			}
+			
+			session.delete("Reports.deleteReportSiteMap", obj);
+			session.insert("Reports.insertReportSiteMap", obj);
+			
 			session.commit();
 			return true;
 		} catch (Exception ex) {
@@ -600,11 +634,18 @@ public class ReportsService extends DB {
 	 * @param id
 	 */
 	public boolean deleteReports(ReportsEntity obj) {
+		SqlSession session = this.beginTransaction();
 		try {
-			return update("Reports.deleteReports", obj) > 0;
+			session.delete("Reports.deleteReportSiteMap", obj);
+			int rowDelete = session.delete("Reports.deleteReports", obj);
+			session.commit();
+			return rowDelete > 0;
 		} catch (Exception ex) {
+			session.rollback();
 			log.error("Reports.deleteReports", ex);
 			return false;
+		} finally {
+			session.close();
 		}
 	}
 	

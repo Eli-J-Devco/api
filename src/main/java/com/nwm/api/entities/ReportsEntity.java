@@ -37,6 +37,9 @@ public class ReportsEntity {
 	private Double chart_energy_kwh;
 	private String customer_name;
 	private Double energy_this_month;
+	private int id_sub_group;
+	private int type_option;
+	private List dataSite;
 	
 	
 	public Double getEnergy_this_month() {
@@ -212,6 +215,24 @@ public class ReportsEntity {
 	}
 	public void setCustomer_name(String customer_name) {
 		this.customer_name = customer_name;
+	}
+	public int getId_sub_group() {
+		return id_sub_group;
+	}
+	public void setId_sub_group(int id_sub_group) {
+		this.id_sub_group = id_sub_group;
+	}
+	public int getType_option() {
+		return type_option;
+	}
+	public void setType_option(int type_option) {
+		this.type_option = type_option;
+	}
+	public List getDataSite() {
+		return dataSite;
+	}
+	public void setDataSite(List dataSite) {
+		this.dataSite = dataSite;
 	}
 	
 	
