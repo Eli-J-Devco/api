@@ -153,7 +153,7 @@
 		 <mapper resource="mybatis/map/VirtualDevice.xml" />
 		 <mapper resource="mybatis/map/CalculationMeasuredProduction.xml" />
 		 
-		 
+		 <mapper resource="mybatis/map/BuiltInReport.xml"/>
 		 
 		
 		
