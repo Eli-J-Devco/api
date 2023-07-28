@@ -45,6 +45,7 @@ public class Constants {
 	public static final String uploadFilePathConfigKey="uploadpath.logo";
 	public static final String uploadFilePathConfigKeyAvatar="uploadpath.avatar";
 	public static final String uploadFilePathConfigKeyGallery="uploadpath.galleries";
+	public static final String uploadFilePathConfigKeyDiagram="uploadpath.diagrams";
 	public static final String uploadFilePathConfigKeyIcons="uploadpath.icons";
 	public static final String uploadFilePathConfigKeySupport="uploadpath.supports";
 	public static final String uploadFilePathConfigKeyLogoReport="uploadpath.reports";

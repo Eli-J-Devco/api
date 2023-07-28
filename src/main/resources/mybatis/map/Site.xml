@@ -421,6 +421,7 @@
 			`about`,
 			`kiosk_view`,
 			`site_logo`,
+			`diagram`,
 			`id_site_group`,
 			`id_site_sub_group`,
 			`timezone_datalogger`,
@@ -461,6 +462,7 @@
 			#{about},
 			#{kiosk_view},
 			#{site_logo},
+			#{diagram},
 			#{id_site_group},
 			#{id_site_sub_group},
 			#{timezone_datalogger},
@@ -510,6 +512,7 @@
 			`about` = #{about},
 			`kiosk_view` = #{kiosk_view},
 			`site_logo` = #{site_logo},
+			`diagram` = #{diagram},
 			`id_site_group` = #{id_site_group},
 			`id_site_sub_group` = #{id_site_sub_group},
 			`timezone_datalogger` = #{timezone_datalogger},
@@ -578,6 +581,7 @@
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
+			s.diagram,
 			sem.is_hiding
 		FROM
 			site s
