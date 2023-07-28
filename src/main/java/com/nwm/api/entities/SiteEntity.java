@@ -78,6 +78,7 @@ public class SiteEntity {
 	private String street_ws;
 	private String file_upload;
 	private String file_site_logo_upload;
+	private String file_diagram_upload;
 	private String current_time;
 	
 	private double energy_this_year;
@@ -151,6 +152,7 @@ public class SiteEntity {
 	private String about;
 	private int kiosk_view;
 	private String site_logo;
+	private String diagram;
 	private List groupDevices;
 	private List weatherStation;
 	private double nvm_irradiance;
@@ -184,6 +186,18 @@ public class SiteEntity {
 	
 	
 	
+	public String getDiagram() {
+		return diagram;
+	}
+	public void setDiagram(String diagram) {
+		this.diagram = diagram;
+	}
+	public String getFile_diagram_upload() {
+		return file_diagram_upload;
+	}
+	public void setFile_diagram_upload(String file_diagram_upload) {
+		this.file_diagram_upload = file_diagram_upload;
+	}
 	public String getAlert_mail_cc() {
 		return alert_mail_cc;
 	}

@@ -186,6 +186,8 @@ public class SiteController extends BaseController {
 			String saveDir = "";
 			String fileNameLogo = "";
 			String saveDirLogo = "";
+			String fileNameDiagram = "";
+			String saveDirDiagram = "";
 			if (obj.getScreen_mode() == 1) {
 				
 				if(!Lib.isBlank(obj.getFile_upload())) {
@@ -202,6 +204,13 @@ public class SiteController extends BaseController {
 					String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
 					obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
 					obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
+				}
+				
+				if(!Lib.isBlank(obj.getFile_diagram_upload())) {
+					saveDirDiagram = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
+					fileNameDiagram = randomAlphabetic(16);
+					String saveFileNameDiagram = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileNameDiagram, saveDirDiagram);
+					obj.setDiagram(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram)+"/"+saveFileNameDiagram);
 				}
 				
 				
@@ -227,6 +236,13 @@ public class SiteController extends BaseController {
 						fileNameLogo = randomAlphabetic(16);
 						String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
 						obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
+					}
+					
+					if(!Lib.isBlank(obj.getFile_diagram_upload())) {
+						saveDirDiagram = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
+						fileNameDiagram = randomAlphabetic(16);
+						String saveFileNameDiagram = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileNameDiagram, saveDirDiagram);
+						obj.setDiagram(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram)+"/"+saveFileNameDiagram);
 					}
 					
 					boolean insert = service.updateSite(obj);
