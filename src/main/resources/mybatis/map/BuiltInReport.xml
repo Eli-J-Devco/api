@@ -22,7 +22,7 @@
 	</resultMap>
 	
 	
-	<select id="getListSiteInReport" resultType="com.nwm.api.entities.SiteEntity" >
+	<select id="getListSiteInReport" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.* 
 		FROM
@@ -32,7 +32,13 @@
 			sem.id_employee = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0
-			AND s.id IN(125, 119, 120, 122)
+			<if test="id_sites != null">
+				AND s.id IN  (
+					<foreach item="item" index="index" collection="ids" separator=",">
+						#{item}
+					</foreach>
+				)
+			</if>
 	</select>
 	
 	<select id="getDetailReport" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
@@ -212,7 +218,8 @@
 					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 				END) * 100, 1)
 			, 0)
-			AS ModeledGenerationIndex
+			AS ModeledGenerationIndex,
+			s.name
 		FROM
 			model_virtual_meter_or_inverter vir
 			LEFT JOIN device d ON d.id = vir.id_device

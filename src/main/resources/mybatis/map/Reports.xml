@@ -173,12 +173,35 @@
 			r.file_type,
 			r.type_option,
 			r.id_sub_group,
-			t.ids_site,
 			DATE_FORMAT(r.date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
 			DATE_FORMAT(r.date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
 			r.`status`,
 			DATE_FORMAT(r.created_date, '%m/%d/%Y %H:%i %p') AS created_on,
-			DATE_FORMAT(r.updated_date, '%m/%d/%Y %H:%i %p') AS last_modified
+			DATE_FORMAT(r.updated_date, '%m/%d/%Y %H:%i %p') AS last_modified,
+			CASE
+					WHEN r.type_report = 2 AND r.type_option = 1 THEN (
+						SELECT GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
+								FROM site_employee_map sem 
+								LEFT JOIN site s ON s.id = sem.id_site
+							WHERE sem.id_employee = 1 AND s.`status` = 1 AND s.is_delete = 0
+					)
+					
+					WHEN r.type_report = 2 AND r.type_option = 2 THEN (
+						SELECT
+							GROUP_CONCAT(s.id SEPARATOR ',')
+						FROM
+							report_site_map rsm
+							LEFT JOIN site s ON s.id = rsm.id_site
+							WHERE s.`status` = 1 AND s.is_delete = 0 AND rsm.id_report = r.id
+						GROUP BY rsm.id_report
+					)
+					WHEN r.type_report = 2 AND r.type_option = 3 THEN (
+						SELECT GROUP_CONCAT(s.id SEPARATOR ',')
+						FROM site s WHERE 
+						s.`status` = 1 AND s.is_delete = 0 AND s.id_site_sub_group = r.id_sub_group
+					)
+					ELSE t.ids_site
+			END AS ids_site
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site

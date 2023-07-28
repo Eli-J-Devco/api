@@ -42,7 +42,24 @@ public class ViewReportEntity {
 	private int file_type;
 	private String time_zone;
 	private List dataWeatherStation;
+	private String id_sites;
+	private List ids;
+	
+	
+	
 
+	public List getIds() {
+		return ids;
+	}
+	public void setIds(List ids) {
+		this.ids = ids;
+	}
+	public String getId_sites() {
+		return id_sites;
+	}
+	public void setId_sites(String id_sites) {
+		this.id_sites = id_sites;
+	}
 	public String getDeviceType() {
 		return deviceType;
 	}
