@@ -6,6 +6,7 @@
 package com.nwm.api.entities;
 
 import java.util.List;
+import java.util.Map;
 
 public class ViewReportEntity {
 	private int id;
@@ -47,6 +48,11 @@ public class ViewReportEntity {
 	
 	
 	
+	private int type_report;
+	private int type_option;
+	private int id_sub_group;
+	private String ids_site;
+	private List<Map<String, Object>> dataSite;
 
 	public List getIds() {
 		return ids;
@@ -263,6 +269,36 @@ public class ViewReportEntity {
 	}
 	public void setDataWeatherStation(List dataWeatherStation) {
 		this.dataWeatherStation = dataWeatherStation;
+	}
+	public int getType_report() {
+		return type_report;
+	}
+	public void setType_report(int type_report) {
+		this.type_report = type_report;
+	}
+	public int getType_option() {
+		return type_option;
+	}
+	public void setType_option(int type_option) {
+		this.type_option = type_option;
+	}
+	public int getId_sub_group() {
+		return id_sub_group;
+	}
+	public void setId_sub_group(int id_sub_group) {
+		this.id_sub_group = id_sub_group;
+	}
+	public String getIds_site() {
+		return ids_site;
+	}
+	public void setIds_site(String ids_site) {
+		this.ids_site = ids_site;
+	}
+	public List<Map<String, Object>> getDataSite() {
+		return dataSite;
+	}
+	public void setDataSite(List<Map<String, Object>> dataSite) {
+		this.dataSite = dataSite;
 	}
 	
 	

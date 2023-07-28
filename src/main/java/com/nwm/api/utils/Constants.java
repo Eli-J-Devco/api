@@ -118,6 +118,9 @@ public class Constants {
 	
 	
 	
+	public static final String mailMonthlyBuiltin = "mailMonthlyBuiltin";
+	public static final String mailMonthlyBuiltinSubject = "mailMonthlyBuiltinSubject";
+	public static final String mailMonthlyBuiltinBody = "mailMonthlyBuiltinBody";
 	
 	
 	public static final String mailInscriptionToCustomerBody = "mailInscriptionToCustomerBody";
@@ -517,6 +520,8 @@ public class Constants {
 		case 17:
 			// annual production trend report (monthly interval)
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendBody);
+			// monthly built-in report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBuiltinBody);
 		default:
 			return null;
 		}
@@ -569,6 +574,8 @@ public class Constants {
 		case 17:
 			// Annual production trend report (monthly interval)
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendTitle);
+			// Monthly built-in report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBuiltinSubject);
 		default:
 			return null;
 		}

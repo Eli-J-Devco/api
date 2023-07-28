@@ -41,6 +41,19 @@
 		ORDER BY s.`name` ASC
 	</select>
 	
+	<select id="getListSiteByIdEmployee" resultType="Map">
+		SELECT
+			s.id,
+			s.`name`
+		FROM
+			site_employee_map sem
+			LEFT JOIN site s ON s.id = sem.id_site
+		WHERE
+			s.is_delete = 0
+			AND s.`status` = 1
+			AND sem.id_employee = #{id_employee}
+	</select>
+	
 	<select id="getListSiteSubGroupByEmployee" resultType="Map" >
 		SELECT
 			ssg.id,
@@ -64,6 +77,36 @@
 			</if>
 		GROUP BY ssg.id
 	    ORDER BY ssg.id ASC
+	</select>
+	
+	<select id="getListSiteBySubGroup" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`
+		FROM
+			site s
+			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
+		WHERE 
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND s.id_site_sub_group = #{id_sub_group}
+	</select>
+	
+	<select id="getListSelectedSiteByIdSite" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`
+		FROM
+			site s
+		WHERE 
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND s.id IN (${ids_site})
 	</select>
 	
 	<insert id="insertReports" useGeneratedKeys="true" keyProperty="id">
@@ -281,18 +324,38 @@
 			r.cadence_range,
 			r.subscribers,
 			r.data_intervals,
+			r.type_report,
+			r.type_option,
+			r.id_sub_group,
+			r.id_employee,
+			t.ids_site,
 			CASE
 		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
-		    	WHEN r.type_report = 2 THEN CONCAT_WS( " " , s.`name`, "Renewable Energy Credits") 
-		    
-		    ELSE s.`name`
+		    	WHEN r.type_report = 2 THEN
+		    		CASE
+		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
+		    		END
+		    	ELSE s.`name`
 			END	AS report_name,
 			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address
 		FROM
 			site s 
 			LEFT JOIN report r ON r.id_site = s.id
+			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
+			LEFT JOIN (
+				SELECT
+					rsm.id_report,
+					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ', ') AS ids_site
+				FROM
+					report_site_map rsm
+					LEFT JOIN site s ON s.id = rsm.id_site
+				GROUP BY rsm.id_report
+			) t ON t.id_report = r.id
 		WHERE
-			s.id = #{id_site} AND r.id = #{id}
+			r.id = #{id}
 	</select>
   	
   	
@@ -409,6 +472,28 @@
 			AND s.id = #{id_site}
 			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY s.id, DATE_FORMAT( sdr.time , "%Y-%m/%d")
+	</select>
+	
+	<select id="getDataEnergyMonthlyBuiltinReport" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
+			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh
+			
+		FROM
+			site_data_report sdr 
+			LEFT JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND s.id = #{id_site}
+			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+			GROUP BY s.id, time_format
 	</select>
 	
 	
