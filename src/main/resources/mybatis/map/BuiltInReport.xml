@@ -73,7 +73,8 @@
 			d.devicename,
 			d.devicename AS export_devicename,
 			d.datatablename,
-			d.id_site
+			d.id_site,
+			d.id_device_type
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
@@ -235,6 +236,68 @@
 			
 			GROUP BY time_format
 	</select>
+	
+	
+	<select id="getListDeviceTypeMeter" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.devicename AS export_devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id = 3 
+			AND d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+		GROUP BY d.id_device_type
+	</select>
+	
+	
+	
+	<select id="getMonthlyTrendBuitInReport" resultType="Map" >
+		SELECT
+				t.time_format,
+				t.time_full,
+				t.name,
+				IFNULL(ROUND(SUM( t.monthlyProduction)), 0.001)  AS monthlyProduction
+				
+			FROM
+				(
+					<foreach collection="groupDevices" item="item" index="index" separator="union all">
+						SELECT
+							dv.time,
+							s.name,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+							IFNULL(SUM(dv.MeasuredProduction), 0) AS monthlyProduction 
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.id = #{item.id_site}
+							AND d.id_device_type = #{item.id_device_type}
+							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+							AND s.`status` = 1 
+							AND d.`status` = 1 
+						GROUP BY
+							d.id, time_format
+			      </foreach>
+				) t 
+			GROUP BY
+				t.time_format
+	</select>
+	
+	
+	
+	
+	
 	
 	<!-- 
 	<select id="getListSiteByEmployee" resultType="Map">
@@ -450,23 +513,7 @@
 	
 	
 	
-	<select id="getListDeviceTypeMeter" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			d.devicename AS export_devicename,
-			d.datatablename,
-			d.id_site
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-		WHERE
-			dt.id = 3 
-			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-		GROUP BY d.id_device_type
-	</select>
+	
 	
 	
 	

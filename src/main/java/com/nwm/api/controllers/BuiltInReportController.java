@@ -500,7 +500,7 @@ public class BuiltInReportController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/sent-mail-excel-annual-production-trend-report")
-	public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
+	public Object sentMailAnnualTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
 			String idSites = obj.getId_sites();
 			
@@ -784,10 +784,10 @@ public class BuiltInReportController extends BaseController {
 						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 								Constants.mailFromContact);
 
-						String msgTemplate = Constants.getMailTempleteByState(17);
+						String msgTemplate = Constants.getMailTempleteByState(18);
 						String body = String.format(msgTemplate, "Customer", "ANNUAL PRODUCTION TREND REPORT (MONTHLY INTERVAL) ", "", "");
 						String mailTo = obj.getSubscribers();
-						String subject = Constants.getMailSubjectByState(17);
+						String subject = Constants.getMailSubjectByState(18);
 
 						String tags = "report_annual";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";
@@ -811,6 +811,441 @@ public class BuiltInReportController extends BaseController {
 		}
 	}
 	
+	
+	
+	
+	
+	
+	/**
+	 * @description Sent Mail monthly Production Trend Report
+	 * @author long.pham
+	 * @since 2023-07-25
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/monthly-production-trend-report")
+	public Object monthlyProductionTrendReport(@RequestBody ViewReportEntity obj) {
+		try {
+			// Get list data site render report
+			BuiltInReportService service = new BuiltInReportService();
+			ViewReportEntity dataObj = (ViewReportEntity) service.getMonthlyTrendBuitInReport(obj);	
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
+
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
+	
+	
+	
+	/**
+	 * @description Sent Mail monthly portfolio Production Report
+	 * @author long.pham
+	 * @since 2023-07-25
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-excel-monthly-production-trend-report")
+	public Object sentMailMonthlyTrendReport(@RequestBody ViewReportEntity obj) {
+		try {
+
+			String idSites = obj.getId_sites();
+			
+			if(idSites == null) {
+				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			}
+			
+			List<String> ids = new ArrayList<String>(Arrays.asList(idSites.split(",")));
+			obj.setIds(ids);
+			
+			// Get list data site render report
+			BuiltInReportService service = new BuiltInReportService();
+			List sites  = service.getListSiteInReport(obj);
+			
+			if(sites.size() > 0) {
+				try (XSSFWorkbook document = new XSSFWorkbook()) {
+					int count = 1;
+					for (int s = 0; s < sites.size(); s++) {
+						SiteEntity siteItem = (SiteEntity) sites.get(s);
+						obj.setId_site(siteItem.getId());
+						ViewReportEntity dataObj = (ViewReportEntity) service.getMonthlyTrendBuitInReport(obj);
+						dataObj.setSite_name(siteItem.getName());
+						
+						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						Date convertedDate = dateFormat.parse(obj.getEnd_date());
+						Date start = dateFormat.parse(obj.getStart_date());
+						String lastOfMonth = new SimpleDateFormat("dd").format(convertedDate);
+						
+						dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(start) );
+						dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
+						dataObj.setData_intervals(obj.getData_intervals());
+						
+						List dataExports = dataObj.getDataReports();
+						
+						if (dataObj != null) {
+							XSSFSheet chartSheet = document.createSheet(siteItem.getName());
+							XSSFSheet dataSheet = document.createSheet("data"+s);
+							document.setSheetHidden( count, true);
+							count = count + 2;
+							// FileInputStream obtains input bytes from the image file
+							InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
+							// Get the contents of an InputStream as a byte[].
+							byte[] bytes = IOUtils.toByteArray(inputStreamImage);
+							// Adds a picture to the workbook
+							int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+							// close the input stream
+							inputStreamImage.close();
+
+							// Returns an object that handles instantiating concrete classes
+							CreationHelper helper = document.getCreationHelper();
+							// Creates the top-level drawing patriarch.
+							Drawing drawing = chartSheet.createDrawingPatriarch();
+
+							// Create an anchor that is attached to the worksheet
+							ClientAnchor anchor = helper.createClientAnchor();
+							// set top-left corner for the image
+							anchor.setCol1(4);
+							anchor.setRow1(1);
+
+							// Creates a picture
+							Picture pict = drawing.createPicture(anchor, pictureIdx);
+							// Reset the image to the original size
+							pict.resize(1.0, 3.8);
+
+							ArrayList<String> categories = new ArrayList<String>();
+							SimpleDateFormat dateFormatCategories = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
+							
+							if(Integer.parseInt(lastOfMonth) > 0) {
+								for(int i = 0; i < Integer.parseInt(lastOfMonth); i++) {
+									Date startDate = dateFormat.parse(obj.getStart_date());
+									Calendar newCalendar = Calendar.getInstance();
+									newCalendar.setTime(startDate);
+									newCalendar.add(Calendar.DATE, i);
+									
+									if(obj.getData_intervals() == 2) {
+										for(int j = 0; j < 96; j++) {
+											Calendar itemCalendar = Calendar.getInstance();
+											itemCalendar.setTime(newCalendar.getTime());
+											itemCalendar.add(Calendar.MINUTE, j * 15);
+											categories.add(dateFormatCategories.format(itemCalendar.getTime()));
+										}
+									} else if(obj.getData_intervals() == 1) {
+										for(int j = 0; j < 288; j++) {
+											Calendar itemCalendar = Calendar.getInstance();
+											itemCalendar.setTime(newCalendar.getTime());
+											itemCalendar.add(Calendar.MINUTE, j * 5);
+											categories.add(dateFormatCategories.format(itemCalendar.getTime()));
+										}
+									}
+								}
+							}
+							
+							
+							ArrayList<Double> dataGeneration = new ArrayList<Double>();
+							for(int i = 0; i < categories.size(); i++) {
+								if(dataExports.size() > 0) {
+									Double dataMonthly = 0.0;
+									for( int j = 0; j < dataExports.size(); j++){
+										Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
+										String date = (String) item.get("time_full");
+										if(date.equals( categories.get(i))) {
+											dataMonthly = (Double) item.get("monthlyProduction");
+										}
+									}
+									
+									dataGeneration.add(dataMonthly);
+								} else {
+									dataGeneration.add(0.0);
+								}
+							}
+							
+							writeHeaderMonthTrendReport(chartSheet, 0, categories, dataGeneration, dataObj);
+						}
+						
+					}
+					
+					// Write the output to a file
+					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+					String dir = uploadRootPath() + "/"
+							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+					String fileName = dir + "/Monthly-portfolio-production-report-" + timeStamp + ".xlsx";
+					
+					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
+						document.write(fileOut);
+						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+								Constants.mailFromContact);
+
+						String msgTemplate = Constants.getMailTempleteByState(19);
+						String body = String.format(msgTemplate, "Customer", "Monthly Portfolio Production Report", "", "");
+						String mailTo = obj.getSubscribers();
+						String subject = Constants.getMailSubjectByState(19);
+
+						String tags = "report_monthly_portfolio";
+						String fromName = "NEXT WAVE ENERGY MONITORING INC";
+						boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+						if (!flagSent) {
+							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+						}
+					}
+					
+					
+					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
+				}
+			} else {
+				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			}
+			
+			
+			
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
+	
+	
+	
+	// Write header with format monthly portfolio production report 
+	private static void writeHeaderMonthTrendReport(Sheet sheet, int rowIndex, ArrayList categories, ArrayList dataGeneration, ViewReportEntity dataObj) {
+		try {
+			DecimalFormat df = new DecimalFormat("###,###");
+			DecimalFormat dfp = new DecimalFormat("###,###.0");
+			// create CellStyle
+			Font fonDef = sheet.getWorkbook().createFont();
+			fonDef.setFontName("Calibri (Body)");
+			fonDef.setFontHeightInPoints((short) 12); // font size
+			
+			CellStyle cellStyle = createStyleForHeader(sheet);
+			cellStyle.setFont(fonDef);
+			cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyle.setBorderBottom(BorderStyle.THIN);
+			cellStyle.setBorderTop(BorderStyle.THIN);
+			cellStyle.setBorderRight(BorderStyle.THIN);
+			cellStyle.setBorderLeft(BorderStyle.THIN);
+			cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
+			
+			
+			
+			// create CellStyle title
+			CellStyle cellStyleTitle = createStyleForHeader(sheet);
+			cellStyleTitle.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleTitle.setAlignment(HorizontalAlignment.LEFT);
+			
+			cellStyleTitle.setBorderBottom(BorderStyle.THIN);
+			cellStyleTitle.setBorderTop(BorderStyle.THIN);
+			cellStyleTitle.setBorderRight(BorderStyle.THIN);
+			cellStyleTitle.setBorderLeft(BorderStyle.THIN);
+			cellStyleTitle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleTitle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleTitle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleTitle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
+
+			// Create font
+			Font fontBold = sheet.getWorkbook().createFont();
+			fontBold.setFontName("Calibri (Body)");
+			fontBold.setBold(true);
+			fontBold.setFontHeightInPoints((short) 12); // font size
+			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
+			cellStyleFontBold.setFont(fontBold);
+			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleFontBold.setAlignment(HorizontalAlignment.CENTER);
+			cellStyleFontBold.setBorderBottom(BorderStyle.THIN);
+			cellStyleFontBold.setBorderTop(BorderStyle.THIN);
+			cellStyleFontBold.setBorderRight(BorderStyle.THIN);
+			cellStyleFontBold.setBorderLeft(BorderStyle.THIN);
+			cellStyleFontBold.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleFontBold.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleFontBold.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleFontBold.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 30 * 256);
+			sheet.setColumnWidth(1, 30 * 256);
+			sheet.setColumnWidth(2, 30 * 256);
+			
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 2));
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 2));
+			sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 2));
+
+			Row row1 = sheet.createRow(1);
+			row1.setHeight((short) 600);
+			Cell cell = row1.createCell(0);
+
+			// Create font
+			Font font = sheet.getWorkbook().createFont();
+			font.setFontName("Calibri (Body)");
+			font.setBold(true);
+			font.setFontHeightInPoints((short) 18); // font size
+			font.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleHeader = sheet.getWorkbook().createCellStyle();
+			cellStyleHeader.setFont(font);
+			cellStyleHeader.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+			cellStyleHeader.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleHeader.setAlignment(HorizontalAlignment.CENTER);
+			
+			cell.setCellStyle(cellStyleHeader);
+			if(dataObj.getData_intervals() == 1) {
+				cell.setCellValue("Monthly Portfolio Production Report (5min Interval)");
+			} else if(dataObj.getData_intervals() == 2) {
+				cell.setCellValue("Monthly Portfolio Production Report (15min Interval)");
+			}
+							
+			// Create font
+			Font font1 = sheet.getWorkbook().createFont();
+			font1.setFontName("Calibri (Body)");
+			font1.setBold(true);
+			font1.setFontHeightInPoints((short) 14); // font size
+			font1.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleSubTitle = sheet.getWorkbook().createCellStyle();
+			cellStyleSubTitle.setFont(font1);
+			cellStyleSubTitle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+			cellStyleSubTitle.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleSubTitle.setAlignment(HorizontalAlignment.CENTER);
+						
+			Row row2 = sheet.createRow(2);
+			row2.setHeight((short) 500);
+			Cell cell2 = row2.createCell(0);
+			cell2.setCellStyle(cellStyleSubTitle);
+			cell2.setCellValue(dataObj.getSite_name());
+			
+			
+			
+			Font font3 = sheet.getWorkbook().createFont();
+			font3.setFontName("Calibri (Body)");
+			font3.setBold(false);
+			font3.setFontHeightInPoints((short) 14); // font size
+			font3.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleDate = sheet.getWorkbook().createCellStyle();
+			cellStyleDate.setFont(font3);
+			cellStyleDate.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+			cellStyleDate.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleDate.setAlignment(HorizontalAlignment.CENTER);
+			Row row3 = sheet.createRow(3);
+			row3.setHeight((short) 500);
+			Cell cell3 = row3.createCell(0);
+			cell3.setCellStyle(cellStyleDate);
+			
+			SimpleDateFormat dt = new SimpleDateFormat("mm/dd/yyyy"); 
+			Date startDate = dt.parse(dataObj.getStart_date());
+			Date endDate = dt.parse(dataObj.getEnd_date()); 
+			cell3.setCellValue(dt.format(startDate) + " - " +  dt.format(endDate));
+			
+			
+			
+			Font fonDefB = sheet.getWorkbook().createFont();
+			fonDefB.setFontName("Calibri (Body)");
+			fonDefB.setBold(true);
+			fonDefB.setFontHeightInPoints((short) 12); // font size
+			
+			CellStyle cellStyleB = createStyleForHeader(sheet);
+			cellStyleB.setFont(fonDefB);
+			cellStyleB.setWrapText(true);
+			cellStyleB.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleB.setAlignment(HorizontalAlignment.CENTER);
+			cellStyleB.setBorderBottom(BorderStyle.THIN);
+			cellStyleB.setBorderTop(BorderStyle.THIN);
+			cellStyleB.setBorderRight(BorderStyle.THIN);
+			cellStyleB.setBorderLeft(BorderStyle.THIN);
+			cellStyleB.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleB.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleB.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleB.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
+			
+			Row row4 = sheet.createRow(5);
+			row4.setHeight((short) 500);
+			Cell cell4 = row4.createCell(0);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2));
+			cell4.setCellStyle(cellStyleB);
+			cell4.setCellValue("Timestamp");
+			
+			cell4 = row4.createCell(1);
+			cell4.setCellStyle(cellStyleB);
+			cell4.setCellValue("");
+			
+			cell4 = row4.createCell(2);
+			cell4.setCellStyle(cellStyleB);
+			cell4.setCellValue("");
+
+			cell4 = row4.createCell(3);
+			cell4.setCellStyle(cellStyleB);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 3, 4));
+			cell4.setCellValue("Monthly Production (kWh)");
+			
+			cell4 = row4.createCell(4);
+			cell4.setCellStyle(cellStyleB);
+			cell4.setCellValue("");
+			
+			
+			// Create style row
+			Font fontRow = sheet.getWorkbook().createFont();
+			fontRow.setFontName("Calibri (Body)");
+			fontRow.setFontHeightInPoints((short) 12); // font size
+			fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
+			// Create CellStyle
+			CellStyle cellStyleItem = sheet.getWorkbook().createCellStyle();
+			cellStyleItem.setFont(fontRow);
+			cellStyleItem.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+			cellStyleItem.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleItem.setAlignment(HorizontalAlignment.CENTER);
+			
+			cellStyleItem.setBorderBottom(BorderStyle.THIN);
+			cellStyleItem.setBorderTop(BorderStyle.THIN);
+			cellStyleItem.setBorderRight(BorderStyle.THIN);
+			cellStyleItem.setBorderLeft(BorderStyle.THIN);
+			cellStyleItem.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleItem.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleItem.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleItem.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
+			
+
+			Row row5 = sheet.createRow(6);
+			for (int i = 0; i < categories.size(); i++) {
+				row5 = sheet.createRow(i + 6);
+				row5.setHeight((short) 500);
+				sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 0, 2));
+				Cell cell5 = row5.createCell(0);
+				cell5.setCellStyle(cellStyleItem);
+				cell5.setCellValue((String) categories.get(i));
+				
+				cell5 = row5.createCell(1);
+				cell5.setCellStyle(cellStyleItem);
+				cell5.setCellValue("");
+				
+				cell5 = row5.createCell(2);
+				cell5.setCellStyle(cellStyleItem);
+				cell5.setCellValue("");
+				
+				
+				Cell cell51 = row5.createCell(3);
+				sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 3, 4));
+				cell51.setCellStyle(cellStyleItem);
+				cell51.setCellValue( dataGeneration.get(i) == null ? "0.0" : df.format(dataGeneration.get(i)));
+				
+				cell51 = row5.createCell(4);
+				cell51.setCellStyle(cellStyleItem);
+				cell51.setCellValue("");
+			}
+			
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+
+	}
+		
+		
 	
 	private static void solidLineSeries(XDDFChartData data, int index, PresetColor color) {
 		XDDFSolidFillProperties fill = new XDDFSolidFillProperties(XDDFColor.from(color));
