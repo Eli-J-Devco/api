@@ -113,6 +113,20 @@ public class Constants {
 	public static final String mailMonthlySubject = "mailMonthlySubject";
 	public static final String mailMonthlyBody = "mailMonthlyBody";
 	
+	public static final String mailAnnualProductionTrendTitle = "mailAnnualProductionTrendTitle";
+	public static final String mailAnnualProductionTrendBody = "mailAnnualProductionTrendBody";
+	
+	
+	public static final String mailMonthlyPortfolioTitle = "mailMonthlyPortfolioTitle";
+	public static final String mailMonthlyPortfolioBody = "mailMonthlyPortfolioBody";
+	
+	
+	
+	
+	
+	public static final String mailMonthlyBuiltin = "mailMonthlyBuiltin";
+	public static final String mailMonthlyBuiltinSubject = "mailMonthlyBuiltinSubject";
+	public static final String mailMonthlyBuiltinBody = "mailMonthlyBuiltinBody";
 	
 	
 	public static final String mailInscriptionToCustomerBody = "mailInscriptionToCustomerBody";
@@ -509,6 +523,16 @@ public class Constants {
 		case 16:
 			// monthly report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBody);
+		case 17:
+			// monthly built-in report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBuiltinBody);
+		case 18:
+			// annual production trend report (monthly interval)
+				return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendBody);
+				
+		case 19:
+			// annual production trend report (monthly interval)
+				return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioBody);
 		default:
 			return null;
 		}
@@ -558,6 +582,15 @@ public class Constants {
 		case 16:
 			// Monthly report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlySubject);
+		case 17:
+			// Monthly built-in report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyBuiltinSubject);
+		case 18:
+			// Annual production trend report (monthly interval)
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAnnualProductionTrendTitle);
+		case 19:
+			// monthly portfolio production trend report (monthly interval)
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioTitle);
 		default:
 			return null;
 		}
