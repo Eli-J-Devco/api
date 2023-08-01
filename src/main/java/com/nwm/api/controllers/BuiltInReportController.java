@@ -7,6 +7,9 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -60,6 +63,16 @@ import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.DatasetRenderingOrder;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.util.ShapeUtils;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTBoolean;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineChart;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineSer;
@@ -69,6 +82,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
@@ -1572,6 +1600,275 @@ public class BuiltInReportController extends BaseController {
 			
 			
 		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Sent Mail Weekly Production Trend Report in pdf
+	 * @author Hung.Bui
+	 * @since 2023-07-31
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-pdf-weekly-production-trend-report")
+	public Object sentMailPdfWeeklyTrendReport(@RequestBody ViewReportEntity obj) {
+		try {
+			String idSites = obj.getId_sites();
+			
+			if(idSites == null) {
+				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			}
+			
+			List<String> ids = new ArrayList<String>(Arrays.asList(idSites.split(",")));
+			obj.setIds(ids);
+			
+			// Get list data site render report
+			BuiltInReportService service = new BuiltInReportService();
+			List sites  = service.getListSiteInReport(obj);
+			obj.setStart_date(obj.getStart_date());
+			obj.setEnd_date(obj.getEnd_date());
+			
+			if (sites.size() > 0) {
+				
+				String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+				String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+				String fileName = dir + "/Weekly-production-trend-report-daily-interval-" + timeStamp + ".pdf";
+				File file = new File(fileName);
+				
+				try (
+						PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
+						Document document = new Document(pdfDocument, PageSize.A3.rotate());
+						) {
+					
+					for (int s = 0; s < sites.size(); s++) {
+						SiteEntity siteItem = (SiteEntity) sites.get(s);
+						obj.setId_site(siteItem.getId());
+						ViewReportEntity dataObj = (ViewReportEntity) service.getWeeklyBuiltInReport(obj);
+						
+						if (dataObj != null) {
+							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							Date convertedDate = dateFormat.parse(obj.getEnd_date());
+							Date startDate = dateFormat.parse(obj.getStart_date());
+							dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
+							dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
+							dataObj.setSite_name(siteItem.getName());
+							
+							List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
+							
+							// calculate for data of table
+							ArrayList<String> categories = new ArrayList<String>();
+							ArrayList<Double> dataActualGeneration = new ArrayList<Double>();
+							ArrayList<Double> dataExpectedGeneration = new ArrayList<Double>();
+							ArrayList<Double> dataModeledGeneration = new ArrayList<Double>();
+							ArrayList<Double> dataPOA = new ArrayList<Double>();
+							ArrayList<Double> dataExpectedGenerationIndex = new ArrayList<Double>();
+							ArrayList<Double> dataModeledGenerationIndex = new ArrayList<Double>();
+							
+							double totalActualGeneration = 0;
+							double totalExpectedGeneration = 0;
+							double totalModeledGeneration = 0;
+							double totalExpectedGenerationIndex = 0;
+							double totalModeledGenerationIndex = 0;
+							
+							if(dataExports != null && dataExports.size() > 0) {
+								for( int i = 0; i < dataExports.size(); i++){
+									WeeklyDateEntity item = (WeeklyDateEntity) dataExports.get(i);
+
+									categories.add(item.getCategories_time());
+									Double v = (Double) item.getActualGeneration();
+									Double ex = (Double) item.getExpectedGeneration();
+									Double mo = (Double) item.getModeledGeneration();
+									Double poa = (Double) item.getPoa();
+									Double exi = (Double) item.getExpectedGenerationIndex();
+									Double moi = (Double) item.getModeledGenerationIndex();
+																	
+									totalActualGeneration = totalActualGeneration + v;
+									totalExpectedGeneration =  totalExpectedGeneration + ex;
+									totalModeledGeneration = totalModeledGeneration + mo;
+									
+									dataActualGeneration.add(v);
+									dataExpectedGeneration.add(ex);
+									dataModeledGeneration.add(mo);
+									
+									dataPOA.add(poa);
+									dataExpectedGenerationIndex.add(exi);
+									dataModeledGenerationIndex.add(moi);
+								}
+							}
+							
+							if(totalActualGeneration > 0 && totalExpectedGeneration > 0) {
+								totalExpectedGenerationIndex = (totalActualGeneration / totalExpectedGeneration) * 100;
+							}
+							if(totalActualGeneration > 0 && totalModeledGeneration > 0) {
+								totalModeledGenerationIndex = (totalActualGeneration / totalModeledGeneration) * 100;
+							}
+							
+							// total column: 12
+							Table table = new Table(UnitValue.createPercentArray(12));
+							table.setWidth(UnitValue.createPercentValue(100));
+							table.setFixedLayout();
+							table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+							table.setFontSize(8);
+							table.setTextAlignment(TextAlignment.CENTER);
+							
+							Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
+							logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
+							
+							//====== table ============================================================
+							// header and logo
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 3).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 6).add(new Paragraph("WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)")).setHeight(35).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.BOTTOM).setFontSize(14).setBold().setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(3, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 6).add(new Paragraph(dataObj.getSite_name().toUpperCase())).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setFontSize(10).setBold().setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 6).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date())).setHeight(35).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP).setFontSize(10).setBorder(Border.NO_BORDER));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// data table
+							DecimalFormat df = new DecimalFormat("###,###");
+							DecimalFormat df1p = new DecimalFormat("###,###.#");
+							DecimalFormat df2p = new DecimalFormat("###,###.##");
+							
+							table.addCell(new com.itextpdf.layout.element.Cell().setHeight(14));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Expected Generation (kWh)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Modeled Generation (kWh)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("POA (W/m2)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Expected Generation Index (%)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Modeled Generation Index (%)")).setTextAlignment(TextAlignment.CENTER).setBold());
+							
+							for (int i = 0; i < categories.size(); i++) {
+								table.addCell(categories.get(i));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(dataActualGeneration.get(i)))));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(dataExpectedGeneration.get(i)))));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(dataModeledGeneration.get(i)))));
+								table.addCell(df2p.format(dataPOA.get(i)));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df1p.format(dataExpectedGenerationIndex.get(i)))));
+								table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df1p.format(dataModeledGenerationIndex.get(i)))));
+							}
+							
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Total")).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(totalActualGeneration))).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(totalExpectedGeneration))).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df.format(totalModeledGeneration))).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().setHeight(14));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df1p.format(totalExpectedGenerationIndex))).setTextAlignment(TextAlignment.CENTER).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(df1p.format(totalModeledGenerationIndex))).setTextAlignment(TextAlignment.CENTER).setBold());
+							
+							// empty row: gap between data table and chart
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+							
+							// chart
+							com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(22, 12);
+							table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+							
+							//====== chart ============================================================
+							final float tickMarkLength = 5;
+							final float tickMarkStroke = 1;
+							final double domainAxisMargin = 0.01;
+							CategoryPlot plot = new CategoryPlot();
+							
+							// configure plot
+							plot.setRangeGridlineStroke(new BasicStroke(tickMarkStroke));
+							plot.setDatasetRenderingOrder(DatasetRenderingOrder.FORWARD);
+							
+							// configure horizontal axis
+							CategoryAxis domainAxis = new CategoryAxis();
+							domainAxis.setTickMarkInsideLength(tickMarkLength);
+							domainAxis.setTickMarkOutsideLength(tickMarkLength);
+							domainAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+							domainAxis.setLowerMargin(domainAxisMargin);
+							domainAxis.setUpperMargin(domainAxisMargin);
+							domainAxis.setCategoryMargin(0.25);
+							
+							plot.setDomainAxis(domainAxis);
+							
+							// configure bar chart
+							final DefaultCategoryDataset barChartDataset = new DefaultCategoryDataset();
+							for ( int i = 0; i < categories.size(); i++ ) {
+								barChartDataset.addValue(dataActualGeneration.get(i), "Actual Generation (kWh)", categories.get(i));
+								barChartDataset.addValue(dataExpectedGeneration.get(i), "Expected Generation (kWh)", categories.get(i));
+								barChartDataset.addValue(dataModeledGeneration.get(i), "Modeled Generation (kWh)", categories.get(i));
+							}
+							
+							BarRenderer barRenderer = new BarRenderer();
+							barRenderer.setShadowVisible(false);
+							barRenderer.setBarPainter(new StandardBarPainter());
+							barRenderer.setSeriesPaint(0, new Color(49, 119, 168));
+							barRenderer.setSeriesPaint(1, new Color(163, 188, 215));
+							barRenderer.setSeriesPaint(2, Color.gray);
+							barRenderer.setItemMargin(0);
+							
+							NumberAxis leftAxis = new NumberAxis("GENERATION (KWH)");
+							leftAxis.setTickMarkInsideLength(tickMarkLength);
+							leftAxis.setTickMarkOutsideLength(tickMarkLength);
+							leftAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+							
+							plot.setRenderer(0, barRenderer);
+							plot.setRangeAxis(0, leftAxis);
+							plot.setDataset(0, barChartDataset);
+							plot.mapDatasetToRangeAxis(0, 0);
+							
+							// configure line chart
+							final DefaultCategoryDataset lineChartDataset = new DefaultCategoryDataset();
+							for ( int i = 0; i < categories.size(); i++ ) {
+								lineChartDataset.addValue(dataExpectedGenerationIndex.get(i), "Expected Generation Index (%)", categories.get(i));
+								lineChartDataset.addValue(dataModeledGenerationIndex.get(i), "Modeled Generation Index (%)", categories.get(i));
+							}
+							
+							LineAndShapeRenderer lineAndShapeRenderer = new LineAndShapeRenderer();
+							lineAndShapeRenderer.setSeriesPaint(0, new Color(245, 194, 66));
+							lineAndShapeRenderer.setSeriesShape(0, ShapeUtils.createDiagonalCross(0, 2));
+							lineAndShapeRenderer.setSeriesPaint(1, new Color(106, 153, 208));
+							lineAndShapeRenderer.setSeriesShape(1, ShapeUtils.createDiagonalCross(2, 2));
+							
+							NumberAxis rightAxis = new NumberAxis("PERFORMANCE INDEX (%)");
+							rightAxis.setTickMarkInsideLength(tickMarkLength);
+							rightAxis.setTickMarkOutsideLength(tickMarkLength);
+							rightAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+							
+							plot.setRenderer(1, lineAndShapeRenderer);
+							plot.setRangeAxis(1, rightAxis);
+							plot.setDataset(1, lineChartDataset);
+							plot.mapDatasetToRangeAxis(1, 1);
+							
+							// plot and return image
+							JFreeChart chart = new JFreeChart(plot);
+							chart.setBackgroundPaint(Color.white);
+							chart.setTitle("Performance");
+							chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1650, 400), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 400));
+							
+							// Write the output to a file
+							document.add(table);
+							if(s < (sites.size() - 1)) document.add(new AreaBreak());
+						}
+					}
+					
+					// It must be closed before attach to mail
+					document.close();
+					
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+					String msgTemplate = Constants.getMailTempleteByState(18);
+					String body = String.format(msgTemplate, "Customer", "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL) ", "", "");
+					String mailTo = obj.getSubscribers();
+					String subject = Constants.getMailSubjectByState(18);
+					
+					String tags = "report_weekly";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+					if (!flagSent) {
+						throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+					}
+					
+					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
+				}
+			} else {
+				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
 	}
