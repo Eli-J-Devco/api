@@ -125,5 +125,36 @@ public class AuditingLogsService extends DB {
 			return false;
 		}
 	}
+	
+	/**
+	 * @description get list auditing logs by employee
+	 * @author duy.phan
+	 * @since 2023-07-31
+	 */
+
+	public List getListAll(AuditingLogsEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("AuditingLogs.getListAll", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get total record auditing logs
+	 * @author duy.phan
+	 * @since 2023-07-31
+	 */
+	public int getTotalAllRecord(AuditingLogsEntity obj) {
+		try {
+			return (int) queryForObject("AuditingLogs.getListAllCount", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 
 }

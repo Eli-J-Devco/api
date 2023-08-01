@@ -21,8 +21,16 @@ public class AuditingLogsEntity {
 	private String latest_records;
 	private int id_site;
 	private String full_name;
+	private String keyword;
 	
 	
+	
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
 	public String getFull_name() {
 		return full_name;
 	}

@@ -106,4 +106,42 @@
 			AND id NOT IN (${latest_records})
 	</delete>
 	
+	<select id="getListAll" resultType="com.nwm.api.entities.AuditingLogsEntity" parameterType="com.nwm.api.entities.AuditingLogsEntity" >
+		SELECT al.*,
+			concat( e.first_name, ' ', e.last_name ) AS `full_name`,
+			e.table_column
+		FROM
+			auditing_logs al
+		LEFT JOIN employee e ON e.id = al.id_employee
+		WHERE 
+		<if test="keyword != null">
+			  e.first_name LIKE CONCAT("%",#{keyword}, "%")
+			  OR e.last_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+		ORDER BY
+        <choose>  
+            <when test="sort_column == 'id'">
+                id ${order_by}
+            </when>         
+            <when test="sort_column == 'full_name'">
+                full_name ${order_by}
+            </when>            
+            <otherwise>
+	            id DESC
+		    </otherwise>                                                  
+        </choose>
+		LIMIT ${limit} OFFSET ${offset}
+	</select>
+	
+	<select id="getListAllCount" resultType="int">
+    	SELECT count(*) as totalRecord
+		FROM auditing_logs al
+		LEFT JOIN employee e ON e.id = al.id_employee
+		WHERE 
+		<if test="keyword != null">
+			  e.first_name LIKE CONCAT("%",#{keyword}, "%")
+			  OR e.last_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+  	</select>
+	
 </mapper>

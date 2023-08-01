@@ -94,4 +94,26 @@ public class AuditingLogsController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description get list all auditing logs 
+	 * @author duy.phan
+	 * @since 2023-07-31
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list")
+	public Object getListAll(@RequestBody AuditingLogsEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			AuditingLogsService service = new AuditingLogsService();
+			List data = service.getListAll(obj);
+			int totalRecord = service.getTotalAllRecord(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }
