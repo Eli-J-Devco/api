@@ -4584,12 +4584,10 @@ public class ReportsController extends BaseController {
 								String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 										Constants.mailFromContact);
 								
-								String siteName = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("name"))).collect(Collectors.joining(", "));
-								String siteId = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("id"))).collect(Collectors.joining(", "));
-								String msgTemplate = Constants.getMailTempleteByState(17);
-								String body = String.format(msgTemplate, siteName, siteId, "Customer", "Monthly Portfolio Production Report (Monthly Interval) ", "", "");
+								String msgTemplate = Constants.getMailTempleteByState(18);
+								String body = String.format(msgTemplate, "Customer", "MONTHLY PORTFOLIO PRODUCTION REPORT (MONTHLY INTERVAL) ", "", "");
 								String mailTo = dataObj.getSubscribers();
-								String subject = Constants.getMailSubjectByState(17);
+								String subject = Constants.getMailSubjectByState(18);
 								
 								String tags = "report_monthly";
 								String fromName = "NEXT WAVE ENERGY MONITORING INC";
@@ -4904,13 +4902,11 @@ public class ReportsController extends BaseController {
 							// It must be closed before attach to mail
 							document.close();
 							
-							String siteName = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("name"))).collect(Collectors.joining(", "));
-							String siteId = dataObj.getDataSite().stream().map(site -> String.valueOf(site.get("id"))).collect(Collectors.joining(", "));
 							String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-							String msgTemplate = Constants.getMailTempleteByState(17);
-							String body = String.format(msgTemplate, siteName, siteId, "Customer", "Monthly Portfolio Production Report (Monthly Interval) ", "", "");
+							String msgTemplate = Constants.getMailTempleteByState(18);
+							String body = String.format(msgTemplate, "Customer", "MONTHLY PORTFOLIO PRODUCTION REPORT (MONTHLY INTERVAL) ", "", "");
 							String mailTo = dataObj.getSubscribers();
-							String subject = Constants.getMailSubjectByState(17);
+							String subject = Constants.getMailSubjectByState(18);
 							
 							String tags = "report_monthly";
 							String fromName = "NEXT WAVE ENERGY MONITORING INC";
