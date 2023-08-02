@@ -103,7 +103,7 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 		try {
 			ModelVerisIndustriesE50c2aEntity dataObj = (ModelVerisIndustriesE50c2aEntity) queryForObject("ModelVerisIndustriesE50c2a.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 

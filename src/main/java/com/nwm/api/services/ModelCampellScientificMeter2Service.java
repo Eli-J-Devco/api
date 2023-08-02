@@ -63,7 +63,7 @@ public class ModelCampellScientificMeter2Service extends DB {
 		try {
 			ModelCampellScientificMeter2Entity dataObj = (ModelCampellScientificMeter2Entity) queryForObject("ModelCampellScientificMeter2.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 

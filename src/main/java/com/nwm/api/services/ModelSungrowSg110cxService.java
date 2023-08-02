@@ -22,7 +22,7 @@ public class ModelSungrowSg110cxService extends DB {
 		try {
 			ModelSungrowSg110cxEntity dataObj = (ModelSungrowSg110cxEntity) queryForObject("ModelSungrowSg110cx.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 

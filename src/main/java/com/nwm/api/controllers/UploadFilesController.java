@@ -34,6 +34,7 @@ import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
 import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
+import com.nwm.api.entities.ModelAesTxInverterEntity;
 import com.nwm.api.entities.ModelCampellScientificMeter1Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter2Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter3Entity;
@@ -70,6 +71,7 @@ import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelAbbTrioClass6210Service;
 import com.nwm.api.services.ModelAdam4017WSClass8110Nelis190Service;
 import com.nwm.api.services.ModelAdvancedEnergySolaronService;
+import com.nwm.api.services.ModelAesTxInverterService;
 import com.nwm.api.services.ModelCampellScientificMeter1Service;
 import com.nwm.api.services.ModelCampellScientificMeter2Service;
 import com.nwm.api.services.ModelCampellScientificMeter3Service;
@@ -3021,6 +3023,83 @@ public class UploadFilesController extends BaseController {
 														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
 														dataModelAE1000NX.setId_device(item.getId());
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataModelAE1000NX);
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  
+//																System.out.println(logFile.getName() + " deleted .log");  
+															}
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  
+//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
+															}		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
+												
+												
+											case "model_aes_tx_inverter":
+												ModelAesTxInverterService serviceModelAesTx = new ModelAesTxInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// AC Power
+														if(!Lib.isBlank(words.get(37))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														// AC Frequency
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
+														dataModelAesTx.setId_device(item.getId());
+														serviceModelAesTx.insertModelAesTxInverter(dataModelAesTx);
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());

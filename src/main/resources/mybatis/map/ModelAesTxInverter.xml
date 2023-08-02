@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAesTxInverter">
+	<resultMap id="ModelAesTxInverterMap"
+		type="com.nwm.api.entities.ModelAesTxInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="pt0" column="pt0" />
+		<result property="pt1" column="pt1" />
+		<result property="pt2" column="pt2" />
+		<result property="pt3" column="pt3" />
+		<result property="pt4" column="pt4" />
+		<result property="pt5" column="pt5" />
+		<result property="pt6" column="pt6" />
+		<result property="pt7" column="pt7" />
+		<result property="pt8" column="pt8" />
+		<result property="pt9" column="pt9" />
+		<result property="pt10" column="pt10" />
+		<result property="pt11" column="pt11" />
+		<result property="pt12" column="pt12" />
+		<result property="pt13" column="pt13" />
+		<result property="pt14" column="pt14" />
+		<result property="pt15" column="pt15" />
+		<result property="pt16" column="pt16" />
+		<result property="pt17" column="pt17" />
+		<result property="pt18" column="pt18" />
+		<result property="pt19" column="pt19" />
+		<result property="pt20" column="pt20" />
+		<result property="pt21" column="pt21" />
+		<result property="pt22" column="pt22" />
+		<result property="pt23" column="pt23" />
+		<result property="pt24" column="pt24" />
+		<result property="pt25" column="pt25" />
+		<result property="pt26" column="pt26" />
+		<result property="pt27" column="pt27" />
+		<result property="pt28" column="pt28" />
+		<result property="pt29" column="pt29" />
+		<result property="pt30" column="pt30" />
+		<result property="pt31" column="pt31" />
+		<result property="pt32" column="pt32" />
+		<result property="pt33" column="pt33" />
+		<result property="pt34" column="pt34" />
+		<result property="pt35" column="pt35" />
+		<result property="pt36" column="pt36" />
+		<result property="pt37" column="pt37" />
+		<result property="pt38" column="pt38" />
+		<result property="pt39" column="pt39" />
+		<result property="pt40" column="pt40" />
+		<result property="pt41" column="pt41" />
+		<result property="pt42" column="pt42" />
+		<result property="pt43" column="pt43" />
+		<result property="pt44" column="pt44" />
+		<result property="pt45" column="pt45" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+
+	</resultMap>
+
+	<insert id="insertModelAesTxInverter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_aes_tx_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="pt0 != 0.001">
+				`pt0`,
+			</if>
+			<if test="pt1 != 0.001">
+				`pt1`,
+			</if>
+			<if test="pt2 != 0.001">
+				`pt2`,
+			</if>
+			<if test="pt3 != 0.001">
+				`pt3`,
+			</if>
+			<if test="pt4 != 0.001">
+				`pt4`,
+			</if>
+			<if test="pt5 != 0.001">
+				`pt5`,
+			</if>
+			<if test="pt6 != 0.001">
+				`pt6`,
+			</if>
+			<if test="pt7 != 0.001">
+				`pt7`,
+			</if>
+			<if test="pt8 != 0.001">
+				`pt8`,
+			</if>
+			<if test="pt9 != 0.001">
+				`pt9`,
+			</if>
+			<if test="pt10 != 0.001">
+				`pt10`,
+			</if>
+			<if test="pt11 != 0.001">
+				`pt11`,
+			</if>
+			<if test="pt12 != 0.001">
+				`pt12`,
+			</if>
+			<if test="pt13 != 0.001">
+				`pt13`,
+			</if>
+			<if test="pt14 != 0.001">
+				`pt14`,
+			</if>
+			<if test="pt15 != 0.001">
+				`pt15`,
+			</if>
+			<if test="pt16 != 0.001">
+				`pt16`,
+			</if>
+			<if test="pt17 != 0.001">
+				`pt17`,
+			</if>
+			<if test="pt18 != 0.001">
+				`pt18`,
+			</if>
+			<if test="pt19 != 0.001">
+				`pt19`,
+			</if>
+			<if test="pt20 != 0.001">
+				`pt20`,
+			</if>
+			<if test="pt21 != 0.001">
+				`pt21`,
+			</if>
+			<if test="pt22 != 0.001">
+				`pt22`,
+			</if>
+			<if test="pt23 != 0.001">
+				`pt23`,
+			</if>
+			<if test="pt24 != 0.001">
+				`pt24`,
+			</if>
+			<if test="pt25 != 0.001">
+				`pt25`,
+			</if>
+			<if test="pt26 != 0.001">
+				`pt26`,
+			</if>
+			<if test="pt27 != 0.001">
+				`pt27`,
+			</if>
+			<if test="pt28 != 0.001">
+				`pt28`,
+			</if>
+			<if test="pt29 != 0.001">
+				`pt29`,
+			</if>
+			<if test="pt30 != 0.001">
+				`pt30`,
+			</if>
+			<if test="pt31 != 0.001">
+				`pt31`,
+			</if>
+			<if test="pt32 != 0.001">
+				`pt32`,
+			</if>
+			<if test="pt33 != 0.001">
+				`pt33`,
+			</if>
+			<if test="pt34 != 0.001">
+				`pt34`,
+			</if>
+			<if test="pt35 != 0.001">
+				`pt35`,
+			</if>
+			<if test="pt36 != 0.001">
+				`pt36`,
+			</if>
+			<if test="pt37 != 0.001">
+				`pt37`,
+			</if>
+			<if
+				test="pt38 != 0.001">
+				`pt38`,
+			</if>
+			<if test="pt39 != 0.001">
+				`pt39`,
+			</if>
+			<if test="pt40 != 0.001">
+				`pt40`,
+			</if>
+			<if test="pt41 != 0.001">
+				`pt41`,
+			</if>
+			<if
+				test="pt42 != 0.001">
+				`pt42`,
+			</if>
+			<if test="pt43 != 0.001">
+				`pt43`,
+			</if>
+			<if test="pt44 != 0.001">
+				`pt44`,
+			</if>
+			<if test="pt45 != 0.001">
+				`pt45`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="pt0 != 0.001">
+				#{pt0},
+			</if>
+			<if test="pt1 != 0.001">
+				#{pt1},
+			</if>
+			<if test="pt2 != 0.001">
+				#{pt2},
+			</if>
+			<if test="pt3 != 0.001">
+				#{pt3},
+			</if>
+			<if test="pt4 != 0.001">
+				#{pt4},
+			</if>
+			<if test="pt5 != 0.001">
+				#{pt5},
+			</if>
+			<if test="pt6 != 0.001">
+				#{pt6},
+			</if>
+			<if test="pt7 != 0.001">
+				#{pt7},
+			</if>
+			<if test="pt8 != 0.001">
+				#{pt8},
+			</if>
+			<if test="pt9 != 0.001">
+				#{pt9},
+			</if>
+			<if test="pt10 != 0.001">
+				#{pt10},
+			</if>
+			<if test="pt11 != 0.001">
+				#{pt11},
+			</if>
+			<if test="pt12 != 0.001">
+				#{pt12},
+			</if>
+			<if test="pt13 != 0.001">
+				#{pt13},
+			</if>
+			<if test="pt14 != 0.001">
+				#{pt14},
+			</if>
+			<if test="pt15 != 0.001">
+				#{pt15},
+			</if>
+			<if test="pt16 != 0.001">
+				#{pt16},
+			</if>
+			<if test="pt17 != 0.001">
+				#{pt17},
+			</if>
+			<if test="pt18 != 0.001">
+				#{pt18},
+			</if>
+			<if test="pt19 != 0.001">
+				#{pt19},
+			</if>
+			<if test="pt20 != 0.001">
+				#{pt20},
+			</if>
+			<if test="pt21 != 0.001">
+				#{pt21},
+			</if>
+			<if test="pt22 != 0.001">
+				#{pt22},
+			</if>
+			<if test="pt23 != 0.001">
+				#{pt23},
+			</if>
+			<if test="pt24 != 0.001">
+				#{pt24},
+			</if>
+			<if test="pt25 != 0.001">
+				#{pt25},
+			</if>
+			<if test="pt26 != 0.001">
+				#{pt26},
+			</if>
+			<if test="pt27 != 0.001">
+				#{pt27},
+			</if>
+			<if test="pt28 != 0.001">
+				#{pt28},
+			</if>
+			<if test="pt29 != 0.001">
+				#{pt29},
+			</if>
+			<if test="pt30 != 0.001">
+				#{pt30},
+			</if>
+			<if test="pt31 != 0.001">
+				#{pt31},
+			</if>
+			<if test="pt32 != 0.001">
+				#{pt32},
+			</if>
+			<if test="pt33 != 0.001">
+				#{pt33},
+			</if>
+			<if test="pt34 != 0.001">
+				#{pt34},
+			</if>
+			<if test="pt35 != 0.001">
+				#{pt35},
+			</if>
+			<if test="pt36 != 0.001">
+				#{pt36},
+			</if>
+			<if test="pt37 != 0.001">
+				#{pt37},
+			</if>
+			<if
+				test="pt38 != 0.001">
+				#{pt38},
+			</if>
+			<if test="pt39 != 0.001">
+				#{pt39},
+			</if>
+			<if test="pt40 != 0.001">
+				#{pt40},
+			</if>
+			<if test="pt41 != 0.001">
+				#{pt41},
+			</if>
+			<if
+				test="pt42 != 0.001">
+				#{pt42},
+			</if>
+			<if test="pt43 != 0.001">
+				#{pt43},
+			</if>
+			<if test="pt44 != 0.001">
+				#{pt44},
+			</if>
+			<if test="pt45 != 0.001">
+				#{pt45},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="pt0 != 0.001">
+				`pt0` = #{pt0},
+			</if>
+			<if test="pt1 != 0.001">
+				`pt1` = #{pt1},
+			</if>
+			<if test="pt2 != 0.001">
+				`pt2` = #{pt2},
+			</if>
+			<if test="pt3 != 0.001">
+				`pt3` = #{pt3},
+			</if>
+			<if test="pt4 != 0.001">
+				`pt4` = #{pt4},
+			</if>
+			<if test="pt5 != 0.001">
+				`pt5` = #{pt5},
+			</if>
+			<if test="pt6 != 0.001">
+				`pt6` = #{pt6},
+			</if>
+			<if test="pt7 != 0.001">
+				`pt7` = #{pt7},
+			</if>
+			<if test="pt8 != 0.001">
+				`pt8` = #{pt8},
+			</if>
+			<if test="pt9 != 0.001">
+				`pt9` = #{pt9},
+			</if>
+			<if test="pt10 != 0.001">
+				`pt10` = #{pt10},
+			</if>
+			<if test="pt11 != 0.001">
+				`pt11` = #{pt11},
+			</if>
+			<if test="pt12 != 0.001">
+				`pt12` = #{pt12},
+			</if>
+			<if test="pt13 != 0.001">
+				`pt13` = #{pt13},
+			</if>
+			<if test="pt14 != 0.001">
+				`pt14` = #{pt14},
+			</if>
+			<if test="pt15 != 0.001">
+				`pt15` = #{pt15},
+			</if>
+			<if test="pt16 != 0.001">
+				`pt16` = #{pt16},
+			</if>
+			<if test="pt17 != 0.001">
+				`pt17` = #{pt17},
+			</if>
+			<if test="pt18 != 0.001">
+				`pt18` = #{pt18},
+			</if>
+			<if test="pt19 != 0.001">
+				`pt19` = #{pt19},
+			</if>
+			<if test="pt20 != 0.001">
+				`pt20` = #{pt20},
+			</if>
+			<if test="pt21 != 0.001">
+				`pt21` = #{pt21},
+			</if>
+			<if test="pt22 != 0.001">
+				`pt22` = #{pt22},
+			</if>
+			<if test="pt23 != 0.001">
+				`pt23` = #{pt23},
+			</if>
+			<if test="pt24 != 0.001">
+				`pt24` = #{pt24},
+			</if>
+			<if test="pt25 != 0.001">
+				`pt25` = #{pt25},
+			</if>
+			<if test="pt26 != 0.001">
+				`pt26` = #{pt26},
+			</if>
+			<if test="pt27 != 0.001">
+				`pt27` = #{pt27},
+			</if>
+			<if test="pt28 != 0.001">
+				`pt28` = #{pt28},
+			</if>
+			<if test="pt29 != 0.001">
+				`pt29` = #{pt29},
+			</if>
+			<if test="pt30 != 0.001">
+				`pt30` = #{pt30},
+			</if>
+			<if test="pt31 != 0.001">
+				`pt31` = #{pt31},
+			</if>
+			<if test="pt32 != 0.001">
+				`pt32` = #{pt32},
+			</if>
+			<if test="pt33 != 0.001">
+				`pt33` = #{pt33},
+			</if>
+			<if test="pt34 != 0.001">
+				`pt34` = #{pt34},
+			</if>
+			<if test="pt35 != 0.001">
+				`pt35` = #{pt35},
+			</if>
+			<if test="pt36 != 0.001">
+				`pt36` = #{pt36},
+			</if>
+			<if test="pt37 != 0.001">
+				`pt37` = #{pt37},
+			</if>
+			<if
+				test="pt38 != 0.001">
+				`pt38` = #{pt38},
+			</if>
+			<if test="pt39 != 0.001">
+				`pt39` = #{pt39},
+			</if>
+			<if test="pt40 != 0.001">
+				`pt40` = #{pt40},
+			</if>
+			<if test="pt41 != 0.001">
+				`pt41` = #{pt41},
+			</if>
+			<if
+				test="pt42 != 0.001">
+				`pt42` = #{pt42},
+			</if>
+			<if test="pt43 != 0.001">
+				`pt43` = #{pt43},
+			</if>
+			<if test="pt44 != 0.001">
+				`pt44` = #{pt44},
+			</if>
+			<if test="pt45 != 0.001">
+				`pt45` = #{pt45},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+	</insert>
+	
+	
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAesTxInverterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelAesTxInverter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+  	
+
+</mapper> 
