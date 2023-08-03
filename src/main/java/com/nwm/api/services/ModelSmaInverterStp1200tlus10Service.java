@@ -22,7 +22,7 @@ public class ModelSmaInverterStp1200tlus10Service extends DB {
 		try {
 			ModelSmaInverterStp1200tlus10Entity dataObj = (ModelSmaInverterStp1200tlus10Entity) queryForObject("ModelSmaInverterStp1200tlus10.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 

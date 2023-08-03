@@ -78,6 +78,59 @@
 				
 			</if>
 			
+			<if test="(datatablename == 'model_aes_tx_inverter') || (datatablename == 'ViewModelAesTxInverter')">
+				IFNULL(ROUND(AVG(dv.pt0), 2), 0.001) AS pt0,
+				IFNULL(ROUND(AVG(dv.pt1), 2), 0.001) AS pt1,
+				IFNULL(ROUND(AVG(dv.pt2), 2), 0.001) AS pt2,
+				IFNULL(ROUND(AVG(dv.pt3), 2), 0.001) AS pt3,
+				IFNULL(ROUND(AVG(dv.pt4), 2), 0.001) AS pt4,
+				IFNULL(ROUND(AVG(dv.pt5), 2), 0.001) AS pt5,
+				IFNULL(ROUND(AVG(dv.pt6), 2), 0.001) AS pt6,
+				IFNULL(ROUND(AVG(dv.pt7), 2), 0.001) AS pt7,
+				IFNULL(ROUND(AVG(dv.pt8), 2), 0.001) AS pt8,
+				IFNULL(ROUND(AVG(dv.pt9), 2), 0.001) AS pt9,
+				IFNULL(ROUND(AVG(dv.pt10), 2), 0.001) AS pt10,
+				
+				IFNULL(ROUND(AVG(dv.pt11), 2), 0.001) AS pt11,
+				IFNULL(ROUND(AVG(dv.pt12), 2), 0.001) AS pt12,
+				IFNULL(ROUND(AVG(dv.pt13), 2), 0.001) AS pt13,
+				IFNULL(ROUND(AVG(dv.pt14), 2), 0.001) AS pt14,
+				IFNULL(ROUND(AVG(dv.pt15), 2), 0.001) AS pt15,
+				IFNULL(ROUND(AVG(dv.pt16), 2), 0.001) AS pt16,
+				IFNULL(ROUND(AVG(dv.pt17), 2), 0.001) AS pt17,
+				IFNULL(ROUND(AVG(dv.pt18), 2), 0.001) AS pt18,
+				IFNULL(ROUND(AVG(dv.pt19), 2), 0.001) AS pt19,
+				IFNULL(ROUND(AVG(dv.pt20), 2), 0.001) AS pt20,
+				
+				IFNULL(ROUND(AVG(dv.pt21), 2), 0.001) AS pt21,
+				IFNULL(ROUND(AVG(dv.pt22), 2), 0.001) AS pt22,
+				IFNULL(ROUND(AVG(dv.pt23), 2), 0.001) AS pt23,
+				IFNULL(ROUND(AVG(dv.pt24), 2), 0.001) AS pt24,
+				IFNULL(ROUND(AVG(dv.pt25), 2), 0.001) AS pt25,
+				IFNULL(ROUND(AVG(dv.pt26), 2), 0.001) AS pt26,
+				IFNULL(ROUND(AVG(dv.pt27), 2), 0.001) AS pt27,
+				IFNULL(ROUND(AVG(dv.pt28), 2), 0.001) AS pt28,
+				IFNULL(ROUND(AVG(dv.pt29), 2), 0.001) AS pt29,
+				IFNULL(ROUND(AVG(dv.pt30), 2), 0.001) AS pt30,
+				
+				IFNULL(ROUND(AVG(dv.pt31), 2), 0.001) AS pt31,
+				IFNULL(ROUND(AVG(dv.pt32), 2), 0.001) AS pt32,
+				IFNULL(ROUND(AVG(dv.pt33), 2), 0.001) AS pt33,
+				IFNULL(ROUND(AVG(dv.pt34), 2), 0.001) AS pt34,
+				IFNULL(ROUND(AVG(dv.pt35), 2), 0.001) AS pt35,
+				IFNULL(ROUND(AVG(dv.pt36), 2), 0.001) AS pt36,
+				IFNULL(ROUND(AVG(dv.pt37), 2), 0.001) AS pt37,
+				IFNULL(ROUND(AVG(dv.pt38), 2), 0.001) AS pt38,
+				IFNULL(ROUND(AVG(dv.pt39), 2), 0.001) AS pt39,
+				IFNULL(ROUND(AVG(dv.pt40), 2), 0.001) AS pt40,
+				
+				IFNULL(ROUND(AVG(dv.pt41), 2), 0.001) AS pt41,
+				IFNULL(ROUND(AVG(dv.pt42), 2), 0.001) AS pt42,
+				IFNULL(ROUND(AVG(dv.pt43), 2), 0.001) AS pt43,
+				IFNULL(ROUND(AVG(dv.pt44), 2), 0.001) AS pt44,
+				IFNULL(ROUND(AVG(dv.pt45), 2), 0.001) AS pt45,
+			</if>
+			
 			<if test="(datatablename == 'model_sma_inverter_stp62us41') || (datatablename == 'ViewModelSmaInverterStp62us41')">
 				IFNULL(ROUND(AVG(dv.VA_phsA), 2), 0.001) AS VA_phsA,
 				IFNULL(ROUND(AVG(dv.VA_phsB), 2), 0.001) AS VA_phsB,
