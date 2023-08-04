@@ -1945,8 +1945,8 @@ public class UploadFilesController extends BaseController {
 													}
 													
 													// IrradianceActual
-													if(!Lib.isBlank(words.get(21))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
+													if(!Lib.isBlank(words.get(4))) {
+														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
 													} else {
 														deviceUpdateE.setField_value2(null);
 													}

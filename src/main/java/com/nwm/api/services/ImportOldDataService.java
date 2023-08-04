@@ -15,8 +15,13 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.CustomerEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.FileImportDataOldEntity;
+import com.nwm.api.entities.GroupEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
+import com.nwm.api.entities.SiteEntity;
 
 public class ImportOldDataService extends DB {
 
@@ -58,6 +63,66 @@ public class ImportOldDataService extends DB {
 		}
 		return dataList;
 	}
+	
+	
+	
+	/**
+	 * @description get detail file upload
+	 * @author long.pham
+	 * @since 2023-08-03
+	 * @param id
+	 */
+
+	public FileImportDataOldEntity getDetailFileUploadDataOld(FileImportDataOldEntity obj) {
+		FileImportDataOldEntity data = new FileImportDataOldEntity();
+		try {
+			data = (FileImportDataOldEntity) queryForObject("FileImportDataOld.getDetailFileUploadDataOld", obj);
+			if (data == null)
+				return new FileImportDataOldEntity();
+		} catch (Exception ex) {
+			return new FileImportDataOldEntity();
+		}
+		return data;
+	}
+	
+	
+	
+	/**
+	 * @description get list device by id_site 
+	 * @author long.pham
+	 * @since 2022-12-21
+	 * @param {}
+	 */
+	
+	
+	public List getListFileImport(FileImportDataOldEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("FileImportDataOld.getListFileImport", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get total file import
+	 * @author long.pham
+	 * @since 2023-08-03
+	 * @param {}
+	 */
+	
+	public int getTotalRecord(FileImportDataOldEntity obj) {
+		try {
+			return (int)queryForObject("FileImportDataOld.getListCount", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	
 	
 	/**
 	 * @description insert old data
@@ -333,7 +398,8 @@ public class ImportOldDataService extends DB {
 		} catch (Exception ex) {
 			session.rollback();
 			log.error("Site.insertSite", ex);
-			return null;
+			obj.setId(0);
+			return obj;
 		} finally {
 			session.close();
 		}			
@@ -486,4 +552,46 @@ public class ImportOldDataService extends DB {
 	        log.error("insertDataGenerateReport", ex);
 	    }		
 	}
+	
+	
+	/**
+	 * @description insert file import data old
+	 * @author long.pham
+	 * @since 2023-08-03
+	 * @param {}
+	 */
+	public FileImportDataOldEntity insertFileImportDataOld(FileImportDataOldEntity obj) 
+	{
+		try
+	    {
+	       Object insertId = insert("FileImportDataOld.insertFileImportDataOld", obj);
+	       if(insertId != null && insertId instanceof Integer) {
+	    	   return obj;
+	       }else {
+	    	   return null;
+	       }
+	    }
+	    catch(Exception ex)
+	    {
+	        log.error("insert.insertFileImportDataOld", ex);
+	        return null;
+	    }	
+	}
+	
+	
+	
+	/**
+	 * @description update device
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	public boolean updateFileReportDataRow(FileImportDataOldEntity obj){
+		try{
+			return update("FileImportDataOld.updateFileReportDataRow", obj)>0;
+		}catch (Exception ex) {
+			log.error("FileImportDataOld.updateFileReportDataRow", ex);
+			return false;
+		}
+	}
+	
 }
