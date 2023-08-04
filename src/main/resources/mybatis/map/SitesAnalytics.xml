@@ -18,6 +18,7 @@
 			d.id_device_type,
 			1 AS is_paramerter_expand,
 			1 AS is_calculation_expand,
+			1 AS is_hidden,
 			0 AS is_checked
 		FROM
 			device d

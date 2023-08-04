@@ -114,6 +114,7 @@ public class SitesDevicesEntity {
 	
 	private String alert_mail_cc;
 	private String alert_mail_bcc;
+	private int is_hidden;
 	
 	
 	
@@ -735,6 +736,12 @@ public class SitesDevicesEntity {
 	}
 	public void setIds_device_ambient_temp(String ids_device_ambient_temp) {
 		this.ids_device_ambient_temp = ids_device_ambient_temp;
+	}
+	public int getIs_hidden() {
+		return is_hidden;
+	}
+	public void setIs_hidden(int is_hidden) {
+		this.is_hidden = is_hidden;
 	}
 	
 	
