@@ -8,21 +8,27 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 
 import javax.validation.Valid;
 import org.apache.commons.lang3.time.StopWatch;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.services.ImportOldDataService;
 import com.nwm.api.utils.Constants;
@@ -35,6 +41,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/import-old-data")
 public class ImportOldDataController extends BaseController {
 
+//	Integer count = 0;
 	/**
 	 * @description Get all site by id_employee
 	 * @author long.pham
@@ -79,6 +86,31 @@ public class ImportOldDataController extends BaseController {
 	}
 	
 
+	
+	/**
+	 * @description Get list file import
+	 * @author long.pham
+	 * @since 2023-08-03
+	 * @param id_customer
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-file-import")
+	public Object getListFileImport(@RequestBody FileImportDataOldEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			ImportOldDataService service = new ImportOldDataService();
+			List data = service.getListFileImport(obj);
+			int totalRecord = service.getTotalRecord(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	/**
 	 * @description save error level
 	 * @author long.pham
@@ -115,6 +147,7 @@ public class ImportOldDataController extends BaseController {
 
 	@PostMapping("/save-upload")
 	public Object saveUpload(@Valid @RequestBody ImportOldDataEntity obj) {
+		FileImportDataOldEntity itemRow = new FileImportDataOldEntity();
 		try {
 			ImportOldDataService service = new ImportOldDataService();
 			String fileName = "";
@@ -123,30 +156,95 @@ public class ImportOldDataController extends BaseController {
 			if (!Lib.isBlank(obj.getFile_upload())) {
 				saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName,
 						Constants.uploadFilePathConfigKeyOlddata);
-				fileName = randomAlphabetic(16);
+				String newFileName = obj.getFilename().toString(); 
+				newFileName = newFileName.substring(0, newFileName.indexOf('.'));
+				fileName = newFileName + "-"+ randomAlphabetic(16);
 				String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-
 				String fileUrl = saveDir + "/" + saveFileName;
+				if(fileUrl == null){ return this.jsonResult(true, "Upload file error", null, 1); }
+				// Insert file to database
+				FileImportDataOldEntity item = new FileImportDataOldEntity();
+				item.setId_device(obj.getId_device());
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+		        // set UTC time zone by using SimpleDateFormat class  
+		        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));  
+		        item.setTime_upload(sdf.format(new Date()));
+		        item.setFilename(saveFileName);
+		        item.setId_employee(obj.getId_employee());
+		        item.setStatus(1);
+		        FileImportDataOldEntity result = service.insertFileImportDataOld(item);
+		        itemRow.setId(result.getId());
+		        
+		        String domainCronJob = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.domainCronJob);
+				String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+		
+				String url = domainCronJob + "/api-server/import-old-data/run-event-upload-old-data?token=" + privateKey + "&id="+ result.getId();
+				String command = "curl -X GET " + url;
+				Runtime.getRuntime().exec(command);
+				return this.jsonResult(true, "Upload file import old data successfully", null, 1);
+			} else {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
 
+		} 
+		
+		catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description run event upload old data 
+	 * @author long.pham
+	 * @since 2023-08-03
+	 * @return {}
+	 */
+	@GetMapping("/run-event-upload-old-data")
+	@ResponseBody
+	public Object renderDataVirtualDevice(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			
+			String id = (String) params.get("id");
+			int idFile = 0;
+			
+			if(id != null && Integer.parseInt(id) > 0 ) {
+				idFile = Integer.parseInt(id);
+			}
+			
+			FileImportDataOldEntity itemFile = new FileImportDataOldEntity();
+			itemFile.setId(idFile);
+			
+			ImportOldDataService service = new ImportOldDataService();
+			FileImportDataOldEntity dataFile = service.getDetailFileUploadDataOld(itemFile);
+			ImportOldDataEntity obj = new ImportOldDataEntity(); 
+			
+			if( dataFile.getId() >= 0 ) {
+				obj.setId_site(dataFile.getId_site());
+				obj.setTable_name(dataFile.getDatatablename());
+				
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyOlddata);
+				String fileUrl = saveDir + "/" + dataFile.getFilename();
 				try (InputStream is = new FileInputStream(fileUrl); ReadableWorkbook wb = new ReadableWorkbook(is)) {
 					StopWatch watch = new StopWatch();
 					watch.start();
-
+	
 					wb.getSheets().forEach(sheet -> {
 						try (Stream<Row> rows = sheet.openStream()) {
+							long rowTotal = sheet.openStream().mapToLong(e -> 1L).sum();
 							rows.skip(1).forEach(r -> {
 								List<Object> result = new ArrayList<Object>();
 								HashMap<String, String> rowItem = new HashMap<String, String>();
 								if (Lib.isDateValid(r.getCellText(1).toString())) {
 									rowItem.put("time", r.getCellText(1).toString());
 									rowItem.put("local_time", r.getCellText(1).toString());
-
-//									String dateData = r.getCell(0).asDate().toString().replace("T", " ") + ":00Z";
-////								String dateData = ("2022-12-12 00:00:00").replace("T", " ") + ":00Z";
-////								SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-////								Date date = formatter.parse(dateData);
-									
-									switch (obj.getTable_name()) {
+									switch (dataFile.getDatatablename()) {
 									case "model_hukseflux_sr30d1_deviceclass_v0":
 										rowItem.put("id_device", r.getCellText(2).toString());
 										rowItem.put("error", r.getCellText(3).toString());
@@ -169,7 +267,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("FanCurrent", r.getCellText(20).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(21).toString());
 										rowItem.put("nvm_temperature", r.getCellText(22).toString());
-
+	
 										break;
 									case "model_imtsolar_tmodul_class8006":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -179,7 +277,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("ModuleTemperature", r.getCellText(6).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(7).toString());
 										rowItem.put("nvm_temperature", r.getCellText(8).toString());
-
+	
 										break;
 									case "model_xantrex_gt100_250_500":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -206,9 +304,9 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("IntakeAirTemperature", r.getCellText(23).toString());
 										rowItem.put("nvmActivePower", r.getCellText(24).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(25).toString());
-
+	
 										break;
-
+	
 									case "model_tti_tracker":
 										rowItem.put("id_device", r.getCellText(2).toString());
 										rowItem.put("error", r.getCellText(3).toString());
@@ -252,7 +350,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("WindConstant", r.getCellText(41).toString());
 										rowItem.put("WindStowSpeed", r.getCellText(42).toString());
 										rowItem.put("WindStowTime", r.getCellText(43).toString());
-
+	
 										break;
 									case "model_solectria_sgi_226ivt":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -276,7 +374,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("InformativeAlarms", r.getCellText(20).toString());
 										rowItem.put("nvmActivePower", r.getCellText(21).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(22).toString());
-
+	
 										break;
 									case "model_pv_powered_35_50_260_500kw_inverter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -331,7 +429,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("PVMStatusCodes", r.getCellText(51).toString());
 										rowItem.put("nvmActivePower", r.getCellText(52).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(53).toString());
-
+	
 										break;
 									case "model_lufft_class8020":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -405,7 +503,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("WindValueQualityFast", r.getCellText(70).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(71).toString());
 										rowItem.put("nvm_temperature", r.getCellText(72).toString());
-
+	
 										break;
 									case "model_lufft_ws501_umb_weather":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -492,7 +590,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("IslolationResistance", r.getCellText(27).toString());
 										rowItem.put("nvmActivePower", r.getCellText(28).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(29).toString());
-
+	
 										break;
 									case "model_elkor_production_meter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -573,7 +671,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("Q2ReactiveEnergyA", r.getCellText(77).toString());
 										rowItem.put("Q2ReactiveEnergyB", r.getCellText(78).toString());
 										rowItem.put("Q2ReactiveEnergyC", r.getCellText(79).toString());
-
+	
 										rowItem.put("Q3ReactiveEnergyA", r.getCellText(80).toString());
 										rowItem.put("Q3ReactiveEnergyB", r.getCellText(81).toString());
 										rowItem.put("Q3ReactiveEnergyC", r.getCellText(82).toString());
@@ -582,7 +680,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("Q4ReactiveEnergyC", r.getCellText(85).toString());
 										rowItem.put("nvmActivePower", r.getCellText(86).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(87).toString());
-
+	
 										break;
 									case "model_w_kipp_zonen_rt1":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -601,7 +699,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("CalibrationDateYYMMDD", r.getCellText(15).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(16).toString());
 										rowItem.put("nvm_temperature", r.getCellText(17).toString());
-
+	
 										break;
 									case "model_elkor_wattson_pv_meter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -641,7 +739,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("PowerFactorC", r.getCellText(36).toString());
 										rowItem.put("nvmActivePower", r.getCellText(37).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(38).toString());
-
+	
 										break;
 									case "model_satcon_pvs357_inverter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -722,7 +820,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("String_kwh7", r.getCellText(77).toString());
 										rowItem.put("String_kwh8", r.getCellText(78).toString());
 										rowItem.put("String_kwh9", r.getCellText(79).toString());
-
+	
 										rowItem.put("String_kwh10", r.getCellText(80).toString());
 										rowItem.put("String_kwh11", r.getCellText(81).toString());
 										rowItem.put("String_kwh12", r.getCellText(82).toString());
@@ -781,7 +879,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("Number_of_Strings", r.getCellText(135).toString());
 										rowItem.put("nvmActivePower", r.getCellText(136).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(137).toString());
-
+	
 										break;
 									case "model_veris_industries_e51c2_power_meter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -880,7 +978,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("CurrentPhaseC", r.getCellText(77).toString());
 										rowItem.put("nvmActivePower", r.getCellText(78).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(79).toString());
-
+	
 										break;
 									case "model_chint_solectria_inverter_class9725":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -964,7 +1062,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("node_id", r.getCellText(20).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(21).toString());
 										rowItem.put("nvm_temperature", r.getCellText(22).toString());
-
+	
 										break;
 									case "model_advanced_energy_solaron":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1009,7 +1107,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("current_time", r.getCellText(41).toString());
 										rowItem.put("nvmActivePower", r.getCellText(42).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(43).toString());
-
+	
 										break;
 									case "model_imtsolar_class8000":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1020,7 +1118,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("tcell", r.getCellText(7).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(8).toString());
 										rowItem.put("nvm_temperature", r.getCellText(9).toString());
-
+	
 										break;
 									case "model_pvp_inverter":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1045,7 +1143,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("data_comm_status", r.getCellText(21).toString());
 										rowItem.put("nvmActivePower", r.getCellText(22).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(23).toString());
-
+	
 										break;
 									case "model_ivt_solaron_ext":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1103,9 +1201,9 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("power_factor_ramp_rate", r.getCellText(52).toString());
 										rowItem.put("nvmActivePower", r.getCellText(53).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(54).toString());
-
+	
 										break;
-
+	
 									case "model_kippzonen_rt1_class8009":
 										rowItem.put("id_device", r.getCellText(2).toString());
 										rowItem.put("error", r.getCellText(3).toString());
@@ -1128,7 +1226,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("node_id", r.getCellText(20).toString());
 										rowItem.put("nvm_irradiance", r.getCellText(21).toString());
 										rowItem.put("nvm_temperature", r.getCellText(22).toString());
-
+	
 										break;
 									case "model_shark100":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1255,47 +1353,55 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("nvmActiveEnergy", r.getCellText(123).toString());
 										break;
 									}
-
+	
 									result.add(rowItem);
 									obj.setDataList(result);
-									ImportOldDataEntity data = service.insertImportOldData(obj);
+									ImportOldDataEntity insert = service.insertImportOldData(obj);
+									
+									// update file data 
+									FileImportDataOldEntity updateFileImportRow = new FileImportDataOldEntity();
+									updateFileImportRow.setId(itemFile.getId());
+									updateFileImportRow.setStatus(2);
+									updateFileImportRow.setTotal_row((int) rowTotal);
+									updateFileImportRow.setTotal_complete_row(r.getRowNum());
+									updateFileImportRow.setTotal_error_row(0);
+									service.updateFileReportDataRow(updateFileImportRow);
 								}
-
+	
 							});
-
+	
 						} catch (Exception e) {
 							e.printStackTrace();
+						}  finally {
+							FileImportDataOldEntity getRowComplete = service.getDetailFileUploadDataOld(itemFile);
+							
+							// update file data 
+							FileImportDataOldEntity updateRow = new FileImportDataOldEntity();
+							updateRow.setId(getRowComplete.getId());
+							updateRow.setStatus(3);
+							updateRow.setTotal_row(getRowComplete.getTotal_row());
+							updateRow.setTotal_complete_row(getRowComplete.getTotal_complete_row());
+							updateRow.setTotal_error_row( getRowComplete.getTotal_row() - getRowComplete.getTotal_complete_row() );
+							SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");  
+					        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));  
+							updateRow.setTime_complete(sdf.format(new Date()));
+							service.updateFileReportDataRow(updateRow);
 						}
 						watch.stop();
-						System.out.println("Processing time: " + watch.getTime(TimeUnit.MILLISECONDS));
 					});
-
-//					obj.setDataList(result);
-//					ImportOldDataEntity data = service.insertImportOldData(obj);
-//					if (data != null) {
-//						if (data.getRow() > 0) {
-//							return this.jsonResult(false, "Error date format at row " + data.getRow(), null, 0);
-//						}
-//						File logGzFile = new File(fileUrl);
-//						if(logGzFile.delete()) {  System.out.println(fileUrl); }	
-//						return this.jsonResult(true, "Import data successfully", data, 1);
-//					} else {
-//						return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
-//					}
+					
 					return this.jsonResult(true, "Import data successfully", null, 1);
-
 				} catch (Exception e) {
 					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
 				}
-
-			} else {
-				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			}
 
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
-			// log error
-			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
 	
 }

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FileImportDataOld">
+	<resultMap id="FileImportDataOldMap" type="com.nwm.api.entities.FileImportDataOldEntity">
+		<result property="id" column="id" />
+		<result property="id_device" column="id_device" />
+		<result property="id_employee" column="id_employee" />
+		<result property="time_upload" column="time_upload" />
+		<result property="time_complete" column="time_complete" />
+		<result property="total_row" column="total_row" />
+		<result property="total_error_row" column="total_error_row" />
+		<result property="filename" column="filename" />
+		<result property="status" column="status" />
+	</resultMap>
+	
+	
+	<insert id="insertFileImportDataOld" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `file_import_data_old`(
+			`id_device`,
+			`id_employee`,
+			`time_upload`,
+			`time_complete`,
+			`total_row`,
+			`total_error_row`,
+			`filename`,
+			`status`
+		)VALUES(
+			#{id_device},
+			#{id_employee},
+			#{time_upload},
+			#{time_complete},
+			#{total_row},
+			#{total_error_row},
+			#{filename},
+			#{status}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	
+	<select id="getListFileImport" resultType="Map" >
+		SELECT
+			f.id,
+			f.id_device,
+			f.id_employee,
+			f.filename,
+			f.`status`,
+			IF( f.time_complete IS NULL, "", DATE_FORMAT(f.time_complete, "%d/%m/%Y %H:%i:%s")) AS time_complete,
+			IF( f.time_upload IS NULL, "", DATE_FORMAT(f.time_upload, "%d/%m/%Y %H:%i:%s")) AS time_upload,
+			f.total_complete_row,
+			f.total_error_row,
+			f.total_row,
+			d.devicename,
+			s.`name` AS site_name,
+			t.`value` AS timezone_value,
+			CONCAT_WS( " ", e.first_name, e.last_name ) AS fullname,
+			CASE 
+				WHEN f.`status` = 1 THEN "Uploaded"
+				WHEN f.`status` = 2 THEN "In Process"
+				WHEN f.`status` = 3 THEN "Completed"
+				WHEN f.`status` = 4 THEN "Error"
+				ELSE ""
+			END  AS status_name,
+			IF
+				(
+					f.total_complete_row <![CDATA[<=]]> 0 
+					OR f.total_row <![CDATA[<=]]> 0,
+					0,
+					ROUND(
+						( f.total_complete_row / f.total_row ) * 100,
+						4 
+					)) upload_process 
+		FROM
+			file_import_data_old f
+			LEFT JOIN employee e ON e.id = f.id_employee
+			LEFT JOIN device d ON d.id = f.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0 
+			AND e.`status` = 1
+		<if test="keyword != null">
+			AND f.filename LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                f.id ${order_by}
+	            </when> 
+	            
+	            <when test="sort_column == 'status'">
+	                f.`status` ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      f.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.FileImportDataOldEntity">
+    	SELECT count(*) as totalRow
+		FROM file_import_data_old f
+			LEFT JOIN employee e ON e.id = f.id_employee
+			LEFT JOIN device d ON d.id = f.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0 
+			AND e.`status` = 1
+		<if test="keyword != null">
+			AND f.filename LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	<select id="getDetailFileUploadDataOld" resultType="com.nwm.api.entities.FileImportDataOldEntity">
+    	SELECT
+    		u.*,
+    		d.datatablename,
+    		d.id_site
+		FROM `file_import_data_old` u
+		LEFT JOIN device d ON d.id = u.id_device
+		WHERE u.id = #{id};
+  	</select>
+  	
+  	
+  	
+  	<update id="updateFileReportDataRow">
+		UPDATE `file_import_data_old`
+		SET
+			`total_row` = #{total_row},
+			
+			`total_error_row` = #{total_error_row},
+			`total_complete_row` = #{total_complete_row},
+			`status` = #{status}
+			
+		WHERE
+			`id` = #{id}
+	</update>
+  	
+
+</mapper>
