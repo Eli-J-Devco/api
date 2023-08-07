@@ -56,6 +56,7 @@ import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
+import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -159,8 +160,8 @@ public class BuiltInReportController extends BaseController {
 			DecimalFormat df2p = new DecimalFormat("###,###.##");
 			// create CellStyle
 			Font fonDef = sheet.getWorkbook().createFont();
-			fonDef.setFontName("Calibri (Body)");
-			fonDef.setFontHeightInPoints((short) 12); // font size
+			fonDef.setFontName("Times New Roman");
+			fonDef.setFontHeightInPoints((short) 14); // font size
 			
 			CellStyle cellStyle = createStyleForHeader(sheet);
 			cellStyle.setFont(fonDef);
@@ -194,9 +195,9 @@ public class BuiltInReportController extends BaseController {
 
 			// Create font
 			Font fontBold = sheet.getWorkbook().createFont();
-			fontBold.setFontName("Calibri (Body)");
+			fontBold.setFontName("Times New Roman");
 			fontBold.setBold(true);
-			fontBold.setFontHeightInPoints((short) 12); // font size
+			fontBold.setFontHeightInPoints((short) 14); // font size
 			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
 			cellStyleFontBold.setFont(fontBold);
 			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -218,7 +219,10 @@ public class BuiltInReportController extends BaseController {
 			sheet.setColumnWidth(4, 30 * 256);
 			sheet.setColumnWidth(5, 30 * 256);
 			
-			sheet.setDefaultRowHeight((short) 500);
+			sheet.setColumnWidth(6, 20 * 256);
+			sheet.setColumnWidth(7, 13 * 256);
+			
+			sheet.setDefaultRowHeight((short) 400);
 			sheet.setDisplayGridlines(false);
 			
 			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
@@ -232,7 +236,7 @@ public class BuiltInReportController extends BaseController {
 
 			// Create font
 			Font font = sheet.getWorkbook().createFont();
-			font.setFontName("Calibri (Body)");
+			font.setFontName("Times New Roman");
 			font.setBold(true);
 			font.setFontHeightInPoints((short) 18); // font size
 			font.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -250,7 +254,7 @@ public class BuiltInReportController extends BaseController {
 			
 			// Create font
 			Font font1 = sheet.getWorkbook().createFont();
-			font1.setFontName("Calibri (Body)");
+			font1.setFontName("Times New Roman");
 			font1.setBold(true);
 			font1.setFontHeightInPoints((short) 14); // font size
 			font1.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -262,7 +266,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleSubTitle.setAlignment(HorizontalAlignment.CENTER);
 						
 			Row row2 = sheet.createRow(2);
-			row2.setHeight((short) 500);
+			row2.setHeight((short) 400);
 			Cell cell2 = row2.createCell(0);
 			cell2.setCellStyle(cellStyleSubTitle);
 			cell2.setCellValue(dataObj.getSite_name().toUpperCase());
@@ -270,7 +274,7 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Font font3 = sheet.getWorkbook().createFont();
-			font3.setFontName("Calibri (Body)");
+			font3.setFontName("Times New Roman");
 			font3.setBold(false);
 			font3.setFontHeightInPoints((short) 14); // font size
 			font3.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -281,7 +285,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleDate.setVerticalAlignment(VerticalAlignment.CENTER);
 			cellStyleDate.setAlignment(HorizontalAlignment.CENTER);
 			Row row3 = sheet.createRow(3);
-			row3.setHeight((short) 500);
+			row3.setHeight((short) 400);
 			Cell cell3 = row3.createCell(0);
 			cell3.setCellStyle(cellStyleDate);
 			
@@ -293,9 +297,9 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Font fonDefB = sheet.getWorkbook().createFont();
-			fonDefB.setFontName("Calibri (Body)");
+			fonDefB.setFontName("Times New Roman");
 			fonDefB.setBold(true);
-			fonDefB.setFontHeightInPoints((short) 12); // font size
+			fonDefB.setFontHeightInPoints((short) 14); // font size
 			
 			CellStyle cellStyleB = createStyleForHeader(sheet);
 			cellStyleB.setFont(fonDefB);
@@ -313,7 +317,7 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Row row4 = sheet.createRow(5);
-			row4.setHeight((short) 500);
+			row4.setHeight((short) 400);
 			Cell cell4 = row4.createCell(0);
 			cell4.setCellStyle(cellStyleB);
 			cell4.setCellValue("");
@@ -350,7 +354,7 @@ public class BuiltInReportController extends BaseController {
 			
 			// Create style row
 			Font fontRow = sheet.getWorkbook().createFont();
-			fontRow.setFontName("Calibri (Body)");
+			fontRow.setFontName("Times New Roman");
 			fontRow.setFontHeightInPoints((short) 12); // font size
 			fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
@@ -375,7 +379,7 @@ public class BuiltInReportController extends BaseController {
 			
 			for (int i = 0; i < categories.size(); i++) {
 				row5 = sheet.createRow(i + 6);
-				row5.setHeight((short) 500);
+				row5.setHeight((short) 315);
 				Cell cell5 = row5.createCell(0);
 				cell5.setCellStyle(cellStyleItem);
 				cell5.setCellValue((String) categories.get(i));
@@ -418,7 +422,7 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Row row6 = sheet.createRow(6 + categories.size());
-			row6.setHeight((short) 500);
+			row6.setHeight((short) 315);
 			Cell cell6 = row6.createCell(0);
 			cell6.setCellStyle(cellStyleB);
 			cell6.setCellValue("Total");
@@ -459,8 +463,8 @@ public class BuiltInReportController extends BaseController {
 			
 			// add Note
 			Font fontRowBg = sheet.getWorkbook().createFont();
-			fontRowBg.setFontName("Calibri (Body)");
-			fontRowBg.setFontHeightInPoints((short) 14); // font size
+			fontRowBg.setFontName("Times New Roman");
+			fontRowBg.setFontHeightInPoints((short) 12); // font size
 			fontRowBg.setColor(IndexedColors.WHITE.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleBg = sheet.getWorkbook().createCellStyle();
@@ -478,15 +482,15 @@ public class BuiltInReportController extends BaseController {
 			sheet.addMergedRegion(new CellRangeAddress(25 + categories.size(), 25 + categories.size(), 0, 5));
 			
 			Row row7 = sheet.createRow(22 + categories.size());
-			row7.setHeight((short) 600);
+			row7.setHeight((short) 315);
 			Cell cell7 = row7.createCell(0);
 			cell7.setCellStyle(cellStyleBg);
 			cell7.setCellValue("Actual, Expected and Modeled Generation");
 			
 			
 			Font fontRowNote = sheet.getWorkbook().createFont();
-			fontRowNote.setFontName("Calibri (Body)");
-			fontRowNote.setFontHeightInPoints((short) 14); // font size
+			fontRowNote.setFontName("Times New Roman");
+			fontRowNote.setFontHeightInPoints((short) 12); // font size
 			fontRowNote.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleNote = sheet.getWorkbook().createCellStyle();
@@ -496,21 +500,21 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Row row8 = sheet.createRow(23 + categories.size());
-			row8.setHeight((short) 600);
+			row8.setHeight((short) 315);
 			Cell cell8 = row8.createCell(0);
 			cell8.setCellStyle(cellStyleNote);
 			cell8.setCellValue("The Actual Generation is the energy reported by the production meters.");
 			
 			
 			Row row9 = sheet.createRow(24 + categories.size());
-			row8.setHeight((short) 600);
+			row8.setHeight((short) 315);
 			Cell cell9 = row9.createCell(0);
 			cell9.setCellStyle(cellStyleNote);
 			cell9.setCellValue("The Expected Generation is calculated based on measured irradiance and module temperature.");
 			
 			
 			Row row10 = sheet.createRow(25 + categories.size());
-			row10.setHeight((short) 600);
+			row10.setHeight((short) 315);
 			Cell cell10 = row10.createCell(0);
 			cell10.setCellStyle(cellStyleNote);
 			cell10.setCellValue("The Modeled Generation is predicted by PVWatts Calculator.");
@@ -684,6 +688,9 @@ public class BuiltInReportController extends BaseController {
 							chart = drawing1.createChart(anchor1);
 							chart.setTitleText("Performance");
 							chart.setTitleOverlay(false);
+							chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1400);
+							
+							
 		
 							// create data sources
 							int numOfPoints = categories.size();
@@ -736,13 +743,18 @@ public class BuiltInReportController extends BaseController {
 							series.setTitle("Actual Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 1, true, true));
 							
-							
+							chart.plot(data);
+							// set bar colors
+							solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
 							
 							series = data.addSeries(categoriesData, valuesData2);
 							series.setTitle("Expected Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 2, true, true));
 							
-							
+							chart.plot(data);
+							// set bar colors
+							solidFillSeries(data, 1, PresetColor.GRAY);
+//							solidFillSeries(data, 1, PresetColor.GRAY);
 							
 							series = data.addSeries(categoriesData, valuesData3);
 							series.setTitle("Modeled Generation (kWh)",
@@ -751,8 +763,8 @@ public class BuiltInReportController extends BaseController {
 						
 							chart.plot(data);
 							// set bar colors
-							solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
-							solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
+							solidFillSeries(data, 2, PresetColor.LIGHT_STEEL_BLUE);
+
 							
 		
 							// second bar chart
@@ -778,12 +790,19 @@ public class BuiltInReportController extends BaseController {
 							series = data.addSeries(categoriesData, valuesData4);
 							series.setTitle("Expected Generation Index (%)",
 									new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
+							chart.plot(data);
+							solidFillSeries(data, 0, PresetColor.LIME);
 							
 							series = data.addSeries(categoriesData, valuesData5);
 							series.setTitle("Expected Generation Index (%)",
 									new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
 							
 							chart.plot(data);
+//							solidFillSeries(data, 2, PresetColor.LIME);
+							solidLineSeries(data, 1, PresetColor.ORANGE);
+							
+//							solidFillSeries(data, 3, PresetColor.LIME);
+//							solidFillSeries(data, 4, PresetColor.ORANGE);
 		
 		
 							// this must occur after the call to chart.plot above
@@ -800,6 +819,7 @@ public class BuiltInReportController extends BaseController {
 							// set legend
 							XDDFChartLegend legend = chart.getOrAddLegend();
 							legend.setPosition(LegendPosition.BOTTOM);
+					        
 						}
 						
 					}
@@ -1042,8 +1062,8 @@ public class BuiltInReportController extends BaseController {
 			DecimalFormat dfp = new DecimalFormat("###,###.0");
 			// create CellStyle
 			Font fonDef = sheet.getWorkbook().createFont();
-			fonDef.setFontName("Calibri (Body)");
-			fonDef.setFontHeightInPoints((short) 12); // font size
+			fonDef.setFontName("Times New Roman");
+			fonDef.setFontHeightInPoints((short) 14); // font size
 			
 			CellStyle cellStyle = createStyleForHeader(sheet);
 			cellStyle.setFont(fonDef);
@@ -1077,9 +1097,9 @@ public class BuiltInReportController extends BaseController {
 
 			// Create font
 			Font fontBold = sheet.getWorkbook().createFont();
-			fontBold.setFontName("Calibri (Body)");
+			fontBold.setFontName("Times New Roman");
 			fontBold.setBold(true);
-			fontBold.setFontHeightInPoints((short) 12); // font size
+			fontBold.setFontHeightInPoints((short) 14); // font size
 			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
 			cellStyleFontBold.setFont(fontBold);
 			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -1097,8 +1117,10 @@ public class BuiltInReportController extends BaseController {
 			sheet.setColumnWidth(0, 30 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
 			sheet.setColumnWidth(2, 30 * 256);
+			sheet.setColumnWidth(3, 20 * 256);
+			sheet.setColumnWidth(4, 13 * 256);
 			
-			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDefaultRowHeight((short) 400);
 			sheet.setDisplayGridlines(false);
 			
 			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
@@ -1107,12 +1129,12 @@ public class BuiltInReportController extends BaseController {
 			sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 2));
 
 			Row row1 = sheet.createRow(1);
-			row1.setHeight((short) 600);
+			row1.setHeight((short) 400);
 			Cell cell = row1.createCell(0);
 
 			// Create font
 			Font font = sheet.getWorkbook().createFont();
-			font.setFontName("Calibri (Body)");
+			font.setFontName("Times New Roman");
 			font.setBold(true);
 			font.setFontHeightInPoints((short) 18); // font size
 			font.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -1132,7 +1154,7 @@ public class BuiltInReportController extends BaseController {
 							
 			// Create font
 			Font font1 = sheet.getWorkbook().createFont();
-			font1.setFontName("Calibri (Body)");
+			font1.setFontName("Times New Roman");
 			font1.setBold(true);
 			font1.setFontHeightInPoints((short) 14); // font size
 			font1.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -1144,7 +1166,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleSubTitle.setAlignment(HorizontalAlignment.CENTER);
 						
 			Row row2 = sheet.createRow(2);
-			row2.setHeight((short) 500);
+			row2.setHeight((short) 400);
 			Cell cell2 = row2.createCell(0);
 			cell2.setCellStyle(cellStyleSubTitle);
 			cell2.setCellValue(dataObj.getSite_name());
@@ -1152,7 +1174,7 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Font font3 = sheet.getWorkbook().createFont();
-			font3.setFontName("Calibri (Body)");
+			font3.setFontName("Times New Roman");
 			font3.setBold(false);
 			font3.setFontHeightInPoints((short) 14); // font size
 			font3.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -1163,7 +1185,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleDate.setVerticalAlignment(VerticalAlignment.CENTER);
 			cellStyleDate.setAlignment(HorizontalAlignment.CENTER);
 			Row row3 = sheet.createRow(3);
-			row3.setHeight((short) 500);
+			row3.setHeight((short) 400);
 			Cell cell3 = row3.createCell(0);
 			cell3.setCellStyle(cellStyleDate);
 			
@@ -1175,9 +1197,9 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Font fonDefB = sheet.getWorkbook().createFont();
-			fonDefB.setFontName("Calibri (Body)");
+			fonDefB.setFontName("Times New Roman");
 			fonDefB.setBold(true);
-			fonDefB.setFontHeightInPoints((short) 12); // font size
+			fonDefB.setFontHeightInPoints((short) 14); // font size
 			
 			CellStyle cellStyleB = createStyleForHeader(sheet);
 			cellStyleB.setFont(fonDefB);
@@ -1195,7 +1217,7 @@ public class BuiltInReportController extends BaseController {
 			
 			
 			Row row4 = sheet.createRow(5);
-			row4.setHeight((short) 500);
+			row4.setHeight((short) 400);
 			Cell cell4 = row4.createCell(0);
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 2));
 			cell4.setCellStyle(cellStyleB);
@@ -1221,7 +1243,7 @@ public class BuiltInReportController extends BaseController {
 			
 			// Create style row
 			Font fontRow = sheet.getWorkbook().createFont();
-			fontRow.setFontName("Calibri (Body)");
+			fontRow.setFontName("Times New Roman");
 			fontRow.setFontHeightInPoints((short) 12); // font size
 			fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
@@ -1245,7 +1267,7 @@ public class BuiltInReportController extends BaseController {
 			Row row5 = sheet.createRow(6);
 			for (int i = 0; i < categories.size(); i++) {
 				row5 = sheet.createRow(i + 6);
-				row5.setHeight((short) 500);
+				row5.setHeight((short) 315);
 				sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 0, 2));
 				Cell cell5 = row5.createCell(0);
 				cell5.setCellStyle(cellStyleItem);
@@ -1881,7 +1903,7 @@ public class BuiltInReportController extends BaseController {
 				DecimalFormat df2p = new DecimalFormat("###,###.##");
 				// create CellStyle
 				Font fonDef = sheet.getWorkbook().createFont();
-				fonDef.setFontName("Calibri (Body)");
+				fonDef.setFontName("Times New Roman");
 				fonDef.setFontHeightInPoints((short) 12); // font size
 				
 				CellStyle cellStyle = createStyleForHeader(sheet);
@@ -1916,7 +1938,7 @@ public class BuiltInReportController extends BaseController {
 
 				// Create font
 				Font fontBold = sheet.getWorkbook().createFont();
-				fontBold.setFontName("Calibri (Body)");
+				fontBold.setFontName("Times New Roman");
 				fontBold.setBold(true);
 				fontBold.setFontHeightInPoints((short) 12); // font size
 				CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
@@ -1954,7 +1976,7 @@ public class BuiltInReportController extends BaseController {
 
 				// Create font
 				Font font = sheet.getWorkbook().createFont();
-				font.setFontName("Calibri (Body)");
+				font.setFontName("Times New Roman");
 				font.setBold(true);
 				font.setFontHeightInPoints((short) 18); // font size
 				font.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -1972,7 +1994,7 @@ public class BuiltInReportController extends BaseController {
 				
 				// Create font
 				Font font1 = sheet.getWorkbook().createFont();
-				font1.setFontName("Calibri (Body)");
+				font1.setFontName("Times New Roman");
 				font1.setBold(true);
 				font1.setFontHeightInPoints((short) 14); // font size
 				font1.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -1992,7 +2014,7 @@ public class BuiltInReportController extends BaseController {
 				
 				
 				Font font3 = sheet.getWorkbook().createFont();
-				font3.setFontName("Calibri (Body)");
+				font3.setFontName("Times New Roman");
 				font3.setBold(false);
 				font3.setFontHeightInPoints((short) 14); // font size
 				font3.setColor(IndexedColors.BLACK.getIndex()); // text color
@@ -2015,7 +2037,7 @@ public class BuiltInReportController extends BaseController {
 				
 				
 				Font fonDefB = sheet.getWorkbook().createFont();
-				fonDefB.setFontName("Calibri (Body)");
+				fonDefB.setFontName("Times New Roman");
 				fonDefB.setBold(true);
 				fonDefB.setFontHeightInPoints((short) 12); // font size
 				
@@ -2072,7 +2094,7 @@ public class BuiltInReportController extends BaseController {
 				
 				// Create style row
 				Font fontRow = sheet.getWorkbook().createFont();
-				fontRow.setFontName("Calibri (Body)");
+				fontRow.setFontName("Times New Roman");
 				fontRow.setFontHeightInPoints((short) 12); // font size
 				fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
 				// Create CellStyle
@@ -2181,7 +2203,7 @@ public class BuiltInReportController extends BaseController {
 				
 				// add Note
 				Font fontRowBg = sheet.getWorkbook().createFont();
-				fontRowBg.setFontName("Calibri (Body)");
+				fontRowBg.setFontName("Times New Roman");
 				fontRowBg.setFontHeightInPoints((short) 14); // font size
 				fontRowBg.setColor(IndexedColors.WHITE.getIndex()); // text color
 				// Create CellStyle
@@ -2207,7 +2229,7 @@ public class BuiltInReportController extends BaseController {
 				
 				
 				Font fontRowNote = sheet.getWorkbook().createFont();
-				fontRowNote.setFontName("Calibri (Body)");
+				fontRowNote.setFontName("Times New Roman");
 				fontRowNote.setFontHeightInPoints((short) 14); // font size
 				fontRowNote.setColor(IndexedColors.BLACK.getIndex()); // text color
 				// Create CellStyle

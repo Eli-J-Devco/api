@@ -166,20 +166,20 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "FILETIME", required = false) String filetime) {
 
 //		public String message = " ";
-//		System.out.println("---------------------------------start------------------------------");
-//		System.out.println("SENDDATATRACE: " + senddatatrace);
-//		System.out.println("MODE: " + mode);
-//		System.out.println("SERIALNUMBER: " + serialnumber);
-//		System.out.println("PASSWORD: " + password);
-//		System.out.println("LOOPNAME: " + loopname);
-//		System.out.println("MODBUSIP: " + modbusip);
-//		System.out.println("MODBUSPORT: " + modbusport);
-//		System.out.println("MODBUSDEVICE: " + modbusdevice);
-//		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-//		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-//		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-//		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-//		System.out.println("-------------------------------end--------------------------------");
+		System.out.println("---------------------------------start------------------------------");
+		System.out.println("SENDDATATRACE: " + senddatatrace);
+		System.out.println("MODE: " + mode);
+		System.out.println("SERIALNUMBER: " + serialnumber);
+		System.out.println("PASSWORD: " + password);
+		System.out.println("LOOPNAME: " + loopname);
+		System.out.println("MODBUSIP: " + modbusip);
+		System.out.println("MODBUSPORT: " + modbusport);
+		System.out.println("MODBUSDEVICE: " + modbusdevice);
+		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+		System.out.println("-------------------------------end--------------------------------");
 		
 		try {
 
@@ -3208,6 +3208,8 @@ public class UploadFilesController extends BaseController {
 				message = "\nSUCCESS\n";
 				
 			}
+			
+			System.out.println("message: " + message);
 			return message;
 
 		} catch (Exception e) {
