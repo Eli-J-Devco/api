@@ -448,5 +448,46 @@
 		</if> 
   	</select>
   	
+  	<select id="getListHiddenDataByDevice" resultType="Map">
+		SELECT
+			id,
+			CONCAT_WS(" - ", date_from, date_to) AS text
+		FROM
+			hidden_data
+		WHERE
+			id_device = #{id}
+			AND status = 1
+			AND is_delete = 0
+	</select>
+	
+  	<insert id="insertHiddenData" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `hidden_data`(
+			`id_device`,
+			`date_from`,
+			`date_to`,
+			`create_by`,
+			`create_date`
+		)VALUES(
+			#{id},
+			#{date_from},
+			#{date_to},
+			#{id_employee},
+			NOW()
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="deleteHiddenData">
+		UPDATE `hidden_data`
+		SET
+			is_delete = 1,
+			update_by = #{id_employee},
+			update_date = NOW()
+		WHERE
+			`id` = #{id}
+	</update>
 	
 </mapper>

@@ -182,6 +182,7 @@ public class SiteEntity {
 	private String alert_mail_cc;
 	private String alert_mail_bcc;
 	
+	private List hidden_data_list;
 	
 	
 	
@@ -1163,6 +1164,12 @@ public class SiteEntity {
 	}
 	public void setLast_modified(String last_modified) {
 		this.last_modified = last_modified;
+	}
+	public List getHidden_data_list() {
+		return hidden_data_list;
+	}
+	public void setHidden_data_list(List hidden_data_list) {
+		this.hidden_data_list = hidden_data_list;
 	}
 	
 	

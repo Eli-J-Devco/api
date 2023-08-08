@@ -58,6 +58,17 @@
 			d.id = #{id} AND d.`status` = 1 AND dp.is_delete = 0 AND dp.`status` = 1 AND dp.is_filter = 1 ORDER BY menu_order DESC;
 	</select>
 	
+	<select id="getHiddenDataListByDevice" resultType="Map">
+		SELECT
+			date_from,
+			date_to
+		FROM
+			hidden_data
+		WHERE
+			id_device = #{id}
+			AND status = 1
+			AND is_delete = 0
+	</select>
 	
 	<select id="getDataChartParameter" resultType="Map">
 		SELECT
@@ -1964,6 +1975,9 @@
 		WHERE
 			dv.id_device = #{id}
 			AND (CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+		    <foreach item="item" index="index" collection="hidden_data_list">
+				AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
+		    </foreach>
 		GROUP BY time_group_by 
 		ORDER BY time_group_by ASC
 	</select>
