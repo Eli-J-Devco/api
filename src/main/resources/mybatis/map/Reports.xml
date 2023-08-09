@@ -479,7 +479,7 @@
 			s.id,
 			s.`name`,
 			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh
+			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
 			site_data_report sdr 

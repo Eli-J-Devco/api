@@ -132,28 +132,30 @@ public class BuiltInReportService extends DB {
 			List data = queryForList("BuiltInReport.getDataWeeklyTrendReport", obj);
 			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
 			
-			if (data.size() > 0 && categories.size() > 0) {
+			if (categories.size() > 0) {
 				for (WeeklyDateEntity item : categories) {
 					boolean flag = false;
 					WeeklyDateEntity mapItem = new WeeklyDateEntity();
 					
-					for(int v = 0; v < data.size(); v++) {
-						Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-						String categoriesTime = item.getTime_format();
-						String powerTime = itemT.get("time_format").toString();
-						
-						if (categoriesTime.equals(powerTime)) {
-							flag = true;
-							mapItem.setTime_format(itemT.get("time_format").toString());
-							mapItem.setCategories_time(itemT.get("categories_time").toString());
-							mapItem.setSiteName(itemT.get("name").toString());
-							mapItem.setActualGeneration(Double.parseDouble(itemT.get("ActualGeneration").toString()));
-							mapItem.setExpectedGeneration(Double.parseDouble(itemT.get("ExpectedGeneration").toString()));
-							mapItem.setModeledGeneration(Double.parseDouble(itemT.get("ModeledGeneration").toString()));
-							mapItem.setPoa(Double.parseDouble(itemT.get("POA").toString()));
-							mapItem.setExpectedGenerationIndex(Double.parseDouble(itemT.get("ExpectedGenerationIndex").toString()));
-							mapItem.setModeledGenerationIndex(Double.parseDouble(itemT.get("ModeledGenerationIndex").toString()));
-							break;
+					if (data != null && data.size() > 0) {
+						for(int v = 0; v < data.size(); v++) {
+							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get("time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItem.setTime_format(itemT.get("time_format").toString());
+								mapItem.setCategories_time(itemT.get("categories_time").toString());
+								mapItem.setSiteName(itemT.get("name").toString());
+								mapItem.setActualGeneration(Double.parseDouble(itemT.get("ActualGeneration").toString()));
+								mapItem.setExpectedGeneration(Double.parseDouble(itemT.get("ExpectedGeneration").toString()));
+								mapItem.setModeledGeneration(Double.parseDouble(itemT.get("ModeledGeneration").toString()));
+								mapItem.setPoa(Double.parseDouble(itemT.get("POA").toString()));
+								mapItem.setExpectedGenerationIndex(Double.parseDouble(itemT.get("ExpectedGenerationIndex").toString()));
+								mapItem.setModeledGenerationIndex(Double.parseDouble(itemT.get("ModeledGenerationIndex").toString()));
+								break;
+							}
 						}
 					}
 					

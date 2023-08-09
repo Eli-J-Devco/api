@@ -62,9 +62,6 @@ public class CustomerViewService extends DB {
 				switch (obj.getFilterBy()) {
 				
 				case "today":
-					switch (obj.getData_send_time()) {
-					case 1:
-						Map<String, Object> deviceItem1 = new HashMap<>();
 						if (obj.getEnable_virtual_device() == 1) {
 							if (obj.getRead_data_all() == "all_data") {
 								obj.setDatatablename("model_virtual_meter_or_inverter");
@@ -72,7 +69,11 @@ public class CustomerViewService extends DB {
 								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 							}
 							
-							List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutesToday", obj);
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList);
+							
+							List dataList = queryForList("CustomerView.getDataVirtualDeviceToday", obj);
 							if (dataList.size() > 0) {
 								Map<String, Object> powerItem = new HashMap<>();
 								Map<String, Object> expectedPowerItem = new HashMap<>();
@@ -131,8 +132,17 @@ public class CustomerViewService extends DB {
 								}
 							}
 						} else {
+							Map<String, Object> deviceItem1 = new HashMap<>();
+							
+							// get list of time to exclude data from
+							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+								List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+								device.put("hidden_data_list", hiddenDataList);
+							}
+							
 							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower1 = queryForList("CustomerView.getDataPowerMeterFiveMinutes", obj);
+							List dataPower1 = queryForList("CustomerView.getDataPowerToday", obj);
 							if (dataPower1.size() > 0) {
 								deviceItem1.put("data_energy", dataPower1);
 								deviceItem1.put("type", "energy");
@@ -151,11 +161,14 @@ public class CustomerViewService extends DB {
 									List dataListAIrrDevice = new ArrayList<>();
 									
 									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									// get list of time to exclude data from
+									List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+									item.put("hidden_data_list", hiddenDataList);
 									dataListAIrrDevice.add(item);
 									
 									obj.setGroupMeter(dataListAIrrDevice);
 									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceToday", obj);
 									if(dataIrradianceDevice.size() > 0 ) {
 										// Get Expected Power
 										if (countExpectedPower == 1) {
@@ -177,352 +190,7 @@ public class CustomerViewService extends DB {
 						}
 						
 						break;
-					case 2:
-						Map<String, Object> deviceItem2 = new HashMap<>();
-						if (obj.getEnable_virtual_device() == 1) {
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
-							
-							List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutesToday", obj);
-							if (dataList.size() > 0) {
-								Map<String, Object> powerItem = new HashMap<>();
-								Map<String, Object> expectedPowerItem = new HashMap<>();
-								Map<String, Object> irradianceItem = new HashMap<>();
-								List powerList = new ArrayList<>();
-								List expectedPowerList = new ArrayList<>();
-								List irradianceList = new ArrayList<>();
-								
-								for (int i = 0; i < dataList.size(); i++) {
-									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-									Map<String, Object> powerListItem = new HashMap<>();
-									Map<String, Object> expectedPowerListItem = new HashMap<>();
-									Map<String, Object> irradianceListItem = new HashMap<>();
-									
-									powerListItem.put("time", dataListItem.get("time"));
-									powerListItem.put("download_time", dataListItem.get("download_time"));
-									powerListItem.put("time_format", dataListItem.get("time_format"));
-									powerListItem.put("time_full", dataListItem.get("time_full"));
-									powerListItem.put("categories_time", dataListItem.get("categories_time"));
-									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-									powerList.add(powerListItem);
-
-									expectedPowerListItem.put("time", dataListItem.get("time"));
-									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-									expectedPowerList.add(expectedPowerListItem);
-
-									irradianceListItem.put("time", dataListItem.get("time"));
-									irradianceListItem.put("download_time", dataListItem.get("download_time"));
-									irradianceListItem.put("time_format", dataListItem.get("time_format"));
-									irradianceListItem.put("time_full", dataListItem.get("time_full"));
-									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-									irradianceList.add(irradianceListItem);
-								}
-								
-								powerItem.put("data_energy", powerList);
-								powerItem.put("type", "energy");
-								powerItem.put("devicename", "Power");
-								powerItem.put("deviceType", "meter");
-								dataEnergy.add(powerItem);
-								
-								if (dataListDeviceIrr.size() > 0) {
-									expectedPowerItem.put("data_energy", expectedPowerList);
-									expectedPowerItem.put("type", "expected_power");
-									expectedPowerItem.put("devicename", "Expected Power");
-									dataEnergy.add(expectedPowerItem);
-									
-									irradianceItem.put("data_energy", irradianceList);
-									irradianceItem.put("type", "irradiance");
-									irradianceItem.put("devicename", "Irradiance");
-									dataEnergy.add(irradianceItem);
-								}
-							}
-						} else {
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower2 = queryForList("CustomerView.getDataEnergyFifteenMinutes", obj);
-							if (dataPower2.size() > 0) {
-								deviceItem2.put("data_energy", dataPower2);
-								deviceItem2.put("type", "energy");
-								deviceItem2.put("devicename", "Power");
-								deviceItem2.put("deviceType", "meter");
-								dataEnergy.add(deviceItem2);
-							}
-							
-							
-							// Get Irradiance
-							if (dataListDeviceIrr.size() > 0) {
-								int countExpectedPower = 1;
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem2 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem2 = new HashMap<>();
-									
-									List dataListAIrrDevice = new ArrayList<>();
-									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										if (countExpectedPower == 1) {
-											deviceExpectedPowerItem2.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem2.put("type", "expected_power");
-											deviceExpectedPowerItem2.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem2);
-										}
-										
-										// Get Irradiance
-										deviceIrrItem2.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem2.put("type", "irradiance");
-										deviceIrrItem2.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem2);
-										countExpectedPower++;
-									}
-								}
-							}
-						}
-
-						break;
-						
-					case 3:
-						Map<String, Object> deviceItem3 = new HashMap<>();
-						if (obj.getEnable_virtual_device() == 1) {
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
-							
-							List dataList = queryForList("CustomerView.getDataVirtualDeviceHourToday", obj);
-							if (dataList.size() > 0) {
-								Map<String, Object> powerItem = new HashMap<>();
-								Map<String, Object> expectedPowerItem = new HashMap<>();
-								Map<String, Object> irradianceItem = new HashMap<>();
-								List powerList = new ArrayList<>();
-								List expectedPowerList = new ArrayList<>();
-								List irradianceList = new ArrayList<>();
-								
-								for (int i = 0; i < dataList.size(); i++) {
-									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-									Map<String, Object> powerListItem = new HashMap<>();
-									Map<String, Object> expectedPowerListItem = new HashMap<>();
-									Map<String, Object> irradianceListItem = new HashMap<>();
-									
-									powerListItem.put("time", dataListItem.get("time"));
-									powerListItem.put("download_time", dataListItem.get("download_time"));
-									powerListItem.put("time_format", dataListItem.get("time_format"));
-									powerListItem.put("time_full", dataListItem.get("time_full"));
-									powerListItem.put("categories_time", dataListItem.get("categories_time"));
-									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-									powerList.add(powerListItem);
-
-									expectedPowerListItem.put("time", dataListItem.get("time"));
-									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-									expectedPowerList.add(expectedPowerListItem);
-
-									irradianceListItem.put("time", dataListItem.get("time"));
-									irradianceListItem.put("download_time", dataListItem.get("download_time"));
-									irradianceListItem.put("time_format", dataListItem.get("time_format"));
-									irradianceListItem.put("time_full", dataListItem.get("time_full"));
-									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-									irradianceList.add(irradianceListItem);
-								}
-								
-								powerItem.put("data_energy", powerList);
-								powerItem.put("type", "energy");
-								powerItem.put("devicename", "Power");
-								powerItem.put("deviceType", "meter");
-								dataEnergy.add(powerItem);
-								
-								if (dataListDeviceIrr.size() > 0) {
-									expectedPowerItem.put("data_energy", expectedPowerList);
-									expectedPowerItem.put("type", "expected_power");
-									expectedPowerItem.put("devicename", "Expected Power");
-									dataEnergy.add(expectedPowerItem);
-									
-									irradianceItem.put("data_energy", irradianceList);
-									irradianceItem.put("type", "irradiance");
-									irradianceItem.put("devicename", "Irradiance");
-									dataEnergy.add(irradianceItem);
-								}
-							}
-						} else {
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower3 = queryForList("CustomerView.getDataEnergyHour", obj);
-							if (dataPower3.size() > 0) {
-								deviceItem3.put("data_energy", dataPower3);
-								deviceItem3.put("type", "energy");
-								deviceItem3.put("devicename", "Power");
-								deviceItem3.put("deviceType", "meter");
-								dataEnergy.add(deviceItem3);
-							}
-							
-							// Get Irradiance
-							if (dataListDeviceIrr.size() > 0) {
-								int countExpectedPower = 1;
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem3 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem3 = new HashMap<>();
-									
-									List dataListAIrrDevice = new ArrayList<>();
-									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										if (countExpectedPower == 1) {
-											deviceExpectedPowerItem3.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem3.put("type", "expected_power");
-											deviceExpectedPowerItem3.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem3);
-										}										
-										
-										// Get Irradiance
-										deviceIrrItem3.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem3.put("type", "irradiance");
-										deviceIrrItem3.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem3);
-										countExpectedPower++;
-									}
-								}
-							}
-						}
-						break;
-						
-					case 4:
-						Map<String, Object> deviceItem4 = new HashMap<>();
-						if (obj.getEnable_virtual_device() == 1) {
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
-							
-							List dataList = queryForList("CustomerView.getDataVirtualDeviceDayToday", obj);
-							if (dataList.size() > 0) {
-								Map<String, Object> powerItem = new HashMap<>();
-								Map<String, Object> expectedPowerItem = new HashMap<>();
-								Map<String, Object> irradianceItem = new HashMap<>();
-								List powerList = new ArrayList<>();
-								List expectedPowerList = new ArrayList<>();
-								List irradianceList = new ArrayList<>();
-								
-								for (int i = 0; i < dataList.size(); i++) {
-									Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-									Map<String, Object> powerListItem = new HashMap<>();
-									Map<String, Object> expectedPowerListItem = new HashMap<>();
-									Map<String, Object> irradianceListItem = new HashMap<>();
-									
-									powerListItem.put("time", dataListItem.get("time"));
-									powerListItem.put("download_time", dataListItem.get("download_time"));
-									powerListItem.put("time_format", dataListItem.get("time_format"));
-									powerListItem.put("time_full", dataListItem.get("time_full"));
-									powerListItem.put("categories_time", dataListItem.get("categories_time"));
-									powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-									powerList.add(powerListItem);
-
-									expectedPowerListItem.put("time", dataListItem.get("time"));
-									expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-									expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-									expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-									expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-									expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-									expectedPowerList.add(expectedPowerListItem);
-
-									irradianceListItem.put("time", dataListItem.get("time"));
-									irradianceListItem.put("download_time", dataListItem.get("download_time"));
-									irradianceListItem.put("time_format", dataListItem.get("time_format"));
-									irradianceListItem.put("time_full", dataListItem.get("time_full"));
-									irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-									irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-									irradianceList.add(irradianceListItem);
-								}
-								
-								powerItem.put("data_energy", powerList);
-								powerItem.put("type", "energy");
-								powerItem.put("devicename", "Power");
-								powerItem.put("deviceType", "meter");
-								dataEnergy.add(powerItem);
-								
-								if (dataListDeviceIrr.size() > 0) {
-									expectedPowerItem.put("data_energy", expectedPowerList);
-									expectedPowerItem.put("type", "expected_power");
-									expectedPowerItem.put("devicename", "Expected Power");
-									dataEnergy.add(expectedPowerItem);
-									
-									irradianceItem.put("data_energy", irradianceList);
-									irradianceItem.put("type", "irradiance");
-									irradianceItem.put("devicename", "Irradiance");
-									dataEnergy.add(irradianceItem);
-								}
-							}
-						} else {
-							obj.setGroupMeter(dataListDeviceMeter);
-							List dataPower4 = queryForList("CustomerView.getDataEnergyHourDay", obj);
-							if (dataPower4.size() > 0) {
-								deviceItem4.put("data_energy", dataPower4);
-								deviceItem4.put("type", "energy");
-								deviceItem4.put("devicename", "Power");
-								deviceItem4.put("deviceType", "meter");
-								dataEnergy.add(deviceItem4);
-							}
-							
-							// Get Irradiance
-							if (dataListDeviceIrr.size() > 0) {
-								int countExpectedPower = 1;
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> deviceIrrItem4 = new HashMap<>();
-									Map<String, Object> deviceExpectedPowerItem4 = new HashMap<>();
-									
-									List dataListAIrrDevice = new ArrayList<>();
-									
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									dataListAIrrDevice.add(item);
-									
-									obj.setGroupMeter(dataListAIrrDevice);
-									
-									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-									if(dataIrradianceDevice.size() > 0 ) {
-										// Get Expected Power
-										if (countExpectedPower == 1) {
-											deviceExpectedPowerItem4.put("data_energy", dataIrradianceDevice);
-											deviceExpectedPowerItem4.put("type", "expected_power");
-											deviceExpectedPowerItem4.put("devicename", "Expected Power");
-											dataEnergy.add(deviceExpectedPowerItem4);
-										}										
-										
-										// Get Irradiance
-										deviceIrrItem4.put("data_energy", dataIrradianceDevice);
-										deviceIrrItem4.put("type", "irradiance");
-										deviceIrrItem4.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceIrrItem4);
-										countExpectedPower++;
-									}
-								}
-							}
-						}
-						break;
-					}
-					break;
-				case "custom":
+				case "custom": {
 					// Create list date 
 					SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
 					SimpleDateFormat usFormatCustom = new SimpleDateFormat("MM/dd/yyyy");
@@ -545,11 +213,11 @@ public class CustomerViewService extends DB {
 					Calendar calEndCustom = Calendar.getInstance();
 					calEndCustom.setTime(endDateCustom);
 
+					List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
+					long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
+					
 					switch (obj.getData_send_time()) {
-						case 4: {
-							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-							
-							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
+						case 4:
 							int day = 1;
 												
 							for(int t = 0; t <= forCountYTD; t++) {
@@ -565,77 +233,11 @@ public class CustomerViewService extends DB {
 								headerDate.setExpected_power(0.001);
 								categories.add(headerDate);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceDayCustom", obj);
-							} else {
-								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
-							}
-							
-							if(dataPowerM.size() > 0 && categories.size() > 0) {
-								for (ClientMonthlyDateEntity item : categories) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObj = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerM.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerM.get(v);
-										String categoriesTime = item.getTime_format();
-										String powerTime = itemT.get("time_format").toString();
-										if (categoriesTime.equals(powerTime)) {
-								        	flag = true;
-								        	mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObj.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										mapItem.setExpected_power(item.getExpected_power());
-										dataNew.add(mapItem);
-									} else {
-										dataNew.add(mapItemObj);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemM = new HashMap<>();
-							if (dataPowerM.size() > 0) {
-								deviceItemM.put("data_energy", dataNew);
-								deviceItemM.put("type", "energy");
-								deviceItemM.put("devicename", "Energy output");
-								deviceItemM.put("deviceType", "meter");
-								dataEnergy.add(deviceItemM);
-							}
-										
 							break;
-						}
-						
-						case 5: {
+						case 5:
 							LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
 							LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
 							long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-
-							List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
 							int YTD7Day = 1;
 							
 							for(int t = 0; t <= forCountYTD7Day; t++) {
@@ -649,77 +251,13 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								headerDateLT.setExpected_power(0.001);
-								categoriesYTD7Day.add(headerDateLT);
+								categories.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerYTD7Day = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDevice7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDevice7DayCustom", obj);
-							} else {
-								dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeter7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
-							}
-							
-							if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerYTD7Day.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
-										String categoriesTimeYTD = item.getTime_format();
-										String powerTimeYTD = itemT.get("time_format").toString();
-										if (categoriesTimeYTD.equals(powerTimeYTD)) {
-								        	flag = true;
-								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										mapItem.setExpected_power(item.getExpected_power());
-										dataNewYTD7Day.add(mapItem);
-									} else {
-										dataNewYTD7Day.add(mapItemObjYTD);
-									}
-								}
-							}
-							
-							Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
-							if (dataPowerYTD7Day.size() > 0) {
-								deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
-								deviceItemMYTD7Day.put("type", "energy");
-								deviceItemMYTD7Day.put("devicename", "Energy output");
-								deviceItemMYTD7Day.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMYTD7Day);
-							}							
 							break;
-						}
-
-						case 6: {
+						case 6: 
 							YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 							YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 							long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
-							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-					        
-							List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
 							int monthYTD = 1;
 							
 							for(int t = 0; t <= forCountYTDMonth; t++) {
@@ -733,83 +271,16 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								headerDateLT.setExpected_power(0.001);
-								categoriesYTDMonth.add(headerDateLT);
+								categories.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceMonthCustom", obj);
-							} else {
-								dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
-							}
-							
-							if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerMLT.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-										String categoriesTimeLT = item.getTime_format();
-										String powerTimeLT = itemT.get("time_format").toString();
-										if (categoriesTimeLT.equals(powerTimeLT)) {
-								        	flag = true;
-								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										mapItem.setExpected_power(item.getExpected_power());
-										dataNewYTDMonth.add(mapItem);
-									} else {
-										dataNewYTDMonth.add(mapItemObjLT);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemMLT = new HashMap<>();
-							if (dataPowerMLT.size() > 0) {
-								deviceItemMLT.put("data_energy", dataNewYTDMonth);
-								deviceItemMLT.put("type", "energy");
-								deviceItemMLT.put("devicename", "Energy output");
-								deviceItemMLT.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMLT);
-							}
-							
 							break;
-						}
-
-						case 7: {
+						case 7:
 							YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
 							YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
 							long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
-							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-
 							if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
 									forCountLTYear += 1;
-								}
-							
-							List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
+							}
 							int yearLT = 1;
 							
 							for(int t = 0; t <= forCountLTYear; t++) {
@@ -823,75 +294,78 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
 								headerDateLT.setExpected_power(0.001);
-								categoriesLTYear.add(headerDateLT);
-							}
-							
-							List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLTYear = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceYearCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceYearCustom", obj);
-							} else {
-								dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterYearCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
-							}
-							
-							if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesLTYear) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerMLTYear.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
-										String categoriesTimeLT = item.getTime_format();
-										String powerTimeLT = itemT.get("time_format").toString();
-										if (categoriesTimeLT.equals(powerTimeLT)) {
-								        	flag = true;
-								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										mapItem.setExpected_power(item.getExpected_power());
-										dataNewLTYear.add(mapItem);
-									} else {
-										dataNewLTYear.add(mapItemObjLT);
-									}
-								}
-							}
-							
-							Map<String, Object> deviceItemMLTYear = new HashMap<>();
-							if (dataPowerMLTYear.size() > 0) {
-								deviceItemMLTYear.put("data_energy", dataNewLTYear);
-								deviceItemMLTYear.put("type", "energy");
-								deviceItemMLTYear.put("devicename", "Energy output");
-								deviceItemMLTYear.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMLTYear);
+								categories.add(headerDateLT);
 							}
 							break;
+					}
+					
+					// get list of time to exclude data from
+					List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+					obj.setHidden_data_list(hiddenDataList);
+					obj.setGroupMeter(dataListDeviceMeter);
+					
+					List dataPowerM = null;
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+						 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceCustom", obj);
+					} else {
+						 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
+					}
+					
+					List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
+					if(dataPowerM.size() > 0 && categories.size() > 0) {
+						for (ClientMonthlyDateEntity item : categories) {
+							boolean flag = false;
+							ClientMonthlyDateEntity mapItemObj = new ClientMonthlyDateEntity();
+							for( int v = 0; v < dataPowerM.size(); v++){
+								Map<String, Object> itemT = (Map<String, Object>) dataPowerM.get(v);
+								String categoriesTime = item.getTime_format();
+								String powerTime = itemT.get("time_format").toString();
+								if (categoriesTime.equals(powerTime)) {
+						        	flag = true;
+						        	mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+						        	mapItemObj.setTime_format(itemT.get("time_format").toString());
+						        	mapItemObj.setTime_full(itemT.get("time_full").toString());
+						        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
+						        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+						        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+						        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
+						        	break;
+						        }
+							}
+							
+							if(flag == false) {
+								ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+								mapItem.setCategories_time(item.getCategories_time());
+								mapItem.setTime_format(item.getTime_format());
+								mapItem.setTime_full(item.getTime_full());
+								mapItem.setDownload_time(item.getDownload_time());
+								mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+								mapItem.setNvm_irradiance(item.getNvm_irradiance());
+								mapItem.setExpected_power(item.getExpected_power());
+								dataNew.add(mapItem);
+							} else {
+								dataNew.add(mapItemObj);
+							}
 						}
 					}
+					
+					Map<String, Object> deviceItemM = new HashMap<>();
+					if (dataPowerM.size() > 0) {
+						deviceItemM.put("data_energy", dataNew);
+						deviceItemM.put("type", "energy");
+						deviceItemM.put("devicename", "Energy output");
+						deviceItemM.put("deviceType", "meter");
+						dataEnergy.add(deviceItemM);
+					}
+				
 					break;
+				}
 				case "3_day":
-					switch (obj.getData_send_time()) {
-						case 1:
-							Map<String, Object> deviceItem5 = new HashMap<>();
 							if (obj.getEnable_virtual_device() == 1) {
 								if (obj.getRead_data_all() == "all_data") {
 									obj.setDatatablename("model_virtual_meter_or_inverter");
@@ -899,7 +373,11 @@ public class CustomerViewService extends DB {
 									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 								}
 								
-								List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutes3Day", obj);
+								// get list of time to exclude data from
+								List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+								obj.setHidden_data_list(hiddenDataList);
+								
+								List dataList = queryForList("CustomerView.getDataVirtualDevice3Day", obj);
 								if (dataList.size() > 0) {
 									Map<String, Object> powerItem = new HashMap<>();
 									Map<String, Object> expectedPowerItem = new HashMap<>();
@@ -958,8 +436,17 @@ public class CustomerViewService extends DB {
 									}
 								}
 							} else {
+								Map<String, Object> deviceItem5 = new HashMap<>();
+								
+								// get list of time to exclude data from
+								for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+									Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+									List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+									device.put("hidden_data_list", hiddenDataList);
+								}
+								
 								obj.setGroupMeter(dataListDeviceMeter);
-								List dataPower5 = queryForList("CustomerView.getDataPowerMeterFiveMinutes3Day", obj);
+								List dataPower5 = queryForList("CustomerView.getDataPower3Day", obj);
 								if (dataPower5.size() > 0) {
 									deviceItem5.put("data_energy", dataPower5);
 									deviceItem5.put("type", "energy");
@@ -979,11 +466,14 @@ public class CustomerViewService extends DB {
 										List dataListAIrrDevice = new ArrayList<>();
 										
 										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+										// get list of time to exclude data from
+										List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+										item.put("hidden_data_list", hiddenDataList);
 										dataListAIrrDevice.add(item);
 										
 										obj.setGroupMeter(dataListAIrrDevice);
 										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
 										if(dataIrradianceDevice.size() > 0 ) {
 											// Get Expected Power
 											if(countExpectedPower == 1) {
@@ -1005,362 +495,18 @@ public class CustomerViewService extends DB {
 							}
 							
 							break;
-						case 2:
-							Map<String, Object> deviceItem6 = new HashMap<>();
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								
-								List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutes3Day", obj);
-								if (dataList.size() > 0) {
-									Map<String, Object> powerItem = new HashMap<>();
-									Map<String, Object> expectedPowerItem = new HashMap<>();
-									Map<String, Object> irradianceItem = new HashMap<>();
-									List powerList = new ArrayList<>();
-									List expectedPowerList = new ArrayList<>();
-									List irradianceList = new ArrayList<>();
-									
-									for (int i = 0; i < dataList.size(); i++) {
-										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-										Map<String, Object> powerListItem = new HashMap<>();
-										Map<String, Object> expectedPowerListItem = new HashMap<>();
-										Map<String, Object> irradianceListItem = new HashMap<>();
-										
-										powerListItem.put("time", dataListItem.get("time"));
-										powerListItem.put("download_time", dataListItem.get("download_time"));
-										powerListItem.put("time_format", dataListItem.get("time_format"));
-										powerListItem.put("time_full", dataListItem.get("time_full"));
-										powerListItem.put("categories_time", dataListItem.get("categories_time"));
-										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-										powerList.add(powerListItem);
-
-										expectedPowerListItem.put("time", dataListItem.get("time"));
-										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-										expectedPowerList.add(expectedPowerListItem);
-
-										irradianceListItem.put("time", dataListItem.get("time"));
-										irradianceListItem.put("download_time", dataListItem.get("download_time"));
-										irradianceListItem.put("time_format", dataListItem.get("time_format"));
-										irradianceListItem.put("time_full", dataListItem.get("time_full"));
-										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-										irradianceList.add(irradianceListItem);
-									}
-									
-									powerItem.put("data_energy", powerList);
-									powerItem.put("type", "energy");
-									powerItem.put("devicename", "Power");
-									powerItem.put("deviceType", "meter");
-									dataEnergy.add(powerItem);
-									
-									if (dataListDeviceIrr.size() > 0) {
-										expectedPowerItem.put("data_energy", expectedPowerList);
-										expectedPowerItem.put("type", "expected_power");
-										expectedPowerItem.put("devicename", "Expected Power");
-										dataEnergy.add(expectedPowerItem);
-										
-										irradianceItem.put("data_energy", irradianceList);
-										irradianceItem.put("type", "irradiance");
-										irradianceItem.put("devicename", "Irradiance");
-										dataEnergy.add(irradianceItem);
-									}
-								}
-							} else {
-								obj.setGroupMeter(dataListDeviceMeter);
-								List dataPower6 = queryForList("CustomerView.getDataEnergyFifteenMinutes3Day", obj);
-								if (dataPower6.size() > 0) {
-									deviceItem6.put("data_energy", dataPower6);
-									deviceItem6.put("type", "energy");
-									deviceItem6.put("devicename", "Power");
-									deviceItem6.put("deviceType", "meter");
-									dataEnergy.add(deviceItem6);
-								}
-								
-								
-								// Get Irradiance
-								
-								if (dataListDeviceIrr.size() > 0) {
-									int countExpectedPower = 1;
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem6 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem6 = new HashMap<>();
-										
-										List dataListAIrrDevice = new ArrayList<>();
-											
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-											
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											if (countExpectedPower == 1) {
-												deviceExpectedPowerItem6.put("data_energy", dataIrradianceDevice);
-												deviceExpectedPowerItem6.put("type", "expected_power");
-												deviceExpectedPowerItem6.put("devicename", "Expected Power");
-												dataEnergy.add(deviceExpectedPowerItem6);
-											}
-											// Get Irradiance
-											deviceIrrItem6.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem6.put("type", "irradiance");
-											deviceIrrItem6.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem6);
-											countExpectedPower++;
-										}
-									}
-								}
-							}
-	
-							break;
-						
-						case 3:
-							Map<String, Object> deviceItem7 = new HashMap<>();
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								
-								List dataList = queryForList("CustomerView.getDataVirtualDeviceHour3Day", obj);
-								if (dataList.size() > 0) {
-									Map<String, Object> powerItem = new HashMap<>();
-									Map<String, Object> expectedPowerItem = new HashMap<>();
-									Map<String, Object> irradianceItem = new HashMap<>();
-									List powerList = new ArrayList<>();
-									List expectedPowerList = new ArrayList<>();
-									List irradianceList = new ArrayList<>();
-									
-									for (int i = 0; i < dataList.size(); i++) {
-										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-										Map<String, Object> powerListItem = new HashMap<>();
-										Map<String, Object> expectedPowerListItem = new HashMap<>();
-										Map<String, Object> irradianceListItem = new HashMap<>();
-										
-										powerListItem.put("time", dataListItem.get("time"));
-										powerListItem.put("download_time", dataListItem.get("download_time"));
-										powerListItem.put("time_format", dataListItem.get("time_format"));
-										powerListItem.put("time_full", dataListItem.get("time_full"));
-										powerListItem.put("categories_time", dataListItem.get("categories_time"));
-										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-										powerList.add(powerListItem);
-
-										expectedPowerListItem.put("time", dataListItem.get("time"));
-										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-										expectedPowerList.add(expectedPowerListItem);
-
-										irradianceListItem.put("time", dataListItem.get("time"));
-										irradianceListItem.put("download_time", dataListItem.get("download_time"));
-										irradianceListItem.put("time_format", dataListItem.get("time_format"));
-										irradianceListItem.put("time_full", dataListItem.get("time_full"));
-										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-										irradianceList.add(irradianceListItem);
-									}
-									
-									powerItem.put("data_energy", powerList);
-									powerItem.put("type", "energy");
-									powerItem.put("devicename", "Power");
-									powerItem.put("deviceType", "meter");
-									dataEnergy.add(powerItem);
-									
-									if (dataListDeviceIrr.size() > 0) {
-										expectedPowerItem.put("data_energy", expectedPowerList);
-										expectedPowerItem.put("type", "expected_power");
-										expectedPowerItem.put("devicename", "Expected Power");
-										dataEnergy.add(expectedPowerItem);
-										
-										irradianceItem.put("data_energy", irradianceList);
-										irradianceItem.put("type", "irradiance");
-										irradianceItem.put("devicename", "Irradiance");
-										dataEnergy.add(irradianceItem);
-									}
-								}
-							} else {
-								obj.setGroupMeter(dataListDeviceMeter);
-								List dataPower7 = queryForList("CustomerView.getDataEnergyHour3Day", obj);
-								if (dataPower7.size() > 0) {
-									deviceItem7.put("data_energy", dataPower7);
-									deviceItem7.put("type", "energy");
-									deviceItem7.put("devicename", "Power");
-									deviceItem7.put("deviceType", "meter");
-									dataEnergy.add(deviceItem7);
-								}
-								
-								// Get Irradiance
-	
-								if (dataListDeviceIrr.size() > 0) {
-									int countExpectedPower = 1;
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem7 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem7 = new HashMap<>();
-										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											if(countExpectedPower == 1) {
-												deviceExpectedPowerItem7.put("data_energy", dataIrradianceDevice);
-												deviceExpectedPowerItem7.put("type", "expected_power");
-												deviceExpectedPowerItem7.put("devicename", "Expected Power");
-												dataEnergy.add(deviceExpectedPowerItem7);
-											}
-											
-											// Get Irradiance
-											deviceIrrItem7.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem7.put("type", "irradiance");
-											deviceIrrItem7.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem7);
-											countExpectedPower++;
-										}
-									}
-								}
-							}
-							break;
-							
-							// 4 day
-						case 4: 
-							Map<String, Object> deviceItem8 = new HashMap<>();
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								
-								List dataList = queryForList("CustomerView.getDataVirtualDeviceDay3Day", obj);
-								if (dataList.size() > 0) {
-									Map<String, Object> powerItem = new HashMap<>();
-									Map<String, Object> expectedPowerItem = new HashMap<>();
-									Map<String, Object> irradianceItem = new HashMap<>();
-									List powerList = new ArrayList<>();
-									List expectedPowerList = new ArrayList<>();
-									List irradianceList = new ArrayList<>();
-									
-									for (int i = 0; i < dataList.size(); i++) {
-										Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-										Map<String, Object> powerListItem = new HashMap<>();
-										Map<String, Object> expectedPowerListItem = new HashMap<>();
-										Map<String, Object> irradianceListItem = new HashMap<>();
-										
-										powerListItem.put("time", dataListItem.get("time"));
-										powerListItem.put("download_time", dataListItem.get("download_time"));
-										powerListItem.put("time_format", dataListItem.get("time_format"));
-										powerListItem.put("time_full", dataListItem.get("time_full"));
-										powerListItem.put("categories_time", dataListItem.get("categories_time"));
-										powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-										powerList.add(powerListItem);
-
-										expectedPowerListItem.put("time", dataListItem.get("time"));
-										expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-										expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-										expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-										expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-										expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-										expectedPowerList.add(expectedPowerListItem);
-
-										irradianceListItem.put("time", dataListItem.get("time"));
-										irradianceListItem.put("download_time", dataListItem.get("download_time"));
-										irradianceListItem.put("time_format", dataListItem.get("time_format"));
-										irradianceListItem.put("time_full", dataListItem.get("time_full"));
-										irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-										irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-										irradianceList.add(irradianceListItem);
-									}
-									
-									powerItem.put("data_energy", powerList);
-									powerItem.put("type", "energy");
-									powerItem.put("devicename", "Power");
-									powerItem.put("deviceType", "meter");
-									dataEnergy.add(powerItem);
-									
-									if (dataListDeviceIrr.size() > 0) {
-										expectedPowerItem.put("data_energy", expectedPowerList);
-										expectedPowerItem.put("type", "expected_power");
-										expectedPowerItem.put("devicename", "Expected Power");
-										dataEnergy.add(expectedPowerItem);
-										
-										irradianceItem.put("data_energy", irradianceList);
-										irradianceItem.put("type", "irradiance");
-										irradianceItem.put("devicename", "Irradiance");
-										dataEnergy.add(irradianceItem);
-									}
-								}
-							} else {
-								obj.setGroupMeter(dataListDeviceMeter);
-								List dataPower8 = queryForList("CustomerView.getDataEnergyDay3Day", obj);
-								if (dataPower8.size() > 0) {
-									deviceItem8.put("data_energy", dataPower8);
-									deviceItem8.put("type", "energy");
-									deviceItem8.put("devicename", "Power");
-									deviceItem8.put("deviceType", "meter");
-									dataEnergy.add(deviceItem8);
-								}
-								
-								// Get Irradiance
-								if (dataListDeviceIrr.size() > 0) {
-									int countExpectedPower = 1;
-									for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-										Map<String, Object> deviceIrrItem8 = new HashMap<>();
-										Map<String, Object> deviceExpectedPowerItem8 = new HashMap<>();
-										
-										List dataListAIrrDevice = new ArrayList<>();
-										
-										Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-										dataListAIrrDevice.add(item);
-										
-										obj.setGroupMeter(dataListAIrrDevice);
-										
-										List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-										if(dataIrradianceDevice.size() > 0 ) {
-											// Get Expected Power
-											if (countExpectedPower == 1) {
-												deviceExpectedPowerItem8.put("data_energy", dataIrradianceDevice);
-												deviceExpectedPowerItem8.put("type", "expected_power");
-												deviceExpectedPowerItem8.put("devicename", "Expected Power");
-												dataEnergy.add(deviceExpectedPowerItem8);
-											}
-											
-											// Get Irradiance
-											deviceIrrItem8.put("data_energy", dataIrradianceDevice);
-											deviceIrrItem8.put("type", "irradiance");
-											deviceIrrItem8.put("devicename", dataListDeviceIrr.get(i));
-											dataEnergy.add(deviceIrrItem8);
-											countExpectedPower++;
-										}
-									}
-								}
-							}
-							break;
-						}
-					break;
 				case "this_week":
 				case "last_week":
-						Map<String, Object> deviceItem5 = new HashMap<>();
 						if (obj.getEnable_virtual_device() == 1) {
 							if (obj.getRead_data_all() == "all_data") {
 								obj.setDatatablename("model_virtual_meter_or_inverter");
 							} else {
 								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 							}
+							
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList);
 							
 							List dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
 							if (dataList.size() > 0) {
@@ -1421,6 +567,15 @@ public class CustomerViewService extends DB {
 								}
 							}
 						} else {
+							Map<String, Object> deviceItem5 = new HashMap<>();
+							
+							// get list of time to exclude data from
+							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+								List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+								device.put("hidden_data_list", hiddenDataList);
+							}
+							
 							obj.setGroupMeter(dataListDeviceMeter);
 							List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
 							if (dataPower5.size() > 0) {
@@ -1442,25 +597,14 @@ public class CustomerViewService extends DB {
 									List dataListAIrrDevice = new ArrayList<>();
 									
 									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+									// get list of time to exclude data from
+									List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+									item.put("hidden_data_list", hiddenDataList);
 									dataListAIrrDevice.add(item);
 									
 									obj.setGroupMeter(dataListAIrrDevice);
 									
-									List dataIrradianceDevice = new ArrayList<>();
-									switch (obj.getData_send_time()) {
-										case 1:
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-											break;
-										case 2:
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-											break;
-										case 3:
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-											break;
-										case 4: 
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-											break;
-									}
+									List dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
 	
 									if(dataIrradianceDevice.size() > 0 ) {
 										// Get Expected Energy
@@ -1514,6 +658,11 @@ public class CustomerViewService extends DB {
 						categories.add(headerDate);
 					}
 
+					// get list of time to exclude data from
+					List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+					obj.setHidden_data_list(hiddenDataList);
+					obj.setGroupMeter(dataListDeviceMeter);
+					
 					List dataPowerM = null;
 					if (obj.getEnable_virtual_device() == 1) {
 						if (obj.getRead_data_all() == "all_data") {
@@ -1523,7 +672,7 @@ public class CustomerViewService extends DB {
 						}
 						 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 					} else {
-						 dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
+						 dataPowerM = queryForList("CustomerView.getDataPowerThisMonth", obj);
 					}
 					
 					
@@ -1595,11 +744,12 @@ public class CustomerViewService extends DB {
 					Calendar calEndYTD = Calendar.getInstance();
 					calEndYTD.setTime(endDateYTD);
 
+					List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
+					
 					switch (obj.getData_send_time()) {
 						case 4:
-							List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
-							int dayYTD = 1;
 							long forCountYTD = ChronoUnit.DAYS.between(calYTD.getTime().toInstant(), calEndYTD.getTime().toInstant());
+							int dayYTD = 1;
 							
 							for(int t = 0; t <= forCountYTD; t++) {
 								calYTD.setTime(startDateYTD);
@@ -1615,73 +765,11 @@ public class CustomerViewService extends DB {
 								headerDateYTD.setNvm_irradiance(0.001);
 								categoriesYTD.add(headerDateYTD);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMYTD = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
-							} else {
-								dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
-							}
-							
-							if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesYTD) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerMYTD.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
-										String categoriesTimeYTD = item.getTime_format();
-										String powerTimeYTD = itemT.get("time_format").toString();
-										if (categoriesTimeYTD.equals(powerTimeYTD)) {
-								        	flag = true;
-								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNewYTD.add(mapItem);
-									} else {
-										dataNewYTD.add(mapItemObjYTD);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemMYTD = new HashMap<>();
-							if (dataPowerMYTD.size() > 0) {
-								deviceItemMYTD.put("data_energy", dataNewYTD);
-								deviceItemMYTD.put("type", "energy");
-								deviceItemMYTD.put("devicename", "Energy output");
-								deviceItemMYTD.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMYTD);
-							}							
-							break;							
+							break;
 						case 5:
 							LocalDate dateToSelect = LocalDate.of(calYTD.get(Calendar.YEAR), calYTD.get(Calendar.MONTH) + 1, calYTD.get(Calendar.DAY_OF_MONTH));
 							LocalDate lastVisible = LocalDate.of(calEndYTD.get(Calendar.YEAR), calEndYTD.get(Calendar.MONTH) + 1, calEndYTD.get(Calendar.DAY_OF_MONTH));
 							long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-						    
-							List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
 							int YTD7Day = 1;
 							
 							for(int t = 0; t <= forCountYTD7Day; t++) {
@@ -1695,74 +783,13 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
-								categoriesYTD7Day.add(headerDateLT);
+								categoriesYTD.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerYTD7Day = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerYTD7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
-							} else {
-								dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
-							}
-							
-							if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerYTD7Day.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
-										String categoriesTimeYTD = item.getTime_format();
-										String powerTimeYTD = itemT.get("time_format").toString();
-										if (categoriesTimeYTD.equals(powerTimeYTD)) {
-								        	flag = true;
-								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNewYTD7Day.add(mapItem);
-									} else {
-										dataNewYTD7Day.add(mapItemObjYTD);
-									}
-								}
-							}
-							
-							Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
-							if (dataPowerYTD7Day.size() > 0) {
-								deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
-								deviceItemMYTD7Day.put("type", "energy");
-								deviceItemMYTD7Day.put("devicename", "Energy output");
-								deviceItemMYTD7Day.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMYTD7Day);
-							}							
-							break;						
+							break;
 						case 6:
 							YearMonth startMonth = YearMonth.of( calYTD.get(Calendar.YEAR) , calYTD.get(Calendar.MONTH) + 1 );
 					        YearMonth endMonth = YearMonth.of(calEndYTD.get(Calendar.YEAR) , calEndYTD.get(Calendar.MONTH) + 1);
 					        long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
-					        
-							List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
 							int monthYTD = 1;
 							
 							for(int t = 0; t <= forCountYTDMonth; t++) {
@@ -1776,71 +803,74 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
-								categoriesYTDMonth.add(headerDateLT);
+								categoriesYTD.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonthYear", obj);
-							} else {
-								dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
-							}
-							
-							if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerMLT.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-										String categoriesTimeLT = item.getTime_format();
-										String powerTimeLT = itemT.get("time_format").toString();
-										if (categoriesTimeLT.equals(powerTimeLT)) {
-								        	flag = true;
-								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNewYTDMonth.add(mapItem);
-									} else {
-										dataNewYTDMonth.add(mapItemObjLT);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemMLT = new HashMap<>();
-							if (dataPowerMLT.size() > 0) {
-								deviceItemMLT.put("data_energy", dataNewYTDMonth);
-								deviceItemMLT.put("type", "energy");
-								deviceItemMLT.put("devicename", "Energy output");
-								deviceItemMLT.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMLT);
-							}
-							
 							break;
 					}
+					
+					// get list of time to exclude data from
+					List hiddenDataList1 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+					obj.setHidden_data_list(hiddenDataList1);
+					obj.setGroupMeter(dataListDeviceMeter);
+					
+					List dataPowerMYTD = null;
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+						dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+					} else {
+						dataPowerMYTD = queryForList("CustomerView.getDataPowerYear", obj);
+					}
+					
+					List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
+					if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
+						for (ClientMonthlyDateEntity item : categoriesYTD) {
+							boolean flag = false;
+							ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+							for( int v = 0; v < dataPowerMYTD.size(); v++){
+								Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
+								String categoriesTimeYTD = item.getTime_format();
+								String powerTimeYTD = itemT.get("time_format").toString();
+								if (categoriesTimeYTD.equals(powerTimeYTD)) {
+									flag = true;
+									mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+									mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+									mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+									mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+									mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+									mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+									mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+									break;
+								}
+							}
+							
+							if(flag == false) {
+								ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+								mapItem.setCategories_time(item.getCategories_time());
+								mapItem.setTime_format(item.getTime_format());
+								mapItem.setTime_full(item.getTime_full());
+								mapItem.setDownload_time(item.getDownload_time());
+								mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+								mapItem.setExpected_power(item.getExpected_power());
+								mapItem.setNvm_irradiance(item.getNvm_irradiance());
+								dataNewYTD.add(mapItem);
+							} else {
+								dataNewYTD.add(mapItemObjYTD);
+							}
+						}
+					}
+					
+					Map<String, Object> deviceItemMYTD = new HashMap<>();
+					if (dataPowerMYTD.size() > 0) {
+						deviceItemMYTD.put("data_energy", dataNewYTD);
+						deviceItemMYTD.put("type", "energy");
+						deviceItemMYTD.put("devicename", "Energy output");
+						deviceItemMYTD.put("deviceType", "meter");
+						dataEnergy.add(deviceItemMYTD);
+					}							
 					
 					break;
 
@@ -1849,7 +879,6 @@ public class CustomerViewService extends DB {
 					SimpleDateFormat dateFormat12 = new SimpleDateFormat("yyyy-MM-dd"); 
 					SimpleDateFormat usFormat12 = new SimpleDateFormat("MM/yyyy");
 					SimpleDateFormat catFormat12 = new SimpleDateFormat("MM/yyyy");
-					SimpleDateFormat dayFormat12 = new SimpleDateFormat("dd");
 					
 					SimpleDateFormat usFormat12Month7Day = new SimpleDateFormat("MM/dd/yyyy");
 					SimpleDateFormat catFormat12Month7Day = new SimpleDateFormat("MMM. yyyy");
@@ -1865,11 +894,12 @@ public class CustomerViewService extends DB {
 					Calendar calEnd12 = Calendar.getInstance();
 					calEnd12.setTime(endDate12);
 
+					List<ClientMonthlyDateEntity> categories12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
+					
 					switch (obj.getData_send_time()) {
 						case 4:
-							List<ClientMonthlyDateEntity> categories12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-							int day12Month = 1;
 							long forCountYTD = ChronoUnit.DAYS.between(cal12.getTime().toInstant(), calEnd12.getTime().toInstant());
+							int day12Month = 1;
 							
 							for(int t = 0; t <= forCountYTD; t++) {
 								cal12.setTime(startDate12);
@@ -1885,73 +915,11 @@ public class CustomerViewService extends DB {
 								headerDate12MonthDay.setNvm_irradiance(0.001);
 								categories12MonthDay.add(headerDate12MonthDay);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM12MonthDay = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
-							} else {
-								dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
-							}
-							
-							if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
-								for (ClientMonthlyDateEntity item : categories12MonthDay) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObj12MonthDay = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerM12MonthDay.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerM12MonthDay.get(v);
-										String categoriesTime12MonthDay = item.getTime_format();
-										String powerTime12MonthDay = itemT.get("time_format").toString();
-										if (categoriesTime12MonthDay.equals(powerTime12MonthDay)) {
-													flag = true;
-													mapItemObj12MonthDay.setCategories_time(itemT.get("categories_time").toString());
-													mapItemObj12MonthDay.setTime_format(itemT.get("time_format").toString());
-													mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
-													mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
-													mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-										        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-													mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-													break;
-												}
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNew12MonthDay.add(mapItem);
-									} else {
-										dataNew12MonthDay.add(mapItemObj12MonthDay);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
-							if (dataPowerM12MonthDay.size() > 0) {
-								deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
-								deviceItemM12MonthDay.put("type", "energy");
-								deviceItemM12MonthDay.put("devicename", "Energy output");
-								deviceItemM12MonthDay.put("deviceType", "meter");
-								dataEnergy.add(deviceItemM12MonthDay);
-							}							
-						break;				
+							break;
 						case 5:
 							LocalDate dateToSelect = LocalDate.of(cal12.get(Calendar.YEAR), cal12.get(Calendar.MONTH) + 1, cal12.get(Calendar.DAY_OF_MONTH));
 							LocalDate lastVisible = LocalDate.of(calEnd12.get(Calendar.YEAR), calEnd12.get(Calendar.MONTH) + 1, calEnd12.get(Calendar.DAY_OF_MONTH));
 							long forCount12Month7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-							
-							List<ClientMonthlyDateEntity> categories12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
 							int week12 = 1;
 							
 							for(int t = 0; t <= forCount12Month7Day; t++) {
@@ -1965,76 +933,14 @@ public class CustomerViewService extends DB {
 								headerDateLT.setChart_energy_kwh(0.001);
 								headerDateLT.setExpected_power(0.001);
 								headerDateLT.setNvm_irradiance(0.001);
-								categories12Month7Day.add(headerDateLT);
+								categories12MonthDay.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNew12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPower12Month7Day = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPower12Month7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
-							} else {
-								dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
-							}
-							
-							if(dataPower12Month7Day.size() > 0 && categories12Month7Day.size() > 0) {
-								for (ClientMonthlyDateEntity item : categories12Month7Day) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPower12Month7Day.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPower12Month7Day.get(v);
-										String categoriesTimeYTD = item.getTime_format();
-										String powerTimeYTD = itemT.get("time_format").toString();
-										if (categoriesTimeYTD.equals(powerTimeYTD)) {
-								        	flag = true;
-								        	mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNew12Month7Day.add(mapItem);
-									} else {
-										dataNew12Month7Day.add(mapItemObjYTD);
-									}
-								}
-							}
-							
-							Map<String, Object> deviceItem12Month7Day = new HashMap<>();
-							if (dataPower12Month7Day.size() > 0) {
-								deviceItem12Month7Day.put("data_energy", dataNew12Month7Day);
-								deviceItem12Month7Day.put("type", "energy");
-								deviceItem12Month7Day.put("devicename", "Energy output");
-								deviceItem12Month7Day.put("deviceType", "meter");
-								dataEnergy.add(deviceItem12Month7Day);
-							}
-							
-						break;
+							break;
 						case 6:
 							cal12.set(Calendar.DAY_OF_MONTH, cal12.getActualMaximum(Calendar.DAY_OF_MONTH));
 							YearMonth startMonth12 = YearMonth.of( cal12.get(Calendar.YEAR) , cal12.get(Calendar.MONTH) + 1 );
 							YearMonth endMonth12 = YearMonth.of(calEnd12.get(Calendar.YEAR) , calEnd12.get(Calendar.MONTH) + 1);
 							long forCount12Month = ChronoUnit.MONTHS.between(startMonth12, endMonth12);
-							
-							List<ClientMonthlyDateEntity> categories12 = new ArrayList<ClientMonthlyDateEntity> ();
 							int day12 = 1;
 							
 							for(int t = 0; t <= forCount12Month; t++) {
@@ -2048,70 +954,74 @@ public class CustomerViewService extends DB {
 								headerDate12.setChart_energy_kwh(0.001);
 								headerDate12.setExpected_power(0.001);
 								headerDate12.setNvm_irradiance(0.001);
-								categories12.add(headerDate12);
+								categories12MonthDay.add(headerDate12);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNew12 = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerM12 = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerM12 = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
-							} else {
-								dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
-							}
-							
-							if(dataPowerM12.size() > 0 && categories12.size() > 0) {
-								for (ClientMonthlyDateEntity item : categories12) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObj12 = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerM12.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerM12.get(v);
-										String categoriesTime12 = item.getTime_format();
-										String powerTime12 = itemT.get("time_format").toString();
-										if (categoriesTime12.equals(powerTime12)) {
-								        	flag = true;
-								        	mapItemObj12.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObj12.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObj12.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObj12.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObj12.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObj12.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObj12.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNew12.add(mapItem);
-									} else {
-										dataNew12.add(mapItemObj12);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemM12 = new HashMap<>();
-							if (dataPowerM12.size() > 0) {
-								deviceItemM12.put("data_energy", dataNew12);
-								deviceItemM12.put("type", "energy");
-								deviceItemM12.put("devicename", "Energy output");
-								deviceItemM12.put("deviceType", "meter");
-								dataEnergy.add(deviceItemM12);
-							}
-						break;
+							break;
 					}
+					
+					// get list of time to exclude data from
+					List hiddenDataList2 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+					obj.setHidden_data_list(hiddenDataList2);
+					obj.setGroupMeter(dataListDeviceMeter);
+							
+					List dataPowerM12MonthDay = null;
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+						dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+					} else {
+						dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerYear", obj);
+					}
+					
+					List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
+					if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
+						for (ClientMonthlyDateEntity item : categories12MonthDay) {
+							boolean flag = false;
+							ClientMonthlyDateEntity mapItemObj12MonthDay = new ClientMonthlyDateEntity();
+							for( int v = 0; v < dataPowerM12MonthDay.size(); v++){
+								Map<String, Object> itemT = (Map<String, Object>) dataPowerM12MonthDay.get(v);
+								String categoriesTime12MonthDay = item.getTime_format();
+								String powerTime12MonthDay = itemT.get("time_format").toString();
+								if (categoriesTime12MonthDay.equals(powerTime12MonthDay)) {
+											flag = true;
+											mapItemObj12MonthDay.setCategories_time(itemT.get("categories_time").toString());
+											mapItemObj12MonthDay.setTime_format(itemT.get("time_format").toString());
+											mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
+											mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
+											mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+											mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+											break;
+										}
+							}
+							
+							if(flag == false) {
+								ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+								mapItem.setCategories_time(item.getCategories_time());
+								mapItem.setTime_format(item.getTime_format());
+								mapItem.setTime_full(item.getTime_full());
+								mapItem.setDownload_time(item.getDownload_time());
+								mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+								mapItem.setExpected_power(item.getExpected_power());
+								mapItem.setNvm_irradiance(item.getNvm_irradiance());
+								dataNew12MonthDay.add(mapItem);
+							} else {
+								dataNew12MonthDay.add(mapItemObj12MonthDay);
+							}
+						}
+					}
+					
+					Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
+					if (dataPowerM12MonthDay.size() > 0) {
+						deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
+						deviceItemM12MonthDay.put("type", "energy");
+						deviceItemM12MonthDay.put("devicename", "Energy output");
+						deviceItemM12MonthDay.put("deviceType", "meter");
+						dataEnergy.add(deviceItemM12MonthDay);
+					}	
 					break;
 				case "lifetime":
 					// Create list date 
@@ -2130,11 +1040,12 @@ public class CustomerViewService extends DB {
 
 					YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
 			        YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
+			        
+			        List<ClientMonthlyDateEntity> categoriesLT = new ArrayList<ClientMonthlyDateEntity> ();
+			        
 					switch (obj.getData_send_time()) {
 						case 6:						
 					        long forCountLT = ChronoUnit.MONTHS.between(startMonth, endMonth);
-							
-							List<ClientMonthlyDateEntity> categoriesLT = new ArrayList<ClientMonthlyDateEntity> ();
 							int dayLT = 1;
 							
 							for(int t = 0; t <= forCountLT; t++) {
@@ -2150,76 +1061,13 @@ public class CustomerViewService extends DB {
 								headerDateLT.setNvm_irradiance(0.001);
 								categoriesLT.add(headerDateLT);
 							}
-							
-							List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
-							List dataPowerMLT = null;
-							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
-								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
-							} else {
-								dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
-							}
-							
-							if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
-								for (ClientMonthlyDateEntity item : categoriesLT) {
-									boolean flag = false;
-									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-									for( int v = 0; v < dataPowerMLT.size(); v++){
-										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-										String categoriesTimeLT = item.getTime_format();
-										String powerTimeLT = itemT.get("time_format").toString();
-										if (categoriesTimeLT.equals(powerTimeLT)) {
-								        	flag = true;
-								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-								        	break;
-								        }
-									}
-									
-									if(flag == false) {
-										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-										mapItem.setCategories_time(item.getCategories_time());
-										mapItem.setTime_format(item.getTime_format());
-										mapItem.setTime_full(item.getTime_full());
-										mapItem.setDownload_time(item.getDownload_time());
-										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-										mapItem.setExpected_power(item.getExpected_power());
-										mapItem.setNvm_irradiance(item.getNvm_irradiance());
-										dataNewLT.add(mapItem);
-									} else {
-										dataNewLT.add(mapItemObjLT);
-									}
-								}
-							}
-							
-							
-							Map<String, Object> deviceItemMLT = new HashMap<>();
-							if (dataPowerMLT.size() > 0) {
-								deviceItemMLT.put("data_energy", dataNewLT);
-								deviceItemMLT.put("type", "energy");
-								deviceItemMLT.put("devicename", "Energy output");
-								deviceItemMLT.put("deviceType", "meter");
-								dataEnergy.add(deviceItemMLT);
-							}
-							
-						break;
+							break;
 						case 7:
 								long forCountLTYear = ChronoUnit.YEARS.between(startMonth, endMonth);
-								
 								if(calLT.get(Calendar.MONTH) > calEndLT.get(Calendar.MONTH)) {
 									forCountLTYear += 1;
 								}
 								
-								List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
 								int yearLT = 1;
 								
 								for(int t = 0; t <= forCountLTYear; t++) {
@@ -2233,73 +1081,76 @@ public class CustomerViewService extends DB {
 									headerDateLT.setChart_energy_kwh(0.001);
 									headerDateLT.setExpected_power(0.001);
 									headerDateLT.setNvm_irradiance(0.001);
-									categoriesLTYear.add(headerDateLT);
+									categoriesLT.add(headerDateLT);
 								}
-								
-								List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLTYear = null;
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									dataPowerMLTYear = queryForList("CustomerView.getDataVirtualDeviceYearLifetime", obj);
-								} else {
-									dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
-								}
-								
-								if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesLTYear) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerMLTYear.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
-											String categoriesTimeLT = item.getTime_format();
-											String powerTimeLT = itemT.get("time_format").toString();
-											if (categoriesTimeLT.equals(powerTimeLT)) {
-									        	flag = true;
-									        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-									        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-									        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-									        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-									        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-									        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-									        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-									        	break;
-									        }
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setExpected_power(item.getExpected_power());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											dataNewLTYear.add(mapItem);
-										} else {
-											dataNewLTYear.add(mapItemObjLT);
-										}
-									}
-								}
-								
-								Map<String, Object> deviceItemMLTYear = new HashMap<>();
-								if (dataPowerMLTYear.size() > 0) {
-									deviceItemMLTYear.put("data_energy", dataNewLTYear);
-									deviceItemMLTYear.put("type", "energy");
-									deviceItemMLTYear.put("devicename", "Energy output");
-									deviceItemMLTYear.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMLTYear);
-								}
-						break;
-						}
-					break;
-			}
-				
+								break;
+					}
 					
+					// get list of time to exclude data from
+					List hiddenDataList3 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+					obj.setHidden_data_list(hiddenDataList3);
+					obj.setGroupMeter(dataListDeviceMeter);
+							
+					List dataPowerMLT = null;
+					if (obj.getEnable_virtual_device() == 1) {
+						if (obj.getRead_data_all() == "all_data") {
+							obj.setDatatablename("model_virtual_meter_or_inverter");
+						} else {
+							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+						}
+						dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+					} else {
+						dataPowerMLT = queryForList("CustomerView.getDataPowerYear", obj);
+					}
+					
+					List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
+					if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
+						for (ClientMonthlyDateEntity item : categoriesLT) {
+							boolean flag = false;
+							ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+							for( int v = 0; v < dataPowerMLT.size(); v++){
+								Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
+								String categoriesTimeLT = item.getTime_format();
+								String powerTimeLT = itemT.get("time_format").toString();
+								if (categoriesTimeLT.equals(powerTimeLT)) {
+						        	flag = true;
+						        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+						        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+						        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+						        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+						        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+						        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+						        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+						        	break;
+						        }
+							}
+							
+							if(flag == false) {
+								ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+								mapItem.setCategories_time(item.getCategories_time());
+								mapItem.setTime_format(item.getTime_format());
+								mapItem.setTime_full(item.getTime_full());
+								mapItem.setDownload_time(item.getDownload_time());
+								mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+								mapItem.setExpected_power(item.getExpected_power());
+								mapItem.setNvm_irradiance(item.getNvm_irradiance());
+								dataNewLT.add(mapItem);
+							} else {
+								dataNewLT.add(mapItemObjLT);
+							}
+						}
+					}
+					
+					Map<String, Object> deviceItemMLT = new HashMap<>();
+					if (dataPowerMLT.size() > 0) {
+						deviceItemMLT.put("data_energy", dataNewLT);
+						deviceItemMLT.put("type", "energy");
+						deviceItemMLT.put("devicename", "Energy output");
+						deviceItemMLT.put("deviceType", "meter");
+						dataEnergy.add(deviceItemMLT);
+					}
+					break;
+				}
 			} else {
 				// Get by inverter
 				List dataListInverter = queryForList("CustomerView.getListDeviceTypeInverter", obj);
@@ -2316,9 +1167,6 @@ public class CustomerViewService extends DB {
 					
 					switch (obj.getFilterBy()) {
 						case "today":
-							switch (obj.getData_send_time()) {
-							case 1:
-								Map<String, Object> deviceItem11 = new HashMap<>();
 								if (obj.getEnable_virtual_device() == 1) {
 									if (obj.getRead_data_all() == "all_data") {
 										obj.setDatatablename("model_virtual_meter_or_inverter");
@@ -2326,7 +1174,11 @@ public class CustomerViewService extends DB {
 										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 									}
 									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutesToday", obj);
+									// get list of time to exclude data from
+									List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+									obj.setHidden_data_list(hiddenDataList);
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDeviceToday", obj);
 									if (dataList.size() > 0) {
 										Map<String, Object> powerItem = new HashMap<>();
 										Map<String, Object> expectedPowerItem = new HashMap<>();
@@ -2369,7 +1221,7 @@ public class CustomerViewService extends DB {
 										powerItem.put("data_energy", powerList);
 										powerItem.put("type", "energy");
 										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
+										powerItem.put("deviceType", "inverter");
 										dataEnergy.add(powerItem);
 										
 										if (dataListDeviceIrr.size() > 0) {
@@ -2385,8 +1237,17 @@ public class CustomerViewService extends DB {
 										}
 									}
 								} else {
+									Map<String, Object> deviceItem11 = new HashMap<>();
+									
+									// get list of time to exclude data from
+									for (int i = 0; i < dataListInverter.size(); i++) {
+										Map<String, Object> device = (Map<String, Object>) dataListInverter.get(i);
+										List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+										device.put("hidden_data_list", hiddenDataList);
+									}
+									
 									obj.setGroupMeter(dataListInverter);
-									List dataPower11 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter", obj);
+									List dataPower11 = queryForList("CustomerView.getDataPowerToday", obj);
 									if (dataPower11.size() > 0) {
 										deviceItem11.put("data_energy", dataPower11);
 										deviceItem11.put("type", "energy");
@@ -2406,11 +1267,14 @@ public class CustomerViewService extends DB {
 											List dataListAIrrDevice = new ArrayList<>();
 											
 											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											// get list of time to exclude data from
+											List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+											item.put("hidden_data_list", hiddenDataList);
 											dataListAIrrDevice.add(item);
 											
 											obj.setGroupMeter(dataListAIrrDevice);
 											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes", obj);
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceToday", obj);
 											if(dataIrradianceDevice.size() > 0 ) {
 												// Get Expected Power
 												if (countExpectedPower == 1) {
@@ -2432,396 +1296,120 @@ public class CustomerViewService extends DB {
 								}
 								
 								break;
-							case 2:
-								Map<String, Object> deviceItem22 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutesToday", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
+						case "custom":{
+							// Create list date 
+							SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
+							SimpleDateFormat usFormatCustom = new SimpleDateFormat("MM/dd/yyyy");
+							SimpleDateFormat usFormatCustomMonth = new SimpleDateFormat("MM/yyyy");
 
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower22 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter", obj);
-									if (dataPower22.size() > 0) {
-										deviceItem22.put("data_energy", dataPower22);
-										deviceItem22.put("type", "energy");
-										deviceItem22.put("devicename", "Power");
-										deviceItem22.put("deviceType", "inverter");
-										dataEnergy.add(deviceItem22);
-									}
-									
-									// Get Irradiance
-									
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											Map<String, Object> deviceIrrItem22 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem22 = new HashMap<>();
-											
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem22.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem22.put("type", "expected_power");
-													deviceExpectedPowerItem22.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem22);
-												}
-
-												// Get Irradiance
-												deviceIrrItem22.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem22.put("type", "irradiance");
-												deviceIrrItem22.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem22);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								break;
-							case 3:
-								Map<String, Object> deviceItem33 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceHourToday", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
-
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower33 = queryForList("CustomerView.getDataEnergyHourInverter", obj);
-									if (dataPower33.size() > 0) {
-										deviceItem33.put("data_energy", dataPower33);
-										deviceItem33.put("type", "energy");
-										deviceItem33.put("devicename", "Power");
-										deviceItem33.put("deviceType", "inverter");
-										dataEnergy.add(deviceItem33);
-									}
-									
-									// Get Irradiance
-									
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											Map<String, Object> deviceIrrItem33 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem33 = new HashMap<>();
-	
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem33.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem33.put("type", "expected_power");
-													deviceExpectedPowerItem33.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem33);
-												}
-												
-												// Get Irradiance
-												deviceIrrItem33.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem33.put("type", "irradiance");
-												deviceIrrItem33.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem33);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								break;
-								
-							case 4:
-								Map<String, Object> deviceItem44 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceDayToday", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
-
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower44 = queryForList("CustomerView.getDataEnergyInverterHourDay", obj);
-									if (dataPower44.size() > 0) {
-										deviceItem44.put("data_energy", dataPower44);
-										deviceItem44.put("type", "energy");
-										deviceItem44.put("devicename", "Power");
-										deviceItem44.put("deviceType", "meter");
-										dataEnergy.add(deviceItem44);
-									}
-									
-									// Get Irradiance
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											Map<String, Object> deviceIrrItem44 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem44 = new HashMap<>();
-											
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHourDay", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem44.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem44.put("type", "expected_power");
-													deviceExpectedPowerItem44.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem44);
-												}
-												
-												// Get Irradiance
-												deviceIrrItem44.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem44.put("type", "irradiance");
-												deviceIrrItem44.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem44);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								break;
-							}
-							break;
+							SimpleDateFormat catFormatCustomDay = new SimpleDateFormat("MM/dd");
 							
-						case "custom":
-						// Create list date 
-						SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
-						SimpleDateFormat usFormatCustom = new SimpleDateFormat("MM/dd/yyyy");
-						SimpleDateFormat usFormatCustomMonth = new SimpleDateFormat("MM/yyyy");
+							SimpleDateFormat catFormatCustom = new SimpleDateFormat("MMM. yyyy");
+							SimpleDateFormat catFormatCustomMonth = new SimpleDateFormat("MMM. yyyy");
 
-						SimpleDateFormat catFormatCustomDay = new SimpleDateFormat("MM/dd");
-						
-						SimpleDateFormat catFormatCustom = new SimpleDateFormat("MMM. yyyy");
-						SimpleDateFormat catFormatCustomMonth = new SimpleDateFormat("MMM. yyyy");
+							SimpleDateFormat usFormatCustomYear = new SimpleDateFormat("yyyy");
+							SimpleDateFormat catFormatCustomYear = new SimpleDateFormat("yyyy");
+							
+							Date startDateCustom = dateFormatCustom.parse(obj.getStart_date() + " AM");
+							Calendar calCustom = Calendar.getInstance();
+							calCustom.setTime(startDateCustom);
+							
+							
+							Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
+							Calendar calEndCustom = Calendar.getInstance();
+							calEndCustom.setTime(endDateCustom);
 
-						SimpleDateFormat usFormatCustomYear = new SimpleDateFormat("yyyy");
-						SimpleDateFormat catFormatCustomYear = new SimpleDateFormat("yyyy");
-						
-						Date startDateCustom = dateFormatCustom.parse(obj.getStart_date() + " AM");
-						Calendar calCustom = Calendar.getInstance();
-						calCustom.setTime(startDateCustom);
-						
-						
-						Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
-						Calendar calEndCustom = Calendar.getInstance();
-						calEndCustom.setTime(endDateCustom);
-
-						switch (obj.getData_send_time()) {
-							case 4: {
+							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
 							long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
 							
-							List<ClientMonthlyDateEntity> categories = new ArrayList<ClientMonthlyDateEntity> ();
-							int day = 1;
-												
-							for(int t = 0; t <= forCountYTD; t++) {
-								calCustom.setTime(startDateCustom);
-								ClientMonthlyDateEntity headerDate = new ClientMonthlyDateEntity();
-								calCustom.add(Calendar.DATE, t * day);
-								headerDate.setDownload_time(usFormatCustom.format(calCustom.getTime()));
-								headerDate.setTime_full(usFormatCustom.format(calCustom.getTime()));
-								headerDate.setTime_format(usFormatCustom.format(calCustom.getTime()));
-								headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
-								headerDate.setChart_energy_kwh(0.001);
-								headerDate.setNvm_irradiance(0.001);
-								headerDate.setExpected_power(0.001);
-								categories.add(headerDate);
+							switch (obj.getData_send_time()) {
+								case 4:
+									int day = 1;
+														
+									for(int t = 0; t <= forCountYTD; t++) {
+										calCustom.setTime(startDateCustom);
+										ClientMonthlyDateEntity headerDate = new ClientMonthlyDateEntity();
+										calCustom.add(Calendar.DATE, t * day);
+										headerDate.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+										headerDate.setTime_full(usFormatCustom.format(calCustom.getTime()));
+										headerDate.setTime_format(usFormatCustom.format(calCustom.getTime()));
+										headerDate.setCategories_time(forCountYTD <= 44 ? catFormatCustomDay.format(calCustom.getTime()) : catFormatCustom.format(calCustom.getTime()));
+										headerDate.setChart_energy_kwh(0.001);
+										headerDate.setNvm_irradiance(0.001);
+										headerDate.setExpected_power(0.001);
+										categories.add(headerDate);
+									}
+									break;
+								case 5:
+									LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
+									LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
+									long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
+									int YTD7Day = 1;
+									
+									for(int t = 0; t <= forCountYTD7Day; t++) {
+										calCustom.setTime(startDateCustom);
+										ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+										calCustom.add(Calendar.WEEK_OF_YEAR, t * YTD7Day);
+										headerDateLT.setDownload_time(usFormatCustom.format(calCustom.getTime()));
+										headerDateLT.setTime_format(String.valueOf(t));
+										headerDateLT.setTime_full(usFormatCustom.format(calCustom.getTime()));
+										headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
+										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setNvm_irradiance(0.001);
+										headerDateLT.setExpected_power(0.001);
+										categories.add(headerDateLT);
+									}
+									break;
+								case 6: 
+									YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+									YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+									long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
+									int monthYTD = 1;
+									
+									for(int t = 0; t <= forCountYTDMonth; t++) {
+										calCustom.setTime(startDateCustom);
+										ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+										calCustom.add(Calendar.MONTH, t * monthYTD);
+										headerDateLT.setDownload_time(usFormatCustomMonth.format(calCustom.getTime()));
+										headerDateLT.setTime_full(usFormatCustomMonth.format(calCustom.getTime()));
+										headerDateLT.setTime_format(usFormatCustomMonth.format(calCustom.getTime()));
+										headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
+										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setNvm_irradiance(0.001);
+										headerDateLT.setExpected_power(0.001);
+										categories.add(headerDateLT);
+									}
+									break;
+								case 7:
+									YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
+									YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
+									long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
+									if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
+											forCountLTYear += 1;
+									}
+									int yearLT = 1;
+									
+									for(int t = 0; t <= forCountLTYear; t++) {
+										calCustom.setTime(startDateCustom);
+										ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
+										calCustom.add(Calendar.YEAR, t * yearLT);
+										headerDateLT.setDownload_time(usFormatCustomYear.format(calCustom.getTime()));
+										headerDateLT.setTime_full(usFormatCustomYear.format(calCustom.getTime()));
+										headerDateLT.setTime_format(usFormatCustomYear.format(calCustom.getTime()));
+										headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
+										headerDateLT.setChart_energy_kwh(0.001);
+										headerDateLT.setNvm_irradiance(0.001);
+										headerDateLT.setExpected_power(0.001);
+										categories.add(headerDateLT);
+									}
+									break;
 							}
 							
-							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList);
+							obj.setGroupMeter(dataListDeviceMeter);
+							
 							List dataPowerM = null;
 							if (obj.getEnable_virtual_device() == 1) {
 								if (obj.getRead_data_all() == "all_data") {
@@ -2829,11 +1417,12 @@ public class CustomerViewService extends DB {
 								} else {
 									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 								}
-								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceDayCustom", obj);
+								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceCustom", obj);
 							} else {
-								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterDayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterDayCustom", obj);
+								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
 							}
 							
+							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
 							if(dataPowerM.size() > 0 && categories.size() > 0) {
 								for (ClientMonthlyDateEntity item : categories) {
 									boolean flag = false;
@@ -2849,8 +1438,8 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
 								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
 								        	break;
 								        }
 									}
@@ -2871,281 +1460,18 @@ public class CustomerViewService extends DB {
 								}
 							}
 							
-							
 							Map<String, Object> deviceItemM = new HashMap<>();
 							if (dataPowerM.size() > 0) {
 								deviceItemM.put("data_energy", dataNew);
 								deviceItemM.put("type", "energy");
 								deviceItemM.put("devicename", "Energy output");
-								deviceItemM.put("deviceType", "meter");
+								deviceItemM.put("deviceType", "inverter");
 								dataEnergy.add(deviceItemM);
 							}
-										
-							break;}
 						
-							case 5: {
-								LocalDate dateToSelect = LocalDate.of(calCustom.get(Calendar.YEAR), calCustom.get(Calendar.MONTH) + 1, calCustom.get(Calendar.DAY_OF_MONTH));
-								LocalDate lastVisible = LocalDate.of(calEndCustom.get(Calendar.YEAR), calEndCustom.get(Calendar.MONTH) + 1, calEndCustom.get(Calendar.DAY_OF_MONTH));
-								long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-									
-								List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-								int YTD7Day = 1;
-								
-								for(int t = 0; t <= forCountYTD7Day; t++) {
-									calCustom.setTime(startDateCustom);
-									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
-									calCustom.add(Calendar.WEEK_OF_YEAR, t * YTD7Day);
-									headerDateLT.setDownload_time(usFormatCustom.format(calCustom.getTime()));
-									headerDateLT.setTime_format(String.valueOf(t));
-									headerDateLT.setTime_full(usFormatCustom.format(calCustom.getTime()));
-									headerDateLT.setCategories_time(catFormatCustom.format(calCustom.getTime()));
-									headerDateLT.setChart_energy_kwh(0.001);
-									headerDateLT.setNvm_irradiance(0.001);
-									headerDateLT.setExpected_power(0.001);
-									categoriesYTD7Day.add(headerDateLT);
-								}
-								
-								List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerYTD7Day = null;
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDevice7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDevice7DayCustom", obj);
-								} else {
-									dataPowerYTD7Day = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeter7DayCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeter7DayCustom", obj);
-								}
-								
-								if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerYTD7Day.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
-											String categoriesTimeYTD = item.getTime_format();
-											String powerTimeYTD = itemT.get("time_format").toString();
-											if (categoriesTimeYTD.equals(powerTimeYTD)) {
-														flag = true;
-														mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-														mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-														mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-														mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-														mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-														mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-														break;
-													}
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											mapItem.setExpected_power(item.getExpected_power());
-											dataNewYTD7Day.add(mapItem);
-										} else {
-											dataNewYTD7Day.add(mapItemObjYTD);
-										}
-									}
-								}
-								
-								Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
-								if (dataPowerYTD7Day.size() > 0) {
-									deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
-									deviceItemMYTD7Day.put("type", "energy");
-									deviceItemMYTD7Day.put("devicename", "Energy output");
-									deviceItemMYTD7Day.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMYTD7Day);
-								}							
-								break;
-							}
-
-							case 6: {
-								YearMonth startMonth = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
-								YearMonth endMonth = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
-								long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
-								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-										
-								List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-								int monthYTD = 1;
-								
-								for(int t = 0; t <= forCountYTDMonth; t++) {
-									calCustom.setTime(startDateCustom);
-									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
-									calCustom.add(Calendar.MONTH, t * monthYTD);
-									headerDateLT.setDownload_time(usFormatCustomMonth.format(calCustom.getTime()));
-									headerDateLT.setTime_full(usFormatCustomMonth.format(calCustom.getTime()));
-									headerDateLT.setTime_format(usFormatCustomMonth.format(calCustom.getTime()));
-									headerDateLT.setCategories_time(catFormatCustomMonth.format(calCustom.getTime()));
-									headerDateLT.setChart_energy_kwh(0.001);
-									headerDateLT.setNvm_irradiance(0.001);
-									headerDateLT.setExpected_power(0.001);
-									categoriesYTDMonth.add(headerDateLT);
-								}
-								
-								List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLT = null;
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceMonthCustom", obj);
-								} else {
-									dataPowerMLT = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterMonthCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterMonthCustom", obj);
-								}
-								
-								if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerMLT.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-											String categoriesTimeLT = item.getTime_format();
-											String powerTimeLT = itemT.get("time_format").toString();
-											if (categoriesTimeLT.equals(powerTimeLT)) {
-														flag = true;
-														mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-														mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-														mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-														break;
-													}
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											mapItem.setExpected_power(item.getExpected_power());
-											dataNewYTDMonth.add(mapItem);
-										} else {
-											dataNewYTDMonth.add(mapItemObjLT);
-										}
-									}
-								}
-								
-								
-								Map<String, Object> deviceItemMLT = new HashMap<>();
-								if (dataPowerMLT.size() > 0) {
-									deviceItemMLT.put("data_energy", dataNewYTDMonth);
-									deviceItemMLT.put("type", "energy");
-									deviceItemMLT.put("devicename", "Energy output");
-									deviceItemMLT.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMLT);
-								}
-								
-								break;
-							}
-
-							case 7: {
-								YearMonth startMonthCustom = YearMonth.of( calCustom.get(Calendar.YEAR) , calCustom.get(Calendar.MONTH) + 1 );
-								YearMonth endMonthCustom = YearMonth.of(calEndCustom.get(Calendar.YEAR) , calEndCustom.get(Calendar.MONTH) + 1);
-								long forCountLTYear = ChronoUnit.YEARS.between(startMonthCustom, endMonthCustom);
-								long forCountYTD = ChronoUnit.DAYS.between(calCustom.getTime().toInstant(), calEndCustom.getTime().toInstant());
-
-								if(calCustom.get(Calendar.MONTH) > calEndCustom.get(Calendar.MONTH)) {
-										forCountLTYear += 1;
-									}
-								
-								List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-								int yearLT = 1;
-								
-								for(int t = 0; t <= forCountLTYear; t++) {
-									calCustom.setTime(startDateCustom);
-									ClientMonthlyDateEntity headerDateLT = new ClientMonthlyDateEntity();
-									calCustom.add(Calendar.YEAR, t * yearLT);
-									headerDateLT.setDownload_time(usFormatCustomYear.format(calCustom.getTime()));
-									headerDateLT.setTime_full(usFormatCustomYear.format(calCustom.getTime()));
-									headerDateLT.setTime_format(usFormatCustomYear.format(calCustom.getTime()));
-									headerDateLT.setCategories_time(catFormatCustomYear.format(calCustom.getTime()));
-									headerDateLT.setChart_energy_kwh(0.001);
-									headerDateLT.setNvm_irradiance(0.001);
-									headerDateLT.setExpected_power(0.001);
-									categoriesLTYear.add(headerDateLT);
-								}
-								
-								List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-								List dataPowerMLTYear = null;
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceYearCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceYearCustom", obj);
-								} else {
-									dataPowerMLTYear = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerMeterYearCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerMeterYearCustom", obj);
-								}
-								
-								if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
-									for (ClientMonthlyDateEntity item : categoriesLTYear) {
-										boolean flag = false;
-										ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-										for( int v = 0; v < dataPowerMLTYear.size(); v++){
-											Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
-											String categoriesTimeLT = item.getTime_format();
-											String powerTimeLT = itemT.get("time_format").toString();
-											if (categoriesTimeLT.equals(powerTimeLT)) {
-														flag = true;
-														mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-														mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-														mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-														mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-														mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-														mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-											        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_power").toString()) );
-														break;
-													}
-										}
-										
-										if(flag == false) {
-											ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-											mapItem.setCategories_time(item.getCategories_time());
-											mapItem.setTime_format(item.getTime_format());
-											mapItem.setTime_full(item.getTime_full());
-											mapItem.setDownload_time(item.getDownload_time());
-											mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-											mapItem.setNvm_irradiance(item.getNvm_irradiance());
-											mapItem.setExpected_power(item.getExpected_power());
-											dataNewLTYear.add(mapItem);
-										} else {
-											dataNewLTYear.add(mapItemObjLT);
-										}
-									}
-								}
-								
-								Map<String, Object> deviceItemMLTYear = new HashMap<>();
-								if (dataPowerMLTYear.size() > 0) {
-									deviceItemMLTYear.put("data_energy", dataNewLTYear);
-									deviceItemMLTYear.put("type", "energy");
-									deviceItemMLTYear.put("devicename", "Energy output");
-									deviceItemMLTYear.put("deviceType", "meter");
-									dataEnergy.add(deviceItemMLTYear);
-								}
-								break;
-							}
+							break;
 						}
-						break;
 						case "3_day":
-							switch (obj.getData_send_time()) {
-							case 1:
-								Map<String, Object> deviceItem55 = new HashMap<>();
 								if (obj.getEnable_virtual_device() == 1) {
 									if (obj.getRead_data_all() == "all_data") {
 										obj.setDatatablename("model_virtual_meter_or_inverter");
@@ -3153,7 +1479,11 @@ public class CustomerViewService extends DB {
 										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 									}
 									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceFiveMinutes3Day", obj);
+									// get list of time to exclude data from
+									List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+									obj.setHidden_data_list(hiddenDataList);
+									
+									List dataList = queryForList("CustomerView.getDataVirtualDevice3Day", obj);
 									if (dataList.size() > 0) {
 										Map<String, Object> powerItem = new HashMap<>();
 										Map<String, Object> expectedPowerItem = new HashMap<>();
@@ -3196,7 +1526,7 @@ public class CustomerViewService extends DB {
 										powerItem.put("data_energy", powerList);
 										powerItem.put("type", "energy");
 										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
+										powerItem.put("deviceType", "inverter");
 										dataEnergy.add(powerItem);
 										
 										if (dataListDeviceIrr.size() > 0) {
@@ -3212,8 +1542,17 @@ public class CustomerViewService extends DB {
 										}
 									}
 								} else {
+									Map<String, Object> deviceItem55 = new HashMap<>();
+									
+									// get list of time to exclude data from
+									for (int i = 0; i < dataListInverter.size(); i++) {
+										Map<String, Object> device = (Map<String, Object>) dataListInverter.get(i);
+										List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+										device.put("hidden_data_list", hiddenDataList);
+									}
+									
 									obj.setGroupMeter(dataListInverter);
-									List dataPower55 = queryForList("CustomerView.getDataPowerMeterFiveMinutesInverter3Day", obj);
+									List dataPower55 = queryForList("CustomerView.getDataPower3Day", obj);
 									if (dataPower55.size() > 0) {
 										deviceItem55.put("data_energy", dataPower55);
 										deviceItem55.put("type", "energy");
@@ -3233,11 +1572,14 @@ public class CustomerViewService extends DB {
 											List dataListAIrrDevice = new ArrayList<>();
 											
 											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											// get list of time to exclude data from
+											List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+											item.put("hidden_data_list", hiddenDataList);
 											dataListAIrrDevice.add(item);
 											
 											obj.setGroupMeter(dataListAIrrDevice);
 											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
 											if(dataIrradianceDevice.size() > 0 ) {
 												// Get Expected Power
 												if (countExpectedPower == 1) {
@@ -3259,361 +1601,18 @@ public class CustomerViewService extends DB {
 								}
 								
 								break;
-							case 2:
-								Map<String, Object> deviceItem66 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceFifteenMinutes3Day", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
-
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower66 = queryForList("CustomerView.getDataEnergyFifteenMinutesInverter3Day", obj);
-									if (dataPower66.size() > 0) {
-										deviceItem66.put("data_energy", dataPower66);
-										deviceItem66.put("type", "energy");
-										deviceItem66.put("devicename", "Power");
-										deviceItem66.put("deviceType", "inverter");
-										dataEnergy.add(deviceItem66);
-									}
-									
-									// Get Irradiance
-									
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											List dataListSensor = new ArrayList<>();
-											Map<String, Object> deviceIrrItem66 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem66 = new HashMap<>();
-											
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem66.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem66.put("type", "expected_power");
-													deviceExpectedPowerItem66.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem66);
-												}
-												
-												// Get Irradiance
-												deviceIrrItem66.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem66.put("type", "irradiance");
-												deviceIrrItem66.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem66);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								break;
-							case 3:
-								Map<String, Object> deviceItem77 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceHour3Day", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
-
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower77 = queryForList("CustomerView.getDataEnergyHourInverter3Day", obj);
-									if (dataPower77.size() > 0) {
-										deviceItem77.put("data_energy", dataPower77);
-										deviceItem77.put("type", "energy");
-										deviceItem77.put("devicename", "Power");
-										deviceItem77.put("deviceType", "inverter");
-										dataEnergy.add(deviceItem77);
-									}
-									
-									// Get Irradiance
-									
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											Map<String, Object> deviceIrrItem77 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem77 = new HashMap<>();
-											
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem77.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem77.put("type", "expected_power");
-													deviceExpectedPowerItem77.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem77);
-												}
-												
-												// Get Irradiance
-												deviceIrrItem77.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem77.put("type", "irradiance");
-												deviceIrrItem77.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem77);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								break;
-								
-								// 4 day
-							case 4: 
-								Map<String, Object> deviceItem88 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
-									
-									List dataList = queryForList("CustomerView.getDataVirtualDeviceDay3Day", obj);
-									if (dataList.size() > 0) {
-										Map<String, Object> powerItem = new HashMap<>();
-										Map<String, Object> expectedPowerItem = new HashMap<>();
-										Map<String, Object> irradianceItem = new HashMap<>();
-										List powerList = new ArrayList<>();
-										List expectedPowerList = new ArrayList<>();
-										List irradianceList = new ArrayList<>();
-										
-										for (int i = 0; i < dataList.size(); i++) {
-											Map<String, Object> dataListItem = (Map<String, Object>) dataList.get(i);
-											Map<String, Object> powerListItem = new HashMap<>();
-											Map<String, Object> expectedPowerListItem = new HashMap<>();
-											Map<String, Object> irradianceListItem = new HashMap<>();
-											
-											powerListItem.put("time", dataListItem.get("time"));
-											powerListItem.put("download_time", dataListItem.get("download_time"));
-											powerListItem.put("time_format", dataListItem.get("time_format"));
-											powerListItem.put("time_full", dataListItem.get("time_full"));
-											powerListItem.put("categories_time", dataListItem.get("categories_time"));
-											powerListItem.put("chart_energy_kwh", dataListItem.get("nvmActivePower"));
-											powerList.add(powerListItem);
-
-											expectedPowerListItem.put("time", dataListItem.get("time"));
-											expectedPowerListItem.put("download_time", dataListItem.get("download_time"));
-											expectedPowerListItem.put("time_format", dataListItem.get("time_format"));
-											expectedPowerListItem.put("time_full", dataListItem.get("time_full"));
-											expectedPowerListItem.put("categories_time", dataListItem.get("categories_time"));
-											expectedPowerListItem.put("expected_power", dataListItem.get("expected_power"));
-											expectedPowerList.add(expectedPowerListItem);
-
-											irradianceListItem.put("time", dataListItem.get("time"));
-											irradianceListItem.put("download_time", dataListItem.get("download_time"));
-											irradianceListItem.put("time_format", dataListItem.get("time_format"));
-											irradianceListItem.put("time_full", dataListItem.get("time_full"));
-											irradianceListItem.put("categories_time", dataListItem.get("categories_time"));
-											irradianceListItem.put("chart_energy_kwh", dataListItem.get("nvm_irradiance"));
-											irradianceList.add(irradianceListItem);
-										}
-										
-										powerItem.put("data_energy", powerList);
-										powerItem.put("type", "energy");
-										powerItem.put("devicename", "Power");
-										powerItem.put("deviceType", "meter");
-										dataEnergy.add(powerItem);
-										
-										if (dataListDeviceIrr.size() > 0) {
-											expectedPowerItem.put("data_energy", expectedPowerList);
-											expectedPowerItem.put("type", "expected_power");
-											expectedPowerItem.put("devicename", "Expected Power");
-											dataEnergy.add(expectedPowerItem);
-											
-											irradianceItem.put("data_energy", irradianceList);
-											irradianceItem.put("type", "irradiance");
-											irradianceItem.put("devicename", "Irradiance");
-											dataEnergy.add(irradianceItem);
-										}
-									}
-								} else {
-									obj.setGroupMeter(dataListInverter);
-									List dataPower88 = queryForList("CustomerView.getDataEnergyDayInverter3Day", obj);
-									if (dataPower88.size() > 0) {
-										deviceItem88.put("data_energy", dataPower88);
-										deviceItem88.put("type", "energy");
-										deviceItem88.put("devicename", "Power");
-										deviceItem88.put("deviceType", "inverter");
-										dataEnergy.add(deviceItem88);
-									}
-									
-									// Get Irradiance
-									if (dataListDeviceIrr.size() > 0) {
-										int countExpectedPower = 1;
-										for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-											Map<String, Object> deviceIrrItem88 = new HashMap<>();
-											Map<String, Object> deviceExpectedPowerItem88 = new HashMap<>();
-											
-											List dataListAIrrDevice = new ArrayList<>();
-											
-											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-											dataListAIrrDevice.add(item);
-											
-											obj.setGroupMeter(dataListAIrrDevice);
-											
-											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-											if(dataIrradianceDevice.size() > 0 ) {
-												// Get Expected Power
-												if (countExpectedPower == 1) {
-													deviceExpectedPowerItem88.put("data_energy", dataIrradianceDevice);
-													deviceExpectedPowerItem88.put("type", "expected_power");
-													deviceExpectedPowerItem88.put("devicename", "Expected Power");
-													dataEnergy.add(deviceExpectedPowerItem88);
-												}
-												
-												// Get Irradiance
-												deviceIrrItem88.put("data_energy", dataIrradianceDevice);
-												deviceIrrItem88.put("type", "irradiance");
-												deviceIrrItem88.put("devicename", dataListDeviceIrr.get(i));
-												dataEnergy.add(deviceIrrItem88);
-												countExpectedPower++;
-											}
-										}
-									}
-								}
-								
-							}
-							break;
 						case "this_week":
 						case "last_week":
-								Map<String, Object> deviceItem5 = new HashMap<>();
-								if (obj.getEnable_virtual_device() == 1) {
+							if (obj.getEnable_virtual_device() == 1) {
 								if (obj.getRead_data_all() == "all_data") {
 									obj.setDatatablename("model_virtual_meter_or_inverter");
 								} else {
 									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 								}
+								
+								// get list of time to exclude data from
+								List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+								obj.setHidden_data_list(hiddenDataList);
 								
 								List dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
 								if (dataList.size() > 0) {
@@ -3658,7 +1657,7 @@ public class CustomerViewService extends DB {
 									energyItem.put("data_energy", energyList);
 									energyItem.put("type", "energy");
 									energyItem.put("devicename", "Energy output");
-									energyItem.put("deviceType", "meter");
+									energyItem.put("deviceType", "inverter");
 									dataEnergy.add(energyItem);
 									
 									if (dataListDeviceIrr.size() > 0) {
@@ -3674,6 +1673,15 @@ public class CustomerViewService extends DB {
 									}
 								}
 							} else {
+									Map<String, Object> deviceItem5 = new HashMap<>();
+
+									// get list of time to exclude data from
+									for (int i = 0; i < dataListInverter.size(); i++) {
+										Map<String, Object> device = (Map<String, Object>) dataListInverter.get(i);
+										List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
+										device.put("hidden_data_list", hiddenDataList);
+									}
+									
 									obj.setGroupMeter(dataListInverter);
 									List dataPower5 = queryForList("CustomerView.getDataEnergyThisWeek", obj);
 									if (dataPower5.size() > 0) {
@@ -3695,25 +1703,14 @@ public class CustomerViewService extends DB {
 											List dataListAIrrDevice = new ArrayList<>();
 											
 											Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
+											// get list of time to exclude data from
+											List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", item);
+											item.put("hidden_data_list", hiddenDataList);
 											dataListAIrrDevice.add(item);
 											
 											obj.setGroupMeter(dataListAIrrDevice);
 											
-											List dataIrradianceDevice = new ArrayList<>();
-											switch (obj.getData_send_time()) {
-												case 1:
-													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFiveMinutes3Day", obj);
-													break;
-												case 2:
-													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceFifteenMinutes3Day", obj);
-													break;
-												case 3:
-													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceHour3Day", obj);
-													break;
-												case 4: 
-													dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceDay3Day", obj);
-													break;
-											}
+											List dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
 
 											if(dataIrradianceDevice.size() > 0 ) {
 												// Get Expected Energy
@@ -3766,6 +1763,11 @@ public class CustomerViewService extends DB {
 								headerDate.setNvm_irradiance(0.001);
 								categories.add(headerDate);
 							}
+							
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList);
+							obj.setGroupMeter(dataListDeviceMeter);
 
 							List dataPowerM = null;
 							if (obj.getEnable_virtual_device() == 1) {
@@ -3776,7 +1778,7 @@ public class CustomerViewService extends DB {
 								}
 								 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 							} else {
-								 dataPowerM = queryForList("CustomerView.getDataPowerMeterThisMonth", obj);
+								 dataPowerM = queryForList("CustomerView.getDataPowerThisMonth", obj);
 							}
 							
 							List<ClientMonthlyDateEntity> dataNew = new ArrayList<ClientMonthlyDateEntity> ();
@@ -3846,12 +1848,13 @@ public class CustomerViewService extends DB {
 							Date endDateYTD = dateFormatYTD.parse(obj.getEnd_date() + " PM");
 							Calendar calEndYTD = Calendar.getInstance();
 							calEndYTD.setTime(endDateYTD);
+							
+							List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
 
 							switch (obj.getData_send_time()) {
 								case 4:
-									List<ClientMonthlyDateEntity> categoriesYTD = new ArrayList<ClientMonthlyDateEntity> ();
-									int dayYTD = 1;
 									long forCountYTD = ChronoUnit.DAYS.between(calYTD.getTime().toInstant(), calEndYTD.getTime().toInstant());
+									int dayYTD = 1;
 									
 									for(int t = 0; t <= forCountYTD; t++) {
 										calYTD.setTime(startDateYTD);
@@ -3867,73 +1870,11 @@ public class CustomerViewService extends DB {
 										headerDateYTD.setNvm_irradiance(0.001);
 										categoriesYTD.add(headerDateYTD);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMYTD = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
-									} else {
-										dataPowerMYTD = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
-									}
-									
-									if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
-										for (ClientMonthlyDateEntity item : categoriesYTD) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerMYTD.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
-												String categoriesTimeYTD = item.getTime_format();
-												String powerTimeYTD = itemT.get("time_format").toString();
-												if (categoriesTimeYTD.equals(powerTimeYTD)) {
-															flag = true;
-															mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNewYTD.add(mapItem);
-											} else {
-												dataNewYTD.add(mapItemObjYTD);
-											}
-										}
-									}
-									
-									
-									Map<String, Object> deviceItemMYTD = new HashMap<>();
-									if (dataPowerMYTD.size() > 0) {
-										deviceItemMYTD.put("data_energy", dataNewYTD);
-										deviceItemMYTD.put("type", "energy");
-										deviceItemMYTD.put("devicename", "Energy output");
-										deviceItemMYTD.put("deviceType", "meter");
-										dataEnergy.add(deviceItemMYTD);
-									}							
-									break;							
+									break;
 								case 5:
 									LocalDate dateToSelect = LocalDate.of(calYTD.get(Calendar.YEAR), calYTD.get(Calendar.MONTH) + 1, calYTD.get(Calendar.DAY_OF_MONTH));
 									LocalDate lastVisible = LocalDate.of(calEndYTD.get(Calendar.YEAR), calEndYTD.get(Calendar.MONTH) + 1, calEndYTD.get(Calendar.DAY_OF_MONTH));
 									long forCountYTD7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-										
-									List<ClientMonthlyDateEntity> categoriesYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
 									int YTD7Day = 1;
 									
 									for(int t = 0; t <= forCountYTD7Day; t++) {
@@ -3947,74 +1888,13 @@ public class CustomerViewService extends DB {
 										headerDateLT.setChart_energy_kwh(0.001);
 										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
-										categoriesYTD7Day.add(headerDateLT);
+										categoriesYTD.add(headerDateLT);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNewYTD7Day = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerYTD7Day = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerYTD7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
-									} else {
-										dataPowerYTD7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
-									}
-									
-									if(dataPowerYTD7Day.size() > 0 && categoriesYTD7Day.size() > 0) {
-										for (ClientMonthlyDateEntity item : categoriesYTD7Day) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerYTD7Day.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerYTD7Day.get(v);
-												String categoriesTimeYTD = item.getTime_format();
-												String powerTimeYTD = itemT.get("time_format").toString();
-												if (categoriesTimeYTD.equals(powerTimeYTD)) {
-															flag = true;
-															mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNewYTD7Day.add(mapItem);
-											} else {
-												dataNewYTD7Day.add(mapItemObjYTD);
-											}
-										}
-									}
-									
-									Map<String, Object> deviceItemMYTD7Day = new HashMap<>();
-									if (dataPowerYTD7Day.size() > 0) {
-										deviceItemMYTD7Day.put("data_energy", dataNewYTD7Day);
-										deviceItemMYTD7Day.put("type", "energy");
-										deviceItemMYTD7Day.put("devicename", "Energy output");
-										deviceItemMYTD7Day.put("deviceType", "meter");
-										dataEnergy.add(deviceItemMYTD7Day);
-									}							
-									break;						
+									break;
 								case 6:
 									YearMonth startMonth = YearMonth.of( calYTD.get(Calendar.YEAR) , calYTD.get(Calendar.MONTH) + 1 );
-											YearMonth endMonth = YearMonth.of(calEndYTD.get(Calendar.YEAR) , calEndYTD.get(Calendar.MONTH) + 1);
-											long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
-											
-									List<ClientMonthlyDateEntity> categoriesYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
+							        YearMonth endMonth = YearMonth.of(calEndYTD.get(Calendar.YEAR) , calEndYTD.get(Calendar.MONTH) + 1);
+							        long forCountYTDMonth = ChronoUnit.MONTHS.between(startMonth, endMonth);
 									int monthYTD = 1;
 									
 									for(int t = 0; t <= forCountYTDMonth; t++) {
@@ -4028,71 +1908,75 @@ public class CustomerViewService extends DB {
 										headerDateLT.setChart_energy_kwh(0.001);
 										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
-										categoriesYTDMonth.add(headerDateLT);
+										categoriesYTD.add(headerDateLT);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNewYTDMonth = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMLT = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonthYear", obj);
-									} else {
-										dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonthYear", obj);
-									}
-									
-									if(dataPowerMLT.size() > 0 && categoriesYTDMonth.size() > 0) {
-										for (ClientMonthlyDateEntity item : categoriesYTDMonth) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerMLT.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-												String categoriesTimeLT = item.getTime_format();
-												String powerTimeLT = itemT.get("time_format").toString();
-												if (categoriesTimeLT.equals(powerTimeLT)) {
-															flag = true;
-															mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-															mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-															mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-															mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNewYTDMonth.add(mapItem);
-											} else {
-												dataNewYTDMonth.add(mapItemObjLT);
-											}
-										}
-									}
-									
-									
-									Map<String, Object> deviceItemMLT = new HashMap<>();
-									if (dataPowerMLT.size() > 0) {
-										deviceItemMLT.put("data_energy", dataNewYTDMonth);
-										deviceItemMLT.put("type", "energy");
-										deviceItemMLT.put("devicename", "Energy output");
-										deviceItemMLT.put("deviceType", "meter");
-										dataEnergy.add(deviceItemMLT);
-									}
-									
 									break;
 							}
+									
+							// get list of time to exclude data from
+							List hiddenDataList1 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList1);
+							obj.setGroupMeter(dataListDeviceMeter);
+							
+							List dataPowerMYTD = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+							} else {
+								dataPowerMYTD = queryForList("CustomerView.getDataPowerYear", obj);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewYTD = new ArrayList<ClientMonthlyDateEntity> ();
+							if(dataPowerMYTD.size() > 0 && categoriesYTD.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesYTD) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerMYTD.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerMYTD.get(v);
+										String categoriesTimeYTD = item.getTime_format();
+										String powerTimeYTD = itemT.get("time_format").toString();
+										if (categoriesTimeYTD.equals(powerTimeYTD)) {
+													flag = true;
+													mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
+													mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
+													mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
+													mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
+													mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+										        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+													mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+													break;
+												}
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewYTD.add(mapItem);
+									} else {
+										dataNewYTD.add(mapItemObjYTD);
+									}
+								}
+							}
+							
+							
+							Map<String, Object> deviceItemMYTD = new HashMap<>();
+							if (dataPowerMYTD.size() > 0) {
+								deviceItemMYTD.put("data_energy", dataNewYTD);
+								deviceItemMYTD.put("type", "energy");
+								deviceItemMYTD.put("devicename", "Energy output");
+								deviceItemMYTD.put("deviceType", "inverter");
+								dataEnergy.add(deviceItemMYTD);
+							}							
 							
 							break;
 						case "12_month":				
@@ -4100,27 +1984,27 @@ public class CustomerViewService extends DB {
 							SimpleDateFormat dateFormat12 = new SimpleDateFormat("yyyy-MM-dd"); 
 							SimpleDateFormat usFormat12 = new SimpleDateFormat("MM/yyyy");
 							SimpleDateFormat catFormat12 = new SimpleDateFormat("MM/yyyy");
-							SimpleDateFormat dayFormat12 = new SimpleDateFormat("dd");
 							
 							SimpleDateFormat usFormat12Month7Day = new SimpleDateFormat("MM/dd/yyyy");
 							SimpleDateFormat catFormat12Month7Day = new SimpleDateFormat("MMM. yyyy");
-
+							
 							SimpleDateFormat usFormat12MonthDay = new SimpleDateFormat("MM/dd/yyyy");
 							SimpleDateFormat catFormat12MonthDay = new SimpleDateFormat("MMM. yyyy");
 							
 							Date startDate12 = dateFormat12.parse(obj.getStart_date() + " AM");
 							Calendar cal12 = Calendar.getInstance();
-							cal12.setTime(startDate12);
-
+							cal12.setTime(startDate12);					
+							
 							Date endDate12 = dateFormat12.parse(obj.getEnd_date() + " PM");
 							Calendar calEnd12 = Calendar.getInstance();
 							calEnd12.setTime(endDate12);
+
+							List<ClientMonthlyDateEntity> categories12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
 							
 							switch (obj.getData_send_time()) {
 								case 4:
-									List<ClientMonthlyDateEntity> categories12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-									int day12Month = 1;
 									long forCountYTD = ChronoUnit.DAYS.between(cal12.getTime().toInstant(), calEnd12.getTime().toInstant());
+									int day12Month = 1;
 									
 									for(int t = 0; t <= forCountYTD; t++) {
 										cal12.setTime(startDate12);
@@ -4136,73 +2020,11 @@ public class CustomerViewService extends DB {
 										headerDate12MonthDay.setNvm_irradiance(0.001);
 										categories12MonthDay.add(headerDate12MonthDay);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerM12MonthDay = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceDayYear", obj);
-									} else {
-										dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerMeterDayYear", obj);
-									}
-									
-									if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
-										for (ClientMonthlyDateEntity item : categories12MonthDay) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObj12MonthDay = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerM12MonthDay.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerM12MonthDay.get(v);
-												String categoriesTime12MonthDay = item.getTime_format();
-												String powerTime12MonthDay = itemT.get("time_format").toString();
-												if (categoriesTime12MonthDay.equals(powerTime12MonthDay)) {
-															flag = true;
-															mapItemObj12MonthDay.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObj12MonthDay.setTime_format(itemT.get("time_format").toString());
-															mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
-															mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
-															mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNew12MonthDay.add(mapItem);
-											} else {
-												dataNew12MonthDay.add(mapItemObj12MonthDay);
-											}
-										}
-									}
-									
-									
-									Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
-									if (dataPowerM12MonthDay.size() > 0) {
-										deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
-										deviceItemM12MonthDay.put("type", "energy");
-										deviceItemM12MonthDay.put("devicename", "Energy output");
-										deviceItemM12MonthDay.put("deviceType", "meter");
-										dataEnergy.add(deviceItemM12MonthDay);
-									}
-									break;		
+									break;
 								case 5:
 									LocalDate dateToSelect = LocalDate.of(cal12.get(Calendar.YEAR), cal12.get(Calendar.MONTH) + 1, cal12.get(Calendar.DAY_OF_MONTH));
 									LocalDate lastVisible = LocalDate.of(calEnd12.get(Calendar.YEAR), calEnd12.get(Calendar.MONTH) + 1, calEnd12.get(Calendar.DAY_OF_MONTH));
 									long forCount12Month7Day = ChronoUnit.WEEKS.between(dateToSelect, lastVisible);
-									
-									List<ClientMonthlyDateEntity> categories12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
 									int week12 = 1;
 									
 									for(int t = 0; t <= forCount12Month7Day; t++) {
@@ -4216,75 +2038,17 @@ public class CustomerViewService extends DB {
 										headerDateLT.setChart_energy_kwh(0.001);
 										headerDateLT.setExpected_power(0.001);
 										headerDateLT.setNvm_irradiance(0.001);
-										categories12Month7Day.add(headerDateLT);
+										categories12MonthDay.add(headerDateLT);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNew12Month7Day = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPower12Month7Day = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPower12Month7Day = queryForList("CustomerView.getDataVirtualDevice7DayYear", obj);
-									} else {
-										dataPower12Month7Day = queryForList("CustomerView.getDataPowerMeter7DayYear", obj);
-									}
-									
-									if(dataPower12Month7Day.size() > 0 && categories12Month7Day.size() > 0) {
-										for (ClientMonthlyDateEntity item : categories12Month7Day) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObjYTD = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPower12Month7Day.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPower12Month7Day.get(v);
-												String categoriesTimeYTD = item.getTime_format();
-												String powerTimeYTD = itemT.get("time_format").toString();
-												if (categoriesTimeYTD.equals(powerTimeYTD)) {
-															flag = true;
-															mapItemObjYTD.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObjYTD.setTime_format(itemT.get("time_format").toString());
-															mapItemObjYTD.setTime_full(itemT.get("time_full").toString());
-															mapItemObjYTD.setDownload_time(itemT.get("download_time").toString());
-															mapItemObjYTD.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObjYTD.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObjYTD.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNew12Month7Day.add(mapItem);
-											} else {
-												dataNew12Month7Day.add(mapItemObjYTD);
-											}
-										}
-									}
-									
-									Map<String, Object> deviceItem12Month7Day = new HashMap<>();
-									if (dataPower12Month7Day.size() > 0) {
-										deviceItem12Month7Day.put("data_energy", dataNew12Month7Day);
-										deviceItem12Month7Day.put("type", "energy");
-										deviceItem12Month7Day.put("devicename", "Energy output");
-										deviceItem12Month7Day.put("deviceType", "meter");
-										dataEnergy.add(deviceItem12Month7Day);
-									}
-									
-								break;
+									break;
 								case 6:
 									cal12.set(Calendar.DAY_OF_MONTH, cal12.getActualMaximum(Calendar.DAY_OF_MONTH));
-									List<ClientMonthlyDateEntity> categories12 = new ArrayList<ClientMonthlyDateEntity> ();
+									YearMonth startMonth12 = YearMonth.of( cal12.get(Calendar.YEAR) , cal12.get(Calendar.MONTH) + 1 );
+									YearMonth endMonth12 = YearMonth.of(calEnd12.get(Calendar.YEAR) , calEnd12.get(Calendar.MONTH) + 1);
+									long forCount12Month = ChronoUnit.MONTHS.between(startMonth12, endMonth12);
 									int day12 = 1;
 									
-									for(int t = 0; t <= 12; t++) {
+									for(int t = 0; t <= forCount12Month; t++) {
 										cal12.setTime(startDate12);
 										ClientMonthlyDateEntity headerDate12 = new ClientMonthlyDateEntity();
 										cal12.add(Calendar.MONTH, t * day12);
@@ -4295,70 +2059,74 @@ public class CustomerViewService extends DB {
 										headerDate12.setChart_energy_kwh(0.001);
 										headerDate12.setExpected_power(0.001);
 										headerDate12.setNvm_irradiance(0.001);
-										categories12.add(headerDate12);
+										categories12MonthDay.add(headerDate12);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNew12 = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerM12 = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerM12 = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
-									} else {
-										dataPowerM12 = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
-									}
-									
-									if(dataPowerM12.size() > 0 && categories12.size() > 0) {
-										for (ClientMonthlyDateEntity item : categories12) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObj12 = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerM12.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerM12.get(v);
-												String categoriesTime12 = item.getTime_format();
-												String powerTime12 = itemT.get("time_format").toString();
-												if (categoriesTime12.equals(powerTime12)) {
-															flag = true;
-															mapItemObj12.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObj12.setTime_format(itemT.get("time_format").toString());
-															mapItemObj12.setTime_full(itemT.get("time_full").toString());
-															mapItemObj12.setDownload_time(itemT.get("download_time").toString());
-															mapItemObj12.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObj12.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObj12.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNew12.add(mapItem);
-											} else {
-												dataNew12.add(mapItemObj12);
-											}
-										}
-									}
-									
-									
-									Map<String, Object> deviceItemM12 = new HashMap<>();
-									if (dataPowerM12.size() > 0) {
-										deviceItemM12.put("data_energy", dataNew12);
-										deviceItemM12.put("type", "energy");
-										deviceItemM12.put("devicename", "Energy output");
-										deviceItemM12.put("deviceType", "meter");
-										dataEnergy.add(deviceItemM12);
-									}
-								break;
+									break;
 							}
+							
+							// get list of time to exclude data from
+							List hiddenDataList2 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList2);
+							obj.setGroupMeter(dataListDeviceMeter);
+									
+							List dataPowerM12MonthDay = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
+								}
+								dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+							} else {
+								dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerYear", obj);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNew12MonthDay = new ArrayList<ClientMonthlyDateEntity> ();
+							if(dataPowerM12MonthDay.size() > 0 && categories12MonthDay.size() > 0) {
+								for (ClientMonthlyDateEntity item : categories12MonthDay) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObj12MonthDay = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerM12MonthDay.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerM12MonthDay.get(v);
+										String categoriesTime12MonthDay = item.getTime_format();
+										String powerTime12MonthDay = itemT.get("time_format").toString();
+										if (categoriesTime12MonthDay.equals(powerTime12MonthDay)) {
+													flag = true;
+													mapItemObj12MonthDay.setCategories_time(itemT.get("categories_time").toString());
+													mapItemObj12MonthDay.setTime_format(itemT.get("time_format").toString());
+													mapItemObj12MonthDay.setTime_full(itemT.get("time_full").toString());
+													mapItemObj12MonthDay.setDownload_time(itemT.get("download_time").toString());
+													mapItemObj12MonthDay.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+										        	mapItemObj12MonthDay.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+													mapItemObj12MonthDay.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+													break;
+												}
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNew12MonthDay.add(mapItem);
+									} else {
+										dataNew12MonthDay.add(mapItemObj12MonthDay);
+									}
+								}
+							}
+							
+							Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
+							if (dataPowerM12MonthDay.size() > 0) {
+								deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
+								deviceItemM12MonthDay.put("type", "energy");
+								deviceItemM12MonthDay.put("devicename", "Energy output");
+								deviceItemM12MonthDay.put("deviceType", "inverter");
+								dataEnergy.add(deviceItemM12MonthDay);
+							}	
 							break;
 						case "lifetime":
 							// Create list date 
@@ -4376,12 +2144,13 @@ public class CustomerViewService extends DB {
 							calEndLT.setTime(endDateLT);
 
 							YearMonth startMonth = YearMonth.of( calLT.get(Calendar.YEAR) , calLT.get(Calendar.MONTH) + 1 );
-									YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
+					        YearMonth endMonth = YearMonth.of(calEndLT.get(Calendar.YEAR) , calEndLT.get(Calendar.MONTH) + 1);
+					        
+					        List<ClientMonthlyDateEntity> categoriesLT = new ArrayList<ClientMonthlyDateEntity> ();
+					        
 							switch (obj.getData_send_time()) {
 								case 6:						
-											long forCountLT = ChronoUnit.MONTHS.between(startMonth, endMonth);
-									
-									List<ClientMonthlyDateEntity> categoriesLT = new ArrayList<ClientMonthlyDateEntity> ();
+							        long forCountLT = ChronoUnit.MONTHS.between(startMonth, endMonth);
 									int dayLT = 1;
 									
 									for(int t = 0; t <= forCountLT; t++) {
@@ -4397,76 +2166,13 @@ public class CustomerViewService extends DB {
 										headerDateLT.setNvm_irradiance(0.001);
 										categoriesLT.add(headerDateLT);
 									}
-									
-									List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
-									List dataPowerMLT = null;
-									if (obj.getEnable_virtual_device() == 1) {
-										if (obj.getRead_data_all() == "all_data") {
-											obj.setDatatablename("model_virtual_meter_or_inverter");
-										} else {
-											obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-										}
-										dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceMonth12Month", obj);
-									} else {
-										dataPowerMLT = queryForList("CustomerView.getDataPowerMeterMonth12Month", obj);
-									}
-									
-									if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
-										for (ClientMonthlyDateEntity item : categoriesLT) {
-											boolean flag = false;
-											ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-											for( int v = 0; v < dataPowerMLT.size(); v++){
-												Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
-												String categoriesTimeLT = item.getTime_format();
-												String powerTimeLT = itemT.get("time_format").toString();
-												if (categoriesTimeLT.equals(powerTimeLT)) {
-															flag = true;
-															mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-															mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-															mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-															mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-															mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-												        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-															mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-															break;
-														}
-											}
-											
-											if(flag == false) {
-												ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-												mapItem.setCategories_time(item.getCategories_time());
-												mapItem.setTime_format(item.getTime_format());
-												mapItem.setTime_full(item.getTime_full());
-												mapItem.setDownload_time(item.getDownload_time());
-												mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-												mapItem.setExpected_power(item.getExpected_power());
-												mapItem.setNvm_irradiance(item.getNvm_irradiance());
-												dataNewLT.add(mapItem);
-											} else {
-												dataNewLT.add(mapItemObjLT);
-											}
-										}
-									}
-									
-									
-									Map<String, Object> deviceItemMLT = new HashMap<>();
-									if (dataPowerMLT.size() > 0) {
-										deviceItemMLT.put("data_energy", dataNewLT);
-										deviceItemMLT.put("type", "energy");
-										deviceItemMLT.put("devicename", "Energy output");
-										deviceItemMLT.put("deviceType", "meter");
-										dataEnergy.add(deviceItemMLT);
-									}
-									
-								break;
+									break;
 								case 7:
 										long forCountLTYear = ChronoUnit.YEARS.between(startMonth, endMonth);
-										
 										if(calLT.get(Calendar.MONTH) > calEndLT.get(Calendar.MONTH)) {
 											forCountLTYear += 1;
 										}
 										
-										List<ClientMonthlyDateEntity> categoriesLTYear = new ArrayList<ClientMonthlyDateEntity> ();
 										int yearLT = 1;
 										
 										for(int t = 0; t <= forCountLTYear; t++) {
@@ -4480,69 +2186,74 @@ public class CustomerViewService extends DB {
 											headerDateLT.setChart_energy_kwh(0.001);
 											headerDateLT.setExpected_power(0.001);
 											headerDateLT.setNvm_irradiance(0.001);
-											categoriesLTYear.add(headerDateLT);
+											categoriesLT.add(headerDateLT);
 										}
-										
-										List<ClientMonthlyDateEntity> dataNewLTYear = new ArrayList<ClientMonthlyDateEntity> ();
-										List dataPowerMLTYear = null;
-										if (obj.getEnable_virtual_device() == 1) {
-											if (obj.getRead_data_all() == "all_data") {
-												obj.setDatatablename("model_virtual_meter_or_inverter");
-											} else {
-												obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-											}
-											dataPowerMLTYear = queryForList("CustomerView.getDataVirtualDeviceYearLifetime", obj);
-										} else {
-											dataPowerMLTYear = queryForList("CustomerView.getDataPowerMeterYearLifetime", obj);
-										}
-										
-										if(dataPowerMLTYear.size() > 0 && categoriesLTYear.size() > 0) {
-											for (ClientMonthlyDateEntity item : categoriesLTYear) {
-												boolean flag = false;
-												ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
-												for( int v = 0; v < dataPowerMLTYear.size(); v++){
-													Map<String, Object> itemT = (Map<String, Object>) dataPowerMLTYear.get(v);
-													String categoriesTimeLT = item.getTime_format();
-													String powerTimeLT = itemT.get("time_format").toString();
-													if (categoriesTimeLT.equals(powerTimeLT)) {
-																flag = true;
-																mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
-																mapItemObjLT.setTime_format(itemT.get("time_format").toString());
-																mapItemObjLT.setTime_full(itemT.get("time_full").toString());
-																mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
-																mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-													        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
-																mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
-																break;
-															}
-												}
-												
-												if(flag == false) {
-													ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
-													mapItem.setCategories_time(item.getCategories_time());
-													mapItem.setTime_format(item.getTime_format());
-													mapItem.setTime_full(item.getTime_full());
-													mapItem.setDownload_time(item.getDownload_time());
-													mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
-													mapItem.setExpected_power(item.getExpected_power());
-													mapItem.setNvm_irradiance(item.getNvm_irradiance());
-													dataNewLTYear.add(mapItem);
-												} else {
-													dataNewLTYear.add(mapItemObjLT);
-												}
-											}
-										}
-										
-										Map<String, Object> deviceItemMLTYear = new HashMap<>();
-										if (dataPowerMLTYear.size() > 0) {
-											deviceItemMLTYear.put("data_energy", dataNewLTYear);
-											deviceItemMLTYear.put("type", "energy");
-											deviceItemMLTYear.put("devicename", "Energy output");
-											deviceItemMLTYear.put("deviceType", "meter");
-											dataEnergy.add(deviceItemMLTYear);
-										}
-								break;
+										break;
+							}
+							
+							// get list of time to exclude data from
+							List hiddenDataList3 = queryForList("CustomerView.getHiddenDataListBySite", obj);
+							obj.setHidden_data_list(hiddenDataList3);
+							obj.setGroupMeter(dataListDeviceMeter);
+									
+							List dataPowerMLT = null;
+							if (obj.getEnable_virtual_device() == 1) {
+								if (obj.getRead_data_all() == "all_data") {
+									obj.setDatatablename("model_virtual_meter_or_inverter");
+								} else {
+									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
 								}
+								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
+							} else {
+								dataPowerMLT = queryForList("CustomerView.getDataPowerYear", obj);
+							}
+							
+							List<ClientMonthlyDateEntity> dataNewLT = new ArrayList<ClientMonthlyDateEntity> ();
+							if(dataPowerMLT.size() > 0 && categoriesLT.size() > 0) {
+								for (ClientMonthlyDateEntity item : categoriesLT) {
+									boolean flag = false;
+									ClientMonthlyDateEntity mapItemObjLT = new ClientMonthlyDateEntity();
+									for( int v = 0; v < dataPowerMLT.size(); v++){
+										Map<String, Object> itemT = (Map<String, Object>) dataPowerMLT.get(v);
+										String categoriesTimeLT = item.getTime_format();
+										String powerTimeLT = itemT.get("time_format").toString();
+										if (categoriesTimeLT.equals(powerTimeLT)) {
+								        	flag = true;
+								        	mapItemObjLT.setCategories_time(itemT.get("categories_time").toString());
+								        	mapItemObjLT.setTime_format(itemT.get("time_format").toString());
+								        	mapItemObjLT.setTime_full(itemT.get("time_full").toString());
+								        	mapItemObjLT.setDownload_time(itemT.get("download_time").toString());
+								        	mapItemObjLT.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+								        	mapItemObjLT.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
+								        	mapItemObjLT.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
+								        	break;
+								        }
+									}
+									
+									if(flag == false) {
+										ClientMonthlyDateEntity mapItem = new ClientMonthlyDateEntity();
+										mapItem.setCategories_time(item.getCategories_time());
+										mapItem.setTime_format(item.getTime_format());
+										mapItem.setTime_full(item.getTime_full());
+										mapItem.setDownload_time(item.getDownload_time());
+										mapItem.setChart_energy_kwh(item.getChart_energy_kwh());
+										mapItem.setExpected_power(item.getExpected_power());
+										mapItem.setNvm_irradiance(item.getNvm_irradiance());
+										dataNewLT.add(mapItem);
+									} else {
+										dataNewLT.add(mapItemObjLT);
+									}
+								}
+							}
+							
+							Map<String, Object> deviceItemMLT = new HashMap<>();
+							if (dataPowerMLT.size() > 0) {
+								deviceItemMLT.put("data_energy", dataNewLT);
+								deviceItemMLT.put("type", "energy");
+								deviceItemMLT.put("devicename", "Energy output");
+								deviceItemMLT.put("deviceType", "inverter");
+								dataEnergy.add(deviceItemMLT);
+							}
 							break;
 					}
 				}

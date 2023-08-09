@@ -4577,7 +4577,7 @@ public class ReportsController extends BaseController {
 							String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 							String dir = uploadRootPath() + "/"
 									+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-							String fileName = dir + "/Monthly-portfolio-production-report-monthly-interval-" + timeStamp + ".xlsx";
+							String fileName = dir + "/Monthly Portfolio Production Report (Monthly Interval)_" + timeStamp + ".xlsx";
 							
 							try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 								document.write(fileOut);
@@ -7358,11 +7358,28 @@ public class ReportsController extends BaseController {
 			cellStyleCustom11.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			cellStyleCustom11.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			
+			// Create CellStyle
+			CellStyle cellStyleCustom12 = sheet.getWorkbook().createCellStyle();
+			cellStyleCustom12.setFont(font11);
+			
+			cellStyleCustom12.setVerticalAlignment(VerticalAlignment.CENTER);
+			cellStyleCustom12.setAlignment(HorizontalAlignment.LEFT);
+			cellStyleCustom12.setWrapText(true);
+			
+			cellStyleCustom12.setBorderBottom(BorderStyle.THIN);
+			cellStyleCustom12.setBorderTop(BorderStyle.THIN);
+			cellStyleCustom12.setBorderRight(BorderStyle.THIN);
+			cellStyleCustom12.setBorderLeft(BorderStyle.THIN);
+			cellStyleCustom12.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom12.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom12.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			cellStyleCustom12.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			
 			// Monthly Data
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1));
 			Row row5 = sheet.createRow(5);
 			Cell cell50 = row5.createCell(0);
-			cell50.setCellStyle(cellStyleCustom11);
+			cell50.setCellStyle(cellStyleCustom12);
 			cell50.setCellValue("Site Name");
 			
 			Cell cell51 = row5.createCell(1);
@@ -7411,6 +7428,22 @@ public class ReportsController extends BaseController {
 				cellStyleRow.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 				cellStyleRow.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 				
+				// Create CellStyle
+				CellStyle cellStyleRow1 = sheet.getWorkbook().createCellStyle();
+				cellStyleRow1.setFont(fontR);
+				cellStyleRow1.setVerticalAlignment(VerticalAlignment.CENTER);
+				cellStyleRow1.setAlignment(HorizontalAlignment.LEFT);
+				
+				
+				cellStyleRow1.setBorderBottom(BorderStyle.THIN);
+				cellStyleRow1.setBorderTop(BorderStyle.THIN);
+				cellStyleRow1.setBorderRight(BorderStyle.THIN);
+				cellStyleRow1.setBorderLeft(BorderStyle.THIN);
+				cellStyleRow1.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow1.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow1.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				cellStyleRow1.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+				
 				
 				int r = 6;
 				for( int j = 0; j < dataExports.size(); j++){
@@ -7419,7 +7452,7 @@ public class ReportsController extends BaseController {
 					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 0, 1));
 					Row row6f = sheet.createRow(r+j);
 					Cell cell60f = row6f.createCell(0);
-					cell60f.setCellStyle(cellStyleRow);
+					cell60f.setCellStyle(cellStyleRow1);
 					cell60f.setCellValue(item.get("name").toString());
 					
 					Cell cell61f = row6f.createCell(1);

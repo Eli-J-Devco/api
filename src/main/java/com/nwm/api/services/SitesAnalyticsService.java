@@ -94,6 +94,10 @@ public class SitesAnalyticsService extends DB {
 					maps.put("id_device_group", map.get("id_device_group"));
 					maps.put("id_device_type", map.get("id_device_type"));
 					
+					// get list of time to exclude data from
+					List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
+					maps.put("hidden_data_list", hiddenDataList);
+					
 					List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
 					
 					maps.put("data", getDataChartParameter);

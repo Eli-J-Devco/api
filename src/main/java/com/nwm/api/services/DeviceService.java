@@ -243,5 +243,64 @@ public class DeviceService extends DB {
 			return 0;
 		}
 	}
+	
+	/**
+	 * @description Get list hidden data by device
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListHiddenDataByDevice(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListHiddenDataByDevice", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description delete hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id
+	 */
+	public boolean deleteHiddenData(DeviceEntity obj) {
+		try {
+			return update("Device.deleteHiddenData", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.deleteHiddenData", ex);
+			return false;
+		}
+	}
+	
+	
+	/**
+	 * @description add hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 */
+	public DeviceEntity insertHiddenData(DeviceEntity obj) 
+	{
+		try
+	    {
+	       Object insertId = insert("Device.insertHiddenData", obj);
+	       if(insertId != null && insertId instanceof Integer) {
+	    	   return obj;
+	       }else {
+	    	   return null;
+	       }
+	    }
+	    catch(Exception ex)
+	    {
+	        log.error("Device.insertHiddenData", ex);
+	        return null;
+	    }	
+	}
 
 }

@@ -158,4 +158,69 @@ public class DeviceController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list hidden data by device
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-hidden-data-by-device")
+	public Object getListHiddenDataByDevice(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			List data = service.getListHiddenDataByDevice(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description add hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/add-hidden-data")
+	public Object addHiddenData(@RequestBody DeviceEntity obj) {
+		DeviceService service = new DeviceService();
+		try {
+			DeviceEntity data = service.insertHiddenData(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete hidden data
+	 * @author Hung.Bui
+	 * @since 2023-08-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-hidden-data")
+	public Object deleteHiddenData(@RequestBody DeviceEntity obj) {
+		DeviceService service = new DeviceService();
+		try {
+			boolean result = service.deleteHiddenData(obj);
+			if (result) {
+				if (obj.getIs_delete() == 0) {
+					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
+				}
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
 }
