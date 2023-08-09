@@ -106,6 +106,8 @@
 		<mapper resource="mybatis/map/ModelSmaInverterStp3000ktlus10.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp62us41.xml"/>
 		<mapper resource="mybatis/map/ModelAesTxInverter.xml"/>
+		<mapper resource="mybatis/map/ModelMeterIon8600.xml"/>
+		
 		
 		
 		

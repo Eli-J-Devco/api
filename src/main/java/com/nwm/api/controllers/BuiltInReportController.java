@@ -746,27 +746,27 @@ public class BuiltInReportController extends BaseController {
 							series.setTitle("Actual Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 1, true, true));
 							
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 0, (byte) 0, (byte) 0})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 0, (byte) 0, (byte) 0}))));
+							
 							chart.plot(data);
-							// set bar colors
-							solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
 							
 							series = data.addSeries(categoriesData, valuesData2);
 							series.setTitle("Expected Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 2, true, true));
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}))));
 							
 							chart.plot(data);
-							// set bar colors
-							solidFillSeries(data, 1, PresetColor.GRAY);
-//							solidFillSeries(data, 1, PresetColor.GRAY);
 							
 							series = data.addSeries(categoriesData, valuesData3);
 							series.setTitle("Modeled Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 3, true, true));
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}))));
 							
 						
 							chart.plot(data);
-							// set bar colors
-							solidFillSeries(data, 2, PresetColor.LIGHT_STEEL_BLUE);
 
 							
 		
@@ -793,20 +793,18 @@ public class BuiltInReportController extends BaseController {
 							series = data.addSeries(categoriesData, valuesData4);
 							series.setTitle("Expected Generation Index (%)",
 									new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}))));
+							
 							chart.plot(data);
-							solidFillSeries(data, 0, PresetColor.LIME);
 							
 							series = data.addSeries(categoriesData, valuesData5);
 							series.setTitle("Expected Generation Index (%)",
 									new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}))));
 							
 							chart.plot(data);
-//							solidFillSeries(data, 2, PresetColor.LIME);
-							solidLineSeries(data, 1, PresetColor.ORANGE);
-							
-//							solidFillSeries(data, 3, PresetColor.LIME);
-//							solidFillSeries(data, 4, PresetColor.ORANGE);
-		
 		
 							// this must occur after the call to chart.plot above
 							CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
