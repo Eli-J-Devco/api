@@ -133,7 +133,7 @@
 
 	<insert id="insertModelShark100" useGeneratedKeys="true"
 		keyProperty="time">
-		INSERT INTO `model_shark100_copy1`
+		INSERT INTO `model_shark100`
 		<trim prefix="(" suffix=")" suffixOverrides="," >
 		  <if test="time != null" >
                 `time`,

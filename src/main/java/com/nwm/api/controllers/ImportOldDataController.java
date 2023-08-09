@@ -7,11 +7,14 @@ package com.nwm.api.controllers;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -28,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.services.ImportOldDataService;
@@ -195,6 +200,7 @@ public class ImportOldDataController extends BaseController {
 	}
 	
 	
+	
 	/**
 	 * @description run event upload old data 
 	 * @author long.pham
@@ -223,7 +229,9 @@ public class ImportOldDataController extends BaseController {
 			
 			ImportOldDataService service = new ImportOldDataService();
 			FileImportDataOldEntity dataFile = service.getDetailFileUploadDataOld(itemFile);
-			ImportOldDataEntity obj = new ImportOldDataEntity(); 
+			ImportOldDataEntity obj = new ImportOldDataEntity();
+			
+			HashSet<String> setDate = new HashSet<String> ();
 			
 			if( dataFile.getId() >= 0 ) {
 				obj.setId_site(dataFile.getId_site());
@@ -239,11 +247,24 @@ public class ImportOldDataController extends BaseController {
 						try (Stream<Row> rows = sheet.openStream()) {
 							long rowTotal = sheet.openStream().mapToLong(e -> 1L).sum();
 							rows.skip(1).forEach(r -> {
+								if(r.getRowNum() == 2) { itemFile.setStart_date(r.getCellText(1).toString()); }
+								
 								List<Object> result = new ArrayList<Object>();
 								HashMap<String, String> rowItem = new HashMap<String, String>();
 								if (Lib.isDateValid(r.getCellText(1).toString())) {
 									rowItem.put("time", r.getCellText(1).toString());
 									rowItem.put("local_time", r.getCellText(1).toString());
+									String time = r.getCellText(1).toString();
+									
+									if (time == null || !time.matches("((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]) ([2][0-3]|[0-1][0-9]|[1-9]):[0-5][0-9]:([0-5][0-9]|[6][0])$")) {
+										setDate.clear();
+							    	}
+
+									System.out.println("time: " + time);
+									String[] parts = time.split(" ");
+									String start = parts[0];
+									setDate.add(start);
+									
 									switch (dataFile.getDatatablename()) {
 									case "model_hukseflux_sr30d1_deviceclass_v0":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1375,6 +1396,15 @@ public class ImportOldDataController extends BaseController {
 						}  finally {
 							FileImportDataOldEntity getRowComplete = service.getDetailFileUploadDataOld(itemFile);
 							
+							System.out.println("setDate: " + setDate);
+							for (String s : setDate) {	
+								String[] year = s.split("-");
+								obj.setYear(year[0]);
+								obj.setStart_date(s + " 08:00:00");
+								obj.setEnd_date(s + " 17:59:59");
+								obj.setDatatablename(obj.getTable_name());
+								service.insertSiteDataReport(obj);
+							}
 							// update file data 
 							FileImportDataOldEntity updateRow = new FileImportDataOldEntity();
 							updateRow.setId(getRowComplete.getId());
@@ -1389,6 +1419,27 @@ public class ImportOldDataController extends BaseController {
 						}
 						watch.stop();
 					});
+					
+					// Run event update data virtual table
+					String domainCronJob = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.domainCronJob);
+					DateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date currentDate = new Date();
+					Date date1 = null;
+					Date date2 = null;
+					String startDate = itemFile.getStart_date();
+					int total_day = 2;
+					if (startDate != null) {
+						String endDate = simpleDateFormat.format(currentDate);
+						date1 = simpleDateFormat.parse(startDate);
+						date2 = simpleDateFormat.parse(endDate);
+						long getDiff = date2.getTime() - date1.getTime();
+						long getDaysDiff = getDiff / (24 * 60 * 60 * 1000);
+						total_day = Integer.parseInt(String.valueOf(getDaysDiff));
+					}
+			
+					String url = domainCronJob + "/api-server/virtual-device/render-data?token=" + privateKey + "&id_site="+ dataFile.getId_site() + "&total_day="+total_day;
+					String command = "curl -X GET " + url;
+					Runtime.getRuntime().exec(command);
 					
 					return this.jsonResult(true, "Import data successfully", null, 1);
 				} catch (Exception e) {
