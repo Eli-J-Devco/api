@@ -7307,8 +7307,8 @@ public class ReportsController extends BaseController {
 			sheet.setColumnWidth(1, 25 * 256);
 			sheet.setColumnWidth(2, 25 * 256);
 			sheet.setColumnWidth(3, 25 * 256);
-			sheet.setColumnWidth(4, 12 * 256);
-			sheet.setColumnWidth(5, 13 * 256);
+			sheet.setColumnWidth(4, 11 * 256);
+			sheet.setColumnWidth(5, 14 * 256);
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
 			
@@ -7358,28 +7358,11 @@ public class ReportsController extends BaseController {
 			cellStyleCustom11.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			cellStyleCustom11.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 			
-			// Create CellStyle
-			CellStyle cellStyleCustom12 = sheet.getWorkbook().createCellStyle();
-			cellStyleCustom12.setFont(font11);
-			
-			cellStyleCustom12.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleCustom12.setAlignment(HorizontalAlignment.LEFT);
-			cellStyleCustom12.setWrapText(true);
-			
-			cellStyleCustom12.setBorderBottom(BorderStyle.THIN);
-			cellStyleCustom12.setBorderTop(BorderStyle.THIN);
-			cellStyleCustom12.setBorderRight(BorderStyle.THIN);
-			cellStyleCustom12.setBorderLeft(BorderStyle.THIN);
-			cellStyleCustom12.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom12.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom12.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom12.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
 			// Monthly Data
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1));
 			Row row5 = sheet.createRow(5);
 			Cell cell50 = row5.createCell(0);
-			cell50.setCellStyle(cellStyleCustom12);
+			cell50.setCellStyle(cellStyleCustom11);
 			cell50.setCellValue("Site Name");
 			
 			Cell cell51 = row5.createCell(1);
