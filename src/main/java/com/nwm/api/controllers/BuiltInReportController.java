@@ -1394,7 +1394,7 @@ public class BuiltInReportController extends BaseController {
 							// Creates a picture
 							Picture pict = drawing.createPicture(anchor, pictureIdx);
 							// Reset the image to the original size
-							pict.resize(1.1, 3.8);
+							pict.resize(1, 3.1);
 							
 							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							Date convertedDate = dateFormat.parse(obj.getEnd_date());

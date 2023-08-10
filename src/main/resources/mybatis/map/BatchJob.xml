@@ -58,6 +58,16 @@
 			AND s.lng != 0
 	</select>
 	
+	<select id="getListDeviceMeasuredProduction" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.datatablename
+		FROM
+			device d
+		WHERE
+			d.id_device_type IN (1, 3, 7, 8, 9)
+	</select>
+	
 	<select id="getListAlertOpenBySite" resultType="Map" >
 		SELECT
 			a.id,
@@ -109,6 +119,20 @@
 	</select>
 	
 	
+	<update id="updateDeviceMeasuredProduction">
+		UPDATE ${datatablename} dv
+		LEFT JOIN (
+			SELECT 
+				time,
+				IF(nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST( (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) - nvmActiveEnergy, 0), 0) ) AS MeasuredProduction
+			FROM 
+				${datatablename}
+			WHERE
+				id_device = #{id}
+		) t ON t.time = dv.time
+		SET dv.MeasuredProduction = t.MeasuredProduction
+		WHERE dv.id_device = #{id}
+	</update>
 	
 	<update id="updateOpenSentAlert">
 		UPDATE `alert`
