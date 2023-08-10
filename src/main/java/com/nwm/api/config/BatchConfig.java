@@ -34,6 +34,16 @@ public class BatchConfig {
 //		job.runCronJobSolarOpenWeather();
 	}
 	
+	/**
+	 * @description batch job update measured production
+	 * @author Hung.Bui
+	 * @since 2023-08-10
+	 */
+	@Scheduled(cron = "0 0 0 * * *")
+	public void startBatchJobMeasuredProduction() throws Exception {
+		BatchJob job =new BatchJob(); 
+		job.runCronJobMeasuredProduction();
+	}
 	
 	/**
 	 * @description batch job update data device energy lifetime
