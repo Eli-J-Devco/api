@@ -153,6 +153,8 @@ public class VirtualDeviceController extends BaseController {
 						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
+//						System.out.println("dataPower: " + dataPower.get(i));
+						
 						if(dataPower.size() > 0){
 							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
 							deviceItem.setId_device(siteItem.getId_device());
@@ -183,7 +185,7 @@ public class VirtualDeviceController extends BaseController {
 						deviceEntity.setField_value3(null);
 					}
 					
-//					service.updateDeviceVirtualDevice(deviceEntity);
+					service.updateDeviceVirtualDevice(deviceEntity);
 					
 					
 				}
