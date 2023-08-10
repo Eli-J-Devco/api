@@ -1068,7 +1068,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("FaultCode2", r.getCellText(57).toString());
 										rowItem.put("nvmActivePower", r.getCellText(58).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(59).toString());
-										rowItem.put("MeasuredProduction", r.getCellText(80).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(60).toString());
 										break;
 									case "model_rt1_class30000":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1384,7 +1384,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("angle_volts_c_a", r.getCellText(121).toString());
 										rowItem.put("nvmActivePower", r.getCellText(122).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(123).toString());
-										rowItem.put("MeasuredProduction", r.getCellText(125).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(124).toString());
 										break;
 									}
 	
