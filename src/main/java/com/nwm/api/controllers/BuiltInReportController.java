@@ -59,7 +59,6 @@ import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
 import org.apache.poi.xddf.usermodel.chart.XDDFLineChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
-import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -77,11 +76,7 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTBoolean;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineChart;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
-import org.openxmlformats.schemas.drawingml.x2006.chart.STMarkerStyle;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -592,7 +587,7 @@ public class BuiltInReportController extends BaseController {
 							// Creates a picture
 							Picture pict = drawing.createPicture(anchor, pictureIdx);
 							// Reset the image to the original size
-							pict.resize(1.0, 3.8);
+							pict.resize(1.0, 3.1);
 							
 							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							Date convertedDate = dateFormat.parse(obj.getEnd_date());
@@ -771,7 +766,9 @@ public class BuiltInReportController extends BaseController {
 
 							
 		
-							// second bar chart
+							// second line chart
+							
+							// line chart
 							// bottom axis must be there but must not be visible
 							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 							bottomAxis.setVisible(false);
@@ -786,37 +783,30 @@ public class BuiltInReportController extends BaseController {
 							rightAxis.crossAxis(bottomAxis);
 							
 		
-							data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
-							bar.setBarDirection(BarDirection.COL);
-		
-		
-						    
-							series = data.addSeries(categoriesData, valuesData4);
-							series.setTitle("Expected Generation Index (%)",
-									new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
-							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71})));
-							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}))));
+							XDDFLineChartData data1 = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 							
-							chart.plot(data);
+							XDDFLineChartData.Series series1 = (XDDFLineChartData.Series) data1.addSeries(categoriesData, valuesData4);
+							series1.setTitle("Expected Generation Index (%)", new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
+							series1.setSmooth(false);
+							series1.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}))));
+							series1.setMarkerStyle(MarkerStyle.CIRCLE);
+							XDDFShapeProperties propertiesMarker = new XDDFShapeProperties();
+							propertiesMarker.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71})));
+							propertiesMarker.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+							chart.getCTChart().getPlotArea().getLineChartArray(0).getSerArray(0).getMarker().addNewSpPr().set(propertiesMarker.getXmlObject());
 							
-							series = data.addSeries(categoriesData, valuesData5);
-							series.setTitle("Expected Generation Index (%)",
-									new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
-							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0})));
-							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}))));
 							
-							chart.plot(data);
-		
-							// this must occur after the call to chart.plot above
-							CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
-						    for (CTLineChart ch : plotAreaLine.getLineChartList()) {
-						        for (CTLineSer ser : ch.getSerList()) {
-						            CTBoolean ctBool = CTBoolean.Factory.newInstance();
-						            ctBool.setVal(false);
-						            ser.setSmooth(ctBool);
-						            ser.addNewMarker().addNewSymbol().setVal(STMarkerStyle.CIRCLE);
-						        }
-						    }
+							series1 = (XDDFLineChartData.Series) data1.addSeries(categoriesData, valuesData5);
+							series1.setTitle("Expected Generation Index (%)", new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
+							series1.setSmooth(false);
+							series1.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}))));
+							series1.setMarkerStyle(MarkerStyle.CIRCLE);
+							XDDFShapeProperties propertiesMarker1 = new XDDFShapeProperties();
+							propertiesMarker1.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0})));
+							propertiesMarker1.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+							chart.getCTChart().getPlotArea().getLineChartArray(0).getSerArray(1).getMarker().addNewSpPr().set(propertiesMarker1.getXmlObject());
+
+							chart.plot(data1);
 							
 							// set legend
 							XDDFChartLegend legend = chart.getOrAddLegend();
