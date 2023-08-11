@@ -137,27 +137,6 @@ public class BatchJob {
 
 	}
 	
-	public void runCronJobMeasuredProduction() {
-		try {
-			BatchJobService service = new BatchJobService();
-
-			// Get list device
-			List listDevice = service.getListDeviceMeasuredProduction(new DeviceEntity());
-			if (listDevice == null || listDevice.size() == 0) {
-				return;
-			}
-
-			for (int i = 0; i < listDevice.size(); i++) {
-				DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
-				System.out.println(deviceItem.getId());
-				
-				service.updateDeviceMeasuredProduction(deviceItem);
-			}
-		} catch (Exception e) {
-			log.error(e);
-		}
-
-	}
 
 	public static ModelSolarOpenWeatherEntity fetchFromJSONSolarOpenWeather(double lat, double lon)
 			throws FileNotFoundException, IOException, org.json.simple.parser.ParseException {

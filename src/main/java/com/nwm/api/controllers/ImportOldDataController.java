@@ -1409,13 +1409,19 @@ public class ImportOldDataController extends BaseController {
 						}  finally {
 							FileImportDataOldEntity getRowComplete = service.getDetailFileUploadDataOld(itemFile);
 							
+							obj.setId(dataFile.getId_device());
+							obj.setId_device_type(dataFile.getId_device_type());
+							
 							for (String s : setDate) {	
 								String[] year = s.split("-");
 								obj.setYear(year[0]);
 								obj.setStart_date(s + " 08:00:00");
 								obj.setEnd_date(s + " 17:59:59");
 								obj.setDatatablename(obj.getTable_name());
+								obj.setId(dataFile.getId_device()); 
+								
 								service.insertSiteDataReport(obj);
+								
 							}
 							// update file data 
 							FileImportDataOldEntity updateRow = new FileImportDataOldEntity();

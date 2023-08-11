@@ -52,25 +52,6 @@ public class BatchJobService extends DB {
 		return obj;
 	}
 	
-	/**
-	 * @description get device list
-	 * @author Hung.Bui
-	 * @since 2023-08-10
-	 * @return List
-	 */
-	
-	public List getListDeviceMeasuredProduction(DeviceEntity obj) {
-		List dataList = new ArrayList<>();
-		try {
-			dataList = queryForList("BatchJob.getListDeviceMeasuredProduction", obj);
-			if (dataList == null)
-				return new ArrayList<>();
-		} catch (Exception ex) {
-			log.error("BatchJob.getListDeviceMeasuredProduction", ex);
-			return new ArrayList<>();
-		}
-		return dataList;
-	}
 	
 	/**
 	 * @description get total records by device
@@ -86,19 +67,6 @@ public class BatchJobService extends DB {
 		}
 	}
 	
-	/**
-	 * @description update device measured production 
-	 * @author Hung.Bui
-	 * @since 2023-08-10
-	 */
-	public boolean updateDeviceMeasuredProduction(DeviceEntity obj){
-		try{
-			return update("BatchJob.updateDeviceMeasuredProduction", obj)>0;
-		}catch (Exception ex) {
-			log.error("BatchJob.updateDeviceMeasuredProduction", ex);
-			return false;
-		}
-	}
 	
 	
 	/**

@@ -78,6 +78,42 @@ public class VirtualDeviceService extends DB {
 	
 	
 	
+	/**
+	 * @description get device list
+	 * @author Hung.Bui
+	 * @since 2023-08-10
+	 * @return List
+	 */
+	
+	public List getListDeviceMeasuredProduction(DeviceEntity obj) {
+		List dataList = new ArrayList<>();
+		try {
+			dataList = queryForList("VirtualDevice.getListDeviceMeasuredProduction", obj);
+			if (dataList == null)
+				return new ArrayList<>();
+		} catch (Exception ex) {
+			log.error("VirtualDevice.getListDeviceMeasuredProduction", ex);
+			return new ArrayList<>();
+		}
+		return dataList;
+	}
+	
+	
+	
+	/**
+	 * @description update device measured production 
+	 * @author Hung.Bui
+	 * @since 2023-08-10
+	 */
+	public boolean updateDeviceMeasuredProduction(DeviceEntity obj){
+		try{
+			return update("VirtualDevice.updateDeviceMeasuredProduction", obj)>0;
+		}catch (Exception ex) {
+			log.error("VirtualDevice.updateDeviceMeasuredProduction", ex);
+			return false;
+		}
+	}
+	
 	
 	
 	/**
