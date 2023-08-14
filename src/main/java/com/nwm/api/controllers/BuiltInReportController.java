@@ -59,7 +59,6 @@ import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
 import org.apache.poi.xddf.usermodel.chart.XDDFLineChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
-import org.apache.poi.xddf.usermodel.text.XDDFTextBody;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
@@ -77,11 +76,7 @@ import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.util.ShapeUtils;
 import org.jfree.data.category.DefaultCategoryDataset;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTBoolean;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineChart;
-import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
-import org.openxmlformats.schemas.drawingml.x2006.chart.STMarkerStyle;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -164,7 +159,7 @@ public class BuiltInReportController extends BaseController {
 			// create CellStyle
 			Font fonDef = sheet.getWorkbook().createFont();
 			fonDef.setFontName("Times New Roman");
-			fonDef.setFontHeightInPoints((short) 14); // font size
+			fonDef.setFontHeightInPoints((short) 12); // font size
 			
 			CellStyle cellStyle = createStyleForHeader(sheet);
 			cellStyle.setFont(fonDef);
@@ -200,7 +195,7 @@ public class BuiltInReportController extends BaseController {
 			Font fontBold = sheet.getWorkbook().createFont();
 			fontBold.setFontName("Times New Roman");
 			fontBold.setBold(true);
-			fontBold.setFontHeightInPoints((short) 14); // font size
+			fontBold.setFontHeightInPoints((short) 12); // font size
 			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
 			cellStyleFontBold.setFont(fontBold);
 			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -215,7 +210,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleFontBold.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 
 			sheet.setDefaultColumnWidth(16);
-			sheet.setColumnWidth(0, 30 * 256);
+			sheet.setColumnWidth(0, 15 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
 			sheet.setColumnWidth(2, 30 * 256);
 			sheet.setColumnWidth(3, 30 * 256);
@@ -228,20 +223,20 @@ public class BuiltInReportController extends BaseController {
 			sheet.setDefaultRowHeight((short) 400);
 			sheet.setDisplayGridlines(false);
 			
-			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
-			sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 5));
-			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 5));
-			sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 5));
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 6));
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 6));
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 6));
+			sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 6));
 
 			Row row1 = sheet.createRow(1);
-			row1.setHeight((short) 600);
-			Cell cell = row1.createCell(0);
+			row1.setHeight((short) 500);
+			Cell cell = row1.createCell(1);
 
 			// Create font
 			Font font = sheet.getWorkbook().createFont();
 			font.setFontName("Times New Roman");
 			font.setBold(true);
-			font.setFontHeightInPoints((short) 18); // font size
+			font.setFontHeightInPoints((short) 14); // font size
 			font.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleHeader = sheet.getWorkbook().createCellStyle();
@@ -259,7 +254,7 @@ public class BuiltInReportController extends BaseController {
 			Font font1 = sheet.getWorkbook().createFont();
 			font1.setFontName("Times New Roman");
 			font1.setBold(true);
-			font1.setFontHeightInPoints((short) 14); // font size
+			font1.setFontHeightInPoints((short) 12); // font size
 			font1.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleSubTitle = sheet.getWorkbook().createCellStyle();
@@ -270,7 +265,7 @@ public class BuiltInReportController extends BaseController {
 						
 			Row row2 = sheet.createRow(2);
 			row2.setHeight((short) 400);
-			Cell cell2 = row2.createCell(0);
+			Cell cell2 = row2.createCell(1);
 			cell2.setCellStyle(cellStyleSubTitle);
 			cell2.setCellValue(dataObj.getSite_name().toUpperCase());
 			
@@ -279,7 +274,7 @@ public class BuiltInReportController extends BaseController {
 			Font font3 = sheet.getWorkbook().createFont();
 			font3.setFontName("Times New Roman");
 			font3.setBold(false);
-			font3.setFontHeightInPoints((short) 14); // font size
+			font3.setFontHeightInPoints((short) 12); // font size
 			font3.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleDate = sheet.getWorkbook().createCellStyle();
@@ -289,7 +284,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleDate.setAlignment(HorizontalAlignment.CENTER);
 			Row row3 = sheet.createRow(3);
 			row3.setHeight((short) 400);
-			Cell cell3 = row3.createCell(0);
+			Cell cell3 = row3.createCell(1);
 			cell3.setCellStyle(cellStyleDate);
 			
 			SimpleDateFormat dt = new SimpleDateFormat("mm/dd/yyyy"); 
@@ -302,7 +297,7 @@ public class BuiltInReportController extends BaseController {
 			Font fonDefB = sheet.getWorkbook().createFont();
 			fonDefB.setFontName("Times New Roman");
 			fonDefB.setBold(true);
-			fonDefB.setFontHeightInPoints((short) 14); // font size
+			fonDefB.setFontHeightInPoints((short) 12); // font size
 			
 			CellStyle cellStyleB = createStyleForHeader(sheet);
 			cellStyleB.setFont(fonDefB);
@@ -469,6 +464,7 @@ public class BuiltInReportController extends BaseController {
 			fontRowBg.setFontName("Times New Roman");
 			fontRowBg.setFontHeightInPoints((short) 12); // font size
 			fontRowBg.setColor(IndexedColors.WHITE.getIndex()); // text color
+			fontRowBg.setBold(true);
 			// Create CellStyle
 			CellStyle cellStyleBg = sheet.getWorkbook().createCellStyle();
 			cellStyleBg.setFont(fontRowBg);
@@ -591,7 +587,7 @@ public class BuiltInReportController extends BaseController {
 							// Creates a picture
 							Picture pict = drawing.createPicture(anchor, pictureIdx);
 							// Reset the image to the original size
-							pict.resize(1.0, 3.8);
+							pict.resize(1.0, 3.1);
 							
 							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							Date convertedDate = dateFormat.parse(obj.getEnd_date());
@@ -746,8 +742,8 @@ public class BuiltInReportController extends BaseController {
 							series.setTitle("Actual Generation (kWh)",
 									new CellReference(chartSheet.getSheetName(), 5, 1, true, true));
 							
-							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 0, (byte) 0, (byte) 0})));
-							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 0, (byte) 0, (byte) 0}))));
+							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180})));
+							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}))));
 							
 							chart.plot(data);
 							
@@ -770,7 +766,9 @@ public class BuiltInReportController extends BaseController {
 
 							
 		
-							// second bar chart
+							// second line chart
+							
+							// line chart
 							// bottom axis must be there but must not be visible
 							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 							bottomAxis.setVisible(false);
@@ -785,37 +783,30 @@ public class BuiltInReportController extends BaseController {
 							rightAxis.crossAxis(bottomAxis);
 							
 		
-							data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
-							bar.setBarDirection(BarDirection.COL);
-		
-		
-						    
-							series = data.addSeries(categoriesData, valuesData4);
-							series.setTitle("Expected Generation Index (%)",
-									new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
-							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71})));
-							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}))));
+							XDDFLineChartData data1 = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 							
-							chart.plot(data);
+							XDDFLineChartData.Series series1 = (XDDFLineChartData.Series) data1.addSeries(categoriesData, valuesData4);
+							series1.setTitle("Expected Generation Index (%)", new CellReference(chartSheet.getSheetName(), 5, 5, true, true));
+							series1.setSmooth(false);
+							series1.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}))));
+							series1.setMarkerStyle(MarkerStyle.CIRCLE);
+							XDDFShapeProperties propertiesMarker = new XDDFShapeProperties();
+							propertiesMarker.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71})));
+							propertiesMarker.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+							chart.getCTChart().getPlotArea().getLineChartArray(0).getSerArray(0).getMarker().addNewSpPr().set(propertiesMarker.getXmlObject());
 							
-							series = data.addSeries(categoriesData, valuesData5);
-							series.setTitle("Expected Generation Index (%)",
-									new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
-							series.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0})));
-							series.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}))));
 							
-							chart.plot(data);
-		
-							// this must occur after the call to chart.plot above
-							CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
-						    for (CTLineChart ch : plotAreaLine.getLineChartList()) {
-						        for (CTLineSer ser : ch.getSerList()) {
-						            CTBoolean ctBool = CTBoolean.Factory.newInstance();
-						            ctBool.setVal(false);
-						            ser.setSmooth(ctBool);
-						            ser.addNewMarker().addNewSymbol().setVal(STMarkerStyle.CIRCLE);
-						        }
-						    }
+							series1 = (XDDFLineChartData.Series) data1.addSeries(categoriesData, valuesData5);
+							series1.setTitle("Expected Generation Index (%)", new CellReference(chartSheet.getSheetName(), 5, 6, true, true));
+							series1.setSmooth(false);
+							series1.setLineProperties(new XDDFLineProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}))));
+							series1.setMarkerStyle(MarkerStyle.CIRCLE);
+							XDDFShapeProperties propertiesMarker1 = new XDDFShapeProperties();
+							propertiesMarker1.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0})));
+							propertiesMarker1.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+							chart.getCTChart().getPlotArea().getLineChartArray(0).getSerArray(1).getMarker().addNewSpPr().set(propertiesMarker1.getXmlObject());
+
+							chart.plot(data1);
 							
 							// set legend
 							XDDFChartLegend legend = chart.getOrAddLegend();
@@ -829,7 +820,7 @@ public class BuiltInReportController extends BaseController {
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String dir = uploadRootPath() + "/"
 							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/Annual-production-trend-report-" + timeStamp + ".xlsx";
+					String fileName = dir + "/Annual production Trend Report (Monthly Interval)_" + timeStamp + ".xlsx";
 					
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
@@ -1020,7 +1011,13 @@ public class BuiltInReportController extends BaseController {
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String dir = uploadRootPath() + "/"
 							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/Monthly-portfolio-production-report-" + timeStamp + ".xlsx";
+					String fileName = "";
+					if(obj.getData_intervals() == 1) {
+						fileName = dir + "/Monthly Portfolio Production Report (5min Interval)_" + timeStamp + ".xlsx";
+					} else {
+						fileName = dir + "/Monthly Portfolio Production Report (15min Interval)_" + timeStamp + ".xlsx";
+					}
+					
 					
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
@@ -1064,7 +1061,7 @@ public class BuiltInReportController extends BaseController {
 			// create CellStyle
 			Font fonDef = sheet.getWorkbook().createFont();
 			fonDef.setFontName("Times New Roman");
-			fonDef.setFontHeightInPoints((short) 14); // font size
+			fonDef.setFontHeightInPoints((short) 12); // font size
 			
 			CellStyle cellStyle = createStyleForHeader(sheet);
 			cellStyle.setFont(fonDef);
@@ -1100,7 +1097,7 @@ public class BuiltInReportController extends BaseController {
 			Font fontBold = sheet.getWorkbook().createFont();
 			fontBold.setFontName("Times New Roman");
 			fontBold.setBold(true);
-			fontBold.setFontHeightInPoints((short) 14); // font size
+			fontBold.setFontHeightInPoints((short) 12); // font size
 			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
 			cellStyleFontBold.setFont(fontBold);
 			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -1115,7 +1112,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleFontBold.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 
 			sheet.setDefaultColumnWidth(16);
-			sheet.setColumnWidth(0, 30 * 256);
+			sheet.setColumnWidth(0, 20 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
 			sheet.setColumnWidth(2, 30 * 256);
 			sheet.setColumnWidth(3, 20 * 256);
@@ -1124,20 +1121,20 @@ public class BuiltInReportController extends BaseController {
 			sheet.setDefaultRowHeight((short) 400);
 			sheet.setDisplayGridlines(false);
 			
-			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 2));
-			sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 2));
-			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 2));
-			sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 2));
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 3));
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 1, 3));
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, 3));
+			sheet.addMergedRegion(new CellRangeAddress(3, 3, 1, 3));
 
 			Row row1 = sheet.createRow(1);
 			row1.setHeight((short) 400);
-			Cell cell = row1.createCell(0);
+			Cell cell = row1.createCell(1);
 
 			// Create font
 			Font font = sheet.getWorkbook().createFont();
 			font.setFontName("Times New Roman");
 			font.setBold(true);
-			font.setFontHeightInPoints((short) 18); // font size
+			font.setFontHeightInPoints((short) 14); // font size
 			font.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleHeader = sheet.getWorkbook().createCellStyle();
@@ -1157,7 +1154,7 @@ public class BuiltInReportController extends BaseController {
 			Font font1 = sheet.getWorkbook().createFont();
 			font1.setFontName("Times New Roman");
 			font1.setBold(true);
-			font1.setFontHeightInPoints((short) 14); // font size
+			font1.setFontHeightInPoints((short) 12); // font size
 			font1.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleSubTitle = sheet.getWorkbook().createCellStyle();
@@ -1168,7 +1165,7 @@ public class BuiltInReportController extends BaseController {
 						
 			Row row2 = sheet.createRow(2);
 			row2.setHeight((short) 400);
-			Cell cell2 = row2.createCell(0);
+			Cell cell2 = row2.createCell(1);
 			cell2.setCellStyle(cellStyleSubTitle);
 			cell2.setCellValue(dataObj.getSite_name());
 			
@@ -1177,7 +1174,7 @@ public class BuiltInReportController extends BaseController {
 			Font font3 = sheet.getWorkbook().createFont();
 			font3.setFontName("Times New Roman");
 			font3.setBold(false);
-			font3.setFontHeightInPoints((short) 14); // font size
+			font3.setFontHeightInPoints((short) 12); // font size
 			font3.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleDate = sheet.getWorkbook().createCellStyle();
@@ -1187,7 +1184,7 @@ public class BuiltInReportController extends BaseController {
 			cellStyleDate.setAlignment(HorizontalAlignment.CENTER);
 			Row row3 = sheet.createRow(3);
 			row3.setHeight((short) 400);
-			Cell cell3 = row3.createCell(0);
+			Cell cell3 = row3.createCell(1);
 			cell3.setCellStyle(cellStyleDate);
 			
 			SimpleDateFormat dt = new SimpleDateFormat("mm/dd/yyyy"); 
@@ -1200,7 +1197,7 @@ public class BuiltInReportController extends BaseController {
 			Font fonDefB = sheet.getWorkbook().createFont();
 			fonDefB.setFontName("Times New Roman");
 			fonDefB.setBold(true);
-			fonDefB.setFontHeightInPoints((short) 14); // font size
+			fonDefB.setFontHeightInPoints((short) 12); // font size
 			
 			CellStyle cellStyleB = createStyleForHeader(sheet);
 			cellStyleB.setFont(fonDefB);
@@ -1245,7 +1242,7 @@ public class BuiltInReportController extends BaseController {
 			// Create style row
 			Font fontRow = sheet.getWorkbook().createFont();
 			fontRow.setFontName("Times New Roman");
-			fontRow.setFontHeightInPoints((short) 12); // font size
+			fontRow.setFontHeightInPoints((short) 11); // font size
 			fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
 			// Create CellStyle
 			CellStyle cellStyleItem = sheet.getWorkbook().createCellStyle();
@@ -1387,7 +1384,7 @@ public class BuiltInReportController extends BaseController {
 							// Creates a picture
 							Picture pict = drawing.createPicture(anchor, pictureIdx);
 							// Reset the image to the original size
-							pict.resize(1.1, 3.8);
+							pict.resize(1, 3.1);
 							
 							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							Date convertedDate = dateFormat.parse(obj.getEnd_date());

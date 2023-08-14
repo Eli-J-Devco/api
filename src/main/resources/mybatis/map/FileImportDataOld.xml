@@ -133,7 +133,9 @@
     	SELECT
     		u.*,
     		d.datatablename,
-    		d.id_site
+    		d.id_site,
+    		d.id_device_type,
+    		d.id AS id_device
 		FROM `file_import_data_old` u
 		LEFT JOIN device d ON d.id = u.id_device
 		WHERE u.id = #{id};

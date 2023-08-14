@@ -53,6 +53,21 @@ public class BatchJobService extends DB {
 	}
 	
 	
+	/**
+	 * @description get total records by device
+	 * @author Hung.Bui
+	 * @since 2023-08-10
+	 */
+	public int getTotalRecordsByDevice(DeviceEntity obj){
+		try{
+			return (int) queryForObject("BatchJob.getTotalRecordsByDevice", obj);
+		}catch (Exception ex) {
+			log.error("BatchJob.getTotalRecordsByDevice", ex);
+			return 0;
+		}
+	}
+	
+	
 	
 	/**
 	 * @description get data from datalogger

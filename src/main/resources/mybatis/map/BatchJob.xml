@@ -58,6 +58,7 @@
 			AND s.lng != 0
 	</select>
 	
+	
 	<select id="getListAlertOpenBySite" resultType="Map" >
 		SELECT
 			a.id,

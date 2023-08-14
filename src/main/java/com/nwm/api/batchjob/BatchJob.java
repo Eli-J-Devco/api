@@ -136,6 +136,7 @@ public class BatchJob {
 		}
 
 	}
+	
 
 	public static ModelSolarOpenWeatherEntity fetchFromJSONSolarOpenWeather(double lat, double lon)
 			throws FileNotFoundException, IOException, org.json.simple.parser.ParseException {

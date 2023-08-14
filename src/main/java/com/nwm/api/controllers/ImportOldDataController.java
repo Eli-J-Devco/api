@@ -325,6 +325,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("IntakeAirTemperature", r.getCellText(23).toString());
 										rowItem.put("nvmActivePower", r.getCellText(24).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(25).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(26).toString());
 	
 										break;
 	
@@ -395,6 +396,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("InformativeAlarms", r.getCellText(20).toString());
 										rowItem.put("nvmActivePower", r.getCellText(21).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(22).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(23).toString());
 	
 										break;
 									case "model_pv_powered_35_50_260_500kw_inverter":
@@ -450,6 +452,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("PVMStatusCodes", r.getCellText(51).toString());
 										rowItem.put("nvmActivePower", r.getCellText(52).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(53).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(54).toString());
 	
 										break;
 									case "model_lufft_class8020":
@@ -611,6 +614,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("IslolationResistance", r.getCellText(27).toString());
 										rowItem.put("nvmActivePower", r.getCellText(28).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(29).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(30).toString());
 	
 										break;
 									case "model_elkor_production_meter":
@@ -701,6 +705,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("Q4ReactiveEnergyC", r.getCellText(85).toString());
 										rowItem.put("nvmActivePower", r.getCellText(86).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(87).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(88).toString());
 	
 										break;
 									case "model_w_kipp_zonen_rt1":
@@ -760,6 +765,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("PowerFactorC", r.getCellText(36).toString());
 										rowItem.put("nvmActivePower", r.getCellText(37).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(38).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(39).toString());
 	
 										break;
 									case "model_satcon_pvs357_inverter":
@@ -900,6 +906,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("Number_of_Strings", r.getCellText(135).toString());
 										rowItem.put("nvmActivePower", r.getCellText(136).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(137).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(138).toString());
 	
 										break;
 									case "model_veris_industries_e51c2_power_meter":
@@ -999,6 +1006,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("CurrentPhaseC", r.getCellText(77).toString());
 										rowItem.put("nvmActivePower", r.getCellText(78).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(79).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(80).toString());
 	
 										break;
 									case "model_chint_solectria_inverter_class9725":
@@ -1060,6 +1068,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("FaultCode2", r.getCellText(57).toString());
 										rowItem.put("nvmActivePower", r.getCellText(58).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(59).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(60).toString());
 										break;
 									case "model_rt1_class30000":
 										rowItem.put("id_device", r.getCellText(2).toString());
@@ -1128,6 +1137,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("current_time", r.getCellText(41).toString());
 										rowItem.put("nvmActivePower", r.getCellText(42).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(43).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(44).toString());
 	
 										break;
 									case "model_imtsolar_class8000":
@@ -1164,6 +1174,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("data_comm_status", r.getCellText(21).toString());
 										rowItem.put("nvmActivePower", r.getCellText(22).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(23).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(24).toString());
 	
 										break;
 									case "model_ivt_solaron_ext":
@@ -1222,6 +1233,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("power_factor_ramp_rate", r.getCellText(52).toString());
 										rowItem.put("nvmActivePower", r.getCellText(53).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(54).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(55).toString());
 	
 										break;
 	
@@ -1372,6 +1384,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("angle_volts_c_a", r.getCellText(121).toString());
 										rowItem.put("nvmActivePower", r.getCellText(122).toString());
 										rowItem.put("nvmActiveEnergy", r.getCellText(123).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(124).toString());
 										break;
 									}
 	
@@ -1396,14 +1409,19 @@ public class ImportOldDataController extends BaseController {
 						}  finally {
 							FileImportDataOldEntity getRowComplete = service.getDetailFileUploadDataOld(itemFile);
 							
-							System.out.println("setDate: " + setDate);
+							obj.setId(dataFile.getId_device());
+							obj.setId_device_type(dataFile.getId_device_type());
+							
 							for (String s : setDate) {	
 								String[] year = s.split("-");
 								obj.setYear(year[0]);
 								obj.setStart_date(s + " 08:00:00");
 								obj.setEnd_date(s + " 17:59:59");
 								obj.setDatatablename(obj.getTable_name());
+								obj.setId(dataFile.getId_device()); 
+								
 								service.insertSiteDataReport(obj);
+								
 							}
 							// update file data 
 							FileImportDataOldEntity updateRow = new FileImportDataOldEntity();

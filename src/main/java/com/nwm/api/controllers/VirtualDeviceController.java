@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelVirtualMeterOrInverterEntity;
 import com.nwm.api.entities.VirtualDeviceEntity;
+import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.VirtualDeviceService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -153,6 +154,8 @@ public class VirtualDeviceController extends BaseController {
 						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
+//						System.out.println("dataPower: " + dataPower.get(i));
+						
 						if(dataPower.size() > 0){
 							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
 							deviceItem.setId_device(siteItem.getId_device());
@@ -183,7 +186,7 @@ public class VirtualDeviceController extends BaseController {
 						deviceEntity.setField_value3(null);
 					}
 					
-//					service.updateDeviceVirtualDevice(deviceEntity);
+					service.updateDeviceVirtualDevice(deviceEntity);
 					
 					
 				}
@@ -195,4 +198,57 @@ public class VirtualDeviceController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	
+	/**
+	 * @description Update measured production for all device inverter and meter
+	 * @author long.pham
+	 * @since 2023-08-11
+	 * @return {}
+	 */
+	@GetMapping("/update-measured-production")
+	@ResponseBody
+	public Object renderUpdateMeasuredproduction(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		    
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+			
+			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+				id_site = Integer.parseInt(idSite);
+			}
+			
+			
+			VirtualDeviceService service = new VirtualDeviceService();
+			DeviceEntity itemDevice = new DeviceEntity();
+			itemDevice.setId_site(id_site);
+			// Get list device
+			List listDevice = service.getListDeviceMeasuredProduction(itemDevice);
+			if (listDevice == null || listDevice.size() == 0) {
+				return null;
+			}
+
+			for (int i = 0; i < listDevice.size(); i++) {
+				DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
+				System.out.println(deviceItem.getId());
+				
+				service.updateDeviceMeasuredProduction(deviceItem);
+			}
+						
+			
+
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }
