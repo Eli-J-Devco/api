@@ -266,56 +266,18 @@
 				(
 				SELECT
 					t.`offset`,
-					FROM_UNIXTIME(((
-									UNIX_TIMESTAMP(
-									CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} 
-									)* #{level_sent_time} 
-								),
-							'%Y-%m-%d %H:%i:00' 
-						) AS time_format,
-					IFNULL( dv.nvmActivePower, 0 ) AS power,
-				IF
-					(
-						MIN( dv.nvmActiveEnergy ) IS NULL 
-						OR dv1.nvmActiveEnergy IS NULL 
-						OR MIN( dv.nvmActiveEnergy ) <![CDATA[<=]]> 0 
-						OR dv1.nvmActiveEnergy <![CDATA[<=]]> 0,
-						NULL,
-						GREATEST(
-							MIN( dv.nvmActiveEnergy ) - dv1.nvmActiveEnergy,
-							0 
-						)) AS energy 
+					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
+					IFNULL( IF(dv.nvmActivePower <![CDATA[<]]> 0 , 0 , dv.nvmActivePower), 0 ) AS power,
+					IFNULL( SUM(dv.MeasuredProduction), 0) AS energy
 				FROM
 					${item.datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					LEFT JOIN (
-						SELECT
-							t.`offset`,
-							dv.time,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} )* #{level_sent_time} ),'%Y-%m-%d %H:%i:00' ) AS time_format,
-							MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-						WHERE
-							dv.id_device = #{item.id}
-							AND (
-								CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN SUBTIME( #{start_date}, '0:5:0' ) 
-							AND SUBTIME( #{end_date}, '0:5:0' )) 
-						GROUP BY
-							time_format 
-						) dv1 ON UNIX_TIMESTAMP(CONVERT_TZ( dv1.time, '+00:00', t.`offset` )) DIV #{level_sent_time} = UNIX_TIMESTAMP(CONVERT_TZ(SUBTIME( dv.time, '0:5:0' ),'+00:00',t.`offset` )) DIV #{level_sent_time} 
 				WHERE
 					d.id = #{item.id}
 					AND d.id_device_type = #{item.id_device_type}
-					AND DATE_FORMAT(
-						CONVERT_TZ( dv.time, '+00:00', t.`offset` ),
-						'%Y-%m-%d' 
-					) = DATE_FORMAT( #{end_date}, '%Y-%m-%d' ) 
+					AND DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) = DATE_FORMAT( #{end_date}, '%Y-%m-%d' ) 
 					AND s.`status` = 1 
 					AND d.`status` = 1 
 				GROUP BY

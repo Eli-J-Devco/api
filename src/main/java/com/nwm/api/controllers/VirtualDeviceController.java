@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelVirtualMeterOrInverterEntity;
+import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.VirtualDeviceEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.VirtualDeviceService;
@@ -154,7 +156,6 @@ public class VirtualDeviceController extends BaseController {
 						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
-//						System.out.println("dataPower: " + dataPower.get(i));
 						
 						if(dataPower.size() > 0){
 							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
