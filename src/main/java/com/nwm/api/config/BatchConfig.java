@@ -218,53 +218,18 @@ public class BatchConfig {
 	
 	
 	/**
-	 * @description sent mail daily report on schedule
+	 * @description sent mail report on schedule
 	 * @author Hung.Bui
 	 * @since 2022-12-22
 	 */
 	@Scheduled(cron = "0 0 */1 * * *")
-	public void sentMailDailyReportOnSchedule() throws Exception {
-		BatchJob job = new BatchJob(); 
-		job.sentMailReportOnSchedule(1);
-	}
-	
-	/**
-	 * @description sent mail monthly report on schedule
-	 * @author Hung.Bui
-	 * @since 2022-12-22
-	 */
-	@Scheduled(cron = "0 0 */1 28-31 * *") // cron expression don't support last day of month L for this running spring version
-	@Scheduled(cron = "0 0 */1 1 * *") // case: local time (server) is after time at site
-	public void sentMailMonthlyReportOnSchedule() throws Exception {
-		BatchJob job = new BatchJob(); 
-		job.sentMailReportOnSchedule(2);
-	}
-	
-	/**
-	 * @description sent mail quarterly report on schedule
-	 * @author Hung.Bui
-	 * @since 2022-12-22
-	 */
-	@Scheduled(cron = "0 0 */1 31 3 *")
-	@Scheduled(cron = "0 0 */1 30 6 *")
-	@Scheduled(cron = "0 0 */1 30 9 *")
-	@Scheduled(cron = "0 0 */1 31 12 *")
-	@Scheduled(cron = "0 0 */1 1 1,4,7,10 *") // case: local time (server) is after time at site
-	public void sentMailQuarterlyReportOnSchedule() throws Exception {
-		BatchJob job = new BatchJob(); 
-		job.sentMailReportOnSchedule(3);
-	}
-	
-	/**
-	 * @description sent mail annually report on schedule
-	 * @author Hung.Bui
-	 * @since 2022-12-22
-	 */
-	@Scheduled(cron = "0 0 */1 31 12 *")
-	@Scheduled(cron = "0 0 */1 1 1 *") // case: local time (server) is after time at site
-	public void sentMailAnnuallyReportOnSchedule() throws Exception {
-		BatchJob job = new BatchJob(); 
-		job.sentMailReportOnSchedule(4);
+	public void sentMailReportOnSchedule() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (!env.equals("staging")) {
+			BatchJob job = new BatchJob(); 
+			job.sentMailReportOnSchedule();
+		}
 	}
 	
 	

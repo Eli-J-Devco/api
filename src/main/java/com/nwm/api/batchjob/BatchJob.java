@@ -24,11 +24,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -66,6 +69,7 @@ import org.xml.sax.SAXException;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.nwm.api.controllers.BuiltInReportController;
 import com.nwm.api.controllers.ReportsController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
@@ -1080,58 +1084,69 @@ public class BatchJob {
 		}
 	}
 
-	public void sentMailReportOnSchedule(int cadenceRange) {
+	public void sentMailReportOnSchedule() {
 		try {
 			BatchJobService service = new BatchJobService();
-			ViewReportEntity entity = new ViewReportEntity();
-			entity.setCadence_range(cadenceRange);
 
 			// Get list reports
-			List<?> listReports = service.getListReportsByCadence(entity);
+			List<?> listReports = service.getListReports(new ViewReportEntity());
+			ZonedDateTime nowLocalDateTime = ZonedDateTime.now();
 
 			if (listReports.size() > 0) {
 				for (int s = 0; s < listReports.size(); s++) {
 					ViewReportEntity objReport = (ViewReportEntity) listReports.get(s);
-					TimeZone timeZone = TimeZone.getTimeZone(objReport.getTime_zone());
-					Calendar calQ = Calendar.getInstance();
-					calQ.setTimeZone(timeZone);
-					String timeSchedule = null;
-					SimpleDateFormat timeScheduleFormat = null;
-					SimpleDateFormat startDateFormat = null;
-					SimpleDateFormat endDateFormat = null;
+					ZonedDateTime nowTimeZonedDateTime = nowLocalDateTime.withZoneSameInstant(ZoneId.of(objReport.getTime_zone()));
+					ZonedDateTime timeSchedule = null;
+					String startDateFormat = "yyyy-MM-dd 00:00:00";
+					String endDateFormat = "yyyy-MM-dd 23:59:59";
+					int runningHour = 8;
 
-					if (cadenceRange == 1) {
-						timeSchedule = "20";
-						timeScheduleFormat = new SimpleDateFormat("HH");
-						startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00");
-						endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59");
-					} else {
-						timeSchedule = calQ.get(Calendar.YEAR) + "-" + (calQ.get(Calendar.MONTH) + 1) + "-"
-								+ calQ.getActualMaximum(Calendar.DATE) + " 20";
-						timeScheduleFormat = new SimpleDateFormat("yyyy-MM-dd HH");
-						startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-						endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+					switch (objReport.getCadence_range()) {
+					case 1:
+						// daily
+						timeSchedule = nowTimeZonedDateTime.withHour(runningHour);
+						break;
+						
+					case 2:
+						// monthly
+						timeSchedule = nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth()).withHour(runningHour);
+						break;
+						
+					case 3:
+						// quarterly
+						timeSchedule = nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth()).withHour(runningHour);
+						break;
+						
+					case 4:
+						// annually
+						timeSchedule = nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear()).withHour(runningHour);
+						break;
+						
+					case 5:
+						// custom
+						continue;
+						
+					case 6:
+						// weekly
+						timeSchedule = nowTimeZonedDateTime.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).withHour(runningHour);
+						break;
+
+					default:
+						break;
 					}
 
-					timeSchedule = timeScheduleFormat.format(timeScheduleFormat.parse(timeSchedule));
-					timeScheduleFormat.setTimeZone(timeZone);
-					startDateFormat.setTimeZone(timeZone);
-					endDateFormat.setTimeZone(timeZone);
-
-					log.infoSuffixes("MailReportOnSchedule",
-							"Cadence: " + cadenceRange + "\nTimeSchedule: " + timeSchedule + "\nNow: "
-									+ timeScheduleFormat.format(calQ.getTime()) + "\nEqual: "
-									+ timeSchedule.equals(timeScheduleFormat.format(calQ.getTime())));
-					// convert local time (server) to time on site and compare to time schedule
-					if (timeSchedule.equals(timeScheduleFormat.format(calQ.getTime()))) {
+					long hoursDiff = nowTimeZonedDateTime.until(timeSchedule, ChronoUnit.HOURS);
+					if (hoursDiff >= 0 && hoursDiff < 1) {
 						ReportsController controller = new ReportsController();
-						objReport.setEnd_date(endDateFormat.format(calQ.getTime()));
+						BuiltInReportController builtInController = new BuiltInReportController();
+						ZonedDateTime startDate = null;
+						objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
 
-						switch (cadenceRange) {
+						switch (objReport.getCadence_range()) {
 						case 1:
 							// daily
-							calQ.add(Calendar.DATE, -2);
-							objReport.setStart_date(startDateFormat.format(calQ.getTime()));
+							startDate = nowTimeZonedDateTime.minusDays(3);
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
 
 							// sent mail
 							if (objReport.getFile_type() == 1) {
@@ -1143,22 +1158,25 @@ public class BatchJob {
 
 						case 2:
 							// monthly
-							calQ.set(Calendar.DATE, 1);
-							objReport.setStart_date(startDateFormat.format(calQ.getTime()));
+							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfMonth());
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
 
 							// sent mail
 							if (objReport.getFile_type() == 1) {
 								controller.sentMailPdfMonthlyReport(objReport);
 							} else if (objReport.getFile_type() == 2) {
-								controller.sentMailMonthlyReport(objReport);
+								if (objReport.getType_report() == 1 || (objReport.getType_report() == 2 && objReport.getData_intervals() == 12)) {
+									controller.sentMailMonthlyReport(objReport);
+								} else {
+									builtInController.sentMailMonthlyTrendReport(objReport);
+								}
 							}
 							break;
 
 						case 3:
 							// quarterly
-							calQ.set(Calendar.DATE, 1);
-							calQ.add(Calendar.MONTH, -2);
-							objReport.setStart_date(startDateFormat.format(calQ.getTime()));
+							startDate = nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusDays(1).getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth());
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
 
 							// sent mail
 							if (objReport.getFile_type() == 1) {
@@ -1170,15 +1188,31 @@ public class BatchJob {
 
 						case 4:
 							// annually
-							calQ.set(Calendar.DATE, 1);
-							calQ.set(Calendar.MONTH, 1);
-							objReport.setStart_date(startDateFormat.format(calQ.getTime()));
+							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfYear());
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
 
 							// sent mail
 							if (objReport.getFile_type() == 1) {
 								controller.sentMailPdfAnnuallyReport(objReport);
 							} else if (objReport.getFile_type() == 2) {
-								controller.sentMailAnnuallyReport(objReport);
+								if (objReport.getType_report() == 1) {
+									controller.sentMailAnnuallyReport(objReport);
+								} else {
+									builtInController.sentMailAnnualTrendReport(objReport);
+								}
+							}
+							break;
+							
+						case 6:
+							// weekly
+							startDate = nowTimeZonedDateTime.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							
+							// sent mail
+							if (objReport.getFile_type() == 1) {
+								builtInController.sentMailPdfWeeklyTrendReport(objReport);
+							} else if (objReport.getFile_type() == 2) {
+								builtInController.sentMailWeeklyTrendReport(objReport);
 							}
 							break;
 

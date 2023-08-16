@@ -37,6 +37,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xddf.usermodel.PresetColor;
 import org.apache.poi.xddf.usermodel.XDDFColor;
 import org.apache.poi.xddf.usermodel.XDDFLineProperties;
@@ -560,7 +561,7 @@ public class BuiltInReportController extends BaseController {
 						List dataExports = dataObj.getDataReports();
 						
 						if (dataObj != null) {
-							XSSFSheet chartSheet = document.createSheet(siteItem.getName());
+							XSSFSheet chartSheet = document.createSheet(WorkbookUtil.createSafeSheetName(siteItem.getName()));
 							XSSFSheet dataSheet = document.createSheet("data"+s);
 							document.setSheetHidden( count, true);
 							count = count + 2;
@@ -926,7 +927,7 @@ public class BuiltInReportController extends BaseController {
 						List dataExports = dataObj.getDataReports();
 						
 						if (dataObj != null) {
-							XSSFSheet chartSheet = document.createSheet(siteItem.getName());
+							XSSFSheet chartSheet = document.createSheet(WorkbookUtil.createSafeSheetName(siteItem.getName()));
 							XSSFSheet dataSheet = document.createSheet("data"+s);
 							document.setSheetHidden( count, true);
 							count = count + 2;
@@ -986,7 +987,7 @@ public class BuiltInReportController extends BaseController {
 							
 							ArrayList<Double> dataGeneration = new ArrayList<Double>();
 							for(int i = 0; i < categories.size(); i++) {
-								if(dataExports.size() > 0) {
+								if(dataExports != null && dataExports.size() > 0) {
 									Double dataMonthly = 0.0;
 									for( int j = 0; j < dataExports.size(); j++){
 										Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
@@ -1357,7 +1358,7 @@ public class BuiltInReportController extends BaseController {
 						List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
 						
 						if (dataObj != null) {
-							XSSFSheet chartSheet = document.createSheet(siteItem.getName());
+							XSSFSheet chartSheet = document.createSheet(WorkbookUtil.createSafeSheetName(siteItem.getName()));
 							XSSFSheet dataSheet = document.createSheet("data"+s);
 							document.setSheetHidden( count, true);
 							count = count + 2;

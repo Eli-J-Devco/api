@@ -1178,10 +1178,10 @@ public class BatchJobService extends DB {
 	 * @since 2021-02-17
 	 */
 	
-	public List getListReportsByCadence(ViewReportEntity obj) {
+	public List getListReports(ViewReportEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("BatchJob.getListReportsByCadence", obj);
+			dataList = queryForList("BatchJob.getListReports", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {

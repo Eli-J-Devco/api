@@ -75,11 +75,11 @@ public class ReportsService extends DB {
 			}
 			
 			// Create list date 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm aaa"); 
-			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm aaa");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm"); 
+			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 			
 			SimpleDateFormat dateFormatHour = new SimpleDateFormat("HH:00");
-			Date startDate = dateFormat.parse(obj.getStart_date() + " AM");
+			Date startDate = dateFormat.parse(obj.getStart_date());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			List<DailyDateEntity> categories = new ArrayList<DailyDateEntity> ();
@@ -100,7 +100,7 @@ public class ReportsService extends DB {
 				DailyDateEntity headerDate = new DailyDateEntity();
 				cal.add(Calendar.MINUTE, t * minute);
 				
-				headerDate.setTime_format(catFormat.format(cal.getTime()));
+				headerDate.setTime_format(dateFormat.format(cal.getTime()));
 				String hours = dateFormatHour.format(cal.getTime());
 				headerDate.setCategories_time(catFormat.format(cal.getTime()));
 				headerDate.setEnergy(0.001);
@@ -120,7 +120,7 @@ public class ReportsService extends DB {
 						for( int v = 0; v < dataPower.size(); v++){
 							Map<String, Object> itemT = (Map<String, Object>) dataPower.get(v);
 							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("categories_time").toString();
+							String powerTime = itemT.get("time_format").toString();
 					        if (categoriesTime.equals(powerTime)) {
 					        	flag = true;
 					        	mapItemObj.setCategories_time(itemT.get("categories_time").toString());
@@ -354,23 +354,25 @@ public class ReportsService extends DB {
 			List data = dataObj.getDataReports();
 			List<QuarterlyDateEntity> dataNew = new ArrayList<QuarterlyDateEntity> ();
 			
-			if (data.size() > 0 && categories.size() > 0) {
+			if (categories.size() > 0) {
 				for (QuarterlyDateEntity item : categories) {
 					boolean flag = false;
 					QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
 					
-					for( int v = 0; v < data.size(); v++) {
-						Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-						String categoriesTime = item.getTime_format();
-						String powerTime = itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString();
-						
-						if (categoriesTime.equals(powerTime)) {
-							flag = true;
-							mapItemObj.setCategories_time(itemT.get(quarterlyReportByDay ? "categories_time_by_day" : "categories_time").toString());
-							mapItemObj.setTime_format(itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString());
-							mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()));
-							mapItemObj.setEstimated(item.getEstimated());
-							break;
+					if(data != null && data.size() > 0) {
+						for( int v = 0; v < data.size(); v++) {
+							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItemObj.setCategories_time(itemT.get(quarterlyReportByDay ? "categories_time_by_day" : "categories_time").toString());
+								mapItemObj.setTime_format(itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString());
+								mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()));
+								mapItemObj.setEstimated(item.getEstimated());
+								break;
+							}
 						}
 					}
 					
@@ -393,22 +395,24 @@ public class ReportsService extends DB {
 				List dataInverterAvailability = dataObj.getDataAvailability();
 				List<QuarterlyDateEntity> dataInverterNew = new ArrayList<QuarterlyDateEntity> ();
 				
-				if (dataInverterAvailability.size() > 0 && categories.size() > 0) {
+				if (categories.size() > 0) {
 					for (QuarterlyDateEntity item : categories) {
 						boolean flag = false;
 						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
 						
-						for( int v = 0; v < dataInverterAvailability.size(); v++) {
-							Map<String, Object> itemT = (Map<String, Object>) dataInverterAvailability.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-								mapItemObj.setTime_format(itemT.get("time_format").toString());
-								mapItemObj.setInverterAvailability(Double.parseDouble(itemT.get("InverterAvailability").toString()));
-								break;
+						if (dataInverterAvailability != null && dataInverterAvailability.size() > 0) {
+							for( int v = 0; v < dataInverterAvailability.size(); v++) {
+								Map<String, Object> itemT = (Map<String, Object>) dataInverterAvailability.get(v);
+								String categoriesTime = item.getTime_format();
+								String powerTime = itemT.get("time_format").toString();
+								
+								if (categoriesTime.equals(powerTime)) {
+									flag = true;
+									mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+									mapItemObj.setTime_format(itemT.get("time_format").toString());
+									mapItemObj.setInverterAvailability(Double.parseDouble(itemT.get("InverterAvailability").toString()));
+									break;
+								}
 							}
 						}
 						
@@ -430,23 +434,25 @@ public class ReportsService extends DB {
 				List dataWeatherStation = dataObj.getDataWeatherStation();
 				List<QuarterlyDateEntity> dataWeatherStationNew = new ArrayList<QuarterlyDateEntity> ();
 				
-				if (dataWeatherStation != null && dataWeatherStation.size() > 0 && categories.size() > 0) {
+				if (categories.size() > 0) {
 					for (QuarterlyDateEntity item : categories) {
 						boolean flag = false;
 						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
 						
-						for( int v = 0; v < dataWeatherStation.size(); v++) {
-							Map<String, Object> itemT = (Map<String, Object>) dataWeatherStation.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-								mapItemObj.setTime_format(itemT.get("time_format").toString());
-								mapItemObj.setPOAAVG(itemT.get("POAAVG") != null ? Double.parseDouble(itemT.get("POAAVG").toString()) : null);
-								mapItemObj.setTCellAVG(itemT.get("TCellAVG") != null ? Double.parseDouble(itemT.get("TCellAVG").toString()) : null);
-								break;
+						if (dataWeatherStation != null && dataWeatherStation.size() > 0) {
+							for( int v = 0; v < dataWeatherStation.size(); v++) {
+								Map<String, Object> itemT = (Map<String, Object>) dataWeatherStation.get(v);
+								String categoriesTime = item.getTime_format();
+								String powerTime = itemT.get("time_format").toString();
+								
+								if (categoriesTime.equals(powerTime)) {
+									flag = true;
+									mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+									mapItemObj.setTime_format(itemT.get("time_format").toString());
+									mapItemObj.setPOAAVG(itemT.get("POAAVG") != null ? Double.parseDouble(itemT.get("POAAVG").toString()) : null);
+									mapItemObj.setTCellAVG(itemT.get("TCellAVG") != null ? Double.parseDouble(itemT.get("TCellAVG").toString()) : null);
+									break;
+								}
 							}
 						}
 						
@@ -732,26 +738,28 @@ public class ReportsService extends DB {
 				
 				List data = dataObj.getDataReports();
 				List<MonthlyDateEntity> dataNew = new ArrayList<MonthlyDateEntity> ();
-				if(data.size() > 0 && categories.size() > 0) {
+				if(categories.size() > 0) {
 					for (MonthlyDateEntity item : categories) {
 						boolean flag = false;
 						MonthlyDateEntity mapItemObj = new MonthlyDateEntity();
-						for( int v = 0; v < data.size(); v++){
-							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+						if(data != null && data.size() > 0) {
+							for( int v = 0; v < data.size(); v++){
+								Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+								String categoriesTime = item.getTime_format();
+								String powerTime = itemT.get("time_format").toString();
 								
-								mapItemObj.setTime_format(itemT.get("time_format").toString());
-								mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								mapItemObj.setEstimated( (double) expecValue/forCount );
-								double energy = Double.parseDouble(itemT.get("chart_energy_kwh")!= null ? itemT.get("chart_energy_kwh").toString() : "0.0");
-								Double percent = (expecValue / forCount > 0) ?  ((energy /  (expecValue / forCount)) * 100) : 0;
-								mapItemObj.setPercent(percent);
-								break;
+								if (categoriesTime.equals(powerTime)) {
+									flag = true;
+									mapItemObj.setCategories_time(itemT.get("categories_time").toString());
+									
+									mapItemObj.setTime_format(itemT.get("time_format").toString());
+									mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
+									mapItemObj.setEstimated( (double) expecValue/forCount );
+									double energy = Double.parseDouble(itemT.get("chart_energy_kwh")!= null ? itemT.get("chart_energy_kwh").toString() : "0.0");
+									Double percent = (expecValue / forCount > 0) ?  ((energy /  (expecValue / forCount)) * 100) : 0;
+									mapItemObj.setPercent(percent);
+									break;
+								}
 							}
 						}
 						
