@@ -172,7 +172,7 @@
 				t.time_format,
 				t.categories_time,
 				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActiveEnergy)), 0.001)  AS `nvmActiveEnergy`
+				IFNULL(ROUND(SUM( t.nvmActiveEnergy), 1), 0.001)  AS `nvmActiveEnergy`
 				
 			FROM
 				(
@@ -222,7 +222,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%m/%d/%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%m/%d' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -245,7 +245,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%m/%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%b-%Y' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -267,7 +267,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%Y' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -296,7 +296,7 @@
 				t.time_format,
 				t.categories_time,
 				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActiveEnergy)), 0)  AS nvmActiveEnergy
+				IFNULL(ROUND(SUM( t.nvmActiveEnergy), 1), 0)  AS nvmActiveEnergy
 				FROM
 					(
 						<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -346,7 +346,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%m/%d/%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%m/%d' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -368,7 +368,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%m/%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%b-%Y' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -390,7 +390,7 @@
 			SELECT
 				DATE_FORMAT( sd.time, '%Y' ) AS time_format,
 				DATE_FORMAT( sd.time, '%Y' ) AS categories_time,
-				SUM( sd.ActualGeneration ) AS nvmActiveEnergy,
+				ROUND(SUM( sd.ActualGeneration ), 1) AS nvmActiveEnergy,
 				0.001 AS power,
 				0 AS hour_time,
 				0.001 AS irradiance 
@@ -416,7 +416,7 @@
 			SELECT
 				t.time,
 				t.time_format,
-				IFNULL(ROUND(SUM( t.nvm_irradiance)), 0.001)  AS `nvm_irradiance`,
+				IFNULL(ROUND(SUM( t.nvm_irradiance), 1), 0.001)  AS `nvm_irradiance`,
 				t.time_full,
 				t.categories_time,
 				t.hour_time
