@@ -5,21 +5,13 @@
 *********************************************************/
 package com.nwm.api.services;
 
-
-import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelAesTxInverterEntity;
 import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.LibErrorCode;
 
 public class ModelAesTxInverterService extends DB {
 	/**
