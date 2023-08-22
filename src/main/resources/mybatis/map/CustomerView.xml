@@ -1078,20 +1078,7 @@
 			</choose>
 			IFNULL(  ROUND(SUM(dv.nvmActiveEnergy), 1), 0.001  ) AS chart_energy_kwh,
 			IFNULL(  ROUND(AVG(dv.nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
-			<choose>
-				<when test="data_send_time == 4">
-					IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24, 1), 0.001  )
-				</when>
-				<when test="data_send_time == 5">
-					IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * 7, 1), 0.001  )
-				</when>
-				<when test="data_send_time == 6">
-					IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( dv.time, '+00:00', t.`offset` ))), 1), 0.001  )
-				</when>
-				<when test="data_send_time == 7">
-					IFNULL(  ROUND(AVG(dv.expected_power_ac) * 24 * DAYOFYEAR(DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-12-31')), 1), 0.001  )
-				</when>
-			</choose> AS expected_energy
+			IFNULL(ROUND(SUM(dv.expected_energy), 0), 0) AS expected_energy
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
