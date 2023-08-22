@@ -164,7 +164,7 @@ public class MiniSiteService extends DB {
 					Calendar calYMEnd = Calendar.getInstance();
 					calYMEnd.setTime(endDateYM);
 					int endYear = calYMEnd.get(Calendar.YEAR);
-					int countYear = (endYear - startYear) == 0 ? 1: (endYear - startYear);
+					int countYear = endYear - startYear + 1;
 		
 			        SimpleDateFormat catYMFormat = new SimpleDateFormat("yyyy");
 			        Calendar calYA = Calendar.getInstance();

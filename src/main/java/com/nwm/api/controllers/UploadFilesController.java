@@ -169,22 +169,22 @@ public class UploadFilesController extends BaseController {
 
 //		public String message = " ";
 		
-//		if(serialnumber.equals("001EC60568DC")) {
-//			System.out.println("---------------------------------start------------------------------");
-//			System.out.println("SENDDATATRACE: " + senddatatrace);
-//			System.out.println("MODE: " + mode);
-//			System.out.println("SERIALNUMBER: " + serialnumber);
-//			System.out.println("PASSWORD: " + password);
-//			System.out.println("LOOPNAME: " + loopname);
-//			System.out.println("MODBUSIP: " + modbusip);
-//			System.out.println("MODBUSPORT: " + modbusport);
-//			System.out.println("MODBUSDEVICE: " + modbusdevice);
-//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-//			System.out.println("-------------------------------end--------------------------------");
-//		}
+		if(serialnumber.equals("001EC605699B")) {
+			System.out.println("---------------------------------start------------------------------");
+			System.out.println("SENDDATATRACE: " + senddatatrace);
+			System.out.println("MODE: " + mode);
+			System.out.println("SERIALNUMBER: " + serialnumber);
+			System.out.println("PASSWORD: " + password);
+			System.out.println("LOOPNAME: " + loopname);
+			System.out.println("MODBUSIP: " + modbusip);
+			System.out.println("MODBUSPORT: " + modbusport);
+			System.out.println("MODBUSDEVICE: " + modbusdevice);
+			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+			System.out.println("-------------------------------end--------------------------------");
+		}
 //		
 		
 		try {
@@ -327,6 +327,13 @@ public class UploadFilesController extends BaseController {
 													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
 													dataModelPVPowered.setId_device(item.getId());
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataModelPVPowered);
+													
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -417,6 +424,12 @@ public class UploadFilesController extends BaseController {
 													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
 													dataModelShark100.setId_device(item.getId());
 													serviceModelShark100.insertModelShark100(dataModelShark100);												
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -677,6 +690,13 @@ public class UploadFilesController extends BaseController {
 													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
 													dataModelIVTSolaronEXT.setId_device(item.getId());
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataModelIVTSolaronEXT);
+													
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1016,6 +1036,12 @@ public class UploadFilesController extends BaseController {
 													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
 													dataModelAdvancedEnergySolaron.setId_device(item.getId());
 													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataModelAdvancedEnergySolaron);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -1104,6 +1130,13 @@ public class UploadFilesController extends BaseController {
 													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
 													dataModelPVPInverter.setId_device(item.getId());
 													serviceModelPVPInverter.insertModelPVPInverter(dataModelPVPInverter);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1197,6 +1230,13 @@ public class UploadFilesController extends BaseController {
 													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
 													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1285,6 +1325,13 @@ public class UploadFilesController extends BaseController {
 													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
 													dataModelVeris.setId_device(item.getId());
 													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataModelVeris);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1378,6 +1425,13 @@ public class UploadFilesController extends BaseController {
 													dataModelSatcon.setId_device(item.getId());
 													dataModelSatcon.setNvmActiveEnergy(!Lib.isBlank(words.get(31)) ? nvmEnergyTotal : Double.parseDouble("0.001"));
 													serviceModelSatcon.insertModelSatconPvs357Inverter(dataModelSatcon);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1464,6 +1518,13 @@ public class UploadFilesController extends BaseController {
 													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
 													dataModelElkor.setId_device(item.getId());
 													serviceModelElkor.insertModelElkorWattsonPVMeter(dataModelElkor);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1636,6 +1697,13 @@ public class UploadFilesController extends BaseController {
 													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
 													dataModelElkorP.setId_device(item.getId());
 													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1732,6 +1800,13 @@ public class UploadFilesController extends BaseController {
 													dataModelABB.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? df.format(nvmActivePowerABB) : "0.001"));
 
 													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -1988,6 +2063,13 @@ public class UploadFilesController extends BaseController {
 													dataModelSolectria226.setACPowerOutput(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
 													dataModelSolectria226.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
 													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataModelSolectria226);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
+													
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -2167,6 +2249,12 @@ public class UploadFilesController extends BaseController {
 													dataModelSET.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
 													dataModelSET.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? df.format(nvmActiveEnergySET) : "0.001"));
 													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2259,6 +2347,12 @@ public class UploadFilesController extends BaseController {
 													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
 													dataModelXantrex.setId_device(item.getId());
 													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2429,6 +2523,12 @@ public class UploadFilesController extends BaseController {
 													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
 													dataModelCSM1.setId_device(item.getId());
 													serviceModelCSM1.insertModelCampellScientificMeter1(dataModelCSM1);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2511,6 +2611,12 @@ public class UploadFilesController extends BaseController {
 													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
 													dataModelCSM2.setId_device(item.getId());
 													serviceModelCSM2.insertModelCampellScientificMeter2(dataModelCSM2);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2592,6 +2698,12 @@ public class UploadFilesController extends BaseController {
 													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
 													dataModelCSM3.setId_device(item.getId());
 													serviceModelCSM3.insertModelCampellScientificMeter3(dataModelCSM3);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2674,6 +2786,12 @@ public class UploadFilesController extends BaseController {
 													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
 													dataModelCSM4.setId_device(item.getId());
 													serviceModelCSM4.insertModelCampellScientificMeter4(dataModelCSM4);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2764,6 +2882,12 @@ public class UploadFilesController extends BaseController {
 													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
 													dataModelSatcon225.setId_device(item.getId());
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2855,6 +2979,12 @@ public class UploadFilesController extends BaseController {
 													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
 													dataModelSunnyClass9775.setId_device(item.getId());
 													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataModelSunnyClass9775);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														deviceUpdateE.setDatatablename(item.getDatatablename());
+														serviceD.checkLowProduction(deviceUpdateE);
+													}
 													
 													try  
 													{ 
@@ -2943,6 +3073,13 @@ public class UploadFilesController extends BaseController {
 														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
 														dataModelVeris.setId_device(item.getId());
 														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataModelVeris);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															deviceUpdateE.setDatatablename(item.getDatatablename());
+															serviceD.checkLowProduction(deviceUpdateE);
+														}
+														
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
@@ -3029,6 +3166,13 @@ public class UploadFilesController extends BaseController {
 														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
 														dataModelAE1000NX.setId_device(item.getId());
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataModelAE1000NX);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															deviceUpdateE.setDatatablename(item.getDatatablename());
+															serviceD.checkLowProduction(deviceUpdateE);
+														}
+														
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
@@ -3065,6 +3209,7 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// AC Power
+														System.out.println("words.get(37) : " + words.get(0) + " - " + words.get(0).replace("'", ""));
 														if(!Lib.isBlank(words.get(37))) {
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
@@ -3106,6 +3251,13 @@ public class UploadFilesController extends BaseController {
 														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
 														dataModelAesTx.setId_device(item.getId());
 														serviceModelAesTx.insertModelAesTxInverter(dataModelAesTx);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															deviceUpdateE.setDatatablename(item.getDatatablename());
+															serviceD.checkLowProduction(deviceUpdateE);
+														}
+														
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
@@ -3184,6 +3336,13 @@ public class UploadFilesController extends BaseController {
 														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
 														dataModelIon.setId_device(item.getId());
 														serviceModelIon.insertModelMeterIon8600(dataModelIon);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															deviceUpdateE.setDatatablename(item.getDatatablename());
+															serviceD.checkLowProduction(deviceUpdateE);
+														}
+														
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());

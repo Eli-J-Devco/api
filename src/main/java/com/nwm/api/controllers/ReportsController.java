@@ -906,9 +906,9 @@ public class ReportsController extends BaseController {
 							double energy = item.getEnergy() <= 0 ? 0 : (item.getEnergy() == 0.001 ? 0 : item.getEnergy());
 							double irradiance = item.getIrradiance() <= 0 ? 0 : (item.getIrradiance() == 0.001 ? 0 : item.getIrradiance());
 							
-							powerSeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm a").parse(item.getCategories_time())), power);
-							energySeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm a").parse(item.getCategories_time())), energy);
-							irradianceSeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm a").parse(item.getCategories_time())), irradiance);
+							powerSeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(item.getCategories_time())), power);
+							energySeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(item.getCategories_time())), energy);
+							irradianceSeries.add(new Minute(new SimpleDateFormat("MM/dd/yyyy HH:mm").parse(item.getCategories_time())), irradiance);
 						}
 						
 						// power line chart
@@ -2078,11 +2078,13 @@ public class ReportsController extends BaseController {
 				boolean flag = false;
 				Map<String, Object> itemObj = new HashMap<String, Object>();
 				
-				for( int v = 0; v < dataExports.size(); v++){
-					Map<String, Object> itemT = (Map<String, Object>) dataExports.get(v);
-					if(fullTime.equals(itemT.get("time_full"))) {
-						flag = true;
-						itemObj = (Map<String, Object>) dataExports.get(v);
+				if (dataExports != null && dataExports.size() > 0) {
+					for( int v = 0; v < dataExports.size(); v++){
+						Map<String, Object> itemT = (Map<String, Object>) dataExports.get(v);
+						if(fullTime.equals(itemT.get("time_full"))) {
+							flag = true;
+							itemObj = (Map<String, Object>) dataExports.get(v);
+						}
 					}
 				}
 				
@@ -2106,11 +2108,7 @@ public class ReportsController extends BaseController {
 			
 			dataObj.setDataReports(dataNewExports);
 
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -2874,23 +2872,14 @@ public class ReportsController extends BaseController {
 						
 						if (!quarterlyReportByDay) {
 							dataSheet.createRow(i).createCell(0).setCellValue(item.getCategories_time());
-							
-							if (item.getEstimated() != null) {
-								dataSheet.getRow(i).createCell(1).setCellValue(item.getEstimated());
-							}
-							if (item.getActual() != null) {
-								dataSheet.getRow(i).createCell(2).setCellValue(item.getActual());
-							}
+							dataSheet.getRow(i).createCell(1).setCellValue(item.getEstimated() != null ? item.getEstimated() : 0);
+							dataSheet.getRow(i).createCell(2).setCellValue(item.getActual() != null ? item.getActual() : 0);
 							
 							dataSheetCumulative.createRow(i).createCell(0).setCellValue(item.getCategories_time());
 							totalBaseline = item.getEstimated() != null ? totalBaseline + item.getEstimated() : totalBaseline;
-							if (item.getEstimated() != null) {
-								dataSheetCumulative.getRow(i).createCell(1).setCellValue(totalBaseline);
-							}
+							dataSheetCumulative.getRow(i).createCell(1).setCellValue(totalBaseline);
 							totalActual = item.getActual() != null ? totalActual + item.getActual() : totalActual;
-							if (item.getActual() != null) {
-								dataSheetCumulative.getRow(i).createCell(2).setCellValue(totalActual);
-							}
+							dataSheetCumulative.getRow(i).createCell(2).setCellValue(totalActual);
 						} else {
 //							if (item.getActual() != null) {
 //								dataSheet.getRow(i).createCell(1).setCellValue(item.getActual());

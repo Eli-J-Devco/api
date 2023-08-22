@@ -1830,22 +1830,62 @@
 	</select>
 	
 	
-	<select id="getListReportsByCadence" resultType="com.nwm.api.entities.ViewReportEntity" >
+	<select id="getListReports" resultType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
 			r.id,
 			r.id_site,
 			r.data_intervals,
+			r.type_report,
+			r.cadence_range,
+			r.subscribers,
 			r.file_type,
 			r.date_from,
 			r.date_to,
-			t.`value` AS time_zone
+			t.`value` AS time_zone,
+			CASE
+				WHEN r.type_report = 2 AND r.type_option = 1 THEN (
+					SELECT 
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						site_employee_map sem
+						LEFT JOIN site s ON s.id = sem.id_site
+					WHERE
+						sem.id_employee = r.id_employee
+						AND s.`status` = 1
+						AND s.is_delete = 0
+					GROUP BY sem.id_employee
+				)
+				WHEN r.type_report = 2 AND r.type_option = 2 THEN (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						report_site_map rsm
+						LEFT JOIN site s ON s.id = rsm.id_site
+					WHERE
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND rsm.id_report = r.id
+					GROUP BY rsm.id_report
+				)
+				WHEN r.type_report = 2 AND r.type_option = 3 THEN (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM 
+						site s
+					WHERE 
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND s.id_site_sub_group = r.id_sub_group
+					GROUP BY s.id_site_sub_group
+				)
+				ELSE NULL
+			END AS id_sites
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			r.`status` = 1
-			AND r.cadence_range = #{cadence_range}
 	</select>
   	
   	

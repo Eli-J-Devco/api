@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
 
 
@@ -301,6 +302,43 @@ public class DeviceService extends DB {
 	        log.error("Device.insertHiddenData", ex);
 	        return null;
 	    }	
+	}
+	
+	/**
+	 * @description check low production
+	 * @author Hung.Bui
+	 * @since 2023-08-17
+	 */
+	public void checkLowProduction(DeviceEntity obj) {
+		try {
+			Integer lowProduction = (Integer) queryForObject("Device.getLowProductionErrorId", obj);
+			if (lowProduction == null) return;
+			double actualPowerToRatingPower = (double) queryForObject("Device.getCurrentProductionPercentage", obj);
+			
+			AlertEntity alertDeviceItem = new AlertEntity();
+			alertDeviceItem.setId_device(obj.getId());
+			alertDeviceItem.setStart_date(obj.getLast_updated());
+			alertDeviceItem.setId_error(lowProduction);
+			
+			if (actualPowerToRatingPower < 50) {
+				System.out.println("status errorId: " + lowProduction);
+				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+				boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+				if (!checkAlertExist && errorExits) {
+					insert("BatchJob.insertAlert", alertDeviceItem);
+				}
+			} else {
+				// Close alert
+				AlertEntity checkAlertExist = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
+				if (checkAlertExist.getId() > 0) {
+					alertDeviceItem.setEnd_date(obj.getLast_updated());
+					alertDeviceItem.setId(checkAlertExist.getId());
+					update("BatchJob.updateCloseAlert", alertDeviceItem);
+				}
+			}
+		} catch (Exception ex) {
+			log.error("Device.checkLowProduction", ex);
+		}
 	}
 
 }

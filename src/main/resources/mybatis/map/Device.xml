@@ -490,4 +490,71 @@
 			`id` = #{id}
 	</update>
 	
+	<select id="getLowProductionErrorId" resultType="int">
+    	SELECT
+			e.id
+		FROM
+			error e
+			LEFT JOIN device_group dg ON dg.id = e.id_device_group
+		WHERE
+			e.status = 1
+			AND e.is_delete = 0
+			AND e.error_code = 1002
+			AND dg.status = 1
+			AND dg.is_delete = 0
+			AND dg.table_name = #{datatablename}
+	</select>
+  	
+	<select id="getCurrentProductionPercentage" resultType="double">
+		SELECT
+			IF(pp.percent_power_last_value <![CDATA[>]]> pp.percent_power_energy_today, percent_power_last_value, pp.percent_power_energy_today) AS percent_power
+		FROM
+			device d 
+			LEFT JOIN (
+				SELECT
+					d.id,
+					IF(
+						d.last_value IS NOT NULL,
+						ROUND( IF((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100), 2),
+						NULL
+					) AS percent_power_last_value,
+					
+					IF(
+						d.energy_today IS NOT NULL, 
+						ROUND(
+							IF(
+								(d.energy_today IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0),
+								0,
+								(
+									d.energy_today /
+									IF(
+										HOUR(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` )) <![CDATA[<]]> 19,
+										IF(
+											(HOUR(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` )) - 6) <![CDATA[<=]]> 0,
+											1,
+											( ((HOUR(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` )) - 6) * 60 + MINUTE(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ))) / 60 )
+										),
+										12
+									)
+								) / d.rating_ac_power * 100
+							),
+							2
+						),
+						0
+					) AS percent_power_energy_today
+				FROM
+					device d
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					d.id = #{id}
+					AND d.`status`  = 1 
+					AND d.is_delete = 0
+			) pp ON pp.id = d.id
+		WHERE
+			d.id = #{id}
+			AND d.`status`  = 1 
+			AND d.is_delete = 0
+	</select>
+	
 </mapper>
