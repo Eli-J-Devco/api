@@ -11,30 +11,30 @@ public class ModelAesTxInverterEntity {
 	private int error;
 	private int low_alarm;
 	private int high_alarm;
-	private double pt0;
-	private double pt1;
-	private double pt2;
-	private double pt3;
-	private double pt4;
-	private double pt5;
-	private double pt6;
-	private double pt7;
-	private double pt8;
-	private double pt9;
-	private double pt10;
-	private double pt11;
-	private double pt12;
-	private double pt13;
-	private double pt14;
-	private double pt15;
-	private double pt16;
-	private double pt17;
-	private double pt18;
-	private double pt19;
-	private double pt20;
-	private double pt21;
-	private double pt22;
-	private double pt23;
+	private String pt0;
+	private String pt1;
+	private String pt2;
+	private String pt3;
+	private String pt4;
+	private String pt5;
+	private String pt6;
+	private String pt7;
+	private String pt8;
+	private String pt9;
+	private String pt10;
+	private String pt11;
+	private String pt12;
+	private String pt13;
+	private String pt14;
+	private String pt15;
+	private String pt16;
+	private String pt17;
+	private String pt18;
+	private String pt19;
+	private String pt20;
+	private String pt21;
+	private String pt22;
+	private String pt23;
 	private double pt24;
 	private double pt25;
 	private double pt26;
@@ -90,148 +90,148 @@ public class ModelAesTxInverterEntity {
 	public void setHigh_alarm(int high_alarm) {
 		this.high_alarm = high_alarm;
 	}
-	public double getPt0() {
+	public String getPt0() {
 		return pt0;
 	}
-	public void setPt0(double pt0) {
+	public void setPt0(String pt0) {
 		this.pt0 = pt0;
 	}
-	public double getPt1() {
+	public String getPt1() {
 		return pt1;
 	}
-	public void setPt1(double pt1) {
+	public void setPt1(String pt1) {
 		this.pt1 = pt1;
 	}
-	public double getPt2() {
+	public String getPt2() {
 		return pt2;
 	}
-	public void setPt2(double pt2) {
+	public void setPt2(String pt2) {
 		this.pt2 = pt2;
 	}
-	public double getPt3() {
+	public String getPt3() {
 		return pt3;
 	}
-	public void setPt3(double pt3) {
+	public void setPt3(String pt3) {
 		this.pt3 = pt3;
 	}
-	public double getPt4() {
+	public String getPt4() {
 		return pt4;
 	}
-	public void setPt4(double pt4) {
+	public void setPt4(String pt4) {
 		this.pt4 = pt4;
 	}
-	public double getPt5() {
+	public String getPt5() {
 		return pt5;
 	}
-	public void setPt5(double pt5) {
+	public void setPt5(String pt5) {
 		this.pt5 = pt5;
 	}
-	public double getPt6() {
+	public String getPt6() {
 		return pt6;
 	}
-	public void setPt6(double pt6) {
+	public void setPt6(String pt6) {
 		this.pt6 = pt6;
 	}
-	public double getPt7() {
+	public String getPt7() {
 		return pt7;
 	}
-	public void setPt7(double pt7) {
+	public void setPt7(String pt7) {
 		this.pt7 = pt7;
 	}
-	public double getPt8() {
+	public String getPt8() {
 		return pt8;
 	}
-	public void setPt8(double pt8) {
+	public void setPt8(String pt8) {
 		this.pt8 = pt8;
 	}
-	public double getPt9() {
+	public String getPt9() {
 		return pt9;
 	}
-	public void setPt9(double pt9) {
+	public void setPt9(String pt9) {
 		this.pt9 = pt9;
 	}
-	public double getPt10() {
+	public String getPt10() {
 		return pt10;
 	}
-	public void setPt10(double pt10) {
+	public void setPt10(String pt10) {
 		this.pt10 = pt10;
 	}
-	public double getPt11() {
+	public String getPt11() {
 		return pt11;
 	}
-	public void setPt11(double pt11) {
+	public void setPt11(String pt11) {
 		this.pt11 = pt11;
 	}
-	public double getPt12() {
+	public String getPt12() {
 		return pt12;
 	}
-	public void setPt12(double pt12) {
+	public void setPt12(String pt12) {
 		this.pt12 = pt12;
 	}
-	public double getPt13() {
+	public String getPt13() {
 		return pt13;
 	}
-	public void setPt13(double pt13) {
+	public void setPt13(String pt13) {
 		this.pt13 = pt13;
 	}
-	public double getPt14() {
+	public String getPt14() {
 		return pt14;
 	}
-	public void setPt14(double pt14) {
+	public void setPt14(String pt14) {
 		this.pt14 = pt14;
 	}
-	public double getPt15() {
+	public String getPt15() {
 		return pt15;
 	}
-	public void setPt15(double pt15) {
+	public void setPt15(String pt15) {
 		this.pt15 = pt15;
 	}
-	public double getPt16() {
+	public String getPt16() {
 		return pt16;
 	}
-	public void setPt16(double pt16) {
+	public void setPt16(String pt16) {
 		this.pt16 = pt16;
 	}
-	public double getPt17() {
+	public String getPt17() {
 		return pt17;
 	}
-	public void setPt17(double pt17) {
+	public void setPt17(String pt17) {
 		this.pt17 = pt17;
 	}
-	public double getPt18() {
+	public String getPt18() {
 		return pt18;
 	}
-	public void setPt18(double pt18) {
+	public void setPt18(String pt18) {
 		this.pt18 = pt18;
 	}
-	public double getPt19() {
+	public String getPt19() {
 		return pt19;
 	}
-	public void setPt19(double pt19) {
+	public void setPt19(String pt19) {
 		this.pt19 = pt19;
 	}
-	public double getPt20() {
+	public String getPt20() {
 		return pt20;
 	}
-	public void setPt20(double pt20) {
+	public void setPt20(String pt20) {
 		this.pt20 = pt20;
 	}
-	public double getPt21() {
+	public String getPt21() {
 		return pt21;
 	}
-	public void setPt21(double pt21) {
+	public void setPt21(String pt21) {
 		this.pt21 = pt21;
 	}
-	public double getPt22() {
+	public String getPt22() {
 		return pt22;
 	}
-	public void setPt22(double pt22) {
+	public void setPt22(String pt22) {
 		this.pt22 = pt22;
 	}
-	public double getPt23() {
+	public String getPt23() {
 		return pt23;
 	}
-	public void setPt23(double pt23) {
+	public void setPt23(String pt23) {
 		this.pt23 = pt23;
 	}
 	public double getPt24() {
@@ -386,5 +386,4 @@ public class ModelAesTxInverterEntity {
 	}
 	
 	
-
 }
