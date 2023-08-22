@@ -14,6 +14,7 @@
 		<result property="id" column="id_user" />
 		<result property="logo" column="logo" />
 		<result property="table_column" column="table_column" />
+		<result property="alert_filter" column="alert_filter" />
 	</resultMap>
 	
 	
@@ -48,6 +49,7 @@
 		<result property="offset_timezone" column="offset_timezone" />
 		<result property="page_login" column="page_login" />
 		<result property="table_column" column="table_column" />
+		<result property="alert_filter" column="alert_filter" />
 		
 	</resultMap>
 	
@@ -100,7 +102,8 @@
 			u.avatar,
 			t.roles,
 			k.id_sites,
-			u.table_column
+			u.table_column,
+			u.alert_filter
 			
 		FROM
 			`employee` u
@@ -457,6 +460,14 @@
 			`alert_per_page` = #{alert_per_page}
 		WHERE
 			`id` = #{id}
+	</update>
+	
+	<update id="updateAlertFilter" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
+		UPDATE `employee`
+		SET
+			`alert_filter` = #{alert_filter}
+		WHERE
+			`id` = #{id};
 	</update>
   	
 </mapper>

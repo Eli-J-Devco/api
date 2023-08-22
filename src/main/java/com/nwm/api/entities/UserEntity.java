@@ -51,10 +51,17 @@ public class UserEntity implements UserDetails, Authentication{
 	private int is_technical;
 	private int id_user;
 	private String table_column;
+	private String alert_filter;
 	
 	
 	
 
+	public String getAlert_filter() {
+		return alert_filter;
+	}
+	public void setAlert_filter(String alert_filter) {
+		this.alert_filter = alert_filter;
+	}
 	public String getTable_column() {
 		return table_column;
 	}

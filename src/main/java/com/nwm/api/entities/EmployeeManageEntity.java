@@ -49,8 +49,15 @@ public class EmployeeManageEntity{
 	private String offset_timezone;
 	private String page_login;
 	private int alert_per_page;
+	private String alert_filter;
 	
 	
+	public String getAlert_filter() {
+		return alert_filter;
+	}
+	public void setAlert_filter(String alert_filter) {
+		this.alert_filter = alert_filter;
+	}
 	public int getAlert_per_page() {
 		return alert_per_page;
 	}
