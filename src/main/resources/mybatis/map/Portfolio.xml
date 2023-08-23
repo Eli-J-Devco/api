@@ -306,7 +306,7 @@
 			LEFT JOIN (
 			 SELECT
 					d.id_site,
-					DATE_FORMAT(CONVERT_TZ( md.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ) AS last_updated,
+					DATE_FORMAT(CONVERT_TZ( md.time, '+00:00', t.`offset` ), '%m/%d/%Y %h:%i:%s %p' ) AS last_updated,
 					UNIX_TIMESTAMP(md.time)  AS unix_time,
 					
 					CASE

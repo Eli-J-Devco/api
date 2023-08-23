@@ -363,5 +363,24 @@ public class EmployeeController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description update alert filter in alert
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-alert-filter")
+	public Object updateAlertFilter(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateAlertFilter(obj);
+			return this.jsonResult(true, "Updated table column", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
 }

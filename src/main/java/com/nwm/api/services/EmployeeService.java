@@ -384,5 +384,20 @@ public class EmployeeService extends DB {
 			return false;
 		}
 	}
+	
+	/**
+	 * @description update alert filter in Alert
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateAlertFilter(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateAlertFilter", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateAlertFilter", ex);
+			return false;
+		}
+	}
 
 }
