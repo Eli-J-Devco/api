@@ -30,6 +30,7 @@ public class ModelSmaInverterStp1200tlus10Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSmaInverterStp1200tlus10.insertModelSmaInverterStp1200tlus10", obj);

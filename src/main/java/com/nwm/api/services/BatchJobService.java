@@ -824,8 +824,8 @@ public class BatchJobService extends DB {
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -2);
-			int setTime = 2;
+			calCurrent.add(Calendar.DATE, -1200);
+			int setTime = 1200;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
@@ -898,7 +898,7 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
+					System.out.println("Generate Report inverter, meter: " + dateFormat.format(cal.getTime()));
 
 					// inverter 
 					for (int k = 0; k < dataListInverter.size(); k++) {
@@ -941,9 +941,10 @@ public class BatchJobService extends DB {
 			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
 				// Create list date 
 				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
+					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
+					
+					System.out.println("Generate Report inverter, weather: " + dateFormat.format(cal.getTime()));
 					//inverter
 					
 					for (int i = 0; i < dataListInverter.size(); i++) {
@@ -1407,6 +1408,26 @@ public class BatchJobService extends DB {
 			return null;
 		}
 	}
+	
+	
+	/**
+	 * @description get list device by id_device_group = 44
+	 * @author long.pham
+	 * @since 2023-08-23
+	 */
+	
+	public List getListDeviceCelModemSierraRs50(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceCelModemSierraRs50", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 	
 //	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
 //		DeviceEntity rowItem = new DeviceEntity();

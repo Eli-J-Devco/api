@@ -99,6 +99,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelAbbTrioClass6210.insertModelAbbTrioClass6210", obj);

@@ -199,6 +199,8 @@ public class ModelAE1000NXClass9644Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelAE1000NXClass9644.insertModelAE1000NXClass9644", obj);

@@ -111,6 +111,7 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelVerisIndustriesE50c2a.insertModelVerisIndustriesE50c2a", obj);
