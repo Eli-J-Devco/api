@@ -50,8 +50,29 @@ public class EmployeeManageEntity{
 	private String page_login;
 	private int alert_per_page;
 	private String alert_filter;
+	private int failed_attempt;
+	private int account_locked;
+	private String lock_time;
 	
 	
+	public int getFailed_attempt() {
+		return failed_attempt;
+	}
+	public void setFailed_attempt(int failed_attempt) {
+		this.failed_attempt = failed_attempt;
+	}
+	public int getAccount_locked() {
+		return account_locked;
+	}
+	public void setAccount_locked(int account_locked) {
+		this.account_locked = account_locked;
+	}
+	public String getLock_time() {
+		return lock_time;
+	}
+	public void setLock_time(String lock_time) {
+		this.lock_time = lock_time;
+	}
 	public String getAlert_filter() {
 		return alert_filter;
 	}
