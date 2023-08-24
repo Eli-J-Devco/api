@@ -50,6 +50,9 @@
 		<result property="page_login" column="page_login" />
 		<result property="table_column" column="table_column" />
 		<result property="alert_filter" column="alert_filter" />
+		<result property="failed_attempt" column="failed_attempt" />
+		<result property="account_locked" column="account_locked" />
+		<result property="lock_time" column="lock_time" />
 		
 	</resultMap>
 	
@@ -194,7 +197,10 @@
 			m.ids_site,
 			s.last_login,
 			s.offset_timezone,
-			s.page_login
+			s.page_login,
+			e.account_locked,
+			e.failed_attempt,
+			e.lock_time
 		FROM
 			`employee` e	
 			
@@ -468,6 +474,25 @@
 			`alert_filter` = #{alert_filter}
 		WHERE
 			`id` = #{id};
+	</update>
+	
+	<update id="updateLockedAccount">
+		UPDATE `employee`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateUnLockedAccount">
+		UPDATE `employee`
+		SET
+			`status` = #{status},
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time}
+		WHERE
+			`id` = #{id}
 	</update>
   	
 </mapper>

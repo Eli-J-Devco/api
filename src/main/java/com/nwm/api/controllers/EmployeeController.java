@@ -382,5 +382,43 @@ public class EmployeeController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description update lock account
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-locked-account")
+	public Object updateLockedAccount(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateLockedAccount(obj);
+			return this.jsonResult(true, "This Account is locked", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2023-08-22
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-unlocked-account")
+	public Object updateUnlockedAccount(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			boolean data = service.updateUnlockedAccount(obj);
+			return this.jsonResult(true, "This Account is unlocked", data, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
 }
