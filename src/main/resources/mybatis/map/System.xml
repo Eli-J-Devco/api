@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="System">
+	
+	<select id="getSystemSetting" resultType="com.nwm.api.entities.SystemEntity" >
+		SELECT
+			type,
+			value	
+		FROM system_setup
+	</select>
+	
+	<update id="updateMaxAttempts">
+		UPDATE system_setup
+		SET
+			value = #{max_attempts}
+		WHERE
+			type = "max_failed_attempt"
+	</update>
+	
+	<update id="updateLockoutTime">
+		UPDATE system_setup
+		SET
+			value = #{lockout_time}
+		WHERE
+			type = "time_account_locked"
+	</update>
+	
+</mapper>
