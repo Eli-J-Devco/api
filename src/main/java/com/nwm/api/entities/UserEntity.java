@@ -52,10 +52,48 @@ public class UserEntity implements UserDetails, Authentication{
 	private int id_user;
 	private String table_column;
 	private String alert_filter;
+	private int failed_attempt = 0;
+	private int account_locked = 0;
+	private String lock_time;
+	private int max_failed_attempt;
+	private double time_account_locked;
 	
 	
 	
 
+	public int getMax_failed_attempt() {
+		return max_failed_attempt;
+	}
+	public void setMax_failed_attempt(int max_failed_attempt) {
+		this.max_failed_attempt = max_failed_attempt;
+	}
+	public double getTime_account_locked() {
+		return time_account_locked;
+	}
+	public void setTime_account_locked(double time_account_locked) {
+		this.time_account_locked = time_account_locked;
+	}
+	public int getFailed_attempt() {
+		return failed_attempt;
+	}
+	public void setFailed_attempt(int failed_attempt) {
+		this.failed_attempt = failed_attempt;
+	}
+	public int getAccount_locked() {
+		return account_locked;
+	}
+	public void setAccount_locked(int account_locked) {
+		this.account_locked = account_locked;
+	}
+	public String getLock_time() {
+		return lock_time;
+	}
+	public void setLock_time(String lock_time) {
+		this.lock_time = lock_time;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	public String getAlert_filter() {
 		return alert_filter;
 	}

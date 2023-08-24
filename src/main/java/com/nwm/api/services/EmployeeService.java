@@ -20,6 +20,22 @@ import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.UserEntity;
 
 public class EmployeeService extends DB {
+	
+	/**
+	 * @description update account lock
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param id
+	 */
+	public boolean updateLockAccount(UserEntity obj) {
+		try {
+			return update("Employee.updateLockAccount", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockAccount", ex);
+			return false;
+		}
+	}
+	
 	/**
 	 * @description get list role
 	 * @author long.pham

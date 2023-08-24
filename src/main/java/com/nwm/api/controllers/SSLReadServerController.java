@@ -25,8 +25,10 @@ import com.jcraft.jsch.Session;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
+import com.nwm.api.entities.UserEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.utils.Constants;
@@ -37,6 +39,58 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/connect")
 public class SSLReadServerController extends BaseController {
+	
+	/**
+	 * @description run event reset acount lock
+	 * @author long.pham
+	 * @since 2023-08-24
+	 * @return {}
+	 */
+	@GetMapping("/reset-account-lock")
+	public Object resetAccountLock() {
+		try {
+			BatchJobService service = new BatchJobService();
+			List<?> listEmployee = service.getListAccountLock(new UserEntity());
+			if (listEmployee == null || listEmployee.size() == 0) {
+				return this.jsonResult(false, Constants.GET_SUCCESS_MSG, null, 0);
+			}
+			
+			EmployeeService employeeService = new EmployeeService();
+			for (int i = 0; i < listEmployee.size(); i++) {
+				UserEntity userItem = (UserEntity) listEmployee.get(i);
+				userItem.setAccount_locked(0);
+				userItem.setFailed_attempt(0);
+				userItem.setId(userItem.getId());
+				
+				
+				Date date = new Date();
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String dateStart = userItem.getLock_time();
+				String dateStop = format.format(date).toString();
+				Date d1 = null;
+				Date d2 = null;
+				d1 = format.parse(dateStart);
+				d2 = format.parse(dateStop);
+
+				long diff = d2.getTime() - d1.getTime();
+				long diffMinutes = diff / (60 * 1000) % 60;
+				long diffHours = diff / (60 * 60 * 1000) % 24;
+				long diffDays = diff / (24 * 60 * 60 * 1000);
+				
+				long totalMinutes = (diffDays * 24 * 60) + (diffHours * 60) + diffMinutes;
+				double setTime = ( userItem.getTime_account_locked()) * 60;
+				
+				if((totalMinutes) > (int) setTime) {
+					employeeService.updateLockAccount(userItem);
+				}
+			}
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 
 	/**
 	 * @description run event read data from datalogger device.

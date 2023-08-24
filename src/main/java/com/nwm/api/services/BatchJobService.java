@@ -25,6 +25,7 @@ import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.UserEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
 
@@ -824,8 +825,8 @@ public class BatchJobService extends DB {
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -1200);
-			int setTime = 1200;
+			calCurrent.add(Calendar.DATE, -2);
+			int setTime = 2;
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
@@ -1420,6 +1421,25 @@ public class BatchJobService extends DB {
 		List dataList = new ArrayList();
 		try {
 			dataList = queryForList("BatchJob.getListDeviceCelModemSierraRs50", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get list account lock
+	 * @author long.pham
+	 * @since 2023-05-11
+	 */
+	
+	public List getListAccountLock(UserEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListAccountLock", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {

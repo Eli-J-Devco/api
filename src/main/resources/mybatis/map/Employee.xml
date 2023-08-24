@@ -103,7 +103,12 @@
 			t.roles,
 			k.id_sites,
 			u.table_column,
-			u.alert_filter
+			u.alert_filter,
+			u.lock_time,
+			u.account_locked,
+			u.failed_attempt,
+			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
+			( SELECT `value` FROM system_setup WHERE type = 'time_account_locked' ) AS time_account_locked
 			
 		FROM
 			`employee` u
@@ -297,6 +302,18 @@
 		UPDATE `employee`
 		SET
 			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	
+	<update id="updateLockAccount">
+		UPDATE `employee`
+		SET
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time}
 		WHERE
 			`id` = #{id}
 	</update>
