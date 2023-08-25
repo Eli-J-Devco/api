@@ -139,6 +139,13 @@ public class ImportOldDataService extends DB {
 			}
 			
 			switch (obj.getTable_name()) {
+			case "model_meter_ion_8600":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelMeterIon8600.insertModelMeterIon8600", dataList.get(i));					
+				}				
+				break;
+				
 			case "model_shark100":
 				obj.setId_device_type(3);
 				for (int i = 0; i < dataList.size(); i++) {

@@ -263,6 +263,81 @@ public class ImportOldDataController extends BaseController {
 									setDate.add(start);
 									
 									switch (dataFile.getDatatablename()) {
+									case "model_meter_ion_8600":
+										rowItem.put("id_device", r.getCellText(2).toString());
+										rowItem.put("error", r.getCellText(3).toString());
+										rowItem.put("low_alarm", r.getCellText(4).toString());
+										rowItem.put("high_alarm", r.getCellText(5).toString());
+										
+										rowItem.put("VlnA", r.getCellText(6).toString());
+										rowItem.put("VlnB", r.getCellText(7).toString());
+										rowItem.put("VlnC", r.getCellText(8).toString());
+										rowItem.put("VlnAve", r.getCellText(9).toString());
+										rowItem.put("VllAb", r.getCellText(10).toString());
+										rowItem.put("VllAc", r.getCellText(11).toString());
+										rowItem.put("VllCa", r.getCellText(12).toString());
+										rowItem.put("IA", r.getCellText(13).toString());
+										rowItem.put("IB", r.getCellText(14).toString());
+										rowItem.put("IC", r.getCellText(15).toString());
+										rowItem.put("IAve", r.getCellText(16).toString());
+										rowItem.put("VUnbal", r.getCellText(17).toString());
+										rowItem.put("IUnbal", r.getCellText(18).toString());
+										rowItem.put("Freq", r.getCellText(19).toString());
+										rowItem.put("I4", r.getCellText(20).toString());
+										rowItem.put("kWA", r.getCellText(21).toString());
+										rowItem.put("kWB", r.getCellText(22).toString());
+										
+										rowItem.put("kWC", r.getCellText(23).toString());
+										rowItem.put("kWTot", r.getCellText(24).toString());
+										rowItem.put("kVARA", r.getCellText(25).toString());
+										rowItem.put("kVARB", r.getCellText(26).toString());
+										rowItem.put("kVARC", r.getCellText(27).toString());
+										rowItem.put("kVARTot", r.getCellText(28).toString());
+										rowItem.put("KVAA", r.getCellText(29).toString());
+										rowItem.put("KVAB", r.getCellText(30).toString());
+										rowItem.put("KVAC", r.getCellText(31).toString());
+										rowItem.put("KVATot", r.getCellText(32).toString());
+										rowItem.put("PFSignA", r.getCellText(33).toString());
+										rowItem.put("PFSignB", r.getCellText(34).toString());
+										rowItem.put("PFSignC", r.getCellText(35).toString());
+										rowItem.put("PFSignTot", r.getCellText(36).toString());
+										rowItem.put("VIIAveMx", r.getCellText(37).toString());
+										rowItem.put("IAveMx", r.getCellText(38).toString());
+										rowItem.put("kWTotMx", r.getCellText(39).toString());
+										rowItem.put("kVARTotMx", r.getCellText(40).toString());
+										rowItem.put("kVATotMx", r.getCellText(41).toString());
+										rowItem.put("FreqMx", r.getCellText(42).toString());
+										rowItem.put("VIIAveMn", r.getCellText(43).toString());
+										
+										rowItem.put("IAveMn", r.getCellText(44).toString());
+										rowItem.put("FreqMn", r.getCellText(45).toString());
+										rowItem.put("kWSdDelRec", r.getCellText(46).toString());
+										rowItem.put("kVASdDelRec", r.getCellText(47).toString());
+										rowItem.put("kVARSdDelRec", r.getCellText(48).toString());
+										rowItem.put("kWSdMxDR", r.getCellText(49).toString());
+										rowItem.put("kVASdMxDR", r.getCellText(50).toString());
+										rowItem.put("kVARSdMxDR", r.getCellText(51).toString());
+										rowItem.put("PhaseRev", r.getCellText(52).toString());
+										rowItem.put("kWhDel", r.getCellText(53).toString());
+										rowItem.put("kWhRec", r.getCellText(54).toString());
+										rowItem.put("kWhDelRec", r.getCellText(55).toString());
+										rowItem.put("kWhDel_Rec", r.getCellText(56).toString());
+										rowItem.put("kVARhDel", r.getCellText(57).toString());
+										rowItem.put("kVARhRec", r.getCellText(58).toString());
+										rowItem.put("kVARhDelRec", r.getCellText(59).toString());
+										rowItem.put("kVARhDel_Rec", r.getCellText(60).toString());
+										rowItem.put("kVAhDelRec", r.getCellText(61).toString());
+										rowItem.put("V1THDMx", r.getCellText(62).toString());
+										rowItem.put("V2THDMx", r.getCellText(63).toString());
+										rowItem.put("V3THDMx", r.getCellText(64).toString());
+										rowItem.put("I1THDMx", r.getCellText(65).toString());
+										rowItem.put("nvmActivePower", r.getCellText(66).toString());
+										rowItem.put("nvmActiveEnergy", r.getCellText(67).toString());
+										rowItem.put("MeasuredProduction", r.getCellText(68).toString());
+	
+										break;
+										
+										
 									case "model_hukseflux_sr30d1_deviceclass_v0":
 										rowItem.put("id_device", r.getCellText(2).toString());
 										rowItem.put("error", r.getCellText(3).toString());
