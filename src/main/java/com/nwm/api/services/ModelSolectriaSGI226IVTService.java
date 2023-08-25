@@ -83,6 +83,7 @@ public class ModelSolectriaSGI226IVTService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);

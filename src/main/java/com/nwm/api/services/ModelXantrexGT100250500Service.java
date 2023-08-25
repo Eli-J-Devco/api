@@ -100,7 +100,7 @@ public class ModelXantrexGT100250500Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
-			 
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelXantrexGT100250500.insertModelXantrexGT100250500", obj);

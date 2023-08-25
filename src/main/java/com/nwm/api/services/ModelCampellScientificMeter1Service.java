@@ -71,6 +71,7 @@ public class ModelCampellScientificMeter1Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelCampellScientificMeter1.insertModelCampellScientificMeter1", obj);

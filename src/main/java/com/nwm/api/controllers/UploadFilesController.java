@@ -3209,7 +3209,6 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// AC Power
-														System.out.println("words.get(37) : " + words.get(0) + " - " + words.get(0).replace("'", ""));
 														if(!Lib.isBlank(words.get(37))) {
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);

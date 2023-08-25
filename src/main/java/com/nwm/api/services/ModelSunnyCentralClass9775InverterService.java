@@ -102,6 +102,7 @@ public class ModelSunnyCentralClass9775InverterService extends DB{
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSunnyCentralClass9775Inverter.insertModelSunnyCentralClass9775Inverter", obj);

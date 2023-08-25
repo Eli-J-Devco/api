@@ -145,6 +145,7 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelVerisIndustriesE51c2PowerMeter.insertModelVerisIndustriesE51c2PowerMeter", obj);

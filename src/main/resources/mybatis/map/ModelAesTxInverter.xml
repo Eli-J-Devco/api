@@ -82,76 +82,76 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm`,
 			</if>
-			<if test="pt0 != 0.001">
+			<if test="pt0 != '0.001'">
 				`pt0`,
 			</if>
-			<if test="pt1 != 0.001">
+			<if test="pt1 != '0.001'">
 				`pt1`,
 			</if>
-			<if test="pt2 != 0.001">
+			<if test="pt2 != '0.001'">
 				`pt2`,
 			</if>
-			<if test="pt3 != 0.001">
+			<if test="pt3 != '0.001'">
 				`pt3`,
 			</if>
-			<if test="pt4 != 0.001">
+			<if test="pt4 != '0.001'">
 				`pt4`,
 			</if>
-			<if test="pt5 != 0.001">
+			<if test="pt5 != '0.001'">
 				`pt5`,
 			</if>
-			<if test="pt6 != 0.001">
+			<if test="pt6 != '0.001'">
 				`pt6`,
 			</if>
-			<if test="pt7 != 0.001">
+			<if test="pt7 != '0.001'">
 				`pt7`,
 			</if>
-			<if test="pt8 != 0.001">
+			<if test="pt8 != '0.001'">
 				`pt8`,
 			</if>
-			<if test="pt9 != 0.001">
+			<if test="pt9 != '0.001'">
 				`pt9`,
 			</if>
-			<if test="pt10 != 0.001">
+			<if test="pt10 != '0.001'">
 				`pt10`,
 			</if>
-			<if test="pt11 != 0.001">
+			<if test="pt11 != '0.001'">
 				`pt11`,
 			</if>
-			<if test="pt12 != 0.001">
+			<if test="pt12 != '0.001'">
 				`pt12`,
 			</if>
-			<if test="pt13 != 0.001">
+			<if test="pt13 != '0.001'">
 				`pt13`,
 			</if>
-			<if test="pt14 != 0.001">
+			<if test="pt14 != '0.001'">
 				`pt14`,
 			</if>
-			<if test="pt15 != 0.001">
+			<if test="pt15 != '0.001'">
 				`pt15`,
 			</if>
-			<if test="pt16 != 0.001">
+			<if test="pt16 != '0.001'">
 				`pt16`,
 			</if>
-			<if test="pt17 != 0.001">
+			<if test="pt17 != '0.001'">
 				`pt17`,
 			</if>
-			<if test="pt18 != 0.001">
+			<if test="pt18 != '0.001'">
 				`pt18`,
 			</if>
-			<if test="pt19 != 0.001">
+			<if test="pt19 != '0.001'">
 				`pt19`,
 			</if>
-			<if test="pt20 != 0.001">
+			<if test="pt20 != '0.001'">
 				`pt20`,
 			</if>
-			<if test="pt21 != 0.001">
+			<if test="pt21 != '0.001'">
 				`pt21`,
 			</if>
-			<if test="pt22 != 0.001">
+			<if test="pt22 != '0.001'">
 				`pt22`,
 			</if>
-			<if test="pt23 != 0.001">
+			<if test="pt23 != '0.001'">
 				`pt23`,
 			</if>
 			<if test="pt24 != 0.001">
@@ -249,76 +249,76 @@
 			<if test="high_alarm != 0.001">
 				#{high_alarm},
 			</if>
-			<if test="pt0 != 0.001">
+			<if test="pt0 != '0.001'">
 				#{pt0},
 			</if>
-			<if test="pt1 != 0.001">
+			<if test="pt1 != '0.001'">
 				#{pt1},
 			</if>
-			<if test="pt2 != 0.001">
+			<if test="pt2 != '0.001'">
 				#{pt2},
 			</if>
-			<if test="pt3 != 0.001">
+			<if test="pt3 != '0.001'">
 				#{pt3},
 			</if>
-			<if test="pt4 != 0.001">
+			<if test="pt4 != '0.001'">
 				#{pt4},
 			</if>
-			<if test="pt5 != 0.001">
+			<if test="pt5 != '0.001'">
 				#{pt5},
 			</if>
-			<if test="pt6 != 0.001">
+			<if test="pt6 != '0.001'">
 				#{pt6},
 			</if>
-			<if test="pt7 != 0.001">
+			<if test="pt7 != '0.001'">
 				#{pt7},
 			</if>
-			<if test="pt8 != 0.001">
+			<if test="pt8 != '0.001'">
 				#{pt8},
 			</if>
-			<if test="pt9 != 0.001">
+			<if test="pt9 != '0.001'">
 				#{pt9},
 			</if>
-			<if test="pt10 != 0.001">
+			<if test="pt10 != '0.001'">
 				#{pt10},
 			</if>
-			<if test="pt11 != 0.001">
+			<if test="pt11 != '0.001'">
 				#{pt11},
 			</if>
-			<if test="pt12 != 0.001">
+			<if test="pt12 != '0.001'">
 				#{pt12},
 			</if>
-			<if test="pt13 != 0.001">
+			<if test="pt13 != '0.001'">
 				#{pt13},
 			</if>
-			<if test="pt14 != 0.001">
+			<if test="pt14 != '0.001'">
 				#{pt14},
 			</if>
-			<if test="pt15 != 0.001">
+			<if test="pt15 != '0.001'">
 				#{pt15},
 			</if>
-			<if test="pt16 != 0.001">
+			<if test="pt16 != '0.001'">
 				#{pt16},
 			</if>
-			<if test="pt17 != 0.001">
+			<if test="pt17 != '0.001'">
 				#{pt17},
 			</if>
-			<if test="pt18 != 0.001">
+			<if test="pt18 != '0.001'">
 				#{pt18},
 			</if>
-			<if test="pt19 != 0.001">
+			<if test="pt19 != '0.001'">
 				#{pt19},
 			</if>
-			<if test="pt20 != 0.001">
+			<if test="pt20 != '0.001'">
 				#{pt20},
 			</if>
-			<if test="pt21 != 0.001">
+			<if test="pt21 != '0.001'">
 				#{pt21},
 			</if>
-			<if test="pt22 != 0.001">
+			<if test="pt22 != '0.001'">
 				#{pt22},
 			</if>
-			<if test="pt23 != 0.001">
+			<if test="pt23 != '0.001'">
 				#{pt23},
 			</if>
 			<if test="pt24 != 0.001">
@@ -417,76 +417,76 @@
 				`high_alarm` = #{high_alarm},
 			</if>
 			
-			<if test="pt0 != 0.001">
+			<if test="pt0 != '0.001'">
 				`pt0` = #{pt0},
 			</if>
-			<if test="pt1 != 0.001">
+			<if test="pt1 != '0.001'">
 				`pt1` = #{pt1},
 			</if>
-			<if test="pt2 != 0.001">
+			<if test="pt2 != '0.001'">
 				`pt2` = #{pt2},
 			</if>
-			<if test="pt3 != 0.001">
+			<if test="pt3 != '0.001'">
 				`pt3` = #{pt3},
 			</if>
-			<if test="pt4 != 0.001">
+			<if test="pt4 != '0.001'">
 				`pt4` = #{pt4},
 			</if>
-			<if test="pt5 != 0.001">
+			<if test="pt5 != '0.001'">
 				`pt5` = #{pt5},
 			</if>
-			<if test="pt6 != 0.001">
+			<if test="pt6 != '0.001'">
 				`pt6` = #{pt6},
 			</if>
-			<if test="pt7 != 0.001">
+			<if test="pt7 != '0.001'">
 				`pt7` = #{pt7},
 			</if>
-			<if test="pt8 != 0.001">
+			<if test="pt8 != '0.001'">
 				`pt8` = #{pt8},
 			</if>
-			<if test="pt9 != 0.001">
+			<if test="pt9 != '0.001'">
 				`pt9` = #{pt9},
 			</if>
-			<if test="pt10 != 0.001">
+			<if test="pt10 != '0.001'">
 				`pt10` = #{pt10},
 			</if>
-			<if test="pt11 != 0.001">
+			<if test="pt11 != '0.001'">
 				`pt11` = #{pt11},
 			</if>
-			<if test="pt12 != 0.001">
+			<if test="pt12 != '0.001'">
 				`pt12` = #{pt12},
 			</if>
-			<if test="pt13 != 0.001">
+			<if test="pt13 != '0.001'">
 				`pt13` = #{pt13},
 			</if>
-			<if test="pt14 != 0.001">
+			<if test="pt14 != '0.001'">
 				`pt14` = #{pt14},
 			</if>
-			<if test="pt15 != 0.001">
+			<if test="pt15 != '0.001'">
 				`pt15` = #{pt15},
 			</if>
-			<if test="pt16 != 0.001">
+			<if test="pt16 != '0.001'">
 				`pt16` = #{pt16},
 			</if>
-			<if test="pt17 != 0.001">
+			<if test="pt17 != '0.001'">
 				`pt17` = #{pt17},
 			</if>
-			<if test="pt18 != 0.001">
+			<if test="pt18 != '0.001'">
 				`pt18` = #{pt18},
 			</if>
-			<if test="pt19 != 0.001">
+			<if test="pt19 != '0.001'">
 				`pt19` = #{pt19},
 			</if>
-			<if test="pt20 != 0.001">
+			<if test="pt20 != '0.001'">
 				`pt20` = #{pt20},
 			</if>
-			<if test="pt21 != 0.001">
+			<if test="pt21 != '0.001'">
 				`pt21` = #{pt21},
 			</if>
-			<if test="pt22 != 0.001">
+			<if test="pt22 != '0.001'">
 				`pt22` = #{pt22},
 			</if>
-			<if test="pt23 != 0.001">
+			<if test="pt23 != '0.001'">
 				`pt23` = #{pt23},
 			</if>
 			<if test="pt24 != 0.001">

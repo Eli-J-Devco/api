@@ -874,7 +874,14 @@ public class SitesDevicesController extends BaseController {
 				// Reading SSH info
 			    Session session = null;
 				ChannelExec channel = null;
-				String command = "system reboot";
+				String command = "";
+				
+				if(obj.getId_device_group() == 19) {
+					command = "reboot";
+				} else {
+					command = "system reboot";
+				}
+				
 				
 				try {
 					session = new JSch().getSession(obj.getSsh_user(), obj.getSsh_host(), Integer.parseInt(obj.getSsh_port()) );
@@ -889,7 +896,12 @@ public class SitesDevicesController extends BaseController {
 					channel.setOutputStream(responseStream);
 					InputStream is = channel.getInputStream();
 					channel.connect();
-					while (channel.isConnected()) { Thread.sleep(100); }
+					while (channel.isConnected()) { 
+						Thread.sleep(1000); 
+					}
+			        String responseString = new String(responseStream.toByteArray());
+			        System.out.println(responseString);
+			        
 					
 					return this.jsonResult(true, "Reboot Cell Modem Successfully", null, 1);
 

@@ -30,6 +30,7 @@ public class ModelSungrowSg50cxService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
+			 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSungrowSg50cx.insertModelSungrowSg50cx", obj);
