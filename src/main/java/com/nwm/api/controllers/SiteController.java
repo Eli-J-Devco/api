@@ -371,6 +371,23 @@ public class SiteController extends BaseController {
 	}
 
 	
+	/**
+	 * @description Get all site group
+	 * @author Hung.Bui
+	 * @since 2023-08-23
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/all-site-group")
+	public Object getAllSiteGroup(@RequestBody SiteEntity site) {
+		try {
+			SiteService service = new SiteService();
+			List data = service.getAllSiteGroup(site);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	
 	
