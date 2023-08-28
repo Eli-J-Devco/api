@@ -330,8 +330,8 @@ public class UploadFilesController extends BaseController {
 													
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -427,8 +427,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -693,8 +693,8 @@ public class UploadFilesController extends BaseController {
 													
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1039,8 +1039,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1133,8 +1133,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1233,8 +1233,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1328,8 +1328,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1428,8 +1428,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1521,8 +1521,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1700,8 +1700,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -1803,8 +1803,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2066,8 +2066,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2252,8 +2252,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2350,8 +2350,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2526,8 +2526,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2614,8 +2614,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2701,8 +2701,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2789,8 +2789,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2885,8 +2885,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -2982,8 +2982,8 @@ public class UploadFilesController extends BaseController {
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														deviceUpdateE.setDatatablename(item.getDatatablename());
-														serviceD.checkLowProduction(deviceUpdateE);
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item);
 													}
 													
 													try  
@@ -3076,8 +3076,8 @@ public class UploadFilesController extends BaseController {
 
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															deviceUpdateE.setDatatablename(item.getDatatablename());
-															serviceD.checkLowProduction(deviceUpdateE);
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
 														}
 														
 														try  
@@ -3169,8 +3169,8 @@ public class UploadFilesController extends BaseController {
 
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															deviceUpdateE.setDatatablename(item.getDatatablename());
-															serviceD.checkLowProduction(deviceUpdateE);
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
 														}
 														
 														try  
@@ -3253,8 +3253,8 @@ public class UploadFilesController extends BaseController {
 
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															deviceUpdateE.setDatatablename(item.getDatatablename());
-															serviceD.checkLowProduction(deviceUpdateE);
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
 														}
 														
 														try  
@@ -3338,8 +3338,8 @@ public class UploadFilesController extends BaseController {
 
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															deviceUpdateE.setDatatablename(item.getDatatablename());
-															serviceD.checkLowProduction(deviceUpdateE);
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
 														}
 														
 														try  

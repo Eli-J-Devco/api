@@ -210,8 +210,9 @@
 			`employee` e	
 			
 			LEFT JOIN (
-						SELECT id_employee, GROUP_CONCAT(sem.`id_site`) AS ids_site 
+						SELECT id_employee, GROUP_CONCAT(sem.`id_site`) AS ids_site, GROUP_CONCAT(s.`name`) AS site_name
 						FROM site_employee_map sem
+						LEFT JOIN site s ON s.id = sem.id_site
 						GROUP BY sem.id_employee
 					)m ON m.id_employee = e.id
 					
@@ -257,7 +258,23 @@
 		
 		
 		<if test="keyword != null">
-			AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") OR e.phone LIKE CONCAT("%",#{keyword}, "%") OR e.email LIKE CONCAT("%",#{keyword}, "%"))
+			<choose>
+				<when test="filter == 'fullname'">
+					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+				</when>
+				<when test="filter == 'phone'">
+					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filter == 'email'">
+					AND e.email LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filter == 'manage_site'">
+					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<otherwise>
+					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+				</otherwise>
+			</choose>
 		</if> 	
 		    order by
 	        <choose>  
