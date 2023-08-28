@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +20,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.common.exceptions.InvalidGrantException;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
 import com.nwm.api.entities.UserEntity;
 
 @Component
@@ -53,20 +55,23 @@ public class CustomUserDetailService implements UserDetailsService {
     	String message = "";
     	double timeAccountLocked = user.getTime_account_locked() > 0 ? user.getTime_account_locked() : 1;
     	int maxFailedAttempt = user.getMax_failed_attempt() > 0 ? user.getMax_failed_attempt() : 6;
+    	HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String password = request.getParameter("password");
+        
+     // Update lock account
+    	UserEntity userEn = new UserEntity();
+    	userEn.setId(user.getId());
     	
+    	
+    	Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
     	if (user.getId() == 0) {
     		message = "The account does not exist or has been locked. Please contact administrator.";
             throw new InvalidGrantException(message);
         } else if(user.getAccount_locked() == 1 || user.getFailed_attempt() >= maxFailedAttempt) {
-        	// Update lock account
-        	UserEntity userEn = new UserEntity();
-        	userEn.setId(user.getId());
         	
-        	
-        	Date date = new Date();
-    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    		userEn.setLock_time(format.format(date).toString());
-        	
+        	userEn.setLock_time(format.format(date).toString());
         	userEn.setFailed_attempt( user.getFailed_attempt() >= maxFailedAttempt ? maxFailedAttempt: (user.getFailed_attempt() + 1));
         	if( (user.getFailed_attempt() + 1) >= maxFailedAttempt) { userEn.setAccount_locked(1); }
         	employeeService.updateLockAccount(userEn);
@@ -78,6 +83,14 @@ public class CustomUserDetailService implements UserDetailsService {
 			}
     		
     		throw new InvalidGrantException(message);
+    		
+    	} else if(!password.equals(user.getPassword())) {
+    		userEn.setLock_time(format.format(date).toString());
+        	userEn.setFailed_attempt( user.getFailed_attempt() >= maxFailedAttempt ? maxFailedAttempt: (user.getFailed_attempt() + 1));
+        	if( (user.getFailed_attempt() + 1) >= maxFailedAttempt) { userEn.setAccount_locked(1); }
+        	employeeService.updateLockAccount(userEn);
+    		message = "Email or Password is incorrect.";
+    		throw new InvalidGrantException(message);
     	}
     	
         String passwd = "";
@@ -88,7 +101,6 @@ public class CustomUserDetailService implements UserDetailsService {
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
 		authorities.add(new SimpleGrantedAuthority(user.getRoles()));
 		user.setAuthorities(authorities);
-
 		return user;
     }
     
