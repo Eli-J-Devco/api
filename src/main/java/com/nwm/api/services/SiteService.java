@@ -423,6 +423,23 @@ public class SiteService extends DB {
 	}
 	
 	
+	/**
+	 * @description get all site group
+	 * @author Hung.Bui
+	 * @since 2023-08-23
+	 */
+
+	public List getAllSiteGroup(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Site.getAllSiteGroup", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	
 	

@@ -807,6 +807,16 @@
 		WHERE s.is_delete = 0;
 	</select>
 	
+	<select id="getAllSiteGroup" resultType="Map">
+		SELECT
+			id,
+			name AS label
+		FROM
+			site_group
+		WHERE
+			status = 1
+			AND is_delete = 0;
+	</select>
 	
 	
 	

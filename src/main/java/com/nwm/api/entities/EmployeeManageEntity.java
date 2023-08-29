@@ -53,6 +53,7 @@ public class EmployeeManageEntity{
 	private int failed_attempt;
 	private int account_locked;
 	private String lock_time;
+	private String filter;
 	
 	
 	public int getFailed_attempt() {
@@ -318,6 +319,12 @@ public class EmployeeManageEntity{
 	}
 	public void setPage_login(String page_login) {
 		this.page_login = page_login;
+	}
+	public String getFilter() {
+		return filter;
+	}
+	public void setFilter(String filter) {
+		this.filter = filter;
 	}
 	
 	
