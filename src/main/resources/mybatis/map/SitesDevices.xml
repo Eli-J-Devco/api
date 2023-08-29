@@ -371,7 +371,7 @@
 			d.devicename,
 			IFNULL(noc.totalNoProuduction, 0) AS totalNoProuduction,
 			IFNULL(IF(noc.id_device = com.id_device, com.totalNoCom - 1, com.totalNoCom), 0) AS totalNoCom,
-			IF(pp.percent_power_last_value <![CDATA[>]]>  pp.percent_power_energy_today, percent_power_last_value, pp.percent_power_energy_today) AS percent_power,
+			IF(noc.totalNoProuduction > 0 OR IFNULL(IF(noc.id_device = com.id_device, com.totalNoCom - 1, com.totalNoCom), 0) > 0, 1, pp.percent_power_last_value) AS percent_power,
 			dt.id as id_device_type
 		
 			FROM
@@ -405,10 +405,79 @@
 						d.id,
 						d.devicename,
 						IFNULL(d.last_value, 0) as active_power,
-						IF(d.last_value IS NOT NULL, ROUND(IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100),2), NULL) AS percent_power_last_value,
-						IF(d.energy_today IS NOT NULL, ROUND(IF ((d.energy_today IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0) OR (HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6 = 0), 0,
-															 (d.energy_today / IF(HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 06:00:00'))) <![CDATA[<]]> 13,
-																			IF(HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6 <![CDATA[<=]]> 0, 1, HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) - 6), 12)) / d.rating_ac_power * 100), 2), 0) AS percent_power_energy_today
+						CASE
+							WHEN HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[<=]]> s.start_date_time
+							THEN CASE 
+				              WHEN d.id_device_type = 1 THEN
+					              ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0.001, d.last_value) / (
+					                    SELECT 
+						                  IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
+						                FROM
+						                  device d
+						                WHERE
+						                  d.id_site = #{id_site}
+						                  AND d.id_device_type = 1
+					            ) * 100),2)
+				              ELSE
+					              ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0.001, d.last_value) / (
+					                    SELECT 
+						                  IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
+						                FROM
+						                  device d
+						                WHERE
+						                  d.id_site = #{id_site}
+						                  AND d.id_device_type = 3
+					            )  * 100),2)
+				            END
+				            
+				            WHEN (HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[<]]> s.end_date_time
+								AND HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[>]]> s.start_date_time)
+									THEN CASE 
+									WHEN d.id_device_type = 1 THEN
+									ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0, d.last_value) / (
+				                    SELECT 
+															IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
+														FROM
+															device d
+														WHERE
+															d.id_site =  #{id_site}
+															AND d.id_device_type = 1
+				            ) * 100),2)
+									ELSE
+									ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0, d.last_value) / (
+												SELECT 
+											IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
+										FROM
+											device d
+										WHERE
+											d.id_site =  #{id_site}
+											AND d.id_device_type = 3
+								)  * 100),2) 
+							END
+				         ELSE
+				            CASE
+				            WHEN d.id_device_type = 1 THEN
+				            	ROUND((IF(d.energy_today IS NULL OR d.energy_today <![CDATA[<=]]> 0, 0, d.energy_today) / (
+										SELECT 
+											IF(MAX(d.energy_today) <![CDATA[<=]]> 0 OR MAX(d.energy_today) IS NULL, 0.001, MAX(d.energy_today))
+										FROM
+											device d
+										WHERE
+											d.id_site = #{id_site}
+											AND d.id_device_type = 1
+								) * 100),2) 
+				            ELSE
+				            	ROUND((IF(d.energy_today IS NULL OR d.energy_today <![CDATA[<=]]> 0, 0, d.energy_today) / (
+										SELECT 
+											IF(MAX(d.energy_today) <![CDATA[<=]]> 0 OR MAX(d.energy_today) IS NULL, 0.001, MAX(d.energy_today))
+										FROM
+											device d
+										WHERE
+											d.id_site = #{id_site}
+											AND d.id_device_type = 3
+								) * 100),2)
+				            END
+				         END AS percent_power_last_value
 					FROM
 						device d
 						LEFT JOIN site s ON s.id = d.id_site
