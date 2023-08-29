@@ -285,6 +285,9 @@
 	            <when test="sort_column == 'manage_site'">
 	                st.manage_site_total ${order_by}
 	            </when>
+	            <when test="sort_column == 'locked'">
+	                e.status ${order_by}
+	            </when>
 	            <otherwise>
 			      t.group_roles ASC
 			    </otherwise>                                                  
