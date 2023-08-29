@@ -340,5 +340,65 @@ public class DeviceService extends DB {
 			log.error("Device.checkLowProduction", ex);
 		}
 	}
+	
+	/**
+	 * @description Get list device parameter
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description Get list device parameter having scale setting
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListScaledDeviceParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListScaledDeviceParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description update device parameter scale
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device, id_device_parameter, slope, offset
+	 */
+	public boolean saveDeviceParameterScale(DeviceEntity obj) {
+		try {
+			if (obj.getId() == 0 || obj.getId_device_parameter() == 0) return false;
+			Object insertId = insert("Device.saveDeviceParameterScale", obj);
+	        if(insertId == null) {
+	        	return false;
+	        }
+	        return true;
+		} catch (Exception ex) {
+			log.error("Device.saveDeviceParameterScale", ex);
+			return false;
+		}
+	}
 
 }

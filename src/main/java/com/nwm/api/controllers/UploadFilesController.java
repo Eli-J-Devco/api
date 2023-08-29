@@ -107,6 +107,7 @@ import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
+import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -326,6 +327,22 @@ public class UploadFilesController extends BaseController {
 													}
 													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
 													dataModelPVPowered.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered) != null ? (Double) pd.getReadMethod().invoke(dataModelPVPowered) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
+														}
+													}
+													
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataModelPVPowered);
 													
 													// low production alert
@@ -423,7 +440,23 @@ public class UploadFilesController extends BaseController {
 													
 													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
 													dataModelShark100.setId_device(item.getId());
-													serviceModelShark100.insertModelShark100(dataModelShark100);												
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100) != null ? (Double) pd.getReadMethod().invoke(dataModelShark100) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
+														}
+													}
+													
+													serviceModelShark100.insertModelShark100(dataModelShark100);
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
@@ -514,6 +547,21 @@ public class UploadFilesController extends BaseController {
 													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
 													dataModelRTC30000.setId_device(item.getId());
 													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000) != null ? (Double) pd.getReadMethod().invoke(dataModelRTC30000) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
+														}
+													}
+													
 													serviceModelRT1Class30000.insertModelRT1Class30000(dataModelRTC30000);
 													try  
 													{ 
@@ -600,6 +648,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
 													dataKippZonen.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen) != null ? (Double) pd.getReadMethod().invoke(dataKippZonen) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
+														}
+													}
+													
 													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataKippZonen);
 													try  
 													{ 
@@ -689,6 +753,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
 													dataModelIVTSolaronEXT.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT) != null ? (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
+														}
+													}
+													
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataModelIVTSolaronEXT);
 													
 													// low production alert
@@ -779,6 +859,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
 													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0) != null ? (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
+														}
+													}
+													
 													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataModelHukselfluxSr30d1DeviceclassV0);
 													try  
 													{ 
@@ -866,6 +962,21 @@ public class UploadFilesController extends BaseController {
 													
 													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
 													dataModelIMTSolarClass.setId_device(item.getId());
+
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass) != null ? (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
+														}
+													}
 													
 													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataModelIMTSolarClass);
 													try  
@@ -945,6 +1056,21 @@ public class UploadFilesController extends BaseController {
 													
 													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
 													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006) != null ? (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
+														}
+													}
 													
 													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataModelIMTSolarTmodulClass8006);
 													try  
@@ -1035,6 +1161,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
 													dataModelAdvancedEnergySolaron.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron) != null ? (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
+														}
+													}
+													
 													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataModelAdvancedEnergySolaron);
 
 													// low production alert
@@ -1129,6 +1271,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
 													dataModelPVPInverter.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter) != null ? (Double) pd.getReadMethod().invoke(dataModelPVPInverter) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
+														}
+													}
+													
 													serviceModelPVPInverter.insertModelPVPInverter(dataModelPVPInverter);
 
 													// low production alert
@@ -1229,6 +1387,22 @@ public class UploadFilesController extends BaseController {
 													
 													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
 													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint) != null ? (Double) pd.getReadMethod().invoke(dataModelChint) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
+														}
+													}
+													
+													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
 
 													// low production alert
@@ -1324,6 +1498,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
 													dataModelVeris.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris) != null ? (Double) pd.getReadMethod().invoke(dataModelVeris) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
+														}
+													}
+													
 													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataModelVeris);
 
 													// low production alert
@@ -1424,6 +1614,22 @@ public class UploadFilesController extends BaseController {
 													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
 													dataModelSatcon.setId_device(item.getId());
 													dataModelSatcon.setNvmActiveEnergy(!Lib.isBlank(words.get(31)) ? nvmEnergyTotal : Double.parseDouble("0.001"));
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon) != null ? (Double) pd.getReadMethod().invoke(dataModelSatcon) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
+														}
+													}
+													
 													serviceModelSatcon.insertModelSatconPvs357Inverter(dataModelSatcon);
 
 													// low production alert
@@ -1517,6 +1723,22 @@ public class UploadFilesController extends BaseController {
 													}
 													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
 													dataModelElkor.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor) != null ? (Double) pd.getReadMethod().invoke(dataModelElkor) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
+														}
+													}
+													
 													serviceModelElkor.insertModelElkorWattsonPVMeter(dataModelElkor);
 
 													// low production alert
@@ -1608,6 +1830,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
 													dataModelWkipp.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp) != null ? (Double) pd.getReadMethod().invoke(dataModelWkipp) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
+														}
+													}
+													
 													serviceModelWkipp.insertModelWKippZonenRT1(dataModelWkipp);
 													try  
 													{ 
@@ -1696,6 +1934,22 @@ public class UploadFilesController extends BaseController {
 													}
 													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
 													dataModelElkorP.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP) != null ? (Double) pd.getReadMethod().invoke(dataModelElkorP) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
+														}
+													}
+													
 													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
 
 													// low production alert
@@ -1799,6 +2053,21 @@ public class UploadFilesController extends BaseController {
 													dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? df.format(input1Power) : "0.001"));
 													dataModelABB.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? df.format(nvmActivePowerABB) : "0.001"));
 
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB) != null ? (Double) pd.getReadMethod().invoke(dataModelABB) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
+														}
+													}
+													
 													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
 
 													// low production alert
@@ -1890,6 +2159,21 @@ public class UploadFilesController extends BaseController {
 													
 													ModelLufftClass8020Entity dataModelLufft = serviceModelLufft.setModelLufftClass8020(line);
 													dataModelLufft.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft) != null ? (Double) pd.getReadMethod().invoke(dataModelLufft) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
+														}
+													}
 
 													serviceModelLufft.insertModelLufftClass8020(dataModelLufft);
 													try  
@@ -1974,6 +2258,21 @@ public class UploadFilesController extends BaseController {
 													
 													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
 													dataModelLufft.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft) != null ? (Double) pd.getReadMethod().invoke(dataModelLufft) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
+														}
+													}
 													
 													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataModelLufft);
 													try  
@@ -2062,6 +2361,22 @@ public class UploadFilesController extends BaseController {
 													dataModelSolectria226.setId_device(item.getId());
 													dataModelSolectria226.setACPowerOutput(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
 													dataModelSolectria226.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226) != null ? (Double) pd.getReadMethod().invoke(dataModelSolectria226) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
+														}
+													}
+													
 													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataModelSolectria226);
 
 													// low production alert
@@ -2248,6 +2563,22 @@ public class UploadFilesController extends BaseController {
 													dataModelSET.setI_AC_Power(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
 													dataModelSET.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
 													dataModelSET.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? df.format(nvmActiveEnergySET) : "0.001"));
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET) != null ? (Double) pd.getReadMethod().invoke(dataModelSET) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
+														}
+													}
+													
 													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
 
 													// low production alert
@@ -2346,6 +2677,22 @@ public class UploadFilesController extends BaseController {
 													}
 													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
 													dataModelXantrex.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex) != null ? (Double) pd.getReadMethod().invoke(dataModelXantrex) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
+														}
+													}
+													
 													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
 
 													// low production alert
@@ -2439,6 +2786,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
 													dataModelAdam4017.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017) != null ? (Double) pd.getReadMethod().invoke(dataModelAdam4017) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
+														}
+													}
+													
 													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataModelAdam4017);
 													
 													try  
@@ -2522,6 +2885,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
 													dataModelCSM1.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM1) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
+														}
+													}
+													
 													serviceModelCSM1.insertModelCampellScientificMeter1(dataModelCSM1);
 
 													// low production alert
@@ -2610,6 +2989,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
 													dataModelCSM2.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM2) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
+														}
+													}
+													
 													serviceModelCSM2.insertModelCampellScientificMeter2(dataModelCSM2);
 
 													// low production alert
@@ -2697,6 +3092,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
 													dataModelCSM3.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM3) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
+														}
+													}
+													
 													serviceModelCSM3.insertModelCampellScientificMeter3(dataModelCSM3);
 
 													// low production alert
@@ -2785,6 +3196,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
 													dataModelCSM4.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM4) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
+														}
+													}
+													
 													serviceModelCSM4.insertModelCampellScientificMeter4(dataModelCSM4);
 
 													// low production alert
@@ -2881,6 +3308,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
 													dataModelSatcon225.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225) != null ? (Double) pd.getReadMethod().invoke(dataModelSatcon225) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
+														}
+													}
+													
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
 
 													// low production alert
@@ -2978,6 +3421,22 @@ public class UploadFilesController extends BaseController {
 													
 													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
 													dataModelSunnyClass9775.setId_device(item.getId());
+													
+													// scaling device parameter
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775) != null ? (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775) : 0;
+															Double scaledValue = initialValue * slope + offset;
+															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
+														}
+													}
+													
 													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataModelSunnyClass9775);
 
 													// low production alert
@@ -3072,6 +3531,22 @@ public class UploadFilesController extends BaseController {
 														
 														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
 														dataModelVeris.setId_device(item.getId());
+														
+														// scaling device parameter
+														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris) != null ? (Double) pd.getReadMethod().invoke(dataModelVeris) : 0;
+																Double scaledValue = initialValue * slope + offset;
+																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
+															}
+														}
+														
 														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataModelVeris);
 
 														// low production alert
@@ -3165,6 +3640,22 @@ public class UploadFilesController extends BaseController {
 														
 														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
 														dataModelAE1000NX.setId_device(item.getId());
+														
+														// scaling device parameter
+														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX) != null ? (Double) pd.getReadMethod().invoke(dataModelAE1000NX) : 0;
+																Double scaledValue = initialValue * slope + offset;
+																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
+															}
+														}
+														
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataModelAE1000NX);
 
 														// low production alert
@@ -3249,6 +3740,22 @@ public class UploadFilesController extends BaseController {
 														
 														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
 														dataModelAesTx.setId_device(item.getId());
+														
+														// scaling device parameter
+														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx) != null ? (Double) pd.getReadMethod().invoke(dataModelAesTx) : 0;
+																Double scaledValue = initialValue * slope + offset;
+																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
+															}
+														}
+														
 														serviceModelAesTx.insertModelAesTxInverter(dataModelAesTx);
 
 														// low production alert
@@ -3334,6 +3841,22 @@ public class UploadFilesController extends BaseController {
 														
 														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
 														dataModelIon.setId_device(item.getId());
+														
+														// scaling device parameter
+														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
+																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon) != null ? (Double) pd.getReadMethod().invoke(dataModelIon) : 0;
+																Double scaledValue = initialValue * slope + offset;
+																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
+															}
+														}
+														
 														serviceModelIon.insertModelMeterIon8600(dataModelIon);
 
 														// low production alert
@@ -3435,7 +3958,7 @@ public class UploadFilesController extends BaseController {
 							message = "\nSUCCESS\n";
 						}
 						
-					} catch (IOException e) {
+					} catch (Exception e) {
 						message = "\nSUCCESS\n";
 //						System.out.println("e2: " + e);
 						// TODO Auto-generated catch block

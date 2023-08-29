@@ -223,4 +223,44 @@ public class DeviceController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list device parameter
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-device-parameter")
+	public Object getListDeviceParameter(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			List data = service.getListDeviceParameter(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update device parameter scale
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device, id_device_parameter, slope, offset
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/save-device-parameter-scale")
+	public Object saveDeviceParameterScale(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			boolean result = service.saveDeviceParameterScale(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
 }
