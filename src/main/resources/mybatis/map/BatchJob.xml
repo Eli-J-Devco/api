@@ -80,6 +80,11 @@
 		WHERE
 			d.`status` = 1 
 			AND d.id_site  = #{id}
+			AND a.`status` = 1
+			AND e.`status` = 1
+			AND a.is_delete = 0
+			AND e.is_delete = 0
+			AND d.is_delete = 0
 			AND a.open_send_mail = 0 AND a.`status` = 1
 			ORDER BY a.`status` DESC
 	</select>
@@ -105,6 +110,11 @@
 		WHERE
 			d.`status` = 1 
 			AND d.id_site  = #{id}
+			AND a.`status` = 1
+			AND e.`status` = 1
+			AND a.is_delete = 0
+			AND e.is_delete = 0
+			AND d.is_delete = 0
 			AND a.close_send_mail = 0 AND a.`status` = 0
 			ORDER BY a.`status` DESC
 	</select>
