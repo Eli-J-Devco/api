@@ -376,9 +376,22 @@
 			LEFT JOIN site s ON d.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN(
-				SELECT a.id_device, COUNT(a.id) AS totalError FROM alert a 
-				LEFT JOIN device d ON d.id = a.id_device
-				WHERE a.`status` = 1 AND d.`status` = 1 AND d.id_site = #{id_site} GROUP BY d.id
+				SELECT 
+					a.id_device,
+					COUNT(a.id) AS totalError
+				FROM
+					alert a
+					LEFT JOIN device d ON d.id = a.id_device
+					LEFT JOIN error e ON e.id = a.id_error
+				WHERE
+					a.`status` = 1
+					AND a.is_delete = 0
+					AND e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND d.is_delete = 0
+					AND d.id_site = #{id_site}
+				GROUP BY d.id
 			) p ON p.id_device = d.id
 			
 		WHERE
