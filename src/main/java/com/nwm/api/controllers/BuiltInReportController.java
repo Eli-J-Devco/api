@@ -476,12 +476,12 @@ public class BuiltInReportController extends BaseController {
 			cellStyleBg.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
 			
 			
-			sheet.addMergedRegion(new CellRangeAddress(22 + categories.size(), 22 + categories.size(), 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(23 + categories.size(), 23 + categories.size(), 0, 5));
-			sheet.addMergedRegion(new CellRangeAddress(24 + categories.size(), 24 + categories.size(), 0, 5));
-			sheet.addMergedRegion(new CellRangeAddress(25 + categories.size(), 25 + categories.size(), 0, 5));
+			sheet.addMergedRegion(new CellRangeAddress(27 + categories.size(), 27 + categories.size(), 0, 1));
+			sheet.addMergedRegion(new CellRangeAddress(28 + categories.size(), 28 + categories.size(), 0, 5));
+			sheet.addMergedRegion(new CellRangeAddress(29 + categories.size(), 29 + categories.size(), 0, 5));
+			sheet.addMergedRegion(new CellRangeAddress(30 + categories.size(), 30 + categories.size(), 0, 5));
 			
-			Row row7 = sheet.createRow(22 + categories.size());
+			Row row7 = sheet.createRow(27 + categories.size());
 			row7.setHeight((short) 315);
 			Cell cell7 = row7.createCell(0);
 			cell7.setCellStyle(cellStyleBg);
@@ -499,21 +499,21 @@ public class BuiltInReportController extends BaseController {
 			cellStyleNote.setAlignment(HorizontalAlignment.LEFT);
 			
 			
-			Row row8 = sheet.createRow(23 + categories.size());
+			Row row8 = sheet.createRow(28 + categories.size());
 			row8.setHeight((short) 315);
 			Cell cell8 = row8.createCell(0);
 			cell8.setCellStyle(cellStyleNote);
 			cell8.setCellValue("The Actual Generation is the energy reported by the production meters.");
 			
 			
-			Row row9 = sheet.createRow(24 + categories.size());
+			Row row9 = sheet.createRow(29 + categories.size());
 			row8.setHeight((short) 315);
 			Cell cell9 = row9.createCell(0);
 			cell9.setCellStyle(cellStyleNote);
 			cell9.setCellValue("The Expected Generation is calculated based on measured irradiance and module temperature.");
 			
 			
-			Row row10 = sheet.createRow(25 + categories.size());
+			Row row10 = sheet.createRow(30 + categories.size());
 			row10.setHeight((short) 315);
 			Cell cell10 = row10.createCell(0);
 			cell10.setCellStyle(cellStyleNote);
@@ -684,7 +684,7 @@ public class BuiltInReportController extends BaseController {
 						    XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
 							
 							//====== first line chart============================================================
-							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 20, 8, 32);
+							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 20, 8, 37);
 							chart = drawing1.createChart(anchor1);
 							chart.setTitleText("Performance");
 							chart.setTitleOverlay(false);
