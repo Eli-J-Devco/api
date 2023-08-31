@@ -54,8 +54,22 @@ public class EmployeeManageEntity{
 	private int account_locked;
 	private String lock_time;
 	private String filter;
+	private int is_send_email_unblock;
+	private String hash_id_user;
 	
 	
+	public String getHash_id_user() {
+		return hash_id_user;
+	}
+	public void setHash_id_user(String hash_id_user) {
+		this.hash_id_user = hash_id_user;
+	}
+	public int getIs_send_email_unblock() {
+		return is_send_email_unblock;
+	}
+	public void setIs_send_email_unblock(int is_send_email_unblock) {
+		this.is_send_email_unblock = is_send_email_unblock;
+	}
 	public int getFailed_attempt() {
 		return failed_attempt;
 	}

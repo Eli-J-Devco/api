@@ -37,6 +37,21 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
+	 * @description update account lock and is_send_email_unblock
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param id
+	 */
+	public boolean updateLockAccountAndEmail(UserEntity obj) {
+		try {
+			return update("Employee.updateLockAccountAndEmail", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockAccountAndEmail", ex);
+			return false;
+		}
+	}
+	
+	/**
 	 * @description get list role
 	 * @author long.pham
 	 * @since 2021-01-05
@@ -442,6 +457,21 @@ public class EmployeeService extends DB {
 			return update("Employee.updateUnLockedAccount", obj) > 0;
 		} catch (Exception ex) {
 			log.error("Employee.updateUnLockedAccount", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateSendEmailUnblock(UserEntity obj) {
+		try {
+			return update("Employee.updateSendEmailUnblock", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateSendEmailUnblock", ex);
 			return false;
 		}
 	}

@@ -60,6 +60,7 @@ public class SSLReadServerController extends BaseController {
 				UserEntity userItem = (UserEntity) listEmployee.get(i);
 				userItem.setAccount_locked(0);
 				userItem.setFailed_attempt(0);
+				userItem.setIs_send_email_unblock(0);
 				userItem.setId(userItem.getId());
 				
 				
@@ -81,7 +82,7 @@ public class SSLReadServerController extends BaseController {
 				double setTime = ( userItem.getTime_account_locked()) * 60;
 				
 				if((totalMinutes) > (int) setTime) {
-					employeeService.updateLockAccount(userItem);
+					employeeService.updateLockAccountAndEmail(userItem);
 				}
 			}
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);

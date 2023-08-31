@@ -57,10 +57,17 @@ public class UserEntity implements UserDetails, Authentication{
 	private String lock_time;
 	private int max_failed_attempt;
 	private double time_account_locked;
+	private int is_send_email_unblock;
 	
 	
 	
-
+	
+	public int getIs_send_email_unblock() {
+		return is_send_email_unblock;
+	}
+	public void setIs_send_email_unblock(int is_send_email_unblock) {
+		this.is_send_email_unblock = is_send_email_unblock;
+	}
 	public int getMax_failed_attempt() {
 		return max_failed_attempt;
 	}
