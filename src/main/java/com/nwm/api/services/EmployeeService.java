@@ -445,5 +445,20 @@ public class EmployeeService extends DB {
 			return false;
 		}
 	}
+	
+	/**
+	 * @description update unlock account
+	 * @author duy.phan
+	 * @since 2022-12-22
+	 * @param id
+	 */
+	public boolean updateSendEmailUnblock(UserEntity obj) {
+		try {
+			return update("Employee.updateSendEmailUnblock", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateSendEmailUnblock", ex);
+			return false;
+		}
+	}
 
 }
