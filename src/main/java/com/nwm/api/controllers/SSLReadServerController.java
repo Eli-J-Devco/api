@@ -82,7 +82,7 @@ public class SSLReadServerController extends BaseController {
 				double setTime = ( userItem.getTime_account_locked()) * 60;
 				
 				if((totalMinutes) > (int) setTime) {
-					employeeService.updateLockAccount(userItem);
+					employeeService.updateLockAccountAndEmail(userItem);
 				}
 			}
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);

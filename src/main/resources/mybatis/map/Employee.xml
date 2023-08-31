@@ -340,6 +340,16 @@
 		SET
 			`failed_attempt` = #{failed_attempt},
 			`account_locked` = #{account_locked},
+			`lock_time` = #{lock_time}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateLockAccountAndEmail">
+		UPDATE `employee`
+		SET
+			`failed_attempt` = #{failed_attempt},
+			`account_locked` = #{account_locked},
 			`lock_time` = #{lock_time},
 			`is_send_email_unblock` = #{is_send_email_unblock}
 		WHERE

@@ -37,6 +37,21 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
+	 * @description update account lock and is_send_email_unblock
+	 * @author long.pham
+	 * @since 2021-01-06
+	 * @param id
+	 */
+	public boolean updateLockAccountAndEmail(UserEntity obj) {
+		try {
+			return update("Employee.updateLockAccountAndEmail", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateLockAccountAndEmail", ex);
+			return false;
+		}
+	}
+	
+	/**
 	 * @description get list role
 	 * @author long.pham
 	 * @since 2021-01-05
