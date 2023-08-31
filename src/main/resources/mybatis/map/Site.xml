@@ -95,8 +95,11 @@
 			s.`status` = 1 
 			AND s.is_delete = 0 
 			AND a.`status` = 1
+			AND a.is_delete = 0
 			AND e.`status` = 1
 			AND e.`is_delete` = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			<if test="id_sites != null">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">

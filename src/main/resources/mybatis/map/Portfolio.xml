@@ -298,8 +298,16 @@
 					site s
 					LEFT JOIN device d ON d.id_site = s.id
 					RIGHT JOIN alert a ON a.id_device = d.id 
+					LEFT JOIN error e ON e.id = a.id_error
+				WHERE
+					s.`status` = 1 
+					AND s.is_delete = 0 
 					AND a.`status` = 1
-					LEFT JOIN error er ON a.id_error = er.id
+					AND a.`is_delete` = 0
+					AND e.`status` = 1
+					AND e.`is_delete` = 0
+					AND d.`status` = 1
+					AND d.`is_delete` = 0
 				GROUP BY s.id 
 			) er ON er.id_site = s.id
 			
@@ -512,6 +520,10 @@
 			WHERE
 				a.`status` = 1 
 				AND e.`status` = 1 
+				AND a.`is_delete` = 0
+				AND e.`is_delete` = 0
+				AND d.`status` = 1
+				AND d.`is_delete` = 0
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">

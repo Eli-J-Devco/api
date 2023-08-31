@@ -251,7 +251,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			
-			WHERE e.`status` = 1 AND e.is_delete = 0
+			WHERE e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 			AND l.is_delete = 0
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
@@ -381,7 +381,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			
-			WHERE  e.`status` = 1 AND e.is_delete = 0
+			WHERE  e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 			AND l.is_delete = 0 
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
@@ -1111,6 +1111,10 @@
 				e.id_error_level = 13
 				AND a.`status` = 1 
 				AND e.`status` = 1
+				AND a.is_delete = 0
+				AND e.is_delete = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1133,6 +1137,10 @@
 				e.id_error_level = 11
 				AND a.`status` = 1 
 				AND e.`status` = 1 
+				AND a.is_delete = 0
+				AND e.is_delete = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1155,6 +1163,10 @@
 			WHERE
 				a.`status` = 1 
 				AND e.`status` = 1 
+				AND a.is_delete = 0
+				AND e.is_delete = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
