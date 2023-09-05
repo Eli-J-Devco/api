@@ -5,13 +5,11 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -28,7 +26,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.nwm.api.controllers.BaseController;
-import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.entities.UserEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;

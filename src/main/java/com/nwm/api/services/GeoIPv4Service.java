@@ -5,6 +5,9 @@
 *********************************************************/
 package com.nwm.api.services;
 import com.maxmind.geoip.LookupService;
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
+
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -13,8 +16,9 @@ public class GeoIPv4Service{
 	
 	static {
         try {
+        	String filePath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/GeoLiteCity.dat" ;
             lookUp = new LookupService(
-            		GeoIPv4Service.class.getResource("/GeoLiteCity.dat").getFile(),
+            		GeoIPv4Service.class.getResource(filePath).getFile(),
                     LookupService.GEOIP_MEMORY_CACHE);
 
             System.out.println("GeoIP Database loaded: " + lookUp.getDatabaseInfo());
