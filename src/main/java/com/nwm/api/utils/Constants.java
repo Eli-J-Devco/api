@@ -37,6 +37,7 @@ public class Constants {
 	public static final String appDev = "application-dev";
 	public static final String appTest = "application-test";
 	public static final String appProd = "application-prod";
+	public static final String appStaging = "application-staging";
 	
 	public static final String sqlMapconfigXml = "mybatis/SQLMapconfig.xml";
 	public static final String appConfigFileName="application";
