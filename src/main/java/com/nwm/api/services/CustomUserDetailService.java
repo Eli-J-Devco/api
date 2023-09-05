@@ -102,7 +102,8 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     				try {
     					// Send email to user to unlock
     					String domain = Lib.getDomain();
-    					String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
+//    					String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
+    					String ip = InetAddress.getLocalHost().getHostAddress();
     				    if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
     				    Assert.isTrue(ip.chars().filter($ -> $ == '.').count() == 3, "Illegal IP: " + ip);
     			        String locationAddress = GeoIPv4Service.getLocation(InetAddress.getByName(ip)).toString();
