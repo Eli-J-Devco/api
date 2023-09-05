@@ -104,16 +104,11 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     					System.out.println("IP: " + ip);
     				    if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
     				    Assert.isTrue(ip.chars().filter($ -> $ == '.').count() == 3, "Illegal IP: " + ip);
-    				    
-//    			        String locationAddress = GeoIPv4Service.getLocation(InetAddress.getByName(ip)).toString();
-//    			        
-//    			        System.out.println("IP Adress: " + locationAddress);
-    				   
     					StringBuilder bodyHtml = new StringBuilder();
     					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
     							+ "<h1 style=\"text-align: left;\">Account Blocked</h1>"
     							+ "<p style=\"text-align: left;\">Next Wave Energy Monitoring system detected suspicious attempts to login to your account from ip: </p>"
-    							+ "<strong>"+ ip +" </strong>"
+    							+ "<strong>"+ ip +"</strong>"
 //    							+ " location: "
 //    							+ "<strong>"+ locationAddress +"</strong>"
     							+ "<span>. If this was you <a href=\"" + domain + "/unlock-account/"+user.getHash_id_user()+"\" target=\\\"_blank\\\" >click here</a> to unblock your account. </span>"

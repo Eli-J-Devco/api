@@ -91,6 +91,10 @@ Lib {
 			ResourceBundle resourceBundleProd = ResourceBundle.getBundle(Constants.appProd);
 			domain = readProperty(resourceBundleProd, "domain", "");
 			break;
+		case "staging":
+			ResourceBundle resourceBundleStaging = ResourceBundle.getBundle(Constants.appProd);
+			domain = readProperty(resourceBundleStaging, "domain", "");
+			break;
 		default:
 			ResourceBundle resourceBundleDev = ResourceBundle.getBundle(Constants.appDev);
 			domain = readProperty(resourceBundleDev, "domain", "");
