@@ -15,6 +15,8 @@
 		<result property="logo" column="logo" />
 		<result property="table_column" column="table_column" />
 		<result property="alert_filter" column="alert_filter" />
+		<result property="hash_id_user" column="hash_id_user" />
+		
 	</resultMap>
 	
 	
@@ -109,6 +111,7 @@
 			u.alert_filter,
 			u.lock_time,
 			u.account_locked,
+			SHA2(u.`id`, 256) AS hash_id_user,
 			u.failed_attempt,
 			u.is_send_email_unblock,
 			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
@@ -206,7 +209,8 @@
 			s.page_login,
 			e.account_locked,
 			e.failed_attempt,
-			e.lock_time
+			e.lock_time,
+			SHA2(e.`id`, 256) AS hash_id_user
 		FROM
 			`employee` e	
 			
@@ -542,7 +546,7 @@
 			`lock_time` = #{lock_time},
 			`is_send_email_unblock` = #{is_send_email_unblock}
 		WHERE
-			`id` = #{id}
+			SHA2(`id`, 256) = #{hash_id_user}
 	</update>
 	
 	<update id="updateSendEmailUnblock">
@@ -550,7 +554,7 @@
 		SET
 			`is_send_email_unblock` = #{is_send_email_unblock}
 		WHERE
-			`id` = #{id}
+			SHA2(`id`, 256) = #{hash_id_user}
 	</update>
   	
 </mapper>

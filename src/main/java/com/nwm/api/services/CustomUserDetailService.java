@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.math.BigInteger;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,6 +55,10 @@ public class CustomUserDetailService extends BaseController implements UserDetai
 
     	String usernameLogin = split[0];
     	String customerType = split[1];
+    	
+    	
+    	
+        
 
     	UserEntity user = new UserEntity();
     	if(customerType.equals("1d607a2011ba58ed52cc32db71ffd37d")) {
@@ -99,16 +105,16 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     					String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
     				    if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
     				    Assert.isTrue(ip.chars().filter($ -> $ == '.').count() == 3, "Illegal IP: " + ip);
-    				    
-    				    String id_hashString =  secretCard.encrypt(Integer.toString(user.getId()));
-    				    user.setHash_id_user(id_hashString);
+    			        String locationAddress = GeoIPv4Service.getLocation(InetAddress.getByName(ip)).toString();
     				   
     					StringBuilder bodyHtml = new StringBuilder();
     					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
-    							+ "<h1 style=\"text-align: center;\">Account Blocked</h1>"
-    							+ "<p style=\"text-indent: 50px;\">Next Wave Energy Monitoring system detected suspicious attempts to login to your account from ip: </p>"
-    							+ "<strong>"+ip+"</strong>"
-    							+ "<span>.If this was you <a href=\"" + domain + "/unlock-account/"+user.getHash_id_user()+"\" target=\\\"_blank\\\" >click here</a> to unblock your account. </span>"
+    							+ "<h1 style=\"text-align: left;\">Account Blocked</h1>"
+    							+ "<p style=\"text-align: left;\">Next Wave Energy Monitoring system detected suspicious attempts to login to your account from ip: </p>"
+    							+ "<strong>"+ ip +" </strong>"
+    							+ " location: "
+    							+ "<strong>"+ locationAddress +"</strong>"
+    							+ "<span>. If this was you <a href=\"" + domain + "/unlock-account/"+user.getHash_id_user()+"\" target=\\\"_blank\\\" >click here</a> to unblock your account. </span>"
     							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
     					+ "                <tbody>\n");
     								
@@ -116,7 +122,7 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     					String subject = "User Account Blocked";
     					String tags = "run_cron_job";
     					String fromName = "NEXT WAVE ENERGY MONITORING INC";
-    					String mailTo = "dphan@nwemon.com";
+    					String mailTo = user.getUser_name();
     					String mailToCC = "";
     					String mailToBCC = "";
     					
@@ -135,7 +141,7 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     						}
     					} catch (Exception e) {
     						// TODO: handle exception
-    						message = "send mail error";
+    						message = "Send email error.";
     						throw new InvalidGrantException(message);
     					}
     			}
@@ -167,5 +173,8 @@ public class CustomUserDetailService extends BaseController implements UserDetai
 		user.setAuthorities(authorities);
 		return user;
     }
+    
+    
+    
     
 }

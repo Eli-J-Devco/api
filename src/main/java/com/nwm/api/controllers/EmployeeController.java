@@ -440,9 +440,6 @@ public class EmployeeController extends BaseController {
 					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 				}
 				
-				String id_user = secretCard.decrypt(hashId);
-				obj.setId(Integer.parseInt(id_user));
-				
 				
 				boolean data = service.updateUnlockedAccount(obj);
 				return this.jsonResult(true, "This Account is unlocked", data, 1);
