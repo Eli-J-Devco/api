@@ -104,9 +104,14 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     					String domain = Lib.getDomain();
 //    					String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
     					String ip = InetAddress.getLocalHost().getHostAddress();
+    					System.out.println("IP: " + ip);
     				    if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
     				    Assert.isTrue(ip.chars().filter($ -> $ == '.').count() == 3, "Illegal IP: " + ip);
+    				    System.out.println("IP: " + ip);
+    				    
     			        String locationAddress = GeoIPv4Service.getLocation(InetAddress.getByName(ip)).toString();
+    			        
+    			        System.out.println("IP Adress: " + locationAddress);
     				   
     					StringBuilder bodyHtml = new StringBuilder();
     					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
