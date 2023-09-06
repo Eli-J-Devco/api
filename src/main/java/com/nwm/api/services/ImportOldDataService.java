@@ -139,6 +139,20 @@ public class ImportOldDataService extends DB {
 			}
 			
 			switch (obj.getTable_name()) {
+			case "model_satcon_powergate_225_inverter":
+				obj.setId_device_type(1);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelSatconPowergate225Inverter.insertModelSatconPowergate225Inverter", dataList.get(i));					
+				}				
+				break;
+				
+			case "model_sunny_central_class9775_inverter":
+				obj.setId_device_type(1);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelSunnyCentralClass9775Inverter.insertModelSunnyCentralClass9775Inverter", dataList.get(i));					
+				}				
+				break;
+				
 			case "model_meter_ion_8600":
 				obj.setId_device_type(3);
 				for (int i = 0; i < dataList.size(); i++) {
