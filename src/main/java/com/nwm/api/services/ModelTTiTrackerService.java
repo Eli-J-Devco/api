@@ -127,7 +127,7 @@ public class ModelTTiTrackerService extends DB {
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelTTiTracker(obj);
 	        }
 			
@@ -180,7 +180,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		ModelTTiTrackerEntity rowItem = (ModelTTiTrackerEntity) checkAlertWriteCode(obj);
 		
-		if(Mode == 0 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 0 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(0);
 				if (errorId > 0) {
@@ -230,7 +230,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 1 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 1 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(1);
 				if (errorId > 0) {
@@ -277,7 +277,7 @@ public class ModelTTiTrackerService extends DB {
 		}
 		
 		// -------------------------------------------
-		if(Mode == 2 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 2 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(2);
 				if (errorId > 0) {
@@ -325,7 +325,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 3 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 3 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(3);
 				if (errorId > 0) {
@@ -372,7 +372,7 @@ public class ModelTTiTrackerService extends DB {
 		}
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 0 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 0 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(40);
 				if (errorId > 0) {
@@ -420,7 +420,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 1 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 1 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(41);
 				if (errorId > 0) {
@@ -467,7 +467,7 @@ public class ModelTTiTrackerService extends DB {
 		}
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 2 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 2 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(42);
 				if (errorId > 0) {
@@ -514,7 +514,7 @@ public class ModelTTiTrackerService extends DB {
 		}
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 3 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 3 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(43);
 				if (errorId > 0) {
@@ -562,7 +562,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 4 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 4 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(44);
 				if (errorId > 0) {
@@ -610,7 +610,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 5 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 5 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(45);
 				if (errorId > 0) {
@@ -658,7 +658,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(Mode == 4 && SubMode == 6 && rowItem.getTotalMode() >= 4) {
+		if(Mode == 4 && SubMode == 6 && rowItem.getTotalMode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(46);
 				if (errorId > 0) {
@@ -707,7 +707,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(MotorFault == 1 && rowItem.getTotalMotorFault() >= 4) {
+		if(MotorFault == 1 && rowItem.getTotalMotorFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(5);
 				if (errorId > 0) {
@@ -755,7 +755,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(RemoteInterfaceFault == 1 && rowItem.getTotalRemoteInterfaceFault() >= 4) {
+		if(RemoteInterfaceFault == 1 && rowItem.getTotalRemoteInterfaceFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(6);
 				if (errorId > 0) {
@@ -803,7 +803,7 @@ public class ModelTTiTrackerService extends DB {
 		
 		
 		// -------------------------------------------
-		if(InclinometerFault == 1 && rowItem.getTotalInclinometerFault() >= 4) {
+		if(InclinometerFault == 1 && rowItem.getTotalInclinometerFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertTTiTracker(7);
 				if (errorId > 0) {

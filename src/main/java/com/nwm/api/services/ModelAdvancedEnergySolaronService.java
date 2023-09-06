@@ -129,7 +129,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelAdvancedEnergySolaron(obj);
 	        }
 			
@@ -180,7 +180,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		ModelAdvancedEnergySolaronEntity rowItem = (ModelAdvancedEnergySolaronEntity) checkAlertWriteCode(obj);
 		
-		if(warningCode > 0 && rowItem.getTotalWarning() >= 4) {
+		if(warningCode > 0 && rowItem.getTotalWarning() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(warningCode);
 				System.out.println("warning toBinary: " + toBinary);
@@ -244,7 +244,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 
 		
-		if(statusCode > 0  && rowItem.getTotalStatus() >= 4) {
+		if(statusCode > 0  && rowItem.getTotalStatus() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(statusCode);
 				System.out.println("status toBinary: " + toBinary);
@@ -308,7 +308,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		
 		
-		if(limitCode > 0  && rowItem.getTotalLimits() >= 4) {
+		if(limitCode > 0  && rowItem.getTotalLimits() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(limitCode);
 				System.out.println("limits toBinary: " + toBinary);
@@ -371,7 +371,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		}
 		
 
-		if (fault1 > 0  && rowItem.getTotalFault1() >= 4) {
+		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault1);
 				System.out.println("fault1 toBinary: " + toBinary);
@@ -434,7 +434,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			}
 		}
 
-		if (fault2 > 0  && rowItem.getTotalFault2() >= 4) {
+		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
 			try {
 				String toBinary2 = Integer.toBinaryString(fault2);
 				System.out.println("fault2 toBinary: " + toBinary2);
@@ -496,7 +496,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			}
 		}
 
-		if (fault3 > 0   && rowItem.getTotalFault3() >= 4) {
+		if (fault3 > 0   && rowItem.getTotalFault3() >= 20) {
 			try {
 				String toBinary3 = Integer.toBinaryString(fault3);
 				System.out.println("fault3 toBinary: " + toBinary3);

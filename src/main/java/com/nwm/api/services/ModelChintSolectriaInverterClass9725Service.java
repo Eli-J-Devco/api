@@ -152,7 +152,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 			int hours = zdtNowLosAngeles.getHour();
 
-			if (hours >= 8 && hours <= 18) {
+			if (hours >= 9 && hours <= 17) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 
@@ -204,7 +204,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 		ModelChintSolectriaInverterClass9725Entity rowItem = (ModelChintSolectriaInverterClass9725Entity) checkAlertWriteCode(
 				obj);
 
-		if (faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 4) {
+		if (faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(faultCode2);
 				System.out.println("status toBinary: " + toBinary);
@@ -266,7 +266,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 4) {
+		if (faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode1);
@@ -329,7 +329,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (faultCode0 > 0 && rowItem.getTotalFaultCode0() >= 4) {
+		if (faultCode0 > 0 && rowItem.getTotalFaultCode0() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode0);
@@ -392,7 +392,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (WarnCode > 0 && rowItem.getTotalWarnCode() >= 4) {
+		if (WarnCode > 0 && rowItem.getTotalWarnCode() >= 20) {
 
 			try {
 				String toBinary = Integer.toBinaryString(WarnCode);
@@ -455,7 +455,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			}
 		}
 
-		if (PermanentFaultCode > 0 && rowItem.getTotalPermanentFaultCode() >= 4) {
+		if (PermanentFaultCode > 0 && rowItem.getTotalPermanentFaultCode() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(PermanentFaultCode);
 				System.out.println("status toBinary: " + toBinary);
