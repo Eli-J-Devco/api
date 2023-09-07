@@ -107,8 +107,8 @@ public class DeviceEntity {
 	
 	private String date_from;
 	private String date_to;
-	private Double parameter_slope;
-	private Double parameter_offset;
+	private String variable_name;
+	private String parameter_scale;
 	private String parameter_slug;
 	private int id_device_parameter;
 	
@@ -684,18 +684,6 @@ public class DeviceEntity {
 	public void setDate_to(String date_to) {
 		this.date_to = date_to;
 	}
-	public Double getParameter_slope() {
-		return parameter_slope;
-	}
-	public void setParameter_slope(Double parameter_slope) {
-		this.parameter_slope = parameter_slope;
-	}
-	public Double getParameter_offset() {
-		return parameter_offset;
-	}
-	public void setParameter_offset(Double parameter_offset) {
-		this.parameter_offset = parameter_offset;
-	}
 	public int getId_device_parameter() {
 		return id_device_parameter;
 	}
@@ -707,6 +695,18 @@ public class DeviceEntity {
 	}
 	public void setParameter_slug(String parameter_slug) {
 		this.parameter_slug = parameter_slug;
+	}
+	public String getParameter_scale() {
+		return parameter_scale;
+	}
+	public void setParameter_scale(String parameter_scale) {
+		this.parameter_scale = parameter_scale;
+	}
+	public String getVariable_name() {
+		return variable_name;
+	}
+	public void setVariable_name(String variable_name) {
+		this.variable_name = variable_name;
 	}
 	
 	

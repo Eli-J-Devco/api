@@ -15,6 +15,9 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.utils.Constants;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+import net.objecthunter.exp4j.ValidationResult;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -252,6 +255,13 @@ public class DeviceController extends BaseController {
 	@PostMapping("/save-device-parameter-scale")
 	public Object saveDeviceParameterScale(@RequestBody DeviceEntity obj) {
 		try {
+			// check whether user input correct scale or not
+			ValidationResult expression = new ExpressionBuilder(obj.getParameter_scale()).variable(obj.getVariable_name()).build().setVariable(obj.getVariable_name(), 1).validate();
+			if (!expression.isValid()) {
+				return this.jsonResult(false, Constants.SAVE_SCALE_ERROR, null, 0);
+			}
+			if (obj.getParameter_scale().trim().equals(obj.getVariable_name())) obj.setParameter_scale(null);
+			
 			DeviceService service = new DeviceService();
 			boolean result = service.saveDeviceParameterScale(obj);
 			if (result) {

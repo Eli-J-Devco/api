@@ -196,6 +196,7 @@ public class Constants {
     public static String GET_SUCCESS_MSG = Translator.toLocale("GET.SUCCESS");
     public static String SENT_EMAIL_SUCCESS = Translator.toLocale("EMAIL.SUCCESS");
     public static String SENT_EMAIL_ERROR = Translator.toLocale("EMAIL.ERROR");
+    public static String SAVE_SCALE_ERROR = Translator.toLocale("SCALE.ERROR");
     
     public static String GET_ERROR_MSG = Translator.toLocale("GET.ERROR");
     public static String COMPANY_EMAIL_EXIST = Translator.toLocale("COMPANY.EXIST");

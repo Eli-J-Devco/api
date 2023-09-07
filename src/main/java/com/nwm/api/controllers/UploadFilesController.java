@@ -107,6 +107,9 @@ import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
+import net.objecthunter.exp4j.Expression;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
@@ -334,11 +337,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered) != null ? (Double) pd.getReadMethod().invoke(dataModelPVPowered) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
 														}
 													}
@@ -447,11 +451,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100) != null ? (Double) pd.getReadMethod().invoke(dataModelShark100) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
 														}
 													}
@@ -553,11 +558,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000) != null ? (Double) pd.getReadMethod().invoke(dataModelRTC30000) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
 														}
 													}
@@ -655,11 +661,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen) != null ? (Double) pd.getReadMethod().invoke(dataKippZonen) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
 														}
 													}
@@ -760,11 +767,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT) != null ? (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
 														}
 													}
@@ -866,11 +874,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0) != null ? (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
 														}
 													}
@@ -969,11 +978,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass) != null ? (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
 														}
 													}
@@ -1063,11 +1073,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006) != null ? (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
 														}
 													}
@@ -1168,11 +1179,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron) != null ? (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
 														}
 													}
@@ -1278,11 +1290,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter) != null ? (Double) pd.getReadMethod().invoke(dataModelPVPInverter) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
 														}
 													}
@@ -1393,11 +1406,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint) != null ? (Double) pd.getReadMethod().invoke(dataModelChint) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
 														}
 													}
@@ -1505,11 +1519,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris) != null ? (Double) pd.getReadMethod().invoke(dataModelVeris) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
 														}
 													}
@@ -1621,11 +1636,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon) != null ? (Double) pd.getReadMethod().invoke(dataModelSatcon) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
 														}
 													}
@@ -1730,11 +1746,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor) != null ? (Double) pd.getReadMethod().invoke(dataModelElkor) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
 														}
 													}
@@ -1837,11 +1854,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp) != null ? (Double) pd.getReadMethod().invoke(dataModelWkipp) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
 														}
 													}
@@ -1941,11 +1959,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP) != null ? (Double) pd.getReadMethod().invoke(dataModelElkorP) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
 														}
 													}
@@ -2059,11 +2078,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB) != null ? (Double) pd.getReadMethod().invoke(dataModelABB) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
 														}
 													}
@@ -2166,11 +2186,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft) != null ? (Double) pd.getReadMethod().invoke(dataModelLufft) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
 														}
 													}
@@ -2265,11 +2286,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft) != null ? (Double) pd.getReadMethod().invoke(dataModelLufft) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
 														}
 													}
@@ -2368,11 +2390,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226) != null ? (Double) pd.getReadMethod().invoke(dataModelSolectria226) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
 														}
 													}
@@ -2570,11 +2593,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET) != null ? (Double) pd.getReadMethod().invoke(dataModelSET) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
 														}
 													}
@@ -2684,11 +2708,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex) != null ? (Double) pd.getReadMethod().invoke(dataModelXantrex) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
 														}
 													}
@@ -2793,11 +2818,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017) != null ? (Double) pd.getReadMethod().invoke(dataModelAdam4017) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
 														}
 													}
@@ -2892,11 +2918,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM1) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
 														}
 													}
@@ -2996,11 +3023,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM2) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
 														}
 													}
@@ -3099,11 +3127,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM3) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
 														}
 													}
@@ -3203,11 +3232,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4) != null ? (Double) pd.getReadMethod().invoke(dataModelCSM4) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
 														}
 													}
@@ -3315,11 +3345,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225) != null ? (Double) pd.getReadMethod().invoke(dataModelSatcon225) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
 														}
 													}
@@ -3428,11 +3459,12 @@ public class UploadFilesController extends BaseController {
 														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 															String slug = scaledDeviceParameter.getParameter_slug();
-															Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-															Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775) != null ? (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775) : 0;
-															Double scaledValue = initialValue * slope + offset;
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
 														}
 													}
@@ -3538,11 +3570,12 @@ public class UploadFilesController extends BaseController {
 															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 																String slug = scaledDeviceParameter.getParameter_slug();
-																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris) != null ? (Double) pd.getReadMethod().invoke(dataModelVeris) : 0;
-																Double scaledValue = initialValue * slope + offset;
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
 															}
 														}
@@ -3647,11 +3680,12 @@ public class UploadFilesController extends BaseController {
 															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 																String slug = scaledDeviceParameter.getParameter_slug();
-																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX) != null ? (Double) pd.getReadMethod().invoke(dataModelAE1000NX) : 0;
-																Double scaledValue = initialValue * slope + offset;
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
 															}
 														}
@@ -3747,11 +3781,12 @@ public class UploadFilesController extends BaseController {
 															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 																String slug = scaledDeviceParameter.getParameter_slug();
-																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx) != null ? (Double) pd.getReadMethod().invoke(dataModelAesTx) : 0;
-																Double scaledValue = initialValue * slope + offset;
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
 															}
 														}
@@ -3848,11 +3883,12 @@ public class UploadFilesController extends BaseController {
 															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
 																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
 																String slug = scaledDeviceParameter.getParameter_slug();
-																Double slope = scaledDeviceParameter.getParameter_slope() != null ? scaledDeviceParameter.getParameter_slope() : 1;
-																Double offset = scaledDeviceParameter.getParameter_offset() != null ? scaledDeviceParameter.getParameter_offset() : 0;
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon) != null ? (Double) pd.getReadMethod().invoke(dataModelIon) : 0;
-																Double scaledValue = initialValue * slope + offset;
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
 															}
 														}
