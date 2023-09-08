@@ -75,6 +75,11 @@
 			s.number_of_strings,
 			s.kwp_dc_for_each_solar_module,
 			s.data_interval_factor,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
 			s.alert_mail_bcc,
 			s.alert_mail_cc
 		FROM

@@ -26,6 +26,13 @@
 			s.inverter_efficiency,
 			s.t_avg,
 			s.system_loss,
+			s.built_since,
+			s.commissioning,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
 			s.min_irradiance_limit,
 			s.clip,
 			s.bifaciality_factor,
@@ -160,18 +167,11 @@
 			</if>
 			
 			<if test="pv_model == 2">
-				IF(
-					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (IFNULL(#{t_avg}, 39) - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100, 0) <![CDATA[<]]> #{ac_capacity},
-					#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (IFNULL(#{t_avg}, 39) - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100,
-					#{ac_capacity}
-				) AS expected_power_ac,
-				
+				IFNULL( #{dc_capacity} * (ROUND(SUM( t.irradiance ),0) / #{global_solar_irradiance_at_stc}) * (1 - ROUND((1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100), 4)) * (ROUND(POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100, 2) / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
+					 AS expected_power_ac,	
+
 				ROUND(
-				IF(
-					IFNULL(#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (IFNULL(#{t_avg}, 39) - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100, 0) <![CDATA[<]]> #{ac_capacity},
-					#{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100) * (IFNULL(#{t_avg}, 39) - SUM( t.temperature ))) * (1 - IFNULL(#{system_loss}, 9)/100) * IFNULL(#{inverter_efficiency}, 96)/100,
-					#{ac_capacity}
-				)
+				IFNULL( #{dc_capacity} * (ROUND(SUM( t.irradiance ),0) / #{global_solar_irradiance_at_stc}) * (1 - ROUND((1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100), 4)) * (ROUND(POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100, 2) / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
 				<choose>
 					<when test="data_send_time == 1">
 						* 5 / 60
@@ -312,7 +312,6 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{id}
-						AND d.id_device_type IN(6)
 						AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
 						AND s.`status` = 1 
 						AND d.`status` = 1
@@ -373,7 +372,7 @@
 						0 AS energy,
 						IF(IFNULL(AVG(dv.nvm_irradiance), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS irradiance,
 						
-						0 AS temperature,
+						IF(IFNULL(AVG(dv.nvm_temperature), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_temperature), 0), 0) AS temperature,
 						0 AS rpoa,
 						0 AS ambient_temp,
 						0 AS calculation_poa,

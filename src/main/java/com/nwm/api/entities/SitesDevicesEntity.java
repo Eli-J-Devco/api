@@ -94,6 +94,11 @@ public class SitesDevicesEntity {
 	private Double system_loss;
 	private Double clip;
 	private	Double bifaciality_factor;
+	private double annual_pv_module_degradation;
+	private double cable_losses;
+	private double transformer_losses;
+	private double soiling;
+	private double other_losses;
 	private int min_irradiance_limit;
 	
 	private String ssh_host;
@@ -118,6 +123,36 @@ public class SitesDevicesEntity {
 	
 	
 	
+	public double getAnnual_pv_module_degradation() {
+		return annual_pv_module_degradation;
+	}
+	public void setAnnual_pv_module_degradation(double annual_pv_module_degradation) {
+		this.annual_pv_module_degradation = annual_pv_module_degradation;
+	}
+	public double getCable_losses() {
+		return cable_losses;
+	}
+	public void setCable_losses(double cable_losses) {
+		this.cable_losses = cable_losses;
+	}
+	public double getTransformer_losses() {
+		return transformer_losses;
+	}
+	public void setTransformer_losses(double transformer_losses) {
+		this.transformer_losses = transformer_losses;
+	}
+	public double getSoiling() {
+		return soiling;
+	}
+	public void setSoiling(double soiling) {
+		this.soiling = soiling;
+	}
+	public double getOther_losses() {
+		return other_losses;
+	}
+	public void setOther_losses(double other_losses) {
+		this.other_losses = other_losses;
+	}
 	public String getAlert_mail_cc() {
 		return alert_mail_cc;
 	}

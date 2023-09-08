@@ -130,7 +130,12 @@
 			modules_per_string = #{modules_per_string},
 			number_of_strings = #{number_of_strings},
 			kwp_dc_for_each_solar_module = #{kwp_dc_for_each_solar_module},
-			data_interval_factor = #{data_interval_factor}
+			data_interval_factor = #{data_interval_factor},
+			other_losses = #{other_losses},
+			annual_pv_module_degradation = #{annual_pv_module_degradation},
+			transformer_losses = #{transformer_losses},
+			soiling = #{soiling},
+			cable_losses = #{cable_losses}
 		WHERE
 			`id` = #{id}
 	</update>
