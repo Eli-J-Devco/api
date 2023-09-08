@@ -116,7 +116,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
 	        }
 	        
@@ -194,7 +194,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 		
 		
 		// check fault code 1
-		if (fault1 > 0  && rowItem.getTotalFault1() >= 4) {
+		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -253,69 +253,9 @@ public class ModelSatconPowergate225InverterService extends DB {
 		}
 		
 		
-		// check fault code 2
-//		if (fault2 > 0  && rowItem.getTotalFaultWord2() >= 4) {
-//			try {
-//				String toBinary = Integer.toBinaryString(fault2);
-//				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-//				int v = 0;
-//				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
-//					int index = b;
-//					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
-//					if (bitLevel == 1) {
-//						int errorId = LibErrorCode.GetErrorCodeModelSatconPVS357Inverter(v, 2);
-//						if (errorId > 0) {
-//							AlertEntity alertDeviceItem = new AlertEntity();
-//							alertDeviceItem.setId_device(obj.getId_device());
-//							alertDeviceItem.setStart_date(obj.getTime());
-//							alertDeviceItem.setId_error(errorId);
-//							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
-//							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-//							if (!checkAlertDeviceExist && errorExits) {
-//								insert("BatchJob.insertAlert", alertDeviceItem);
-//							}
-//						}
-//					}
-//					v += 1;
-//				}
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		} else {
-//			// Close fault code 
-//			try {
-//				if(rowItem.getTotalFaultWord2() == 0) {
-//					AlertEntity alertItemClose = new AlertEntity();
-//					alertItemClose.setId_device(obj.getId_device());
-//					alertItemClose.setFaultCodeLevel(2);
-//					List dataListFault2 = new ArrayList();
-//					dataListFault2 = queryForList("ModelSatconPvs357Inverter.getListTriggerFaultCode", alertItemClose);
-//					if(dataListFault2.size() > 0) {
-//						for(int i = 0; i < dataListFault2.size(); i++) {
-//							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
-//							int id =  Integer.parseInt(itemFault.get("id").toString());
-//							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
-//							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-//							alertItemClose.setId(id );
-//							alertItemClose.setId_error(idError);
-//							update("Alert.UpdateErrorRow", alertItemClose);
-//						}
-//					}
-//				}
-//				
-//			}
-//			catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
-		
 		
 		// check fault code 3
-		if (fault3 > 0  && rowItem.getTotalFault3() >= 4) {
+		if (fault3 > 0  && rowItem.getTotalFault3() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault3);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -376,7 +316,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 		
 		
 		// check fault code 4
-		if (fault4 > 0  && rowItem.getTotalFault4() >= 4) {
+		if (fault4 > 0  && rowItem.getTotalFault4() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault4);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -437,7 +377,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 		
 		
 		// check fault code 5
-		if (fault5 > 0  && rowItem.getTotalGridStatus() >= 4) {
+		if (fault5 > 0  && rowItem.getTotalGridStatus() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault5);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -497,7 +437,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 		
 		
 		// check fault code 6
-		if (fault6 > 0  && rowItem.getTotalStatus6() >= 4) {
+		if (fault6 > 0  && rowItem.getTotalStatus6() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault6);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -557,7 +497,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 		
 		
 		// check fault code 7
-		if (fault7 > 0  && rowItem.getTotalStatus7() >= 4) {
+		if (fault7 > 0  && rowItem.getTotalStatus7() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault7);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");

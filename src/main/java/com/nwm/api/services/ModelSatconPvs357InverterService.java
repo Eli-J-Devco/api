@@ -226,7 +226,7 @@ public class ModelSatconPvs357InverterService extends DB {
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelSatconPVS357Inverter(obj);
 	        }
 	        return true;
@@ -303,7 +303,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 1
-		if (fault1 > 0  && rowItem.getTotalFaultWord1() >= 4) {
+		if (fault1 > 0  && rowItem.getTotalFaultWord1() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -363,7 +363,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 2
-		if (fault2 > 0  && rowItem.getTotalFaultWord2() >= 4) {
+		if (fault2 > 0  && rowItem.getTotalFaultWord2() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault2);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -424,7 +424,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 3
-		if (fault3 > 0  && rowItem.getTotalFaultWord3() >= 4) {
+		if (fault3 > 0  && rowItem.getTotalFaultWord3() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault3);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -485,7 +485,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 4
-		if (fault4 > 0  && rowItem.getTotalFaultWord4() >= 4) {
+		if (fault4 > 0  && rowItem.getTotalFaultWord4() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault4);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -546,7 +546,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 5
-		if (fault5 > 0  && rowItem.getTotalFaultWord5() >= 4) {
+		if (fault5 > 0  && rowItem.getTotalFaultWord5() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault5);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -606,7 +606,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 6
-		if (fault6 > 0  && rowItem.getTotalFaultWord6() >= 4) {
+		if (fault6 > 0  && rowItem.getTotalFaultWord6() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault6);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
@@ -666,7 +666,7 @@ public class ModelSatconPvs357InverterService extends DB {
 		
 		
 		// check fault code 7
-		if (fault7 > 0  && rowItem.getTotalFaultWord7() >= 4) {
+		if (fault7 > 0  && rowItem.getTotalFaultWord7() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(fault7);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");

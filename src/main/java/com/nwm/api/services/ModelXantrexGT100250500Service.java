@@ -112,7 +112,7 @@ public class ModelXantrexGT100250500Service extends DB {
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
 	        
-	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelXantrexGT100250500(obj);
 	        }
 			
@@ -158,7 +158,7 @@ public class ModelXantrexGT100250500Service extends DB {
 		
 		ModelXantrexGT100250500Entity rowItem = (ModelXantrexGT100250500Entity) checkAlertWriteCode(obj);
 		
-		if(faultCode > 0 && rowItem.getTotalFaultCode() >= 4) {
+		if(faultCode > 0 && rowItem.getTotalFaultCode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertModelXantrexGT100250500(faultCode);
 				System.out.println("status errorId: " + errorId);		

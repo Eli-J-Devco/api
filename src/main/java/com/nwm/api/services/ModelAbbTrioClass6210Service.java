@@ -110,7 +110,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 			ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 			int hours = zdtNowLosAngeles.getHour();
 
-			if (hours >= 8 && hours <= 18) {
+			if (hours >= 9 && hours <= 17) {
 				checkTriggerAlertModelAbbTrioClass6210(obj);
 			}
 			return true;
@@ -158,7 +158,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 		ModelAbbTrioClass6210Entity rowItem = (ModelAbbTrioClass6210Entity) checkAlertWriteCode(
 				obj);
 
-		if (StatesByte0 > 0 && rowItem.getTotalStatesByte0() >= 4) {
+		if (StatesByte0 > 0 && rowItem.getTotalStatesByte0() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte0ModelABB(StatesByte0);
 				System.out.println("status errorId: " + errorId);
@@ -209,7 +209,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 		
 		
 		
-		if (StatesByte1 > 0 && rowItem.getTotalStatesByte1() >= 4) {
+		if (StatesByte1 > 0 && rowItem.getTotalStatesByte1() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte1ModelABB(StatesByte1);
 				System.out.println("status errorId: " + errorId);
@@ -259,7 +259,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 		}
 		
 		
-		if (StatesByte2 > 0 && rowItem.getTotalStatesByte2() >= 4) {
+		if (StatesByte2 > 0 && rowItem.getTotalStatesByte2() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte2ModelABB(StatesByte2);
 				System.out.println("status errorId: " + errorId);
@@ -309,57 +309,8 @@ public class ModelAbbTrioClass6210Service extends DB {
 			}
 		}
 		
-//		if (StatesByte3 > 0 && rowItem.getTotalStatesByte3() >= 4) {
-//			try {
-//				int errorId = LibErrorCode.GetStatesByte3ModelABB(StatesByte3);
-//				System.out.println("status errorId: " + errorId);
-//				if (errorId > 0) {
-//					AlertEntity alertDeviceItem = new AlertEntity();
-//					alertDeviceItem.setId_device(obj.getId_device());
-//					alertDeviceItem.setStart_date(obj.getTime());
-//					alertDeviceItem.setId_error(errorId);
-//					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
-//							alertDeviceItem) > 0;
-//					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-//					if (!checkAlertDeviceExist && errorExits) {
-//						insert("BatchJob.insertAlert", alertDeviceItem);
-//					}
-//				}
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		} else {
-//			// Close StatesByte3
-//			try {
-//				if(rowItem.getTotalStatesByte3() == 0) {
-//					AlertEntity alertItemClose = new AlertEntity();
-//					alertItemClose.setId_device(obj.getId_device());
-//					// type 4 is StatesByte3
-//					alertItemClose.setFaultCodeLevel(4);
-//					List dataListStatusCode = new ArrayList();
-//					dataListStatusCode = queryForList("ModelAbbTrioClass6210.getListTriggerFaultCode",
-//							alertItemClose);
-//					if (dataListStatusCode.size() > 0) {
-//						for (int i = 0; i < dataListStatusCode.size(); i++) {
-//							Map<String, Object> itemFault = (Map<String, Object>) dataListStatusCode.get(i);
-//							int id = Integer.parseInt(itemFault.get("id").toString());
-//							int idError = Integer.parseInt(itemFault.get("id_error").toString());
-//							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
-//							alertItemClose.setId(id);
-//							alertItemClose.setId_error(idError);
-//							update("Alert.UpdateErrorRow", alertItemClose);
-//						}
-//					}
-//				}
-//				
-//			} catch (SQLException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
 		
-		
-		if (StatesByte4 > 0 && rowItem.getTotalStatesByte4() >= 4) {
+		if (StatesByte4 > 0 && rowItem.getTotalStatesByte4() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte4ModelABB(StatesByte4);
 				System.out.println("status errorId: " + errorId);

@@ -113,6 +113,14 @@
 			AND s.is_delete = 0
   	</select>
   	
+	<select id="getTotalSiteInSubGroupById"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
+    	SELECT count(*) as totalRow
+		FROM site s
+		WHERE
+			s.id_site_sub_group = #{id}
+			AND s.is_delete = 0
+  	</select>
+  	
   	<select id="getExitsCount"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
     	SELECT count(*) as totalRow
 		FROM site s WHERE s.id_site_group = #{id}

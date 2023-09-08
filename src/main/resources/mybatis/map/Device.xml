@@ -540,13 +540,12 @@
 		SELECT
 			dp.id,
 			dp.`name`,
-			CONCAT(dp.`name`, " (Slope: ", IFNULL(dps.slope, 1), ", Offset: ", IFNULL(dps.offset, 0), ")") AS text,
-			dps.slope,
-			dps.offset
+			CONCAT(dp.`name`, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			dps.scale
 		FROM
 			device_parameters dp
 			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
-			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id
+			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id AND dps.id_device = d.id
 		WHERE
 			d.id = #{id}
 			AND d.status = 1
@@ -558,32 +557,33 @@
 	
 	<select id="getListScaledDeviceParameter" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
-			dps.slope AS parameter_slope,
-			dps.offset AS parameter_offset,
+			dps.scale AS parameter_scale,
+			dps.variable_name,
 			dp.slug AS parameter_slug
 		FROM
 			device_parameter_scale dps
 			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
 		WHERE
 			dps.id_device = #{id}
+			AND dps.scale IS NOT NULL
 	</select>
 	
 	<insert id="saveDeviceParameterScale">
 		INSERT INTO `device_parameter_scale` (
 			`id_device`,
 			`id_device_parameter`,
-			`slope`,
-			`offset`
+			`scale`,
+			`variable_name`
 		) VALUES (
 			#{id},
 			#{id_device_parameter},
-			#{parameter_slope},
-			#{parameter_offset}
+			#{parameter_scale},
+			#{variable_name}
 		) ON DUPLICATE KEY UPDATE
 			`id_device` = VALUES(id_device),
 			`id_device_parameter` = VALUES(id_device_parameter),
-			`slope` = VALUES(slope),
-			`offset` = VALUES(offset)
+			`scale` = VALUES(scale),
+			`variable_name` = VALUES(variable_name)
 	</insert>
 	
 </mapper>
