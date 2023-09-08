@@ -190,7 +190,12 @@ public class CronJobAlertController extends BaseController {
 										case "model_sungrow_sg110cx":
 											noProduction = 934;
 											break;
-
+										case "model_sma_inverter_stp30000tlus10":
+											noProduction = 970;
+											break;
+										case "model_sma_inverter_stp62us41":
+											noProduction = 972;
+											break;
 										}
 
 										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
@@ -429,7 +434,12 @@ public class CronJobAlertController extends BaseController {
 										case "model_sungrow_sg110cx":
 											noCommunication = 933;
 											break;
-
+										case "model_sma_inverter_stp30000tlus10":
+											noCommunication = 969;
+											break;
+										case "model_sma_inverter_stp62us41":
+											noCommunication = 971;
+											break;
 										}
 
 										BatchJobTableEntity lastRowItem = service
