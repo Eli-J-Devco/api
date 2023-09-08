@@ -99,24 +99,17 @@ public class CustomUserDetailService extends BaseController implements UserDetai
     				try {
     					// Send email to user to unlock
     					String domain = Lib.getDomain();
-//    					String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
-    					String ip = InetAddress.getLocalHost().getHostAddress();
-    					System.out.println("IP: " + ip);
-    				    if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
-    				    Assert.isTrue(ip.chars().filter($ -> $ == '.').count() == 3, "Illegal IP: " + ip);
     					StringBuilder bodyHtml = new StringBuilder();
     					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
-    							+ "<h1 style=\"text-align: left;\">Account Blocked</h1>"
-    							+ "<p style=\"text-align: left;\">Next Wave Energy Monitoring system detected suspicious attempts to login to your account from ip: </p>"
-    							+ "<strong>"+ ip +"</strong>"
-//    							+ " location: "
-//    							+ "<strong>"+ locationAddress +"</strong>"
-    							+ "<span>. If this was you <a href=\"" + domain + "/unlock-account/"+user.getHash_id_user()+"\" target=\\\"_blank\\\" >click here</a> to unblock your account. </span>"
+    							+ "<p style=\"text-align: left;\">Dear "+ user.getFirst_name()  +"</p>"
+    							+ "<p></p><p style=\"text-align: left;\">Next Wave Energy Monitoring has detected numerous invalid login attempts and has locked your account. If this was you, click the link below to gain access.</p>"
+    							+ "<p></p><p></p> <p style=\"text-align: center;\"><a style=\"color: #000; background: #ffda00; display: inline-block; padding: 5px 30px; border-radius: 4px; text-decoration: none;\" href=\"" + domain + "/unlock-account/"+user.getHash_id_user()+"\" target=\\\"_blank\\\" >CLICK HERE TO CONFIRM</a> </p>"
     							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
     					+ "                <tbody>\n");
-    								
+    						
+    					
     					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-    					String subject = "User Account Blocked";
+    					String subject = "Account Temporarily Locked";
     					String tags = "run_cron_job";
     					String fromName = "NEXT WAVE ENERGY MONITORING INC";
     					String mailTo = user.getUser_name();

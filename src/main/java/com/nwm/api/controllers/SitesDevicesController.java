@@ -9,6 +9,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,6 @@ import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.SitesDevicesService;
 import com.nwm.api.utils.Constants;
-import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -896,14 +896,18 @@ public class SitesDevicesController extends BaseController {
 					channel.setOutputStream(responseStream);
 					InputStream is = channel.getInputStream();
 					channel.connect();
-					while (channel.isConnected()) { 
-						Thread.sleep(1000); 
-					}
+//					while (channel.isConnected()) { 
+//						Thread.sleep(1000); 
+//					}
 			        String responseString = new String(responseStream.toByteArray());
 			        System.out.println(responseString);
 			        
+					if(obj.getId_device_group() == 19) {
+						return this.jsonResult(true, "Data logger reboot successfully", null, 1);
+					} else {
+						return this.jsonResult(true, "Reboot Cell Modem Successfully", null, 1);
+					}
 					
-					return this.jsonResult(true, "Reboot Cell Modem Successfully", null, 1);
 
 				} finally {
 					if (session != null) {
@@ -916,13 +920,13 @@ public class SitesDevicesController extends BaseController {
 				
 				
 			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+				return this.jsonResult(false, "SSH connection timeout", null, 0);
 			}
 			
 			
 		
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, "SSH connection timeout", e, 0);
 		}
 	}
 	
@@ -946,5 +950,78 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description reboot cell 
+	 * @author long.pham
+	 * @since 2023-05-24
+	 * @param ssh_host, ssh_user, ssh_pass, ssh_port
+	 * @return data (status, message, object, total_row
+	 */
+
+	@PostMapping("/run-command-datalogger")
+	public Object runCommandDatalogger(@RequestBody DeviceEntity obj) {
+		try {
+			
+			if(obj.getSsh_host() != null && obj.getSsh_user() != null && obj.getSsh_pass() != null && obj.getSsh_port() != null ) {
+				
+				// Reading SSH info
+			    Session session = null;
+				ChannelExec channel = null;
+				String command = obj.getCommand();
+				
+				ArrayList<String> commandResult = new ArrayList<String>();
+				
+				try {
+					session = new JSch().getSession(obj.getSsh_user(), obj.getSsh_host(), Integer.parseInt(obj.getSsh_port()) );
+					session.setPassword(obj.getSsh_pass());
+					session.setConfig("StrictHostKeyChecking", "no");
+					session.connect();
+
+					channel = (ChannelExec) session.openChannel("exec");
+					channel.setCommand(command);
+					channel.setPty(true);
+					ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+					channel.setOutputStream(responseStream);
+					InputStream is = channel.getInputStream();
+					channel.connect();
+					
+					while (channel.isConnected()) { Thread.sleep(100); }
+					
+					try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+						for (String line = br.readLine(); line != null; line = br.readLine()) {
+							System.out.println("Line: " + line);
+							commandResult.add(line.toString());
+						}
+						
+						obj.setCommandResult(commandResult);
+					}
+					
+					
+					
+					return this.jsonResult(true, "Fetch Successfully", obj, 1);
+					
+
+				} finally {
+					if (session != null) {
+						session.disconnect();
+					}
+					if (channel != null) {
+						channel.disconnect();
+					}
+				}
+				
+				
+			} else {
+				return this.jsonResult(false, "SSH connection timeout", null, 0);
+			}
+			
+			
+		
+		} catch (Exception e) {
+			return this.jsonResult(false, "SSH connection timeout", e, 0);
+		}
+	}
 	
 }

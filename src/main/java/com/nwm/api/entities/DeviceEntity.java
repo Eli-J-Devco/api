@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -111,8 +112,24 @@ public class DeviceEntity {
 	private Double parameter_offset;
 	private String parameter_slug;
 	private int id_device_parameter;
+	private String command;
+	private List commandResult;
 	
 	
+	
+
+	public List getCommandResult() {
+		return commandResult;
+	}
+	public void setCommandResult(List commandResult) {
+		this.commandResult = commandResult;
+	}
+	public String getCommand() {
+		return command;
+	}
+	public void setCommand(String command) {
+		this.command = command;
+	}
 	public String getIp_address() {
 		return ip_address;
 	}
