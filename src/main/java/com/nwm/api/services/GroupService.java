@@ -85,6 +85,14 @@ public class GroupService extends DB {
 		}
 	}
 	
+	public int getTotalSiteInSubGroupById(GroupEntity obj) {
+		try {
+			return (int)queryForObject("Group.getTotalSiteInSubGroupById", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
 	
 	public int getExitsCount(GroupEntity obj) {
 		try {

@@ -94,7 +94,7 @@ public class GroupController extends BaseController {
 	public Object delete(@Valid @RequestBody GroupEntity obj) {
 		GroupService service = new GroupService();
 		try {
-			int totalSite = service.getTotalSiteById(obj);
+			int totalSite = obj.isSubGroup() ? service.getTotalSiteInSubGroupById(obj) : service.getTotalSiteById(obj);
 			if(totalSite > 0) {
 				return this.jsonResult(false, Constants.USING_SUCCESS_MSG, null, 0);
 			}
