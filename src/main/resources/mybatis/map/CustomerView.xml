@@ -541,11 +541,8 @@
 				</when>
 				<when test="pv_model == 2">
 					IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
-						IF(
-							IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-							s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-							s.ac_capacity
-						),
+						IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
+						,
 						NULL
 					)) * 24, 1), 0.001)
 				</when>
@@ -638,8 +635,8 @@
 									s.ac_capacity
 								</when>
 								<when test="pv_model == 2">
-									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
 									s.ac_capacity
 								</when>
 								<otherwise>
@@ -824,11 +821,8 @@
 						</when>
 						<when test="pv_model == 2">
 							IFNULL(ROUND(AVG(IF(d.id_device_type = 4,
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
+								IFNULL( s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
+								,
 								NULL
 							)), 1), 0.001)
 						</when>
@@ -984,8 +978,8 @@
 									s.ac_capacity
 								</when>
 								<when test="pv_model == 2">
-									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
+									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
 									s.ac_capacity
 								</when>
 								<otherwise>
@@ -1234,11 +1228,7 @@
 										)
 									</when>
 									<when test="pv_model == 2">
-										IF(
-											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-											s.ac_capacity
-										)
+										IFNULL( s.dc_capacity * (ROUND(AVG(dv.nvm_irradiance),0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(dv.nvm_temperature) - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
 									</when>
 									<otherwise>
 										IF(
@@ -1396,11 +1386,7 @@
 										)
 									</when>
 									<when test="pv_model == 2">
-										IF(
-											IFNULL(s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * (AVG(dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-											s.ac_capacity
-										)
+										IFNULL( s.dc_capacity * (ROUND(AVG(dv.nvm_irradiance),0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(dv.nvm_temperature) - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
 									</when>
 									<otherwise>
 										IF(
