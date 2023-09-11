@@ -232,6 +232,7 @@
 	<select id="getWeatherStationListSiteConfig" resultType="Map" >
 		SELECT
 			d.id AS value,
+			d.id_device_type,
 			d.devicename AS label
 		FROM
 			device d
