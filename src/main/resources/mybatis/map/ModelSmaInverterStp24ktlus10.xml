@@ -26,7 +26,6 @@
 		<result property="DcMs_VolB" column="DcMs_VolB" />
 		<result property="DcMs_AmpA" column="DcMs_AmpA" />
 		<result property="DcMs_AmpB" column="DcMs_AmpB" />
-		<result property="DcMs_AmpA1" column="DcMs_AmpA1" />
 		<result property="GridMs_PhV_phsA" column="GridMs_PhV_phsA" />
 		<result property="GridMs_PhV_phsB" column="GridMs_PhV_phsB" />
 		<result property="GridMs_PhV_phsC" column="GridMs_PhV_phsC" />
@@ -104,9 +103,6 @@
 			</if>
 			<if test="DcMs_AmpB != 0.001">
 			`DcMs_AmpB`,
-			</if>
-			<if test="DcMs_AmpA1 != 0.001">
-			`DcMs_AmpA1`,
 			</if>
 			<if test="GridMs_PhV_phsA != 0.001">
 			`GridMs_PhV_phsA`,
@@ -213,9 +209,7 @@
 			<if test="DcMs_AmpB != 0.001">
 			#{DcMs_AmpB},
 			</if>
-			<if test="DcMs_AmpA1 != 0.001">
-			#{DcMs_AmpA1},
-			</if>
+
 			<if test="GridMs_PhV_phsA != 0.001">
 			#{GridMs_PhV_phsA},
 			</if>
@@ -318,9 +312,6 @@
 			</if>
 			<if test="DcMs_AmpB != 0.001">
 			`DcMs_AmpB` = #{DcMs_AmpB},
-			</if>
-			<if test="DcMs_AmpA1 != 0.001">
-			`DcMs_AmpA1` = #{DcMs_AmpA1},
 			</if>
 			
 			<if test="GridMs_PhV_phsA != 0.001">

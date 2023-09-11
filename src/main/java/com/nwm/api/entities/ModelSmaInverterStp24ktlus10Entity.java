@@ -24,7 +24,6 @@ public class ModelSmaInverterStp24ktlus10Entity {
 	private double DcMs_VolB;
 	private double DcMs_AmpA;
 	private double DcMs_AmpB;
-	private double DcMs_AmpA1;
 	private double GridMs_PhV_phsA;
 	private double GridMs_PhV_phsB;
 	private double GridMs_PhV_phsC;
@@ -158,12 +157,7 @@ public class ModelSmaInverterStp24ktlus10Entity {
 	public void setDcMs_AmpB(double dcMs_AmpB) {
 		DcMs_AmpB = dcMs_AmpB;
 	}
-	public double getDcMs_AmpA1() {
-		return DcMs_AmpA1;
-	}
-	public void setDcMs_AmpA1(double dcMs_AmpA1) {
-		DcMs_AmpA1 = dcMs_AmpA1;
-	}
+
 	public double getGridMs_PhV_phsA() {
 		return GridMs_PhV_phsA;
 	}

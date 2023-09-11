@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPowerMeasurementIon7650">
+	<resultMap id="ModelPowerMeasurementIon7650Map" type="com.nwm.api.entities.ModelPowerMeasurementIon7650Entity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   
+		   <result property="Ia" column="Ia" />
+		  <result property="Ib" column="Ib" />
+		  <result property="Ic" column="Ic" />
+		  <result property="I4" column="I4" />
+		  <result property="I5" column="I5" />
+		  <result property="IAvg" column="IAvg" />
+		  <result property="IAvgMn" column="IAvgMn" />
+		  <result property="IAvgMx" column="IAvgMx" />
+		  <result property="IAvgMean" column="IAvgMean" />
+		  <result property="Freq" column="Freq" />
+		  <result property="FreqMn" column="FreqMn" />
+		  <result property="FreqMx" column="FreqMx" />
+		  <result property="FreqMean" column="FreqMean" />
+		  <result property="VUnbal" column="VUnbal" />
+		  <result property="IUnbal" column="IUnbal" />
+		  <result property="PhaseRev" column="PhaseRev" />
+		  <result property="VInA" column="VInA" />
+		  <result property="VInB" column="VInB" />
+		  <result property="VInC" column="VInC" />
+		  <result property="VInAvg" column="VInAvg" />
+		  <result property="VInAvgMx" column="VInAvgMx" />
+		  <result property="unused1" column="unused1" />
+		  <result property="VIIAb" column="VIIAb" />
+		  <result property="VIIBc" column="VIIBc" />
+		  <result property="VIICa" column="VIICa" />
+		  <result property="VIIAvg" column="VIIAvg" />
+		  <result property="VIIAvgMx" column="VIIAvgMx" />
+		  <result property="VIIAvgMean" column="VIIAvgMean" />
+		  <result property="unused2" column="unused2" />
+		  <result property="unused3" column="unused3" />
+		  <result property="unused4" column="unused4" />
+		  <result property="unused5" column="unused5" />
+		  <result property="kWA" column="kWA" />
+		  <result property="kWB" column="kWB" />
+		  <result property="kWC" column="kWC" />
+		  <result property="kWTot" column="kWTot" />
+		  <result property="kWTotMax" column="kWTotMax" />
+		  <result property="kVARA" column="kVARA" />
+		  <result property="kVARB" column="kVARB" />
+		  <result property="kVARC" column="kVARC" />
+		  <result property="kVARTot" column="kVARTot" />
+		  <result property="kVARTotMax" column="kVARTotMax" />
+		  <result property="kVAA" column="kVAA" />
+		  <result property="kVAB" column="kVAB" />
+		  <result property="kVAC" column="kVAC" />
+		  <result property="kVATot" column="kVATot" />
+		  <result property="kVATotMax" column="kVATotMax" />
+		  <result property="unused6" column="unused6" />
+		  <result property="kWhDel" column="kWhDel" />
+		  <result property="kWhRec" column="kWhRec" />
+		  <result property="kVARhDel" column="kVARhDel" />
+		  <result property="kVARhRec" column="kVARhRec" />
+		  <result property="kVARhDelRec" column="kVARhDelRec" />
+		  <result property="unused7" column="unused7" />
+		  <result property="unused8" column="unused8" />
+		  <result property="unused9" column="unused9" />
+		  <result property="unused10" column="unused10" />
+		  <result property="unused11" column="unused11" />
+		  <result property="unused12" column="unused12" />
+		  <result property="unused13" column="unused13" />
+		  <result property="unused14" column="unused14" />
+		  <result property="unused15" column="unused15" />
+		  <result property="unused16" column="unused16" />
+		  <result property="unused17" column="unused17" />
+		  <result property="PFSignA" column="PFSignA" />
+		  <result property="PFSignB" column="PFSignB" />
+		  <result property="PFSignC" column="PFSignC" />
+		  <result property="PFSignTot" column="PFSignTot" />
+		  <result property="V1THDMx" column="V1THDMx" />
+		  <result property="V2THDMx" column="V2THDMx" />
+		  <result property="V3THDMx" column="V3THDMx" />
+		  <result property="I1THDMx" column="I1THDMx" />
+		  <result property="I2THDMx" column="I2THDMx" />
+		  <result property="I3THDMx" column="I3THDMx" />
+		  <result property="I1KFactor" column="I1KFactor" />
+		  <result property="I2KFactor" column="I2KFactor" />
+		  <result property="I3KFactor" column="I3KFactor" />
+		  <result property="I1CrestFactor" column="I1CrestFactor" />
+		  <result property="I2CrestFactor" column="I2CrestFactor" />
+		  <result property="I3CrestFactor" column="I3CrestFactor" />
+		  <result property="nvmActivePower" column="nvmActivePower" />
+		  <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		  <result property="MeasuredProduction" column="MeasuredProduction" />
+
+	</resultMap>
+
+	<insert id="insertModelPowerMeasurementIon7650" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_power_measurement_ion_7650`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="Ia != 0.001" >
+			`Ia`,
+			</if>
+			<if test="Ib != 0.001" >
+				  `Ib`,
+				  </if>
+			<if test="Ic != 0.001" >
+				  `Ic`,
+				  </if>
+			<if test="I4 != 0.001" >
+				  `I4`,
+				  </if>
+			<if test="I5 != 0.001" >
+				  `I5`,
+				  </if>
+			<if test="IAvg != 0.001" >
+				  `IAvg`,
+				  </if>
+			<if test="IAvgMn != 0.001" >
+				  `IAvgMn`,
+				  </if>
+			<if test="IAvgMx != 0.001" >
+				  `IAvgMx`,
+				  </if>
+			<if test="IAvgMean != 0.001" >
+				  `IAvgMean`,
+				  </if>
+			<if test="Freq != 0.001" >
+				  `Freq`,
+				  </if>
+			<if test="FreqMn != 0.001" >
+				  `FreqMn`,
+				  </if>
+			<if test="FreqMx != 0.001" >
+				  `FreqMx`,
+				  </if>
+			<if test="FreqMean != 0.001" >
+				  `FreqMean`,
+				  </if>
+			<if test="VUnbal != 0.001" >
+				  `VUnbal`,
+				  </if>
+			<if test="IUnbal != 0.001" >
+				  `IUnbal`,
+				  </if>
+			<if test="PhaseRev != 0.001" >
+				  `PhaseRev`,
+				  </if>
+			<if test="VInA != 0.001" >
+				  `VInA`,
+				  </if>
+			<if test="VInB != 0.001" >
+				  `VInB`,
+				  </if>
+			<if test="VInC != 0.001" >
+				  `VInC`,
+				  </if>
+			<if test="VInAvg != 0.001" >
+				  `VInAvg`,
+				  </if>
+			<if test="VInAvgMx != 0.001" >
+				  `VInAvgMx`,
+				  </if>
+			<if test="unused1 != 0.001" >
+				  `unused1`,
+				  </if>
+			<if test="VIIAb != 0.001" >
+				  `VIIAb`,
+				  </if>
+			<if test="VIIBc != 0.001" >
+				  `VIIBc`,
+				  </if>
+			<if test="VIICa != 0.001" >
+				  `VIICa`,
+				  </if>
+			<if test="VIIAvg != 0.001" >
+				  `VIIAvg`,
+				  </if>
+			<if test="VIIAvgMx != 0.001" >
+				  `VIIAvgMx`,
+				  </if>
+			<if test="VIIAvgMean != 0.001" >
+				  `VIIAvgMean`,
+				  </if>
+			<if test="unused2 != 0.001" >
+				  `unused2`,
+				  </if>
+			<if test="unused3 != 0.001" >
+				  `unused3`,
+				  </if>
+			<if test="unused4 != 0.001" >
+				  `unused4`,
+				  </if>
+			<if test="unused5 != 0.001" >
+				  `unused5`,
+				  </if>
+			<if test="kWA != 0.001" >
+				  `kWA`,
+				  </if>
+			<if test="kWB != 0.001" >
+				  `kWB`,
+				  </if>
+			<if test="kWC != 0.001" >
+				  `kWC`,
+				  </if>
+			<if test="kWTot != 0.001" >
+				  `kWTot`,
+				  </if>
+			<if test="kWTotMax != 0.001" >
+				  `kWTotMax`,
+				  </if>
+			<if test="kVARA != 0.001" >
+				  `kVARA`,
+				  </if>
+			<if test="kVARB != 0.001" >
+				  `kVARB`,
+				  </if>
+			<if test="kVARC != 0.001" >
+				  `kVARC`,
+				  </if>
+			<if test="kVARTot != 0.001" >
+				  `kVARTot`,
+				  </if>
+			<if test="kVARTotMax != 0.001" >
+				  `kVARTotMax`,
+				  </if>
+			<if test="kVAA != 0.001" >
+				  `kVAA`,
+				  </if>
+			<if test="kVAB != 0.001" >
+				  `kVAB`,
+				  </if>
+			<if test="kVAC != 0.001" >
+				  `kVAC`,
+				  </if>
+			<if test="kVATot != 0.001" >
+				  `kVATot`,
+				  </if>
+			<if test="kVATotMax != 0.001" >
+				  `kVATotMax`,
+				  </if>
+			<if test="unused6 != 0.001" >
+				  `unused6`,
+				  </if>
+			<if test="kWhDel != 0.001" >
+				  `kWhDel`,
+				  </if>
+			<if test="kWhRec != 0.001" >
+				  `kWhRec`,
+				  </if>
+			<if test="kVARhDel != 0.001" >
+				  `kVARhDel`,
+				  </if>
+			<if test="kVARhRec != 0.001" >
+				  `kVARhRec`,
+				  </if>
+			<if test="kVARhDelRec != 0.001" >
+				  `kVARhDelRec`,
+				  </if>
+			<if test="unused7 != 0.001" >
+				  `unused7`,
+				  </if>
+			<if test="unused8 != 0.001" >
+				  `unused8`,
+				  </if>
+			<if test="unused9 != 0.001" >
+				  `unused9`,
+				  </if>
+			<if test="unused10 != 0.001" >
+				  `unused10`,
+				  </if>
+			<if test="unused11 != 0.001" >
+				  `unused11`,
+				  </if>
+			<if test="unused12 != 0.001" >
+				  `unused12`,
+				  </if>
+			<if test="unused13 != 0.001" >
+				  `unused13`,
+				  </if>
+			<if test="unused14 != 0.001" >
+				  `unused14`,
+				  </if>
+			<if test="unused15 != 0.001" >
+				  `unused15`,
+				  </if>
+			<if test="unused16 != 0.001" >
+				  `unused16`,
+				  </if>
+			<if test="unused17 != 0.001" >
+				  `unused17`,
+				  </if>
+			<if test="PFSignA != 0.001" >
+				  `PFSignA`,
+				  </if>
+			<if test="PFSignB != 0.001" >
+				  `PFSignB`,
+				  </if>
+			<if test="PFSignC != 0.001" >
+				  `PFSignC`,
+				  </if>
+			<if test="PFSignTot != 0.001" >
+				  `PFSignTot`,
+				  </if>
+			<if test="V1THDMx != 0.001" >
+				  `V1THDMx`,
+				  </if>
+			<if test="V2THDMx != 0.001" >
+				  `V2THDMx`,
+				  </if>
+			<if test="V3THDMx != 0.001" >
+				  `V3THDMx`,
+				  </if>
+			<if test="I1THDMx != 0.001" >
+				  `I1THDMx`,
+				  </if>
+			<if test="I2THDMx != 0.001" >
+				  `I2THDMx`,
+				  </if>
+			<if test="I3THDMx != 0.001" >
+				  `I3THDMx`,
+				  </if>
+			<if test="I1KFactor != 0.001" >
+				  `I1KFactor`,
+				  </if>
+			<if test="I2KFactor != 0.001" >
+				  `I2KFactor`,
+				  </if>
+			<if test="I3KFactor != 0.001" >
+				  `I3KFactor`,
+				  </if>
+			<if test="I1CrestFactor != 0.001" >
+				  `I1CrestFactor`,
+				  </if>
+			<if test="I2CrestFactor != 0.001" >
+				  `I2CrestFactor`,
+				  </if>
+			<if test="I3CrestFactor != 0.001" >
+				  `I3CrestFactor`,
+				  </if>
+			<if test="nvmActivePower != 0.001" >
+				  `nvmActivePower`,
+				  </if>
+			<if test="nvmActiveEnergy != 0.001" >
+				  `nvmActiveEnergy`,
+				  </if>
+			<if test="MeasuredProduction != 0.001" >
+				  `MeasuredProduction`,
+				  </if>
+
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="Ia != 0.001" >
+			#{Ia},
+			</if>
+			<if test="Ib != 0.001" >
+				  #{Ib},
+				  </if>
+			<if test="Ic != 0.001" >
+				  #{Ic},
+				  </if>
+			<if test="I4 != 0.001" >
+				  #{I4},
+				  </if>
+			<if test="I5 != 0.001" >
+				  #{I5},
+				  </if>
+			<if test="IAvg != 0.001" >
+				  #{IAvg},
+				  </if>
+			<if test="IAvgMn != 0.001" >
+				  #{IAvgMn},
+				  </if>
+			<if test="IAvgMx != 0.001" >
+				  #{IAvgMx},
+				  </if>
+			<if test="IAvgMean != 0.001" >
+				  #{IAvgMean},
+				  </if>
+			<if test="Freq != 0.001" >
+				  #{Freq},
+				  </if>
+			<if test="FreqMn != 0.001" >
+				  #{FreqMn},
+				  </if>
+			<if test="FreqMx != 0.001" >
+				  #{FreqMx},
+				  </if>
+			<if test="FreqMean != 0.001" >
+				  #{FreqMean},
+				  </if>
+			<if test="VUnbal != 0.001" >
+				  #{VUnbal},
+				  </if>
+			<if test="IUnbal != 0.001" >
+				  #{IUnbal},
+				  </if>
+			<if test="PhaseRev != 0.001" >
+				  #{PhaseRev},
+				  </if>
+			<if test="VInA != 0.001" >
+				  #{VInA},
+				  </if>
+			<if test="VInB != 0.001" >
+				  #{VInB},
+				  </if>
+			<if test="VInC != 0.001" >
+				  #{VInC},
+				  </if>
+			<if test="VInAvg != 0.001" >
+				  #{VInAvg},
+				  </if>
+			<if test="VInAvgMx != 0.001" >
+				  #{VInAvgMx},
+				  </if>
+			<if test="unused1 != 0.001" >
+				  #{unused1},
+				  </if>
+			<if test="VIIAb != 0.001" >
+				  #{VIIAb},
+				  </if>
+			<if test="VIIBc != 0.001" >
+				  #{VIIBc},
+				  </if>
+			<if test="VIICa != 0.001" >
+				  #{VIICa},
+				  </if>
+			<if test="VIIAvg != 0.001" >
+				  #{VIIAvg},
+				  </if>
+			<if test="VIIAvgMx != 0.001" >
+				  #{VIIAvgMx},
+				  </if>
+			<if test="VIIAvgMean != 0.001" >
+				  #{VIIAvgMean},
+				  </if>
+			<if test="unused2 != 0.001" >
+				  #{unused2},
+				  </if>
+			<if test="unused3 != 0.001" >
+				  #{unused3},
+				  </if>
+			<if test="unused4 != 0.001" >
+				  #{unused4},
+				  </if>
+			<if test="unused5 != 0.001" >
+				  #{unused5},
+				  </if>
+			<if test="kWA != 0.001" >
+				  #{kWA},
+				  </if>
+			<if test="kWB != 0.001" >
+				  #{kWB},
+				  </if>
+			<if test="kWC != 0.001" >
+				  #{kWC},
+				  </if>
+			<if test="kWTot != 0.001" >
+				  #{kWTot},
+				  </if>
+			<if test="kWTotMax != 0.001" >
+				  #{kWTotMax},
+				  </if>
+			<if test="kVARA != 0.001" >
+				  #{kVARA},
+				  </if>
+			<if test="kVARB != 0.001" >
+				  #{kVARB},
+				  </if>
+			<if test="kVARC != 0.001" >
+				  #{kVARC},
+				  </if>
+			<if test="kVARTot != 0.001" >
+				  #{kVARTot},
+				  </if>
+			<if test="kVARTotMax != 0.001" >
+				  #{kVARTotMax},
+				  </if>
+			<if test="kVAA != 0.001" >
+				  #{kVAA},
+				  </if>
+			<if test="kVAB != 0.001" >
+				  #{kVAB},
+				  </if>
+			<if test="kVAC != 0.001" >
+				  #{kVAC},
+				  </if>
+			<if test="kVATot != 0.001" >
+				  #{kVATot},
+				  </if>
+			<if test="kVATotMax != 0.001" >
+				  #{kVATotMax},
+				  </if>
+			<if test="unused6 != 0.001" >
+				  #{unused6},
+				  </if>
+			<if test="kWhDel != 0.001" >
+				  #{kWhDel},
+				  </if>
+			<if test="kWhRec != 0.001" >
+				  #{kWhRec},
+				  </if>
+			<if test="kVARhDel != 0.001" >
+				  #{kVARhDel},
+				  </if>
+			<if test="kVARhRec != 0.001" >
+				  #{kVARhRec},
+				  </if>
+			<if test="kVARhDelRec != 0.001" >
+				  #{kVARhDelRec},
+				  </if>
+			<if test="unused7 != 0.001" >
+				  #{unused7},
+				  </if>
+			<if test="unused8 != 0.001" >
+				  #{unused8},
+				  </if>
+			<if test="unused9 != 0.001" >
+				  #{unused9},
+				  </if>
+			<if test="unused10 != 0.001" >
+				  #{unused10},
+				  </if>
+			<if test="unused11 != 0.001" >
+				  #{unused11},
+				  </if>
+			<if test="unused12 != 0.001" >
+				  #{unused12},
+				  </if>
+			<if test="unused13 != 0.001" >
+				  #{unused13},
+				  </if>
+			<if test="unused14 != 0.001" >
+				  #{unused14},
+				  </if>
+			<if test="unused15 != 0.001" >
+				  #{unused15},
+				  </if>
+			<if test="unused16 != 0.001" >
+				  #{unused16},
+				  </if>
+			<if test="unused17 != 0.001" >
+				  #{unused17},
+				  </if>
+			<if test="PFSignA != 0.001" >
+				  #{PFSignA},
+				  </if>
+			<if test="PFSignB != 0.001" >
+				  #{PFSignB},
+				  </if>
+			<if test="PFSignC != 0.001" >
+				  #{PFSignC},
+				  </if>
+			<if test="PFSignTot != 0.001" >
+				  #{PFSignTot},
+				  </if>
+			<if test="V1THDMx != 0.001" >
+				  #{V1THDMx},
+				  </if>
+			<if test="V2THDMx != 0.001" >
+				  #{V2THDMx},
+				  </if>
+			<if test="V3THDMx != 0.001" >
+				  #{V3THDMx},
+				  </if>
+			<if test="I1THDMx != 0.001" >
+				  #{I1THDMx},
+				  </if>
+			<if test="I2THDMx != 0.001" >
+				  #{I2THDMx},
+				  </if>
+			<if test="I3THDMx != 0.001" >
+				  #{I3THDMx},
+				  </if>
+			<if test="I1KFactor != 0.001" >
+				  #{I1KFactor},
+				  </if>
+			<if test="I2KFactor != 0.001" >
+				  #{I2KFactor},
+				  </if>
+			<if test="I3KFactor != 0.001" >
+				  #{I3KFactor},
+				  </if>
+			<if test="I1CrestFactor != 0.001" >
+				  #{I1CrestFactor},
+				  </if>
+			<if test="I2CrestFactor != 0.001" >
+				  #{I2CrestFactor},
+				  </if>
+			<if test="I3CrestFactor != 0.001" >
+				  #{I3CrestFactor},
+				  </if>
+			<if test="nvmActivePower != 0.001" >
+				  #{nvmActivePower},
+				  </if>
+			<if test="nvmActiveEnergy != 0.001" >
+				  #{nvmActiveEnergy},
+				  </if>
+			<if test="MeasuredProduction != 0.001" >
+				  #{MeasuredProduction},
+				  </if>
+				  
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="Ia != 0.001" >
+				`Ia` = #{Ia},
+			</if>
+			<if test="Ib != 0.001" >
+				  `Ib` = #{Ib},
+				  </if>
+			<if test="Ic != 0.001" >
+				  `Ic` = #{Ic},
+				  </if>
+			<if test="I4 != 0.001" >
+				  `I4` = #{I4},
+				  </if>
+			<if test="I5 != 0.001" >
+				  `I5` = #{I5},
+				  </if>
+			<if test="IAvg != 0.001" >
+				  `IAvg` = #{IAvg},
+				  </if>
+			<if test="IAvgMn != 0.001" >
+				  `IAvgMn` = #{IAvgMn},
+				  </if>
+			<if test="IAvgMx != 0.001" >
+				  `IAvgMx` = #{IAvgMx},
+				  </if>
+			<if test="IAvgMean != 0.001" >
+				  `IAvgMean` = #{IAvgMean},
+				  </if>
+			<if test="Freq != 0.001" >
+				  `Freq` = #{Freq},
+				  </if>
+			<if test="FreqMn != 0.001" >
+				  `FreqMn` = #{FreqMn},
+				  </if>
+			<if test="FreqMx != 0.001" >
+				  `FreqMx` = #{FreqMx},
+				  </if>
+			<if test="FreqMean != 0.001" >
+				  `FreqMean` = #{FreqMean},
+				  </if>
+			<if test="VUnbal != 0.001" >
+				  `VUnbal` = #{VUnbal},
+				  </if>
+			<if test="IUnbal != 0.001" >
+				  `IUnbal` = #{IUnbal},
+				  </if>
+			<if test="PhaseRev != 0.001" >
+				  `PhaseRev` = #{PhaseRev},
+				  </if>
+			<if test="VInA != 0.001" >
+				  `VInA` = #{VInA},
+				  </if>
+			<if test="VInB != 0.001" >
+				  `VInB` = #{VInB},
+				  </if>
+			<if test="VInC != 0.001" >
+				  `VInC` = #{VInC},
+				  </if>
+			<if test="VInAvg != 0.001" >
+				  `VInAvg` = #{VInAvg},
+				  </if>
+			<if test="VInAvgMx != 0.001" >
+				  `VInAvgMx` = #{VInAvgMx},
+				  </if>
+			<if test="unused1 != 0.001" >
+				  `unused1` = #{unused1},
+				  </if>
+			<if test="VIIAb != 0.001" >
+				  `VIIAb` = #{VIIAb},
+				  </if>
+			<if test="VIIBc != 0.001" >
+				  `VIIBc` = #{VIIBc},
+				  </if>
+			<if test="VIICa != 0.001" >
+				  `VIICa` = #{VIICa},
+				  </if>
+			<if test="VIIAvg != 0.001" >
+				  `VIIAvg` = #{VIIAvg},
+				  </if>
+			<if test="VIIAvgMx != 0.001" >
+				  `VIIAvgMx` = #{VIIAvgMx},
+				  </if>
+			<if test="VIIAvgMean != 0.001" >
+				  `VIIAvgMean` = #{VIIAvgMean},
+				  </if>
+			<if test="unused2 != 0.001" >
+				  `unused2` = #{unused2},
+				  </if>
+			<if test="unused3 != 0.001" >
+				  `unused3` = #{unused3},
+				  </if>
+			<if test="unused4 != 0.001" >
+				  `unused4` = #{unused4},
+				  </if>
+			<if test="unused5 != 0.001" >
+				  `unused5` = #{unused5},
+				  </if>
+			<if test="kWA != 0.001" >
+				  `kWA` = #{kWA},
+				  </if>
+			<if test="kWB != 0.001" >
+				  `kWB` = #{kWB},
+				  </if>
+			<if test="kWC != 0.001" >
+				  `kWC` = #{kWC},
+				  </if>
+			<if test="kWTot != 0.001" >
+				  `kWTot` = #{kWTot},
+				  </if>
+			<if test="kWTotMax != 0.001" >
+				  `kWTotMax` = #{kWTotMax},
+				  </if>
+			<if test="kVARA != 0.001" >
+				  `kVARA` = #{kVARA},
+				  </if>
+			<if test="kVARB != 0.001" >
+				  `kVARB` = #{kVARB},
+				  </if>
+			<if test="kVARC != 0.001" >
+				  `kVARC` = #{kVARC},
+				  </if>
+			<if test="kVARTot != 0.001" >
+				  `kVARTot` = #{kVARTot},
+				  </if>
+			<if test="kVARTotMax != 0.001" >
+				  `kVARTotMax` = #{kVARTotMax},
+				  </if>
+			<if test="kVAA != 0.001" >
+				  `kVAA` = #{kVAA},
+				  </if>
+			<if test="kVAB != 0.001" >
+				  `kVAB` = #{kVAB},
+				  </if>
+			<if test="kVAC != 0.001" >
+				  `kVAC` = #{kVAC},
+				  </if>
+			<if test="kVATot != 0.001" >
+				  `kVATot` = #{kVATot},
+				  </if>
+			<if test="kVATotMax != 0.001" >
+				  `kVATotMax` = #{kVATotMax},
+				  </if>
+			<if test="unused6 != 0.001" >
+				  `unused6` = #{unused6},
+				  </if>
+			<if test="kWhDel != 0.001" >
+				  `kWhDel` = #{kWhDel},
+				  </if>
+			<if test="kWhRec != 0.001" >
+				  `kWhRec` = #{kWhRec},
+				  </if>
+			<if test="kVARhDel != 0.001" >
+				  `kVARhDel` = #{kVARhDel},
+				  </if>
+			<if test="kVARhRec != 0.001" >
+				  `kVARhRec` = #{kVARhRec},
+				  </if>
+			<if test="kVARhDelRec != 0.001" >
+				  `kVARhDelRec` = #{kVARhDelRec},
+				  </if>
+			<if test="unused7 != 0.001" >
+				  `unused7` = #{unused7},
+				  </if>
+			<if test="unused8 != 0.001" >
+				  `unused8` = #{unused8},
+				  </if>
+			<if test="unused9 != 0.001" >
+				  `unused9` = #{unused9},
+				  </if>
+			<if test="unused10 != 0.001" >
+				  `unused10` = #{unused10},
+				  </if>
+			<if test="unused11 != 0.001" >
+				  `unused11` = #{unused11},
+				  </if>
+			<if test="unused12 != 0.001" >
+				  `unused12` = #{unused12},
+				  </if>
+			<if test="unused13 != 0.001" >
+				  `unused13` = #{unused13},
+				  </if>
+			<if test="unused14 != 0.001" >
+				  `unused14` = #{unused14},
+				  </if>
+			<if test="unused15 != 0.001" >
+				  `unused15` = #{unused15},
+				  </if>
+			<if test="unused16 != 0.001" >
+				  `unused16` = #{unused16},
+				  </if>
+			<if test="unused17 != 0.001" >
+				  `unused17` = #{unused17},
+				  </if>
+			<if test="PFSignA != 0.001" >
+				  `PFSignA` = #{PFSignA},
+				  </if>
+			<if test="PFSignB != 0.001" >
+				  `PFSignB` = #{PFSignB},
+				  </if>
+			<if test="PFSignC != 0.001" >
+				  `PFSignC` = #{PFSignC},
+				  </if>
+			<if test="PFSignTot != 0.001" >
+				  `PFSignTot` = #{PFSignTot},
+				  </if>
+			<if test="V1THDMx != 0.001" >
+				  `V1THDMx` = #{V1THDMx},
+				  </if>
+			<if test="V2THDMx != 0.001" >
+				  `V2THDMx` = #{V2THDMx},
+				  </if>
+			<if test="V3THDMx != 0.001" >
+				  `V3THDMx` = #{V3THDMx},
+				  </if>
+			<if test="I1THDMx != 0.001" >
+				  `I1THDMx` = #{I1THDMx},
+				  </if>
+			<if test="I2THDMx != 0.001" >
+				  `I2THDMx` = #{I2THDMx},
+				  </if>
+			<if test="I3THDMx != 0.001" >
+				  `I3THDMx` = #{I3THDMx},
+				  </if>
+			<if test="I1KFactor != 0.001" >
+				  `I1KFactor` = #{I1KFactor},
+				  </if>
+			<if test="I2KFactor != 0.001" >
+				 `I2KFactor` = #{I2KFactor},
+				  </if>
+			<if test="I3KFactor != 0.001" >
+				  `I3KFactor` = #{I3KFactor},
+				  </if>
+			<if test="I1CrestFactor != 0.001" >
+				  `I1CrestFactor` = #{I1CrestFactor},
+				  </if>
+			<if test="I2CrestFactor != 0.001" >
+				  `I2CrestFactor` = #{I2CrestFactor},
+				  </if>
+			<if test="I3CrestFactor != 0.001" >
+				  `I3CrestFactor` = #{I3CrestFactor},
+				  </if>
+			<if test="nvmActivePower != 0.001" >
+				  `nvmActivePower` = #{nvmActivePower},
+				  </if>
+			<if test="nvmActiveEnergy != 0.001" >
+				  `nvmActiveEnergy` = #{nvmActiveEnergy},
+				  </if>
+			<if test="MeasuredProduction != 0.001" >
+				  `MeasuredProduction` = #{MeasuredProduction},
+				  </if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelPowerMeasurementIon7650Entity">
+		SELECT
+			* 
+		FROM
+			ViewModelPowerMeasurementIon7650 dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

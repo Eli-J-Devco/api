@@ -420,7 +420,6 @@ public class BatchJobSMAFTP {
 													else if(fieldName.equals("DcMs.Vol[B]")) { entityStp24.setDcMs_VolB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("DcMs.Amp[A]")) { entityStp24.setDcMs_AmpA(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("DcMs.Amp[B]")) { entityStp24.setDcMs_AmpB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
-													else if(fieldName.equals("DcMs.Amp[A1]")) { entityStp24.setDcMs_AmpA1(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsA")) { entityStp24.setGridMs_PhV_phsA(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsB")) { entityStp24.setGridMs_PhV_phsB(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
 													else if(fieldName.equals("GridMs.PhV.phsC")) { entityStp24.setGridMs_PhV_phsC(Double.parseDouble(!Lib.isBlank(values.get(j + 1)) ? values.get(j + 1) : "0.001")); }
