@@ -1092,7 +1092,7 @@
 				  
 				  IFNULL(ROUND(IF(AVG(dv.sensor1_data) <![CDATA[<]]> 0, 0, AVG(dv.sensor1_data)), 2), 0.001) AS sensor1_data,
 				  
-			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
+			      IFNULL(ROUND(AVG(dv.panel_temperature), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
 			      IFNULL(ROUND(COUNT(dv.error_code), 2), 0.001) AS error_code,
 			</if>
@@ -1178,7 +1178,7 @@
 			<if test="(datatablename == 'model_rt1_class30000') || (datatablename == 'ViewModelRt1Class30000')">
 				  IFNULL(ROUND(IF(AVG(dv.sensor1_data) <![CDATA[<]]> 0, 0, AVG(dv.sensor1_data  )), 2), 0.001) AS sensor1_data,
 				  
-			      IFNULL(ROUND(AVG(dv.panel_temperature * 0.1), 2), 0.001) AS panel_temperature,
+			      IFNULL(ROUND(AVG(dv.panel_temperature), 2), 0.001) AS panel_temperature,
 			      IFNULL(ROUND(AVG(dv.external_power_sensor), 2), 0.001) AS external_power_sensor,
 			      IFNULL(ROUND(COUNT(dv.error_code), 2), 0.001) AS error_code,
 			</if>
