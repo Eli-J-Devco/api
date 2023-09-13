@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.services.CalculationMeasureProductionService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -100,4 +101,78 @@ public class CalculationMeasuredProductionController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	
+	/**
+	 * @description update measured production device upload FTP
+	 * @author long.pham
+	 * @since 2023-09-12
+	 * @return {}
+	 */
+	@GetMapping("/update-measured-production-device-upload-ftp")
+	@ResponseBody
+	public Object updateMeasuredProductionDeviceUploadFTP(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			int day = 4;
+			String totalDay = (String) params.get("day");
+			if(totalDay != null && Integer.parseInt(totalDay) > 0 ) {
+				day = Integer.parseInt(totalDay);
+			}
+		    
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+			
+			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+				id_site = Integer.parseInt(idSite);
+			}
+			
+			CalculationMeasuredProductionEntity entity = new CalculationMeasuredProductionEntity();
+			entity.setId_site(id_site);
+			entity.setTotalDay(day);
+		    
+			CalculationMeasureProductionService service = new CalculationMeasureProductionService();
+			List<?> listDevices = service.getListDeviceUpdateMeasuredProductionFTP(entity);
+			
+			if (listDevices == null || listDevices.size() == 0) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+
+			
+			for (int i = 0; i < listDevices.size(); i++) {
+				DeviceEntity deviceItem = (DeviceEntity) listDevices.get(i);
+				
+				Date now = new Date();
+				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTimezone_value()));
+				SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+				Calendar calCurrent = Calendar.getInstance();
+				calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
+				
+				deviceItem.setEnd_date(dateFormat.format(calCurrent.getTime()) + " 23:59:59");
+
+				calCurrent.add(Calendar.DATE, -day);
+				
+				Calendar cal = Calendar.getInstance();
+				Date currentDate = calCurrent.getTime();
+				cal.setTime(currentDate);
+				deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
+
+				service.updateDeviceMeasuredProduction(deviceItem);
+			}
+			
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }
