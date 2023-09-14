@@ -211,6 +211,10 @@
 				WHEN d.datatablename = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
 				WHEN d.datatablename = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
 				
+				WHEN d.datatablename = 'model_xantrex_inverter' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				WHEN d.datatablename = 'model_xantrex_inverter' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+				WHEN d.datatablename = 'model_xantrex_inverter' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
+				
 				WHEN d.datatablename = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN d.datatablename = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))

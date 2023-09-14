@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelXantrexInverter">
+	<resultMap id="ModelXantrexInverterMap"
+		type="com.nwm.api.entities.ModelXantrexInverterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="VAB" column="VAB" />
+		<result property="VBC" column="VBC" />
+		<result property="VCA" column="VCA" />
+		<result property="CurrentA" column="CurrentA" />
+		<result property="CurrentB" column="CurrentB" />
+		<result property="CurrentC" column="CurrentC" />
+		<result property="ReadPower" column="ReadPower" />
+		<result property="PVVoltage" column="PVVoltage" />
+		<result property="PVCurrent" column="PVCurrent" />
+		<result property="PVPower" column="PVPower" />
+		<result property="GridFrequency" column="GridFrequency" />
+		<result property="SystemState" column="SystemState" />
+		<result property="GoalState" column="GoalState" />
+		<result property="FaultCode" column="FaultCode" />
+		<result property="kWh" column="kWh" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+			
+	</resultMap>
+
+	<insert id="insertModelXantrexInverter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_xantrex_inverter`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="VAB != 0.001">
+				`VAB`,
+			</if>
+			<if test="VBC != 0.001">
+				`VBC`,
+			</if>
+			<if test="VCA != 0.001">
+				`VCA`,
+			</if>
+			<if test="CurrentA != 0.001">
+				`CurrentA`,
+			</if>
+			<if test="CurrentB != 0.001">
+				`CurrentB`,
+			</if>
+			<if test="CurrentC != 0.001">
+				`CurrentC`,
+			</if>
+			<if test="ReadPower != 0.001">
+				`ReadPower`,
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage`,
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent`,
+			</if>
+			<if test="PVPower != 0.001">
+				`PVPower`,
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency`,
+			</if>
+			<if test="SystemState != 0.001">
+				`SystemState`,
+			</if>
+			<if test="GoalState != 0.001">
+				`GoalState`,
+			</if>
+			<if test="FaultCode != 0.001">
+				`FaultCode`,
+			</if>
+			<if test="kWh != 0.001">
+				`kWh`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="VAB != 0.001">
+				#{VAB},
+			</if>
+			<if test="VBC != 0.001">
+				#{VBC},
+			</if>
+			<if test="VCA != 0.001">
+				#{VCA},
+			</if>
+			<if test="CurrentA != 0.001">
+				#{CurrentA},
+			</if>
+			<if test="CurrentB != 0.001">
+				#{CurrentB},
+			</if>
+			<if test="CurrentC != 0.001">
+				#{CurrentC},
+			</if>
+			<if test="ReadPower != 0.001">
+				#{ReadPower},
+			</if>
+			<if test="PVVoltage != 0.001">
+				#{PVVoltage},
+			</if>
+			<if test="PVCurrent != 0.001">
+				#{PVCurrent},
+			</if>
+			<if test="PVPower != 0.001">
+				#{PVPower},
+			</if>
+			<if test="GridFrequency != 0.001">
+				#{GridFrequency},
+			</if>
+			<if test="SystemState != 0.001">
+				#{SystemState},
+			</if>
+			<if test="GoalState != 0.001">
+				#{GoalState},
+			</if>
+			<if test="FaultCode != 0.001">
+				#{FaultCode},
+			</if>
+			<if test="kWh != 0.001">
+				#{kWh},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="VAB != 0.001">
+				`VAB` = #{VAB},
+			</if>
+			<if test="VBC != 0.001">
+				`VBC` = #{VBC},
+			</if>
+			<if test="VCA != 0.001">
+				`VCA` = #{VCA},
+			</if>
+			<if test="CurrentA != 0.001">
+				`CurrentA` = #{CurrentA},
+			</if>
+			<if test="CurrentB != 0.001">
+				`CurrentB` = #{CurrentB},
+			</if>
+			<if test="CurrentC != 0.001">
+				`CurrentC` = #{CurrentC},
+			</if>
+			<if test="ReadPower != 0.001">
+				`ReadPower` = #{ReadPower},
+			</if>
+			<if test="PVVoltage != 0.001">
+				`PVVoltage` = #{PVVoltage},
+			</if>
+			<if test="PVCurrent != 0.001">
+				`PVCurrent` = #{PVCurrent},
+			</if>
+			<if test="PVPower != 0.001">
+				`PVPower` = #{PVPower},
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency` = #{GridFrequency},
+			</if>
+			<if test="SystemState != 0.001">
+				`SystemState` = #{SystemState},
+			</if>
+			<if test="GoalState != 0.001">
+				`GoalState` = #{GoalState},
+			</if>
+			<if test="FaultCode != 0.001">
+				`FaultCode` = #{FaultCode},
+			</if>
+			<if test="kWh != 0.001">
+				`kWh` = #{kWh},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	
+	
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelXantrexInverterEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelXantrexInverter dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
