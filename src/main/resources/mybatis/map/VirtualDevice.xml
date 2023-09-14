@@ -364,6 +364,21 @@
 			
 			<if test="weatherPOA != null and !weatherPOA.isEmpty()">
 				UNION ALL
+				SELECT
+					i.`offset`,
+					i.time_format,
+					0 AS power,
+					0 AS energy,
+					IFNULL(AVG(i.irradiance), 0) AS irradiance,
+					
+					IFNULL(AVG(i.temperature), 0) AS temperature,
+					0 AS rpoa,
+					0 AS ambient_temp,
+					0 AS calculation_poa,
+					0 AS calculation_temp,
+					0 AS calculation_clipping
+				FROM 
+				(
 				<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
 					SELECT
 						t.`offset`,
@@ -394,7 +409,7 @@
 						d.id, time_format
 								
 				</foreach>
-				
+				) i GROUP BY i.time_format
 			
 			</if>
 			
