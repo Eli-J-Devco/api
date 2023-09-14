@@ -194,52 +194,52 @@ public class ModelMeterIon8600Entity {
 	public void setI4(double i4) {
 		I4 = i4;
 	}
-	public double getkWA() {
+	public double getKWA() {
 		return kWA;
 	}
-	public void setkWA(double kWA) {
+	public void setKWA(double kWA) {
 		this.kWA = kWA;
 	}
-	public double getkWB() {
+	public double getKWB() {
 		return kWB;
 	}
-	public void setkWB(double kWB) {
+	public void setKWB(double kWB) {
 		this.kWB = kWB;
 	}
-	public double getkWC() {
+	public double getKWC() {
 		return kWC;
 	}
-	public void setkWC(double kWC) {
+	public void setKWC(double kWC) {
 		this.kWC = kWC;
 	}
-	public double getkWTot() {
+	public double getKWTot() {
 		return kWTot;
 	}
-	public void setkWTot(double kWTot) {
+	public void setKWTot(double kWTot) {
 		this.kWTot = kWTot;
 	}
-	public double getkVARA() {
+	public double getKVARA() {
 		return kVARA;
 	}
-	public void setkVARA(double kVARA) {
+	public void setKVARA(double kVARA) {
 		this.kVARA = kVARA;
 	}
-	public double getkVARB() {
+	public double getKVARB() {
 		return kVARB;
 	}
-	public void setkVARB(double kVARB) {
+	public void setKVARB(double kVARB) {
 		this.kVARB = kVARB;
 	}
-	public double getkVARC() {
+	public double getKVARC() {
 		return kVARC;
 	}
-	public void setkVARC(double kVARC) {
+	public void setKVARC(double kVARC) {
 		this.kVARC = kVARC;
 	}
-	public double getkVARTot() {
+	public double getKVARTot() {
 		return kVARTot;
 	}
-	public void setkVARTot(double kVARTot) {
+	public void setKVARTot(double kVARTot) {
 		this.kVARTot = kVARTot;
 	}
 	public double getKVAA() {
@@ -302,22 +302,22 @@ public class ModelMeterIon8600Entity {
 	public void setIAveMx(double iAveMx) {
 		IAveMx = iAveMx;
 	}
-	public double getkWTotMx() {
+	public double getKWTotMx() {
 		return kWTotMx;
 	}
-	public void setkWTotMx(double kWTotMx) {
+	public void setKWTotMx(double kWTotMx) {
 		this.kWTotMx = kWTotMx;
 	}
-	public double getkVARTotMx() {
+	public double getKVARTotMx() {
 		return kVARTotMx;
 	}
-	public void setkVARTotMx(double kVARTotMx) {
+	public void setKVARTotMx(double kVARTotMx) {
 		this.kVARTotMx = kVARTotMx;
 	}
-	public double getkVATotMx() {
+	public double getKVATotMx() {
 		return kVATotMx;
 	}
-	public void setkVATotMx(double kVATotMx) {
+	public void setKVATotMx(double kVATotMx) {
 		this.kVATotMx = kVATotMx;
 	}
 	public double getFreqMx() {
@@ -344,40 +344,40 @@ public class ModelMeterIon8600Entity {
 	public void setFreqMn(double freqMn) {
 		FreqMn = freqMn;
 	}
-	public double getkWSdDelRec() {
+	public double getKWSdDelRec() {
 		return kWSdDelRec;
 	}
-	public void setkWSdDelRec(double kWSdDelRec) {
+	public void setKWSdDelRec(double kWSdDelRec) {
 		this.kWSdDelRec = kWSdDelRec;
 	}
-	public double getkVASdDelRec() {
+	public double getKVASdDelRec() {
 		return kVASdDelRec;
 	}
-	public void setkVASdDelRec(double kVASdDelRec) {
+	public void setKVASdDelRec(double kVASdDelRec) {
 		this.kVASdDelRec = kVASdDelRec;
 	}
-	public double getkVARSdDelRec() {
+	public double getKVARSdDelRec() {
 		return kVARSdDelRec;
 	}
-	public void setkVARSdDelRec(double kVARSdDelRec) {
+	public void setKVARSdDelRec(double kVARSdDelRec) {
 		this.kVARSdDelRec = kVARSdDelRec;
 	}
-	public double getkWSdMxDR() {
+	public double getKWSdMxDR() {
 		return kWSdMxDR;
 	}
-	public void setkWSdMxDR(double kWSdMxDR) {
+	public void setKWSdMxDR(double kWSdMxDR) {
 		this.kWSdMxDR = kWSdMxDR;
 	}
-	public double getkVASdMxDR() {
+	public double getKVASdMxDR() {
 		return kVASdMxDR;
 	}
-	public void setkVASdMxDR(double kVASdMxDR) {
+	public void setKVASdMxDR(double kVASdMxDR) {
 		this.kVASdMxDR = kVASdMxDR;
 	}
-	public double getkVARSdMxDR() {
+	public double getKVARSdMxDR() {
 		return kVARSdMxDR;
 	}
-	public void setkVARSdMxDR(double kVARSdMxDR) {
+	public void setKVARSdMxDR(double kVARSdMxDR) {
 		this.kVARSdMxDR = kVARSdMxDR;
 	}
 	public double getPhaseRev() {
@@ -386,58 +386,58 @@ public class ModelMeterIon8600Entity {
 	public void setPhaseRev(double phaseRev) {
 		PhaseRev = phaseRev;
 	}
-	public double getkWhDel() {
+	public double getKWhDel() {
 		return kWhDel;
 	}
-	public void setkWhDel(double kWhDel) {
+	public void setKWhDel(double kWhDel) {
 		this.kWhDel = kWhDel;
 	}
-	public double getkWhRec() {
+	public double getKWhRec() {
 		return kWhRec;
 	}
-	public void setkWhRec(double kWhRec) {
+	public void setKWhRec(double kWhRec) {
 		this.kWhRec = kWhRec;
 	}
-	public double getkWhDelRec() {
+	public double getKWhDelRec() {
 		return kWhDelRec;
 	}
-	public void setkWhDelRec(double kWhDelRec) {
+	public void setKWhDelRec(double kWhDelRec) {
 		this.kWhDelRec = kWhDelRec;
 	}
-	public double getkWhDel_Rec() {
+	public double getKWhDel_Rec() {
 		return kWhDel_Rec;
 	}
-	public void setkWhDel_Rec(double kWhDel_Rec) {
+	public void setKWhDel_Rec(double kWhDel_Rec) {
 		this.kWhDel_Rec = kWhDel_Rec;
 	}
-	public double getkVARhDel() {
+	public double getKVARhDel() {
 		return kVARhDel;
 	}
-	public void setkVARhDel(double kVARhDel) {
+	public void setKVARhDel(double kVARhDel) {
 		this.kVARhDel = kVARhDel;
 	}
-	public double getkVARhRec() {
+	public double getKVARhRec() {
 		return kVARhRec;
 	}
-	public void setkVARhRec(double kVARhRec) {
+	public void setKVARhRec(double kVARhRec) {
 		this.kVARhRec = kVARhRec;
 	}
-	public double getkVARhDelRec() {
+	public double getKVARhDelRec() {
 		return kVARhDelRec;
 	}
-	public void setkVARhDelRec(double kVARhDelRec) {
+	public void setKVARhDelRec(double kVARhDelRec) {
 		this.kVARhDelRec = kVARhDelRec;
 	}
-	public double getkVARhDel_Rec() {
+	public double getKVARhDel_Rec() {
 		return kVARhDel_Rec;
 	}
-	public void setkVARhDel_Rec(double kVARhDel_Rec) {
+	public void setKVARhDel_Rec(double kVARhDel_Rec) {
 		this.kVARhDel_Rec = kVARhDel_Rec;
 	}
-	public double getkVAhDelRec() {
+	public double getKVAhDelRec() {
 		return kVAhDelRec;
 	}
-	public void setkVAhDelRec(double kVAhDelRec) {
+	public void setKVAhDelRec(double kVAhDelRec) {
 		this.kVAhDelRec = kVAhDelRec;
 	}
 	public double getV1THDMx() {
