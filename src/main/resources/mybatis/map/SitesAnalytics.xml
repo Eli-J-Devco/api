@@ -1756,6 +1756,26 @@
 			      IFNULL(ROUND(AVG(dv.IntakeAirTemperature), 2), 0.001) AS IntakeAirTemperature,
 			</if>
 			
+			<if test="(datatablename == 'model_xantrex_inverter') || (datatablename == 'ViewModelXantrexInverter')">
+				  IFNULL(ROUND(AVG(dv.VAB), 2), 0.001) AS VAB,
+			      IFNULL(ROUND(AVG(dv.VBC), 2), 0.001) AS VBC,
+			      IFNULL(ROUND(AVG(dv.VCA), 2), 0.001) AS VCA,
+			      IFNULL(ROUND(AVG(dv.CurrentA), 2), 0.001) AS CurrentA,
+			      IFNULL(ROUND(AVG(dv.CurrentB), 2), 0.001) AS CurrentB,
+			      IFNULL(ROUND(AVG(dv.CurrentC), 2), 0.001) AS CurrentC,
+			      
+			      IFNULL(ROUND(IF(AVG(dv.ReadPower) <![CDATA[<]]> 0, 0, AVG(dv.ReadPower)), 2), 0.001) AS ReadPower,
+			      
+			      IFNULL(ROUND(AVG(dv.PVVoltage), 2), 0.001) AS PVVoltage,
+			      IFNULL(ROUND(AVG(dv.PVCurrent), 2), 0.001) AS PVCurrent,
+			      IFNULL(ROUND(AVG(dv.PVPower), 2), 0.001) AS PVPower,
+			      IFNULL(ROUND(AVG(dv.GridFrequency), 2), 0.001) AS GridFrequency,
+			      IFNULL(ROUND(AVG(dv.SystemState), 2), 0.001) AS SystemState,
+			      IFNULL(ROUND(AVG(dv.GoalState), 2), 0.001) AS GoalState,
+			      IFNULL(ROUND(AVG(dv.FaultCode), 2), 0.001) AS FaultCode,
+			      IFNULL(ROUND(AVG(dv.kWh), 2), 0.001) AS kWh,
+			</if>
+			
 			<if test="(datatablename == 'model_ae1000nx_class9644') || (datatablename == 'ViewModelAE1000NXClass9644')">
 				  IFNULL(ROUND(AVG(dv.LastRestart), 2), 0.001) AS LastRestart,
 			      IFNULL(ROUND(AVG(dv.Uptime), 2), 0.001) AS Uptime,

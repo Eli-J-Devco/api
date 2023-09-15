@@ -275,6 +275,7 @@ public class FTPUploadServerController extends BaseController {
 																		// Put data to entity
 																		if (field.equals("Metering.TotWhOut") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
+																			entitySMA24k.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
 																		}
 																		  
 																		if (field.equals("Operation.GriSwCnt") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
@@ -294,8 +295,8 @@ public class FTPUploadServerController extends BaseController {
 																		}
 																		  
 																		if (field.equals("GridMs.TotW") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
-																			entitySMA24k.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
-																			entitySMA24k.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
+																			entitySMA24k.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/100 : 0.001);
+																			entitySMA24k.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 100 : 0.001);
 																		}
 																		  
 																		if (field.equals("GridMs.Hz") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
@@ -313,7 +314,7 @@ public class FTPUploadServerController extends BaseController {
 																		if (field.equals("DcMs.Vol[A]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
-//																		  `` 
+//																		  
 																		if (field.equals("DcMs.Vol[B]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
@@ -741,11 +742,11 @@ public class FTPUploadServerController extends BaseController {
 															deviceUpdateE.setLast_value(null);
 															deviceUpdateE.setField_value1(null);
 														}
-//													
-//														
+													
+														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
-//														
+														
 														deviceUpdateE.setId(entitySMA24k.getId_device());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
@@ -761,11 +762,10 @@ public class FTPUploadServerController extends BaseController {
 															deviceUpdateE.setLast_value(null);
 															deviceUpdateE.setField_value1(null);
 														}
-//													
-//														
+
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
-//														
+														
 														deviceUpdateE.setId(entitySMA3000.getId_device());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
@@ -799,10 +799,10 @@ public class FTPUploadServerController extends BaseController {
 											}
 											
 											// Delete file from server
-//											File logFile = new File(fileXML);
-//											if(logFile.delete()){  
-//												System.out.println("Delete file: " + fileXML);  
-//											}
+											File logFile = new File(fileXML);
+											if(logFile.delete()){  
+												System.out.println("Delete file: " + fileXML);  
+											}
 										}
 									}
 								}
@@ -926,10 +926,10 @@ public class FTPUploadServerController extends BaseController {
 									}
 									fos.close();
 									
-//									File logFile = new File(fileZip);
-//									if(logFile.delete()){  
-//										System.out.println("Delete file zip: " + fileZip);  
-//									}
+									File logFile = new File(fileZip);
+									if(logFile.delete()){  
+										System.out.println("Delete file zip: " + fileZip);  
+									}
 									
 								}
 								zipEntry = zis.getNextEntry();
@@ -939,12 +939,12 @@ public class FTPUploadServerController extends BaseController {
 							zis.close();
 							
 							
-//							boolean deleted = ftpClient.deleteFile(filePath);
-//						    if (deleted) {
-//						        System.out.println("The file was deleted successfully.");
-//						    } else {
-//						        System.out.println("Could not delete the file.");
-//						    }
+							boolean deleted = ftpClient.deleteFile(filePath);
+						    if (deleted) {
+						        System.out.println("The file was deleted successfully.");
+						    } else {
+						        System.out.println("Could not delete the file.");
+						    }
 						    
 
 						} else {

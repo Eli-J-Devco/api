@@ -36,6 +36,11 @@
 	</select>
 	
 	
+	
+	
+	
+	
+	
 	<update id="updateModelMeasuredProduction">
 		
 	
@@ -83,6 +88,52 @@
 	
 	</update>
 	
+	
+	
+	<select id="getListDeviceUpdateMeasuredProductionFTP" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			null AS time,
+			d.id,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type,
+			s.data_send_time,
+			null AS start_date,
+			null AS end_date,
+			null AS MeasuredProduction,
+			t.`offset` AS timezone_value,
+			d.view_tablename,
+			d.job_tablename
+		FROM
+			device d
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.id_device_group IN (48,46,31,32)
+			<if test="id_site > 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
+	<update id="updateDeviceMeasuredProduction">
+		UPDATE ${datatablename} dv
+		LEFT JOIN (
+			SELECT 
+				time,
+				IF(nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST( (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) - nvmActiveEnergy, 0), 0) ) AS MeasuredProduction
+			FROM 
+				${datatablename}
+			WHERE
+				id_device = #{id}
+		) t ON t.time = dv.time
+		SET dv.MeasuredProduction = t.MeasuredProduction
+		WHERE dv.id_device = #{id}
+	</update>
 	
 	
 	
