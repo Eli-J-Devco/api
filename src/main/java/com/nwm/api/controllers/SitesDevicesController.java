@@ -6,6 +6,10 @@
 package com.nwm.api.controllers;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
@@ -16,6 +20,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +40,7 @@ import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.SitesDevicesService;
 import com.nwm.api.utils.Constants;
-
+import com.nwm.api.utils.Lib;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -42,6 +48,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/sites-devices")
 public class SitesDevicesController extends BaseController {
 	
+	private static final int BUFFER_SIZE = 4096;
 	/**
 	 * @description Get detail site 
 	 * @author long.pham
@@ -1023,5 +1030,105 @@ public class SitesDevicesController extends BaseController {
 			return this.jsonResult(false, "SSH connection timeout", e, 0);
 		}
 	}
+	
+	
+	
+	
+	/**
+	 * @description fetch and push config data logger.
+	 * @author long.pham
+	 * @since 2023-09-19
+	 * @param ssh_host, ssh_user, ssh_pass, ssh_port
+	 * @return data (status, message, object, total_row
+	 */
+
+	@PostMapping("/run-save-command-datalogger")
+	public Object runSaveCommandDatalogger(@RequestBody DeviceEntity obj) {
+		try {
+
+			if (obj.getSsh_host() != null && obj.getSsh_user() != null && obj.getSsh_pass() != null
+					&& obj.getSsh_port() != null) {
+				String dirFolderXML = Lib.getReourcePropValue(Constants.appConfigFileName,
+						Constants.uploadRootPathConfigKey) + "/" + obj.getId_site();
+
+				File fDir = new File(dirFolderXML);
+				if (!fDir.exists() && !fDir.isDirectory()) { fDir.mkdirs(); }
+
+				String fileName = obj.getCommand();
+				String source = dirFolderXML + "/" + fileName.substring(fileName.lastIndexOf("/") + 1);
+				String des = "/mnt/main/sysconfig/modbus/" + fileName.substring(fileName.lastIndexOf("/") + 1);
+				
+				File fExits = new File(source);
+				if (fExits.exists()) { Lib.deleteFile(source); }
+				
+				
+				File myObj = new File(source);
+				if (myObj.createNewFile()) {
+					System.out.println("File created: " + myObj.getName());
+				} else {
+					System.out.println("File already exists.");
+				}
+				
+				List commandResult = obj.getCommandResult();
+				
+				if(commandResult.size() > 0) {
+					FileWriter myWriter = new FileWriter(source );
+					for(int i = 0; i < commandResult.size(); i++) {
+						 myWriter.write(commandResult.get(i).toString() + "\n");
+					}
+					myWriter.close();
+					
+					// Upload file to datalogger 
+					String server = obj.getSsh_host();
+			        int port = 9921;
+			        String user = obj.getSsh_user();
+			        String pass = obj.getSsh_pass();
+			 
+			        FTPClient ftpClient = new FTPClient();
+			        try {
+			            ftpClient.connect(server, port);
+			            ftpClient.login(user, pass);
+			            ftpClient.enterLocalPassiveMode();
+			 
+			            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+			 
+			            // APPROACH #1: uploads first file using an InputStream
+			            File firstLocalFile = new File(source);
+			 
+			            String firstRemoteFile = des;
+			            InputStream inputStream = new FileInputStream(firstLocalFile);
+			 
+			            System.out.println("Start uploading first file");
+			            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
+			            inputStream.close();
+			            if (done) {
+			                System.out.println("The first file is uploaded successfully.");
+			            }
+			        } catch (IOException ex) {
+			            System.out.println("Error: " + ex.getMessage());
+			            ex.printStackTrace();
+			        } finally {
+			            try {
+			                if (ftpClient.isConnected()) {
+			                    ftpClient.logout();
+			                    ftpClient.disconnect();
+			                }
+			            } catch (IOException ex) {
+			                ex.printStackTrace();
+			            }
+			        }
+				}
+
+				return this.jsonResult(true, "Save data successfully", obj, 1);
+
+			} else {
+				return this.jsonResult(false, "SSH connection timeout", null, 0);
+			}
+
+		} catch (Exception e) {
+			return this.jsonResult(false, "SSH connection timeout", e, 0);
+		}
+	}
+	
 	
 }
