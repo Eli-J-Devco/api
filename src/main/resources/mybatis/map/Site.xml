@@ -142,7 +142,7 @@
 			LEFT JOIN employee em ON em.id = sem.id_employee
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			
-			<if test="keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')">
+			<if test="(keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')) or (device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition != null and device_ac_rating_condition != '') ">
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
 			
@@ -192,6 +192,48 @@
 				AND d.serial_number LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'more'">	
+					AND s.ac_capacity <![CDATA[>]]> #{ac_capacity}
+			</if>		
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'equal'">	
+					AND s.ac_capacity <![CDATA[=]]> #{ac_capacity}
+			</if>	
+			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'less'">	
+					AND s.ac_capacity <![CDATA[<]]> #{ac_capacity}
+			</if>
+			
+			
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'more'">	
+					AND s.dc_capacity <![CDATA[>]]> #{dc_capacity}
+			</if>		
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'equal'">	
+					AND s.dc_capacity <![CDATA[=]]> #{dc_capacity}
+			</if>	
+			<if test="dc_capacity != null and dc_capacity != '' and dc_capacity_condition == 'less'">	
+					AND s.dc_capacity <![CDATA[<]]> #{dc_capacity}
+			</if>
+			
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'more'">	
+					AND d.rating_ac_power <![CDATA[>]]> #{device_ac_rating}
+			</if>		
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'equal'">	
+					AND d.rating_ac_power <![CDATA[=]]> #{device_ac_rating}
+			</if>	
+			<if test="device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition == 'less'">	
+					AND d.rating_ac_power <![CDATA[<]]> #{device_ac_rating}
+			</if>
+			
+			<if test="data_send_time != null and data_send_time != ''">	
+					AND s.data_send_time = #{data_send_time}
+			</if>
+			
+			<if test="built_since != null and built_since != ''">	
+					AND s.built_since = #{built_since}
+			</if>
+			<if test="commissioning != null and commissioning != ''">	
+					AND s.commissioning = #{commissioning}
+			</if>
+			
 		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
 			 
@@ -222,7 +264,7 @@
 			sg.id,
 			sg.`name`,
 			sg.order_id,
-			1 AS is_expand
+			0 AS is_expand
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
