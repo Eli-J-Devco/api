@@ -184,9 +184,38 @@ public class SiteEntity {
 	
 	private List hidden_data_list;
 	
+	private Double device_ac_rating;
+	private String ac_capacity_condition;
+	private String dc_capacity_condition;
+	private String device_ac_rating_condition;	
 	
 	
 	
+	
+	public Double getDevice_ac_rating() {
+		return device_ac_rating;
+	}
+	public void setDevice_ac_rating(Double device_ac_rating) {
+		this.device_ac_rating = device_ac_rating;
+	}
+	public String getDevice_ac_rating_condition() {
+		return device_ac_rating_condition;
+	}
+	public void setDevice_ac_rating_condition(String device_ac_rating_condition) {
+		this.device_ac_rating_condition = device_ac_rating_condition;
+	}
+	public String getAc_capacity_condition() {
+		return ac_capacity_condition;
+	}
+	public void setAc_capacity_condition(String ac_capacity_condition) {
+		this.ac_capacity_condition = ac_capacity_condition;
+	}
+	public String getDc_capacity_condition() {
+		return dc_capacity_condition;
+	}
+	public void setDc_capacity_condition(String dc_capacity_condition) {
+		this.dc_capacity_condition = dc_capacity_condition;
+	}
 	public String getDiagram() {
 		return diagram;
 	}
