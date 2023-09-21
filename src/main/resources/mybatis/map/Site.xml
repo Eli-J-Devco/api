@@ -228,10 +228,10 @@
 			</if>
 			
 			<if test="built_since != null and built_since != ''">	
-					AND s.built_since = #{built_since}
+					AND DATE_FORMAT(s.built_since, '%Y-%m-%d') = #{built_since}
 			</if>
 			<if test="commissioning != null and commissioning != ''">	
-					AND s.commissioning = #{commissioning}
+					AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') = #{commissioning}
 			</if>
 			
 		GROUP BY s.id	
