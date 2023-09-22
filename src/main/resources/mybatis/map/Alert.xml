@@ -539,7 +539,7 @@
 			s.id,
 			s.`name`,
 			s.`name` AS text,
-			0 AS active 
+			1 AS active 
 		FROM
 			site s
 		WHERE s.is_delete = 0 AND s.`status` = 1
