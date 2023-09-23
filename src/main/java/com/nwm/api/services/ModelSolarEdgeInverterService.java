@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.google.common.base.Splitter;
@@ -28,8 +29,11 @@ public class ModelSolarEdgeInverterService extends DB {
 			if (words.size() > 0) {
 				ModelSolarEdgeInverterEntity dataModelSEI = new ModelSolarEdgeInverterEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001");
+				DecimalFormat df = new DecimalFormat("#.0");
+				double power = !Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(19)) / 1000)) : 0.001;
 				if(power < 0) { power = 0.0; };
+				
+				double nvmActiveEnergy = !Lib.isBlank(words.get(29)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(29)) / 1000)) : 0.001;
 				
 				dataModelSEI.setTime(words.get(0).replace("'", ""));
 				dataModelSEI.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -82,7 +86,7 @@ public class ModelSolarEdgeInverterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSEI.setNvmActivePower(power);
-				dataModelSEI.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy);
 				
 				return dataModelSEI;
 				
