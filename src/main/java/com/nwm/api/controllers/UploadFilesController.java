@@ -268,6 +268,8 @@ public class UploadFilesController extends BaseController {
 							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 							        int hours = zdtNowLosAngeles.getHour();
 							        
+									List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
 										switch (item.getDatatablename()) {
 
@@ -281,32 +283,38 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
+													dataModelPVPowered.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
+															if (slug == "OutputGeneration") dataModelPVPowered.setNvmActivePower(scaledValue);
+															if (slug == "TotalEnergyGeneration") dataModelPVPowered.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// OutputGeneration
-													if(!Lib.isBlank(words.get(37))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelPVPowered.getTime());
+													deviceUpdateE.setLast_value(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
+													deviceUpdateE.setField_value1(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
 													
 													// DCInputVoltage
-													if(!Lib.isBlank(words.get(34))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(34)) ? Double.parseDouble(words.get(34)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelPVPowered.getDCInputVoltage() != 0.001 ? dataModelPVPowered.getDCInputVoltage() : null);
 													
 													// DCInputCurrent
-													if(!Lib.isBlank(words.get(35))) {
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(35)) ? Double.parseDouble(words.get(35)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setLast_value(dataModelPVPowered.getDCInputCurrent() != 0.001 ? dataModelPVPowered.getDCInputCurrent() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
@@ -330,24 +338,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
-													dataModelPVPowered.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
 														}
 													}
 													
@@ -393,32 +383,38 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
+													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
+													dataModelShark100.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
+															if (slug == "watts_3ph_total") dataModelShark100.setNvmActivePower(scaledValue);
+															if (slug == "w_hours_total") dataModelShark100.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// watts_3ph_total
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelShark100.getTime());
+													deviceUpdateE.setLast_value(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
+													deviceUpdateE.setField_value1(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
 													
 													// vars_3ph_total
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelShark100.getVars_3ph_total() != 0.001 ? dataModelShark100.getVars_3ph_total() : null);
 													
 													// vas_3ph_total
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelShark100.getVas_3ph_total() != 0.001 ? dataModelShark100.getVas_3ph_total() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -443,25 +439,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
-													dataModelShark100.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
 														}
 													}
 													
@@ -507,24 +484,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// sensor1_data
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
+													dataModelRTC30000.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
+															if (slug == "sensor1_data") dataModelRTC30000.setNvm_irradiance(scaledValue);
+															if (slug == "panel_temperature") dataModelRTC30000.setNvm_temperature(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// sensor1_data
+													deviceUpdateE.setLast_updated(dataModelRTC30000.getTime());
+													deviceUpdateE.setLast_value(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
+													deviceUpdateE.setField_value1(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
+													
 													// panel_temperature
-													if(!Lib.isBlank(words.get(9))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelRTC30000.getPanel_temperature() != 0.001 ? dataModelRTC30000.getPanel_temperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -550,25 +537,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
-													dataModelRTC30000.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
 														}
 													}
 													
@@ -609,25 +577,35 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
+													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
+													dataKippZonen.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
+															if (slug == "sensor1_data") dataKippZonen.setNvm_irradiance(scaledValue);
+															if (slug == "panel_temperature") dataKippZonen.setNvm_temperature(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// Sensor1_data
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataKippZonen.getTime());
+													deviceUpdateE.setLast_value(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
+													deviceUpdateE.setField_value1(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
 													
 													// panel_temperature
-													if(!Lib.isBlank(words.get(9))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? Double.parseDouble(words.get(9)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataKippZonen.getPanel_temperature() != 0.001 ? dataKippZonen.getPanel_temperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -653,25 +631,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
-													dataKippZonen.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
 														}
 													}
 													
@@ -712,31 +671,37 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
+													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
+													dataModelIVTSolaronEXT.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
+															if (slug == "ac_power") dataModelIVTSolaronEXT.setNvmActivePower(scaledValue);
+															if (slug == "ytd_kwh_total") dataModelIVTSolaronEXT.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ac_power
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelIVTSolaronEXT.getTime());
+													deviceUpdateE.setLast_value(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
+													deviceUpdateE.setField_value1(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
 													
 													// ac_frequency
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelIVTSolaronEXT.getAc_frequency() != 0.001 ? dataModelIVTSolaronEXT.getAc_frequency() : null);
 													
 													// pv_voltage
-													if(!Lib.isBlank(words.get(16))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(16)) ? Double.parseDouble(words.get(16)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelIVTSolaronEXT.getPv_voltage() != 0.001 ? dataModelIVTSolaronEXT.getPv_voltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -759,25 +724,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
-													dataModelIVTSolaronEXT.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
 														}
 													}
 													
@@ -823,24 +769,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// IrradianceTcs
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
+													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
+															if (slug == "IrradianceTcs") dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(scaledValue);
+															if (slug == "SensorBodyTemperature") dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// IrradianceTcs
+													deviceUpdateE.setLast_updated(dataModelHukselfluxSr30d1DeviceclassV0.getTime());
+													deviceUpdateE.setLast_value(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
+													deviceUpdateE.setField_value1(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
+													
 													// SensorBodyTemperature
-													if(!Lib.isBlank(words.get(6))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(6)) ? Double.parseDouble(words.get(6)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelHukselfluxSr30d1DeviceclassV0.getSensorBodyTemperature() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getSensorBodyTemperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -866,25 +822,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
-													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
 														}
 													}
 													
@@ -922,29 +859,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
+													dataModelIMTSolarClass.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
+															if (initialValue == 0.001) break;
+															if (slug == "irradiance") initialValue = initialValue * 0.1;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															if (slug == "irradiance") scaledValue = scaledValue * 10;
+															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
+															if (slug == "irradiance") dataModelIMTSolarClass.setNvm_irradiance(scaledValue);
+															if (slug == "tcell") dataModelIMTSolarClass.setNvm_temperature(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// irradiance
-													if(!Lib.isBlank(words.get(4))) {
-														Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-														if(irradiance < 0) { irradiance = 0.0; };
-														
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? irradiance * 0.1 : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? irradiance * 0.1 : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelIMTSolarClass.getTime());
+													deviceUpdateE.setLast_value(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() * 0.1 : null);
+													deviceUpdateE.setField_value1(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() * 0.1 : null);
 													
 													// tcell
-													double temperature = !Lib.isBlank(words.get(5)) ? ((Double.parseDouble(words.get(5)) / 10) - 25) : 0.001;
-													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(5)) ? temperature : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelIMTSolarClass.getTcell() != 0.001 ? dataModelIMTSolarClass.getTcell() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -970,25 +915,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
-													dataModelIMTSolarClass.setId_device(item.getId());
-
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
 														}
 													}
 													
@@ -1027,16 +953,30 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
+													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
+															if (slug == "ModuleTemperature") dataModelIMTSolarTmodulClass8006.setNvm_temperature(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ModuleTemperature
+													deviceUpdateE.setLast_updated(dataModelIMTSolarTmodulClass8006.getTime());
+													deviceUpdateE.setLast_value(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
+													deviceUpdateE.setField_value1(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -1065,25 +1005,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
-													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
 														}
 													}
 													
@@ -1121,32 +1042,38 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
+													dataModelAdvancedEnergySolaron.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
+															if (slug == "ac_power") dataModelAdvancedEnergySolaron.setNvmActivePower(scaledValue);
+															if (slug == "ytd_kwh_total") dataModelAdvancedEnergySolaron.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// ac_power
-													if(!Lib.isBlank(words.get(13))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelAdvancedEnergySolaron.getTime());
+													deviceUpdateE.setLast_value(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
+													deviceUpdateE.setField_value1(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
 													
 													// ac_frequency
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelAdvancedEnergySolaron.getAc_frequency() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_frequency() : null);
 													
 													// pv_voltage
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelAdvancedEnergySolaron.getPv_voltage() != 0.001 ? dataModelAdvancedEnergySolaron.getPv_voltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1171,25 +1098,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
-													dataModelAdvancedEnergySolaron.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
 														}
 													}
 													
@@ -1235,31 +1143,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
+													dataModelPVPInverter.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
+															if (slug == "line_kw") dataModelPVPInverter.setNvmActivePower(scaledValue);
+															if (slug == "total_kwh_delivered") dataModelPVPInverter.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// line_kw
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelPVPInverter.getTime());
+													deviceUpdateE.setLast_value(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
+													deviceUpdateE.setField_value1(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
 													
 													// dc_output_voltage
-													if(!Lib.isBlank(words.get(11))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(11)) ? Double.parseDouble(words.get(11)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelPVPInverter.getDc_output_voltage() != 0.001 ? dataModelPVPInverter.getDc_output_voltage() : null);
 													
 													// dc_output_current
-													if(!Lib.isBlank(words.get(12))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelPVPInverter.getDc_output_current() != 0.001 ? dataModelPVPInverter.getDc_output_current() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1282,25 +1196,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
-													dataModelPVPInverter.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
 														}
 													}
 													
@@ -1347,32 +1242,40 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
+													dataModelChint.setId_device(item.getId());
+													
+													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
+															if (slug == "AC_ActivePower") dataModelChint.setNvmActivePower(scaledValue);
+															if (slug == "TotalEnergyToEnergy") dataModelChint.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// AC_ActivePower
-													if(!Lib.isBlank(words.get(32))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0"));
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelChint.getTime());
+													deviceUpdateE.setLast_value(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
+													deviceUpdateE.setField_value1(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
 													
 													// AC_ApparentPower
-													if(!Lib.isBlank(words.get(33))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(33)) ? Double.parseDouble(words.get(33)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelChint.getAC_ApparentPower() != 0.001 ? dataModelChint.getAC_ApparentPower() : null);
 													
 													// PV1_Voltage
-													if(!Lib.isBlank(words.get(40))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(40)) ? Double.parseDouble(words.get(40)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelChint.getPV1_Voltage() != 0.001 ? dataModelChint.getPV1_Voltage() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
@@ -1396,27 +1299,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
-													dataModelChint.setId_device(item.getId());
-													
-													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
 														}
 													}
 													
@@ -1464,31 +1346,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
+													dataModelVeris.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
+															if (slug == "TotalNetInstantaneousRealPower") dataModelVeris.setNvmActivePower(scaledValue);
+															if (slug == "AccumulatedRealEnergyNet") dataModelVeris.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// TotalNetInstantaneousRealPower
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+													deviceUpdateE.setLast_value(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
+													deviceUpdateE.setField_value1(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
 													
 													// RealPowerPhaseA
-													if(!Lib.isBlank(words.get(55))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(55)) ? Double.parseDouble(words.get(55)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelVeris.getRealPowerPhaseA() != 0.001 ? dataModelVeris.getRealPowerPhaseA() : null);
 													
 													// RealPowerPhaseB
-													if(!Lib.isBlank(words.get(56))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(56)) ? Double.parseDouble(words.get(56)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelVeris.getRealPowerPhaseB() != 0.001 ? dataModelVeris.getRealPowerPhaseB() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1511,25 +1399,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
-													dataModelVeris.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
 														}
 													}
 													
@@ -1576,35 +1445,36 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													Double nvm103 = Double.parseDouble(!Lib.isBlank(words.get(103)) ? words.get(103) : "0");
-													Double nvm102 = Double.parseDouble(!Lib.isBlank(words.get(102)) ? words.get(102) : "0");
+													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
+													dataModelSatcon.setId_device(item.getId());
 													
-													Double nvmEnergyTotal = nvm103 * 1000 + nvm102;
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
+															if (slug == "Output_kw") dataModelSatcon.setNvmActivePower(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
-													//Input_kW
-													if(!Lib.isBlank(words.get(31))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(31)) ? Double.parseDouble(words.get(31)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(31)) ? Double.parseDouble(words.get(31)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													//Output_kw
+													deviceUpdateE.setLast_updated(dataModelSatcon.getTime());
+													deviceUpdateE.setLast_value(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
+													deviceUpdateE.setField_value1(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
 													
-													// Output_kw
-													if(!Lib.isBlank(words.get(30))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													// Input_kW
+													deviceUpdateE.setField_value2(dataModelSatcon.getInput_kW() != 0.001 ? dataModelSatcon.getInput_kW() : null);
 													
 													// DC_Input_Volts
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelSatcon.getDC_Input_Volts() != 0.001 ? dataModelSatcon.getDC_Input_Volts() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1627,26 +1497,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
-													dataModelSatcon.setId_device(item.getId());
-													dataModelSatcon.setNvmActiveEnergy(!Lib.isBlank(words.get(31)) ? nvmEnergyTotal : Double.parseDouble("0.001"));
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
 														}
 													}
 													
@@ -1693,30 +1543,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
+													dataModelElkor.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
+															if (slug == "TotalRealPower") dataModelElkor.setNvmActivePower(scaledValue);
+															if (slug == "TotalEnergyConsumption") dataModelElkor.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// TotalRealPower
+													deviceUpdateE.setLast_updated(dataModelElkor.getTime());
+													deviceUpdateE.setLast_value(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
+													deviceUpdateE.setField_value1(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
 													
 													// TotalReactivePower
-													if(!Lib.isBlank(words.get(6))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(6)) ? Double.parseDouble(words.get(6)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelElkor.getTotalReactivePower() != 0.001 ? dataModelElkor.getTotalReactivePower() : null);
 													
 													// TotalApparentPower
-													if(!Lib.isBlank(words.get(7))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(7)) ? Double.parseDouble(words.get(7)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelElkor.getTotalApparentPower() != 0.001 ? dataModelElkor.getTotalApparentPower() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -1739,24 +1596,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
-													dataModelElkor.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
 														}
 													}
 													
@@ -1803,24 +1642,36 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
+													dataModelWkipp.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
+															if (initialValue == 0.001) break;
+															if (slug == "PanelTemperature") initialValue = initialValue * 0.1;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															if (slug == "PanelTemperature") scaledValue = scaledValue * 10;
+															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
+															if (slug == "SunPOATempComp") dataModelWkipp.setNvm_irradiance(scaledValue);
+															if (slug == "PanelTemperature") dataModelWkipp.setNvm_temperature(scaledValue * 0.1);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// SunPOATempComp
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(words.get(8)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelWkipp.getTime());
+													deviceUpdateE.setLast_value(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
+													deviceUpdateE.setField_value1(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
 
 													// PanelTemperature
-													if(!Lib.isBlank(words.get(9))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(9)) ? ((Double.parseDouble(words.get(9)) * 0.1)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelWkipp.getPanelTemperature() != 0.001 ? dataModelWkipp.getPanelTemperature() * 0.1 : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -1846,25 +1697,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
-													dataModelWkipp.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
 														}
 													}
 													
@@ -1904,31 +1736,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
+													dataModelElkorP.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
+															if (slug == "ActivePowerTotal") dataModelElkorP.setNvmActivePower(scaledValue);
+															if (slug == "TotalImportEnergy") dataModelElkorP.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ActivePowerTotal
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelElkorP.getTime());
+													deviceUpdateE.setLast_value(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
+													deviceUpdateE.setField_value1(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
 													
 													// VoltageA
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelElkorP.getVoltageA() != 0.001 ? dataModelElkorP.getVoltageA() : null);
 													
 													// VoltageB
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelElkorP.getVoltageB() != 0.001 ? dataModelElkorP.getVoltageB() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
@@ -1952,24 +1790,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
-													dataModelElkorP.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
 														}
 													}
 													
@@ -2016,29 +1836,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePowerABB = Double.parseDouble((!Lib.isBlank(words.get(15)) ? words.get(15) : "0") ) / 1000;
+													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
+													dataModelABB.setId_device(item.getId());
 													
-													if(nvmActivePowerABB < 0) { nvmActivePowerABB = 0.0; };
-													
-													// Input1Power
-													if(!Lib.isBlank(words.get(15))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(nvmActivePowerABB)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
+															if (initialValue == 0.001) break;
+															if (slug == "GridPower") initialValue = initialValue / 1000;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															if (slug == "GridPower") scaledValue = scaledValue * 1000;
+															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
+															if (slug == "GridPower") dataModelABB.setNvmActivePower(scaledValue / 1000);
+															if (slug == "TotalEnergy") dataModelABB.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// GridPower
+													deviceUpdateE.setLast_updated(dataModelABB.getTime());
+													deviceUpdateE.setLast_value(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() / 1000 : null);
+													deviceUpdateE.setField_value1(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() / 1000 : null);
 													
 													// Input1Voltage
-													if(!Lib.isBlank(words.get(18))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(18)) ? Double.parseDouble(words.get(18)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelABB.getInput1Voltage() != 0.001 ? dataModelABB.getInput1Voltage() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2064,31 +1892,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
-													dataModelABB.setId_device(item.getId());
-													
-													double input1Power = Double.parseDouble((!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
-													if(input1Power < 0) { input1Power = 0.0; };
-													
-													dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? df.format(input1Power) : "0.001"));
-													dataModelABB.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? df.format(nvmActivePowerABB) : "0.001"));
-
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
 														}
 													}
 													
@@ -2135,24 +1938,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// AirTemperatureActual
-													if(!Lib.isBlank(words.get(25))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelLufftClass8020Entity dataModelLufft = serviceModelLufft.setModelLufftClass8020(line);
+													dataModelLufft.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
+															if (slug == "IrradianceActual") dataModelLufft.setNvm_irradiance(scaledValue);
+															if (slug == "AirTemperatureActual") dataModelLufft.setNvm_temperature(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// AirTemperatureActual
+													deviceUpdateE.setLast_updated(dataModelLufft.getTime());
+													deviceUpdateE.setLast_value(dataModelLufft.getAirTemperatureActual() != 0.001 ? dataModelLufft.getAirTemperatureActual() : null);
+													deviceUpdateE.setField_value1(dataModelLufft.getAirTemperatureActual() != 0.001 ? dataModelLufft.getAirTemperatureActual() : null);
+													
 													// IrradianceActual
-													if(!Lib.isBlank(words.get(21))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelLufft.getIrradianceActual() != 0.001 ? dataModelLufft.getIrradianceActual() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2178,25 +1991,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelLufftClass8020Entity dataModelLufft = serviceModelLufft.setModelLufftClass8020(line);
-													dataModelLufft.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
 														}
 													}
 
@@ -2235,24 +2029,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// AirTemperatureActual
-													if(!Lib.isBlank(words.get(25))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(25)) ? Double.parseDouble(words.get(25)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
+													dataModelLufft.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
+															if (slug == "GlobalRadiation") dataModelLufft.setNvm_irradiance(scaledValue);
+															if (slug == "AirTemperatureCActual") dataModelLufft.setNvm_temperature(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// AirTemperatureActual
+													deviceUpdateE.setLast_updated(dataModelLufft.getTime());
+													deviceUpdateE.setLast_value(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
+													deviceUpdateE.setField_value1(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
+													
 													// GlobalRadiation
-													if(!Lib.isBlank(words.get(21))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(21)) ? Double.parseDouble(words.get(21)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelLufft.getGlobalRadiation() != 0.001 ? dataModelLufft.getGlobalRadiation() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2278,25 +2082,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
-													dataModelLufft.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
 														}
 													}
 													
@@ -2334,28 +2119,35 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelSolectriaSGI226IVTEntity dataModelSolectria226 = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
+													dataModelSolectria226.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
+															if (slug == "ACPowerOutput") dataModelSolectria226.setNvmActivePower(scaledValue);
+															if (slug == "CumulativeACEnergy") dataModelSolectria226.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePower226 = Double.parseDouble((!Lib.isBlank(words.get(5)) ? words.get(5) : "0") ) / 1000;
-													if(nvmActivePower226 < 0 ) {nvmActivePower226 = 0.0; }
+													// ACPowerOutput
+													deviceUpdateE.setLast_updated(dataModelSolectria226.getTime());
+													deviceUpdateE.setLast_value(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
+													deviceUpdateE.setField_value1(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
 													
-													if(!Lib.isBlank(words.get(5))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(nvmActivePower226)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(nvmActivePower226)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
-													
-													// IrradianceActual
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													// DCVoltage
+													deviceUpdateE.setField_value2(dataModelSolectria226.getDCVoltage() != 0.001 ? dataModelSolectria226.getDCVoltage() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2381,26 +2173,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													ModelSolectriaSGI226IVTEntity dataModelSolectria226 = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
-													dataModelSolectria226.setId_device(item.getId());
-													dataModelSolectria226.setACPowerOutput(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
-													dataModelSolectria226.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? df.format(nvmActivePower226) : "0.001"));
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
 														}
 													}
 													
@@ -2538,22 +2310,32 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
+													dataModelSET.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
+															if (slug == "I_AC_Power") dataModelSET.setNvmActivePower(scaledValue);
+															if (slug == "I_AC_Energy_WH") dataModelSET.setNvmActiveEnergy(scaledValue / 1000);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
-													DecimalFormat df = new DecimalFormat("#.0");
-													double nvmActivePowerSET = Double.parseDouble((!Lib.isBlank(words.get(19)) ? words.get(19) : "0") ) / 1000;
-													double nvmActiveEnergySET = Double.parseDouble((!Lib.isBlank(words.get(30)) ? words.get(30) : "0") ) / 1000;
-													
-													
-													if(!Lib.isBlank(words.get(19))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
-														deviceUpdateE.setField_value1(!Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(nvmActivePowerSET)) : null);
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													// I_AC_Power
+													deviceUpdateE.setLast_updated(dataModelSET.getTime());
+													deviceUpdateE.setLast_value(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
+													deviceUpdateE.setField_value1(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -2582,28 +2364,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
-													dataModelSET.setId_device(item.getId());
-													dataModelSET.setI_AC_Power(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
-													dataModelSET.setNvmActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? df.format(nvmActivePowerSET) : "0.001"));
-													dataModelSET.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(30)) ? df.format(nvmActiveEnergySET) : "0.001"));
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
 														}
 													}
 													
@@ -2652,32 +2412,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
+													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
+													dataModelXantrex.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
+															if (slug == "ReadPower") dataModelXantrex.setNvmActivePower(scaledValue);
+															if (slug == "AccumulatedEnergy") dataModelXantrex.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													if(!Lib.isBlank(words.get(7))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
-													}
+													deviceUpdateE.setLast_updated(dataModelXantrex.getTime());
+													deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
+													deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 													
 													// PVVoltage
-													if(!Lib.isBlank(words.get(11))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(11)) ? Double.parseDouble(words.get(11)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelXantrex.getPVVoltage() != 0.001 ? dataModelXantrex.getPVVoltage() : null);
 													
 													// PVCurrent
-													if(!Lib.isBlank(words.get(12))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelXantrex.getPVCurrent() != 0.001 ? dataModelXantrex.getPVCurrent() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -2701,24 +2466,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
-													dataModelXantrex.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
 														}
 													}
 													
@@ -2765,25 +2512,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(8))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
+													dataModelAdam4017.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
+															if (slug == "POACMP11") dataModelAdam4017.setNvm_irradiance(scaledValue);
+															if (slug == "AmbientTemp") dataModelAdam4017.setNvm_temperature(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// POACMP11
+													deviceUpdateE.setLast_updated(dataModelAdam4017.getTime());
+													deviceUpdateE.setLast_value(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
+													deviceUpdateE.setField_value1(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
+													
 													// AmbientTemp
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(4)) ? Double.parseDouble(words.get(4)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelAdam4017.getAmbientTemp() != 0.001 ? dataModelAdam4017.getAmbientTemp() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2810,25 +2566,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
-													dataModelAdam4017.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
 														}
 													}
 													
@@ -2870,18 +2607,31 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
+													dataModelCSM1.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
+															if (slug == "Meter1_ACPower") dataModelCSM1.setNvmActivePower(scaledValue);
+															if (slug == "Total_Energy") dataModelCSM1.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// Meter1_ACPower
+													deviceUpdateE.setLast_updated(dataModelCSM1.getTime());
+													deviceUpdateE.setLast_value(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
+													deviceUpdateE.setField_value1(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -2910,25 +2660,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
-													dataModelCSM1.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
 														}
 													}
 													
@@ -2975,18 +2706,31 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
+													dataModelCSM2.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
+															if (slug == "Meter2_ACPower") dataModelCSM2.setNvmActivePower(scaledValue);
+															if (slug == "Total_Energy") dataModelCSM2.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// Meter2_ACPower
+													deviceUpdateE.setLast_updated(dataModelCSM2.getTime());
+													deviceUpdateE.setLast_value(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
+													deviceUpdateE.setField_value1(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3015,25 +2759,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
-													dataModelCSM2.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
 														}
 													}
 													
@@ -3079,18 +2804,31 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
+													dataModelCSM3.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
+															if (slug == "Meter3_ACPower") dataModelCSM3.setNvmActivePower(scaledValue);
+															if (slug == "Total_Energy") dataModelCSM3.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// Meter3_ACPower
+													deviceUpdateE.setLast_updated(dataModelCSM3.getTime());
+													deviceUpdateE.setLast_value(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
+													deviceUpdateE.setField_value1(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3119,25 +2857,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
-													dataModelCSM3.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
 														}
 													}
 													
@@ -3184,18 +2903,31 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(4))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
+													dataModelCSM4.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
+															if (slug == "Meter4_ACPower") dataModelCSM4.setNvmActivePower(scaledValue);
+															if (slug == "Total_Energy") dataModelCSM4.setNvmActiveEnergy(scaledValue);
+														}
 													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// Meter4_ACPower
+													deviceUpdateE.setLast_updated(dataModelCSM4.getTime());
+													deviceUpdateE.setLast_value(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
+													deviceUpdateE.setField_value1(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3224,25 +2956,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
-													dataModelCSM4.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
 														}
 													}
 													
@@ -3289,31 +3002,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ReadPower
-													if(!Lib.isBlank(words.get(17))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
+													dataModelSatcon225.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
+															if (slug == "OutputKW") dataModelSatcon225.setNvmActivePower(scaledValue);
+															if (slug == "KWH") dataModelSatcon225.setNvmActiveEnergy(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// OutputKW
+														deviceUpdateE.setLast_updated(dataModelSatcon225.getTime());
+														deviceUpdateE.setLast_value(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
+														deviceUpdateE.setField_value1(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
+													
 													// Line Freq
-													if(!Lib.isBlank(words.get(30))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelSatcon225.getLineFreq() != 0.001 ? dataModelSatcon225.getLineFreq() : null);
+													
 													// DC Input Voltage
-													if(!Lib.isBlank(words.get(14))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelSatcon225.getDCInputVoltage() != 0.001 ? dataModelSatcon225.getDCInputVoltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -3337,25 +3056,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
-													dataModelSatcon225.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
 														}
 													}
 													
@@ -3403,31 +3103,37 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													// ACPower
-													if(!Lib.isBlank(words.get(12))) {
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0"));
-														deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0"));
-														
-													} else {
-														deviceUpdateE.setLast_updated(null);
-														deviceUpdateE.setLast_value(null);
-														deviceUpdateE.setField_value1(null);
+													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
+													dataModelSunnyClass9775.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775);
+															if (initialValue == 0.001) break;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
+															if (slug == "ACPower") dataModelSunnyClass9775.setNvmActivePower(scaledValue);
+															if (slug == "LifekWhTotal") dataModelSunnyClass9775.setNvmActiveEnergy(scaledValue);
+														}
 													}
 													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ACPower
+													deviceUpdateE.setLast_updated(dataModelSunnyClass9775.getTime());
+													deviceUpdateE.setLast_value(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
+													deviceUpdateE.setField_value1(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
+													
 													// ACVoltage
-													if(!Lib.isBlank(words.get(28))) {
-														deviceUpdateE.setField_value2(!Lib.isBlank(words.get(28)) ? Double.parseDouble(words.get(28)) : null);
-													} else {
-														deviceUpdateE.setField_value2(null);
-													}
+													deviceUpdateE.setField_value2(dataModelSunnyClass9775.getACVoltage() != 0.001 ? dataModelSunnyClass9775.getACVoltage() : null);
+													
 													// InteriorTemperature
-													if(!Lib.isBlank(words.get(30))) {
-														deviceUpdateE.setField_value3(!Lib.isBlank(words.get(30)) ? Double.parseDouble(words.get(30)) : null);
-													} else {
-														deviceUpdateE.setField_value3(null);
-													}
+													deviceUpdateE.setField_value3(dataModelSunnyClass9775.getInteriorTemperature() != 0.001 ? dataModelSunnyClass9775.getInteriorTemperature() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -3451,25 +3157,6 @@ public class UploadFilesController extends BaseController {
 																// Insert alert
 																service.insertAlert(alertItem);
 															}
-														}
-													}
-													
-													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
-													dataModelSunnyClass9775.setId_device(item.getId());
-													
-													// scaling device parameter
-													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775);
-															if (initialValue == 0.001) break;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
 														}
 													}
 													
@@ -3515,31 +3202,37 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
+														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
+														dataModelVeris.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
+																if (slug == "TotalInstantaneousRealPower") dataModelVeris.setNvmActivePower(scaledValue);
+																if (slug == "RealEnergyConsumption") dataModelVeris.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// TotalInstantaneousRealPower
-														if(!Lib.isBlank(words.get(5))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
+														deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+														deviceUpdateE.setLast_value(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
+														deviceUpdateE.setField_value1(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
 														
 														// RealPowerPhaseA
-														if(!Lib.isBlank(words.get(12))) {
-															deviceUpdateE.setField_value2(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
-														} else {
-															deviceUpdateE.setField_value2(null);
-														}
+														deviceUpdateE.setField_value2(dataModelVeris.getRealPowerPhaseA() != 0.001 ? dataModelVeris.getRealPowerPhaseA() : null);
 														
 														// RealPowerPhaseB
-														if(!Lib.isBlank(words.get(13))) {
-															deviceUpdateE.setField_value3(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-														} else {
-															deviceUpdateE.setField_value3(null);
-														}
+														deviceUpdateE.setField_value3(dataModelVeris.getRealPowerPhaseB() != 0.001 ? dataModelVeris.getRealPowerPhaseB() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
@@ -3562,25 +3255,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														
-														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
-														dataModelVeris.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
 															}
 														}
 														
@@ -3625,31 +3299,37 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
+														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
+														dataModelAE1000NX.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
+																if (slug == "ACPower") dataModelAE1000NX.setNvmActivePower(scaledValue);
+																if (slug == "LifekWhTotal") dataModelAE1000NX.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// AC Power
-														if(!Lib.isBlank(words.get(13))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(words.get(13)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
+														deviceUpdateE.setLast_updated(dataModelAE1000NX.getTime());
+														deviceUpdateE.setLast_value(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
+														deviceUpdateE.setField_value1(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
 														
 														// AC Frequency
-														if(!Lib.isBlank(words.get(14))) {
-															deviceUpdateE.setField_value2(!Lib.isBlank(words.get(14)) ? Double.parseDouble(words.get(14)) : null);
-														} else {
-															deviceUpdateE.setField_value2(null);
-														}
+														deviceUpdateE.setField_value2(dataModelAE1000NX.getACFrequency() != 0.001 ? dataModelAE1000NX.getACFrequency() : null);
 														
 														// PV Voltage
-														if(!Lib.isBlank(words.get(15))) {
-															deviceUpdateE.setField_value3(!Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : null);
-														} else {
-															deviceUpdateE.setField_value3(null);
-														}
+														deviceUpdateE.setField_value3(dataModelAE1000NX.getPVVoltage() != 0.001 ? dataModelAE1000NX.getPVVoltage() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
@@ -3672,25 +3352,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														
-														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
-														dataModelAE1000NX.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
 															}
 														}
 														
@@ -3736,19 +3397,32 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														// AC Power
-														if(!Lib.isBlank(words.get(37))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(37)) ? Double.parseDouble(words.get(37)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
+														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
+														dataModelAesTx.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
+																if (slug == "pt33") dataModelAesTx.setNvmActivePower(scaledValue);
+																if (slug == "pt34") dataModelAesTx.setNvmActiveEnergy(scaledValue);
+															}
 														}
 														
-														// AC Frequency
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// pt33
+														deviceUpdateE.setLast_updated(dataModelAesTx.getTime());
+														deviceUpdateE.setLast_value(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
+														deviceUpdateE.setField_value1(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
+														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
 														
@@ -3773,25 +3447,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														
-														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
-														dataModelAesTx.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
 															}
 														}
 														
@@ -3838,19 +3493,32 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														// AC Power
-														if(!Lib.isBlank(words.get(22))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(22)) ? Double.parseDouble(words.get(22)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(22)) ? Double.parseDouble(words.get(22)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
+														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
+														dataModelIon.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
+																if (slug == "kWTot") dataModelIon.setNvmActivePower(scaledValue);
+																if (slug == "kWhDelRec") dataModelIon.setNvmActiveEnergy(scaledValue);
+															}
 														}
 														
-														// AC Frequency
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// kWTot
+														deviceUpdateE.setLast_updated(dataModelIon.getTime());
+														deviceUpdateE.setLast_value(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
+														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
 														
@@ -3875,25 +3543,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														
-														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
-														dataModelIon.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
 															}
 														}
 														
@@ -3940,19 +3589,32 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														// AC Power
-														if(!Lib.isBlank(words.get(39))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(39)) ? Double.parseDouble(words.get(39)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(39)) ? Double.parseDouble(words.get(39)) : null);
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
+														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
+														dataModelPM7650.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM7650);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelPM7650, scaledValue);
+																if (slug == "kWTot") dataModelPM7650.setNvmActivePower(scaledValue);
+																if (slug == "kWhDel") dataModelPM7650.setNvmActiveEnergy(scaledValue);
+															}
 														}
 														
-														// AC Frequency
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// kWTot
+														deviceUpdateE.setLast_updated(dataModelPM7650.getTime());
+														deviceUpdateE.setLast_value(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
+														deviceUpdateE.setField_value1(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
+														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
 														
@@ -3977,25 +3639,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														
-														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
-														dataModelPM7650.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM7650);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelPM7650, scaledValue);
 															}
 														}
 														
@@ -4041,32 +3684,37 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
+														ModelXantrexInverterEntity dataModelXantrex = serviceModelXINV.setModelXantrexInverter(line);
+														dataModelXantrex.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
+																if (initialValue == 0.001) break;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
+																if (slug == "ReadPower") dataModelXantrex.setNvmActivePower(scaledValue);
+																if (slug == "kWh") dataModelXantrex.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// ReadPower
-														if(!Lib.isBlank(words.get(7))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
-															deviceUpdateE.setField_value1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0"));
-															
-														} else {
-															deviceUpdateE.setLast_updated(null);
-															deviceUpdateE.setLast_value(null);
-															deviceUpdateE.setField_value1(null);
-														}
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
+														deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 														
 														// PVVoltage
-														if(!Lib.isBlank(words.get(11))) {
-															deviceUpdateE.setField_value2(!Lib.isBlank(words.get(11)) ? Double.parseDouble(words.get(11)) : null);
-														} else {
-															deviceUpdateE.setField_value2(null);
-														}
+														deviceUpdateE.setField_value2(dataModelXantrex.getPVVoltage() != 0.001 ? dataModelXantrex.getPVVoltage() : null);
 														
 														// PVCurrent
-														if(!Lib.isBlank(words.get(12))) {
-															deviceUpdateE.setField_value3(!Lib.isBlank(words.get(12)) ? Double.parseDouble(words.get(12)) : null);
-														} else {
-															deviceUpdateE.setField_value3(null);
-														}
+														deviceUpdateE.setField_value3(dataModelXantrex.getPVCurrent() != 0.001 ? dataModelXantrex.getPVCurrent() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
@@ -4090,24 +3738,6 @@ public class UploadFilesController extends BaseController {
 																	// Insert alert
 																	service.insertAlert(alertItem);
 																}
-															}
-														}
-														ModelXantrexInverterEntity dataModelXantrex = serviceModelXINV.setModelXantrexInverter(line);
-														dataModelXantrex.setId_device(item.getId());
-														
-														// scaling device parameter
-														List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-																if (initialValue == 0.001) break;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
 															}
 														}
 														

@@ -7,6 +7,7 @@ package com.nwm.api.services;
 
 
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -35,6 +36,11 @@ public class ModelAbbTrioClass6210Service extends DB {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAbbTrioClass6210Entity dataModelABB = new ModelAbbTrioClass6210Entity();
+				
+				DecimalFormat df = new DecimalFormat("#.0");
+				double power = !Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(15)) / 1000)) : 0.001;
+				if(power < 0) { power = 0.0; };
+				
 				dataModelABB.setTime(words.get(0).replace("'", ""));
 				dataModelABB.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				
@@ -53,6 +59,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 				dataModelABB.setGridCurrent(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModelABB.setGridPower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelABB.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
+				dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelABB.setInput1Voltage(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				dataModelABB.setInput1Current(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModelABB.setInput2Power(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
@@ -63,8 +70,8 @@ public class ModelAbbTrioClass6210Service extends DB {
 				dataModelABB.setIslolationResistance(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
+				dataModelABB.setNvmActivePower(power);
 				dataModelABB.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				
 				
 				
 				return dataModelABB;
