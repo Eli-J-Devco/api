@@ -60,6 +60,7 @@ public class ModelAdam4017WSClass8110Nelis190Service extends DB {
 				// set custom field nvm_irradiance
 				dataModelAdam4017.setNvm_irradiance(irradiance);
 				dataModelAdam4017.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelAdam4017.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				
 				
 				

@@ -49,8 +49,10 @@ public class ModelWKippZonenRT1Service extends DB {
 				
 				// set custom field nvm_irradiance
 				dataModelWkipp.setNvm_irradiance(irradiance);
-				double temperature = !Lib.isBlank(words.get(9)) ? ((Double.parseDouble(words.get(9)) / 10)) : 0.001;
+				double temperature = !Lib.isBlank(words.get(9)) ? ((Double.parseDouble(words.get(9)))) : 0.001;
 				dataModelWkipp.setNvm_temperature(temperature);
+				
+				dataModelWkipp.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				return dataModelWkipp;
 				

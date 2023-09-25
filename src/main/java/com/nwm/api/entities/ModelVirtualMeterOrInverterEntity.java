@@ -19,6 +19,16 @@ public class ModelVirtualMeterOrInverterEntity {
 	private double expected_energy;
 	private double r_irradiance;
 	
+	private double nvm_panel_temperature;
+	
+	
+	public double getNvm_panel_temperature() {
+		return nvm_panel_temperature;
+	}
+	public void setNvm_panel_temperature(double nvm_panel_temperature) {
+		this.nvm_panel_temperature = nvm_panel_temperature;
+	}
+	
 
 	
 	public double getR_irradiance() {

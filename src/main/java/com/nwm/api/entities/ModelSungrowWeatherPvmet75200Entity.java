@@ -15,6 +15,17 @@ public class ModelSungrowWeatherPvmet75200Entity {
 	private double SRAD_D_H;
 	private double nvm_irradiance;
 	private double nvm_temperature;
+	
+	private double nvm_panel_temperature;
+	
+	
+	public double getNvm_panel_temperature() {
+		return nvm_panel_temperature;
+	}
+	public void setNvm_panel_temperature(double nvm_panel_temperature) {
+		this.nvm_panel_temperature = nvm_panel_temperature;
+	}
+	
 	public String getTime() {
 		return time;
 	}

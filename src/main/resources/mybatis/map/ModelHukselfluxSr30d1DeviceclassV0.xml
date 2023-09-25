@@ -27,6 +27,7 @@
 		<result property="FanCurrent" column="FanCurrent" />
 		<result property="nvm_irradiance" column="nvm_irradiance" />
 		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
 	</resultMap>
 	
 	<insert id="insertModelHukselfluxSr30d1DeviceclassV0" useGeneratedKeys="true"
@@ -99,6 +100,13 @@
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature`,
 			</if>
+			
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+			
+			
+			
 		</trim>
 
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -168,6 +176,9 @@
 			<if test="nvm_temperature != 0.001">
 				#{nvm_temperature},
 			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
 		</trim>
 		
 		
@@ -234,6 +245,9 @@
 			</if>
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
 		</trim>
 	</insert>

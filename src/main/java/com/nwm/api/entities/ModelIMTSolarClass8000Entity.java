@@ -16,6 +16,17 @@ public class ModelIMTSolarClass8000Entity {
 	private double nvm_irradiance;
 	private double nvm_temperature; 
 	
+	private double nvm_panel_temperature;
+	
+	
+	public double getNvm_panel_temperature() {
+		return nvm_panel_temperature;
+	}
+	public void setNvm_panel_temperature(double nvm_panel_temperature) {
+		this.nvm_panel_temperature = nvm_panel_temperature;
+	}
+	
+	
 	public double getNvm_temperature() {
 		return nvm_temperature;
 	}

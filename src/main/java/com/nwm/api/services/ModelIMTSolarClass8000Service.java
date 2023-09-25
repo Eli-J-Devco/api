@@ -31,7 +31,7 @@ public class ModelIMTSolarClass8000Service extends DB {
 				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				if(irradiance < 0) { irradiance = 0.0; };
 				
-				double temperature = !Lib.isBlank(words.get(5)) ? ((Double.parseDouble(words.get(5)) / 10) - 25) : 0.001;
+				double temperature = !Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : 0.001;
 				
 				dataModelIMTSolarClass.setTime(words.get(0).replace("'", ""));
 				dataModelIMTSolarClass.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -43,6 +43,7 @@ public class ModelIMTSolarClass8000Service extends DB {
 				// set custom field nvm_irradiance
 				dataModelIMTSolarClass.setNvm_irradiance(irradiance);
 				dataModelIMTSolarClass.setNvm_temperature(temperature);
+				dataModelIMTSolarClass.setNvm_panel_temperature(Double.parseDouble( "0.001"));
 				
 				return dataModelIMTSolarClass;
 				

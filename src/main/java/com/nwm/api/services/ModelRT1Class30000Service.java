@@ -55,6 +55,7 @@ public class ModelRT1Class30000Service extends DB {
 				// set custom field nvm_irradiance
 				dataModelRTC30000.setNvm_irradiance(irradiance);
 				dataModelRTC30000.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModelRTC30000.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				
 				return dataModelRTC30000;

@@ -14,6 +14,7 @@
 		<result property="SRAD_D_H" column="SRAD_D_H" />
 		<result property="nvm_irradiance" column="nvm_irradiance" />
 		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
 		
 
 	</resultMap>
@@ -47,6 +48,9 @@
 			<if test="nvm_temperature != 0.001">
 			`nvm_temperature`,
 			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
 			
 		</trim>
 
@@ -77,6 +81,9 @@
 			<if test="nvm_temperature != 0.001">
 			#{nvm_temperature},
 			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
 		</trim>
 		
 		
@@ -103,6 +110,9 @@
 			</if>
 			<if test="nvm_temperature != 0.001">
 			`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
 			</if>
 		</trim>
 		

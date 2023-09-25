@@ -87,6 +87,7 @@ public class ModelLufftWS501UMBWeatherService extends DB {
 				// set custom field nvm_irradiance
 				dataModelLufft.setNvm_irradiance(irradiance);
 				dataModelLufft.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
+				dataModelLufft.setNvm_panel_temperature(Double.parseDouble("0.001"));
 				
 				return dataModelLufft;
 				

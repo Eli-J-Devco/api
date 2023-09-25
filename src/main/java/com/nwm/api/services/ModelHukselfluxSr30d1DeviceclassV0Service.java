@@ -55,6 +55,8 @@ public class ModelHukselfluxSr30d1DeviceclassV0Service extends DB {
 				// set custom field nvm_irradiance
 				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(irradiance);
 				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.0"));
+				dataModelHukselfluxSr30d1DeviceclassV0.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
+				
 				return dataModelHukselfluxSr30d1DeviceclassV0;
 				
 			} else {
