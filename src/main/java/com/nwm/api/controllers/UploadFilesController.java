@@ -295,11 +295,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
-															if (slug == "OutputGeneration") dataModelPVPowered.setNvmActivePower(scaledValue);
-															if (slug == "TotalEnergyGeneration") dataModelPVPowered.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("OutputGeneration")) dataModelPVPowered.setNvmActivePower(scaledValue);
+															if (slug.equals("TotalEnergyGeneration")) dataModelPVPowered.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -395,11 +395,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
-															if (slug == "watts_3ph_total") dataModelShark100.setNvmActivePower(scaledValue);
-															if (slug == "w_hours_total") dataModelShark100.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("watts_3ph_total")) dataModelShark100.setNvmActivePower(scaledValue);
+															if (slug.equals("w_hours_total")) dataModelShark100.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -496,11 +496,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
-															if (slug == "sensor1_data") dataModelRTC30000.setNvm_irradiance(scaledValue);
-															if (slug == "panel_temperature") dataModelRTC30000.setNvm_temperature(scaledValue);
+															if (slug.equals("sensor1_data")) dataModelRTC30000.setNvm_irradiance(scaledValue);
+															if (slug.equals("panel_temperature")) dataModelRTC30000.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -589,11 +589,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
-															if (slug == "sensor1_data") dataKippZonen.setNvm_irradiance(scaledValue);
-															if (slug == "panel_temperature") dataKippZonen.setNvm_temperature(scaledValue);
+															if (slug.equals("sensor1_data")) dataKippZonen.setNvm_irradiance(scaledValue);
+															if (slug.equals("panel_temperature")) dataKippZonen.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -683,11 +683,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
-															if (slug == "ac_power") dataModelIVTSolaronEXT.setNvmActivePower(scaledValue);
-															if (slug == "ytd_kwh_total") dataModelIVTSolaronEXT.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ac_power")) dataModelIVTSolaronEXT.setNvmActivePower(scaledValue);
+															if (slug.equals("ytd_kwh_total")) dataModelIVTSolaronEXT.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -781,11 +781,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
-															if (slug == "IrradianceTcs") dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(scaledValue);
-															if (slug == "SensorBodyTemperature") dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(scaledValue);
+															if (slug.equals("IrradianceTcs")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(scaledValue);
+															if (slug.equals("SensorBodyTemperature")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -871,13 +871,13 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
-															if (initialValue == 0.001) break;
-															if (slug == "irradiance") initialValue = initialValue * 0.1;
+															if (initialValue == 0.001) continue;
+															if (slug.equals("irradiance")) initialValue = initialValue * 0.1;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug == "irradiance") scaledValue = scaledValue * 10;
+															if (slug.equals("irradiance")) scaledValue = scaledValue * 10;
 															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
-															if (slug == "irradiance") dataModelIMTSolarClass.setNvm_irradiance(scaledValue);
-															if (slug == "tcell") dataModelIMTSolarClass.setNvm_temperature(scaledValue);
+															if (slug.equals("irradiance")) dataModelIMTSolarClass.setNvm_irradiance(scaledValue);
+															if (slug.equals("tcell")) dataModelIMTSolarClass.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -965,10 +965,10 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
-															if (slug == "ModuleTemperature") dataModelIMTSolarTmodulClass8006.setNvm_temperature(scaledValue);
+															if (slug.equals("ModuleTemperature")) dataModelIMTSolarTmodulClass8006.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -1054,11 +1054,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
-															if (slug == "ac_power") dataModelAdvancedEnergySolaron.setNvmActivePower(scaledValue);
-															if (slug == "ytd_kwh_total") dataModelAdvancedEnergySolaron.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ac_power")) dataModelAdvancedEnergySolaron.setNvmActivePower(scaledValue);
+															if (slug.equals("ytd_kwh_total")) dataModelAdvancedEnergySolaron.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1155,11 +1155,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
-															if (slug == "line_kw") dataModelPVPInverter.setNvmActivePower(scaledValue);
-															if (slug == "total_kwh_delivered") dataModelPVPInverter.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("line_kw")) dataModelPVPInverter.setNvmActivePower(scaledValue);
+															if (slug.equals("total_kwh_delivered")) dataModelPVPInverter.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1256,11 +1256,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
-															if (slug == "AC_ActivePower") dataModelChint.setNvmActivePower(scaledValue);
-															if (slug == "TotalEnergyToEnergy") dataModelChint.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("AC_ActivePower")) dataModelChint.setNvmActivePower(scaledValue);
+															if (slug.equals("TotalEnergyToEnergy")) dataModelChint.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1358,11 +1358,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
-															if (slug == "TotalNetInstantaneousRealPower") dataModelVeris.setNvmActivePower(scaledValue);
-															if (slug == "AccumulatedRealEnergyNet") dataModelVeris.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("TotalNetInstantaneousRealPower")) dataModelVeris.setNvmActivePower(scaledValue);
+															if (slug.equals("AccumulatedRealEnergyNet")) dataModelVeris.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1457,10 +1457,10 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
-															if (slug == "Output_kw") dataModelSatcon.setNvmActivePower(scaledValue);
+															if (slug.equals("Output_kw")) dataModelSatcon.setNvmActivePower(scaledValue);
 														}
 													}
 													
@@ -1555,11 +1555,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
-															if (slug == "TotalRealPower") dataModelElkor.setNvmActivePower(scaledValue);
-															if (slug == "TotalEnergyConsumption") dataModelElkor.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("TotalRealPower")) dataModelElkor.setNvmActivePower(scaledValue);
+															if (slug.equals("TotalEnergyConsumption")) dataModelElkor.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1654,13 +1654,13 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
-															if (initialValue == 0.001) break;
-															if (slug == "PanelTemperature") initialValue = initialValue * 0.1;
+															if (initialValue == 0.001) continue;
+															if (slug.equals("PanelTemperature")) initialValue = initialValue * 0.1;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug == "PanelTemperature") scaledValue = scaledValue * 10;
+															if (slug.equals("PanelTemperature")) scaledValue = scaledValue * 10;
 															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
-															if (slug == "SunPOATempComp") dataModelWkipp.setNvm_irradiance(scaledValue);
-															if (slug == "PanelTemperature") dataModelWkipp.setNvm_temperature(scaledValue * 0.1);
+															if (slug.equals("SunPOATempComp")) dataModelWkipp.setNvm_irradiance(scaledValue);
+															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_temperature(scaledValue * 0.1);
 														}
 													}
 													
@@ -1748,11 +1748,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
-															if (slug == "ActivePowerTotal") dataModelElkorP.setNvmActivePower(scaledValue);
-															if (slug == "TotalImportEnergy") dataModelElkorP.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ActivePowerTotal")) dataModelElkorP.setNvmActivePower(scaledValue);
+															if (slug.equals("TotalImportEnergy")) dataModelElkorP.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1848,13 +1848,13 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
-															if (initialValue == 0.001) break;
-															if (slug == "GridPower") initialValue = initialValue / 1000;
+															if (initialValue == 0.001) continue;
+															if (slug.equals("GridPower")) initialValue = initialValue / 1000;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug == "GridPower") scaledValue = scaledValue * 1000;
+															if (slug.equals("GridPower")) scaledValue = scaledValue * 1000;
 															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
-															if (slug == "GridPower") dataModelABB.setNvmActivePower(scaledValue / 1000);
-															if (slug == "TotalEnergy") dataModelABB.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("GridPower")) dataModelABB.setNvmActivePower(scaledValue / 1000);
+															if (slug.equals("TotalEnergy")) dataModelABB.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -1950,11 +1950,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
-															if (slug == "IrradianceActual") dataModelLufft.setNvm_irradiance(scaledValue);
-															if (slug == "AirTemperatureActual") dataModelLufft.setNvm_temperature(scaledValue);
+															if (slug.equals("IrradianceActual")) dataModelLufft.setNvm_irradiance(scaledValue);
+															if (slug.equals("AirTemperatureActual")) dataModelLufft.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -2041,11 +2041,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
-															if (slug == "GlobalRadiation") dataModelLufft.setNvm_irradiance(scaledValue);
-															if (slug == "AirTemperatureCActual") dataModelLufft.setNvm_temperature(scaledValue);
+															if (slug.equals("GlobalRadiation")) dataModelLufft.setNvm_irradiance(scaledValue);
+															if (slug.equals("AirTemperatureCActual")) dataModelLufft.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -2131,11 +2131,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
-															if (slug == "ACPowerOutput") dataModelSolectria226.setNvmActivePower(scaledValue);
-															if (slug == "CumulativeACEnergy") dataModelSolectria226.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ACPowerOutput")) dataModelSolectria226.setNvmActivePower(scaledValue);
+															if (slug.equals("CumulativeACEnergy")) dataModelSolectria226.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -2322,11 +2322,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
-															if (slug == "I_AC_Power") dataModelSET.setNvmActivePower(scaledValue);
-															if (slug == "I_AC_Energy_WH") dataModelSET.setNvmActiveEnergy(scaledValue / 1000);
+															if (slug.equals("I_AC_Power")) dataModelSET.setNvmActivePower(scaledValue);
+															if (slug.equals("I_AC_Energy_WH")) dataModelSET.setNvmActiveEnergy(scaledValue / 1000);
 														}
 													}
 													
@@ -2424,11 +2424,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
-															if (slug == "ReadPower") dataModelXantrex.setNvmActivePower(scaledValue);
-															if (slug == "AccumulatedEnergy") dataModelXantrex.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ReadPower")) dataModelXantrex.setNvmActivePower(scaledValue);
+															if (slug.equals("AccumulatedEnergy")) dataModelXantrex.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -2524,11 +2524,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
-															if (slug == "POACMP11") dataModelAdam4017.setNvm_irradiance(scaledValue);
-															if (slug == "AmbientTemp") dataModelAdam4017.setNvm_temperature(scaledValue);
+															if (slug.equals("POACMP11")) dataModelAdam4017.setNvm_irradiance(scaledValue);
+															if (slug.equals("AmbientTemp")) dataModelAdam4017.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -2619,11 +2619,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
-															if (slug == "Meter1_ACPower") dataModelCSM1.setNvmActivePower(scaledValue);
-															if (slug == "Total_Energy") dataModelCSM1.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("Meter1_ACPower")) dataModelCSM1.setNvmActivePower(scaledValue);
+															if (slug.equals("Total_Energy")) dataModelCSM1.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -2718,11 +2718,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
-															if (slug == "Meter2_ACPower") dataModelCSM2.setNvmActivePower(scaledValue);
-															if (slug == "Total_Energy") dataModelCSM2.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("Meter2_ACPower")) dataModelCSM2.setNvmActivePower(scaledValue);
+															if (slug.equals("Total_Energy")) dataModelCSM2.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -2816,11 +2816,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
-															if (slug == "Meter3_ACPower") dataModelCSM3.setNvmActivePower(scaledValue);
-															if (slug == "Total_Energy") dataModelCSM3.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("Meter3_ACPower")) dataModelCSM3.setNvmActivePower(scaledValue);
+															if (slug.equals("Total_Energy")) dataModelCSM3.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -2915,11 +2915,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
-															if (slug == "Meter4_ACPower") dataModelCSM4.setNvmActivePower(scaledValue);
-															if (slug == "Total_Energy") dataModelCSM4.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("Meter4_ACPower")) dataModelCSM4.setNvmActivePower(scaledValue);
+															if (slug.equals("Total_Energy")) dataModelCSM4.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -3014,11 +3014,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
-															if (slug == "OutputKW") dataModelSatcon225.setNvmActivePower(scaledValue);
-															if (slug == "KWH") dataModelSatcon225.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("OutputKW")) dataModelSatcon225.setNvmActivePower(scaledValue);
+															if (slug.equals("KWH")) dataModelSatcon225.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -3115,11 +3115,11 @@ public class UploadFilesController extends BaseController {
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775);
-															if (initialValue == 0.001) break;
+															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
-															if (slug == "ACPower") dataModelSunnyClass9775.setNvmActivePower(scaledValue);
-															if (slug == "LifekWhTotal") dataModelSunnyClass9775.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("ACPower")) dataModelSunnyClass9775.setNvmActivePower(scaledValue);
+															if (slug.equals("LifekWhTotal")) dataModelSunnyClass9775.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
@@ -3214,11 +3214,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
-																if (slug == "TotalInstantaneousRealPower") dataModelVeris.setNvmActivePower(scaledValue);
-																if (slug == "RealEnergyConsumption") dataModelVeris.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("TotalInstantaneousRealPower")) dataModelVeris.setNvmActivePower(scaledValue);
+																if (slug.equals("RealEnergyConsumption")) dataModelVeris.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -3311,11 +3311,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
-																if (slug == "ACPower") dataModelAE1000NX.setNvmActivePower(scaledValue);
-																if (slug == "LifekWhTotal") dataModelAE1000NX.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("ACPower")) dataModelAE1000NX.setNvmActivePower(scaledValue);
+																if (slug.equals("LifekWhTotal")) dataModelAE1000NX.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -3409,11 +3409,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
-																if (slug == "pt33") dataModelAesTx.setNvmActivePower(scaledValue);
-																if (slug == "pt34") dataModelAesTx.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("pt33")) dataModelAesTx.setNvmActivePower(scaledValue);
+																if (slug.equals("pt34")) dataModelAesTx.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -3505,11 +3505,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
-																if (slug == "kWTot") dataModelIon.setNvmActivePower(scaledValue);
-																if (slug == "kWhDelRec") dataModelIon.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("kWTot")) dataModelIon.setNvmActivePower(scaledValue);
+																if (slug.equals("kWhDelRec")) dataModelIon.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -3601,11 +3601,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM7650);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelPM7650, scaledValue);
-																if (slug == "kWTot") dataModelPM7650.setNvmActivePower(scaledValue);
-																if (slug == "kWhDel") dataModelPM7650.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("kWTot")) dataModelPM7650.setNvmActivePower(scaledValue);
+																if (slug.equals("kWhDel")) dataModelPM7650.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -3696,11 +3696,11 @@ public class UploadFilesController extends BaseController {
 																String variableName = scaledDeviceParameter.getVariable_name();
 																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-																if (initialValue == 0.001) break;
+																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
-																if (slug == "ReadPower") dataModelXantrex.setNvmActivePower(scaledValue);
-																if (slug == "kWh") dataModelXantrex.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("ReadPower")) dataModelXantrex.setNvmActivePower(scaledValue);
+																if (slug.equals("kWh")) dataModelXantrex.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
