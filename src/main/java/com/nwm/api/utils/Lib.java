@@ -2846,7 +2846,7 @@ Lib {
 	public static List<String> datetimeToCronExp(int periodicity, String timeSchedule, String daysWeek, String offset_timezone) {
 		try {
 			List<String> cronsList = new ArrayList<String>();
-			if (timeSchedule.isBlank()) return new ArrayList<String>();
+			if (timeSchedule.isEmpty()) return new ArrayList<String>();
 			ZonedDateTime zonedDateTime = ZonedDateTime.parse(timeSchedule, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.of(offset_timezone)));
 			ZonedDateTime localDateTime = zonedDateTime.withZoneSameInstant(ZoneId.systemDefault());
 			
@@ -2857,7 +2857,7 @@ Lib {
 					break;
 				}
 				case 2: { // weekly
-					if (daysWeek.isBlank()) return new ArrayList<String>();
+					if (daysWeek.isEmpty()) return new ArrayList<String>();
 					List<String> days = new ArrayList<>();
 					for (int i = 0; i < daysWeek.length(); i++) {
 						if (Character.compare((char) daysWeek.charAt(i), '0') == 0) continue;
