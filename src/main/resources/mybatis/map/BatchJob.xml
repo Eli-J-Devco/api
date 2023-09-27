@@ -1910,6 +1910,11 @@
 			r.date_from,
 			r.date_to,
 			t.`value` AS time_zone,
+			r.schedule_enable,
+			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
+			r.periodicity,
+			r.days_week,
+			r.offset_timezone,
 			CASE
 				WHEN r.type_report = 2 AND r.type_option = 1 THEN (
 					SELECT 

@@ -124,7 +124,12 @@
 			`created_date`,
 			`updated_date`,
 			`id_sub_group`,
-			`type_option`
+			`type_option`,
+			`schedule_enable`,
+			`periodicity`,
+			`time_schedule`,
+			`days_week`,
+			`offset_timezone`
 		)VALUES(
 			#{id_site},
 			#{id_employee},
@@ -139,7 +144,12 @@
 			NOW(),
 			NOW(),
 			#{id_sub_group},
-			#{type_option}
+			#{type_option},
+			#{schedule_enable},
+			#{periodicity},
+			#{time_schedule},
+			#{days_week},
+			#{offset_timezone}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -162,7 +172,12 @@
 			`status` = #{status},
 			`updated_date` = NOW(),
 			`id_sub_group` = #{id_sub_group},
-			`type_option` = #{type_option}
+			`type_option` = #{type_option},
+			`schedule_enable` = #{schedule_enable},
+			`periodicity` = #{periodicity},
+			`time_schedule` = #{time_schedule},
+			`days_week` = #{days_week},
+			`offset_timezone` = #{offset_timezone}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -219,6 +234,10 @@
 			DATE_FORMAT(r.date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
 			DATE_FORMAT(r.date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
 			r.`status`,
+			r.schedule_enable,
+			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
+			r.periodicity,
+			r.days_week,
 			DATE_FORMAT(r.created_date, '%m/%d/%Y %H:%i %p') AS created_on,
 			DATE_FORMAT(r.updated_date, '%m/%d/%Y %H:%i %p') AS last_modified,
 			CASE
