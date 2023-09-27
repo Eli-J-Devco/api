@@ -32,9 +32,25 @@ public class FileImportDataOldEntity{
 	private int row; 
 	private String start_date;
 	private String end_date;
+	private String timezone_value;
+	private String timezone_offset;
 	
 	
 	
+	
+	
+	public String getTimezone_value() {
+		return timezone_value;
+	}
+	public void setTimezone_value(String timezone_value) {
+		this.timezone_value = timezone_value;
+	}
+	public String getTimezone_offset() {
+		return timezone_offset;
+	}
+	public void setTimezone_offset(String timezone_offset) {
+		this.timezone_offset = timezone_offset;
+	}
 	public String getStart_date() {
 		return start_date;
 	}
