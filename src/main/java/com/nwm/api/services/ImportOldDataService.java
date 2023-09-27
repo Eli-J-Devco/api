@@ -20,6 +20,8 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.GroupEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
+import com.nwm.api.entities.RoleEntity;
+import com.nwm.api.entities.RoleScreenMapEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
 import com.nwm.api.entities.SiteEntity;
 
@@ -519,6 +521,30 @@ public class ImportOldDataService extends DB {
 		}catch (Exception ex) {
 			log.error("FileImportDataOld.updateFileReportDataRow", ex);
 			return false;
+		}
+	}
+	
+	
+
+	/**
+	 * @description delete data old
+	 * @author long.pham
+	 * @since 2023-09-26
+	 */
+	
+	public int deleteDataOld(FileImportDataOldEntity dataE) {
+		SqlSession session = this.beginTransaction();
+		try {
+			session.delete("FileImportDataOld.deleteDataFromModel", dataE);
+			session.delete("FileImportDataOld.deleteDataReport", dataE);
+			session.commit();
+			return 1;
+		}catch (Exception e) {
+			log.error(e);
+			session.rollback();
+			return 0;
+		} finally {
+			session.close();
 		}
 	}
 	

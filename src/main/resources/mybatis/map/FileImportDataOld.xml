@@ -155,6 +155,17 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	
+	
+	<delete id = "deleteDataFromModel">
+		DELETE from ${datatablename} WHERE id_device = #{id_device} AND `time`  <![CDATA[>=]]> #{start_date} AND `time`  <![CDATA[<=]]> #{end_date};
+	</delete>
+	
+	
+	<delete id = "deleteDataReport">
+		DELETE from `site_data_report` WHERE id_device = #{id_device} AND `time`  <![CDATA[>=]]> #{start_date} AND `time`  <![CDATA[<=]]> #{end_date};
+	</delete>
   	
 
 </mapper>

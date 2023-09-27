@@ -32,7 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
+import com.nwm.api.entities.RoleEntity;
 import com.nwm.api.services.ImportOldDataService;
+import com.nwm.api.services.RoleService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -1637,6 +1639,30 @@ public class ImportOldDataController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description delete role
+	 * @author long.pham
+	 * @since 2020-12-30
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-data-old")
+	public Object deleteDataOld(@Valid @RequestBody FileImportDataOldEntity obj) {
+		ImportOldDataService service = new ImportOldDataService();
+		try {
+			int result = service.deleteDataOld(obj);
+			if (result == 1) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
 	

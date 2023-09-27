@@ -9,6 +9,8 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
@@ -183,20 +185,51 @@ public class DeviceService extends DB {
 	 */
 	public DeviceEntity insertDevice(DeviceEntity obj) 
 	{
-		try
-	    {
-	       Object insertId = insert("Device.insertDevice", obj);
-	       if(insertId != null && insertId instanceof Integer) {
-	    	   return obj;
-	       }else {
-	    	   return null;
-	       }
-	    }
-	    catch(Exception ex)
-	    {
-	        log.error("insert", ex);
-	        return null;
-	    }	
+		SqlSession session = this.beginTransaction();
+		try {
+			Object insertId =  session.insert("Device.insertDevice", obj);
+			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
+				// Create table, view, BJob
+//				session.insert("Device.createTableDevice", obj);
+//				session.insert("Device.createViewThreeMonthData", obj);
+//				session.insert("Device.createBJobData", obj);
+//				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDatatablename());
+//				obj.setView_tablename("view" + obj.getId() + "_"+ obj.getDatatablename());
+//				obj.setJob_tablename("bjob" + obj.getId() + "_"+ obj.getDatatablename());
+//				session.update("Device.updateTableDevice", obj);
+				
+			} else {
+				throw new Exception();
+			}
+
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Device.insertDevice", ex);
+			obj.setId(0);
+			return obj;
+		} finally {
+			session.close();
+		}	
+		
+//		try
+//	    {
+//	       Object insertId = insert("Device.insertDevice", obj);
+//	       if(insertId != null && insertId instanceof Integer) {
+//	    	   
+//	    	   // Create table, view, BJob
+//	    	   
+//	    	   return obj;
+//	       }else {
+//	    	   return null;
+//	       }
+//	    }
+//	    catch(Exception ex)
+//	    {
+//	        log.error("insert", ex);
+//	        return null;
+//	    }	
 	}
 	
 	/**
