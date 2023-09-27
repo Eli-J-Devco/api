@@ -112,6 +112,7 @@ import org.openxmlformats.schemas.drawingml.x2006.chart.CTLineSer;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STDispBlanksAs;
 import org.openxmlformats.schemas.drawingml.x2006.chart.STMarkerStyle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -135,6 +136,7 @@ import com.itextpdf.layout.properties.BorderCollapsePropertyValue;
 import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.Book;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
@@ -4133,6 +4135,8 @@ public class ReportsController extends BaseController {
 	 * @since 2021-01-05
 	 * @param screen_mode = 0:add, 1:edit
 	 */
+	@Autowired
+	private ReportTaskScheduler reportTaskScheduler;
 
 	@PostMapping("/save")
 	public Object save(@Valid @RequestBody ReportsEntity obj) {
@@ -4141,6 +4145,8 @@ public class ReportsController extends BaseController {
 			if (obj.getScreen_mode() == 1) {
 				ReportsEntity data = service.insertReports(obj);
 				if (data != null) {
+					// update scheduled task
+					reportTaskScheduler.scheduleWithCronTrigger();
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 				} else {
 					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
@@ -4149,6 +4155,8 @@ public class ReportsController extends BaseController {
 				if (obj.getScreen_mode() == 2) {
 					boolean insert = service.updateReports(obj);
 					if (insert == true) {
+						// update scheduled task
+						reportTaskScheduler.scheduleWithCronTrigger();
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 					} else {
 						return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
@@ -4199,6 +4207,8 @@ public class ReportsController extends BaseController {
 		try {
 			boolean result = service.deleteReports(obj);
 			if (result) {
+				// update scheduled task
+				reportTaskScheduler.scheduleWithCronTrigger();
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);

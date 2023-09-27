@@ -40,6 +40,11 @@ public class ReportsEntity {
 	private int id_sub_group;
 	private int type_option;
 	private List dataSite;
+	private int schedule_enable;
+	private int periodicity;
+	private String time_schedule;
+	private String days_week;
+	private String offset_timezone;
 	
 	
 	public Double getEnergy_this_month() {
@@ -233,6 +238,36 @@ public class ReportsEntity {
 	}
 	public void setDataSite(List dataSite) {
 		this.dataSite = dataSite;
+	}
+	public int getSchedule_enable() {
+		return schedule_enable;
+	}
+	public void setSchedule_enable(int schedule_enable) {
+		this.schedule_enable = schedule_enable;
+	}
+	public int getPeriodicity() {
+		return periodicity;
+	}
+	public void setPeriodicity(int periodicity) {
+		this.periodicity = periodicity;
+	}
+	public String getTime_schedule() {
+		return time_schedule;
+	}
+	public void setTime_schedule(String time_schedule) {
+		this.time_schedule = time_schedule;
+	}
+	public String getDays_week() {
+		return days_week;
+	}
+	public void setDays_week(String days_week) {
+		this.days_week = days_week;
+	}
+	public String getOffset_timezone() {
+		return offset_timezone;
+	}
+	public void setOffset_timezone(String offset_timezone) {
+		this.offset_timezone = offset_timezone;
 	}
 	
 	

@@ -8,9 +8,11 @@ package com.nwm.api.config;
 import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.batchjob.BatchJobFTP;
@@ -222,15 +224,10 @@ public class BatchConfig {
 	 * @author Hung.Bui
 	 * @since 2022-12-22
 	 */
-	@Scheduled(cron = "0 0 */1 * * *")
-	public void sentMailReportOnSchedule() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (!env.equals("staging")) {
-			BatchJob job = new BatchJob(); 
-			job.sentMailReportOnSchedule();
-		}
-	}
+	@Bean
+    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+        return new ThreadPoolTaskScheduler();
+    }
 	
 	
 	/**
