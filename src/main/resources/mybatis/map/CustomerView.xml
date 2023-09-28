@@ -1392,7 +1392,7 @@
 										AVG(IF(
 											s.t_avg IS NULL OR NOT ((dv.nvm_irradiance) >= s.min_irradiance_limit),
 											NULL,
-											s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - ((dv.nvm_temperature) + AVG(dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+											s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - ((dv.nvm_temperature) + (dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
 										))
 									</otherwise>
 								</choose> AS expected_power
