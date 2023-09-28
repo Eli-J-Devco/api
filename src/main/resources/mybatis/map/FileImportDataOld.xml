@@ -159,12 +159,14 @@
 	
 	
 	<delete id = "deleteDataFromModel">
-		DELETE from ${datatablename} WHERE id_device = #{id_device} AND `time`  <![CDATA[>=]]> #{start_date} AND `time`  <![CDATA[<=]]> #{end_date};
+		DELETE from ${datatablename} WHERE id_device = #{id_device} 
+		AND (CAST(CONVERT_TZ( dv.time, '+00:00', #{timezone_offset} ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME));
 	</delete>
 	
 	
 	<delete id = "deleteDataReport">
-		DELETE from `site_data_report` WHERE id_device = #{id_device} AND `time`  <![CDATA[>=]]> #{start_date} AND `time`  <![CDATA[<=]]> #{end_date};
+		DELETE from `site_data_report` WHERE id_device = #{id_device} 
+		AND (CAST(CONVERT_TZ( dv.time, '+00:00', #{timezone_offset} ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME));
 	</delete>
   	
 
