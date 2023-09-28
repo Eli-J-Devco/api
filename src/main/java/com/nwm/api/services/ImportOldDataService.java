@@ -536,7 +536,7 @@ public class ImportOldDataService extends DB {
 		SqlSession session = this.beginTransaction();
 		try {
 			session.delete("FileImportDataOld.deleteDataFromModel", dataE);
-			session.delete("FileImportDataOld.deleteDataReport", dataE);
+//			session.delete("FileImportDataOld.deleteDataReport", dataE);
 			session.commit();
 			return 1;
 		}catch (Exception e) {
