@@ -154,7 +154,7 @@
 			
 			<if test="(datatablename == 'model_virtual_meter_or_inverter') || (datatablename == 'ViewModelVirtualMeterOrInverter')">
 				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
-				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
+				IFNULL(ROUND(SUM(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
 				IFNULL(ROUND(AVG(dv.nvm_temperature), 2), 0.001) AS nvm_temperature,
 				IFNULL(ROUND(AVG(dv.nvm_irradiance), 2), 0.001) AS nvm_irradiance,
 				IFNULL(ROUND(AVG(dv.expected_power_ac), 2), 0.001) AS expected_power_ac,
