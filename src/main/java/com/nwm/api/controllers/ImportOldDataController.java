@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.entities.RoleEntity;
+import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.ImportOldDataService;
 import com.nwm.api.services.RoleService;
 import com.nwm.api.utils.Constants;
@@ -1658,6 +1660,14 @@ public class ImportOldDataController extends BaseController {
 		try {
 			int result = service.deleteDataOld(obj);
 			if (result == 1) {
+				BatchJobService serviceBathJob = new BatchJobService();
+				SiteEntity siteItem = new SiteEntity();
+				siteItem.setId(obj.getId_site());
+				siteItem.setStart_date(obj.getStart_date());
+				siteItem.setEnd_date(obj.getEnd_date());
+				siteItem.setTime_zone_value(obj.getTimezone_value());
+				
+				serviceBathJob.insertDataGenerateReport(siteItem);
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);

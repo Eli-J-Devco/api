@@ -15,15 +15,9 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.CustomerEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.FileImportDataOldEntity;
-import com.nwm.api.entities.GroupEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
-import com.nwm.api.entities.RoleEntity;
-import com.nwm.api.entities.RoleScreenMapEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
-import com.nwm.api.entities.SiteEntity;
 
 public class ImportOldDataService extends DB {
 
@@ -536,7 +530,7 @@ public class ImportOldDataService extends DB {
 		SqlSession session = this.beginTransaction();
 		try {
 			session.delete("FileImportDataOld.deleteDataFromModel", dataE);
-//			session.delete("FileImportDataOld.deleteDataReport", dataE);
+			session.delete("FileImportDataOld.deleteDataReport", dataE);
 			session.commit();
 			return 1;
 		}catch (Exception e) {

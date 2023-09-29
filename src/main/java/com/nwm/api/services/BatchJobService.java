@@ -7,6 +7,7 @@ package com.nwm.api.services;
 
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -18,6 +19,7 @@ import java.util.TimeZone;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
@@ -822,15 +824,37 @@ public class BatchJobService extends DB {
 			SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 			Calendar calCurrent = Calendar.getInstance();
 			
+			Calendar calNowDate = Calendar.getInstance();
+			calNowDate.setTime(now);
+			
+			int forTime = 2;
+			int setTime = 2;
+			if(obj.getStart_date() != null && obj.getEnd_date() != null) {
+				// Create list date 
+				SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
+				Date startDate = dateFormatCustom.parse(obj.getStart_date() + " AM");
+				Calendar calStartDate = Calendar.getInstance();
+				calStartDate.setTime(startDate);
+				
+				Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
+				Calendar calEndCustom = Calendar.getInstance();
+				calEndCustom.setTime(endDateCustom);
+				long forCountYTD = ChronoUnit.DAYS.between(calStartDate.getTime().toInstant(), calEndCustom.getTime().toInstant());
+				long forCountNow = ChronoUnit.DAYS.between(calStartDate.getTime().toInstant(), calNowDate.getTime().toInstant());
+				
+				forTime = (int) forCountNow + 2;
+				setTime = (int) forCountYTD + 2;
+			}
 			
 			
 			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -2);
-			int setTime = 2;
+			calCurrent.add(Calendar.DATE, -forTime);
+			
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 			Calendar cal = Calendar.getInstance();
 			Date currentDate = calCurrent.getTime();
+			
 			
 			// Case 1: inverter, meter, weather
 			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
