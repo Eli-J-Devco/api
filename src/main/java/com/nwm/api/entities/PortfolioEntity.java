@@ -65,8 +65,22 @@ public class PortfolioEntity {
 	private List inverters;
 	private List meters;
 	private String note;
+	private String hash_id_site_group;
+	private String hash_id_site_sub_group;
 	
 	
+	public String getHash_id_site_sub_group() {
+		return hash_id_site_sub_group;
+	}
+	public void setHash_id_site_sub_group(String hash_id_site_sub_group) {
+		this.hash_id_site_sub_group = hash_id_site_sub_group;
+	}
+	public String getHash_id_site_group() {
+		return hash_id_site_group;
+	}
+	public void setHash_id_site_group(String hash_id_site_group) {
+		this.hash_id_site_group = hash_id_site_group;
+	}
 	public String getNote() {
 		return note;
 	}
