@@ -1284,14 +1284,64 @@
 				FROM
 					alert a
 					LEFT JOIN error e ON e.id = a.id_error
+					LEFT JOIN error_level el ON el.id = e.id_error_level
 					LEFT JOIN device d ON d.id = a.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					WHERE a.`status` = 1
-					AND a.is_delete = 0
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE a.is_delete = 0
 					AND e.`status` = 1
 					AND e.`is_delete` = 0
-					GROUP BY s.id
+					
+					<if test="view_history != 'filter'">
+						AND a.`status` = 1
+					</if>
+					
+					<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
+						AND a.status IN  (
+							<foreach item="item" index="index" collection="id_status" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_sites != null and !id_sites.isEmpty()">
+						AND s.id IN  (
+							<foreach item="item" index="index" collection="id_sites" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_levels != null and !id_levels.isEmpty()">
+						AND el.id IN  (
+							<foreach item="item" index="index" collection="id_levels" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_types != null and !id_types.isEmpty()">
+						AND e.id_error_type IN  (
+							<foreach item="item" index="index" collection="id_types" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_device_type != null and !id_device_type.isEmpty()">
+						AND d.id_device_type IN  (
+							<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="date_from != null and date_to != null">
+						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+					</if>
+					
+				GROUP BY s.id
 			)g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
@@ -1364,9 +1414,62 @@
 					LEFT JOIN device d ON d.id = a.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					WHERE a.`status` = 1
-					AND a.is_delete = 0
-					GROUP BY s.id
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					LEFT JOIN error e ON e.id = a.id_error
+					LEFT JOIN error_level el ON el.id = e.id_error_level
+				WHERE a.is_delete = 0
+					AND e.`status` = 1
+					AND e.`is_delete` = 0
+					
+					<if test="view_history != 'filter'">
+						AND a.`status` = 1
+					</if>
+					
+					<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
+						AND a.status IN  (
+							<foreach item="item" index="index" collection="id_status" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_sites != null and !id_sites.isEmpty()">
+						AND s.id IN  (
+							<foreach item="item" index="index" collection="id_sites" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_levels != null and !id_levels.isEmpty()">
+						AND el.id IN  (
+							<foreach item="item" index="index" collection="id_levels" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_types != null and !id_types.isEmpty()">
+						AND e.id_error_type IN  (
+							<foreach item="item" index="index" collection="id_types" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="id_device_type != null and !id_device_type.isEmpty()">
+						AND d.id_device_type IN  (
+							<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+								#{item.id}
+							</foreach>
+						)
+					</if>
+					
+					<if test="date_from != null and date_to != null">
+						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+					</if>
+					
+				GROUP BY s.id
 			)g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
@@ -1567,7 +1670,6 @@
 			WHERE e.`status` = 1 
 			AND e.is_delete = 0
 			AND l.is_delete = 0
-			AND l.`status` = 1
 			AND s.id = #{id}
 			
 			<if test="id_levels != null and !id_levels.isEmpty()">
@@ -1576,6 +1678,38 @@
 						#{item.id}
 					</foreach>
 				)
+			</if>
+			
+			<if test="view_history != 'filter'">
+				AND l.`status` = 1
+			</if>
+			
+			<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
+				AND l.status IN  (
+					<foreach item="item" index="index" collection="id_status" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_types != null and !id_types.isEmpty()">
+				AND e.id_error_type IN  (
+					<foreach item="item" index="index" collection="id_types" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+
+			<if test="id_device_type != null and !id_device_type.isEmpty()">
+				AND d.id_device_type IN  (
+					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="date_from != null and date_to != null">
+				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
 			</if>
 			
 			<if test="site_name != null">

@@ -56,6 +56,7 @@ public class EmployeeManageEntity{
 	private String filter;
 	private int is_send_email_unblock;
 	private String hash_id_user;
+	private String created_by;
 	
 	
 	public String getHash_id_user() {
@@ -339,6 +340,12 @@ public class EmployeeManageEntity{
 	}
 	public void setFilter(String filter) {
 		this.filter = filter;
+	}
+	public String getCreated_by() {
+		return created_by;
+	}
+	public void setCreated_by(String created_by) {
+		this.created_by = created_by;
 	}
 	
 	
