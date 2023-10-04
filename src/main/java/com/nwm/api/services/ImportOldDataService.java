@@ -135,6 +135,14 @@ public class ImportOldDataService extends DB {
 			}
 			
 			switch (obj.getTable_name()) {
+			
+			case "model_xantrex_inverter":
+				obj.setId_device_type(1);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelXantrexInverter.insertModelXantrexInverter", dataList.get(i));					
+				}				
+				break;
+				
 			case "model_satcon_powergate_225_inverter":
 				obj.setId_device_type(1);
 				for (int i = 0; i < dataList.size(); i++) {
