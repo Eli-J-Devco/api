@@ -264,6 +264,7 @@
 			sg.id,
 			sg.`name`,
 			sg.order_id,
+			SHA2(sg.id, 256) AS hash_id,
 			0 AS is_expand
 		FROM
 			site s
@@ -283,6 +284,7 @@
 	<select id="getSubGroupByGroup" resultType="Map" >
 		SELECT
 			ssg.id,
+			SHA2(ssg.id, 512) AS hash_id,
 			ssg.id_site_group,
 			ssg.`name`,
 			ssg.order_id,

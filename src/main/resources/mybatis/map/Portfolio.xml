@@ -344,6 +344,13 @@
 			
 		WHERE s.status = 1 and s.is_delete = 0 AND sem.id_employee = #{id_employee}
 		
+		<if test="hash_id_site_group != null">	
+ 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+		</if>
+		
+		<if test="hash_id_site_sub_group != null">	
+ 			AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+		</if>
 		
 		<if test="column == 1 and value_filter != null">
 			AND s.name LIKE CONCAT("%",#{value_filter}, "%")
