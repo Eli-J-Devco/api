@@ -57,7 +57,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 				dataModelABB.setTotalEnergy(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModelABB.setGridVoltage(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModelABB.setGridCurrent(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
-				dataModelABB.setGridPower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
+				dataModelABB.setGridPower(power);
 				dataModelABB.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelABB.setInput1Power(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelABB.setInput1Voltage(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));

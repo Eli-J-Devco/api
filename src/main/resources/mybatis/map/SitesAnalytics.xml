@@ -1144,7 +1144,7 @@
 			</if>
 			<if test="(datatablename == 'model_imtsolar_class8000') || (datatablename == 'ViewModelImtsolarClass8000')">
 				
-				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance * 0.1)), 2), 0.001) AS irradiance,
+				IFNULL(ROUND(IF(AVG(dv.irradiance) <![CDATA[<]]> 0, 0, AVG(dv.irradiance)), 2), 0.001) AS irradiance,
 				
 		      	IFNULL(ROUND(AVG(dv.tcell), 2), 0.001) AS tcell,
 			</if>
@@ -1477,7 +1477,7 @@
 		    	
 		    	IFNULL(ROUND(IF(AVG(dv.SunPOATempComp) <![CDATA[<]]> 0, 0, AVG(dv.SunPOATempComp  )), 2), 0.001) AS SunPOATempComp,
 		    	
-		    	IFNULL(ROUND(AVG(dv.PanelTemperature * 0.1), 2), 0.001) AS PanelTemperature,
+		    	IFNULL(ROUND(AVG(dv.PanelTemperature), 2), 0.001) AS PanelTemperature,
 		    	IFNULL(ROUND(AVG(dv.ExtPowerSensor), 2), 0.001) AS ExtPowerSensor,
 		    	IFNULL(ROUND(AVG(dv.BatchNumber), 2), 0.001) AS BatchNumber,
 		    	IFNULL(ROUND(AVG(dv.SerialNumber), 2), 0.001) AS SerialNumber,
@@ -1580,7 +1580,7 @@
 			      IFNULL(ROUND(AVG(dv.GridVoltage), 2), 0.001) AS GridVoltage,
 			      IFNULL(ROUND(AVG(dv.GridCurrent), 2), 0.001) AS GridCurrent,
 			      
-			      IFNULL(ROUND(IF(AVG(dv.GridPower) <![CDATA[<]]> 0, 0, AVG(dv.GridPower/1000)), 2), 0.001) AS GridPower,
+			      IFNULL(ROUND(IF(AVG(dv.GridPower) <![CDATA[<]]> 0, 0, AVG(dv.GridPower)), 2), 0.001) AS GridPower,
 			      
 			      IFNULL(ROUND(AVG(dv.Frequency), 2), 0.001) AS Frequency,
 			      IFNULL(ROUND(AVG(dv.Input1Power), 2), 0.001) AS Input1Power,

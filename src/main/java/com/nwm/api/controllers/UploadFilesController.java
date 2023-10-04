@@ -872,9 +872,7 @@ public class UploadFilesController extends BaseController {
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
 															if (initialValue == 0.001) continue;
-															if (slug.equals("irradiance")) initialValue = initialValue * 0.1;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug.equals("irradiance")) scaledValue = scaledValue * 10;
 															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
 															if (slug.equals("irradiance")) dataModelIMTSolarClass.setNvm_irradiance(scaledValue);
 															if (slug.equals("tcell")) dataModelIMTSolarClass.setNvm_temperature(scaledValue);
@@ -885,8 +883,8 @@ public class UploadFilesController extends BaseController {
 													
 													// irradiance
 													deviceUpdateE.setLast_updated(dataModelIMTSolarClass.getTime());
-													deviceUpdateE.setLast_value(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() * 0.1 : null);
-													deviceUpdateE.setField_value1(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() * 0.1 : null);
+													deviceUpdateE.setLast_value(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
+													deviceUpdateE.setField_value1(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
 													
 													// tcell
 													deviceUpdateE.setField_value2(dataModelIMTSolarClass.getTcell() != 0.001 ? dataModelIMTSolarClass.getTcell() : null);
@@ -1655,12 +1653,10 @@ public class UploadFilesController extends BaseController {
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
 															if (initialValue == 0.001) continue;
-															if (slug.equals("PanelTemperature")) initialValue = initialValue * 0.1;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug.equals("PanelTemperature")) scaledValue = scaledValue * 10;
 															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
 															if (slug.equals("SunPOATempComp")) dataModelWkipp.setNvm_irradiance(scaledValue);
-															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_temperature(scaledValue * 0.1);
+															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_temperature(scaledValue);
 														}
 													}
 													
@@ -1671,7 +1667,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setField_value1(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
 
 													// PanelTemperature
-													deviceUpdateE.setField_value2(dataModelWkipp.getPanelTemperature() != 0.001 ? dataModelWkipp.getPanelTemperature() * 0.1 : null);
+													deviceUpdateE.setField_value2(dataModelWkipp.getPanelTemperature() != 0.001 ? dataModelWkipp.getPanelTemperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -1849,11 +1845,9 @@ public class UploadFilesController extends BaseController {
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
 															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
 															if (initialValue == 0.001) continue;
-															if (slug.equals("GridPower")) initialValue = initialValue / 1000;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															if (slug.equals("GridPower")) scaledValue = scaledValue * 1000;
 															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
-															if (slug.equals("GridPower")) dataModelABB.setNvmActivePower(scaledValue / 1000);
+															if (slug.equals("GridPower")) dataModelABB.setNvmActivePower(scaledValue);
 															if (slug.equals("TotalEnergy")) dataModelABB.setNvmActiveEnergy(scaledValue);
 														}
 													}
@@ -1862,8 +1856,8 @@ public class UploadFilesController extends BaseController {
 													
 													// GridPower
 													deviceUpdateE.setLast_updated(dataModelABB.getTime());
-													deviceUpdateE.setLast_value(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() / 1000 : null);
-													deviceUpdateE.setField_value1(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() / 1000 : null);
+													deviceUpdateE.setLast_value(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
+													deviceUpdateE.setField_value1(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
 													
 													// Input1Voltage
 													deviceUpdateE.setField_value2(dataModelABB.getInput1Voltage() != 0.001 ? dataModelABB.getInput1Voltage() : null);

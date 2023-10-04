@@ -75,7 +75,7 @@
 				#{tcell},
 			</if>
 			<if test="nvm_irradiance != 0.001">
-				#{nvm_irradiance} * 0.1,
+				#{nvm_irradiance},
 			</if>
 			<if test="nvm_temperature != 0.001">
 				#{nvm_temperature},
@@ -106,7 +106,7 @@
 				`tcell` = #{tcell},
 			</if>
 			<if test="nvm_irradiance != 0.001">
-				`nvm_irradiance` = #{nvm_irradiance} * 0.1,
+				`nvm_irradiance` = #{nvm_irradiance},
 			</if>
 			<if test="nvm_temperature != 0.001">
 				`nvm_temperature` = #{nvm_temperature},
