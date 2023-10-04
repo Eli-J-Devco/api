@@ -79,7 +79,7 @@ public class AlertEntity {
 	private int is_notification;
 	private String view_notification;
 	private List alerts;
-	private int id_device_type;
+	private List id_device_type;
 	
 	private String alert_mail_bcc;
 	private String alert_mail_cc;
@@ -97,10 +97,10 @@ public class AlertEntity {
 	public void setAlert_mail_cc(String alert_mail_cc) {
 		this.alert_mail_cc = alert_mail_cc;
 	}
-	public int getId_device_type() {
+	public List getId_device_type() {
 		return id_device_type;
 	}
-	public void setId_device_type(int id_device_type) {
+	public void setId_device_type(List id_device_type) {
 		this.id_device_type = id_device_type;
 	}
 	public List getAlerts() {
