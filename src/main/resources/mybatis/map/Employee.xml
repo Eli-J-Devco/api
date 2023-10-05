@@ -210,6 +210,7 @@
 			e.account_locked,
 			e.failed_attempt,
 			e.lock_time,
+			e.created_by,
 			SHA2(e.`id`, 256) AS hash_id_user
 		FROM
 			`employee` e	
@@ -309,6 +310,9 @@
 	            </when>
 	            <when test="sort_column == 'locked'">
 	                e.status ${order_by}
+	            </when>
+	            <when test="sort_column == 'created_by'">
+	                e.created_by ${order_by}
 	            </when>
 	            <otherwise>
 			      t.group_roles ASC
@@ -425,7 +429,9 @@
 			password,
 			avatar,
 			birthday,
-			skype
+			skype,
+			created_by,
+			created_date
 		)VALUES(
 			#{first_name},
 			#{last_name},
@@ -435,7 +441,9 @@
 			#{password},
 			#{avatar},
 			#{birthday},
-			#{skype}
+			#{skype},
+			#{created_by},
+			NOW()
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -483,7 +491,9 @@
 			`address` = #{address},
 			`avatar` = #{avatar},
 			`birthday` = #{birthday},
-			`skype` = #{skype}
+			`skype` = #{skype},
+			`updated_by` = #{created_by},
+			`updated_date` = NOW()
 			
 		WHERE
 			`id` = #{id}
