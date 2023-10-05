@@ -2,6 +2,7 @@ package com.nwm.api.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.concurrent.ScheduledFuture;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.services.BatchJobService;
+import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
 @Component
@@ -26,6 +28,10 @@ public class ReportTaskScheduler {
 
     @PostConstruct
     public void scheduleWithCronTrigger() {
+    	ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+    	String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+    	if (env.equals("staging")) return;
+    	
     	BatchJobService service = new BatchJobService();
     	BatchJob batchJob = new BatchJob();
     	List<ViewReportEntity> listReports = service.getListReports(new ViewReportEntity());
@@ -54,4 +60,12 @@ public class ReportTaskScheduler {
 			e.printStackTrace();
 		}
     }
+    
+    private static String readProperty(ResourceBundle resourceBundle, String key, String defaultValue) {
+		String value = defaultValue;
+		try {
+			value = resourceBundle.getString(key);
+		} catch (Exception e) {}
+		return value;
+	}
 }
