@@ -501,6 +501,7 @@ public class UploadFilesController extends BaseController {
 															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
 															if (slug.equals("sensor1_data")) dataModelRTC30000.setNvm_irradiance(scaledValue);
 															if (slug.equals("panel_temperature")) dataModelRTC30000.setNvm_temperature(scaledValue);
+															if (slug.equals("panel_temperature")) dataModelRTC30000.setNvm_panel_temperature(scaledValue);
 														}
 													}
 													
@@ -594,6 +595,7 @@ public class UploadFilesController extends BaseController {
 															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
 															if (slug.equals("sensor1_data")) dataKippZonen.setNvm_irradiance(scaledValue);
 															if (slug.equals("panel_temperature")) dataKippZonen.setNvm_temperature(scaledValue);
+															if (slug.equals("panel_temperature")) dataKippZonen.setNvm_panel_temperature(scaledValue);
 														}
 													}
 													
@@ -786,6 +788,7 @@ public class UploadFilesController extends BaseController {
 															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
 															if (slug.equals("IrradianceTcs")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(scaledValue);
 															if (slug.equals("SensorBodyTemperature")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(scaledValue);
+															if (slug.equals("SensorBodyTemperature")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_panel_temperature(scaledValue);
 														}
 													}
 													
@@ -1657,6 +1660,7 @@ public class UploadFilesController extends BaseController {
 															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
 															if (slug.equals("SunPOATempComp")) dataModelWkipp.setNvm_irradiance(scaledValue);
 															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_temperature(scaledValue);
+															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_panel_temperature(scaledValue);
 														}
 													}
 													
@@ -2523,6 +2527,7 @@ public class UploadFilesController extends BaseController {
 															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
 															if (slug.equals("POACMP11")) dataModelAdam4017.setNvm_irradiance(scaledValue);
 															if (slug.equals("AmbientTemp")) dataModelAdam4017.setNvm_temperature(scaledValue);
+															if (slug.equals("PVPanelTemp")) dataModelAdam4017.setNvm_panel_temperature(scaledValue);
 														}
 													}
 													
