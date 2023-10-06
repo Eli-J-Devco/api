@@ -466,47 +466,47 @@
 			AND e.is_delete = 0 AND e.`status` = 1
 			AND l.is_delete = 0 AND l.id_device = #{id_device}
 			<if test="faultCodeLevel == 1">
-				AND l.id_error IN(556,557,558,559,560,561,562,563,564,565)
+				AND l.id_error IN(555)
 			</if>
 			
 			<if test="faultCodeLevel == 2">
-				AND l.id_error IN(555,557,558,559,560,561,562,563,564,565)
+				AND l.id_error IN(556)
 			</if>
 			
 			<if test="faultCodeLevel == 3">
-				AND l.id_error IN(555,556,558,559,560,561,562,563,564,565)
+				AND l.id_error IN(557)
 			</if>
 			
 			<if test="faultCodeLevel == 4">
-				AND l.id_error IN(555,556,557,559,560,561,562,563,564,565)
+				AND l.id_error IN(558)
 			</if>
 			
 			<if test="faultCodeLevel == 5">
-				AND l.id_error IN(555,556,557,558,560,561,562,563,564,565)
+				AND l.id_error IN(559)
 			</if>
 			
 			<if test="faultCodeLevel == 6">
-				AND l.id_error IN(555,556,557,558,559,561,562,563,564,565)
+				AND l.id_error IN(560)
 			</if>
 			
 			<if test="faultCodeLevel == 7">
-				AND l.id_error IN(555,556,557,558,559,560,562,563,564,565)
+				AND l.id_error IN(561)
 			</if>
 			
 			<if test="faultCodeLevel == 8">
-				AND l.id_error IN(555,556,557,558,559,560,561,563,564,565)
+				AND l.id_error IN(562)
 			</if>
 			
 			<if test="faultCodeLevel == 9">
-				AND l.id_error IN(555,556,557,558,559,560,561,562,564,565)
+				AND l.id_error IN(563)
 			</if>
 			
 			<if test="faultCodeLevel == 10">
-				AND l.id_error IN(555,556,557,558,559,560,561,562,563,565)
+				AND l.id_error IN(564)
 			</if>
 			
 			<if test="faultCodeLevel == 11">
-				AND l.id_error IN(555,556,557,558,559,560,561,562,563,564)
+				AND l.id_error IN(565)
 			</if>
 			
 			<if test="faultCodeLevel == 12">
@@ -543,7 +543,7 @@
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 4 
+			LIMIT 20
 			)t
   	</select>
 
