@@ -18,6 +18,7 @@ public class ModelMeterIon8600Entity {
 	private double VllAb;
 	private double VllAc;
 	private double VllCa;
+	private double VllAve;
 	private double IA;
 	private double IB;
 	private double IC;
@@ -74,6 +75,14 @@ public class ModelMeterIon8600Entity {
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
+	
+	
+	public double getVllAve() {
+		return VllAve;
+	}
+	public void setVllAve(double vllAve) {
+		VllAve = vllAve;
+	}
 	public String getTime() {
 		return time;
 	}

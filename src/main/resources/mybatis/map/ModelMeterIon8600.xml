@@ -18,6 +18,7 @@
 		<result property="VllAb" column="VllAb" />
 		<result property="VllAc" column="VllAc" />
 		<result property="VllCa" column="VllCa" />
+		<result property="VllAve" column="VllAve" />
 		<result property="IA" column="IA" />
 		<result property="IB" column="IB" />
 		<result property="IC" column="IC" />
@@ -117,6 +118,10 @@
 			<if test="VllCa != 0.001">
 				`VllCa`,
 			</if>
+			<if test="VllAve != 0.001">
+				`VllAve`,
+			</if>
+			
 			<if test="IA != 0.001">
 				`IA`,
 			</if>
@@ -328,6 +333,9 @@
 			<if test="VllCa != 0.001">
 				#{VllCa},
 			</if>
+			<if test="VllAve != 0.001">
+				#{VllAve},
+			</if>
 			<if test="IA != 0.001">
 				#{IA},
 			</if>
@@ -536,6 +544,11 @@
 			<if test="VllCa != 0.001">
 				`VllCa` = #{VllCa},
 			</if>
+			
+			<if test="VllAve != 0.001">
+				`VllAve` = #{VllAve},
+			</if>
+			
 			<if test="IA != 0.001">
 				`IA` = #{IA},
 			</if>
