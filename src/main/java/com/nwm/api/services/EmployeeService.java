@@ -173,7 +173,7 @@ public class EmployeeService extends DB {
 			}
 			
 			List dataSite = obj.getDataSite();
-			if(dataSite.size() > 0) {
+			if(dataSite != null && dataSite.size() > 0) {
 				for (int i = 0; i < dataSite.size(); i++) {
 					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
 					int id_site = (int) objSite.get("id");
@@ -276,7 +276,7 @@ public class EmployeeService extends DB {
 			}
 			
 			List dataSite = obj.getDataSite();
-			if(dataSite.size() > 0) {
+			if(dataSite != null && dataSite.size() > 0) {
 				for (int i = 0; i < dataSite.size(); i++) {
 					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
 					int id_site = (int) objSite.get("id");
