@@ -1222,13 +1222,13 @@
 								<choose>
 									<when test="pv_model == 1">
 										AVG(IF(
-											IFNULL(s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+											IFNULL(s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (avg.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (avg.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 											s.ac_capacity
 										))
 									</when>
 									<when test="pv_model == 2">
-										AVG(IFNULL( s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * (((dv.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0))
+										AVG(IFNULL( s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(avg.nvm_panel_temperature <![CDATA[>]]> 0, avg.nvm_panel_temperature, avg.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0))
 									</when>
 									<otherwise>
 										AVG(IF(
@@ -1240,6 +1240,31 @@
 								</choose> AS expected_power
 							FROM
 								${item.datatablename} dv
+								<if test="pv_model == 2 || pv_model == 1">
+								LEFT JOIN (
+									SELECT
+										dv.time,
+										AVG(dv.nvm_irradiance) AS nvm_irradiance,
+										AVG(dv.nvm_temperature) AS nvm_temperature,
+										AVG(dv.nvm_panel_temperature) AS nvm_panel_temperature
+									FROM
+										${item.datatablename} dv
+										LEFT JOIN device d ON d.id = dv.id_device
+										LEFT JOIN site s ON s.id = d.id_site 
+										LEFT JOIN time_zone t ON t.id = s.id_time_zone
+									WHERE
+										s.id = #{item.id_site}
+										AND d.id_device_type IN(4)
+										AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+										<foreach item="hidden" index="index" collection="item.hidden_data_list">
+											AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+									    </foreach>
+										AND s.`status` = 1 
+										AND d.`status` = 1
+									GROUP BY
+										dv.time
+								) avg ON avg.time = dv.time
+								</if>
 								LEFT JOIN device d ON d.id = dv.id_device
 								LEFT JOIN site s ON s.id = d.id_site 
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -1380,13 +1405,13 @@
 								<choose>
 									<when test="pv_model == 1">
 										AVG(IF(
-											IFNULL(s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-											s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+											IFNULL(s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (avg.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (avg.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
 											s.ac_capacity
 										))
 									</when>
 									<when test="pv_model == 2">
-									 	AVG(IFNULL( s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * (((dv.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0))
+									 	AVG(IFNULL( s.dc_capacity * ((avg.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(avg.nvm_panel_temperature <![CDATA[>]]> 0, avg.nvm_panel_temperature, avg.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0))
 									</when>
 									<otherwise>
 										AVG(IF(
@@ -1398,6 +1423,31 @@
 								</choose> AS expected_power
 							FROM
 								${item.datatablename} dv
+								<if test="pv_model == 2 || pv_model == 1">
+								LEFT JOIN (
+									SELECT
+										dv.time,
+										AVG(dv.nvm_irradiance) AS nvm_irradiance,
+										AVG(dv.nvm_temperature) AS nvm_temperature,
+										AVG(dv.nvm_panel_temperature) AS nvm_panel_temperature
+									FROM
+										${item.datatablename} dv
+										LEFT JOIN device d ON d.id = dv.id_device
+										LEFT JOIN site s ON s.id = d.id_site 
+										LEFT JOIN time_zone t ON t.id = s.id_time_zone
+									WHERE
+										s.id = #{item.id_site}
+										AND d.id_device_type IN(4)
+										AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+										<foreach item="hidden" index="index" collection="item.hidden_data_list">
+											AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+									    </foreach>
+										AND s.`status` = 1 
+										AND d.`status` = 1
+									GROUP BY
+										dv.time
+								) avg ON avg.time = dv.time
+								</if>
 								LEFT JOIN device d ON d.id = dv.id_device
 								LEFT JOIN site s ON s.id = d.id_site 
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone

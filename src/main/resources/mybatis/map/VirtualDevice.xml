@@ -167,11 +167,11 @@
 			</if>
 			
 			<if test="pv_model == 2">
-				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
+				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{built_since}), YEAR(#{commissioning}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
 					 AS expected_power_ac,	
 				
 				ROUND(
-				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{commissioning}), YEAR(#{built_since}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
+				IFNULL( #{dc_capacity} * (SUM( t.irradiance ) / #{global_solar_irradiance_at_stc}) * (1 - (1 + (IFNULL(#{pv_module_temperature_coeff}, -0.43)/100)) * ((SUM( t.temperature ) - #{stc_temperature})/100)) * (POW(1 - (IFNULL(#{annual_pv_module_degradation}, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(#{built_since}), YEAR(#{commissioning}))) * 100 / 100) * (1 - (IFNULL(#{soiling}, 5)/100)) * (1 - (IFNULL(#{cable_losses}, 1)/100)) * (1 - (IFNULL(#{transformer_losses}, 1.5)/100)) * (1 - (IFNULL(#{other_losses}, 1.5)/100)) * (IFNULL(#{inverter_efficiency}, 98.5)/100), 0)
 				<choose>
 					<when test="data_send_time == 1">
 						* 5 / 60
@@ -291,7 +291,21 @@
 			
 			
 			<if test="weathers != null and !weathers.isEmpty()">
-				UNION ALL 
+				UNION ALL
+				SELECT
+					w.`offset`,
+					w.time_format,
+					0 AS power,
+					0 AS energy,
+					IFNULL(AVG(w.irradiance), 0) AS irradiance,
+					
+					IFNULL(AVG(w.temperature), 0) AS temperature,
+					0 AS rpoa,
+					0 AS ambient_temp,
+					0 AS calculation_poa,
+					0 AS calculation_temp,
+					0 AS calculation_clipping
+				FROM (
 				<foreach collection="weathers" item="v" index="index" separator="union all">
 					SELECT
 						t.`offset`,
@@ -299,7 +313,12 @@
 						0 AS power,
 						0 AS energy,
 						0 AS irradiance,
+						<if test="pv_model == 2">
+						IF(IFNULL(dv.nvm_panel_temperature, 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_panel_temperature), 0), IFNULL(AVG(dv.nvm_temperature), 0)) AS temperature,
+						</if>
+						<if test="pv_model == 1 || pv_model == 3">
 						IF(IFNULL(dv.nvm_temperature, 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_temperature), 0), 0) AS temperature,
+						</if>
 						0 AS rpoa,
 						0 AS ambient_temp,
 						0 AS calculation_poa,
@@ -320,7 +339,7 @@
 						d.id, time_format
 								
 				</foreach>
-			
+				) w GROUP BY w.time_format
 			</if>
 			
 			
