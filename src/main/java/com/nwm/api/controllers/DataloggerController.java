@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
@@ -158,36 +159,22 @@ public class DataloggerController extends BaseController {
 //	@RequestParam("MD5CHECKSUM") String md5checksum, @RequestParam("FILESIZE") String filesize,
 //	@RequestParam("FILETIME") String filetime
 
-	public String uploadFiles(@RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
-			@RequestParam(name = "SENDDATATRACE", required = false) String senddatatrace,
-			@RequestParam(name = "MODE", required = false) String mode,
-			@RequestParam(name = "SERIALNUMBER", required = true) String serialnumber,
-			@RequestParam(name = "PASSWORD", required = false) String password,
-			@RequestParam(name = "LOOPNAME", required = false) String loopname,
-			@RequestParam(name = "MODBUSIP", required = false) String modbusip,
-			@RequestParam(name = "MODBUSPORT", required = false) String modbusport,
-			@RequestParam(name = "MODBUSDEVICE", required = false) String modbusdevice,
-			@RequestParam(name = "MODBUSDEVICENAME", required = false) String modbusdevicename,
-			@RequestParam(name = "MODBUSDEVICETYPE", required = false) String modbusdevicetype,
-			@RequestParam(name = "MODBUSDEVICETYPENUMBER", required = false) String modbusdevicetypenumber,
-			@RequestParam(name = "MODBUSDEVICECLASS", required = false) String modbusdeviceclass,
-			@RequestParam(name = "MD5CHECKSUM", required = false) String md5checksum,
-			@RequestParam(name = "FILESIZE", required = false) String filesize,
-			@RequestParam(name = "FILETIME", required = false) String filetime) {
+	public String uploadFiles(@RequestParam Map<String, String> params) {
 
-		System.out.println("---------------------------------start------------------------------");
-		System.out.println("SENDDATATRACE: " + senddatatrace);
-		System.out.println("MODE: " + mode);
-		System.out.println("SERIALNUMBER: " + serialnumber);
-		System.out.println("PASSWORD: " + password);
-		System.out.println("LOOPNAME: " + loopname);
-		System.out.println("MODBUSIP: " + modbusip);
-		System.out.println("MODBUSPORT: " + modbusport);
-		System.out.println("MODBUSDEVICE: " + modbusdevice);
-		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+		System.out.println("---------------------------------start power factor------------------------------");
+		System.out.println("SENDDATATRACE: " + params);
+		log.error(params);
+//		System.out.println("MODE: " + mode);
+//		System.out.println("SERIALNUMBER: " + serialnumber);
+//		System.out.println("PASSWORD: " + password);
+//		System.out.println("LOOPNAME: " + loopname);
+//		System.out.println("MODBUSIP: " + modbusip);
+//		System.out.println("MODBUSPORT: " + modbusport);
+//		System.out.println("MODBUSDEVICE: " + modbusdevice);
+//		System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//		System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//		System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//		System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
 		System.out.println("-------------------------------end--------------------------------");
 		
 		return "Done";
