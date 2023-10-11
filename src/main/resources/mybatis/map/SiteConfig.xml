@@ -135,6 +135,7 @@
 			annual_pv_module_degradation = #{annual_pv_module_degradation},
 			transformer_losses = #{transformer_losses},
 			soiling = #{soiling},
+			built_since = #{built_since},
 			cable_losses = #{cable_losses}
 		WHERE
 			`id` = #{id}
