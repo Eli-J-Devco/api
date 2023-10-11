@@ -75,6 +75,7 @@
 		<result property="ftp_port" column="ftp_port" />
 		<result property="ftp_folder" column="ftp_folder" />
 		<result property="datalogger_type" column="datalogger_type" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 		
 		
 		
@@ -150,7 +151,10 @@
 			s.is_delete = 0
 			AND sem.is_hiding = 0
 			AND s.`status` = 1 
-			AND sem.id_employee = #{id_employee}
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+			</if>
+			
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'name'">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
@@ -360,7 +364,12 @@
 				SELECT si.id, 1 AS is_manage FROM site_employee_map se 
 				LEFT JOIN site si ON si.id = se.id_site WHERE se.id_employee = #{id_employee}
 			)t ON t.id = s.id
-		WHERE s.is_delete = 0 AND s.status = 1 AND scm.id_employee = #{id_employee}
+		WHERE s.is_delete = 0 AND s.status = 1 
+		<if test="is_supper_admin != 1">
+			AND scm.id_employee = #{id_employee}
+		</if> 
+		
+		
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	

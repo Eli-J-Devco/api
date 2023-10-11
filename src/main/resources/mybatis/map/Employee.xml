@@ -231,7 +231,7 @@
 							WHERE r.id = #{id_role}
 						</if> -->
 						
-						<if test="roles != null and !roles.isEmpty()">
+						<if test="roles != null and !roles.isEmpty() and is_supper_admin != 1">
 							WHERE r.id IN  (
 								<foreach item="item" index="index" collection="roles" separator=" , ">
 									#{item.id}

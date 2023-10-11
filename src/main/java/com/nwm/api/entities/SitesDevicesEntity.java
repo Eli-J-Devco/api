@@ -120,9 +120,16 @@ public class SitesDevicesEntity {
 	private String alert_mail_cc;
 	private String alert_mail_bcc;
 	private int is_hidden;
+	private int is_supper_admin;
 	
 	
 	
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public double getAnnual_pv_module_degradation() {
 		return annual_pv_module_degradation;
 	}

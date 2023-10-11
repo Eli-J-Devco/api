@@ -57,6 +57,7 @@
 		<result property="low_error" column="low_error" />
 		<result property="medium_error" column="medium_error" />
 		<result property="heigh_error" column="heigh_error" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 	</resultMap>
 	
 	
@@ -187,7 +188,7 @@
 					LEFT JOIN error e ON e.id = a.id_error
 					LEFT JOIN error_level el ON el.id = e.id_error_level
 					WHERE a.`status` = 1 AND el.`level` = 2 AND d.`status` = 1
-					<if test="id_sites != null">
+					<if test="id_sites != null and is_supper_admin != 1">
 						AND s.id IN  (
 							<foreach item="item" index="index" collection="id_sites" separator=" , ">
 								#{item.id}
@@ -209,7 +210,7 @@
 					LEFT JOIN error e ON e.id = a.id_error
 					LEFT JOIN error_level el ON el.id = e.id_error_level
 					WHERE a.`status` = 1 AND el.`level` = 3 AND d.`status` = 1
-					<if test="id_sites != null">
+					<if test="id_sites != null and is_supper_admin != 1">
 						AND s.id IN  (
 							<foreach item="item" index="index" collection="id_sites" separator=" , ">
 								#{item.id}
@@ -222,7 +223,7 @@
 			
 		WHERE
 			 s.is_delete = 0 AND s.`status` = 1
-			 <if test="id_sites != null">
+			 <if test="id_sites != null and is_supper_admin != 1">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item.id}

@@ -57,6 +57,7 @@
 		<result property="weather_description" column="weather_description" />
 		<result property="is_rec_report" column="is_rec_report" />
 		<result property="kiosk_view" column="kiosk_view" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 		
 	</resultMap>
 	
@@ -337,12 +338,23 @@
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 					LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 				WHERE
-					d.id_device_group = 19 AND sem.id_employee = #{id_employee} AND s.`status` = 1 AND s.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
+					d.id_device_group = 19 
+					
+					<if test="is_supper_admin != 1">	
+			 			AND sem.id_employee = #{id_employee} 
+					</if>
+					
+					AND s.`status` = 1 AND s.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 					GROUP BY s.id
 					ORDER BY unix_time ASC
 			)p ON p.id_site = s.id
 			
-		WHERE s.status = 1 and s.is_delete = 0 AND sem.id_employee = #{id_employee}
+		WHERE s.status = 1 and s.is_delete = 0 
+		
+		<if test="is_supper_admin != 1">	
+ 			AND sem.id_employee = #{id_employee}
+		</if>
+		
 		
 		<if test="hash_id_site_group != null">	
  			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
@@ -382,13 +394,15 @@
 			AND s.id_company = #{id_company}
 		</if>
 		
-		<if test="id_sites != null">
+		<if test="id_sites != null and is_supper_admin != 1">
 			AND s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=" , ">
 					#{item.id}
 				</foreach>
 			)
 		</if>
+		
+		GROUP BY  s.id
 				
 		order by
 	        <choose> 
@@ -490,13 +504,15 @@
 			AND s.name LIKE CONCAT("%",#{name}, "%")
 		</if>
 		
-		<if test="id_sites != null">
+		<if test="id_sites != null and is_supper_admin != 1">
 			AND s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=" , ">
 					#{item.id}
 				</foreach>
 			)
 		</if>
+		
+		GROUP BY s.id
 		
   	</select>
   	
