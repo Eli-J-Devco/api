@@ -159,7 +159,7 @@ public class DataloggerController extends BaseController {
 //	@RequestParam("MD5CHECKSUM") String md5checksum, @RequestParam("FILESIZE") String filesize,
 //	@RequestParam("FILETIME") String filetime
 
-	public String uploadFiles(@RequestParam Map<String, String> params) {
+	public String uploadFiles(@RequestParam Map<String, Object> params) {
 
 		System.out.println("---------------------------------start power factor------------------------------");
 		System.out.println("SENDDATATRACE: " + params);
