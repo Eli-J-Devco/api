@@ -331,7 +331,7 @@
     			AND sem.id_employee = #{id_employee}
     		</if>
     		
-			
+			GROUP BY d.id
 	</select>
 	
 	<select id="getModelLastRowItem" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
