@@ -352,7 +352,7 @@
 		WHERE s.status = 1 and s.is_delete = 0 
 		
 		<if test="is_supper_admin != 1">	
- 			AND sem.id_employee = #{id_employee}
+ 			AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 		</if>
 		
 		
