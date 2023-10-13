@@ -223,6 +223,86 @@
 						) t
 						GROUP BY t.id_site
 				) er ON er.id_site = s.id
+				
+				LEFT JOIN (
+				SELECT
+					gg.id_site,
+					JSON_ARRAYAGG(obj_device) as inverters_meters
+				FROM (
+					SELECT 
+						g.*,
+						IF(g.id_device_type = 1,
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_inverter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_inverter), 2))
+						, 'diff', IF(g.optimal_ratio_inverter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_inverter - g.percent_power_status) * 100 / g.optimal_ratio_inverter), 0), 1)) ),
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_meter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_meter), 2))
+						, 'diff', IF(g.optimal_ratio_meter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_meter - g.percent_power_status) * 100 / g.optimal_ratio_meter), 0), 1)) )
+						 ) AS obj_device
+					FROM (
+						SELECT
+							d.id,
+							d.devicename,
+							d.id_site,
+							d.id_device_type,
+							IFNULL(d.last_value, 0) as active_power,
+							IFNULL((
+								SELECT 
+									d.last_value / d.rating_ac_power * 100
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.is_default = 1
+								GROUP BY sem.id_site
+								), 
+								(
+								SELECT 
+									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.id_device_type = 1
+									GROUP BY d.id_site
+								)
+							) AS optimal_ratio_inverter,
+
+							IFNULL((
+								SELECT 
+									d.last_value / d.rating_ac_power * 100
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.is_default = 3
+								GROUP BY sem.id_site
+								), 
+								(
+								SELECT 
+									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.id_device_type = 3
+									GROUP BY d.id_site
+								)
+							)  as optimal_ratio_meter,
+
+							IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
+						FROM
+							device d 
+							LEFT JOIN site_employee_map sem ON sem.id_site = d.id_site
+							LEFT JOIN site s ON s.id = d.id_site				
+						WHERE
+							sem.id_employee = #{id_employee}
+							AND s.status = 1 AND s.is_delete = 0
+							AND d.id_device_type IN (1, 3)
+							AND d.status = 1 AND d.is_delete = 0
+						) g 
+						GROUP BY g.id
+				) gg
+					GROUP BY gg.id_site
+			)im ON im.id_site = s.id
 			
 			LEFT JOIN (
 			 SELECT
