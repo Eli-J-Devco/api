@@ -813,7 +813,77 @@ public class CronJobAlertController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description get no communication
+	 * @author long.pham
+	 * @since 2023-07-20
+	 * @return {}
+	 */
+	@GetMapping("/get-eer-last-month")
+	@ResponseBody
+	public Object renderGetEERLastMonth(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}		
+			
+			CronJobAlertService service = new CronJobAlertService();
+			SiteEntity entitySite = new SiteEntity();
+			
+			// Get list site of id and eer_last_month
+			List<?> listSites = service.getListSiteEERLastMonth(entitySite);
+			if (listSites.size() > 0) {
+				for (int s = 0; s < listSites.size(); s++) {
+					SiteEntity siteObj = (SiteEntity) listSites.get(s);
+
+					service.updateSiteEERLastMonth(siteObj);
+				}
+			}
+		
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
+	/**
+	 * @description get no communication
+	 * @author long.pham
+	 * @since 2023-07-20
+	 * @return {}
+	 */
+	@GetMapping("/get-eer-this-month")
+	@ResponseBody
+	public Object renderGetEERThisMonth(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}		
+			
+			CronJobAlertService service = new CronJobAlertService();
+			SiteEntity entitySite = new SiteEntity();
+			
+			// Get list site of id and eer_last_month
+			List<?> listSites = service.getListSiteEERThisMonth(entitySite);
+			if (listSites.size() > 0) {
+				for (int s = 0; s < listSites.size(); s++) {
+					SiteEntity siteObj = (SiteEntity) listSites.get(s);
+
+					service.updateSiteEERThisMonth(siteObj);
+				}
+			}
+		
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	
 }
