@@ -4,6 +4,7 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -49,17 +50,17 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if(token == null || token == "" || !token.equals(privateKey)) {
+			if (token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-		    
+
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
-			
-			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
 				id_site = Integer.parseInt(idSite);
 			}
-			
+
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
@@ -198,9 +199,10 @@ public class CronJobAlertController extends BaseController {
 											break;
 										}
 
-										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
+										BatchJobTableEntity rowItem = service
+												.getLastRowItemCheckNoProduction(bathJobEntity);
 										if (rowItem.getNvmActivePower() != 0.001) {
-											if (rowItem.getId_device() > 0 && rowItem.getNvmActivePower() <= 0) {
+											if ((rowItem.getId_device() > 0 && rowItem.getNvmActivePower() <= 0) && rowItem.getError() != 139) {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
 												alertItem.setId_error(noProduction);
@@ -233,7 +235,6 @@ public class CronJobAlertController extends BaseController {
 					}
 				}
 			}
-			
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -241,10 +242,7 @@ public class CronJobAlertController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
-	
-	
+
 	/**
 	 * @description get no communication
 	 * @author long.pham
@@ -257,22 +255,21 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if(token == null || token == "" || !token.equals(privateKey)) {
+			if (token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-		    
+
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
-			
-			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
 				id_site = Integer.parseInt(idSite);
 			}
-			
+
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
 
-			
 			// Get list site
 			List<?> listSites = service.getListSiteCheckNoCom(entity);
 			if (listSites.size() > 0) {
@@ -449,9 +446,10 @@ public class CronJobAlertController extends BaseController {
 										alertItem.setId_error(noCommunication);
 										alertItem.setStart_date(
 												!Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
+										
 
-										if (lastRowItem.getId_device() <= 0
-												|| lastRowItem.getNvmActivePower() == 0.001) {
+										if ((lastRowItem.getId_device() <= 0
+												|| lastRowItem.getNvmActivePower() == 0.001) && lastRowItem.getError() != 139) {
 											// Check error exits
 											boolean checkAlertExist = service.checkAlertExist(alertItem);
 											if (!checkAlertExist && alertItem.getId_device() > 0
@@ -477,9 +475,7 @@ public class CronJobAlertController extends BaseController {
 						}
 					}
 				}
-						}
-						
-			
+			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -487,10 +483,7 @@ public class CronJobAlertController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
-	
-	
+
 	/**
 	 * @description get no communication
 	 * @author long.pham
@@ -503,17 +496,17 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if(token == null || token == "" || !token.equals(privateKey)) {
+			if (token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-		    
+
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
-			
-			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
 				id_site = Integer.parseInt(idSite);
 			}
-			
+
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entityDevice = new DeviceEntity();
 			entityDevice.setId_site(id_site);
@@ -562,7 +555,6 @@ public class CronJobAlertController extends BaseController {
 					}
 				}
 			}
-			
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -570,9 +562,7 @@ public class CronJobAlertController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
-	
+
 	/**
 	 * @description get no communication
 	 * @author long.pham
@@ -585,22 +575,21 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if(token == null || token == "" || !token.equals(privateKey)) {
+			if (token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-		    
+
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
-			
-			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
 				id_site = Integer.parseInt(idSite);
 			}
-			
-			
+
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entityDevice = new DeviceEntity();
 			entityDevice.setId_site(id_site);
-			
+
 			BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
 			// Get list device meter and inverter
 			List<?> listDevice = service.getListAllDevice(entityDevice);
@@ -631,7 +620,6 @@ public class CronJobAlertController extends BaseController {
 					service.updateLastValueDevice(deviceObj);
 				}
 			}
-			
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -639,8 +627,7 @@ public class CronJobAlertController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
+
 	/**
 	 * @description get auto sent mail alert
 	 * @author long.pham
@@ -653,19 +640,19 @@ public class CronJobAlertController extends BaseController {
 		try {
 			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 			String token = (String) params.get("token");
-			if(token == null || token == "" || !token.equals(privateKey)) {
+			if (token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-		    
+
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
-			
-			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
 				id_site = Integer.parseInt(idSite);
 			}
-			
+
 			CronJobAlertService service = new CronJobAlertService();
-			
+
 			// Get list site
 			SiteEntity siteEntity = new SiteEntity();
 			siteEntity.setId(id_site);
@@ -776,24 +763,24 @@ public class CronJobAlertController extends BaseController {
 					String mailTo = siteObj.getCf_email_subscribers();
 					String mailToBCC = siteObj.getAlert_mail_bcc();
 					String mailToCC = siteObj.getAlert_mail_cc();
-					
+
 					// Remove email employees who hide a site
 					List emails = service.getEmployeeHidingSite(siteObj);
-					if(emails != null && emails.size() > 0) {
-						for(int j = 0; j < emails.size(); j++) {
+					if (emails != null && emails.size() > 0) {
+						for (int j = 0; j < emails.size(); j++) {
 							Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
 							String email = itemT.get("email").toString();
 
 							mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
 						}
 					}
-					
+
 					String subject = " Next Wave Alert - ".concat(siteObj.getName());
 					String tags = "run_cron_job";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
 					if (mailTo != null && !mailTo.isEmpty()) {
-						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject,
-								bodyHtml.toString(), tags);
+						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
+								subject, bodyHtml.toString(), tags);
 
 						if (!flagSent) {
 							throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
@@ -803,8 +790,6 @@ public class CronJobAlertController extends BaseController {
 				}
 
 			}
-						
-			
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -812,8 +797,5 @@ public class CronJobAlertController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
-	
-	
+
 }

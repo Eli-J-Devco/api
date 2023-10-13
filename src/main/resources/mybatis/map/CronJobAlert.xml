@@ -182,7 +182,7 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			m.id_device = #{id_device}
-			AND DATE_FORMAT(CONVERT_TZ( m.time, '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ( DATE_ADD( NOW() ,INTERVAL -30 MINUTE) , '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s')
+			AND DATE_FORMAT(CONVERT_TZ( m.time, '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ( DATE_ADD( NOW() ,INTERVAL -60 MINUTE) , '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s')
 			LIMIT 1;
 			
   	</select>
@@ -210,7 +210,7 @@
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE u.id_device = #{id_device}
 		
-		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -30 MINUTE) , '%Y-%m-%d %H:%i:%s')
+		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -60 MINUTE) , '%Y-%m-%d %H:%i:%s')
 		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> convert_tz( #{current_time},  t.`offset`, '+00:00')
 		ORDER BY u.time DESC LIMIT 1;
   	</select>
