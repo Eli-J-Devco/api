@@ -571,7 +571,7 @@
 				)pp ON pp.id = d.id
 				
 			WHERE
-				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
 				AND d.id_device_type IN (1,2,3,4)
 		)t
 		 GROUP BY t.id_device_group ORDER BY t.id_device_type ASC;

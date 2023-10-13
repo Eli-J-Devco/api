@@ -27,7 +27,7 @@
 			LEFT JOIN site s ON d.id_site = s.id
 			
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND s.status = 1
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0 AND s.status = 1
 	</select>
 	
 	<select id="getListDeviceParameter" resultType="com.nwm.api.entities.DeviceParameterEntity" parameterType="com.nwm.api.entities.DeviceParameterEntity">
