@@ -129,7 +129,10 @@
 					GROUP_CONCAT(si.id_site) AS id_sites 
 				FROM site_employee_map si 
 				LEFT JOIN employee em ON em.id = si.id_employee  
-				WHERE em.email = #{value} GROUP BY em.id
+				WHERE
+					em.email = #{value}
+					AND si.is_hiding = 0
+				GROUP BY em.id
 			)k ON k.id_employee = u.id
 		WHERE email = #{value} AND u.status = 1 AND u.is_delete = 0 GROUP BY u.id;
 	
@@ -231,7 +234,7 @@
 							WHERE r.id = #{id_role}
 						</if> -->
 						
-						<if test="roles != null and !roles.isEmpty()">
+						<if test="roles != null and !roles.isEmpty() and is_supper_admin != 1">
 							WHERE r.id IN  (
 								<foreach item="item" index="index" collection="roles" separator=" , ">
 									#{item.id}

@@ -67,8 +67,16 @@ public class PortfolioEntity {
 	private String note;
 	private String hash_id_site_group;
 	private String hash_id_site_sub_group;
+	private int is_supper_admin;
 	
 	
+	
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public String getHash_id_site_sub_group() {
 		return hash_id_site_sub_group;
 	}

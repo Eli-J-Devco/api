@@ -188,10 +188,17 @@ public class SiteEntity {
 	private String ac_capacity_condition;
 	private String dc_capacity_condition;
 	private String device_ac_rating_condition;	
+	private int is_supper_admin;
 	
 	
 	
 	
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public Double getDevice_ac_rating() {
 		return device_ac_rating;
 	}

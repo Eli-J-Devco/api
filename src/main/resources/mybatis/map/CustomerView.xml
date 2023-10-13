@@ -2081,8 +2081,12 @@
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 		WHERE
-			 s.is_delete = 0 AND s.status = 1 AND scm.id_employee= #{id_employee}
-			<if test="id_sites != null and !id_sites.isEmpty()">
+			 s.is_delete = 0 AND s.status = 1 
+			 <if test="is_supper_admin != 1">
+			 AND scm.id_employee= #{id_employee}
+			 </if>
+			 
+			<if test="id_sites != null and !id_sites.isEmpty() and is_supper_admin != 1">
 			AND s.id IN  (
 				<foreach item="item" index="index" collection="id_sites" separator=" , ">
 					#{item.id}

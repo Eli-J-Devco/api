@@ -114,10 +114,16 @@ public class DeviceEntity {
 	private int id_device_parameter;
 	private String command;
 	private List commandResult;
-	
+	private int is_supper_admin;
 	
 	
 
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public List getCommandResult() {
 		return commandResult;
 	}

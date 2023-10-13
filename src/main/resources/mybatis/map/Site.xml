@@ -75,6 +75,7 @@
 		<result property="ftp_port" column="ftp_port" />
 		<result property="ftp_folder" column="ftp_folder" />
 		<result property="datalogger_type" column="datalogger_type" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 		
 		
 		
@@ -150,7 +151,10 @@
 			s.is_delete = 0
 			AND sem.is_hiding = 0
 			AND s.`status` = 1 
-			AND sem.id_employee = #{id_employee}
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+			</if>
+			
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'name'">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
@@ -360,7 +364,12 @@
 				SELECT si.id, 1 AS is_manage FROM site_employee_map se 
 				LEFT JOIN site si ON si.id = se.id_site WHERE se.id_employee = #{id_employee}
 			)t ON t.id = s.id
-		WHERE s.is_delete = 0 AND s.status = 1 AND scm.id_employee = #{id_employee}
+		WHERE s.is_delete = 0 AND s.status = 1 
+		<if test="is_supper_admin != 1">
+			AND scm.id_employee = #{id_employee}
+		</if> 
+		
+		
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
@@ -418,12 +427,19 @@
 	</insert>
 	
 	<update id="updateHidingSite">
-		UPDATE `site_employee_map`
+		UPDATE `site_employee_map` sem
+		LEFT JOIN (
+			SELECT
+				id_employee,
+				MIN(id_role) AS id_role
+			FROM employee_role_map
+			GROUP BY id_employee
+		) erm ON erm.id_employee = sem.id_employee
 		SET
 			`is_hiding` = #{is_hiding}
 		WHERE
-			`id_site` = #{id}
-			AND `id_employee` = #{id_employee}
+			sem.`id_site` = #{id}
+			AND erm.id_role != 1
 	</update>
   	
   	
@@ -629,10 +645,17 @@
 			s.ftp_folder,
 			s.datalogger_type,
 			s.diagram,
-			sem.is_hiding
+			h.is_hiding
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone

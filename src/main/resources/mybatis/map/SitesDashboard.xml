@@ -123,7 +123,10 @@
 			
 		WHERE
 			SHA1(s.id) = #{hash_id}
-			AND sem.id_employee = #{id_employee}
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
 			AND s.`status` = 1 
 			AND s.is_delete = 0 GROUP BY s.id
 	</select>

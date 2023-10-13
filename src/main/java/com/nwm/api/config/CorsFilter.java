@@ -16,11 +16,13 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
 import com.nwm.api.utils.EventSendHelper;
+import com.nwm.api.utils.FLLogger;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class CorsFilter implements Filter {
 
+	protected FLLogger log = FLLogger.getLogger("controller/"+this.getClass().getSimpleName());
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         final HttpServletResponse response = (HttpServletResponse) res;

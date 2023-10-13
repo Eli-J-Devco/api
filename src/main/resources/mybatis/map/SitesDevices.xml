@@ -326,7 +326,12 @@
 			)g ON g.id_site = d.id_site
 		WHERE
 			SHA1(d.id) = #{hash_id}
-			AND sem.id_employee = #{id_employee};
+			
+			<if test="is_supper_admin != 1">
+    			AND sem.id_employee = #{id_employee}
+    		</if>
+    		
+			GROUP BY d.id
 	</select>
 	
 	<select id="getModelLastRowItem" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">

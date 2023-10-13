@@ -10,6 +10,15 @@ public class JsonResultEntity {
 	private String mess;
 	private Object data;
 	private int total_row;
+	private int is_supper_admin = 0;
+	
+	
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	private TablePreferenceEntity preference;
 	public boolean isStatus() {
 		return status;

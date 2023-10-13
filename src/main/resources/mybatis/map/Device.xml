@@ -37,6 +37,7 @@
 		<result property="ssh_port" column="ssh_port" />
 		<result property="hidden" column="hidden" />
 		<result property="virtual_device_type" column="virtual_device_type" />
+		<result property="is_supper_admin" column="is_supper_admin" />
 		
 		
 		
