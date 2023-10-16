@@ -152,6 +152,20 @@
 				
 			</if>
 			
+			<if test="(datatablename == 'model_pyranometer_poa') || (datatablename == 'ViewModelPyranometerPoa')">
+				IFNULL(ROUND(AVG(dv.poa), 2), 0.001) AS poa,
+				IFNULL(ROUND(SUM(dv.point1), 2), 0.001) AS point1,
+				IFNULL(ROUND(AVG(dv.point2), 2), 0.001) AS point2,
+				IFNULL(ROUND(AVG(dv.point3), 2), 0.001) AS point3,
+			</if>
+			
+			
+			<if test="(datatablename == 'model_poa_temp') || (datatablename == 'ViewModelPoaTemp')">
+				IFNULL(ROUND(AVG(dv.T_AMB), 2), 0.001) AS T_AMB,
+				IFNULL(ROUND(SUM(dv.T_MOD), 2), 0.001) AS T_MOD,
+			</if>
+			
+			
 			<if test="(datatablename == 'model_virtual_meter_or_inverter') || (datatablename == 'ViewModelVirtualMeterOrInverter')">
 				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
 				IFNULL(ROUND(SUM(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
@@ -161,6 +175,7 @@
 				
 				
 			</if>
+			
 			
 			<if test="(datatablename == 'model_meter_ion_8600') || (datatablename == 'ViewModelMeterIon8600')">
 				IFNULL(ROUND(AVG(dv.VlnA), 2), 0.001) AS VlnA,
