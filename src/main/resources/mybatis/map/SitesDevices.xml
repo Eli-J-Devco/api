@@ -385,29 +385,29 @@
 			COUNT(IF(t.id_device_type = 1, 1, NULL)) AS totalInverter,
 			COUNT(IF(t.id_device_type = 1 AND t.totalNoCom > 0, 1, NULL)) AS noComInverter,
 			COUNT(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionInverter,
-			COUNT(IF(t.id_device_type = 1 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyInverter,
-			COUNT(IF(t.id_device_type = 1, 1, NULL)) - (COUNT(IF(t.id_device_type = 1 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.percent_power >= 50 AND t.percent_power IS NOT NULL, 1, NULL )) ) AS lowInverter,
+			COUNT(IF(t.id_device_type = 1, 1, NULL)) - (COUNT(IF(t.id_device_type = 1 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 1 AND t.totalLowProduction > 0, 1, NULL )) ) AS healthyInverter,
+			COUNT(IF(t.id_device_type = 1 AND t.totalLowProduction > 0, 1, NULL)) AS lowInverter,
 			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoCom), NULL)) AS noComInverterList,
 			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.totalNoProuduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoProuduction), NULL)) AS noProductionInverterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyInverterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND NOT (t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL), JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowInverterList,
+			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND t.totalLowProduction = 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyInverterList,
+			JSON_ARRAYAGG(IF(t.id_device_type = 1 AND t.totalLowProduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowInverterList,
 
 			COUNT(IF(t.id_device_type = 2, 1, NULL)) AS totalTracker,
-			COUNT(IF(t.id_device_type = 2 AND t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyTracker,
-			COUNT(IF(t.id_device_type = 2, 1, NULL)) - COUNT(IF(t.id_device_type = 2 AND t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL, 1, NULL )) AS noComTracker,
-			JSON_ARRAYAGG(IF(t.id_device_type = 2 AND t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL, JSON_OBJECT("device", t.devicename, "dateChanged", "N/A"), NULL )) AS healthyTrackerList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 2 AND NOT (t.percent_power <![CDATA[>=]]> 0 AND t.percent_power IS NOT NULL), JSON_OBJECT("device", t.devicename, "dateChanged", "N/A"), NULL )) AS noComTrackerList,
+			COUNT(IF(t.id_device_type = 2, 1, NULL)) - COUNT(IF(t.id_device_type = 2 AND t.totalNoCom > 0, 1, NULL)) AS healthyTracker,
+			COUNT(IF(t.id_device_type = 2 AND t.totalNoCom > 0, 1, NULL)) AS noComTracker,
+			JSON_ARRAYAGG(IF(t.id_device_type = 2 AND t.totalNoCom = 0, JSON_OBJECT("device", t.devicename, "dateChanged", "N/A"), NULL )) AS healthyTrackerList,
+			JSON_ARRAYAGG(IF(t.id_device_type = 2 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", "N/A"), NULL )) AS noComTrackerList,
 			
 			
 			COUNT(IF(t.id_device_type = 3, 1, NULL)) AS totalMeter,
 			COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0, 1, NULL)) AS noComMeter,
 			COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionMeter,
-			COUNT(IF(t.id_device_type = 3 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, 1, NULL )) AS healthyMeter,
-			COUNT(IF(t.id_device_type = 3, 1, NULL)) - (COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.percent_power >= 50 AND t.percent_power IS NOT NULL, 1, NULL )) ) AS lowMeter,
+			COUNT(IF(t.id_device_type = 3, 1, NULL)) - (COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, 1, NULL )) ) AS healthyMeter,
+			COUNT(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, 1, NULL)) AS lowMeter,
 			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoCom), NULL)) AS noComMeterList,
 			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoProuduction), NULL)) AS noProductionMeterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyMeterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND NOT (t.percent_power <![CDATA[>=]]> 50 AND t.percent_power IS NOT NULL), JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowMeterList,
+			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND t.totalLowProduction = 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyMeterList,
+			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowMeterList,
 		
 			COUNT(IF(t.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
 			COUNT(IF(t.id_device_type = 4 AND t.totalNoCom > 0, 1, NULL)) AS noComWeatherStation,
@@ -425,7 +425,7 @@
 			d.devicename,
 			IFNULL(noc.totalNoProuduction, 0) AS totalNoProuduction,
 			IFNULL(IF(noc.id_device = com.id_device, com.totalNoCom - 1, com.totalNoCom), 0) AS totalNoCom,
-			IF(noc.totalNoProuduction > 0 OR IFNULL(IF(noc.id_device = com.id_device, com.totalNoCom - 1, com.totalNoCom), 0) > 0, 1, pp.percent_power_last_value) AS percent_power,
+			IFNULL(IF(noc.totalNoProuduction > 0 OR com.totalNoCom > 0, 0, low.totalLowProduction), 0) AS totalLowProduction,
 			dt.id as id_device_type,
 			DATE_FORMAT(CONVERT_TZ( noc.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoProuduction,
 			DATE_FORMAT(CONVERT_TZ( com.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoCom,
@@ -444,7 +444,7 @@
 					LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level = 32
 					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 AND e.is_delete = 0 AND a.is_delete = 0
 					AND d.`status` = 1 AND d.id_site = #{id_site}
-					AND d.id_device_type IN (1,2,3,4)
+					AND d.id_device_type IN (1,3)
 					GROUP BY a.id_device
 				)noc ON d.id = noc.id_device
 				
@@ -480,95 +480,6 @@
 					AND d.id_device_type IN (1,2,3,4)
 					GROUP BY a.id_device
 				)hth ON d.id = hth.id_device
-				
-				LEFT JOIN(
-					SELECT
-						d.id,
-						d.devicename,
-						IFNULL(d.last_value, 0) as active_power,
-						CASE
-							WHEN HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[<=]]> s.start_date_time
-							THEN CASE 
-				              WHEN d.id_device_type = 1 THEN
-					              ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0.001, d.last_value) / (
-					                    SELECT 
-						                  IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
-						                FROM
-						                  device d
-						                WHERE
-						                  d.id_site = #{id_site}
-						                  AND d.id_device_type = 1
-					            ) * 100),2)
-				              ELSE
-					              ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0.001, d.last_value) / (
-					                    SELECT 
-						                  IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
-						                FROM
-						                  device d
-						                WHERE
-						                  d.id_site = #{id_site}
-						                  AND d.id_device_type = 3
-					            )  * 100),2)
-				            END
-				            
-				            WHEN (HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[<]]> s.end_date_time
-								AND HOUR(TIMEDIFF(DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d %H:%m:%s'), DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%Y-%m-%d 00:00:00'))) <![CDATA[>]]> s.start_date_time)
-									THEN CASE 
-									WHEN d.id_device_type = 1 THEN
-									ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0, d.last_value) / (
-				                    SELECT 
-															IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
-														FROM
-															device d
-														WHERE
-															d.id_site =  #{id_site}
-															AND d.id_device_type = 1
-				            ) * 100),2)
-									ELSE
-									ROUND((IF(d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0, 0, d.last_value) / (
-												SELECT 
-											IF(MAX(d.last_value) <![CDATA[<=]]> 0 OR MAX(d.last_value) IS NULL, 0.001, MAX(d.last_value))
-										FROM
-											device d
-										WHERE
-											d.id_site =  #{id_site}
-											AND d.id_device_type = 3
-								)  * 100),2) 
-							END
-				         ELSE
-				            CASE
-				            WHEN d.id_device_type = 1 THEN
-				            	ROUND((IF(d.energy_today IS NULL OR d.energy_today <![CDATA[<=]]> 0, 0, d.energy_today) / (
-										SELECT 
-											IF(MAX(d.energy_today) <![CDATA[<=]]> 0 OR MAX(d.energy_today) IS NULL, 0.001, MAX(d.energy_today))
-										FROM
-											device d
-										WHERE
-											d.id_site = #{id_site}
-											AND d.id_device_type = 1
-								) * 100),2) 
-				            ELSE
-				            	ROUND((IF(d.energy_today IS NULL OR d.energy_today <![CDATA[<=]]> 0, 0, d.energy_today) / (
-										SELECT 
-											IF(MAX(d.energy_today) <![CDATA[<=]]> 0 OR MAX(d.energy_today) IS NULL, 0.001, MAX(d.energy_today))
-										FROM
-											device d
-										WHERE
-											d.id_site = #{id_site}
-											AND d.id_device_type = 3
-								) * 100),2)
-				            END
-				         END AS percent_power_last_value
-					FROM
-						device d
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						d.id_site = #{id_site}
-						AND d.`status`  = 1 
-						AND d.is_delete = 0
-						AND d.id_device_type IN (1,2,3,4)
-				)pp ON pp.id = d.id
 				
 			WHERE
 				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
