@@ -29,7 +29,7 @@ public class ModelMeterIon8600Service extends DB {
 				ModelMeterIon8600Entity dataModelIon = new ModelMeterIon8600Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
 				dataModelIon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
