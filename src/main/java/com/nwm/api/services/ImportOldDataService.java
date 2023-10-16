@@ -296,6 +296,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0", dataList.get(i));
 				}
 				break;
+			case "model_poa_temp":
+				obj.setId_device_type(4);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelPoaTemp.insertModelPoaTemp", dataList.get(i));
+				}
+				break;
 			}
 
 			session.commit();

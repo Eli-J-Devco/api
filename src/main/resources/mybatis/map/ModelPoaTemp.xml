@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPoaTemp">
+	<resultMap id="ModelPoaTempMap"
+		type="com.nwm.api.entities.ModelPoaTempEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="T_AMB" column="T_AMB" />
+		<result property="T_MOD" column="T_MOD" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+	</resultMap>
+
+	<insert id="insertModelPoaTemp"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_poa_temp`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="T_AMB != 0.001">
+				`T_AMB`,
+			</if>
+			<if test="T_MOD != 0.001">
+				`T_MOD`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="T_AMB != 0.001">
+				#{T_AMB},
+			</if>
+			<if test="T_MOD != 0.001">
+				#{T_MOD},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="T_AMB != 0.001">
+				`T_AMB` = #{T_AMB},
+			</if>
+			<if test="T_MOD != 0.001">
+				`T_MOD` = #{T_MOD},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance` = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+
+		</trim>
+	</insert>
+
+</mapper> 
