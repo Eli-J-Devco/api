@@ -76,7 +76,7 @@
 		<result property="ftp_folder" column="ftp_folder" />
 		<result property="datalogger_type" column="datalogger_type" />
 		<result property="is_supper_admin" column="is_supper_admin" />
-		
+		<result property="virtual_status" column="virtual_status" />
 		
 		
 		
@@ -645,10 +645,16 @@
 			s.ftp_folder,
 			s.datalogger_type,
 			s.diagram,
-			h.is_hiding
+			h.is_hiding,
+			COUNT(td.id_site) AS virtual_status
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT * FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
+			)td ON td.id_site = s.id
+			
 			LEFT JOIN (
 				SELECT
 					id_site,

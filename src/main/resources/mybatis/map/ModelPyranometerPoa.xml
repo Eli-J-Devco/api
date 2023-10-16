@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPyranometer">
+	<resultMap id="ModelPyranometerMap"
+		type="com.nwm.api.entities.ModelPyranometerPoaEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="poa" column="poa" />
+		<result property="point1" column="point1" />
+		<result property="point2" column="point2" />
+		<result property="point3" column="point3" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+
+
+	</resultMap>
+
+	<insert id="insertModelPyranometer" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `model_pyranometer_poa`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="poa != 0.001">
+				`poa`,
+			</if>
+			<if test="point1 != 0.001">
+				`point1`,
+			</if>
+			<if test="point2 != 0.001">
+				`point2`,
+			</if>
+			<if test="point3 != 0.001">
+				`point3`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="poa != 0.001">
+				#{poa},
+			</if>
+			<if test="point1 != 0.001">
+				#{point1},
+			</if>
+			<if test="point2 != 0.001">
+				#{point2},
+			</if>
+			<if test="point3 != 0.001">
+				#{point3},
+			</if>
+
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="poa != 0.001">
+				poa = #{poa},
+			</if>
+			<if test="point1 != 0.001">
+				point1 = #{point1},
+			</if>
+			<if test="point2 != 0.001">
+				point2 = #{point2},
+			</if>
+			<if test="point3 != 0.001">
+				point3 = #{point3},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+		</trim>
+	</insert>
+
+</mapper> 

@@ -189,10 +189,17 @@ public class SiteEntity {
 	private String dc_capacity_condition;
 	private String device_ac_rating_condition;	
 	private int is_supper_admin;
+	private int virtual_status;
 	
 	
 	
 	
+	public int getVirtual_status() {
+		return virtual_status;
+	}
+	public void setVirtual_status(int virtual_status) {
+		this.virtual_status = virtual_status;
+	}
 	public int getIs_supper_admin() {
 		return is_supper_admin;
 	}
