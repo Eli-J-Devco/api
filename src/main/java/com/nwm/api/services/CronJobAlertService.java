@@ -1395,6 +1395,72 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get list site (id, eer_last_month)
+	 * @author duy.phan
+	 * @since 2023-10-13
+	 */
+	
+	public List getListSiteEERLastMonth(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListSiteEERLastMonth", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description update err last month
+	 * @author duy.phan
+	 * @since 2023-10-13
+	 */
+	
+	public List updateSiteEERLastMonth(SiteEntity obj) {
+		try {
+			update("CronJobAlert.updateSiteEERLastMonth", obj);			
+			return null;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	/**
+	 * @description get list site (id, eer_this_month)
+	 * @author duy.phan
+	 * @since 2023-10-13
+	 */
+	
+	public List getListSiteEERThisMonth(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListSiteEERThisMonth", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description update err this month
+	 * @author duy.phan
+	 * @since 2023-10-13
+	 */
+	
+	public List updateSiteEERThisMonth(SiteEntity obj) {
+		try {
+			update("CronJobAlert.updateSiteEERThisMonth", obj);			
+			return null;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 //	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
 //		DeviceEntity rowItem = new DeviceEntity();
 //		try {

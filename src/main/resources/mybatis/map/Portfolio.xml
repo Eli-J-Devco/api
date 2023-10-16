@@ -66,15 +66,10 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			IF(er.total_error,er.total_error, 0) AS total_error,
+			
+			IFNULL(er.alerts, JSON_ARRAY()) AS alerts,
 			s.`name`,
-			s.lat,
-			s.lng,
-			s.street,
-			s.number,
-			s.postal_code,
-			s.city,
-			s.state,
+
 			s.kiosk_view,
 			IFNULL(s.ac_capacity, 0) as ac_capacity,
 			IFNULL(s.dc_capacity, 0) as dc_capacity,
@@ -91,8 +86,8 @@
 			p.times_ago,
 			p.times_ago_unit,
 			IFNULL(p.unix_time, 0) AS unix_time,
-			IFNULL(eerm.EERLastMonth, 0) AS EERLastMonth,
-			IFNULL(eerthism.EERThisMonth, 0) AS EERThisMonth,
+			IFNULL(s.eer_last_month, 0) AS EERLastMonth,
+			IFNULL(s.eer_this_month, 0) AS EERThisMonth,
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
 			ROUND(t.expected_power,2) AS expected_power,
@@ -106,7 +101,8 @@
 					d.id_site = s.id AND
 					d.is_default = 1
 				GROUP BY d.is_default
-			) AS id_default_device
+			) AS id_default_device,
+			im.inverters_meters
 			
 				
 		FROM
@@ -151,9 +147,10 @@
 								s.ac_capacity
 							)
 						WHEN s.pv_model = 2 THEN
+							
 							IF(
-								IFNULL(s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (IFNULL(s.t_avg, 39) - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+								IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
+								IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
 								s.ac_capacity
 							)
 						ELSE
@@ -173,92 +170,6 @@
 				GROUP BY
 					s.id
 			)t ON t.id_site = s.id
-			
-			
-			LEFT JOIN (
-				SELECT 
-					eermonth.id,
-					ROUND((eermonth.ActualGeneration / eermonth.EstimatedGeneration)*100 , 1 ) AS EERLastMonth
-				FROM (
-					SELECT
-						s.id,
-						SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
-						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-						IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
-						CASE
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-							 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-						END as EstimatedGeneration
-					FROM
-						site_data_report sdr 
-						LEFT JOIN device d ON d.id = sdr.id_device
-						LEFT JOIN site s ON s.id = d.id_site
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						s.`status` = 1
-						AND d.`status` = 1
-						AND s.is_delete = 0
-						AND d.is_delete = 0
-						AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )
-						GROUP BY s.id
-				)eermonth 
-			)eerm ON eerm.id = s.id
-			
-			
-			LEFT JOIN (
-			
-			SELECT 
-				eerthismonth.id,
-				ROUND((eerthismonth.ActualGeneration / eerthismonth.EstimatedGeneration)*100 , 1 ) AS EERThisMonth
-			FROM (
-				SELECT
-					s.id,
-					SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
-					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-					IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
-					
-					CASE
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-						 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					END as EstimatedGeneration
-				FROM
-					site_data_report sdr 
-					LEFT JOIN device d ON d.id = sdr.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE
-					s.`status` = 1
-					AND d.`status` = 1
-					AND s.is_delete = 0
-					AND d.is_delete = 0
-					AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )
-					GROUP BY s.id
-			)eerthismonth 
-			
-			)eerthism ON eerthism.id = s.id
-			
-		
-			
 			
 			LEFT JOIN(
 				SELECT
@@ -293,24 +204,105 @@
 			
 			LEFT JOIN (
 				SELECT
-					s.id AS id_site,
-					COUNT( a.id ) AS total_error 
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id
-					RIGHT JOIN alert a ON a.id_device = d.id 
-					LEFT JOIN error e ON e.id = a.id_error
-				WHERE
-					s.`status` = 1 
-					AND s.is_delete = 0 
-					AND a.`status` = 1
-					AND a.`is_delete` = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
-					AND d.`status` = 1
-					AND d.`is_delete` = 0
-				GROUP BY s.id 
-			) er ON er.id_site = s.id
+					t.id_site,
+					JSON_ARRAYAGG(obj_alert) AS alerts
+				FROM (
+					SELECT
+						s.id AS id_site,
+						JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
+					FROM
+						site_employee_map sem 
+						LEFT JOIN site s ON s.id = sem.id_site
+						LEFT JOIN device d ON d.id_site = s.id
+						RIGHT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
+						LEFT JOIN error er ON a.id_error = er.id 
+						LEFT JOIN error_level el ON el.id = er.id_error_level
+						LEFT JOIN icon i ON i.id = el.id_icon
+					WHERE sem.id_employee = #{id_employee} AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
+						GROUP BY s.id, el.id
+						) t
+						GROUP BY t.id_site
+				) er ON er.id_site = s.id
+				
+				LEFT JOIN (
+				SELECT
+					gg.id_site,
+					JSON_ARRAYAGG(obj_device) as inverters_meters
+				FROM (
+					SELECT 
+						g.*,
+						IF(g.id_device_type = 1,
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_inverter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_inverter), 2))
+						, 'diff', IF(g.optimal_ratio_inverter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_inverter - g.percent_power_status) * 100 / g.optimal_ratio_inverter), 0), 1)) ),
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_meter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_meter), 2))
+						, 'diff', IF(g.optimal_ratio_meter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_meter - g.percent_power_status) * 100 / g.optimal_ratio_meter), 0), 1)) )
+						 ) AS obj_device
+					FROM (
+						SELECT
+							d.id,
+							d.devicename,
+							d.id_site,
+							d.id_device_type,
+							IFNULL(d.last_value, 0) as active_power,
+							IFNULL((
+								SELECT 
+									d.last_value / d.rating_ac_power * 100
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.is_default = 1
+								GROUP BY sem.id_site
+								), 
+								(
+								SELECT 
+									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.id_device_type = 1
+									GROUP BY d.id_site
+								)
+							) AS optimal_ratio_inverter,
+
+							IFNULL((
+								SELECT 
+									d.last_value / d.rating_ac_power * 100
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.is_default = 3
+								GROUP BY sem.id_site
+								), 
+								(
+								SELECT 
+									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+								FROM
+									device d
+								WHERE
+									sem.id_site = d.id_site
+									AND d.id_device_type = 3
+									GROUP BY d.id_site
+								)
+							)  as optimal_ratio_meter,
+
+							IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
+						FROM
+							device d 
+							LEFT JOIN site_employee_map sem ON sem.id_site = d.id_site
+							LEFT JOIN site s ON s.id = d.id_site				
+						WHERE
+							sem.id_employee = #{id_employee}
+							AND s.status = 1 AND s.is_delete = 0
+							AND d.id_device_type IN (1, 3)
+							AND d.status = 1 AND d.is_delete = 0
+						) g 
+						GROUP BY g.id
+				) gg
+					GROUP BY gg.id_site
+			)im ON im.id_site = s.id
 			
 			LEFT JOIN (
 			 SELECT
@@ -349,13 +341,12 @@
 					ORDER BY unix_time ASC
 			)p ON p.id_site = s.id
 			
-		WHERE s.status = 1 and s.is_delete = 0 
-		
+		WHERE s.status = 1 and s.is_delete = 0
+
 		<if test="is_supper_admin != 1">	
  			AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 		</if>
-		
-		
+
 		<if test="hash_id_site_group != null">	
  			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 		</if>

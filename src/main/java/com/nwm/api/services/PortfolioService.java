@@ -66,32 +66,11 @@ public class PortfolioService extends DB {
 			if (dataList == null)
 				return new ArrayList();
 
-			for (int i = 0; i < dataList.size(); i++) {
-				Map<String, Object> siteItem = (Map<String, Object>) dataList.get(i);
-				// get alert by site
-				List dataListAlert = queryForList("Portfolio.getListAlertBySite", siteItem);
-				siteItem.put("alerts", dataListAlert);
-				
-				// get inverter status  by site
-				List inverterList = queryForList("Portfolio.getInverterDeviceStatus", siteItem);
-				siteItem.put("inverters", inverterList);
-				if (inverterList.size() == 0) {
-					List meterList = queryForList("Portfolio.getMeterDeviceStatus", siteItem);
-					siteItem.put("meters", meterList);
-				}
-				
-				if (Integer.parseInt((String) siteItem.get("enable_virtual_device")) == 1) {
-					double expected_power = (double) queryForObject("Portfolio.getExpectedPowerByVirtualDevice", siteItem);
-					siteItem.put("expected_power", expected_power);
-				}
-				
-				// Get weather API
-				newData.add(siteItem);
-			}
+
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return newData;
+		return dataList;
 	}
 
 	public int getTotalRecord(PortfolioEntity obj) {
