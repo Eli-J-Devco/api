@@ -1584,6 +1584,18 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("nvmActiveEnergy", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
 										rowItem.put("MeasuredProduction", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
 										break;
+										
+									case "model_poa_temp":
+										rowItem.put("id_device", r.getCellText(2).toString());
+										rowItem.put("error", r.getCellText(3).toString());
+										rowItem.put("low_alarm", r.getCellText(4).toString());
+										rowItem.put("high_alarm", r.getCellText(5).toString());
+										rowItem.put("T_AMB", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+										rowItem.put("T_MOD", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+										rowItem.put("nvm_irradiance", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+										rowItem.put("nvm_temperature", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+	
+										break;
 									}
 									
 									

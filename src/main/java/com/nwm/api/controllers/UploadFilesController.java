@@ -53,6 +53,7 @@ import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
 import com.nwm.api.entities.ModelMeterIon8600Entity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
+import com.nwm.api.entities.ModelPoaTempEntity;
 import com.nwm.api.entities.ModelPowerMeasurementIon7650Entity;
 import com.nwm.api.entities.ModelPyranometerPoaEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
@@ -94,6 +95,7 @@ import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
 import com.nwm.api.services.ModelMeterIon8600Service;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
+import com.nwm.api.services.ModelPoaTempService;
 import com.nwm.api.services.ModelPowerMeasurementIon7650Service;
 import com.nwm.api.services.ModelPyranometerPoaService;
 import com.nwm.api.services.ModelRT1Class30000Service;
@@ -3775,9 +3777,8 @@ public class UploadFilesController extends BaseController {
 												
 												break;
 												
-												
-											case "model_pyranometer_poa":
-												ModelPyranometerPoaService serviceModelPy = new ModelPyranometerPoaService();
+											case "model_poa_temp":
+												ModelPoaTempService serviceModelPoaTemp = new ModelPoaTempService();
 												// Check insert database status
 												while ((line = br.readLine()) != null) {
 													sb.append(line); // appends line to string buffer
@@ -3785,8 +3786,9 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelPyranometerPoaEntity dataModelPy = serviceModelPy.setModelPyranometer(line);
-														dataModelPy.setId_device(item.getId());
+														
+														ModelPoaTempEntity dataModel = serviceModelPoaTemp.setModelPoaTemp(line);
+														dataModel.setId_device(item.getId());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3795,23 +3797,27 @@ public class UploadFilesController extends BaseController {
 																String slug = scaledDeviceParameter.getParameter_slug();
 																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPyranometerPoaEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPy);
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPoaTempEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelPy, scaledValue);
-//																if (slug.equals("ReadPower")) dataModelPy.setNvmActivePower(scaledValue);
-//																if (slug.equals("kWh")) dataModelPy.setNvmActiveEnergy(scaledValue);
+																pd.getWriteMethod().invoke(dataModel, scaledValue);
+																if (slug.equals("T_AMB")) dataModel.setNvm_temperature(scaledValue);
+																if (slug.equals("T_AMB")) dataModel.setNvm_panel_temperature(scaledValue);
 															}
 														}
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
-														// ReadPower
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-														deviceUpdateE.setLast_value(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
-														deviceUpdateE.setField_value1(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
 														
+														// T_AMB
+														deviceUpdateE.setLast_updated(dataModel.getTime());
+														deviceUpdateE.setLast_value(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
+														deviceUpdateE.setField_value1(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
+														
+														// value 2
 														deviceUpdateE.setField_value2(null);
+														
+														// value 3
 														deviceUpdateE.setField_value3(null);
 														
 														deviceUpdateE.setId(item.getId());
@@ -3825,7 +3831,6 @@ public class UploadFilesController extends BaseController {
 															errorItem.setId_device_group(item.getId_device_group());
 															errorItem.setError_code(words.get(1));
 															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 															if(rowItemError.getId() > 0) {
 																AlertEntity alertItem = new AlertEntity();
 																alertItem.setId_device(item.getId());
@@ -3839,14 +3844,7 @@ public class UploadFilesController extends BaseController {
 															}
 														}
 														
-														serviceModelPy.insertModelPyranometer(dataModelPy);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item);
-														}
-														
+														serviceModelPoaTemp.insertModelPoaTemp(dataModel);
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
@@ -3864,11 +3862,12 @@ public class UploadFilesController extends BaseController {
 															}		
 														}  
 														catch(Exception e){  
-//															System.out.println("e1: " + e);
 															e.printStackTrace();  
 														}
+														
 													}
 												}
+												
 												
 												break;
 												

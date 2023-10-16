@@ -1906,6 +1906,11 @@
 
 			</if>
 			
+			<if test="(datatablename == 'model_poa_temp') || (datatablename == 'ViewModelPoaTemp')">
+				  IFNULL(ROUND(AVG(dv.T_AMB), 2), 0.001) AS T_AMB,
+			      IFNULL(ROUND(AVG(dv.T_MOD), 2), 0.001) AS T_MOD,
+			</if>
+			
 			<!-- virtual device -->
 			<if test="(datatablename == 'model_virtual_meter_or_inverter') || (datatablename == 'ViewModelVirtualMeterOrInverter')">
 				IFNULL(ROUND(IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0, 0, AVG(dv.nvmActivePower)), 2), 0.001) AS Power,
