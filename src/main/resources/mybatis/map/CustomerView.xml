@@ -2338,6 +2338,9 @@
 				WHEN d.datatablename = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))		
 				
 				WHEN d.datatablename = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))	
+				
+				WHEN d.datatablename = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+				WHEN d.datatablename = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				ELSE "N/A"
 			END AS key_indicator
 			
