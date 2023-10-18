@@ -86,9 +86,11 @@ public class CronJobAlertController extends BaseController {
 					TimeZone tzUTC = TimeZone.getTimeZone("UTC");
 					formatUTC.setTimeZone(tzUTC);
 					String sDateUTC = formatUTC.format(now);
+					
+					if(objSite.getId() == 134) {
 
-					if (hourOfDay >= (objSite.getStart_date_time() + 2)
-							&& hourOfDay <= (objSite.getEnd_date_time() - 2)) {
+//					if (hourOfDay >= (objSite.getStart_date_time() + 2)
+//							&& hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						// Check alert datalogger no communication
 						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
 						if (objDatalogger.getId() > 0) {
@@ -202,7 +204,7 @@ public class CronJobAlertController extends BaseController {
 										BatchJobTableEntity rowItem = service
 												.getLastRowItemCheckNoProduction(bathJobEntity);
 										if (rowItem.getNvmActivePower() != 0.001) {
-											if ((rowItem.getId_device() > 0 && rowItem.getNvmActivePower() <= 0) && rowItem.getError() != 139) {
+											if ((rowItem.getId_device() > 0 && rowItem.getNvmActivePower() <= 0) ) {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
 												alertItem.setId_error(noProduction);
@@ -232,6 +234,7 @@ public class CronJobAlertController extends BaseController {
 								}
 							}
 						}
+//					}
 					}
 				}
 			}
