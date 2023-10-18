@@ -138,6 +138,7 @@
 						WHEN d.datatablename = 'model_rt1_class30000' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename = 'model_poa_temp' THEN ROUND( SUM(d.last_value), 2)
+						WHEN d.datatablename = 'model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
 						ELSE "N/A"
 				 	END AS irradiance,
 				 	CASE

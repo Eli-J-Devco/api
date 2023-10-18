@@ -302,6 +302,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelPoaTemp.insertModelPoaTemp", dataList.get(i));
 				}
 				break;
+			case "model_eri_weather_icp_class8050":
+				obj.setId_device_type(4);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050", dataList.get(i));
+				}
+				break;
 			}
 
 			session.commit();

@@ -1596,6 +1596,21 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("nvm_temperature", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
 	
 										break;
+										
+									case "model_eri_weather_icp_class8050":
+										rowItem.put("id_device", r.getCellText(2).toString());
+										rowItem.put("error", r.getCellText(3).toString());
+										rowItem.put("low_alarm", r.getCellText(4).toString());
+										rowItem.put("high_alarm", r.getCellText(5).toString());
+										rowItem.put("panel_temp", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+										rowItem.put("ambient_temp", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+										rowItem.put("wind_speed", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+										rowItem.put("solar_irradiation", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+										rowItem.put("wind_direction", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+										rowItem.put("nvm_irradiance", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+										rowItem.put("nvm_temperature", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+										
+										break;
 									}
 									
 									
