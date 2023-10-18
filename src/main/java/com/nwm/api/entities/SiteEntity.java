@@ -187,13 +187,35 @@ public class SiteEntity {
 	private Double device_ac_rating;
 	private String ac_capacity_condition;
 	private String dc_capacity_condition;
-	private String device_ac_rating_condition;	
+	private String device_ac_rating_condition;
+	private String built_since_condition;
+	private String commissioning_condition;
+	private List ids_inverter_group;
 	private int is_supper_admin;
 	private int virtual_status;
 	
 	
 	
 	
+	
+	public List getIds_inverter_group() {
+		return ids_inverter_group;
+	}
+	public void setIds_inverter_group(List ids_inverter_group) {
+		this.ids_inverter_group = ids_inverter_group;
+	}
+	public String getBuilt_since_condition() {
+		return built_since_condition;
+	}
+	public void setBuilt_since_condition(String built_since_condition) {
+		this.built_since_condition = built_since_condition;
+	}
+	public String getCommissioning_condition() {
+		return commissioning_condition;
+	}
+	public void setCommissioning_condition(String commissioning_condition) {
+		this.commissioning_condition = commissioning_condition;
+	}
 	public int getVirtual_status() {
 		return virtual_status;
 	}

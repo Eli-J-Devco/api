@@ -142,11 +142,9 @@
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
 			LEFT JOIN employee em ON em.id = sem.id_employee
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
-			
-			<if test="(keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')) or (device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition != null and device_ac_rating_condition != '') ">
+			<if test="(keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')) or (device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition != null and device_ac_rating_condition != '') or (ids_inverter_group != null) ">			
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
-			
 		WHERE
 			s.is_delete = 0
 			AND sem.is_hiding = 0
@@ -231,12 +229,35 @@
 					AND s.data_send_time = #{data_send_time}
 			</if>
 			
-			<if test="built_since != null and built_since != ''">	
-					AND DATE_FORMAT(s.built_since, '%Y-%m-%d') = #{built_since}
+			<if test="built_since != null and built_since != '' and built_since_condition == 'more'">  
+          			AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[>]]> #{built_since}
+	      	</if>   
+	    	<if test="built_since != null and built_since != '' and built_since_condition == 'equal'">  
+	          		AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[=]]> #{built_since}
+	     	</if> 
+	      	<if test="built_since != null and built_since != '' and built_since_condition == 'less'"> 
+	          		AND DATE_FORMAT(s.built_since, '%Y-%m-%d') <![CDATA[<]]> #{built_since}
+	      	</if>
+		      
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'more'"> 
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[>]]> #{commissioning}
+	      	</if>   
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'equal'">  
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[=]]> #{commissioning}
+	      	</if> 
+	      	<if test="commissioning != null and commissioning != '' and commissioning_condition == 'less'"> 
+	          		AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') <![CDATA[<]]> #{commissioning}
+	      	</if>
+	      	
+	      	<if test="ids_inverter_group != null">
+				AND d.id_device_group IN  (
+					<foreach item="item" index="index" collection="ids_inverter_group" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
 			</if>
-			<if test="commissioning != null and commissioning != ''">	
-					AND DATE_FORMAT(s.commissioning, '%Y-%m-%d') = #{commissioning}
-			</if>
+	      	
+	      	
 			
 		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
