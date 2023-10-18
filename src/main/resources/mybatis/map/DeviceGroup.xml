@@ -10,6 +10,8 @@
 		<result property="id_device_type" column="id_device_type" />
 		<result property="table_name" column="table_name" />
 		<result property="text" column="text" />
+		<result property="label" column="label" />
+		<result property="value" column="value" />
 		<result property="status" column="status" />
 		<result property="is_delete" column="is_delete" />
 		<result property="created_date" column="created_date" />
@@ -28,6 +30,8 @@
 		SELECT
 			t.*,
 			t.group_name AS text,
+			t.group_name AS label,
+			t.id AS value,
 			t.view_tablename,
 			t.job_tablename
 		FROM
