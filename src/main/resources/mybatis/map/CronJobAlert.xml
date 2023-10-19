@@ -251,6 +251,7 @@
 	<select id="getLastRowItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
     	SELECT
     		`time`, 
+    		u.error,
     		id_device, 
     		d.devicename,
     		CONVERT_TZ( u.time, '+00:00', t.`offset` ) AS time_format
