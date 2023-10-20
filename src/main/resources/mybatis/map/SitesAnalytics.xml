@@ -80,6 +80,33 @@
 			d.job_tablename,
 			d.id_device_group,
 			
+			<if test="(datatablename == 'model_xantrex_gt500e') || (datatablename == 'ViewModelXantrexGt500e')">
+				IFNULL(ROUND(AVG(dv.AC_CURRENT_A), 2), 0.001) AS AC_CURRENT_A,
+				IFNULL(ROUND(AVG(dv.AC_CURRENT_B), 2), 0.001) AS AC_CURRENT_B,
+				IFNULL(ROUND(AVG(dv.AC_CURRENT_C), 2), 0.001) AS AC_CURRENT_C,
+				IFNULL(ROUND(AVG(dv.AC_POWER), 2), 0.001) AS AC_POWER,
+				IFNULL(ROUND(AVG(dv.AC_VOLTAGE_AB), 2), 0.001) AS AC_VOLTAGE_AB,
+				IFNULL(ROUND(AVG(dv.AC_VOLTAGE_BC), 2), 0.001) AS AC_VOLTAGE_BC,
+				IFNULL(ROUND(AVG(dv.AC_VOLTAGE_CA), 2), 0.001) AS AC_VOLTAGE_CA,
+				IFNULL(ROUND(AVG(dv.DC_CURRENT), 2), 0.001) AS DC_CURRENT,
+				IFNULL(ROUND(AVG(dv.DC_POWER), 2), 0.001) AS DC_POWER,
+				IFNULL(ROUND(AVG(dv.DC_VOLTAGE), 2), 0.001) AS DC_VOLTAGE,
+				IFNULL(ROUND(AVG(dv.ENERGY_DELIVERED), 2), 0.001) AS ENERGY_DELIVERED,
+				IFNULL(ROUND(AVG(dv.FREQUENCY), 2), 0.001) AS FREQUENCY,
+				IFNULL(ROUND(AVG(dv.STATUS_FAULT), 2), 0.001) AS STATUS_FAULT,
+				IFNULL(ROUND(AVG(dv.STATUS_GOAL), 2), 0.001) AS STATUS_GOAL,
+				IFNULL(ROUND(AVG(dv.STATUS_INVERTER), 2), 0.001) AS STATUS_INVERTER,
+				IFNULL(ROUND(AVG(dv.STATUS_OPERATING), 2), 0.001) AS STATUS_OPERATING,
+				IFNULL(ROUND(AVG(dv.STATUS_PV), 2), 0.001) AS STATUS_PV,
+				IFNULL(ROUND(AVG(dv.T_LEFT_MATRIX), 2), 0.001) AS T_LEFT_MATRIX,
+				IFNULL(ROUND(AVG(dv.T_RIGHT_MATRIX), 2), 0.001) AS T_RIGHT_MATRIX,
+				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
+				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
+				IFNULL(ROUND(AVG(dv.MeasuredProduction), 2), 0.001) AS MeasuredProduction,
+				
+				
+			</if>
+			
 			<if test="(datatablename == 'model_power_measurement_ion_7650') || (datatablename == 'ViewModelPowerMeasurementIon7650')">
 				IFNULL(ROUND(AVG(dv.Ia), 2), 0.001) AS Ia,
 				IFNULL(ROUND(AVG(dv.Ib), 2), 0.001) AS Ib,

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelXantrexGT500E">
+	<resultMap id="ModelXantrexGT500EMap"
+		type="com.nwm.api.entities.ModelXantrexGT500EEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="AC_CURRENT_A" column="AC_CURRENT_A" />
+		<result property="AC_CURRENT_B" column="AC_CURRENT_B" />
+		<result property="AC_CURRENT_C" column="AC_CURRENT_C" />
+		<result property="AC_POWER" column="AC_POWER" />
+		<result property="AC_VOLTAGE_AB" column="AC_VOLTAGE_AB" />
+		<result property="AC_VOLTAGE_BC" column="AC_VOLTAGE_BC" />
+		<result property="AC_VOLTAGE_CA" column="AC_VOLTAGE_CA" />
+		<result property="DC_CURRENT" column="DC_CURRENT" />
+		<result property="DC_POWER" column="DC_POWER" />
+		<result property="DC_VOLTAGE" column="DC_VOLTAGE" />
+		<result property="ENERGY_DELIVERED" column="ENERGY_DELIVERED" />
+		<result property="FREQUENCY" column="FREQUENCY" />
+		<result property="STATUS_FAULT" column="STATUS_FAULT" />
+		<result property="STATUS_GOAL" column="STATUS_GOAL" />
+		<result property="STATUS_INVERTER" column="STATUS_INVERTER" />
+		<result property="STATUS_OPERATING" column="STATUS_OPERATING" />
+		<result property="STATUS_PV" column="STATUS_PV" />
+		<result property="T_LEFT_MATRIX" column="T_LEFT_MATRIX" />
+		<result property="T_RIGHT_MATRIX" column="T_RIGHT_MATRIX" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+			
+	</resultMap>
+
+	<insert id="insertModelXantrexGT500E"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_xantrex_gt500e`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="AC_CURRENT_A != 0.001">
+				`AC_CURRENT_A`,
+			</if>
+			<if test="AC_CURRENT_B != 0.001">
+				`AC_CURRENT_B`,
+			</if>
+			<if test="AC_CURRENT_C != 0.001">
+				`AC_CURRENT_C`,
+			</if>
+			<if test="AC_POWER != 0.001">
+				`AC_POWER`,
+			</if>
+			<if test="AC_VOLTAGE_AB != 0.001">
+				`AC_VOLTAGE_AB`,
+			</if>
+			<if test="AC_VOLTAGE_BC != 0.001">
+				`AC_VOLTAGE_BC`,
+			</if>
+			<if test="AC_VOLTAGE_CA != 0.001">
+				`AC_VOLTAGE_CA`,
+			</if>
+			<if test="DC_CURRENT != 0.001">
+				`DC_CURRENT`,
+			</if>
+			<if test="DC_POWER != 0.001">
+				`DC_POWER`,
+			</if>
+			<if test="DC_VOLTAGE != 0.001">
+				`DC_VOLTAGE`,
+			</if>
+			<if test="ENERGY_DELIVERED != 0.001">
+				`ENERGY_DELIVERED`,
+			</if>
+			<if test="FREQUENCY != 0.001">
+				`FREQUENCY`,
+			</if>
+			<if test="STATUS_FAULT != 0.001">
+				`STATUS_FAULT`,
+			</if>
+			<if test="STATUS_GOAL != 0.001">
+				`STATUS_GOAL`,
+			</if>
+			<if test="STATUS_INVERTER != 0.001">
+				`STATUS_INVERTER`,
+			</if>
+			<if test="STATUS_OPERATING != 0.001">
+				`STATUS_OPERATING`,
+			</if>
+			<if test="STATUS_PV != 0.001">
+				`STATUS_PV`,
+			</if>
+			<if test="T_LEFT_MATRIX != 0.001">
+				`T_LEFT_MATRIX`,
+			</if>
+			<if test="T_RIGHT_MATRIX != 0.001">
+				`T_RIGHT_MATRIX`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="AC_CURRENT_A != 0.001">
+				#{AC_CURRENT_A},
+			</if>
+			<if test="AC_CURRENT_B != 0.001">
+				#{AC_CURRENT_B},
+			</if>
+			<if test="AC_CURRENT_C != 0.001">
+				#{AC_CURRENT_C},
+			</if>
+			<if test="AC_POWER != 0.001">
+				#{AC_POWER},
+			</if>
+			<if test="AC_VOLTAGE_AB != 0.001">
+				#{AC_VOLTAGE_AB},
+			</if>
+			<if test="AC_VOLTAGE_BC != 0.001">
+				#{AC_VOLTAGE_BC},
+			</if>
+			<if test="AC_VOLTAGE_CA != 0.001">
+				#{AC_VOLTAGE_CA},
+			</if>
+			<if test="DC_CURRENT != 0.001">
+				#{DC_CURRENT},
+			</if>
+			<if test="DC_POWER != 0.001">
+				#{DC_POWER},
+			</if>
+			<if test="DC_VOLTAGE != 0.001">
+				#{DC_VOLTAGE},
+			</if>
+			<if test="ENERGY_DELIVERED != 0.001">
+				#{ENERGY_DELIVERED},
+			</if>
+			<if test="FREQUENCY != 0.001">
+				#{FREQUENCY},
+			</if>
+			<if test="STATUS_FAULT != 0.001">
+				#{STATUS_FAULT},
+			</if>
+			<if test="STATUS_GOAL != 0.001">
+				#{STATUS_GOAL},
+			</if>
+			<if test="STATUS_INVERTER != 0.001">
+				#{STATUS_INVERTER},
+			</if>
+			<if test="STATUS_OPERATING != 0.001">
+				#{STATUS_OPERATING},
+			</if>
+			<if test="STATUS_PV != 0.001">
+				#{STATUS_PV},
+			</if>
+			<if test="T_LEFT_MATRIX != 0.001">
+				#{T_LEFT_MATRIX},
+			</if>
+			<if test="T_RIGHT_MATRIX != 0.001">
+				#{T_RIGHT_MATRIX},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="AC_CURRENT_A != 0.001">
+				`AC_CURRENT_A` = #{AC_CURRENT_A},
+			</if>
+			<if test="AC_CURRENT_B != 0.001">
+				`AC_CURRENT_B` = #{AC_CURRENT_B},
+			</if>
+			<if test="AC_CURRENT_C != 0.001">
+				`AC_CURRENT_C` = #{AC_CURRENT_C},
+			</if>
+			<if test="AC_POWER != 0.001">
+				`AC_POWER` = #{AC_POWER},
+			</if>
+			<if test="AC_VOLTAGE_AB != 0.001">
+				`AC_VOLTAGE_AB` = #{AC_VOLTAGE_AB},
+			</if>
+			<if test="AC_VOLTAGE_BC != 0.001">
+				`AC_VOLTAGE_BC` = #{AC_VOLTAGE_BC},
+			</if>
+			<if test="AC_VOLTAGE_CA != 0.001">
+				`AC_VOLTAGE_CA` = #{AC_VOLTAGE_CA},
+			</if>
+			<if test="DC_CURRENT != 0.001">
+				`DC_CURRENT` = #{DC_CURRENT},
+			</if>
+			<if test="DC_POWER != 0.001">
+				`DC_POWER` = #{DC_POWER},
+			</if>
+			<if test="DC_VOLTAGE != 0.001">
+				`DC_VOLTAGE` = #{DC_VOLTAGE},
+			</if>
+			<if test="ENERGY_DELIVERED != 0.001">
+				`ENERGY_DELIVERED` = #{ENERGY_DELIVERED},
+			</if>
+			<if test="FREQUENCY != 0.001">
+				`FREQUENCY` = #{FREQUENCY},
+			</if>
+			<if test="STATUS_FAULT != 0.001">
+				`STATUS_FAULT` = #{STATUS_FAULT},
+			</if>
+			<if test="STATUS_GOAL != 0.001">
+				`STATUS_GOAL` = #{STATUS_GOAL},
+			</if>
+			<if test="STATUS_INVERTER != 0.001">
+				`STATUS_INVERTER` = #{STATUS_INVERTER},
+			</if>
+			<if test="STATUS_OPERATING != 0.001">
+				`STATUS_OPERATING` = #{STATUS_OPERATING},
+			</if>
+			<if test="STATUS_PV != 0.001">
+				`STATUS_PV` = #{STATUS_PV},
+			</if>
+			<if test="T_LEFT_MATRIX != 0.001">
+				`T_LEFT_MATRIX` = #{T_LEFT_MATRIX},
+			</if>
+			<if test="T_RIGHT_MATRIX != 0.001">
+				`T_RIGHT_MATRIX` = #{T_RIGHT_MATRIX},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelXantrexGT500EEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelXantrexGt500e dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

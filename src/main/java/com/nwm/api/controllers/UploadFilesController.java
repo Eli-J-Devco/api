@@ -70,6 +70,7 @@ import com.nwm.api.entities.ModelVerisIndustriesE50c2aEntity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
+import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.entities.ModelXantrexInverterEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
@@ -113,6 +114,7 @@ import com.nwm.api.services.ModelVerisIndustriesE50c2aService;
 import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
 import com.nwm.api.services.ModelWKippZonenRT1Service;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
+import com.nwm.api.services.ModelXantrexGT500EService;
 import com.nwm.api.services.ModelXantrexInverterService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -4054,6 +4056,95 @@ public class UploadFilesController extends BaseController {
 															if(logGzFile.delete()) {  
 //																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
+												
+												
+											case "model_xantrex_gt500e":
+												ModelXantrexGT500EService serviceModelgt500 = new ModelXantrexGT500EService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelXantrexGT500EEntity dataModel = serviceModelgt500.setModelXantrexGT500E(line);
+														dataModel.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPoaTempEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModel, scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// solar_irradiation
+														deviceUpdateE.setLast_updated(dataModel.getTime());
+														deviceUpdateE.setLast_value(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
+														deviceUpdateE.setField_value1(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
+														
+														// DC_POWER
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value2(dataModel.getDC_POWER() != 0.001 ? dataModel.getDC_POWER() : null);
+														
+														//
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														serviceModelgt500.insertModelXantrexGT500EService(dataModel);
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){   }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) { }		
 														}  
 														catch(Exception e){  
 															e.printStackTrace();  

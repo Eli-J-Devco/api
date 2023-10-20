@@ -112,6 +112,8 @@
 		<mapper resource="mybatis/map/ModelPyranometerPoa.xml"/>
 		<mapper resource="mybatis/map/ModelPoaTemp.xml"/>
 		<mapper resource="mybatis/map/ModelERIWeatherICPClass8050.xml"/>
+		<mapper resource="mybatis/map/ModelXantrexGT500E.xml"/>
+		
 		
 		
 		
