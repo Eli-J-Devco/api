@@ -37,7 +37,6 @@ implements TokenEnhancer {
         		additionalInfo.put("id_sites", user.getId_sites());
         		additionalInfo.put("is_technical", user.getIs_technical());
         		additionalInfo.put("table_column", user.getTable_column());
-        		additionalInfo.put("alert_filter", user.getAlert_filter());
         	}
         	
         }catch (Exception e) {
