@@ -417,6 +417,25 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
+	 * @description get alert filter
+	 * @author duy.phan
+	 * @since 2023-04-18
+	 * @param id
+	 */
+	public EmployeeManageEntity getAlertFilter(int id) {
+		EmployeeManageEntity employee = new EmployeeManageEntity();
+		try {
+			employee = (EmployeeManageEntity) queryForObject("Employee.getAlertFilterEmployeeById", id);
+			if (employee == null)
+				return new EmployeeManageEntity();
+		} catch (Exception ex) {
+			log.error("Employee.getAlertFilterEmployeeById", ex);
+			return new EmployeeManageEntity();
+		}
+		return employee;
+	}
+	
+	/**
 	 * @description update alert filter in Alert
 	 * @author duy.phan
 	 * @since 2022-12-22

@@ -379,7 +379,8 @@
 			dp.description,
 			dp.register,
 			dp.hide,
-			dp.standard_alert_message
+			dp.standard_alert_message,
+			dp.standard_name
 		FROM
 			device d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group 

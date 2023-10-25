@@ -526,6 +526,13 @@
 		WHERE u.id = #{value};
   	</select>
   	
+  	<select id="getAlertFilterEmployeeById" resultMap="EmployeeMap"  parameterType="int">
+    	SELECT
+    		alert_filter
+		FROM `employee` u
+		WHERE u.id = #{id};
+  	</select>
+  	
   	<update id="updateAlertPerPage">
 		UPDATE `employee`
 		SET

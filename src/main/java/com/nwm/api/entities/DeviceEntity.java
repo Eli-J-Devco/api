@@ -115,9 +115,16 @@ public class DeviceEntity {
 	private String command;
 	private List commandResult;
 	private int is_supper_admin;
+	private String standard_name;
 	
 	
-
+	
+	public String getStandard_name() {
+		return standard_name;
+	}
+	public void setStandard_name(String standard_name) {
+		this.standard_name = standard_name;
+	}
 	public int getIs_supper_admin() {
 		return is_supper_admin;
 	}

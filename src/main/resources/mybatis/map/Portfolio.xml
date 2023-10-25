@@ -66,14 +66,13 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			
+			IF(eer.total_error, eer.total_error, 0) AS total_error,
 			IFNULL(er.alerts, JSON_ARRAY()) AS alerts,
 			s.`name`,
 
 			s.kiosk_view,
 			IFNULL(s.ac_capacity, 0) as ac_capacity,
 			IFNULL(s.dc_capacity, 0) as dc_capacity,
-			s.gallery,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			c.name AS company_name,
 			IFNULL(t.irradiance, 0 ) AS irradiance,
@@ -90,18 +89,7 @@
 			IFNULL(s.eer_this_month, 0) AS EERThisMonth,
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
-			ROUND(t.expected_power,2) AS expected_power,
-			IF(v.enable_virtual_device > 0 ,"1","0") AS enable_virtual_device,
-			(
-				SELECT 
-					d.id
-				FROM
-					device d
-				WHERE
-					d.id_site = s.id AND
-					d.is_default = 1
-				GROUP BY d.is_default
-			) AS id_default_device,
+			IFNULL(ROUND(v.expected_power_virtual,2), ROUND(t.expected_power,2)) AS expected_power,
 			im.inverters_meters
 			
 				
@@ -111,15 +99,22 @@
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN (
 				SELECT
-					COUNT(*) AS enable_virtual_device,
-					d.id_site
-				FROM device d 
-				WHERE d.`status` = 1 
-					AND d.is_delete = 0 
-					AND d.hidden = 0
-					AND d.virtual_device_type IS NOT NULL
-					AND d.virtual_device_type != ''
-				GROUP BY d.id_site
+					b.id_device,
+					d.id_site,
+					b.expected_power_ac AS expected_power_virtual
+				FROM
+					BJobModelVirtualMeterOrInverter b
+					LEFT JOIN device d ON d.id = b.id_device
+					LEFT JOIN (
+							SELECT 
+								max(b.time) As max_time
+							FROM
+								BJobModelVirtualMeterOrInverter b
+								GROUP BY b.id_device
+						) bb ON bb.max_time = b.time
+					WHERE
+						b.time = bb.max_time
+						GROUP BY b.id_device
 			)v ON v.id_site = s.id
 			
 			
@@ -141,6 +136,7 @@
 						WHEN d.datatablename = 'model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
 						ELSE "N/A"
 				 	END AS irradiance,
+				 	
 				 	CASE
 				 		WHEN s.pv_model = 1 THEN
 							IF(
@@ -164,7 +160,7 @@
 					END AS expected_power
 				FROM
 					site s
-					LEFT JOIN device d ON d.id_site = s.id 
+					LEFT JOIN device d ON d.id_site = s.id
 				WHERE
 					d.id_device_type = 4 
 					AND s.`status` = 1 
@@ -226,6 +222,27 @@
 						GROUP BY t.id_site
 				) er ON er.id_site = s.id
 				
+			LEFT JOIN (
+				SELECT
+					s.id AS id_site,
+					COUNT( a.id ) AS total_error 
+				FROM
+					site s
+					LEFT JOIN device d ON d.id_site = s.id
+					RIGHT JOIN alert a ON a.id_device = d.id 
+					LEFT JOIN error e ON e.id = a.id_error
+				WHERE
+					s.`status` = 1 
+					AND s.is_delete = 0 
+					AND a.`status` = 1
+					AND a.`is_delete` = 0
+					AND e.`status` = 1
+					AND e.`is_delete` = 0
+					AND d.`status` = 1
+					AND d.`is_delete` = 0
+				GROUP BY s.id 
+				) eer ON eer.id_site = s.id
+				
 				LEFT JOIN (
 				SELECT
 					gg.id_site,
@@ -235,9 +252,9 @@
 						g.*,
 						IF(g.id_device_type = 1,
 						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_inverter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_inverter), 2))
-						, 'diff', IF(g.optimal_ratio_inverter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_inverter - g.percent_power_status) * 100 / g.optimal_ratio_inverter), 0), 1)) ),
+						, 'diff', IF(g.optimal_ratio_inverter = 0, 0, ROUND(IFNULL(((g.optimal_ratio_inverter - g.percent_power_status) * 100 / g.optimal_ratio_inverter), 0), 1)) ),
 						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_meter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_meter), 2))
-						, 'diff', IF(g.optimal_ratio_meter = 0 OR g.percent_power_status, 0, ROUND(IFNULL(((g.optimal_ratio_meter - g.percent_power_status) * 100 / g.optimal_ratio_meter), 0), 1)) )
+						, 'diff', IF(g.optimal_ratio_meter = 0, 0, ROUND(IFNULL(((g.optimal_ratio_meter - g.percent_power_status) * 100 / g.optimal_ratio_meter), 0), 1)) )
 						 ) AS obj_device
 					FROM (
 						SELECT
@@ -258,7 +275,7 @@
 								), 
 								(
 								SELECT 
-									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+									IFNULL(MAX(d.last_value) / d.rating_ac_power * 100, 0)
 								FROM
 									device d
 								WHERE
@@ -280,7 +297,7 @@
 								), 
 								(
 								SELECT 
-									IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
+									IFNULL(MAX(d.last_value) / d.rating_ac_power * 100, 0)
 								FROM
 									device d
 								WHERE
