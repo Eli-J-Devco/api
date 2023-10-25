@@ -192,15 +192,15 @@ public class ModelShark100Service extends DB {
 		try {
 			 ModelShark100Entity dataObj = (ModelShark100Entity) queryForObject("ModelShark100.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 
-				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 }
+//				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+//					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				 }
 			 }
-			 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelShark100.insertModelShark100", obj);
