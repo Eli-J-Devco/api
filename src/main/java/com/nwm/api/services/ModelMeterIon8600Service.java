@@ -136,7 +136,7 @@ public class ModelMeterIon8600Service extends DB {
 		try {
 			ModelMeterIon8600Entity dataObj = (ModelMeterIon8600Entity) queryForObject("ModelMeterIon8600.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 
@@ -144,7 +144,7 @@ public class ModelMeterIon8600Service extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
-			 if(measuredProduction < 0 ) { measuredProduction = 0;}
+
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelMeterIon8600.insertModelMeterIon8600", obj);

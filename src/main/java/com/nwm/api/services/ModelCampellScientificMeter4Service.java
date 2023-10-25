@@ -63,7 +63,7 @@ public class ModelCampellScientificMeter4Service extends DB {
 		try {
 			ModelCampellScientificMeter4Entity dataObj = (ModelCampellScientificMeter4Entity) queryForObject("ModelCampellScientificMeter4.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 
@@ -72,7 +72,7 @@ public class ModelCampellScientificMeter4Service extends DB {
 				 }
 			 }
 			 
-			 if(measuredProduction < 0 ) { measuredProduction = 0;}
+
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelCampellScientificMeter4.insertModelCampellScientificMeter4", obj);

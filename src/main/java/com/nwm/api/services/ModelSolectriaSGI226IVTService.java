@@ -30,8 +30,7 @@ public class ModelSolectriaSGI226IVTService extends DB {
 			if (words.size() > 0) {
 				ModelSolectriaSGI226IVTEntity dataModelSolectria226 = new ModelSolectriaSGI226IVTEntity();
 				
-				DecimalFormat df = new DecimalFormat("#.0");
-				double power = !Lib.isBlank(words.get(5)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(5)) / 1000)) : 0.001;
+				double power = !Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : 0.001;
 				if(power < 0) { power = 0.0; }
 				
 				dataModelSolectria226.setTime(words.get(0).replace("'", ""));
@@ -83,7 +82,7 @@ public class ModelSolectriaSGI226IVTService extends DB {
 		try {
 			ModelSolectriaSGI226IVTEntity dataObj = (ModelSolectriaSGI226IVTEntity) queryForObject("ModelSolectriaSGI226IVT.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 
@@ -91,7 +90,7 @@ public class ModelSolectriaSGI226IVTService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
-			 if(measuredProduction < 0 ) { measuredProduction = 0;}
+			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT", obj);

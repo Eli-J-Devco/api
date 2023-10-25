@@ -85,7 +85,7 @@ public class ModelXantrexGT500EService extends DB {
 		try {
 			ModelXantrexGT500EEntity dataObj = (ModelXantrexGT500EEntity) queryForObject("ModelXantrexGT500E.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 

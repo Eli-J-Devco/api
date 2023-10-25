@@ -82,7 +82,7 @@ public class ModelXantrexInverterService extends DB {
 		try {
 			ModelXantrexInverterEntity dataObj = (ModelXantrexInverterEntity) queryForObject("ModelXantrexInverter.getLastRow", obj);
 			 double measuredProduction = 0;
-			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0) {
+			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
