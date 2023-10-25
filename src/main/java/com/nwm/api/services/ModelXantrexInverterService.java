@@ -88,7 +88,7 @@ public class ModelXantrexInverterService extends DB {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				 }
 			 }
-			 if(measuredProduction < 0 ) { measuredProduction = 0;}
+
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelXantrexInverter.insertModelXantrexInverter", obj);

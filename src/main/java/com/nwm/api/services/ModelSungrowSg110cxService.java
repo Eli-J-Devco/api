@@ -26,9 +26,9 @@ public class ModelSungrowSg110cxService extends DB {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 				 
-				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 }
+//				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+//					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+//				 }
 			 }
 			 obj.setMeasuredProduction(measuredProduction);
 			 
