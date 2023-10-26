@@ -50,7 +50,7 @@ public class ViewReportEntity {
 	private String time_schedule;
 	private String days_week;
 	private String offset_timezone;
-	
+	private int is_supper_admin;
 	
 	
 	private int type_report;
@@ -58,7 +58,15 @@ public class ViewReportEntity {
 	private int id_sub_group;
 	private String ids_site;
 	private List<Map<String, Object>> dataSite;
+	
+	
 
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public List getIds() {
 		return ids;
 	}
