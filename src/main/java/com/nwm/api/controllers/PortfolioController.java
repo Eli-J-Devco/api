@@ -35,12 +35,14 @@ public class PortfolioController extends BaseController {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
+			
 			PortfolioService service = new PortfolioService();
+			TablePreferenceEntity preference = service.getPreference(obj);
 			List data = service.getList(obj);
 			
 			
-			int totalRecord = service.getTotalRecord(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
+			int totalRecord = data.size();
+			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
 		} catch (Exception e) {
 			log.error(e);
