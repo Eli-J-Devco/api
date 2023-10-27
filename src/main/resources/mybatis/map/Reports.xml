@@ -278,7 +278,12 @@
 					LEFT JOIN site s ON s.id = rsm.id_site
 				GROUP BY rsm.id_report
 			) t ON t.id_report = r.id
-		WHERE r.status = 1 AND r.id_employee = #{id_employee} 
+		WHERE r.status = 1 
+		
+		<if test="is_supper_admin != 1">
+			AND r.id_employee = #{id_employee} 
+		</if>
+			
 		GROUP BY r.id 
 		    order by
 	        <choose>  
@@ -302,7 +307,11 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.ReportsEntity">
     	SELECT count(*) as totalRow
 		FROM report r
-		WHERE r.id_employee = #{id_employee}
+		WHERE r.status = 1
+		<if test="is_supper_admin != 1">
+			AND r.id_employee = #{id_employee}
+		</if>
+		
 		
   	</select>
   	
