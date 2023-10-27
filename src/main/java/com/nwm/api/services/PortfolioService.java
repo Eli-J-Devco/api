@@ -23,6 +23,7 @@ import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 public class PortfolioService extends DB {
 
@@ -34,43 +35,80 @@ public class PortfolioService extends DB {
 	 */
 
 	public List getList(PortfolioEntity obj) {
-		List dataList, newData = new ArrayList();
+		List dataList = new ArrayList();
 		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Portfolio");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-			
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-				if (tablePreference != null) {
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					update("TablePreference.updatePreference", tablePreference);
-				} else {
-					tablePreference = new TablePreferenceEntity();
-					tablePreference.setId_employee(obj.getId_employee());
-					tablePreference.setTable("Portfolio");
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					insert("TablePreference.insertPreference", tablePreference);
-				}
-			} else {
-				if (tablePreference != null) {
-					obj.setOrder_by(tablePreference.getOrder_by());
-					obj.setSort_column(tablePreference.getSort_column());
-				}
-			}
-			
 			dataList = queryForList("Portfolio.getList", obj);
 			if (dataList == null)
 				return new ArrayList();
-
-
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> site = (Map<String, Object>) dataList.get(i);
+				String inverters_meters = (String) site.get("inverters_meters");
+				String alerts = (String) site.get("alerts");
+				JSONParser parse = new JSONParser();
+				
+				if (!Lib.isBlank(alerts)) {
+					JSONArray jsonAlerts = (JSONArray) parse.parse(alerts);
+					site.put("alerts", jsonAlerts);
+				}
+				
+				
+				if (!Lib.isBlank(inverters_meters)) {
+					JSONArray jsonArray = (JSONArray) parse.parse(inverters_meters);
+					
+					List<Object> green_inverter = new ArrayList<>();
+					List<Object> yellow_inverter = new ArrayList<>();
+					List<Object> red_inverter = new ArrayList<>();
+					
+					List<Object> green_meter = new ArrayList<>();
+					List<Object> yellow_meter = new ArrayList<>();
+					List<Object> red_meter = new ArrayList<>();
+					
+					for (int j = 0; j < jsonArray.size(); j++) {
+						Map<String, Object> device = (Map<String, Object>) jsonArray.get(j);
+						
+						
+						Double diff = Double.parseDouble(device.get("diff").toString()) ;
+						Double active_power = Double.parseDouble(device.get("active_power").toString()) ;
+						
+						int id_device_type = Integer.parseInt(device.get("id_device_type").toString()) ;
+						if (id_device_type == 1) {
+							if (diff > 49 || active_power <= 0.09 || active_power == 0.001) {
+								red_inverter.add(device);
+							} else if (diff <= 49 && diff >= 10) {
+								yellow_inverter.add(device);
+							} else if (diff < 10) {
+								green_inverter.add(device);
+							}
+						} else {
+							if (diff > 49 || active_power <= 0.09 || active_power == 0.001) {
+								red_meter.add(device);
+							} else if (diff <= 49 && diff >= 10) {
+								yellow_meter.add(device);
+							} else if (diff < 10) {
+								green_meter.add(device);
+							}
+						}
+					}
+					
+					if (green_inverter.size() == 0 && yellow_inverter.size() == 0 && red_inverter.size() == 0) {
+						site.put("green", green_meter);
+						site.put("yellow", yellow_meter);
+						site.put("red", red_meter);
+					} else {
+						site.put("green", green_inverter);
+						site.put("yellow", yellow_inverter);
+						site.put("red", red_inverter);
+					}
+				}
+				site.remove("inverters_meters");
+				
+			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 
 	public int getTotalRecord(PortfolioEntity obj) {
@@ -152,6 +190,26 @@ public class PortfolioService extends DB {
 			tablePreference.setId_employee(obj.getId_employee());
 			tablePreference.setTable("Portfolio");
 			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+						
+			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
+				if (tablePreference != null) {
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					update("TablePreference.updatePreference", tablePreference);
+				} else {
+					tablePreference = new TablePreferenceEntity();
+					tablePreference.setId_employee(obj.getId_employee());
+					tablePreference.setTable("Portfolio");
+					tablePreference.setOrder_by(obj.getOrder_by());
+					tablePreference.setSort_column(obj.getSort_column());
+					insert("TablePreference.insertPreference", tablePreference);
+				}
+			} else {
+				if (tablePreference != null) {
+					obj.setOrder_by(tablePreference.getOrder_by());
+					obj.setSort_column(tablePreference.getSort_column());
+				}
+			}
 			
 			if (tablePreference == null) {
 				return new TablePreferenceEntity();
