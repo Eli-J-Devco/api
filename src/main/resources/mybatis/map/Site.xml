@@ -135,6 +135,7 @@
 			s.city,
 			s.postal_code,
 			s.state,
+			h.is_hiding,
 			0 AS is_expand
 			
 		FROM
@@ -142,6 +143,13 @@
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
 			LEFT JOIN employee em ON em.id = sem.id_employee
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
 			<if test="(keyword != null and keyword != '' and (sort_column == 'hardware_id' or sort_column == 'device_name' or sort_column == 'serial_number')) or (device_ac_rating != null and device_ac_rating != '' and device_ac_rating_condition != null and device_ac_rating_condition != '') or (ids_inverter_group != null) ">			
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>

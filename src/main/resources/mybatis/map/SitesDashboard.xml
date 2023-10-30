@@ -81,13 +81,23 @@
 			s.soiling,
 			s.other_losses,
 			s.alert_mail_bcc,
-			s.alert_mail_cc
+			s.alert_mail_cc,
+			h.is_hiding
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN date_format d ON d.id = s.display_date_format
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			
 			LEFT JOIN (
 				SELECT sem.id_site, GROUP_CONCAT(e.email) AS cf_email_subscribers FROM site_employee_map sem
 				LEFT JOIN employee e ON e.id = sem.id_employee

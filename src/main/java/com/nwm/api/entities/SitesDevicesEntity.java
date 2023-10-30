@@ -121,6 +121,8 @@ public class SitesDevicesEntity {
 	private String alert_mail_bcc;
 	private int is_hidden;
 	private int is_supper_admin;
+	private boolean is_hiding;
+	private int hidden;
 	
 	
 	
@@ -784,6 +786,18 @@ public class SitesDevicesEntity {
 	}
 	public void setIs_hidden(int is_hidden) {
 		this.is_hidden = is_hidden;
+	}
+	public boolean isIs_hiding() {
+		return is_hiding;
+	}
+	public void setIs_hiding(boolean is_hiding) {
+		this.is_hiding = is_hiding;
+	}
+	public int getHidden() {
+		return hidden;
+	}
+	public void setHidden(int hidden) {
+		this.hidden = hidden;
 	}
 	
 	

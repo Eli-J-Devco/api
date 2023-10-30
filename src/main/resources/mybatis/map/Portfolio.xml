@@ -90,6 +90,7 @@
 			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
 			IFNULL(ROUND(v.expected_power_virtual,2), ROUND(t.expected_power,2)) AS expected_power,
+			h.is_hiding,
 			im.inverters_meters
 			
 				
@@ -97,6 +98,15 @@
 			site s
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			
 			LEFT JOIN (
 				SELECT
 					b.id_device,

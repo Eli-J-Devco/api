@@ -45,6 +45,7 @@
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			d.id as id_device,
+			h.is_hiding,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
@@ -176,6 +177,13 @@
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
 			WHERE e.`status` = 1 AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND l.status = 1
@@ -241,7 +249,7 @@
 			inv.power_today_inverter,
 			IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) AS power_today,
 			ep.expected,
-			
+			h.is_hiding,
 			ROUND((IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) / ep.expected)*100, 1)AS a_e 
 		
 		FROM
@@ -293,6 +301,14 @@
 				WHERE
 					ee.`year` = DATE_FORMAT('2022-08-10', '%Y')	
 			)ep ON ep.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
 			
 			WHERE s.`status` = 1 AND s.is_delete = 0
 			<if test="id_sites != null and !id_sites.isEmpty()">
