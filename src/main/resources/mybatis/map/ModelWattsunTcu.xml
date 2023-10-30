@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelWattsunTcu">
+	<resultMap id="ModelWattsunTcuMap"
+		type="com.nwm.api.entities.ModelWattsunTcuEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="TRACKER_ADDRESS" column="TRACKER_ADDRESS" />
+		<result property="HOUR" column="HOUR" />
+		<result property="MINUTE" column="MINUTE" />
+		<result property="DAY" column="DAY" />
+		<result property="DIGITAL_INPUTS" column="DIGITAL_INPUTS" />
+		<result property="DIGITAL_OUTPUTS" column="DIGITAL_OUTPUTS" />
+		<result property="WATCHDOG_COUNTER" column="WATCHDOG_COUNTER" />
+		<result property="ANGLE_CALC" column="ANGLE_CALC" />
+		<result property="LATITUDE" column="LATITUDE" />
+		<result property="LONGITUDE" column="LONGITUDE" />
+		
+
+	</resultMap>
+
+	<insert id="insertModelWattsunTcu"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_wattsun_tcu`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="TRACKER_ADDRESS != 0.001">
+				`TRACKER_ADDRESS`,
+			</if>
+			<if test="HOUR != 0.001">
+				`HOUR`,
+			</if>
+			<if test="MINUTE != 0.001">
+				`MINUTE`,
+			</if>
+			<if test="DAY != 0.001">
+				`DAY`,
+			</if>
+			<if test="DIGITAL_INPUTS != 0.001">
+				`DIGITAL_INPUTS`,
+			</if>
+			<if test="DIGITAL_OUTPUTS != 0.001">
+				`DIGITAL_OUTPUTS`,
+			</if>
+			<if test="WATCHDOG_COUNTER != 0.001">
+				`WATCHDOG_COUNTER`,
+			</if>
+			<if test="ANGLE_CALC != 0.001">
+				`ANGLE_CALC`,
+			</if>
+			<if test="LATITUDE != 0.001">
+				`LATITUDE`,
+			</if>
+			<if test="LONGITUDE != 0.001">
+				`LONGITUDE`,
+			</if>
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="TRACKER_ADDRESS != 0.001">
+				#{TRACKER_ADDRESS},
+			</if>
+			<if test="HOUR != 0.001">
+				#{HOUR},
+			</if>
+			<if test="MINUTE != 0.001">
+				#{MINUTE},
+			</if>
+			<if test="DAY != 0.001">
+				#{DAY},
+			</if>
+			<if test="DIGITAL_INPUTS != 0.001">
+				#{DIGITAL_INPUTS},
+			</if>
+			<if test="DIGITAL_OUTPUTS != 0.001">
+				#{DIGITAL_OUTPUTS},
+			</if>
+			<if test="WATCHDOG_COUNTER != 0.001">
+				#{WATCHDOG_COUNTER},
+			</if>
+			<if test="ANGLE_CALC != 0.001">
+				#{ANGLE_CALC},
+			</if>
+			<if test="LATITUDE != 0.001">
+				#{LATITUDE},
+			</if>
+			<if test="LONGITUDE != 0.001">
+				#{LONGITUDE},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="TRACKER_ADDRESS != 0.001">
+				`TRACKER_ADDRESS` = #{TRACKER_ADDRESS},
+			</if>
+			<if test="HOUR != 0.001">
+				`HOUR` = #{HOUR},
+			</if>
+			<if test="MINUTE != 0.001">
+				`MINUTE` = #{MINUTE},
+			</if>
+			<if test="DAY != 0.001">
+				`DAY` = #{DAY},
+			</if>
+			<if test="DIGITAL_INPUTS != 0.001">
+				`DIGITAL_INPUTS` = #{DIGITAL_INPUTS},
+			</if>
+			<if test="DIGITAL_OUTPUTS != 0.001">
+				`DIGITAL_OUTPUTS` = #{DIGITAL_OUTPUTS},
+			</if>
+			<if test="WATCHDOG_COUNTER != 0.001">
+				`WATCHDOG_COUNTER` = #{WATCHDOG_COUNTER},
+			</if>
+			<if test="ANGLE_CALC != 0.001">
+				`ANGLE_CALC` = #{ANGLE_CALC},
+			</if>
+			<if test="LATITUDE != 0.001">
+				`LATITUDE` = #{LATITUDE},
+			</if>
+			<if test="LONGITUDE != 0.001">
+				`LONGITUDE` = #{LONGITUDE},
+			</if>
+		</trim>
+	</insert>
+	
+
+</mapper> 
