@@ -117,9 +117,9 @@ public class ModelAbbTrioClass6210Service extends DB {
 			ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 			int hours = zdtNowLosAngeles.getHour();
 
-			if (hours >= 9 && hours <= 17) {
+//			if (hours >= 9 && hours <= 17) {
 				checkTriggerAlertModelAbbTrioClass6210(obj);
-			}
+//			}
 			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
