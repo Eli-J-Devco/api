@@ -63,8 +63,9 @@ public class SitesAnalyticsService extends DB {
 			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			List<Map<String, String>> deviceGroupsList = queryForList("SitesAnalytics.getDeviceGroupsList", obj);
 						
-			if(dataDevice.size() > 0) {
+			if(dataDevice.size() > 0 && deviceGroupsList.size() > 0) {
 				for(int i =0; i< dataDevice.size(); i++) {
 					ObjectMapper oMapper = new ObjectMapper();
 					Map<String, Object> map = oMapper.convertValue(dataDevice.get(i), Map.class);
@@ -97,6 +98,10 @@ public class SitesAnalyticsService extends DB {
 					// get list of time to exclude data from
 					List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
 					maps.put("hidden_data_list", hiddenDataList);
+					
+					// get device's common model table
+					Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().contains(deviceGroup.get("table_name"))).findFirst().get();
+					maps.put("table_name", modelTable.get("table_name"));
 					
 					List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
 					
