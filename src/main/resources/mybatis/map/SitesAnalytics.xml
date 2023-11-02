@@ -91,6 +91,29 @@
 			d.job_tablename,
 			d.id_device_group,
 			
+			
+			<if test="table_name == 'model_sev_sg110cx'">
+				IFNULL(ROUND(AVG(dv.TotalYield), 2), 0.001) AS TotalYield,
+				IFNULL(ROUND(AVG(dv.DailyYield), 2), 0.001) AS DailyYield,
+				IFNULL(ROUND(AVG(dv.ArrayInsulationResistance), 2), 0.001) AS ArrayInsulationResistance,
+				IFNULL(ROUND(AVG(dv.InteriorTemperature), 2), 0.001) AS InteriorTemperature,
+				IFNULL(ROUND(AVG(dv.TotalDCPower), 2), 0.001) AS TotalDCPower,
+				IFNULL(ROUND(AVG(dv.TotalApparentPower), 2), 0.001) AS TotalApparentPower,
+				IFNULL(ROUND(AVG(dv.TotalActivePower), 2), 0.001) AS TotalActivePower,
+				IFNULL(ROUND(AVG(dv.TotalReactivePower), 2), 0.001) AS TotalReactivePower,
+				IFNULL(ROUND(AVG(dv.TotalPowerFactor), 2), 0.001) AS TotalPowerFactor,
+				IFNULL(ROUND(AVG(dv.GridFrequency), 2), 0.001) AS GridFrequency,
+				IFNULL(ROUND(AVG(dv.PhaseAVoltage), 2), 0.001) AS PhaseAVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseBVoltage), 2), 0.001) AS PhaseBVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseCVoltage), 2), 0.001) AS PhaseCVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseACurrent), 2), 0.001) AS PhaseACurrent,
+				IFNULL(ROUND(AVG(dv.PhaseBCurrent), 2), 0.001) AS PhaseBCurrent,
+				IFNULL(ROUND(AVG(dv.PhaseCCurrent), 2), 0.001) AS PhaseCCurrent,
+				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
+				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
+				IFNULL(ROUND(AVG(dv.MeasuredProduction), 2), 0.001) AS MeasuredProduction,
+			</if>
+			
 			<if test="table_name == 'model_wattsun_tracker'">
 				IFNULL(ROUND(AVG(dv.MODE), 2), 0.001) AS MODE,
 				IFNULL(ROUND(AVG(dv.ST_CLEAR_ACCUMULATOR), 2), 0.001) AS ST_CLEAR_ACCUMULATOR,

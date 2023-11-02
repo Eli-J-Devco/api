@@ -60,6 +60,7 @@ import com.nwm.api.entities.ModelPyranometerPoaEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
 import com.nwm.api.entities.ModelSatconPowergate225InverterEntity;
 import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
+import com.nwm.api.entities.ModelSevSg110cxEntity;
 import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
@@ -106,6 +107,7 @@ import com.nwm.api.services.ModelPyranometerPoaService;
 import com.nwm.api.services.ModelRT1Class30000Service;
 import com.nwm.api.services.ModelSatconPowergate225InverterService;
 import com.nwm.api.services.ModelSatconPvs357InverterService;
+import com.nwm.api.services.ModelSevSg110cxService;
 import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
@@ -4311,6 +4313,84 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+												
+											case "model_sev_sg110cx":
+												ModelSevSg110cxService serviceModel = new ModelSevSg110cxService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.0");
+														
+														// ac power
+														if(!Lib.isBlank(words.get(10))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(10)) ? power : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(10)) ? power : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														ModelSevSg110cxEntity dataModelSev = serviceModel.setModelSevSg110cx(line);
+														dataModelSev.setId_device(item.getId());
+														serviceModel.insertModelSevSg110cx(dataModelSev);
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
+												
 											
 										}
 										

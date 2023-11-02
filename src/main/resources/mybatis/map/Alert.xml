@@ -247,6 +247,8 @@
 				WHEN d.datatablename = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				WHEN d.datatablename = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				
+				WHEN d.datatablename = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				ELSE "N/A"
 			END AS key_indicator
 			
@@ -775,6 +777,8 @@
 				
 				WHEN d.datatablename = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				WHEN d.datatablename = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+				
+				WHEN d.datatablename = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				ELSE "N/A"
 			END AS key_indicator
@@ -1712,6 +1716,8 @@
 				
 				WHEN d.datatablename = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				WHEN d.datatablename = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+				
+				WHEN d.datatablename = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				ELSE "N/A"
 			END AS key_indicator
