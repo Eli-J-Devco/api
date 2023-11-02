@@ -144,11 +144,10 @@ public class ModelIVTSolaronEXTService extends DB {
 	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
-	        
-//	        if(hours >=8 && hours <= 18) {
+	        if(hours >=9 && hours <= 17) {
 	        	checkTriggerAlertModelIVTSolaronEXT(obj);
 	        	
-//	        }
+	        }
 	        
 	        return true;
 		} catch (Exception ex) {
@@ -237,7 +236,7 @@ public class ModelIVTSolaronEXTService extends DB {
 					AlertEntity alertItemClose = new AlertEntity();
 					alertItemClose.setId_device(obj.getId_device());
 					// type 6 is warning code
-					alertItemClose.setFaultCodeLevel(5);
+					alertItemClose.setFaultCodeLevel(6);
 					List dataListWarningCode = new ArrayList();
 					dataListWarningCode = queryForList("ModelIVTSolaronEXT.getListTriggerFaultCode", alertItemClose);
 					if(dataListWarningCode.size() > 0) {

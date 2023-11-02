@@ -69,6 +69,8 @@ import com.nwm.api.entities.ModelTTiTrackerEntity;
 import com.nwm.api.entities.ModelVerisIndustriesE50c2aEntity;
 import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
 import com.nwm.api.entities.ModelWKippZonenRT1Entity;
+import com.nwm.api.entities.ModelWattsunTcuEntity;
+import com.nwm.api.entities.ModelWattsunTrackerEntity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.entities.ModelXantrexInverterEntity;
@@ -113,6 +115,8 @@ import com.nwm.api.services.ModelTTiTrackerService;
 import com.nwm.api.services.ModelVerisIndustriesE50c2aService;
 import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
 import com.nwm.api.services.ModelWKippZonenRT1Service;
+import com.nwm.api.services.ModelWattsunTcuService;
+import com.nwm.api.services.ModelWattsunTrackerService;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.services.ModelXantrexGT500EService;
 import com.nwm.api.services.ModelXantrexInverterService;
@@ -4150,6 +4154,159 @@ public class UploadFilesController extends BaseController {
 															e.printStackTrace();  
 														}
 														
+													}
+												}
+												
+												break;
+												
+												
+											case "model_wattsun_tcu":
+												ModelWattsunTcuService serviceModelTcu = new ModelWattsunTcuService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.0");
+														
+														// ReadAngle
+														if(!Lib.isBlank(words.get(11))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(11)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(11)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														ModelWattsunTcuEntity dataModelTcu = serviceModelTcu.setModelWattsunTcu(line);
+														dataModelTcu.setId_device(item.getId());
+														serviceModelTcu.insertModelWattsunTcu(dataModelTcu);
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
+												
+											case "model_wattsun_tracker":
+												ModelWattsunTrackerService serviceModelWT = new ModelWattsunTrackerService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.0");
+														
+														// ReadAngle
+														if(!Lib.isBlank(words.get(8))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														ModelWattsunTrackerEntity dataModelWT = serviceModelWT.setModelWattsunTracker(line);
+														dataModelWT.setId_device(item.getId());
+														serviceModelWT.insertModelWattsunTracker(dataModelWT);
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
 													}
 												}
 												

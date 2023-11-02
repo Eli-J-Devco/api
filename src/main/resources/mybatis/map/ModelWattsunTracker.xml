@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelWattsunTracker">
+	<resultMap id="ModelWattsunTrackerMap"
+		type="com.nwm.api.entities.ModelWattsunTrackerEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="MODE" column="MODE" />
+		<result property="ST_CLEAR_ACCUMULATOR" column="ST_CLEAR_ACCUMULATOR" />
+		<result property="ND_CLEAR_ACCUMULATOR" column="ND_CLEAR_ACCUMULATOR" />
+		<result property="TRACKER_ANGLE_SETPOINT" column="TRACKER_ANGLE_SETPOINT" />
+		<result property="TRACKER_ANGLE" column="TRACKER_ANGLE" />
+		<result property="NIGHT_STOW_POSITION" column="NIGHT_STOW_POSITION" />
+		<result property="WIND_STOW_POSITION" column="WIND_STOW_POSITION" />
+		
+
+	</resultMap>
+
+	<insert id="insertModelWattsunTracker"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_wattsun_tracker`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="MODE != 0.001">
+				`MODE`,
+			</if>
+			<if test="ST_CLEAR_ACCUMULATOR != 0.001">
+				`ST_CLEAR_ACCUMULATOR`,
+			</if>
+			<if test="ND_CLEAR_ACCUMULATOR != 0.001">
+				`ND_CLEAR_ACCUMULATOR`,
+			</if>
+			<if test="TRACKER_ANGLE_SETPOINT != 0.001">
+				`TRACKER_ANGLE_SETPOINT`,
+			</if>
+			<if test="TRACKER_ANGLE != 0.001">
+				`TRACKER_ANGLE`,
+			</if>
+			<if test="NIGHT_STOW_POSITION != 0.001">
+				`NIGHT_STOW_POSITION`,
+			</if>
+			<if test="WIND_STOW_POSITION != 0.001">
+				`WIND_STOW_POSITION`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="MODE != 0.001">
+				#{MODE},
+			</if>
+			<if test="ST_CLEAR_ACCUMULATOR != 0.001">
+				#{ST_CLEAR_ACCUMULATOR},
+			</if>
+			<if test="ND_CLEAR_ACCUMULATOR != 0.001">
+				#{ND_CLEAR_ACCUMULATOR},
+			</if>
+			<if test="TRACKER_ANGLE_SETPOINT != 0.001">
+				#{TRACKER_ANGLE_SETPOINT},
+			</if>
+			<if test="TRACKER_ANGLE != 0.001">
+				#{TRACKER_ANGLE},
+			</if>
+			<if test="NIGHT_STOW_POSITION != 0.001">
+				#{NIGHT_STOW_POSITION},
+			</if>
+			<if test="WIND_STOW_POSITION != 0.001">
+				#{WIND_STOW_POSITION},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="MODE != 0.001">
+				`MODE` = #{MODE},
+			</if>
+			<if test="ST_CLEAR_ACCUMULATOR != 0.001">
+				`ST_CLEAR_ACCUMULATOR` = #{ST_CLEAR_ACCUMULATOR},
+			</if>
+			<if test="ND_CLEAR_ACCUMULATOR != 0.001">
+				`ND_CLEAR_ACCUMULATOR` = #{ND_CLEAR_ACCUMULATOR},
+			</if>
+			<if test="TRACKER_ANGLE_SETPOINT != 0.001">
+				`TRACKER_ANGLE_SETPOINT` = #{TRACKER_ANGLE_SETPOINT},
+			</if>
+			<if test="TRACKER_ANGLE != 0.001">
+				`TRACKER_ANGLE`= #{TRACKER_ANGLE},
+			</if>
+			<if test="NIGHT_STOW_POSITION != 0.001">
+				`NIGHT_STOW_POSITION` = #{NIGHT_STOW_POSITION},
+			</if>
+			<if test="WIND_STOW_POSITION != 0.001">
+				`WIND_STOW_POSITION` = #{WIND_STOW_POSITION},
+			</if>
+		</trim>
+	</insert>
+	
+
+</mapper> 

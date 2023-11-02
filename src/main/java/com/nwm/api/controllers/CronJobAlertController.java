@@ -450,7 +450,7 @@ public class CronJobAlertController extends BaseController {
 										
 
 										if ((lastRowItem.getId_device() <= 0
-												|| lastRowItem.getNvmActivePower() == 0.001) && lastRowItem.getError() != 139) {
+												|| lastRowItem.getNvmActivePower() == 0.001) ) {
 											// Check error exits
 											boolean checkAlertExist = service.checkAlertExist(alertItem);
 											if (!checkAlertExist && alertItem.getId_device() > 0

@@ -247,6 +247,9 @@
 				WHEN d.datatablename = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
 				
+				WHEN d.datatablename = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+				WHEN d.datatablename = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+				
 				ELSE "N/A"
 			END AS key_indicator
 			

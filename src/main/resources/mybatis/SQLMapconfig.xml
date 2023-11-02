@@ -113,6 +113,9 @@
 		<mapper resource="mybatis/map/ModelPoaTemp.xml"/>
 		<mapper resource="mybatis/map/ModelERIWeatherICPClass8050.xml"/>
 		<mapper resource="mybatis/map/ModelXantrexGT500E.xml"/>
+		<mapper resource="mybatis/map/ModelWattsunTcu.xml"/>
+		<mapper resource="mybatis/map/ModelWattsunTracker.xml"/>
+		
 		
 		
 		

@@ -36,7 +36,7 @@ public class ModelPyranometerPoaService extends DB {
 				dataModelPyranometer.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelPyranometer.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelPyranometer.setPoa(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelPyranometer.setPoa(irradiance);
 				dataModelPyranometer.setPoint1(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelPyranometer.setPoint2(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelPyranometer.setPoint3(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));

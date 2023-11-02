@@ -395,7 +395,7 @@
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
+			LIMIT 30 
 			)t
   	</select>
   	
