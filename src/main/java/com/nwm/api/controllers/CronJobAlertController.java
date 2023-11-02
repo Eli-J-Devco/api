@@ -198,6 +198,9 @@ public class CronJobAlertController extends BaseController {
 										case "model_sma_inverter_stp62us41":
 											noProduction = 972;
 											break;
+										case "model_elster_a1700":
+											noProduction = 974;
+											break;
 										}
 
 										BatchJobTableEntity rowItem = service
@@ -437,6 +440,9 @@ public class CronJobAlertController extends BaseController {
 											break;
 										case "model_sma_inverter_stp62us41":
 											noCommunication = 971;
+											break;
+										case "model_elster_a1700":
+											noCommunication = 973;
 											break;
 										}
 

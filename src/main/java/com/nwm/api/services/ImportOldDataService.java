@@ -308,6 +308,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050", dataList.get(i));
 				}
 				break;
+			case "model_elster_a1700":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelElsterA1700.insertModelElsterA1700", dataList.get(i));					
+				}				
+				break;
 			}
 
 			session.commit();

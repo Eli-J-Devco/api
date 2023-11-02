@@ -91,6 +91,47 @@
 			d.job_tablename,
 			d.id_device_group,
 			
+			<if test="table_name == 'model_elster_a1700'">
+				IFNULL(ROUND(AVG(dv.PhaseAVoltage), 2), 0.001) AS PhaseAVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseBVoltage), 2), 0.001) AS PhaseBVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseCVoltage), 2), 0.001) AS PhaseCVoltage,
+				IFNULL(ROUND(AVG(dv.ABLineVoltage), 2), 0.001) AS ABLineVoltage,
+				IFNULL(ROUND(AVG(dv.BCLineVoltage), 2), 0.001) AS BCLineVoltage,
+				IFNULL(ROUND(AVG(dv.CALineVoltage), 2), 0.001) AS CALineVoltage,
+				IFNULL(ROUND(AVG(dv.PhaseACurrent), 2), 0.001) AS PhaseACurrent,
+				IFNULL(ROUND(AVG(dv.PhaseBCurrent), 2), 0.001) AS PhaseBCurrent,
+				IFNULL(ROUND(AVG(dv.PhaseCCurrent), 2), 0.001) AS PhaseCCurrent,
+				IFNULL(ROUND(AVG(dv.PhaseAActivePower), 2), 0.001) AS PhaseAActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseBActivePower), 2), 0.001) AS PhaseBActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseCActivePower), 2), 0.001) AS PhaseCActivePower,
+				IFNULL(ROUND(AVG(dv.TotalActivePower), 2), 0.001) AS TotalActivePower,
+				IFNULL(ROUND(AVG(dv.TotalReactivePower), 2), 0.001) AS TotalReactivePower,
+				IFNULL(ROUND(AVG(dv.TotalApparentPower), 2), 0.001) AS TotalApparentPower,
+				IFNULL(ROUND(AVG(dv.TotalPowerFactor), 2), 0.001) AS TotalPowerFactor,
+				IFNULL(ROUND(AVG(dv.GridFrequency), 2), 0.001) AS GridFrequency,
+				IFNULL(ROUND(AVG(dv.TotalForwardActiveEnergy), 2), 0.001) AS TotalForwardActiveEnergy,
+				IFNULL(ROUND(AVG(dv.TotalReverseActiveEnergy), 2), 0.001) AS TotalReverseActiveEnergy,
+				IFNULL(ROUND(AVG(dv.TotalForwardReactiveEnergy), 2), 0.001) AS TotalForwardReactiveEnergy,
+				IFNULL(ROUND(AVG(dv.TotalReverseReactiveEnergy), 2), 0.001) AS TotalReverseReactiveEnergy,
+				IFNULL(ROUND(AVG(dv.PhaseAForwardActivePower), 2), 0.001) AS PhaseAForwardActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseBForwardActivePower), 2), 0.001) AS PhaseBForwardActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseCForwardActivePower), 2), 0.001) AS PhaseCForwardActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseAReverseActivePower), 2), 0.001) AS PhaseAReverseActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseBReverseActivePower), 2), 0.001) AS PhaseBReverseActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseCReverseActivePower), 2), 0.001) AS PhaseCReverseActivePower,
+				IFNULL(ROUND(AVG(dv.PhaseAForwardReactivePower), 2), 0.001) AS PhaseAForwardReactivePower,
+				IFNULL(ROUND(AVG(dv.PhaseBForwardReactivePower), 2), 0.001) AS PhaseBForwardReactivePower,
+				IFNULL(ROUND(AVG(dv.PhaseCForwardReactivePower), 2), 0.001) AS PhaseCForwardReactivePower,
+				IFNULL(ROUND(AVG(dv.PhaseAReverseReactivePower), 2), 0.001) AS PhaseAReverseReactivePower,
+				IFNULL(ROUND(AVG(dv.PhaseBReverseReactivePower), 2), 0.001) AS PhaseBReverseReactivePower,
+				IFNULL(ROUND(AVG(dv.PhaseCReverseReactivePower), 2), 0.001) AS PhaseCReverseReactivePower,
+				IFNULL(ROUND(AVG(dv.FlatForwardActiveEnergy), 2), 0.001) AS FlatForwardActiveEnergy,
+				IFNULL(ROUND(AVG(dv.PeakForwardActiveEnergy), 2), 0.001) AS PeakForwardActiveEnergy,
+				IFNULL(ROUND(AVG(dv.ValleyForwardActiveEnergy), 2), 0.001) AS ValleyForwardActiveEnergy,
+				IFNULL(ROUND(AVG(dv.FlatReverseActiveEnergy), 2), 0.001) AS FlatReverseActiveEnergy,
+				IFNULL(ROUND(AVG(dv.PeakReverseActiveEnergy), 2), 0.001) AS PeakReverseActiveEnergy,
+				IFNULL(ROUND(AVG(dv.ValleyReverseActiveEnergy), 2), 0.001) AS ValleyReverseActiveEnergy,
+			</if>
 			
 			<if test="table_name == 'model_sev_sg110cx'">
 				IFNULL(ROUND(AVG(dv.TotalYield), 2), 0.001) AS TotalYield,
@@ -157,9 +198,6 @@
 				IFNULL(ROUND(AVG(dv.STATUS_PV), 2), 0.001) AS STATUS_PV,
 				IFNULL(ROUND(AVG(dv.T_LEFT_MATRIX), 2), 0.001) AS T_LEFT_MATRIX,
 				IFNULL(ROUND(AVG(dv.T_RIGHT_MATRIX), 2), 0.001) AS T_RIGHT_MATRIX,
-				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
-				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
-				IFNULL(ROUND(AVG(dv.MeasuredProduction), 2), 0.001) AS MeasuredProduction,
 				
 				
 			</if>
@@ -229,9 +267,6 @@
 				IFNULL(ROUND(AVG(dv.I1CrestFactor), 2), 0.001) AS I1CrestFactor,
 				IFNULL(ROUND(AVG(dv.I2CrestFactor), 2), 0.001) AS I2CrestFactor,
 				IFNULL(ROUND(AVG(dv.I3CrestFactor), 2), 0.001) AS I3CrestFactor,
-				IFNULL(ROUND(AVG(dv.nvmActivePower), 2), 0.001) AS nvmActivePower,
-				IFNULL(ROUND(AVG(dv.nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
-				IFNULL(ROUND(AVG(dv.MeasuredProduction), 2), 0.001) AS MeasuredProduction,
 				
 				
 			</if>

@@ -1611,6 +1611,55 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("nvm_temperature", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
 										
 										break;
+										
+									case "model_elster_a1700":
+										rowItem.put("id_device", !r.getCellText(2).toString().equals("") ? r.getCellText(2).toString() : "0");
+										rowItem.put("error", !r.getCellText(3).toString().equals("") ? r.getCellText(3).toString() : "0");
+										rowItem.put("low_alarm", !r.getCellText(4).toString().equals("") ? r.getCellText(4).toString() : "0");
+										rowItem.put("high_alarm", !r.getCellText(5).toString().equals("") ? r.getCellText(5).toString() : "0");
+										rowItem.put("PhaseAVoltage", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+										rowItem.put("PhaseBVoltage", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+										rowItem.put("PhaseCVoltage", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+										rowItem.put("ABLineVoltage", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+										rowItem.put("BCLineVoltage", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+										rowItem.put("CALineVoltage", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+										rowItem.put("PhaseACurrent", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+										rowItem.put("PhaseBCurrent", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+										rowItem.put("PhaseCCurrent", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+										rowItem.put("PhaseAActivePower", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+										rowItem.put("PhaseBActivePower", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+										rowItem.put("PhaseCActivePower", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+										rowItem.put("TotalActivePower", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+										rowItem.put("TotalReactivePower", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+										rowItem.put("TotalApparentPower", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+										rowItem.put("TotalPowerFactor", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+										rowItem.put("GridFrequency", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+										rowItem.put("TotalForwardActiveEnergy", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+										rowItem.put("TotalReverseActiveEnergy", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+										rowItem.put("TotalForwardReactiveEnergy", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+										rowItem.put("TotalReverseReactiveEnergy", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+										rowItem.put("PhaseAForwardActivePower", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+										rowItem.put("PhaseBForwardActivePower", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+										rowItem.put("PhaseCForwardActivePower", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+										rowItem.put("PhaseAReverseActivePower", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+										rowItem.put("PhaseBReverseActivePower", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+										rowItem.put("PhaseCReverseActivePower", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+										rowItem.put("PhaseAForwardReactivePower", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+										rowItem.put("PhaseBForwardReactivePower", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+										rowItem.put("PhaseCForwardReactivePower", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+										rowItem.put("PhaseAReverseReactivePower", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+										rowItem.put("PhaseBReverseReactivePower", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+										rowItem.put("PhaseCReverseReactivePower", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+										rowItem.put("FlatForwardActiveEnergy", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+										rowItem.put("PeakForwardActiveEnergy", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+										rowItem.put("ValleyForwardActiveEnergy", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+										rowItem.put("FlatReverseActiveEnergy", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+										rowItem.put("PeakReverseActiveEnergy", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+										rowItem.put("ValleyReverseActiveEnergy", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+										rowItem.put("nvmActivePower", !r.getCellText(122).toString().equals("") ? r.getCellText(122).toString() : "0.001");
+										rowItem.put("nvmActiveEnergy", !r.getCellText(123).toString().equals("") ? r.getCellText(123).toString() : "0.001");
+										rowItem.put("MeasuredProduction", !r.getCellText(124).toString().equals("") ? r.getCellText(124).toString() : "0.001");
+										break;
 									}
 									
 									

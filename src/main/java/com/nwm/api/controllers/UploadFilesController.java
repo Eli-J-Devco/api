@@ -44,6 +44,7 @@ import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelERIWeatherICPClass8050Entity;
 import com.nwm.api.entities.ModelElkorProductionMeterEntity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
+import com.nwm.api.entities.ModelElsterA1700Entity;
 import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
 import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
@@ -91,6 +92,7 @@ import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelERIWeatherICPClass8050Service;
 import com.nwm.api.services.ModelElkorProductionMeterService;
 import com.nwm.api.services.ModelElkorWattsonPVMeterService;
+import com.nwm.api.services.ModelElsterA1700Service;
 import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
 import com.nwm.api.services.ModelIMTSolarClass8000Service;
 import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
@@ -4391,6 +4393,100 @@ public class UploadFilesController extends BaseController {
 												
 												break;
 												
+											case "model_elster_a1700":
+												ModelElsterA1700Service serviceModelElsterA1700 = new ModelElsterA1700Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelElsterA1700Entity dataModelElsterA1700 = serviceModelElsterA1700.setModelElsterA1700(line);
+														dataModelElsterA1700.setId_device(item.getId());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElsterA1700Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElsterA1700);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelElsterA1700, scaledValue);
+																if (slug.equals("TotalActivePower")) dataModelElsterA1700.setNvmActivePower(scaledValue);
+																if (slug.equals("TotalForwardActiveEnergy")) dataModelElsterA1700.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// TotalActivePower
+														deviceUpdateE.setLast_updated(dataModelElsterA1700.getTime());
+														deviceUpdateE.setLast_value(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														
+														
+														// Insert alert
+														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+															// Check error code
+															BatchJobService service = new BatchJobService();
+															ErrorEntity errorItem = new ErrorEntity();
+															errorItem.setId_device_group(item.getId_device_group());
+															errorItem.setError_code(words.get(1));
+															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+															if(rowItemError.getId() > 0) {
+																AlertEntity alertItem = new AlertEntity();
+																alertItem.setId_device(item.getId());
+																alertItem.setStart_date(words.get(0).replace("'", ""));
+																alertItem.setId_error(rowItemError.getId());
+																boolean checkAlertExist = service.checkAlertExist(alertItem);
+																if(!checkAlertExist && alertItem.getId_device() > 0) {
+																	// Insert alert
+																	service.insertAlert(alertItem);
+																}
+															}
+														}
+														
+														serviceModelElsterA1700.insertModelElsterA1700(dataModelElsterA1700);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
 											
 										}
 										
