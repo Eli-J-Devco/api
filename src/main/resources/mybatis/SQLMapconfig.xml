@@ -115,6 +115,8 @@
 		<mapper resource="mybatis/map/ModelXantrexGT500E.xml"/>
 		<mapper resource="mybatis/map/ModelWattsunTcu.xml"/>
 		<mapper resource="mybatis/map/ModelWattsunTracker.xml"/>
+		<mapper resource="mybatis/map/ModelSevSg110cx.xml"/>
+		
 		
 		
 		

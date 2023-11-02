@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSevSg110cx">
+	<resultMap id="ModelSevSg110cxMap"
+		type="com.nwm.api.entities.ModelSevSg110cxEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="TotalYield" column="TotalYield" />
+		<result property="DailyYield" column="DailyYield" />
+		<result property="ArrayInsulationResistance" column="ArrayInsulationResistance" />
+		<result property="InteriorTemperature" column="InteriorTemperature" />
+		<result property="TotalDCPower" column="TotalDCPower" />
+		<result property="TotalApparentPower" column="TotalApparentPower" />
+		<result property="TotalActivePower" column="TotalActivePower" />
+		<result property="TotalReactivePower" column="TotalReactivePower" />
+		<result property="TotalPowerFactor" column="TotalPowerFactor" />
+		<result property="GridFrequency" column="GridFrequency" />
+		<result property="PhaseAVoltage" column="PhaseAVoltage" />
+		<result property="PhaseBVoltage" column="PhaseBVoltage" />
+		<result property="PhaseCVoltage" column="PhaseCVoltage" />
+		<result property="PhaseACurrent" column="PhaseACurrent" />
+		<result property="PhaseBCurrent" column="PhaseBCurrent" />
+		<result property="PhaseCCurrent" column="PhaseCCurrent" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+			
+	</resultMap>
+
+	<insert id="insertModelSevSg110cx"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_sev_sg110cx`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="TotalYield != 0.001">
+				`TotalYield`,
+			</if>
+			<if test="DailyYield != 0.001">
+				`DailyYield`,
+			</if>
+			<if test="ArrayInsulationResistance != 0.001">
+				`ArrayInsulationResistance`,
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				`InteriorTemperature`,
+			</if>
+			<if test="TotalDCPower != 0.001">
+				`TotalDCPower`,
+			</if>
+			<if test="TotalApparentPower != 0.001">
+				`TotalApparentPower`,
+			</if>
+			<if test="TotalActivePower != 0.001">
+				`TotalActivePower`,
+			</if>
+			<if test="TotalReactivePower != 0.001">
+				`TotalReactivePower`,
+			</if>
+			<if test="TotalPowerFactor != 0.001">
+				`TotalPowerFactor`,
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency`,
+			</if>
+			<if test="PhaseAVoltage != 0.001">
+				`PhaseAVoltage`,
+			</if>
+			<if test="PhaseBVoltage != 0.001">
+				`PhaseBVoltage`,
+			</if>
+			<if test="PhaseCVoltage != 0.001">
+				`PhaseCVoltage`,
+			</if>
+			<if test="PhaseACurrent != 0.001">
+				`PhaseACurrent`,
+			</if>
+			<if test="PhaseBCurrent != 0.001">
+				`PhaseBCurrent`,
+			</if>
+			<if test="PhaseCCurrent != 0.001">
+				`PhaseCCurrent`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="TotalYield != 0.001">
+				#{TotalYield},
+			</if>
+			<if test="DailyYield != 0.001">
+				#{DailyYield},
+			</if>
+			<if test="ArrayInsulationResistance != 0.001">
+				#{ArrayInsulationResistance},
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				#{InteriorTemperature},
+			</if>
+			<if test="TotalDCPower != 0.001">
+				#{TotalDCPower},
+			</if>
+			<if test="TotalApparentPower != 0.001">
+				#{TotalApparentPower},
+			</if>
+			<if test="TotalActivePower != 0.001">
+				#{TotalActivePower},
+			</if>
+			<if test="TotalReactivePower != 0.001">
+				#{TotalReactivePower},
+			</if>
+			<if test="TotalPowerFactor != 0.001">
+				#{TotalPowerFactor},
+			</if>
+			<if test="GridFrequency != 0.001">
+				#{GridFrequency},
+			</if>
+			<if test="PhaseAVoltage != 0.001">
+				#{PhaseAVoltage},
+			</if>
+			<if test="PhaseBVoltage != 0.001">
+				#{PhaseBVoltage},
+			</if>
+			<if test="PhaseCVoltage != 0.001">
+				#{PhaseCVoltage},
+			</if>
+			<if test="PhaseACurrent != 0.001">
+				#{PhaseACurrent},
+			</if>
+			<if test="PhaseBCurrent != 0.001">
+				#{PhaseBCurrent},
+			</if>
+			<if test="PhaseCCurrent != 0.001">
+				#{PhaseCCurrent},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="TotalYield != 0.001">
+				`TotalYield` = #{TotalYield},
+			</if>
+			<if test="DailyYield != 0.001">
+				`DailyYield` = #{DailyYield},
+			</if>
+			<if test="ArrayInsulationResistance != 0.001">
+				`ArrayInsulationResistance` = #{ArrayInsulationResistance},
+			</if>
+			<if test="InteriorTemperature != 0.001">
+				`InteriorTemperature` = #{InteriorTemperature},
+			</if>
+			<if test="TotalDCPower != 0.001">
+				`TotalDCPower` = #{TotalDCPower},
+			</if>
+			<if test="TotalApparentPower != 0.001">
+				`TotalApparentPower` = #{TotalApparentPower},
+			</if>
+			<if test="TotalActivePower != 0.001">
+				`TotalActivePower` = #{TotalActivePower},
+			</if>
+			<if test="TotalReactivePower != 0.001">
+				`TotalReactivePower` = #{TotalReactivePower},
+			</if>
+			<if test="TotalPowerFactor != 0.001">
+				`TotalPowerFactor` = #{TotalPowerFactor},
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency` = #{GridFrequency},
+			</if>
+			<if test="PhaseAVoltage != 0.001">
+				`PhaseAVoltage` = #{PhaseAVoltage},
+			</if>
+			<if test="PhaseBVoltage != 0.001">
+				`PhaseBVoltage` = #{PhaseBVoltage},
+			</if>
+			<if test="PhaseCVoltage != 0.001">
+				`PhaseCVoltage` = #{PhaseCVoltage},
+			</if>
+			<if test="PhaseACurrent != 0.001">
+				`PhaseACurrent` = #{PhaseACurrent},
+			</if>
+			<if test="PhaseBCurrent != 0.001">
+				`PhaseBCurrent` = #{PhaseBCurrent},
+			</if>
+			<if test="PhaseCCurrent != 0.001">
+				`PhaseCCurrent` = #{PhaseCCurrent},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	
+  	
+  	
+  	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSevSg110cxEntity">
+		SELECT
+			* 
+		FROM
+			ViewModelSevSg110cx dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
