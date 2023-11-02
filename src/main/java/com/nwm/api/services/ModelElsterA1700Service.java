@@ -115,7 +115,7 @@ public class ModelElsterA1700Service extends DB {
 			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
-			 Object insertId = insert("ModelElsterA1700.insertModelShark100", obj);
+			 Object insertId = insert("ModelElsterA1700.insertModelElsterA1700", obj);
 		        if(insertId == null ) {
 		        	return false;
 		        }
