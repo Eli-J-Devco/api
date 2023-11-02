@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVMet100">
+	<resultMap id="ModelPVMet100Map"
+		type="com.nwm.api.entities.ModelPVMet100Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="TransientHorizontalIrradiance" column="TransientHorizontalIrradiance" />
+		<result property="DailyHorizontalIrradiance" column="DailyHorizontalIrradiance" />
+		<result property="AmbientTemperature" column="AmbientTemperature" />
+		<result property="Temperature" column="Temperature" />
+		<result property="WindAngle" column="WindAngle" />
+		<result property="WindSpeed" column="WindSpeed" />
+
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+
+
+	</resultMap>
+
+	<insert id="insertModelPVMet100"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `model_pvmet_100`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="TransientHorizontalIrradiance != 0.001">
+				`TransientHorizontalIrradiance`,
+			</if>
+			<if test="DailyHorizontalIrradiance != 0.001">
+				`DailyHorizontalIrradiance`,
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				`AmbientTemperature`,
+			</if>
+			<if test="Temperature != 0.001">
+				`Temperature`,
+			</if>
+			<if test="WindAngle != 0.001">
+				`WindAngle`,
+			</if>
+			<if test="WindSpeed != 0.001">
+				`WindSpeed`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="TransientHorizontalIrradiance != 0.001">
+				#{TransientHorizontalIrradiance},
+			</if>
+			<if test="DailyHorizontalIrradiance != 0.001">
+				#{DailyHorizontalIrradiance},
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				#{AmbientTemperature},
+			</if>
+			<if test="Temperature != 0.001">
+				#{Temperature},
+			</if>
+			<if test="WindAngle != 0.001">
+				#{WindAngle},
+			</if>
+			<if test="WindSpeed != 0.001">
+				#{WindSpeed},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="TransientHorizontalIrradiance != 0.001">
+				`TransientHorizontalIrradiance` = #{TransientHorizontalIrradiance},
+			</if>
+			<if test="DailyHorizontalIrradiance != 0.001">
+				`DailyHorizontalIrradiance` = #{DailyHorizontalIrradiance},
+			</if>
+			<if test="AmbientTemperature != 0.001">
+				`AmbientTemperature` = #{AmbientTemperature},
+			</if>
+			<if test="Temperature != 0.001">
+				`Temperature` = #{Temperature},
+			</if>
+			<if test="WindAngle != 0.001">
+				`WindAngle` = #{WindAngle},
+			</if>
+			<if test="WindSpeed != 0.001">
+				`WindSpeed` = #{WindSpeed},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance` = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+
+		</trim>
+	</insert>
+
+</mapper> 
