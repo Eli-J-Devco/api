@@ -78,6 +78,7 @@
 		<mapper resource="mybatis/map/ModelLufftWS501UMBWeather.xml" />
 		<mapper resource="mybatis/map/ModelShark100Test.xml" />
 		<mapper resource="mybatis/map/ModelPVPowered3550260500kwInverter.xml" />
+		<mapper resource="mybatis/map/ModelPVMet100.xml"/>
 		<mapper resource="mybatis/map/ModelSolectriaSGI226IVT.xml" />
 		<mapper resource="mybatis/map/ModelDatalogger.xml" />
 		<mapper resource="mybatis/map/ModelTTiTracker.xml" />

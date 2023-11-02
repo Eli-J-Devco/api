@@ -53,6 +53,7 @@ import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
 import com.nwm.api.entities.ModelMeterIon8600Entity;
+import com.nwm.api.entities.ModelPVMet100Entity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
 import com.nwm.api.entities.ModelPoaTempEntity;
@@ -101,6 +102,7 @@ import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
 import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
 import com.nwm.api.services.ModelMeterIon8600Service;
+import com.nwm.api.services.ModelPVMet100Service;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
 import com.nwm.api.services.ModelPoaTempService;
@@ -1148,6 +1150,101 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 											}
+											
+											break;
+											
+										case "model_pvmet_100":
+											ModelPVMet100Service servicePVMet100 = new ModelPVMet100Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													
+													ModelPVMet100Entity dataPVMet100 = servicePVMet100.setModelPVMet100(line);
+													dataPVMet100.setId_device(item.getId());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVMet100Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataPVMet100);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataPVMet100, scaledValue);
+															if (slug.equals("TransientHorizontalIrradiance")) dataPVMet100.setNvm_irradiance(scaledValue);
+															if (slug.equals("AmbientTemperature")) dataPVMet100.setNvm_temperature(scaledValue);
+															if (slug.equals("Temperature")) dataPVMet100.setNvm_panel_temperature(scaledValue);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// Irradiance
+													deviceUpdateE.setLast_updated(dataPVMet100.getTime());
+													deviceUpdateE.setLast_value(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
+													deviceUpdateE.setField_value1(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
+													
+													// Ambient Temperature
+													deviceUpdateE.setField_value2(dataPVMet100.getAmbientTemperature() != 0.001 ? dataPVMet100.getAmbientTemperature() : null);
+													
+													// PV Temperature Module
+													deviceUpdateE.setField_value3(dataPVMet100.getTemperature() != 0.001 ? dataPVMet100.getTemperature() : null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+														// Check error code
+														BatchJobService service = new BatchJobService();
+														ErrorEntity errorItem = new ErrorEntity();
+														errorItem.setId_device_group(item.getId_device_group());
+														errorItem.setError_code(words.get(1));
+														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+														if(rowItemError.getId() > 0) {
+															AlertEntity alertItem = new AlertEntity();
+															alertItem.setId_device(item.getId());
+															alertItem.setStart_date(words.get(0).replace("'", ""));
+															alertItem.setId_error(rowItemError.getId());
+															boolean checkAlertExist = service.checkAlertExist(alertItem);
+															if(!checkAlertExist && alertItem.getId_device() > 0) {
+																// Insert alert
+																service.insertAlert(alertItem);
+															}
+														}
+													}
+													
+													servicePVMet100.insertModelPVMet100(dataPVMet100);
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+//															System.out.println(logFile.getName() + " deleted .log");  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+													
+												}
+											}
+											
 											
 											break;
 											

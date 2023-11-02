@@ -1253,7 +1253,17 @@
 			      IFNULL(ROUND(COUNT(dv.warnings3_reserved), 2), 0.001) AS warnings3_reserved,
 			      IFNULL(ROUND(AVG(dv.ac_current), 2), 0.001) AS ac_current,
 			</if>
-			<if test="table_name == 'model_pvp_inverter'">
+			<if test="(datatablename == 'model_pvmet_100') || (datatablename == 'ViewModelPVMet100')">
+				  
+				  IFNULL(ROUND(IF(AVG(dv.TransientHorizontalIrradiance) <![CDATA[<]]> 0, 0, AVG(dv.TransientHorizontalIrradiance)), 2), 0.001) AS TransientHorizontalIrradiance,
+				  IFNULL(ROUND(IF(AVG(dv.DailyHorizontalIrradiance) <![CDATA[<]]> 0, 0, AVG(dv.DailyHorizontalIrradiance)), 2), 0.001) AS DailyHorizontalIrradiance,
+				  
+			      IFNULL(ROUND(AVG(dv.AmbientTemperature), 2), 0.001) AS AmbientTemperature,
+			      IFNULL(ROUND(AVG(dv.Temperature), 2), 0.001) AS Temperature_PV_Module,
+			      IFNULL(ROUND(AVG(dv.WindAngle), 2), 0.001) AS WindAngle,
+			      IFNULL(ROUND(AVG(dv.WindSpeed), 2), 0.001) AS WindSpeed,
+			</if>
+			<if test="(datatablename == 'model_pvp_inverter') || (datatablename == 'ViewModelPvpInverter')">
 				  IFNULL(ROUND(AVG(dv.total_kwh_delivered), 2), 0.001) AS total_kwh_delivered,
 			      IFNULL(ROUND(AVG(dv.volts_a_l_n), 2), 0.001) AS volts_a_l_n,
 			      IFNULL(ROUND(AVG(dv.volts_b_l_n), 2), 0.001) AS volts_b_l_n,

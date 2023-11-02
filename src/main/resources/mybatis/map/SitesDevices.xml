@@ -138,6 +138,11 @@
 				WHEN d.datatablename = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 				WHEN d.datatablename = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				
+				WHEN d.datatablename = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+				WHEN d.datatablename = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+				WHEN d.datatablename = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
+				
+				
 				WHEN d.datatablename = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN d.datatablename = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
 				WHEN d.datatablename = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
