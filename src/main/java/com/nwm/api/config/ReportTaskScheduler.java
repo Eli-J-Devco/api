@@ -39,6 +39,7 @@ public class ReportTaskScheduler {
 		try {
 			// cancel existed schedules before create all new schedules
 			if (scheduledTasks.size() > 0) scheduledTasks.forEach(task -> task.cancel(true));
+			scheduledTasks.removeAll(scheduledTasks);
 			
 			for (ViewReportEntity report : listReports) {
 				if (report.getSchedule_enable() == 0) continue;

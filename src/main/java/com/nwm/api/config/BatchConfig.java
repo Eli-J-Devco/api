@@ -226,7 +226,10 @@ public class BatchConfig {
 	 */
 	@Bean
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
-        return new ThreadPoolTaskScheduler();
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setRemoveOnCancelPolicy(true);
+		taskScheduler.setPoolSize(5);
+        return taskScheduler;
     }
 	
 	
