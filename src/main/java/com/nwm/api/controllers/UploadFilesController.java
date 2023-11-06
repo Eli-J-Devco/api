@@ -339,25 +339,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataModelPVPowered);
 													
@@ -539,25 +539,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelRT1Class30000.insertModelRT1Class30000(dataModelRTC30000);
 													try  
@@ -634,25 +634,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataKippZonen);
 													try  
@@ -727,25 +727,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataModelIVTSolaronEXT);
 													
@@ -826,25 +826,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataModelHukselfluxSr30d1DeviceclassV0);
 													try  
@@ -917,25 +917,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataModelIMTSolarClass);
 													try  
@@ -1007,25 +1007,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataModelIMTSolarTmodulClass8006);
 													try  
@@ -1099,26 +1099,26 @@ public class UploadFilesController extends BaseController {
 													
 													// Insert alert
 													
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataModelAdvancedEnergySolaron);
 
@@ -1201,25 +1201,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													servicePVMet100.insertModelPVMet100(dataPVMet100);
 													try  
@@ -1293,25 +1293,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelPVPInverter.insertModelPVPInverter(dataModelPVPInverter);
 
@@ -1396,25 +1396,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
@@ -1496,25 +1496,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataModelVeris);
 
@@ -1594,25 +1594,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelSatcon.insertModelSatconPvs357Inverter(dataModelSatcon);
 
@@ -1693,25 +1693,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelElkor.insertModelElkorWattsonPVMeter(dataModelElkor);
 
@@ -1793,25 +1793,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelWkipp.insertModelWKippZonenRT1(dataModelWkipp);
 													try  
@@ -1886,25 +1886,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
 
@@ -1986,25 +1986,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													 
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
 
@@ -2085,25 +2085,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 
 													serviceModelLufft.insertModelLufftClass8020(dataModelLufft);
 													try  
@@ -2176,25 +2176,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataModelLufft);
 													try  
@@ -2267,25 +2267,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataModelSolectria226);
 
@@ -2360,26 +2360,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													ModelTTiTrackerEntity dataModelTTiTracker = serviceModelTTiTracker.setModelTTiTracker(line);
 													dataModelTTiTracker.setId_device(item.getId());
@@ -2458,25 +2458,25 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
 
@@ -2559,26 +2559,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
 
@@ -2660,26 +2660,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataModelAdam4017);
 													
@@ -2754,26 +2754,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelCSM1.insertModelCampellScientificMeter1(dataModelCSM1);
 
@@ -2853,26 +2853,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelCSM2.insertModelCampellScientificMeter2(dataModelCSM2);
 
@@ -2951,26 +2951,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelCSM3.insertModelCampellScientificMeter3(dataModelCSM3);
 
@@ -3050,26 +3050,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelCSM4.insertModelCampellScientificMeter4(dataModelCSM4);
 
@@ -3150,26 +3150,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
 
@@ -3251,26 +3251,26 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataModelSunnyClass9775);
 
@@ -3350,25 +3350,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataModelVeris);
 
@@ -3447,25 +3447,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataModelAE1000NX);
 
@@ -3542,25 +3542,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelAesTx.insertModelAesTxInverter(dataModelAesTx);
 
@@ -3638,25 +3638,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelIon.insertModelMeterIon8600(dataModelIon);
 
@@ -3734,25 +3734,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataModelPM7650);
 
@@ -3832,26 +3832,26 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelXINV.insertModelXantrexInverter(dataModelXantrex);
 
@@ -3933,25 +3933,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelPoaTemp.insertModelPoaTemp(dataModel);
 														try  
@@ -4023,26 +4023,26 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelPy.insertModelPyranometer(dataModelPy);
 
@@ -4125,25 +4125,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataModel);
 														try  
@@ -4218,25 +4218,25 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelgt500.insertModelXantrexGT500EService(dataModel);
 														try  
@@ -4292,26 +4292,26 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														ModelWattsunTcuEntity dataModelTcu = serviceModelTcu.setModelWattsunTcu(line);
 														dataModelTcu.setId_device(item.getId());
@@ -4368,26 +4368,26 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														ModelWattsunTrackerEntity dataModelWT = serviceModelWT.setModelWattsunTracker(line);
 														dataModelWT.setId_device(item.getId());
@@ -4445,26 +4445,26 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														ModelSevSg110cxEntity dataModelSev = serviceModel.setModelSevSg110cx(line);
 														dataModelSev.setId_device(item.getId());
@@ -4536,25 +4536,25 @@ public class UploadFilesController extends BaseController {
 														
 														
 														// Insert alert
-														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-															// Check error code
-															BatchJobService service = new BatchJobService();
-															ErrorEntity errorItem = new ErrorEntity();
-															errorItem.setId_device_group(item.getId_device_group());
-															errorItem.setError_code(words.get(1));
-															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-															if(rowItemError.getId() > 0) {
-																AlertEntity alertItem = new AlertEntity();
-																alertItem.setId_device(item.getId());
-																alertItem.setStart_date(words.get(0).replace("'", ""));
-																alertItem.setId_error(rowItemError.getId());
-																boolean checkAlertExist = service.checkAlertExist(alertItem);
-																if(!checkAlertExist && alertItem.getId_device() > 0) {
-																	// Insert alert
-																	service.insertAlert(alertItem);
-																}
-															}
-														}
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
 														
 														serviceModelElsterA1700.insertModelElsterA1700(dataModelElsterA1700);
 
