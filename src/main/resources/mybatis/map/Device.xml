@@ -3230,7 +3230,7 @@
 	
 	
 	<insert id="createBJobData">
-		CREATE OR REPLACE VIEW `bjob${id}_${datatablename}` AS
+		CREATE OR REPLACE VIEW `BJob${id}_${datatablename}` AS
 		  	SELECT
 				* 
 			FROM
