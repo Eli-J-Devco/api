@@ -175,4 +175,96 @@ public class CalculationMeasuredProductionController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description Import table virtual device
+	 * @author long.pham
+	 * @since 2023-06-16
+	 * @return {}
+	 */
+	@GetMapping("/move-data")
+	@ResponseBody
+	public Object renderMoveData(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			
+			String token = (String) params.get("token");
+			if(token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			
+//			int day = 1;
+//			String totalDay = (String) params.get("day");
+//			if(totalDay != null && Integer.parseInt(totalDay) > 0 ) {
+//				day = Integer.parseInt(totalDay);
+//			}
+		    
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+			
+			if(idSite != null && Integer.parseInt(idSite) > 0 ) {
+				id_site = Integer.parseInt(idSite);
+			}
+			
+			CalculationMeasuredProductionEntity entity = new CalculationMeasuredProductionEntity();
+			entity.setId_site(id_site);
+		    
+			CalculationMeasureProductionService service = new CalculationMeasureProductionService();
+			List<?> listDevices = service.getListDeviceMoveData(entity);
+			
+			if (listDevices == null || listDevices.size() == 0) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+
+			for (int i = 0; i < listDevices.size(); i++) {
+				CalculationMeasuredProductionEntity deviceItem = (CalculationMeasuredProductionEntity) listDevices.get(i);
+				
+				deviceItem.setNewtablename("data"+deviceItem.getId() +"_"+ deviceItem.getDatatablename());
+				
+				// Create new table 
+				CalculationMeasuredProductionEntity data = service.insertTable(deviceItem);
+
+//				if (data != null) {
+//					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+//				} else {
+//					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+//				}
+				
+//				createTableDevice
+				
+				
+				
+				
+//				if(day <= 60) {
+//					deviceItem.setDatatablename(deviceItem.getView_tablename());
+//				}
+//				
+//				Date now = new Date();
+//				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTime_zone_value()));
+//				SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+//				Calendar calCurrent = Calendar.getInstance();
+//				calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
+//				calCurrent.add(Calendar.DATE, -day);
+//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//				Calendar cal = Calendar.getInstance();
+//				Date currentDate = calCurrent.getTime();
+//				
+//				for(int t = 0; t <= day; t++) {
+//					cal.setTime(currentDate);
+//					cal.add(Calendar.DATE, t);
+//					System.out.println("Calculation Measured productuon: "+ dateFormat.format(cal.getTime()) + " 00:00:00");
+//					deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
+//					deviceItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
+//					service.updateMeasuredProduction(deviceItem);
+//				}
+			}
+
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 }

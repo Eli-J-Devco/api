@@ -4,6 +4,37 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CalculationMeasuredProduction">
 	
+	<select id="getListDeviceMoveData" resultType="com.nwm.api.entities.CalculationMeasuredProductionEntity">
+		SELECT
+			null AS time,
+			d.id,
+			d.id AS id_device,
+			d.devicename,
+			d.datatablename,
+			d.id_site,
+			d.id_device_type,
+			d.id_device_group,
+			s.data_send_time,
+			null AS start_date,
+			null AS end_date,
+			null AS MeasuredProduction,
+			t.`offset` AS time_zone_value,
+			d.view_tablename,
+			d.job_tablename
+		FROM
+			device d
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			<if test="id_site > 0">
+				AND d.id_site = #{id_site}
+			</if>
+	</select>
+	
 	
 	<select id="getListDevice" resultType="com.nwm.api.entities.CalculationMeasuredProductionEntity">
 		SELECT
@@ -13,6 +44,7 @@
 			d.datatablename,
 			d.id_site,
 			d.id_device_type,
+			d.id_device_group,
 			s.data_send_time,
 			null AS start_date,
 			null AS end_date,

@@ -22,8 +22,24 @@ public class CalculationMeasuredProductionEntity {
 	private int totalDay = 0;
 	private String view_tablename;
 	private String job_tablename;
+	private int id_device_group;
+	private String newtablename;
 	
 	
+	
+	
+	public String getNewtablename() {
+		return newtablename;
+	}
+	public void setNewtablename(String newtablename) {
+		this.newtablename = newtablename;
+	}
+	public int getId_device_group() {
+		return id_device_group;
+	}
+	public void setId_device_group(int id_device_group) {
+		this.id_device_group = id_device_group;
+	}
 	public String getTime() {
 		return time;
 	}
