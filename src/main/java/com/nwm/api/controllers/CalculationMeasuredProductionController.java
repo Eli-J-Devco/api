@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.CalculationMeasureProductionService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -210,8 +211,18 @@ public class CalculationMeasuredProductionController extends BaseController {
 			entity.setId_site(id_site);
 		    
 			CalculationMeasureProductionService service = new CalculationMeasureProductionService();
-			List<?> listDevices = service.getListDeviceMoveData(entity);
 			
+			// Create site data report 
+			SiteEntity siteItem = new SiteEntity();
+			siteItem.setId(id_site);
+			
+			SiteEntity getDetailSite = service.getDetailSite(siteItem);
+			if(getDetailSite.getId() > 0) {
+				service.insertTableReport(getDetailSite);
+			}
+			
+			
+			List<?> listDevices = service.getListDeviceMoveData(entity);
 			if (listDevices == null || listDevices.size() == 0) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
@@ -222,7 +233,7 @@ public class CalculationMeasuredProductionController extends BaseController {
 				deviceItem.setNewtablename("data"+deviceItem.getId() +"_"+ deviceItem.getDatatablename());
 				
 				// Create new table 
-				CalculationMeasuredProductionEntity data = service.insertTable(deviceItem);
+//				CalculationMeasuredProductionEntity data = service.insertTable(deviceItem);
 
 //				if (data != null) {
 //					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);

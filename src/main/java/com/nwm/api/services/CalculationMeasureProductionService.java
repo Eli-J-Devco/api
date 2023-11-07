@@ -13,6 +13,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.SiteEntity;
 
 public class CalculationMeasureProductionService extends DB {
 	
@@ -153,4 +154,60 @@ public class CalculationMeasureProductionService extends DB {
 		
 	}
 	
+	
+	
+	
+	
+	/**
+	 * @description get site detail
+	 * @author long.pham
+	 * @since 2020-10-22
+	 * @param id_customer, id_site
+	 * @return Object
+	 */
+
+	public SiteEntity getDetailSite(SiteEntity obj) {
+		SiteEntity dataObj = new SiteEntity();
+		try {
+			dataObj = (SiteEntity) queryForObject("CalculationMeasuredProduction.getDetailSite", obj);
+			if (dataObj == null)
+				return new SiteEntity();
+		} catch (Exception ex) {
+			return new SiteEntity();
+		}
+		return dataObj;
+	}
+	
+	
+	/**
+	 * @description insert device
+	 * @author long.pham
+	 * @since 2023-11-07
+	 */
+	public SiteEntity insertTableReport(SiteEntity obj) 
+	{
+		SqlSession session = this.beginTransaction();
+		try {
+			// Create table site data report
+			session.insert("CalculationMeasuredProduction.createTableReport", obj);
+			// Move data site data report
+			session.insert("CalculationMeasuredProduction.moveSiteDataReport", obj);
+			
+			// Create table virtual device
+			session.insert("CalculationMeasuredProduction.createTableVirtualDevice", obj);
+			// Move data table virtual device
+			session.insert("CalculationMeasuredProduction.moveSiteDataVirtualDevice", obj);
+
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Device.insertDevice", ex);
+			obj.setId(0);
+			return obj;
+		} finally {
+			session.close();
+		}	
+		
+	}
 }
