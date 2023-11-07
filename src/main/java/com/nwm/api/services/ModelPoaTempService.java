@@ -38,7 +38,7 @@ public class ModelPoaTempService extends DB {
 				// set custom field
 				dataModel.setNvm_irradiance(0.001);
 				dataModel.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModel.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				
 				return dataModel;
 				
