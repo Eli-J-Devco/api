@@ -54,4 +54,19 @@ public class TimeZoneService extends DB {
 		return dataList;
 	}
 
+	
+	
+	/**
+	 * @description update time zone offset
+	 * @author long.pham
+	 * @since 2023-11-07
+	 * @param id
+	 */
+	public boolean updateTimeZoneOffset(TimeZoneEntity obj){
+		try{
+			return update("TimeZone.updateTimeZoneOffset", obj)>0;
+		}catch (Exception ex) {
+			return false;
+		}
+	}
 }

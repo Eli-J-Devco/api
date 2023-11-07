@@ -61,4 +61,12 @@
 			t.`status` = 1 AND t.is_delete = 0;
 	</select>
 	
+	
+	<update id="updateTimeZoneOffset">
+		UPDATE `time_zone`
+		SET
+			`offset` = #{offset}
+		WHERE
+			`id` = #{id}
+	</update>
 </mapper>
