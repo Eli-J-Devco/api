@@ -30,7 +30,7 @@ public class ReportTaskScheduler {
     public void scheduleWithCronTrigger() {
     	ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
     	String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-    	if (env.equals("staging")) return;
+    	if (!env.equals("prod")) return;
     	
     	BatchJobService service = new BatchJobService();
     	BatchJob batchJob = new BatchJob();
