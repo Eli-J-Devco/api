@@ -27,8 +27,17 @@ public class BatchJobTableEntity{
 	private double nvmActiveEnergy;
 	private int id_device_type;	
 	private int id_device_group;
+	private int count_item;
 	
 	
+	
+	
+	public int getCount_item() {
+		return count_item;
+	}
+	public void setCount_item(int count_item) {
+		this.count_item = count_item;
+	}
 	public String getJob_tablename() {
 		return job_tablename;
 	}

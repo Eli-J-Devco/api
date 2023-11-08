@@ -88,8 +88,7 @@ public class CronJobAlertController extends BaseController {
 					String sDateUTC = formatUTC.format(now);
 					
 
-					if (hourOfDay >= (objSite.getStart_date_time() + 2)
-							&& hourOfDay <= (objSite.getEnd_date_time() - 2)) {
+					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						// Check alert datalogger no communication
 						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
 						if (objDatalogger.getId() > 0) {
@@ -114,117 +113,25 @@ public class CronJobAlertController extends BaseController {
 										}
 
 										bathJobEntity.setId_device(obj.getId());
+										int noProduction = obj.getId_error() > 0 ? obj.getId_error() : 0;
 
-										int noProduction = 0;
-										switch (obj.getDatatablename()) {
-										case "model_shark100":
-											noProduction = 48;
-											break;
-										case "model_ivt_solaron_ext":
-											noProduction = 53;
-											break;
-										case "model_pvp_inverter":
-											noProduction = 54;
-											break;
-										case "model_advanced_energy_solaron":
-											noProduction = 55;
-											break;
-										case "model_chint_solectria_inverter_class9725":
-											noProduction = 56;
-											break;
-										case "model_veris_industries_e51c2_power_meter":
-											noProduction = 57;
-											break;
-										case "model_satcon_pvs357_inverter":
-											noProduction = 58;
-											break;
-										case "model_elkor_wattson_pv_meter":
-											noProduction = 59;
-											break;
-										case "model_elkor_production_meter":
-											noProduction = 60;
-											break;
-										case "model_abb_trio_class6210":
-											noProduction = 61;
-											break;
-										case "model_solectria_sgi_226ivt":
-											noProduction = 133;
-											break;
-										case "model_pv_powered_35_50_260_500kw_inverter":
-											noProduction = 135;
-											break;
-										case "model_campell_scientific_meter1":
-											noProduction = 764;
-											break;
-										case "model_campell_scientific_meter2":
-											noProduction = 765;
-											break;
-										case "model_campell_scientific_meter3":
-											noProduction = 766;
-											break;
-										case "model_campell_scientific_meter4":
-											noProduction = 767;
-											break;
-										case "model_xantrex_gt100_250_500":
-											noProduction = 762;
-											break;
-										case "model_veris_industries_e50c2a":
-											noProduction = 920;
-											break;
-										case "model_sunny_central_class9775_inverter":
-											noProduction = 922;
-											break;
-										case "model_satcon_powergate_225_inverter":
-											noProduction = 924;
-											break;
-										case "model_solaredge_inverter":
-											noProduction = 926;
-											break;
-										case "model_sma_inverter_stp1200tlus10":
-											noProduction = 928;
-											break;
-										case "model_sma_inverter_stp24ktlus10":
-											noProduction = 930;
-											break;
-										case "model_sungrow_sg50cx":
-											noProduction = 932;
-											break;
-										case "model_sungrow_sg110cx":
-											noProduction = 934;
-											break;
-										case "model_sma_inverter_stp30000tlus10":
-											noProduction = 970;
-											break;
-										case "model_sma_inverter_stp62us41":
-											noProduction = 972;
-											break;
-										case "model_elster_a1700":
-											noProduction = 974;
-											break;
-										}
-
-										BatchJobTableEntity rowItem = service
-												.getLastRowItemCheckNoProduction(bathJobEntity);
+										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
 										if (rowItem.getNvmActivePower() != 0.001) {
-											if ((rowItem.getId_device() > 0 && rowItem.getNvmActivePower() <= 0) ) {
+											if ((rowItem.getId_device() > 0 && (rowItem.getNvmActivePower() <= 0 || rowItem.getCount_item() == 5 )) ) {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
 												alertItem.setId_error(noProduction);
-												alertItem.setStart_date(
-														!Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated()
-																: sDateUTC);
+												alertItem.setStart_date( !Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
 												// Check error exits
 												boolean checkAlertExist = service.checkAlertExist(alertItem);
-												if (!checkAlertExist && alertItem.getId_device() > 0
-														&& alertItem.getId_error() > 0) {
+												if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
 													// Insert error
 													service.insertAlert(alertItem);
 												}
 											} else {
 												// Close alert no production
 												bathJobEntity.setId_error(noProduction);
-												BatchJobTableEntity rowItemRemove = service
-														.getRowItemAlert(bathJobEntity);
+												BatchJobTableEntity rowItemRemove = service.getRowItemAlert(bathJobEntity);
 												rowItemRemove.setEnd_date(sDateUTC);
 												if (rowItemRemove.getId() > 0) {
 													service.updateCloseAlert(rowItemRemove);
@@ -295,8 +202,7 @@ public class CronJobAlertController extends BaseController {
 					formatUTC.setTimeZone(tzUTC);
 					String sDateUTC = formatUTC.format(now);
 
-					if (hourOfDay >= (objSite.getStart_date_time() + 2)
-							&& hourOfDay <= (objSite.getEnd_date_time() - 2)) {
+					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						String flag = "off";
 						// Check alert datalogger no communication
 						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
@@ -341,7 +247,7 @@ public class CronJobAlertController extends BaseController {
 							// Get list device meter and inverter
 							DeviceEntity dEntity = new DeviceEntity();
 							dEntity.setId_site(objSite.getId());
-							List<?> listDeviceBySite = service.getListMeterAndInverterBySite(dEntity);
+							List<?> listDeviceBySite = service.getListDeviceCheckNoCom(dEntity);
 							if (listDeviceBySite.size() > 0) {
 								for (int i = 0; i < listDeviceBySite.size(); i++) {
 									DeviceEntity obj = (DeviceEntity) listDeviceBySite.get(i);
@@ -358,117 +264,27 @@ public class CronJobAlertController extends BaseController {
 
 										bathJobEntity.setId_device(obj.getId());
 
-										int noCommunication = 0;
-										switch (obj.getDatatablename()) {
-										case "model_shark100":
-											noCommunication = 49;
-											break;
-										case "model_ivt_solaron_ext":
-											noCommunication = 62;
-											break;
-										case "model_pvp_inverter":
-											noCommunication = 63;
-											break;
-										case "model_advanced_energy_solaron":
-											noCommunication = 64;
-											break;
-										case "model_chint_solectria_inverter_class9725":
-											noCommunication = 65;
-											break;
-										case "model_veris_industries_e51c2_power_meter":
-											noCommunication = 66;
-											break;
-										case "model_satcon_pvs357_inverter":
-											noCommunication = 67;
-											break;
-										case "model_elkor_wattson_pv_meter":
-											noCommunication = 68;
-											break;
-										case "model_elkor_production_meter":
-											noCommunication = 69;
-											break;
-										case "model_abb_trio_class6210":
-											noCommunication = 70;
-											break;
-										case "model_solectria_sgi_226ivt":
-											noCommunication = 132;
-											break;
-										case "model_pv_powered_35_50_260_500kw_inverter":
-											noCommunication = 134;
-											break;
-										case "model_xantrex_gt100_250_500":
-											noCommunication = 763;
-											break;
-										case "model_campell_scientific_meter1":
-											noCommunication = 771;
-											break;
-										case "model_campell_scientific_meter2":
-											noCommunication = 770;
-											break;
-										case "model_campell_scientific_meter3":
-											noCommunication = 769;
-											break;
-										case "model_campell_scientific_meter4":
-											noCommunication = 768;
-											break;
-										case "model_veris_industries_e50c2a":
-											noCommunication = 919;
-											break;
-										case "model_sunny_central_class9775_inverter":
-											noCommunication = 921;
-											break;
-										case "model_satcon_powergate_225_inverter":
-											noCommunication = 924;
-											break;
-										case "model_solaredge_inverter":
-											noCommunication = 925;
-											break;
-										case "model_sma_inverter_stp1200tlus10":
-											noCommunication = 927;
-											break;
-										case "model_sma_inverter_stp24ktlus10":
-											noCommunication = 929;
-											break;
-										case "model_sungrow_sg50cx":
-											noCommunication = 931;
-											break;
-										case "model_sungrow_sg110cx":
-											noCommunication = 933;
-											break;
-										case "model_sma_inverter_stp30000tlus10":
-											noCommunication = 969;
-											break;
-										case "model_sma_inverter_stp62us41":
-											noCommunication = 971;
-											break;
-										case "model_elster_a1700":
-											noCommunication = 973;
-											break;
-										}
+										int noCommunication = obj.getId_error() > 0 ? obj.getId_error() : 0;
+										
 
-										BatchJobTableEntity lastRowItem = service
-												.getLastRowItemCheckNoCommunication(bathJobEntity);
+										BatchJobTableEntity lastRowItem = service.getLastRowItemCheckNoCommunication(bathJobEntity);
 										AlertEntity alertItem = new AlertEntity();
 										alertItem.setId_device(obj.getId());
 										alertItem.setId_error(noCommunication);
-										alertItem.setStart_date(
-												!Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
+										alertItem.setStart_date(!Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
 										
 
-										if ((lastRowItem.getId_device() <= 0
-												|| lastRowItem.getNvmActivePower() == 0.001) ) {
+										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == 0.001) ) {
 											// Check error exits
 											boolean checkAlertExist = service.checkAlertExist(alertItem);
-											if (!checkAlertExist && alertItem.getId_device() > 0
-													&& alertItem.getId_error() > 0) {
+											if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
 												// Insert error
 												service.insertAlert(alertItem);
 											}
 
 										} else {
 											// Close no communication
-											AlertEntity checkAlertExist = (AlertEntity) service
-													.getAlertDetail(alertItem);
+											AlertEntity checkAlertExist = (AlertEntity) service.getAlertDetail(alertItem);
 											if (checkAlertExist.getId() > 0) {
 												bathJobEntity.setEnd_date(sDateUTC);
 												bathJobEntity.setId(checkAlertExist.getId());

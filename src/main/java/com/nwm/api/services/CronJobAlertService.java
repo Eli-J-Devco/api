@@ -299,6 +299,25 @@ public class CronJobAlertService extends DB {
 		return dataList;
 	}
 	
+	
+	/**
+	 * @description get list device by site
+	 * @author long.pham
+	 * @since 2023-07-20
+	 */
+	
+	public List getListDeviceCheckNoCom(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListDeviceCheckNoCom", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 	/**
 	 * @description get list device
 	 * @author long.pham

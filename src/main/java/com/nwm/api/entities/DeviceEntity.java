@@ -116,9 +116,23 @@ public class DeviceEntity {
 	private List commandResult;
 	private int is_supper_admin;
 	private String standard_name;
+	private int id_error;
+	private String error_code;
 	
 	
 	
+	public int getId_error() {
+		return id_error;
+	}
+	public void setId_error(int id_error) {
+		this.id_error = id_error;
+	}
+	public String getError_code() {
+		return error_code;
+	}
+	public void setError_code(String error_code) {
+		this.error_code = error_code;
+	}
 	public String getStandard_name() {
 		return standard_name;
 	}
