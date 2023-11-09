@@ -288,17 +288,17 @@ public class BatchConfig {
 	}
 	
 	
-	/**
-	 * @description get sunrise sunset
-	 * @author Duy.Phan
-	 * @since 2023-02-02
-	 */
-	@Scheduled(cron = "0 0 0 * * 0")
-	@Scheduled(cron = "0 0 0 * * 1")
-	public void startBatchJobGetSunriseSunset() throws Exception {
-		BatchJob job = new BatchJob(); 
-		job.runCronJobGetSunriseSunset();
-	}
+//	/**
+//	 * @description get sunrise sunset
+//	 * @author Duy.Phan
+//	 * @since 2023-02-02
+//	 */
+//	@Scheduled(cron = "0 0 0 * * 0")
+//	@Scheduled(cron = "0 0 0 * * 1")
+//	public void startBatchJobGetSunriseSunset() throws Exception {
+//		BatchJob job = new BatchJob(); 
+//		job.runCronJobGetSunriseSunset();
+//	}
 	
 	/**
 	 * @description batch job get run ssh cell modem 
