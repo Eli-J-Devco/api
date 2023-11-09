@@ -121,7 +121,7 @@ public class CronJobAlertController extends BaseController {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
 												alertItem.setId_error(noProduction);
-												alertItem.setStart_date( !Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
+												alertItem.setStart_date( !Lib.isBlank(rowItem.getTime()) ? rowItem.getTime() : sDateUTC);
 												// Check error exits
 												boolean checkAlertExist = service.checkAlertExist(alertItem);
 												if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
@@ -271,7 +271,7 @@ public class CronJobAlertController extends BaseController {
 										AlertEntity alertItem = new AlertEntity();
 										alertItem.setId_device(obj.getId());
 										alertItem.setId_error(noCommunication);
-										alertItem.setStart_date(!Lib.isBlank(obj.getLast_updated()) ? obj.getLast_updated() : sDateUTC);
+										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 										
 
 										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == 0.001) ) {

@@ -3218,7 +3218,7 @@
 	
 	
 	<insert id="createViewThreeMonthData">
-		CREATE OR REPLACE VIEW `view${id}_${datatablename}` AS
+		CREATE OR REPLACE VIEW `View${id}_${datatablename}` AS
 		  	SELECT
 				* 
 			FROM
