@@ -234,7 +234,7 @@
 							WHERE r.id = #{id_role}
 						</if> -->
 						
-						<if test="roles != null and !roles.isEmpty() and is_supper_admin != 1">
+						<if test="roles != null and !roles.isEmpty()">
 							WHERE r.id IN  (
 								<foreach item="item" index="index" collection="roles" separator=" , ">
 									#{item.id}
@@ -328,8 +328,26 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.EmployeeManageEntity">
     	SELECT count(*) as totalRecord
 		FROM employee e
-		WHERE e.is_delete = 0
+		LEFT JOIN (
+				SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
+				FROM employee_role_map er 
+				LEFT JOIN role r ON r.id = er.id_role
+				
+				<if test="roles != null and !roles.isEmpty()">
+					WHERE r.id IN  (
+						<foreach item="item" index="index" collection="roles" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				GROUP BY er.id_employee
+			)t ON t.id_employee = e.id
 		
+		WHERE e.is_delete = 0
+		<if test="roles != null and !roles.isEmpty() ">
+			AND t.group_roles <![CDATA[!=]]> ""
+		</if>
 		
 		<if test="keyword != null">
 			AND ( first_name LIKE CONCAT("%",#{keyword}, "%") OR last_name LIKE CONCAT("%",#{keyword}, "%") OR phone LIKE CONCAT("%",#{keyword}, "%") OR email LIKE CONCAT("%",#{keyword}, "%"))
