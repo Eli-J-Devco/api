@@ -202,7 +202,7 @@ public class CronJobAlertController extends BaseController {
 					formatUTC.setTimeZone(tzUTC);
 					String sDateUTC = formatUTC.format(now);
 
-					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
+					if (hourOfDay >= (objSite.getStart_date_time() + 0) && hourOfDay <= (objSite.getEnd_date_time() - 0)) {
 						String flag = "off";
 						// Check alert datalogger no communication
 						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
