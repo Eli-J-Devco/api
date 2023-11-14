@@ -225,7 +225,7 @@
 			dt.image,
 			s.datalogger_ip,
 			d.ip_address,
-			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %h:%i %p') AS last_updated,
+			IFNULL(DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS last_updated,
 			p.totalError,
 			d.hidden,
 			CASE
