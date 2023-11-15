@@ -440,25 +440,25 @@ public class UploadFilesController extends BaseController {
 													
 													
 													// Insert alert
-													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-														// Check error code
-														BatchJobService service = new BatchJobService();
-														ErrorEntity errorItem = new ErrorEntity();
-														errorItem.setId_device_group(item.getId_device_group());
-														errorItem.setError_code(words.get(1));
-														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-														if(rowItemError.getId() > 0) {
-															AlertEntity alertItem = new AlertEntity();
-															alertItem.setId_device(item.getId());
-															alertItem.setStart_date(words.get(0).replace("'", ""));
-															alertItem.setId_error(rowItemError.getId());
-															boolean checkAlertExist = service.checkAlertExist(alertItem);
-															if(!checkAlertExist && alertItem.getId_device() > 0) {
-																// Insert alert
-																service.insertAlert(alertItem);
-															}
-														}
-													}
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
 													
 													serviceModelShark100.insertModelShark100(dataModelShark100);
 
