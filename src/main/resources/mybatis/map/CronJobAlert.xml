@@ -204,7 +204,7 @@
 					s.start_date_time,
 					s.end_date_time,
 					d.id,
-					IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower
+					IF( u.nvmActivePower = 0, 0.001,  IFNULL(u.nvmActivePower, 0.001) ) AS nvmActivePower
 				FROM
 					${datatablename} u
 					LEFT JOIN device d ON d.id = u.id_device
@@ -214,7 +214,7 @@
 				WHERE u.id_device = #{id} AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00")
 				ORDER BY
 					u.`time` DESC 
-					LIMIT 5
+					LIMIT 10
 		)t
   	</select>
   	
