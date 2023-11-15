@@ -116,7 +116,7 @@ public class CronJobAlertController extends BaseController {
 										int noProduction = obj.getId_error() > 0 ? obj.getId_error() : 0;
 
 										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
-//										if (rowItem.getNvmActivePower() != 0.001) {
+										if (rowItem.getNvmActivePower() != 0.001) {
 											if ((rowItem.getId_device() > 0 && (rowItem.getCount_item() == 10 )) ) {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
@@ -137,7 +137,7 @@ public class CronJobAlertController extends BaseController {
 													service.updateCloseAlert(rowItemRemove);
 												}
 											}
-//										}
+										}
 
 									}
 								}
