@@ -277,7 +277,7 @@ public class CronJobAlertController extends BaseController {
 										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 										
 
-										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == 0.001) ) {
+										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getCount_item() == 10) ) {
 											// Check error exits
 											boolean checkAlertExist = service.checkAlertExist(alertItem);
 											if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
