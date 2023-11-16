@@ -61,6 +61,7 @@ public class CronJobAlertController extends BaseController {
 				id_site = Integer.parseInt(idSite);
 			}
 
+			id_site = 134;
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
@@ -178,6 +179,7 @@ public class CronJobAlertController extends BaseController {
 				id_site = Integer.parseInt(idSite);
 			}
 
+			id_site = 134;
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
