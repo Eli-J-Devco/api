@@ -194,7 +194,7 @@
 			t.start_date_time,
 			t.end_date_time,
 			t.id,
-			IF( SUM(t.nvmActivePower) = 0.005, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
+			IF( SUM(t.nvmActivePower) = 0.01, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
 			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item
 		FROM (
 			SELECT
@@ -204,7 +204,7 @@
 					s.start_date_time,
 					s.end_date_time,
 					d.id,
-					IF( u.nvmActivePower = 0, 0.001,  IFNULL(u.nvmActivePower, 0.001) ) AS nvmActivePower
+					u.nvmActivePower
 				FROM
 					${datatablename} u
 					LEFT JOIN device d ON d.id = u.id_device
