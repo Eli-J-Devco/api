@@ -124,6 +124,7 @@
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>
+			GROUP BY s.id
 	</select>
 	
 	
@@ -193,7 +194,7 @@
 			t.start_date_time,
 			t.end_date_time,
 			t.id,
-			IF( SUM(t.nvmActivePower) = 0.005, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
+			IF( SUM(t.nvmActivePower) = 0.01, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
 			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item
 		FROM (
 			SELECT
@@ -203,7 +204,7 @@
 					s.start_date_time,
 					s.end_date_time,
 					d.id,
-					IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower
+					u.nvmActivePower
 				FROM
 					${datatablename} u
 					LEFT JOIN device d ON d.id = u.id_device
@@ -213,7 +214,7 @@
 				WHERE u.id_device = #{id} AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00")
 				ORDER BY
 					u.`time` DESC 
-					LIMIT 5
+					LIMIT 10
 		)t
   	</select>
   	
@@ -243,22 +244,31 @@
   	</select>
   	
   	<select id="getLastRowItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
-    	SELECT
-    		u.`time`, 
-    		u.`id_device`, 
-    		u.`error`,
-    		IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
-    		u.nvmActiveEnergy,
-    		d.devicename
-		FROM ${datatablename} u 
-		LEFT JOIN device d ON u.id_device = d.id
-		LEFT JOIN site s ON d.id_site = s.id
-		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE u.id_device = #{id_device}
+    	SELECT 
+			t.time,
+			t.devicename,
+			t.id_device,
+			t.nvmActivePower,
+			t.nvmActiveEnergy,
+			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item
+		FROM (
+			SELECT 
+			    	u.`time`, 
+		    		u.`id_device`, 
+		    		u.`error`,
+		    		IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
+		    		u.nvmActiveEnergy,
+		    		d.devicename
+		 FROM ${datatablename} u
 		
-		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -60 MINUTE) , '%Y-%m-%d %H:%i:%s')
-		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> convert_tz( #{current_time},  t.`offset`, '+00:00')
-		ORDER BY u.time DESC LIMIT 1;
+				LEFT JOIN device d ON u.id_device = d.id
+				LEFT JOIN site s ON d.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE u.id_device = #{id_device}
+				AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -4 HOUR) , '%Y-%m-%d %H:%i:%s')
+				AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> convert_tz( #{current_time},  t.`offset`, '+00:00')
+				ORDER BY u.time DESC LIMIT 10
+		)t
   	</select>
   	
 	

@@ -61,6 +61,7 @@ public class CronJobAlertController extends BaseController {
 				id_site = Integer.parseInt(idSite);
 			}
 
+			id_site = 134;
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
@@ -117,7 +118,8 @@ public class CronJobAlertController extends BaseController {
 
 										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
 										if (rowItem.getNvmActivePower() != 0.001) {
-											if ((rowItem.getId_device() > 0 && (rowItem.getNvmActivePower() <= 0 || rowItem.getCount_item() == 5 )) ) {
+										
+											if ((rowItem.getId_device() > 0 && (rowItem.getCount_item() == 10 )) ) {
 												AlertEntity alertItem = new AlertEntity();
 												alertItem.setId_device(obj.getId());
 												alertItem.setId_error(noProduction);
@@ -177,6 +179,7 @@ public class CronJobAlertController extends BaseController {
 				id_site = Integer.parseInt(idSite);
 			}
 
+			id_site = 134;
 			CronJobAlertService service = new CronJobAlertService();
 			DeviceEntity entity = new DeviceEntity();
 			entity.setId_site(id_site);
@@ -274,7 +277,7 @@ public class CronJobAlertController extends BaseController {
 										alertItem.setStart_date(!Lib.isBlank(lastRowItem.getTime()) ? lastRowItem.getTime() : sDateUTC);
 										
 
-										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == 0.001) ) {
+										if ((lastRowItem.getId_device() <= 0 || lastRowItem.getCount_item() == 10) ) {
 											// Check error exits
 											boolean checkAlertExist = service.checkAlertExist(alertItem);
 											if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
