@@ -120,10 +120,10 @@
 			site s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 		WHERE
-			s.`status` = 1
-			<if test="id_site != null and id_site != 0">
+			s.`status` = 1 AND s.id = 134
+			<!-- <if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
-			</if>
+			</if> -->
 			GROUP BY s.id
 	</select>
 	
