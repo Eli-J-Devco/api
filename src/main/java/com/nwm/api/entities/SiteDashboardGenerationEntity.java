@@ -23,6 +23,7 @@ public class SiteDashboardGenerationEntity {
 	private int id_device;
 	private String table_name;
 	private List groupMeter;
+	private String table_data_report;
 	
 	public int getId() {
 		return id;
@@ -113,6 +114,12 @@ public class SiteDashboardGenerationEntity {
 	}
 	public void setGroupMeter(List groupMeter) {
 		this.groupMeter = groupMeter;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	

@@ -82,7 +82,8 @@
 			s.other_losses,
 			s.alert_mail_bcc,
 			s.alert_mail_cc,
-			h.is_hiding
+			h.is_hiding,
+			s.table_data_report
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -542,7 +543,7 @@
 					s.id,
 					IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS nvmActiveEnergy
 				FROM
-					site_data_report sdr 
+					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone

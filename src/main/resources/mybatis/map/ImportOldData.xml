@@ -13,6 +13,7 @@
 			s.`name` AS text,
 			s.`name` AS label,
 			s.id AS `value`,
+			s.table_data_report,
 			t.`offset`,
 			t.`value` AS timezone_value
 		FROM

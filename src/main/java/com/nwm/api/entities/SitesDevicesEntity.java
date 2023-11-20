@@ -123,6 +123,7 @@ public class SitesDevicesEntity {
 	private int is_supper_admin;
 	private boolean is_hiding;
 	private int hidden;
+	private String table_data_report;
 	
 	
 	
@@ -798,6 +799,12 @@ public class SitesDevicesEntity {
 	}
 	public void setHidden(int hidden) {
 		this.hidden = hidden;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	

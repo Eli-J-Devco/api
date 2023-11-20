@@ -165,7 +165,7 @@
 	
 	
 	<delete id = "deleteDataReport">
-		DELETE from `site_data_report` WHERE id_device = #{id_device} 
+		DELETE from ${table_data_report} WHERE id_device = #{id_device} 
 		AND (CAST(CONVERT_TZ( `time`, '+00:00', #{timezone_offset} ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME));
 	</delete>
   	

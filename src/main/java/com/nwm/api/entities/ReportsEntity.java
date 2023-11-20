@@ -46,6 +46,7 @@ public class ReportsEntity {
 	private String days_week;
 	private String offset_timezone;
 	private int is_supper_admin;
+	private String table_data_report;
 	
 	
 	
@@ -276,6 +277,12 @@ public class ReportsEntity {
 	}
 	public void setOffset_timezone(String offset_timezone) {
 		this.offset_timezone = offset_timezone;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	
