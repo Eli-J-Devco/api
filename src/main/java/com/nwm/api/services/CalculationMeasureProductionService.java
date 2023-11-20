@@ -121,26 +121,18 @@ public class CalculationMeasureProductionService extends DB {
 	{
 		SqlSession session = this.beginTransaction();
 		try {
-//			Object insertId =  session.insert("Device.insertDevice", obj);
-//			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
-				// Create table, view, BJob
-				session.insert("Device.createTableDevice", obj);
-				session.insert("Device.createViewThreeMonthData", obj);
-				session.insert("Device.createBJobData", obj);
-				
-				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDatatablename());
-				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDatatablename());
-				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDatatablename());
-//				session.update("Device.updateTableDevice", obj);
-				
-				// Insert data to new table name
-				session.insert("Device.insertDataToNewTableName", obj);
-				
-				
-//			} else {
-//				throw new Exception();
-//			}
-
+			// Create table, view, BJob
+			session.insert("Device.createTableDevice", obj);
+			session.insert("Device.createViewThreeMonthData", obj);
+			session.insert("Device.createBJobData", obj);
+			String datatablename = obj.getDatatablename();
+			
+			// Insert data to new table name
+			session.insert("Device.insertDataToNewTableName", obj);
+			obj.setDatatablename("data" + obj.getId() + "_"+ datatablename);
+			obj.setView_tablename("View" + obj.getId() + "_"+ datatablename);
+			obj.setJob_tablename("BJob" + obj.getId() + "_"+ datatablename);
+			session.update("Device.updateTableDevice", obj);
 			session.commit();
 			return obj;
 		} catch (Exception ex) {
