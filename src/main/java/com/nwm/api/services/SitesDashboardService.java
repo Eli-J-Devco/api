@@ -49,7 +49,7 @@ public class SitesDashboardService extends DB {
 	 */
 	
 	public List getListDeviceByIdSite(SitesDevicesEntity obj) {
-		List dataList = new ArrayList();
+		List dataList, newData = new ArrayList();
 		try {
 			// get user preference for table sorting column
 			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
@@ -78,7 +78,19 @@ public class SitesDashboardService extends DB {
 			}
 			
 			dataList = queryForList("SitesDashboard.getListDeviceByIdSite", obj);
-			return dataList;
+			if (dataList.size() > 0) {
+				for (int i = 0; i < dataList.size(); i++) {
+					Map<String, Object> device = (Map<String, Object>) dataList.get(i);
+					String last_updated = (String) device.get("last_updated");
+					if (last_updated.equals("N/A")) {
+						Map<String, Object> device_site = (Map<String, Object>) queryForObject("SitesDashboard.getLastUpdated", dataList.get(i));
+						device.put("last_updated", device_site.get("time"));
+					}
+					newData.add(device);
+				}
+				
+			}
+			return newData;
 				
 		} catch (Exception ex) {
 			return new ArrayList();

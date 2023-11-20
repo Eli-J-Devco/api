@@ -226,6 +226,7 @@
 			s.datalogger_ip,
 			d.ip_address,
 			IFNULL(DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS last_updated,
+			t.offset,
 			p.totalError,
 			d.hidden,
 			CASE
@@ -412,6 +413,7 @@
 
 	
 			CASE
+				WHEN d.last_updated is null THEN 'N/A'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
@@ -622,5 +624,14 @@
 			AND d.is_delete = 0
 	</select>
 	
-	
+	<select id="getLastUpdated" resultType="Map">
+		SELECT		
+			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS time
+		FROM
+			${datatablename} dv
+
+		WHERE dv.id_device = #{id}
+		ORDER BY dv.time DESC
+		LIMIT 1
+	</select>
 </mapper>

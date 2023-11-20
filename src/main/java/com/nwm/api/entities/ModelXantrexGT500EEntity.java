@@ -33,7 +33,15 @@ public class ModelXantrexGT500EEntity {
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
+	private int totalFaultCode;
 	
+	
+	public int getTotalFaultCode() {
+		return totalFaultCode;
+	}
+	public void setTotalFaultCode(int totalFaultCode) {
+		this.totalFaultCode = totalFaultCode;
+	}
 	public String getTime() {
 		return time;
 	}

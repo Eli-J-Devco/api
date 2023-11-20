@@ -5,13 +5,20 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelXantrexGT500EService extends DB {
 	/**
@@ -100,11 +107,104 @@ public class ModelXantrexGT500EService extends DB {
 				return false;
 			}
 			
+			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if(hours >=9 && hours <= 17) {
+	        	checkTriggerAlertModelXantrexGT500E(obj);
+	        }
+			
 			return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param datatablename
+	 */
+
+	public ModelXantrexGT500EEntity checkAlertWriteCode(ModelXantrexGT500EEntity obj) {
+		ModelXantrexGT500EEntity rowItem = new ModelXantrexGT500EEntity();
+		try {
+			rowItem = (ModelXantrexGT500EEntity) queryForObject("ModelXantrexGT500E.checkAlertWriteCode", obj);
+			if (rowItem == null)
+				return new ModelXantrexGT500EEntity();
+		} catch (Exception ex) {
+			log.error("ModelXantrexGT500E.checkAlertWriteCode", ex);
+			return new ModelXantrexGT500EEntity();
+		}
+		return rowItem;
+	}
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelXantrexGT500E(ModelXantrexGT500EEntity obj) {
+		// Check device alert by fault code
+		 int faultCode = (obj.getSTATUS_FAULT() > 0 && obj.getSTATUS_FAULT() != 0.001) ? (int) obj.getSTATUS_FAULT() : 0;
+		
+		 ModelXantrexGT500EEntity rowItem = (ModelXantrexGT500EEntity) checkAlertWriteCode(obj);
+		
+		if(faultCode > 0 && rowItem.getTotalFaultCode() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelXantrexGT500E(faultCode);
+				System.out.println("status errorId: " + errorId);		
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelXantrexGT500E.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 }

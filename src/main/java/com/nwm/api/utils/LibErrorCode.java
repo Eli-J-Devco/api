@@ -3319,5 +3319,186 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/*
+	 * get PVMStatusCodes from table xantrex gt 500e
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelXantrexGT500E(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 16:
+				// AC Frequency Low
+				errorCode = 980;
+				break;
+			case 17:
+				// AC Frequency High
+				errorCode = 981;
+				break;
+			case 18:
+				// AC Voltage Low
+				errorCode = 982;
+				break;
+			case 19:
+				// AC Voltage High
+				errorCode = 983;
+				break;
+			case 21:
+				// Grid Disconnection
+				errorCode = 984;
+				break;
+			case 22:
+				// DC Disconnect Switch
+				errorCode = 985;
+				break;
+			case 23:
+				// Phase Error
+				errorCode = 986;
+				break;
+			case 24:
+				// AC Contactor Circuit Fault
+				errorCode = 987;
+				break;
+			case 25:
+				// PV Over-I Positive
+				errorCode = 988;
+				break;
+			case 32:
+				// PV Over-I Negative
+				errorCode = 989;
+				break;
+			case 33:
+				// PV Over-Voltage
+				errorCode = 990;
+				break;
+			case 35:
+				// Bus Voltage High
+				errorCode = 991;
+				break;
+			case 304:
+				// Matrix Over-Current Phase A
+				errorCode = 992;
+				break;
+			case 560:
+				// Matrix Over-Current Phase B
+				errorCode = 993;
+				break;
+			case 1072:
+				// Matrix Over-Current Phase C
+				errorCode = 994;
+				break;
+			case 51:
+				// Ground Over-Current
+				errorCode = 995;
+				break;
+			case 52:
+				// Unused Matrix Over-I
+				errorCode = 996;
+				break;
+			case 53:
+				// Fault Class 35
+				errorCode = 997;
+				break;
+			case 64:
+				// Programming Software
+				errorCode = 998;
+				break;
+			case 65:
+				// State Invalid
+				errorCode = 999;
+				break;
+			case 66:
+				// Serial EEPROM Write Error
+				errorCode = 1000;
+				break;
+			case 67:
+				// Serial EEPROM Timeout
+				errorCode = 1001;
+				break;
+			case 68:
+				// Bad NOVRAM Memory
+				errorCode = 1002;
+				break;
+			case 69:
+				// Interrupt 2 Timeout
+				errorCode = 1003;
+				break;
+			case 71:
+				// Software Test
+				errorCode = 1004;
+				break;
+			case 72:
+				// Bad Memory
+				errorCode = 1005;
+				break;
+			case 73:
+				// Control Voltage Low
+				errorCode = 1006;
+				break;
+			case 84:
+				// Control Voltage High
+				errorCode = 1007;
+				break;
+			case 98:
+				// Matrix Temperature
+				errorCode = 1008;
+				break;
+			case 114:
+				// Local E-STOP
+				errorCode = 1009;
+				break;
+			case 115:
+				// Remote E-STOP
+				errorCode = 1010;
+				break;
+			case 117:
+				// Shutdown Remotely
+				errorCode = 1011;
+				break;
+			case 130:
+				// Matrix Not ON
+				errorCode = 1012;
+				break;
+			case 131:
+				// Matrix Not OFF
+				errorCode = 1013;
+				break;
+			case 338:
+				// IGBT Over-current
+				errorCode = 1014;
+				break;
+			case 594:
+				// Switch Fault
+				errorCode = 1015;
+				break;
+			case 1106:
+				// Over-temperature
+				errorCode = 1016;
+				break;
+			case 2130:
+				// Over-voltage DC Bus
+				errorCode = 1017;
+				break;
+			case 4178:
+				// Earth Fault
+				errorCode = 1018;
+				break;
+			case 8274:
+				// Under-voltage 24V Converter
+				errorCode = 1019;
+				break;
+			case 339:
+				// DC Over-current
+				errorCode = 1020;
+				break;
+			case 2131:
+				// Too Cold or Internal Voltage not in Range
+				errorCode = 1021;
+				break;
+		}
+
+		return errorCode;
+	}
+	
 	
 }
