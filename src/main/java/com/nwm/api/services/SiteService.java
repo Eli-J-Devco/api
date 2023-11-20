@@ -212,6 +212,12 @@ public class SiteService extends DB {
 			int insertLastId = obj.getId();
 
 			if (insertLastId > 0) {
+				// Update table virtual and table report
+				obj.setTable_data_report("site" + insertLastId + "_data_report");
+				obj.setTable_data_virtual("model"+ insertLastId + "_virtual_meter_or_inverter");
+				session.insert("Site.updateTableVirtualAndReport", obj);
+				
+				
 				for (int i = 0; i < dataEmployee.size(); i++) {
 					Map<String, Object> employee = (Map<String, Object>) dataEmployee.get(i);
 					int id_employee = (int) employee.get("id");

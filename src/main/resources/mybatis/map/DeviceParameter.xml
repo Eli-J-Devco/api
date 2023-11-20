@@ -3,6 +3,32 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="DeviceParameter">
+	<select id="getListCategorizeData" resultType="Map">
+		SELECT
+			id,
+			name AS text
+		FROM
+			categorize_data
+		WHERE
+			`status` = 1 
+			AND is_delete = 0 
+	</select>
+	
+	<insert id="insertCategorizeDataDeviceParameterMap">
+		INSERT INTO `categorize_data_device_parameter_map` (
+			`id_categorize_data`,
+			`id_device_parameter`
+		) VALUES (
+			#{id_categorize_data},
+			#{id}
+		) ON DUPLICATE KEY UPDATE id_categorize_data=VALUES(id_categorize_data)
+	</insert>
+	
+	<delete id = "deleteCategorizeDataDeviceParameterMap">
+		DELETE FROM `categorize_data_device_parameter_map`
+		WHERE `id_device_parameter` = #{id}
+	</delete>
+	
 	<select id="getListParameterByDevice"  resultType="Map" parameterType="String">
 		SELECT
 			dp.*,
@@ -78,9 +104,13 @@
 			dp.name,
 			dp.standard_name,
 			dp.`status`,
-			dp.is_delete
+			dp.is_delete,
+			ct.id AS id_categorize_data,
+			ct.name AS categorize_data_name
 		FROM
 			device_parameters AS dp
+			LEFT JOIN categorize_data_device_parameter_map m ON m.id_device_parameter = dp.id
+			LEFT JOIN categorize_data ct ON ct.id = m.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
 		WHERE
 			dp.id_device_group = #{id_device_group}
 			AND dp.`status` = 1

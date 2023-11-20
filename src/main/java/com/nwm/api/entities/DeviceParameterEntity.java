@@ -43,6 +43,8 @@ public class DeviceParameterEntity{
 	private String keyword;
 	private String order_by;
 	private String sort_column;
+	private int id_categorize_data;
+	private String scale;
 	
 	
 	
@@ -249,6 +251,18 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_common(int is_common) {
 		this.is_common = is_common;
+	}
+	public int getId_categorize_data() {
+		return id_categorize_data;
+	}
+	public void setId_categorize_data(int id_categorize_data) {
+		this.id_categorize_data = id_categorize_data;
+	}
+	public String getScale() {
+		return scale;
+	}
+	public void setScale(String scale) {
+		this.scale = scale;
 	}
 	
 

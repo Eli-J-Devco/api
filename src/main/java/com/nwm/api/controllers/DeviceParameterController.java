@@ -26,6 +26,25 @@ import springfox.documentation.annotations.ApiIgnore;
 public class DeviceParameterController extends BaseController {
 
 	/**
+	 * @description Get categorize data list
+	 * @author Hung.Bui
+	 * @since 2023-11-14
+	 * @param  empty
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-categorize-data")
+	public Object getListCategorizeData(@RequestBody DeviceParameterEntity obj) {
+		try {
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.getListCategorizeData(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description Get device by device type
 	 * @author long.pham
 	 * @since 2020-11-06
