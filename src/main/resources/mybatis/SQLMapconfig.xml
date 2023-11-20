@@ -175,6 +175,7 @@
 		 <mapper resource="mybatis/map/BuiltInReport.xml"/>
 		 <mapper resource="mybatis/map/FileImportDataOld.xml"/>
 		 <mapper resource="mybatis/map/CronJobAlert.xml" />
+		 <mapper resource="mybatis/map/CategorizeData.xml"/>
 		 
 		
 		

@@ -9,10 +9,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceParameterEntity;
 
 public class DeviceParameterService extends DB {
+	
+	/**
+	 * @description Get categorize data list
+	 * @author Hung.Bui
+	 * @since 2023-11-14
+	 * @param  empty
+	 * @return array
+	 */
+	
+	public List getListCategorizeData(DeviceParameterEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceParameter.getListCategorizeData", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	/**
 	 * @description get list parameter by device
@@ -126,8 +148,16 @@ public class DeviceParameterService extends DB {
 	 * @param id
 	 */
 	public boolean updateDeviceParameter(DeviceParameterEntity obj){
+		SqlSession session = this.beginTransaction();
 		try{
-			return update("DeviceParameter.updateDeviceParameter", obj)>0;
+			session.update("DeviceParameter.updateDeviceParameter", obj);
+			if (obj.getId_categorize_data() == 0) {
+				session.delete("DeviceParameter.deleteCategorizeDataDeviceParameterMap", obj);
+			} else {
+				session.update("DeviceParameter.insertCategorizeDataDeviceParameterMap", obj);
+			}
+			session.commit();
+			return true;
 		}catch (Exception ex) {
 			log.error("DeviceParameter.updateDeviceParameter", ex);
 			return false;

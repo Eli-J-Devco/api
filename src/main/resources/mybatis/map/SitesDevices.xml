@@ -359,10 +359,6 @@
 	
 	<select id="getModelLastRowItem" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
-			<if test="datatablename == 'model_imtsolar_class8000'">
-    			ROUND((u.irradiance * 0.1), 2) AS irradiance,
-		      ROUND(u.tcell, 2) AS tcell,
-    		</if>
 			u.*,
 			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( u.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication
 		FROM
@@ -391,12 +387,17 @@
 			dp.description,
 			dp.register,
 			dp.hide,
-			dp.standard_alert_message,
-			dp.standard_name
+			dp.description,
+			dp.standard_name,
+			ct.id AS id_categorize_data,
+			dps.scale
 		FROM
 			device d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group 
 			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN categorize_data_device_parameter_map m ON m.id_device_parameter = dp.id
+			LEFT JOIN categorize_data ct ON ct.id = m.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id
 		WHERE
 			SHA1(d.id) = #{hash_id} AND d.`status` = 1 AND dp.`status` = 1;
 	</select>
