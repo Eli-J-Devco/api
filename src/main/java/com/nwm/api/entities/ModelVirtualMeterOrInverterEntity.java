@@ -20,6 +20,7 @@ public class ModelVirtualMeterOrInverterEntity {
 	private double r_irradiance;
 	
 	private double nvm_panel_temperature;
+	private String table_data_virtual;
 	
 	
 	public double getNvm_panel_temperature() {
@@ -91,6 +92,12 @@ public class ModelVirtualMeterOrInverterEntity {
 	}
 	public void setExpected_energy(double expected_energy) {
 		this.expected_energy = expected_energy;
+	}
+	public String getTable_data_virtual() {
+		return table_data_virtual;
+	}
+	public void setTable_data_virtual(String table_data_virtual) {
+		this.table_data_virtual = table_data_virtual;
 	}
 	
 	

@@ -70,6 +70,7 @@
 			s.site_logo,
 			s.lat,
 			s.lng,
+			s.table_data_report,
 			IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime) AS energy_lifetime,
 			IF(m.ac_power > 0 ,m.ac_power,t.ac_power) AS ac_power,
 			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)), FORMAT(ROUND((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)) * 0.0117, 0), 0) , 0) AS total_tree,
@@ -227,7 +228,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -250,7 +251,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -272,7 +273,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -351,7 +352,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -373,7 +374,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -395,7 +396,7 @@
 				0 AS hour_time,
 				0.001 AS irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -474,7 +475,7 @@
 				0 AS hour_time,
 				IFNULL(ROUND(SUM(sd.POAAVG), 1), 0.001) AS nvm_irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -496,7 +497,7 @@
 				0 AS hour_time,
 				IFNULL(ROUND(SUM(sd.POAAVG), 1), 0.001) AS nvm_irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE
@@ -518,7 +519,7 @@
 				0 AS hour_time,
 				IFNULL(ROUND(SUM(sd.POAAVG), 1), 0.001) AS nvm_irradiance 
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 			WHERE

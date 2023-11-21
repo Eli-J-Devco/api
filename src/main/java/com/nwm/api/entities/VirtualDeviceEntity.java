@@ -65,6 +65,7 @@ public class VirtualDeviceEntity {
 	private String ids_device_ambient_temp = null;
 	
 	private List ids;
+	private String table_data_virtual;
 	
 	
 	
@@ -385,6 +386,12 @@ public class VirtualDeviceEntity {
 	}
 	public void setNvm_irradiance(double nvm_irradiance) {
 		this.nvm_irradiance = nvm_irradiance;
+	}
+	public String getTable_data_virtual() {
+		return table_data_virtual;
+	}
+	public void setTable_data_virtual(String table_data_virtual) {
+		this.table_data_virtual = table_data_virtual;
 	}
 	
 	

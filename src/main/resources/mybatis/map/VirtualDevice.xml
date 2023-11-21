@@ -41,6 +41,7 @@
 			s.ids_device_rpoa,
 			s.ids_device_panel_temp,
 			s.ids_device_ambient_temp,
+			s.table_data_virtual,
 			null AS time,
 			d.id AS id_device,
 			null AS nvmActivePower,
@@ -843,7 +844,7 @@
 	
 	
 	<insert id="insertVirtualDevice"  useGeneratedKeys="true" keyProperty="id">
-	    INSERT INTO `model_virtual_meter_or_inverter` (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_ac, expected_energy, r_irradiance, total_poa, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
+	    INSERT INTO ${table_data_virtual} (time, id_device, nvmActivePower, nvmActiveEnergy, nvm_irradiance, nvm_temperature, expected_power_ac, expected_energy, r_irradiance, total_poa, ambient_temp, calculation_poa, calculation_temp, calculation_clipping)
 	        VALUES
 	        <foreach collection="data" item="item" index="" separator=",">
 	            (#{item.time}, #{id_device}, #{item.nvmActivePower}, #{item.nvmActiveEnergy}, #{item.nvm_irradiance}, #{item.nvm_temperature}, #{item.expected_power_ac}, #{item.expected_energy}, #{item.r_irradiance}, #{item.total_poa}, #{item.ambient_temp}, #{item.calculation_poa}, #{item.calculation_temp}, #{item.calculation_clipping})

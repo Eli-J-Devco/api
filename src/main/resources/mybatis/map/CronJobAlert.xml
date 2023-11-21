@@ -463,9 +463,17 @@
 	
 	<select id="getListSiteEERLastMonth" resultType="com.nwm.api.entities.SiteEntity" >
   		SELECT 
-				eermonth.id,
-				IFNULL(ROUND((eermonth.ActualGeneration / eermonth.EstimatedGeneration)*100 , 1 ), 0) AS eer_last_month
-		FROM (
+			id,
+			table_data_report
+		FROM site s
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+	</select>
+	
+	<update id="updateSiteEERLastMonth">
+		UPDATE `site` s
+		LEFT JOIN (
 			SELECT
 				s.id,
 				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
@@ -486,7 +494,7 @@
 					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
 				END as EstimatedGeneration
 			FROM
-				site_data_report sdr 
+				${table_data_report} sdr 
 				LEFT JOIN device d ON d.id = sdr.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -496,23 +504,27 @@
 				AND s.is_delete = 0
 				AND d.is_delete = 0
 				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )
-				GROUP BY s.id
-			)eermonth 
-	</select>
-	
-	<update id="updateSiteEERLastMonth">
-		UPDATE `site`
+			GROUP BY s.id
+		) eermonth ON eermonth.id = s.id
 		SET
-			`eer_last_month` = #{eer_last_month}
+			s.`eer_last_month` = IFNULL(ROUND((eermonth.ActualGeneration / eermonth.EstimatedGeneration)*100 , 1 ), 0)
 		WHERE
-			`id` = #{id}
+			s.`id` = #{id}
 	</update>
 	
 	<select id="getListSiteEERThisMonth" resultType="com.nwm.api.entities.SiteEntity" >
   		SELECT 
-			eerthismonth.id,
-			ROUND((eerthismonth.ActualGeneration / eerthismonth.EstimatedGeneration)*100 , 1 ) AS eer_this_month
-		FROM (
+  			id,
+			table_data_report
+		FROM site s
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+	</select>
+	
+	<update id="updateSiteEERThisMonth">
+		UPDATE `site` s
+		LEFT JOIN (
 			SELECT
 				s.id,
 				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
@@ -534,7 +546,7 @@
 					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
 				END as EstimatedGeneration
 			FROM
-				site_data_report sdr 
+				${table_data_report} sdr 
 				LEFT JOIN device d ON d.id = sdr.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -544,16 +556,12 @@
 				AND s.is_delete = 0
 				AND d.is_delete = 0
 				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )
-				GROUP BY s.id
-		)eerthismonth 
-	</select>
-	
-	<update id="updateSiteEERThisMonth">
-		UPDATE `site`
+			GROUP BY s.id
+		) eerthismonth ON eerthismonth.id = s.id
 		SET
-			`eer_this_month` = #{eer_this_month}
+			s.`eer_this_month` = ROUND((eerthismonth.ActualGeneration / eerthismonth.EstimatedGeneration)*100 , 1 )
 		WHERE
-			`id` = #{id}
+			s.`id` = #{id}
 	</update>
   	
 </mapper>

@@ -889,6 +889,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -987,7 +988,9 @@
 			)iv
 			GROUP BY iv.format_date
 			
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	
@@ -999,6 +1002,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -1097,7 +1101,9 @@
 			)iv
 			GROUP BY iv.format_date
 			
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	
@@ -1106,6 +1112,7 @@
 		SELECT
 			t.id_device,
 			t.time_full AS `time`,
+			s.table_data_report,
 			0 AS InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			0 AS InverterUptimeDaytime,
@@ -1143,12 +1150,13 @@
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format
 		)t
+		LEFT JOIN site s ON s.id = t.id_site
 		
 	</select>
 	
 	
 	<insert id="insertSiteDataReport" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `site_data_report`
+		INSERT INTO ${table_data_report}
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -1291,6 +1299,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -1391,7 +1400,9 @@
 					GROUP BY d.id, time_format
 			)iv
 			GROUP BY iv.format_date
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	
@@ -1400,6 +1411,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -1499,7 +1511,9 @@
 			)iv
 			GROUP BY iv.format_date
 			
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	
@@ -1508,6 +1522,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -1607,7 +1622,9 @@
 				)iv
 				GROUP BY iv.format_date
 			
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	
@@ -1617,6 +1634,7 @@
 			t.id_device,
 			t.time_full AS `time`,
 			t.InverterUptime,
+			s.table_data_report,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
 			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
@@ -1717,7 +1735,9 @@
 				)iv
 				GROUP BY iv.format_date
 			
-		)ac ON ac.format_date = t.format_date LIMIT 1
+		)ac ON ac.format_date = t.format_date
+		LEFT JOIN site s ON s.id = t.id_site
+		LIMIT 1
 		
 	</select>
 	

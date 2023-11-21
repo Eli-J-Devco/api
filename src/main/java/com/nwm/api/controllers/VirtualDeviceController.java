@@ -397,6 +397,7 @@ public class VirtualDeviceController extends BaseController {
 						if(dataPower.size() > 0){
 							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
 							deviceItem.setId_device(siteItem.getId_device());
+							deviceItem.setTable_data_virtual(siteItem.getTable_data_virtual());
 							deviceItem.setData(dataPower);
 							service.insertVirtualDevice(deviceItem);
 						}

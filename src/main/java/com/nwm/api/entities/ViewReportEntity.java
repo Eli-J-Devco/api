@@ -58,6 +58,8 @@ public class ViewReportEntity {
 	private int id_sub_group;
 	private String ids_site;
 	private List<Map<String, Object>> dataSite;
+	private String table_data_report;
+	private String table_data_virtual;
 	
 	
 
@@ -342,6 +344,18 @@ public class ViewReportEntity {
 	}
 	public void setOffset_timezone(String offset_timezone) {
 		this.offset_timezone = offset_timezone;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
+	public String getTable_data_virtual() {
+		return table_data_virtual;
+	}
+	public void setTable_data_virtual(String table_data_virtual) {
+		this.table_data_virtual = table_data_virtual;
 	}
 	
 	

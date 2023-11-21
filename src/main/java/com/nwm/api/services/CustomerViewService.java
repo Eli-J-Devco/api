@@ -63,11 +63,7 @@ public class CustomerViewService extends DB {
 				
 				case "today":
 						if (obj.getEnable_virtual_device() == 1) {
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
+							obj.setDatatablename(obj.getTable_data_virtual());
 							
 							// get list of time to exclude data from
 							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -306,11 +302,7 @@ public class CustomerViewService extends DB {
 					
 					List dataPowerM = null;
 					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+						 obj.setDatatablename(obj.getTable_data_virtual());
 						 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceCustom", obj);
 					} else {
 						 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
@@ -367,11 +359,7 @@ public class CustomerViewService extends DB {
 				}
 				case "3_day":
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								obj.setDatatablename(obj.getTable_data_virtual());
 								
 								// get list of time to exclude data from
 								List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -498,11 +486,7 @@ public class CustomerViewService extends DB {
 				case "this_week":
 				case "last_week":
 						if (obj.getEnable_virtual_device() == 1) {
-							if (obj.getRead_data_all() == "all_data") {
-								obj.setDatatablename("model_virtual_meter_or_inverter");
-							} else {
-								obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-							}
+							obj.setDatatablename(obj.getTable_data_virtual());
 							
 							// get list of time to exclude data from
 							List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -665,11 +649,7 @@ public class CustomerViewService extends DB {
 					
 					List dataPowerM = null;
 					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+						obj.setDatatablename(obj.getTable_data_virtual());
 						 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 					} else {
 						 dataPowerM = queryForList("CustomerView.getDataPowerThisMonth", obj);
@@ -815,11 +795,7 @@ public class CustomerViewService extends DB {
 					
 					List dataPowerMYTD = null;
 					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+						obj.setDatatablename(obj.getTable_data_virtual());
 						dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 					} else {
 						dataPowerMYTD = queryForList("CustomerView.getDataPowerYear", obj);
@@ -966,11 +942,7 @@ public class CustomerViewService extends DB {
 							
 					List dataPowerM12MonthDay = null;
 					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+						obj.setDatatablename(obj.getTable_data_virtual());
 						dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 					} else {
 						dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerYear", obj);
@@ -1093,11 +1065,7 @@ public class CustomerViewService extends DB {
 							
 					List dataPowerMLT = null;
 					if (obj.getEnable_virtual_device() == 1) {
-						if (obj.getRead_data_all() == "all_data") {
-							obj.setDatatablename("model_virtual_meter_or_inverter");
-						} else {
-							obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-						}
+						obj.setDatatablename(obj.getTable_data_virtual());
 						dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 					} else {
 						dataPowerMLT = queryForList("CustomerView.getDataPowerYear", obj);
@@ -1168,11 +1136,7 @@ public class CustomerViewService extends DB {
 					switch (obj.getFilterBy()) {
 						case "today":
 								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
+									obj.setDatatablename(obj.getTable_data_virtual());
 									
 									// get list of time to exclude data from
 									List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -1412,11 +1376,7 @@ public class CustomerViewService extends DB {
 							
 							List dataPowerM = null;
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								 obj.setDatatablename(obj.getTable_data_virtual());
 								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataVirtualDeviceCustomAtMost5Days", obj) : queryForList("CustomerView.getDataVirtualDeviceCustom", obj);
 							} else {
 								 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerCustomAtMost5Days", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
@@ -1473,11 +1433,7 @@ public class CustomerViewService extends DB {
 						}
 						case "3_day":
 								if (obj.getEnable_virtual_device() == 1) {
-									if (obj.getRead_data_all() == "all_data") {
-										obj.setDatatablename("model_virtual_meter_or_inverter");
-									} else {
-										obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-									}
+									obj.setDatatablename(obj.getTable_data_virtual());
 									
 									// get list of time to exclude data from
 									List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -1604,11 +1560,7 @@ public class CustomerViewService extends DB {
 						case "this_week":
 						case "last_week":
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								obj.setDatatablename(obj.getTable_data_virtual());
 								
 								// get list of time to exclude data from
 								List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
@@ -1771,11 +1723,7 @@ public class CustomerViewService extends DB {
 
 							List dataPowerM = null;
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								 obj.setDatatablename(obj.getTable_data_virtual());
 								 dataPowerM = queryForList("CustomerView.getDataVirtualDeviceThisMonth", obj);
 							} else {
 								 dataPowerM = queryForList("CustomerView.getDataPowerThisMonth", obj);
@@ -1920,11 +1868,7 @@ public class CustomerViewService extends DB {
 							
 							List dataPowerMYTD = null;
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								obj.setDatatablename(obj.getTable_data_virtual());
 								dataPowerMYTD = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 							} else {
 								dataPowerMYTD = queryForList("CustomerView.getDataPowerYear", obj);
@@ -2071,11 +2015,7 @@ public class CustomerViewService extends DB {
 									
 							List dataPowerM12MonthDay = null;
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								obj.setDatatablename(obj.getTable_data_virtual());
 								dataPowerM12MonthDay = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 							} else {
 								dataPowerM12MonthDay = queryForList("CustomerView.getDataPowerYear", obj);
@@ -2198,11 +2138,7 @@ public class CustomerViewService extends DB {
 									
 							List dataPowerMLT = null;
 							if (obj.getEnable_virtual_device() == 1) {
-								if (obj.getRead_data_all() == "all_data") {
-									obj.setDatatablename("model_virtual_meter_or_inverter");
-								} else {
-									obj.setDatatablename("ViewModelVirtualMeterOrInverter");
-								}
+								obj.setDatatablename(obj.getTable_data_virtual());
 								dataPowerMLT = queryForList("CustomerView.getDataVirtualDeviceYear", obj);
 							} else {
 								dataPowerMLT = queryForList("CustomerView.getDataPowerYear", obj);

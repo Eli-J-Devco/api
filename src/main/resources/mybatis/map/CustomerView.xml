@@ -560,7 +560,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone			
@@ -668,7 +668,7 @@
 			) AS expected_power,
 			IFNULL(  ROUND(AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)), 1), 0.001  ) AS nvm_irradiance
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
@@ -841,7 +841,7 @@
 					AVG(IF(d.id_device_type = 3, sdr.PowerTodayAVG, NULL)) AS meterEnergy,
 					AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) AS inverterEnergy
 				FROM
-					site_data_report sdr
+					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 				WHERE
@@ -1012,7 +1012,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone

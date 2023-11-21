@@ -21,6 +21,8 @@ public class SiteDataReportEntity {
 	private double POATotal;
 	private double POAAVG;
 	private double TCellAVG;
+	private String table_data_report;
+	
 	public String getTime() {
 		return time;
 	}
@@ -104,6 +106,12 @@ public class SiteDataReportEntity {
 	}
 	public void setTCellAVG(double tCellAVG) {
 		TCellAVG = tCellAVG;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	

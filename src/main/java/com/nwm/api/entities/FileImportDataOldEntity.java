@@ -34,6 +34,7 @@ public class FileImportDataOldEntity{
 	private String end_date;
 	private String timezone_value;
 	private String timezone_offset;
+	private String table_data_report;
 	
 	
 	
@@ -194,6 +195,12 @@ public class FileImportDataOldEntity{
 	}
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	
