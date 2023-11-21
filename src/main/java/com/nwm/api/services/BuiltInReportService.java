@@ -36,6 +36,22 @@ public class BuiltInReportService extends DB {
 	}
 	
 	/**
+	 * @description get table data virtual
+	 * @author Hung.Bui
+	 * @since 2023-11-21
+	 */
+	
+	public String getTableDataVirtual(ViewReportEntity obj) {
+		String data = new String();
+		try {
+			data = queryForObject("BuiltInReport.getTableDataVirtual", obj).toString();
+			return data;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @description get annually production trend report 
 	 * @author long.pham
 	 * @since 2022-08-23

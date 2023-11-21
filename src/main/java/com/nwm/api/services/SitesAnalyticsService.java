@@ -103,6 +103,8 @@ public class SitesAnalyticsService extends DB {
 					Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().contains(deviceGroup.get("table_name"))).findFirst().get();
 					maps.put("table_name", modelTable.get("table_name"));
 					
+					if ((int) map.get("id_device_type") == 12) maps.put("datatablename", map.get("table_data_virtual"));
+					
 					List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
 					
 					maps.put("data", getDataChartParameter);

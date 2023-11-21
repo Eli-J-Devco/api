@@ -280,7 +280,8 @@
 			s.`name` AS label,
 			s.id AS value,
 			s.is_rec_report,
-			s.datalogger_ip
+			s.datalogger_ip,
+			s.table_data_report
 			
 		FROM
 			site AS s

@@ -223,6 +223,7 @@
 		
 			r.id,
 			s.id AS id_site,
+			s.table_data_report,
 			r.id_employee,
 			r.cadence_range,
 			r.type_report,
@@ -487,7 +488,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 			
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -510,7 +511,7 @@
 			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			
@@ -556,6 +557,7 @@
 	
 	
 	<select id="getDataEnergyRECReport" resultType="Map" >
+		<foreach item="item" index="index" collection="id_sites" separator="UNION">
 		SELECT
 			s.id,
 			s.id AS id_site,
@@ -580,7 +582,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 			
 		FROM
-			site_data_report sdr 
+			${item.table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -588,18 +590,13 @@
 		WHERE
 			s.`status` = 1
 			AND d.`status` = 1
-			<if test="id_sites != null">
- 				AND s.id IN  (
- 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
- 						#{item.id}
- 					</foreach>
- 				)
- 			</if>
+			AND s.id = #{item.id}
 			AND s.is_delete = 0
 			AND d.is_delete = 0
 			AND DATE_FORMAT(sdr.time, '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
 			AND s.is_rec_report = 1
 			GROUP BY s.id
+		</foreach>
 		
 		
 	</select>
@@ -641,7 +638,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 			
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -671,7 +668,7 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
 		FROM
-			site_data_report sdr
+			${table_data_report} sdr
 			LEFT JOIN device d ON d.id = sdr.id_device
 		WHERE
 			d.`status` = 1
@@ -689,7 +686,7 @@
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
 		FROM
-			site_data_report sdr
+			${table_data_report} sdr
 			LEFT JOIN device d ON d.id = sdr.id_device
 		WHERE
 			d.`status` = 1
@@ -716,7 +713,7 @@
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 			
 		FROM
-			site_data_report sdr 
+			${table_data_report} sdr 
 			LEFT JOIN device d ON d.id = sdr.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -744,7 +741,7 @@
 				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
 				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device 
 			WHERE
 				d.id_site = #{id_site}
@@ -765,7 +762,7 @@
 				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
 				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
 			FROM
-				site_data_report sd
+				${table_data_report} sd
 				LEFT JOIN device d ON d.id = sd.id_device 
 			WHERE
 				d.id_site = #{id_site}
@@ -1128,7 +1125,7 @@
 				IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 				
 			FROM
-				site_data_report sdr 
+				${table_data_report} sdr 
 				LEFT JOIN device d ON d.id = sdr.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
