@@ -17,6 +17,7 @@
 			d.id AS id_device,
 			d.id_device_type,
 			d.hidden,
+			s.table_data_virtual,
 			1 AS is_paramerter_expand,
 			1 AS is_calculation_expand,
 			1 AS is_hidden,

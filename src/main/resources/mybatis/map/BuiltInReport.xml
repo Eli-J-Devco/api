@@ -22,6 +22,17 @@
 	</resultMap>
 	
 	
+	<select id="getTableDataVirtual" resultType="String">
+		SELECT
+			s.table_data_virtual
+		FROM
+			site s
+		WHERE
+			s.`status` = 1 
+			AND s.is_delete = 0
+			AND s.id = #{id_site}
+	</select>
+	
 	<select id="getListSiteInReport" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.* 
@@ -222,7 +233,7 @@
 			AS ModeledGenerationIndex,
 			s.name
 		FROM
-			model_virtual_meter_or_inverter vir
+			${table_data_virtual} vir
 			LEFT JOIN device d ON d.id = vir.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -350,7 +361,7 @@
 			, 0) AS ModeledGenerationIndex,
 			s.name
 		FROM
-			model_virtual_meter_or_inverter vir
+			${table_data_virtual} vir
 			LEFT JOIN device d ON d.id = vir.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone

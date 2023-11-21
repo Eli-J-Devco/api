@@ -125,6 +125,8 @@ public class BuiltInReportController extends BaseController {
 		try {
 			// Get list data site render report
 			BuiltInReportService service = new BuiltInReportService();
+			String table_data_virtual = service.getTableDataVirtual(obj);
+			obj.setTable_data_virtual(table_data_virtual);
 			ViewReportEntity dataObj = (ViewReportEntity) service.getAnnuallyBuitInReport(obj);	
 			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 
@@ -1309,7 +1311,8 @@ public class BuiltInReportController extends BaseController {
 	public Object weeklyProductionTrendReport(@RequestBody ViewReportEntity obj) {
 		try {
 			BuiltInReportService service = new BuiltInReportService();
-
+			String table_data_virtual = service.getTableDataVirtual(obj);
+			obj.setTable_data_virtual(table_data_virtual);
 			ViewReportEntity dataObj = (ViewReportEntity) service.getWeeklyBuiltInReport(obj);
 
 			if (dataObj != null) {

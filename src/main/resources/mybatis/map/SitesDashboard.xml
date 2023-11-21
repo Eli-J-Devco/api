@@ -83,7 +83,8 @@
 			s.alert_mail_bcc,
 			s.alert_mail_cc,
 			h.is_hiding,
-			s.table_data_report
+			s.table_data_report,
+			s.table_data_virtual
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
