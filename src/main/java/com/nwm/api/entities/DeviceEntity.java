@@ -119,7 +119,7 @@ public class DeviceEntity {
 	private int id_error;
 	private String error_code;
 	private String device_group_table;
-	
+	private int consumption_meter;
 	
 	
 	
@@ -128,6 +128,14 @@ public class DeviceEntity {
 	}
 	public void setDevice_group_table(String device_group_table) {
 		this.device_group_table = device_group_table;
+	}
+	
+	
+	public int getConsumption_meter() {
+		return consumption_meter;
+	}
+	public void setConsumption_meter(int consumption_meter) {
+		this.consumption_meter = consumption_meter;
 	}
 	public int getId_error() {
 		return id_error;
