@@ -17,6 +17,31 @@ public class ModelCampellScientificMeter4Entity {
 	private double Total_Energy;
 	
 	private double MeasuredProduction;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
+	
+	
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	
 	
 	

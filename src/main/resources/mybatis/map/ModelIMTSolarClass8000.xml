@@ -15,11 +15,14 @@
 		<result property="nvm_irradiance" column="nvm_irradiance" />
 		<result property="nvm_temperature" column="nvm_temperature" />
 		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 	</resultMap>
 
 	<insert id="insertModelIMTSolarClass8000"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_imtsolar_class8000`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,

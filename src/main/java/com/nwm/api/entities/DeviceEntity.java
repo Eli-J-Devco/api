@@ -118,9 +118,17 @@ public class DeviceEntity {
 	private String standard_name;
 	private int id_error;
 	private String error_code;
+	private String device_group_table;
 	
 	
 	
+	
+	public String getDevice_group_table() {
+		return device_group_table;
+	}
+	public void setDevice_group_table(String device_group_table) {
+		this.device_group_table = device_group_table;
+	}
 	public int getId_error() {
 		return id_error;
 	}

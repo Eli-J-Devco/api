@@ -31,12 +31,15 @@
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 	</resultMap>
 
 	<insert id="insertModelSolectriaSGI226IVT"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_solectria_sgi_226ivt`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -258,7 +261,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelSolectriaSgi226ivt dv 
+			${view_tablename} dv 
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY

@@ -221,12 +221,18 @@ public class FTPUploadServerController extends BaseController {
 													String[] itemXML = {"MeanPublic", "CurrentPublic"};
 													ModelSmaInverterStp3000ktlus10Entity entitySMA3000 = new ModelSmaInverterStp3000ktlus10Entity();
 													entitySMA3000.setId_device(deviceItem.getId());
+													entitySMA3000.setView_tablename(deviceItem.getView_tablename());
+													entitySMA3000.setJob_tablename(deviceItem.getJob_tablename());
 													
 													ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
 													entitySMA62.setId_device(deviceItem.getId());
+													entitySMA62.setView_tablename(deviceItem.getView_tablename());
+													entitySMA62.setJob_tablename(deviceItem.getJob_tablename());
 													
 													ModelSmaInverterStp24ktlus10Entity entitySMA24k = new ModelSmaInverterStp24ktlus10Entity();
 													entitySMA24k.setId_device(deviceItem.getId());
+													entitySMA24k.setView_tablename(deviceItem.getView_tablename());
+													entitySMA24k.setJob_tablename(deviceItem.getJob_tablename());
 													
 													for (int k = 0; k < itemXML.length; k++) {
 													  NodeList list = doc.getElementsByTagName(itemXML[k]);
@@ -269,7 +275,7 @@ public class FTPUploadServerController extends BaseController {
 
 																if (deviceItem.getId() > 0) {
 																	// Insert to datatable
-																	switch (deviceItem.getDatatablename()) {
+																	switch (deviceItem.getDevice_group_table()) {
 																	case "model_sma_inverter_stp24ktlus10":
 																		entitySMA24k.setTime(formatterUtcDateTime);
 																		// Put data to entity
@@ -722,7 +728,7 @@ public class FTPUploadServerController extends BaseController {
 
 																		break;
 																	default:
-																		
+																		break;
 																	}
 																}
 															}
@@ -730,7 +736,7 @@ public class FTPUploadServerController extends BaseController {
 
 													}
 													
-													switch (deviceItem.getDatatablename()) {
+													switch (deviceItem.getDevice_group_table()) {
 													case "model_sma_inverter_stp24ktlus10":
 														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
 														if (entitySMA24k.getGridMs_TotW() > 0) {

@@ -134,7 +134,7 @@ public class ImportOldDataService extends DB {
 				throw new Exception();
 			}
 			
-			switch (obj.getTable_name()) {
+			switch (obj.getDevice_group_table()) {
 			
 			case "model_xantrex_inverter":
 				obj.setId_device_type(1);

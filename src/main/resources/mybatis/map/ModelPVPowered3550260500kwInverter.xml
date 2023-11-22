@@ -85,12 +85,15 @@
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 	</resultMap>
 
 	<insert id="insertModelPVPowered3550260KWInverter"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_pv_powered_35_50_260_500kw_inverter`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -681,7 +684,7 @@
 				IF(m.SystemWarnings > 0, 1, 0) AS SystemWarnings,
 				IF(m.PVMStatusCodes > 0, 1, 0) AS PVMStatusCodes
 			FROM
-				model_pv_powered_35_50_260_500kw_inverter m
+				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
@@ -695,7 +698,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelPvPowered3550260500kwInverter dv 
+			${view_tablename} dv 
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY

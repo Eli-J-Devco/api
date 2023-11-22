@@ -75,13 +75,18 @@
 			d.ssh_pass,
 			d.ssh_port,
 			d.hidden,
-			d.virtual_device_type
+			d.virtual_device_type,
+			d.view_tablename,
+			d.job_tablename,
+			dg.table_name  AS device_group_table
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 		WHERE
-			d.serial_number = #{serial_number};
+			d.serial_number = #{serial_number}
+			GROUP BY d.id
 	</select>
 	
 	<select id="getListByDeviceType" resultMap="DeviceMap">

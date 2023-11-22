@@ -15,13 +15,16 @@
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="Total_Energy" column="Total_Energy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 		
 
 	</resultMap>
 
 	<insert id="insertModelCampellScientificMeter1"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_campell_scientific_meter1`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -131,7 +134,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelCampellScientificMeter1 dv 
+			${view_tablename} dv 
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY

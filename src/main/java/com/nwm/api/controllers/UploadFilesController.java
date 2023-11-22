@@ -289,7 +289,7 @@ public class UploadFilesController extends BaseController {
 									List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
 
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
-										switch (item.getDatatablename()) {
+										switch (item.getDevice_group_table()) {
 
 										// Model model_pv_powered_35_50_260_500kw_inverter
 										case "model_pv_powered_35_50_260_500kw_inverter":
@@ -303,6 +303,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
 													dataModelPVPowered.setId_device(item.getId());
+													dataModelPVPowered.setDatatablename(item.getDatatablename());
+													dataModelPVPowered.setView_tablename(item.getView_tablename());
+													dataModelPVPowered.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -403,6 +406,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
 													dataModelShark100.setId_device(item.getId());
+													dataModelShark100.setDatatablename(item.getDatatablename());
+													dataModelShark100.setView_tablename(item.getView_tablename());
+													dataModelShark100.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -504,6 +510,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
 													dataModelRTC30000.setId_device(item.getId());
+													dataModelRTC30000.setDatatablename(item.getDatatablename());
+													dataModelRTC30000.setView_tablename(item.getView_tablename());
+													dataModelRTC30000.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -598,6 +607,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
 													dataKippZonen.setId_device(item.getId());
+													dataKippZonen.setDatatablename(item.getDatatablename());
+													dataKippZonen.setView_tablename(item.getView_tablename());
+													dataKippZonen.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -693,6 +705,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
 													dataModelIVTSolaronEXT.setId_device(item.getId());
+													dataModelIVTSolaronEXT.setDatatablename(item.getDatatablename());
+													dataModelIVTSolaronEXT.setView_tablename(item.getView_tablename());
+													dataModelIVTSolaronEXT.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -791,6 +806,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
 													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
+													dataModelHukselfluxSr30d1DeviceclassV0.setDatatablename(item.getDatatablename());
+													dataModelHukselfluxSr30d1DeviceclassV0.setView_tablename(item.getView_tablename());
+													dataModelHukselfluxSr30d1DeviceclassV0.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -882,6 +900,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
 													dataModelIMTSolarClass.setId_device(item.getId());
+													dataModelIMTSolarClass.setDatatablename(item.getDatatablename());
+													dataModelIMTSolarClass.setView_tablename(item.getView_tablename());
+													dataModelIMTSolarClass.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -974,6 +995,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
 													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
+													dataModelIMTSolarTmodulClass8006.setDatatablename(item.getDatatablename());
+													dataModelIMTSolarTmodulClass8006.setView_tablename(item.getView_tablename());
+													dataModelIMTSolarTmodulClass8006.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1063,6 +1087,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
 													dataModelAdvancedEnergySolaron.setId_device(item.getId());
+													dataModelAdvancedEnergySolaron.setDatatablename(item.getDatatablename());
+													dataModelAdvancedEnergySolaron.setView_tablename(item.getView_tablename());
+													dataModelAdvancedEnergySolaron.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1165,6 +1192,9 @@ public class UploadFilesController extends BaseController {
 													
 													ModelPVMet100Entity dataPVMet100 = servicePVMet100.setModelPVMet100(line);
 													dataPVMet100.setId_device(item.getId());
+													dataPVMet100.setDatatablename(item.getDatatablename());
+													dataPVMet100.setView_tablename(item.getView_tablename());
+													dataPVMet100.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1259,6 +1289,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
 													dataModelPVPInverter.setId_device(item.getId());
+													dataModelPVPInverter.setDatatablename(item.getDatatablename());
+													dataModelPVPInverter.setView_tablename(item.getView_tablename());
+													dataModelPVPInverter.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1358,6 +1391,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
 													dataModelChint.setId_device(item.getId());
+													dataModelChint.setDatatablename(item.getDatatablename());
+													dataModelChint.setView_tablename(item.getView_tablename());
+													dataModelChint.setJob_tablename(item.getJob_tablename());
 													
 													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
 													
@@ -1462,6 +1498,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
 													dataModelVeris.setId_device(item.getId());
+													dataModelVeris.setDatatablename(item.getDatatablename());
+													dataModelVeris.setView_tablename(item.getView_tablename());
+													dataModelVeris.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1561,6 +1600,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
 													dataModelSatcon.setId_device(item.getId());
+													dataModelSatcon.setDatatablename(item.getDatatablename());
+													dataModelSatcon.setView_tablename(item.getView_tablename());
+													dataModelSatcon.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1659,6 +1701,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
 													dataModelElkor.setId_device(item.getId());
+													dataModelElkor.setDatatablename(item.getDatatablename());
+													dataModelElkor.setView_tablename(item.getView_tablename());
+													dataModelElkor.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1758,6 +1803,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
 													dataModelWkipp.setId_device(item.getId());
+													dataModelWkipp.setDatatablename(item.getDatatablename());
+													dataModelWkipp.setView_tablename(item.getView_tablename());
+													dataModelWkipp.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1851,6 +1899,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
 													dataModelElkorP.setId_device(item.getId());
+													dataModelElkorP.setDatatablename(item.getDatatablename());
+													dataModelElkorP.setView_tablename(item.getView_tablename());
+													dataModelElkorP.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1951,6 +2002,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
 													dataModelABB.setId_device(item.getId());
+													dataModelABB.setDatatablename(item.getDatatablename());
+													dataModelABB.setView_tablename(item.getView_tablename());
+													dataModelABB.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2049,8 +2103,11 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelLufftClass8020Entity dataModelLufft = serviceModelLufft.setModelLufftClass8020(line);
-													dataModelLufft.setId_device(item.getId());
+													ModelLufftClass8020Entity dataModelLufftC = serviceModelLufft.setModelLufftClass8020(line);
+													dataModelLufftC.setId_device(item.getId());
+													dataModelLufftC.setDatatablename(item.getDatatablename());
+													dataModelLufftC.setView_tablename(item.getView_tablename());
+													dataModelLufftC.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2060,23 +2117,23 @@ public class UploadFilesController extends BaseController {
 															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 															String variableName = scaledDeviceParameter.getVariable_name();
 															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufftC);
 															if (initialValue == 0.001) continue;
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
-															if (slug.equals("IrradianceActual")) dataModelLufft.setNvm_irradiance(scaledValue);
-															if (slug.equals("AirTemperatureActual")) dataModelLufft.setNvm_temperature(scaledValue);
+															pd.getWriteMethod().invoke(dataModelLufftC, scaledValue);
+															if (slug.equals("IrradianceActual")) dataModelLufftC.setNvm_irradiance(scaledValue);
+															if (slug.equals("AirTemperatureActual")) dataModelLufftC.setNvm_temperature(scaledValue);
 														}
 													}
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// AirTemperatureActual
-													deviceUpdateE.setLast_updated(dataModelLufft.getTime());
-													deviceUpdateE.setLast_value(dataModelLufft.getAirTemperatureActual() != 0.001 ? dataModelLufft.getAirTemperatureActual() : null);
-													deviceUpdateE.setField_value1(dataModelLufft.getAirTemperatureActual() != 0.001 ? dataModelLufft.getAirTemperatureActual() : null);
+													deviceUpdateE.setLast_updated(dataModelLufftC.getTime());
+													deviceUpdateE.setLast_value(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
+													deviceUpdateE.setField_value1(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
 													
 													// IrradianceActual
-													deviceUpdateE.setField_value2(dataModelLufft.getIrradianceActual() != 0.001 ? dataModelLufft.getIrradianceActual() : null);
+													deviceUpdateE.setField_value2(dataModelLufftC.getIrradianceActual() != 0.001 ? dataModelLufftC.getIrradianceActual() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2105,7 +2162,7 @@ public class UploadFilesController extends BaseController {
 //														}
 //													}
 
-													serviceModelLufft.insertModelLufftClass8020(dataModelLufft);
+													serviceModelLufft.insertModelLufftClass8020(dataModelLufftC);
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
@@ -2142,6 +2199,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
 													dataModelLufft.setId_device(item.getId());
+													dataModelLufft.setDatatablename(item.getDatatablename());
+													dataModelLufft.setView_tablename(item.getView_tablename());
+													dataModelLufft.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2232,6 +2292,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelSolectriaSGI226IVTEntity dataModelSolectria226 = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
 													dataModelSolectria226.setId_device(item.getId());
+													dataModelSolectria226.setDatatablename(item.getDatatablename());
+													dataModelSolectria226.setView_tablename(item.getView_tablename());
+													dataModelSolectria226.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2383,6 +2446,10 @@ public class UploadFilesController extends BaseController {
 													
 													ModelTTiTrackerEntity dataModelTTiTracker = serviceModelTTiTracker.setModelTTiTracker(line);
 													dataModelTTiTracker.setId_device(item.getId());
+													dataModelTTiTracker.setDatatablename(item.getDatatablename());
+													dataModelTTiTracker.setView_tablename(item.getView_tablename());
+													dataModelTTiTracker.setJob_tablename(item.getJob_tablename());
+													
 													serviceModelTTiTracker.insertModelTTiTracker(dataModelTTiTracker);
 													
 													try  
@@ -2423,6 +2490,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
 													dataModelSET.setId_device(item.getId());
+													dataModelSET.setDatatablename(item.getDatatablename());
+													dataModelSET.setView_tablename(item.getView_tablename());
+													dataModelSET.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2525,6 +2595,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
 													dataModelXantrex.setId_device(item.getId());
+													dataModelXantrex.setDatatablename(item.getDatatablename());
+													dataModelXantrex.setView_tablename(item.getView_tablename());
+													dataModelXantrex.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2625,6 +2698,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
 													dataModelAdam4017.setId_device(item.getId());
+													dataModelAdam4017.setDatatablename(item.getDatatablename());
+													dataModelAdam4017.setView_tablename(item.getView_tablename());
+													dataModelAdam4017.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2721,6 +2797,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
 													dataModelCSM1.setId_device(item.getId());
+													dataModelCSM1.setDatatablename(item.getDatatablename());
+													dataModelCSM1.setView_tablename(item.getView_tablename());
+													dataModelCSM1.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2820,6 +2899,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
 													dataModelCSM2.setId_device(item.getId());
+													dataModelCSM2.setDatatablename(item.getDatatablename());
+													dataModelCSM2.setView_tablename(item.getView_tablename());
+													dataModelCSM2.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -2918,6 +3000,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
 													dataModelCSM3.setId_device(item.getId());
+													dataModelCSM3.setDatatablename(item.getDatatablename());
+													dataModelCSM3.setView_tablename(item.getView_tablename());
+													dataModelCSM3.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -3017,6 +3102,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
 													dataModelCSM4.setId_device(item.getId());
+													dataModelCSM4.setDatatablename(item.getDatatablename());
+													dataModelCSM4.setView_tablename(item.getView_tablename());
+													dataModelCSM4.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -3116,6 +3204,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
 													dataModelSatcon225.setId_device(item.getId());
+													dataModelSatcon225.setDatatablename(item.getDatatablename());
+													dataModelSatcon225.setView_tablename(item.getView_tablename());
+													dataModelSatcon225.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -3217,6 +3308,9 @@ public class UploadFilesController extends BaseController {
 												if (words.size() > 0) {
 													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
 													dataModelSunnyClass9775.setId_device(item.getId());
+													dataModelSunnyClass9775.setDatatablename(item.getDatatablename());
+													dataModelSunnyClass9775.setView_tablename(item.getView_tablename());
+													dataModelSunnyClass9775.setJob_tablename(item.getJob_tablename());
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -3316,6 +3410,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
 														dataModelVeris.setId_device(item.getId());
+														dataModelVeris.setDatatablename(item.getDatatablename());
+														dataModelVeris.setView_tablename(item.getView_tablename());
+														dataModelVeris.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3413,6 +3510,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
 														dataModelAE1000NX.setId_device(item.getId());
+														dataModelAE1000NX.setDatatablename(item.getDatatablename());
+														dataModelAE1000NX.setView_tablename(item.getView_tablename());
+														dataModelAE1000NX.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3511,6 +3611,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
 														dataModelAesTx.setId_device(item.getId());
+														dataModelAesTx.setDatatablename(item.getDatatablename());
+														dataModelAesTx.setView_tablename(item.getView_tablename());
+														dataModelAesTx.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3607,6 +3710,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
 														dataModelIon.setId_device(item.getId());
+														dataModelIon.setDatatablename(item.getDatatablename());
+														dataModelIon.setView_tablename(item.getView_tablename());
+														dataModelIon.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3703,6 +3809,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
 														dataModelPM7650.setId_device(item.getId());
+														dataModelPM7650.setDatatablename(item.getDatatablename());
+														dataModelPM7650.setView_tablename(item.getView_tablename());
+														dataModelPM7650.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3798,6 +3907,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelXantrexInverterEntity dataModelXantrex = serviceModelXINV.setModelXantrexInverter(line);
 														dataModelXantrex.setId_device(item.getId());
+														dataModelXantrex.setDatatablename(item.getDatatablename());
+														dataModelXantrex.setView_tablename(item.getView_tablename());
+														dataModelXantrex.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3898,6 +4010,9 @@ public class UploadFilesController extends BaseController {
 														
 														ModelPoaTempEntity dataModel = serviceModelPoaTemp.setModelPoaTemp(line);
 														dataModel.setId_device(item.getId());
+														dataModel.setDatatablename(item.getDatatablename());
+														dataModel.setView_tablename(item.getView_tablename());
+														dataModel.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -3992,6 +4107,9 @@ public class UploadFilesController extends BaseController {
 													if (words.size() > 0) {
 														ModelPyranometerPoaEntity dataModelPy = serviceModelPy.setModelPyranometer(line);
 														dataModelPy.setId_device(item.getId());
+														dataModelPy.setDatatablename(item.getDatatablename());
+														dataModelPy.setView_tablename(item.getView_tablename());
+														dataModelPy.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -4089,6 +4207,9 @@ public class UploadFilesController extends BaseController {
 														
 														ModelERIWeatherICPClass8050Entity dataModel = serviceModelERIWeatherICPClass8050.setModelERIWeatherICPClass8050(line);
 														dataModel.setId_device(item.getId());
+														dataModel.setDatatablename(item.getDatatablename());
+														dataModel.setView_tablename(item.getView_tablename());
+														dataModel.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -4184,6 +4305,9 @@ public class UploadFilesController extends BaseController {
 														
 														ModelXantrexGT500EEntity dataModel = serviceModelgt500.setModelXantrexGT500E(line);
 														dataModel.setId_device(item.getId());
+														dataModel.setDatatablename(item.getDatatablename());
+														dataModel.setView_tablename(item.getView_tablename());
+														dataModel.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -4315,6 +4439,10 @@ public class UploadFilesController extends BaseController {
 														
 														ModelWattsunTcuEntity dataModelTcu = serviceModelTcu.setModelWattsunTcu(line);
 														dataModelTcu.setId_device(item.getId());
+														dataModelTcu.setDatatablename(item.getDatatablename());
+														dataModelTcu.setView_tablename(item.getView_tablename());
+														dataModelTcu.setJob_tablename(item.getJob_tablename());
+														
 														serviceModelTcu.insertModelWattsunTcu(dataModelTcu);
 														
 														try  
@@ -4391,6 +4519,10 @@ public class UploadFilesController extends BaseController {
 														
 														ModelWattsunTrackerEntity dataModelWT = serviceModelWT.setModelWattsunTracker(line);
 														dataModelWT.setId_device(item.getId());
+														dataModelWT.setDatatablename(item.getDatatablename());
+														dataModelWT.setView_tablename(item.getView_tablename());
+														dataModelWT.setJob_tablename(item.getJob_tablename());
+														
 														serviceModelWT.insertModelWattsunTracker(dataModelWT);
 														
 														try  
@@ -4468,6 +4600,10 @@ public class UploadFilesController extends BaseController {
 														
 														ModelSevSg110cxEntity dataModelSev = serviceModel.setModelSevSg110cx(line);
 														dataModelSev.setId_device(item.getId());
+														dataModelSev.setDatatablename(item.getDatatablename());
+														dataModelSev.setView_tablename(item.getView_tablename());
+														dataModelSev.setJob_tablename(item.getJob_tablename());
+														
 														serviceModel.insertModelSevSg110cx(dataModelSev);
 														
 														try  
@@ -4502,6 +4638,9 @@ public class UploadFilesController extends BaseController {
 														
 														ModelElsterA1700Entity dataModelElsterA1700 = serviceModelElsterA1700.setModelElsterA1700(line);
 														dataModelElsterA1700.setId_device(item.getId());
+														dataModelElsterA1700.setDatatablename(item.getDatatablename());
+														dataModelElsterA1700.setView_tablename(item.getView_tablename());
+														dataModelElsterA1700.setJob_tablename(item.getJob_tablename());
 														
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {
@@ -4591,6 +4730,10 @@ public class UploadFilesController extends BaseController {
 										// Save to datalogger
 										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
 										dataloggerEntity.setId_device(item.getId());
+										dataloggerEntity.setDatatablename(item.getDatatablename());
+										dataloggerEntity.setView_tablename(item.getView_tablename());
+										dataloggerEntity.setJob_tablename(item.getJob_tablename());
+										
 										Date now = new Date();
 										TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
 										SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -4627,6 +4770,10 @@ public class UploadFilesController extends BaseController {
 											// Save to datalogger
 											ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
 											dataloggerEntity.setId_device(item.getId());
+											dataloggerEntity.setDatatablename(item.getDatatablename());
+											dataloggerEntity.setView_tablename(item.getView_tablename());
+											dataloggerEntity.setJob_tablename(item.getJob_tablename());
+											
 									        String sDateUTC = format.format(now);
 									        dataloggerEntity.setTime(sDateUTC);
 									        dataloggerEntity.setSerialnumber(serialnumber);

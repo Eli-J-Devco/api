@@ -18,6 +18,32 @@ public class ModelPyranometerPoaEntity {
 	private double nvm_irradiance;
 	private double nvm_temperature;
 	private double nvm_panel_temperature;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
+	
+	
+	
+	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
+	
 	public String getTime() {
 		return time;
 	}

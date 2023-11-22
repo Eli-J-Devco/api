@@ -41,12 +41,15 @@
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 
 	</resultMap>
 
 	<insert id="insertModelSmaInverterStp1200tlus10" useGeneratedKeys="true"
 		keyProperty="time">
-		INSERT INTO `model_sma_inverter_stp1200tlus10`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
@@ -368,7 +371,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelSmaInverterStp1200tlus10 dv 
+			${view_tablename} dv 
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY

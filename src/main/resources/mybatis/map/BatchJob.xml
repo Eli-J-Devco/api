@@ -2078,14 +2078,16 @@
 			d.ssh_host,
 			d.ssh_port,
 			d.ssh_user,
-			d.ssh_pass
+			d.ssh_pass,
+			dg.table_name  AS device_group_table
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 		WHERE
 			d.`status` = 1 
 			AND d.is_delete = 0
-			AND d.id_site = #{id_site}
+			AND d.id_site = #{id_site} GROUP BY d.id
 	</select>
 	
 	

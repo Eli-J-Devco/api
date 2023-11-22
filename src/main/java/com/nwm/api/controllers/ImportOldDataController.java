@@ -237,6 +237,7 @@ public class ImportOldDataController extends BaseController {
 			if( dataFile.getId() >= 0 ) {
 				obj.setId_site(dataFile.getId_site());
 				obj.setTable_name(dataFile.getDatatablename());
+				obj.setDevice_group_table(dataFile.getDevice_group_table());
 				
 				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyOlddata);
 				String fileUrl = saveDir + "/" + dataFile.getFilename();
@@ -261,12 +262,11 @@ public class ImportOldDataController extends BaseController {
 										setDate.clear();
 							    	}
 
-									System.out.println("time: " + time);
 									String[] parts = time.split(" ");
 									String start = parts[0];
 									setDate.add(start);
 									
-									switch (dataFile.getDatatablename()) {
+									switch (dataFile.getDevice_group_table()) {
 									
 									case "model_sunny_central_class9775_inverter":
 										rowItem.put("id_device", r.getCellText(2).toString());

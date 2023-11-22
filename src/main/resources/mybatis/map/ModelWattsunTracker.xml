@@ -17,13 +17,16 @@
 		<result property="TRACKER_ANGLE" column="TRACKER_ANGLE" />
 		<result property="NIGHT_STOW_POSITION" column="NIGHT_STOW_POSITION" />
 		<result property="WIND_STOW_POSITION" column="WIND_STOW_POSITION" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 		
 
 	</resultMap>
 
 	<insert id="insertModelWattsunTracker"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_wattsun_tracker`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,

@@ -20,13 +20,16 @@
 		<result property="ANGLE_CALC" column="ANGLE_CALC" />
 		<result property="LATITUDE" column="LATITUDE" />
 		<result property="LONGITUDE" column="LONGITUDE" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
 		
 
 	</resultMap>
 
 	<insert id="insertModelWattsunTcu"
 		useGeneratedKeys="true" keyProperty="time">
-		INSERT INTO `model_wattsun_tcu`
+		INSERT INTO `${datatablename}`
 		<trim prefix="(" suffix=")" suffixOverrides=",">
 			<if test="time != null">
 				`time`,
