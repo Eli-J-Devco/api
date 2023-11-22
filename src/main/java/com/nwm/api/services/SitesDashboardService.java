@@ -84,7 +84,11 @@ public class SitesDashboardService extends DB {
 					String last_updated = (String) device.get("last_updated");
 					if (last_updated.equals("N/A")) {
 						Map<String, Object> device_site = (Map<String, Object>) queryForObject("SitesDashboard.getLastUpdated", dataList.get(i));
-						device.put("last_updated", device_site.get("time"));
+						if(device_site != null) {
+							device.put("last_updated", device_site.get("time"));
+						} else {
+							device.put("last_updated", "N/A");
+						}
 					}
 					newData.add(device);
 				}
