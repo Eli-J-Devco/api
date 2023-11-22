@@ -4756,7 +4756,7 @@ public class UploadFilesController extends BaseController {
 									} else {
 										// Set last update for datalogger 
 										// DeviceEntity deviceObject = dataDevice.stream().filter(device -> "model_datalogger".equals(device.getDatatablename())).findAny().orElse(null);
-										if(item != null && "model_datalogger".equals(item.getDatatablename()) ) {
+										if(item != null && "model_datalogger".equals(item.getDevice_group_table()) ) {
 											Date now = new Date();
 											TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 											SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);

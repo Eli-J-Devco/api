@@ -223,7 +223,7 @@
 		SELECT
 			* 
 		FROM
-			model_datalogger m
+			${datatablename} m
 			LEFT JOIN device d ON d.id = m.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
