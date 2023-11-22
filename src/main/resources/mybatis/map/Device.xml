@@ -163,7 +163,8 @@
 			s.rating_ac_power,
 			IF(s.`hidden` = 1, 1, 0) AS hidden,
 			s.virtual_device_type,
-			s.ip_address
+			s.ip_address,
+			s.consumption_meter
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -288,7 +289,8 @@
 			`rating_ac_power`,
 			`hidden`,
 			`virtual_device_type`,
-			`ip_address`
+			`ip_address`,
+			`consumption_meter`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -318,7 +320,8 @@
 			#{rating_ac_power},
 			#{hidden},
 			#{virtual_device_type},
-			#{ip_address}
+			#{ip_address},
+			#{consumption_meter}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -364,7 +367,8 @@
 				rating_ac_power = #{rating_ac_power},
 				`hidden` = #{hidden},
 				virtual_device_type = #{virtual_device_type},
-				ip_address = #{ip_address}
+				ip_address = #{ip_address},
+				consumption_meter = #{consumption_meter}
 			WHERE
 				`id` = #{id}
 		</if>

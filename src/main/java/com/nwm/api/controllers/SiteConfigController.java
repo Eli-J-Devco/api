@@ -101,7 +101,7 @@ public class SiteConfigController extends BaseController {
 		String url = domainCronJob + "/api-server/virtual-device/render-data?token=" + privateKey + "&id_site="+ obj.getId();
 		try {
 			SiteConfigService service = new SiteConfigService();
-			boolean insert = service.updatePVModelSetting(obj);
+			boolean	insert = service.updatePVModelSetting(obj);
 			if (insert == true) {
 
 				String command = "curl -X GET " + url + "&total_day=" + total_day;
@@ -126,6 +126,13 @@ public class SiteConfigController extends BaseController {
 				Date date1 = null;
 				Date date2 = null;
 				String startDate = obj.getCommissioning();
+				
+				// Convert YYYY-MM-dd 00:00:00 to MM/dd/YYYY
+				startDate = startDate.substring(0, 10);
+				String[] strDateInfo;
+				strDateInfo = startDate.split("-");
+				startDate = strDateInfo[1] + "/" + strDateInfo[2] + "/" + strDateInfo[0];
+				
 				if (startDate != null) {
 					String endDate = simpleDateFormat.format(currentDate);
 					date1 = simpleDateFormat.parse(startDate);
@@ -191,6 +198,57 @@ public class SiteConfigController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e);
+		}
+	}
+	
+	/**
+	 * @description update virtual meter when change consumption meter
+	 * @author duy.phan
+	 * @since 2023-06-26
+	 * @param {}
+	 * @throws ParseException
+	 */
+
+	@PostMapping("/update-virtual-meter")
+	public Object updateVirtualMeter(@Valid @RequestBody SitesDevicesEntity obj) throws ParseException {
+		String domainCronJob = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.domainCronJob);
+		String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+		int total_day = 10;
+		String url = domainCronJob + "/api-server/virtual-device/render-data?token=" + privateKey + "&id_site="+ obj.getId();
+		try {
+		String command = "curl -X GET " + url + "&total_day=" + total_day;
+		Process process = Runtime.getRuntime().exec(command);
+		int exitValue = process.waitFor();
+		if(exitValue == 0) {
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} else {
+			return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+		}
+				
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		} finally {
+			try {
+				DateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				Date currentDate = new Date();
+				Date date1 = null;
+				Date date2 = null;
+				String startDate = obj.getCommissioning();
+				
+				if (startDate != null) {
+					String endDate = simpleDateFormat.format(currentDate);
+					date1 = simpleDateFormat.parse(startDate);
+					date2 = simpleDateFormat.parse(endDate);
+					long getDiff = date2.getTime() - date1.getTime();
+					long getDaysDiff = getDiff / (24 * 60 * 60 * 1000);
+					total_day = Integer.parseInt(String.valueOf(getDaysDiff));
+					String commandUpdate = "curl -X GET " + url + "&total_day=" + total_day;
+					Runtime.getRuntime().exec(commandUpdate);
+				}
+			} catch (Exception e) {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+			}
 		}
 	}
 	

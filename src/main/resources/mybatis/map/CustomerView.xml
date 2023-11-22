@@ -27,6 +27,7 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND d.consumption_meter = 0
 		<!--GROUP BY d.id_device_type -->
 	</select>
 	
@@ -520,7 +521,7 @@
 			DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
 			<choose>
 				<when test="groupMeter.size() > 0">
-					ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)
+					ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)
 				</when>
 				<otherwise>
 					ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
@@ -557,7 +558,7 @@
 					)) * 24, 1), 0.001)
 				</otherwise>
 			</choose> AS expected_energy,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
+			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			${table_data_report} sdr 
@@ -616,7 +617,7 @@
 			</choose>
 			<choose>
 				<when test="groupMeter.size() > 0">
-					ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)
+					ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)
 				</when>
 				<otherwise>
 					ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
@@ -838,7 +839,7 @@
 						</otherwise>
 					</choose> AS expected_power,
 					AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)) AS nvm_irradiance,
-					AVG(IF(d.id_device_type = 3, sdr.PowerTodayAVG, NULL)) AS meterEnergy,
+					AVG(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)) AS meterEnergy,
 					AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) AS inverterEnergy
 				FROM
 					${table_data_report} sdr
@@ -958,7 +959,7 @@
 			</choose>
 			<choose>
 				<when test="groupMeter.size() > 0">
-					ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)
+					ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)
 				</when>
 				<otherwise>
 					ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
@@ -1009,7 +1010,7 @@
 				),
 				0.001
 			) AS expected_energy,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
+			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
 			${table_data_report} sdr 

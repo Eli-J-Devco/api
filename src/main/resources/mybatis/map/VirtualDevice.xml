@@ -92,6 +92,7 @@
 			</if>
 			
 			<if test="virtual_device_type == 'meter'">
+				AND d.consumption_meter = 0
 				AND d.id_device_type = 3
 			</if>
 			

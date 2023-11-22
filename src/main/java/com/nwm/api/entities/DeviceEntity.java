@@ -118,9 +118,15 @@ public class DeviceEntity {
 	private String standard_name;
 	private int id_error;
 	private String error_code;
+	private int consumption_meter;
 	
 	
-	
+	public int getConsumption_meter() {
+		return consumption_meter;
+	}
+	public void setConsumption_meter(int consumption_meter) {
+		this.consumption_meter = consumption_meter;
+	}
 	public int getId_error() {
 		return id_error;
 	}
