@@ -1744,7 +1744,7 @@ public class CustomerViewService extends DB {
 								        	mapItemObj.setTime_format(itemT.get("time_format").toString());
 								        	mapItemObj.setTime_full(itemT.get("time_full").toString());
 								        	mapItemObj.setDownload_time(itemT.get("download_time").toString());
-								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("inverterEnergy").toString()) );
+								        	mapItemObj.setChart_energy_kwh(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
 								        	mapItemObj.setExpected_power(Double.parseDouble(itemT.get("expected_energy").toString()) );
 								        	mapItemObj.setNvm_irradiance(Double.parseDouble(itemT.get("nvm_irradiance").toString()) );
 								        	break;
