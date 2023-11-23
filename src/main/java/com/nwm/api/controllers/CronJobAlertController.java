@@ -210,6 +210,7 @@ public class CronJobAlertController extends BaseController {
 						if (objDatalogger.getId() > 0) {
 							bathJobEntity.setCurrent_time(sDateUTC);
 							bathJobEntity.setId_device(objDatalogger.getId());
+							bathJobEntity.setDatatablename(objDatalogger.getDatatablename());
 
 							AlertEntity alertItem = new AlertEntity();
 							alertItem.setId_device(objDatalogger.getId());
