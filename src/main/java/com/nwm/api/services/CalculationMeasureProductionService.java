@@ -125,13 +125,13 @@ public class CalculationMeasureProductionService extends DB {
 			session.insert("Device.createTableDevice", obj);
 			session.insert("Device.createViewThreeMonthData", obj);
 			session.insert("Device.createBJobData", obj);
-			String datatablename = obj.getDatatablename();
+			String device_group_table = obj.getDevice_group_table();
 			
 			// Insert data to new table name
 			session.insert("Device.insertDataToNewTableName", obj);
-			obj.setDatatablename("data" + obj.getId() + "_"+ datatablename);
-			obj.setView_tablename("View" + obj.getId() + "_"+ datatablename);
-			obj.setJob_tablename("BJob" + obj.getId() + "_"+ datatablename);
+			obj.setDatatablename("data" + obj.getId() + "_"+ device_group_table);
+			obj.setView_tablename("View" + obj.getId() + "_"+ device_group_table);
+			obj.setJob_tablename("BJob" + obj.getId() + "_"+ device_group_table);
 			session.update("Device.updateTableDevice", obj);
 			session.commit();
 			return obj;
