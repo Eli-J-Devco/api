@@ -300,6 +300,26 @@ public class CronJobAlertService extends DB {
 	}
 	
 	
+	
+	/**
+	 * @description get list device by site
+	 * @author long.pham
+	 * @since 2023-07-20
+	 */
+	
+	public List getListWeatherStation(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListWeatherStation", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
 	/**
 	 * @description get list device by site
 	 * @author long.pham
@@ -760,6 +780,28 @@ public class CronJobAlertService extends DB {
 		}
 		return rowItem;
 	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2021-05-18
+	 * @param datatablename
+	 */
+
+	public BatchJobTableEntity getLastRowItemNoCommWeather(BatchJobTableEntity obj) {
+		BatchJobTableEntity rowItem = new BatchJobTableEntity();
+		try {
+			rowItem = (BatchJobTableEntity) queryForObject("CronJobAlert.getLastRowItemNoCommWeather", obj);
+			if (rowItem == null)
+				return new BatchJobTableEntity();
+		} catch (Exception ex) {
+			log.error("CronJobAlert.getLastRowItemNoCommWeather", ex);
+			return new BatchJobTableEntity();
+		}
+		return rowItem;
+	}
+	
 //	
 //	
 //	

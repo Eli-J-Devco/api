@@ -72,6 +72,39 @@
 	
 	
 	
+	<select id="getListWeatherStation" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.last_updated,
+			e.id AS id_error,
+			e.error_code
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = dg.id AND e.error_code = 1001
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (4) AND d.disable_alert = 0 AND s.id = #{id_site}
+			GROUP BY d.id
+	</select>
+	
+	
 	
 	<select id="getListDeviceCheckNoCom" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
@@ -121,6 +154,11 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
 		WHERE
 			s.`status` = 1
+			AND s.ftp_server IS NULL
+			AND s.ftp_port IS NULL
+			AND s.ftp_pass IS NULL
+			AND s.ftp_user IS NULL
+			AND s.ftp_folder IS NULL
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>
@@ -195,7 +233,7 @@
 			t.end_date_time,
 			t.id,
 			IF( SUM(t.nvmActivePower) = 0.01, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
-			COUNT( IF(t.nvmActivePower = 0.001 || t.nvmActivePower = 0, 1, NULL)) AS count_item
+			COUNT( IF( (t.nvmActivePower = 0.001 || t.nvmActivePower = 0) <![CDATA[&&]]> t.nvmActiveEnergy > 0 , 1, NULL)) AS count_item
 		FROM (
 			SELECT
 					`time`,
@@ -205,6 +243,39 @@
 					s.end_date_time,
 					d.id,
 					u.nvmActivePower
+				FROM
+					${datatablename} u
+					LEFT JOIN device d ON d.id = u.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					
+				WHERE u.id_device = #{id} AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00")
+				ORDER BY
+					u.`time` DESC 
+					LIMIT 10
+		)t
+  	</select>
+  	
+  	
+  	<select id="getLastRowItemNoCommWeather" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT 
+			t.time,
+			t.id_device,
+			t.error,
+			t.start_date_time,
+			t.end_date_time,
+			t.id,
+			COUNT( IF( (t.nvm_irradiance = 0.001 || t.nvm_irradiance = 0 || t.nvm_irradiance = NULL) <![CDATA[&&]]> (t.nvm_temperature = 0.001 || t.nvm_temperature = 0 || t.nvm_temperature = NULL), 1, NULL)) AS count_item
+		FROM (
+			SELECT
+					`time`,
+					id_device,
+					error,
+					s.start_date_time,
+					s.end_date_time,
+					d.id,
+					u.nvm_irradiance,
+					u.nvm_temperature
 				FROM
 					${datatablename} u
 					LEFT JOIN device d ON d.id = u.id_device
@@ -250,7 +321,8 @@
 			t.id_device,
 			t.nvmActivePower,
 			t.nvmActiveEnergy,
-			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item
+			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item,
+			COUNT( IF(t.count_is_comm = 1 , 1, NULL)) AS count_is_comm
 		FROM (
 			SELECT 
 			    	u.`time`, 
@@ -258,7 +330,8 @@
 		    		u.`error`,
 		    		IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
 		    		u.nvmActiveEnergy,
-		    		d.devicename
+		    		d.devicename,
+		    		IF(u.nvmActivePower = 0 <![CDATA[&&]]> u.nvmActiveEnergy = 0 , 1, NULL) AS count_is_comm
 		 FROM ${datatablename} u
 		
 				LEFT JOIN device d ON u.id_device = d.id

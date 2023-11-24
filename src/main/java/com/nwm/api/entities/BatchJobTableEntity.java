@@ -28,10 +28,17 @@ public class BatchJobTableEntity{
 	private int id_device_type;	
 	private int id_device_group;
 	private int count_item;
+	private int count_is_comm;
 	
 	
 	
 	
+	public int getCount_is_comm() {
+		return count_is_comm;
+	}
+	public void setCount_is_comm(int count_is_comm) {
+		this.count_is_comm = count_is_comm;
+	}
 	public int getCount_item() {
 		return count_item;
 	}
