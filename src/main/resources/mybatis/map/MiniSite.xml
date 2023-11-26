@@ -108,6 +108,7 @@
 			AND s.kiosk_view = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
 	
@@ -122,11 +123,14 @@
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dt.id = 3 
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY d.id_device_type
 	</select>
 	
@@ -141,11 +145,14 @@
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dt.id = 1
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY d.id_device_type
 	</select>
 	

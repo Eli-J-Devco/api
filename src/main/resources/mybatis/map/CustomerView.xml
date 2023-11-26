@@ -22,12 +22,15 @@
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dt.id = 3 
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND d.consumption_meter = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		<!--GROUP BY d.id_device_type -->
 	</select>
 	
@@ -49,11 +52,14 @@
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dt.id = 1
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		<!-- GROUP BY d.id_device_type -->
 	</select>
 	

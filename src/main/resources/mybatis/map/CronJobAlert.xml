@@ -424,8 +424,10 @@
 			s.*
 		FROM
 			site AS s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			s.`status` = 1 AND s.is_delete = 0 AND s.cf_email_subscribers IS NOT NULL
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>

@@ -269,6 +269,7 @@
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
 			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
@@ -280,6 +281,7 @@
 				GROUP BY rsm.id_report
 			) t ON t.id_report = r.id
 		WHERE r.status = 1 
+		AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		
 		<if test="is_supper_admin != 1">
 			AND r.id_employee = #{id_employee} 
@@ -373,6 +375,7 @@
 			site s 
 			LEFT JOIN report r ON r.id_site = s.id
 			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
@@ -385,6 +388,7 @@
 			) t ON t.id_report = r.id
 		WHERE
 			r.id = #{id}
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
   	
   	

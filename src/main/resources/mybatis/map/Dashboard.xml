@@ -190,6 +190,7 @@
 			WHERE e.`status` = 1 AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND l.status = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
@@ -261,10 +262,14 @@
 				SELECT 
 					SUM(d.last_value) AS power_today_meter,
 					d.id_site
-				FROM device d
+				FROM
+					device d
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					d.id_device_type = 3
 					AND d.`status` = 1 
+					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 					GROUP BY d.id_site
 			)meter ON meter.id_site = s.id
 			
@@ -272,10 +277,14 @@
 				SELECT 
 					SUM(d.last_value) AS power_today_inverter,
 					d.id_site
-				FROM device d
+				FROM
+					device d
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					d.id_device_type = 1
 					AND d.`status` = 1 
+					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 					GROUP BY d.id_site
 			)inv ON inv.id_site = s.id
 			
@@ -301,8 +310,11 @@
 
 				FROM
 					energy_expectations ee 
+					LEFT JOIN site s ON s.id = ee.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 					ee.`year` = DATE_FORMAT('2022-08-10', '%Y')	
+					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			)ep ON ep.id_site = s.id
 			
 			LEFT JOIN (
@@ -359,6 +371,8 @@
 				alert a
 				LEFT JOIN device d ON d.id = a.id_device
 				LEFT JOIN error e ON a.id_error = e.id 
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				e.id_error_level = 13
 				AND a.`status` = 1 
@@ -367,6 +381,7 @@
 				AND e.`is_delete` = 0
 				AND d.`status` = 1
 				AND d.`is_delete` = 0
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -385,6 +400,8 @@
 				alert a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				e.id_error_level = 11
 				AND a.`status` = 1 
@@ -393,6 +410,7 @@
 				AND e.`is_delete` = 0
 				AND d.`status` = 1
 				AND d.`is_delete` = 0 
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -412,6 +430,8 @@
 				alert a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				a.`status` = 1 
 				AND e.`status` = 1 
@@ -419,6 +439,7 @@
 				AND e.`is_delete` = 0
 				AND d.`status` = 1
 				AND d.`is_delete` = 0
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -435,7 +456,9 @@
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE d.`status` = 1 AND s.`status` = 1 AND d.id_device_type = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND s.id IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">

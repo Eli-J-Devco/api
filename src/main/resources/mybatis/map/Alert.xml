@@ -293,6 +293,7 @@
 			
 			WHERE e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 			AND l.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
 				AND l.resolved = 0
@@ -1164,6 +1165,8 @@
 				alert a
 				LEFT JOIN device d ON d.id = a.id_device
 				LEFT JOIN error e ON a.id_error = e.id 
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				e.id_error_level = 13
 				AND a.`status` = 1 
@@ -1172,6 +1175,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1190,6 +1194,8 @@
 				alert a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				e.id_error_level = 11
 				AND a.`status` = 1 
@@ -1198,6 +1204,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1217,6 +1224,8 @@
 				alert a
 				LEFT JOIN error e ON a.id_error = e.id 
 				LEFT JOIN device d ON d.id = a.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				a.`status` = 1 
 				AND e.`status` = 1 
@@ -1224,6 +1233,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
+				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1293,6 +1303,7 @@
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			
 			LEFT JOIN (
 				SELECT
@@ -1411,6 +1422,7 @@
 			AND totalAlert > 0
 			AND sem.id_employee = #{id_employee}
 			AND sem.is_hiding = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")

@@ -248,6 +248,7 @@
 			) p ON p.id_device = d.id
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			order by
 	        <choose> 
@@ -510,6 +511,7 @@
 			WHERE
 				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
 				AND d.id_device_type IN (1,2,3,4)
+				AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		)t
 		 GROUP BY t.id_device_group ORDER BY t.id_device_type ASC;
  

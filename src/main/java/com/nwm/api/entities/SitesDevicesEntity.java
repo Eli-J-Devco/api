@@ -125,6 +125,7 @@ public class SitesDevicesEntity {
 	private int hidden;
 	private String table_data_report;
 	private String table_data_virtual;
+	private String expiration;
 	
 	
 	
@@ -812,6 +813,12 @@ public class SitesDevicesEntity {
 	}
 	public void setTable_data_virtual(String table_data_virtual) {
 		this.table_data_virtual = table_data_virtual;
+	}
+	public String getExpiration() {
+		return expiration;
+	}
+	public void setExpiration(String expiration) {
+		this.expiration = expiration;
 	}
 	
 	
