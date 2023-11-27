@@ -14,6 +14,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -52,12 +53,14 @@ import org.xml.sax.SAXException;
 
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelSmaInverterStp1200tlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.ModelSmaInverterStp1200tlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp24ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
@@ -111,7 +114,7 @@ public class FTPUploadServerController extends BaseController {
 					
 					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
 					
-//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231124";
+//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231122";
 //					if(siteItem.getId() == 147) {
 //						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
 //					}
@@ -170,6 +173,7 @@ public class FTPUploadServerController extends BaseController {
 			ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
 			ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
 			ModelSmaInverterStp24ktlus10Service serviceSMA24k = new ModelSmaInverterStp24ktlus10Service();
+			ModelSmaInverterStp1200tlus10Service serviceSMA12k = new ModelSmaInverterStp1200tlus10Service();
 			
 			DeviceService serviceD = new DeviceService();
 
@@ -237,6 +241,12 @@ public class FTPUploadServerController extends BaseController {
 													entitySMA24k.setJob_tablename(deviceItem.getJob_tablename());
 													entitySMA24k.setDatatablename(deviceItem.getDatatablename());
 													
+													ModelSmaInverterStp1200tlus10Entity entitySMA12k = new ModelSmaInverterStp1200tlus10Entity();
+													entitySMA12k.setId_device(deviceItem.getId());
+													entitySMA12k.setView_tablename(deviceItem.getView_tablename());
+													entitySMA12k.setJob_tablename(deviceItem.getJob_tablename());
+													entitySMA12k.setDatatablename(deviceItem.getDatatablename());
+													
 													for (int k = 0; k < itemXML.length; k++) {
 													  NodeList list = doc.getElementsByTagName(itemXML[k]);
 														for (int temp = 0; temp < list.getLength(); temp++) {
@@ -271,7 +281,6 @@ public class FTPUploadServerController extends BaseController {
 																ZoneId zId = ZoneId.of(siteItem.getTime_zone_value());
 																ZonedDateTime utcDateTime = LocalDateTime.parse(timestamp).atZone(zId).withZoneSameInstant(utc);
 																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
-																entitySMA3000.setTime(formatterUtcDateTime);
 																
 																
 																System.out.println("Cron job modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
@@ -279,6 +288,42 @@ public class FTPUploadServerController extends BaseController {
 																if (deviceItem.getId() > 0) {
 																	// Insert to datatable
 																	switch (deviceItem.getDevice_group_table()) {
+																	case "model_sma_inverter_stp1200tlus10":
+																		entitySMA12k.setTime(formatterUtcDateTime);
+																		if(field.equals("Metering.TotWhOut")) { 
+																			entitySMA12k.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001);
+																			entitySMA12k.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean) : 0.001);
+																		}
+																		else if(field.equals("Operation.GriSwCnt")) { entitySMA12k.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Metering.TotFeedTms")) { entitySMA12k.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Metering.GridMs.TotWhOut")) { entitySMA12k.setMetering_GridMs_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.TotW")) {
+																			entitySMA12k.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
+																			entitySMA12k.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001); 
+																		}
+																		else if(field.equals("GridMs.Hz")) { entitySMA12k.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Isolation.FltA")) { entitySMA12k.setIsolation_FltA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Isolation.LeakRis")) { entitySMA12k.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Vol[A]")) { entitySMA12k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Vol[B]")) { entitySMA12k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Amp[A]")) { entitySMA12k.setDcMs_AmpA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Amp[B]")) { entitySMA12k.setDcMs_AmpB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsA")) { entitySMA12k.setGridMs_PhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsB")) { entitySMA12k.setGridMs_PhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsC")) { entitySMA12k.setGridMs_PhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsA")) { entitySMA12k.setGridMs_A_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsB")) { entitySMA12k.setGridMs_A_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsC")) { entitySMA12k.setGridMs_A_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Watt[A]")) { entitySMA12k.setDcMs_WattA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Watt[B]")) { entitySMA12k.setDcMs_WattB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Operation.Health")) { entitySMA12k.setOperation_Health(mean != null ? mean : null); }
+																		else if(field.equals("Operation.Evt.Prio")) { entitySMA12k.setOperation_Evt_Prio(mean != null ? mean : null); }
+																		else if(field.equals( "Operation.Evt.Msg")) { entitySMA12k.setOperation_Evt_Msg(mean != null ? mean : null); }
+																		else if(field.equals("Operation.Evt.Dsc")) { 
+																			entitySMA12k.setOperation_Evt_Dsc(mean != null ? mean : null); 
+																		}
+																		
+																		break;
 																	case "model_sma_inverter_stp24ktlus10":
 																		entitySMA24k.setTime(formatterUtcDateTime);
 																		// Put data to entity
@@ -386,6 +431,7 @@ public class FTPUploadServerController extends BaseController {
 																		
 																		break;
 																	case "model_sma_inverter_stp30000tlus10":
+																		entitySMA3000.setTime(formatterUtcDateTime);
 																		// Put data to entity
 																		if (field.equals("Measurement.GridMs.TotVAr") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA3000.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
@@ -740,10 +786,30 @@ public class FTPUploadServerController extends BaseController {
 													}
 													
 													switch (deviceItem.getDevice_group_table()) {
+													case "model_sma_inverter_stp1200tlus10":
+														
+														serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
+//														
+//														// Update last value
+														if(entitySMA12k.getNvmActivePower() >= 0) {
+															deviceUpdateE.setLast_updated(entitySMA12k.getTime());
+															deviceUpdateE.setLast_value(entitySMA12k.getNvmActivePower() >= 0 ? entitySMA12k.getNvmActivePower() : null);
+															deviceUpdateE.setField_value1(entitySMA12k.getNvmActivePower() >= 0 ? entitySMA12k.getNvmActivePower() : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(entitySMA12k.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														break;
 													case "model_sma_inverter_stp24ktlus10":
 														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
 														if (entitySMA24k.getGridMs_TotW() > 0) {
-//															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
+															deviceUpdateE.setLast_updated(entitySMA24k.getTime());
 															deviceUpdateE.setLast_value(entitySMA24k.getGridMs_TotW()  > 0 ? entitySMA24k.getGridMs_TotW() : null);
 															deviceUpdateE.setField_value1(entitySMA24k.getGridMs_TotW()  > 0 ? entitySMA24k.getGridMs_TotW() : null);
 														} else {
@@ -763,7 +829,7 @@ public class FTPUploadServerController extends BaseController {
 													case "model_sma_inverter_stp30000tlus10":
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
 														if (entitySMA3000.getGridMs_TotW() > 0) {
-//															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
+															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
 															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
 															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
 														} else {
@@ -783,7 +849,7 @@ public class FTPUploadServerController extends BaseController {
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
 														if (entitySMA62.getGridMs_TotW() > 0) {
-//															deviceUpdateE.setLast_updated(entitySMA62.getTime());
+															deviceUpdateE.setLast_updated(entitySMA62.getTime());
 															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
 															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
 														} else {
@@ -808,10 +874,10 @@ public class FTPUploadServerController extends BaseController {
 											}
 											
 											// Delete file from server
-											File logFile = new File(fileXML);
-											if(logFile.delete()){  
-												System.out.println("Delete file: " + fileXML);  
-											}
+//											File logFile = new File(fileXML);
+//											if(logFile.delete()){  
+//												System.out.println("Delete file: " + fileXML);  
+//											}
 										}
 									}
 								}
