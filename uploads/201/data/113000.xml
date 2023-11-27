@@ -1,0 +1,837 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClusterController>
+  <Info>
+    <Created>2023-11-24T11:30:00</Created>
+    <Culture>en</Culture>
+    <UtcOffset>-480</UtcOffset>
+    <DST>False</DST>
+    <FW-Version>1.05.01.4</FW-Version>
+  </Info>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Metering.TotWhOut</Key>
+    <Mean>357257.4</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Operation.GriSwCnt</Key>
+    <Mean>5234</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Metering.TotOpTms</Key>
+    <Mean>58123.64</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Metering.TotWhOut</Key>
+    <Mean>118954.4</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Operation.GriSwCnt</Key>
+    <Mean>2515</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Metering.TotOpTms</Key>
+    <Mean>27257.76</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Metering.TotWhOut</Key>
+    <Mean>203645.8</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Operation.GriSwCnt</Key>
+    <Mean>2451</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Metering.TotOpTms</Key>
+    <Mean>27510.53</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Metering.TotWhOut</Key>
+    <Mean>34657.32</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Operation.GriSwCnt</Key>
+    <Mean>268</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Metering.TotOpTms</Key>
+    <Mean>3355.357</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Metering.TotFeedTms</Key>
+    <Mean>56853.71</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Metering.TotFeedTms</Key>
+    <Mean>26499.44</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Metering.GridMs.TotWhOut</Key>
+    <Mean>1.844674E+16</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Metering.TotFeedTms</Key>
+    <Mean>27060.49</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Metering.GridMs.TotWhOut</Key>
+    <Mean>1.844674E+16</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Metering.TotFeedTms</Key>
+    <Mean>3293.793</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Metering.GridMs.TotWhOut</Key>
+    <Mean>1.844674E+16</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.TotW</Key>
+    <Min>2018</Min>
+    <Max>17740</Max>
+    <Mean>21370</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.Hz</Key>
+    <Min>59.98</Min>
+    <Max>60.04</Max>
+    <Mean>60.01</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.TotW</Key>
+    <Min>2018</Min>
+    <Max>7323</Max>
+    <Mean>4032</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.Hz</Key>
+    <Min>59.98</Min>
+    <Max>60.03</Max>
+    <Mean>60.01</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.TotW</Key>
+    <Min>3841</Min>
+    <Max>13131</Max>
+    <Mean>7078</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.Hz</Key>
+    <Min>59.98</Min>
+    <Max>60.04</Max>
+    <Mean>60.01</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.TotW</Key>
+    <Min>5060</Min>
+    <Max>17740</Max>
+    <Mean>10260</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.Hz</Key>
+    <Min>59.98</Min>
+    <Max>60.04</Max>
+    <Mean>60.01</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Isolation.FltA</Key>
+    <Min>15</Min>
+    <Max>18</Max>
+    <Mean>16</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Isolation.FltA</Key>
+    <Min>16</Min>
+    <Max>16</Max>
+    <Mean>16</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Isolation.FltA</Key>
+    <Min>18</Min>
+    <Max>18</Max>
+    <Mean>18</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Isolation.FltA</Key>
+    <Min>15</Min>
+    <Max>15</Max>
+    <Mean>15</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Isolation.LeakRis</Key>
+    <Min>626.809</Min>
+    <Max>2565.516</Max>
+    <Mean>1377.233</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Isolation.LeakRis</Key>
+    <Min>2565.516</Min>
+    <Max>2565.516</Max>
+    <Mean>2565.516</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Isolation.LeakRis</Key>
+    <Min>939.375</Min>
+    <Max>939.375</Max>
+    <Mean>939.375</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Isolation.LeakRis</Key>
+    <Min>626.809</Min>
+    <Max>626.809</Max>
+    <Mean>626.809</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Vol[A]</Key>
+    <Min>298.16</Min>
+    <Max>642.04</Max>
+    <Mean>565.3</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Vol[B]</Key>
+    <Min>273.37</Min>
+    <Max>635.45</Max>
+    <Mean>568.34</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Vol[A]</Key>
+    <Min>482.55</Min>
+    <Max>520.89</Max>
+    <Mean>500.76</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Vol[B]</Key>
+    <Min>480.71</Min>
+    <Max>525.52</Max>
+    <Mean>500.86</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Vol[A]</Key>
+    <Min>298.16</Min>
+    <Max>642.04</Max>
+    <Mean>596.04</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Vol[B]</Key>
+    <Min>273.37</Min>
+    <Max>626.61</Max>
+    <Mean>601.95</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Vol[A]</Key>
+    <Min>493.95</Min>
+    <Max>619.84</Max>
+    <Mean>599.1</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Vol[B]</Key>
+    <Min>349.48</Min>
+    <Max>635.45</Max>
+    <Mean>602.23</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Amp[A]</Key>
+    <Min>2.0050001223755</Min>
+    <Max>15.1990009276734</Max>
+    <Mean>6.29900038446047</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Amp[B]</Key>
+    <Min>2.0050001223755</Min>
+    <Max>14.9260009110108</Max>
+    <Mean>6.16100037603762</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Amp[A]</Key>
+    <Min>2.0050001223755</Min>
+    <Max>7.39600045141604</Max>
+    <Mean>4.04500024688722</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Amp[B]</Key>
+    <Min>2.0050001223755</Min>
+    <Max>7.3520004487305</Max>
+    <Mean>4.06400024804689</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Amp[A]</Key>
+    <Min>3.3190002025757</Min>
+    <Max>11.1270006791382</Max>
+    <Mean>6.01500036712649</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Amp[B]</Key>
+    <Min>3.10600018957521</Min>
+    <Max>10.9690006694947</Max>
+    <Mean>5.91100036077883</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Amp[A]</Key>
+    <Min>4.16400025415041</Min>
+    <Max>15.1990009276734</Max>
+    <Mean>8.83800053942874</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Amp[B]</Key>
+    <Min>4.05900024774171</Min>
+    <Max>14.9260009110108</Max>
+    <Mean>8.50800051928714</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.PhV.phsA</Key>
+    <Min>273.16</Min>
+    <Max>280.24</Max>
+    <Mean>276.06</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.PhV.phsA</Key>
+    <Min>273.16</Min>
+    <Max>279.48</Max>
+    <Mean>275.66</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.PhV.phsA</Key>
+    <Min>273.7</Min>
+    <Max>280.05</Max>
+    <Mean>276.2</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.PhV.phsA</Key>
+    <Min>273.88</Min>
+    <Max>280.24</Max>
+    <Mean>276.34</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.PhV.phsB</Key>
+    <Min>273.01</Min>
+    <Max>280.54</Max>
+    <Mean>276.04</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.PhV.phsC</Key>
+    <Min>272.24</Min>
+    <Max>279.63</Max>
+    <Mean>275.14</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.A.phsA</Key>
+    <Min>2.46800015063477</Min>
+    <Max>21.2530012971803</Max>
+    <Mean>8.59100052435306</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.PhV.phsB</Key>
+    <Min>273.29</Min>
+    <Max>279.82</Max>
+    <Mean>275.97</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.PhV.phsC</Key>
+    <Min>272.49</Min>
+    <Max>279.08</Max>
+    <Mean>275.08</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.A.phsA</Key>
+    <Min>2.46800015063477</Min>
+    <Max>8.77100053533939</Max>
+    <Mean>4.87000029724123</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.PhV.phsB</Key>
+    <Min>273.01</Min>
+    <Max>279.62</Max>
+    <Mean>275.73</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.PhV.phsC</Key>
+    <Min>272.24</Min>
+    <Max>278.86</Max>
+    <Mean>274.82</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.A.phsA</Key>
+    <Min>4.70200028698732</Min>
+    <Max>15.6830009572144</Max>
+    <Mean>8.53900052117923</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.PhV.phsB</Key>
+    <Min>273.66</Min>
+    <Max>280.54</Max>
+    <Mean>276.42</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.PhV.phsC</Key>
+    <Min>272.94</Min>
+    <Max>279.63</Max>
+    <Mean>275.52</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.A.phsA</Key>
+    <Min>6.19600037817385</Min>
+    <Max>21.2530012971803</Max>
+    <Mean>12.3660007547608</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.A.phsB</Key>
+    <Min>2.45300014971925</Min>
+    <Max>21.1090012883912</Max>
+    <Mean>8.52800052050784</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:GridMs.A.phsC</Key>
+    <Min>2.45700014996339</Min>
+    <Max>21.275001298523</Max>
+    <Mean>8.59300052447513</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.A.phsB</Key>
+    <Min>2.45300014971925</Min>
+    <Max>8.71700053204349</Max>
+    <Mean>4.83900029534914</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:GridMs.A.phsC</Key>
+    <Min>2.45700014996339</Min>
+    <Max>8.76900053521732</Max>
+    <Mean>4.86000029663088</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.A.phsB</Key>
+    <Min>4.67200028515627</Min>
+    <Max>15.6100009527588</Max>
+    <Mean>8.49100051824954</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:GridMs.A.phsC</Key>
+    <Min>4.70200028698732</Min>
+    <Max>15.701000958313</Max>
+    <Mean>8.54300052142337</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.A.phsB</Key>
+    <Min>6.11000037292483</Min>
+    <Max>21.1090012883912</Max>
+    <Mean>12.2560007480469</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:GridMs.A.phsC</Key>
+    <Min>6.19600037817385</Min>
+    <Max>21.275001298523</Max>
+    <Mean>12.3780007554932</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Watt[A]</Key>
+    <Min>1004</Min>
+    <Max>9056</Max>
+    <Mean>10948</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>Cluster Controller:165012367:DcMs.Watt[B]</Key>
+    <Min>1014</Min>
+    <Max>9043</Max>
+    <Mean>10763</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Watt[A]</Key>
+    <Min>1004</Min>
+    <Max>3741</Max>
+    <Mean>2036</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:DcMs.Watt[B]</Key>
+    <Min>1014</Min>
+    <Max>3720</Max>
+    <Mean>2047</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Watt[A]</Key>
+    <Min>1996</Min>
+    <Max>6706</Max>
+    <Mean>3605</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:DcMs.Watt[B]</Key>
+    <Min>1862</Min>
+    <Max>6642</Max>
+    <Mean>3567</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Watt[A]</Key>
+    <Min>2576</Min>
+    <Max>9056</Max>
+    <Mean>5307</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <MeanPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:DcMs.Watt[B]</Key>
+    <Min>2489</Min>
+    <Max>9043</Max>
+    <Mean>5149</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </MeanPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:Operation.Health</Key>
+    <Mean>Ok</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Operation.Health</Key>
+    <Mean>Ok</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Operation.Evt.Prio</Key>
+    <Mean>NonePrio</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Operation.Evt.Msg</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Operation.Health</Key>
+    <Mean>Ok</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Operation.Evt.Prio</Key>
+    <Mean>NonePrio</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Operation.Evt.Msg</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Operation.Health</Key>
+    <Mean>Ok</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Operation.Evt.Prio</Key>
+    <Mean>NonePrio</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Operation.Evt.Msg</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240180 (SN: 191240180):191240180:Operation.Evt.Dsc</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191240234 (SN: 191240234):191240234:Operation.Evt.Dsc</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>SN: 191246219 (SN: 191246219):191246219:Operation.Evt.Dsc</Key>
+    <Mean>None</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:InOut.AnInA2</Key>
+    <Min>0</Min>
+    <Max>0</Max>
+    <Mean>0</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:InOut.AnInA3</Key>
+    <Min>0</Min>
+    <Max>0</Max>
+    <Mean>0</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+  <CurrentPublic>
+    <Key>Cluster Controller:165012367:InOut.AnInVol4</Key>
+    <Min>2.07</Min>
+    <Max>2.07</Max>
+    <Mean>2.07</Mean>
+    <Base>1</Base>
+    <Period>300</Period>
+    <Timestamp>2023-11-24T11:30:00</Timestamp>
+  </CurrentPublic>
+</ClusterController>

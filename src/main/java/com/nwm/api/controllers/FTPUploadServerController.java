@@ -111,7 +111,7 @@ public class FTPUploadServerController extends BaseController {
 					
 					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
 					
-//					remoteDirPath = "/SMAFTP/OneillVintners/XML/2023/06/20230615";
+//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231124";
 //					if(siteItem.getId() == 147) {
 //						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
 //					}
@@ -223,16 +223,19 @@ public class FTPUploadServerController extends BaseController {
 													entitySMA3000.setId_device(deviceItem.getId());
 													entitySMA3000.setView_tablename(deviceItem.getView_tablename());
 													entitySMA3000.setJob_tablename(deviceItem.getJob_tablename());
+													entitySMA3000.setDatatablename(deviceItem.getDatatablename());
 													
 													ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
 													entitySMA62.setId_device(deviceItem.getId());
 													entitySMA62.setView_tablename(deviceItem.getView_tablename());
 													entitySMA62.setJob_tablename(deviceItem.getJob_tablename());
+													entitySMA62.setDatatablename(deviceItem.getDatatablename());
 													
 													ModelSmaInverterStp24ktlus10Entity entitySMA24k = new ModelSmaInverterStp24ktlus10Entity();
 													entitySMA24k.setId_device(deviceItem.getId());
 													entitySMA24k.setView_tablename(deviceItem.getView_tablename());
 													entitySMA24k.setJob_tablename(deviceItem.getJob_tablename());
+													entitySMA24k.setDatatablename(deviceItem.getDatatablename());
 													
 													for (int k = 0; k < itemXML.length; k++) {
 													  NodeList list = doc.getElementsByTagName(itemXML[k]);
