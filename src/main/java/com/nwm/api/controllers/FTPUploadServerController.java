@@ -53,6 +53,7 @@ import org.xml.sax.SAXException;
 
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelSmaClusterControllerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1200tlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
@@ -60,6 +61,7 @@ import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.ModelSmaClusterControllerService;
 import com.nwm.api.services.ModelSmaInverterStp1200tlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp24ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
@@ -114,7 +116,7 @@ public class FTPUploadServerController extends BaseController {
 					
 					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
 					
-//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231122";
+//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231121";
 //					if(siteItem.getId() == 147) {
 //						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
 //					}
@@ -174,6 +176,7 @@ public class FTPUploadServerController extends BaseController {
 			ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
 			ModelSmaInverterStp24ktlus10Service serviceSMA24k = new ModelSmaInverterStp24ktlus10Service();
 			ModelSmaInverterStp1200tlus10Service serviceSMA12k = new ModelSmaInverterStp1200tlus10Service();
+			ModelSmaClusterControllerService serviceUmg604 = new ModelSmaClusterControllerService();
 			
 			DeviceService serviceD = new DeviceService();
 
@@ -247,6 +250,13 @@ public class FTPUploadServerController extends BaseController {
 													entitySMA12k.setJob_tablename(deviceItem.getJob_tablename());
 													entitySMA12k.setDatatablename(deviceItem.getDatatablename());
 													
+													ModelSmaClusterControllerEntity entityCluster = new ModelSmaClusterControllerEntity();
+													entityCluster.setId_device(deviceItem.getId());
+													entityCluster.setView_tablename(deviceItem.getView_tablename());
+													entityCluster.setJob_tablename(deviceItem.getJob_tablename());
+													entityCluster.setDatatablename(deviceItem.getDatatablename());
+													
+													
 													for (int k = 0; k < itemXML.length; k++) {
 													  NodeList list = doc.getElementsByTagName(itemXML[k]);
 														for (int temp = 0; temp < list.getLength(); temp++) {
@@ -283,11 +293,50 @@ public class FTPUploadServerController extends BaseController {
 																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 																
 																
-																System.out.println("Cron job modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
+																System.out.println("Cron job FTP upload: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 																if (deviceItem.getId() > 0) {
 																	// Insert to datatable
 																	switch (deviceItem.getDevice_group_table()) {
+																	case "model_sma_cluster_controller":
+																		entityCluster.setTime(formatterUtcDateTime);
+																		if(field.equals("Metering.TotWhOut")) { 
+																			entityCluster.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean) : 0.001); 
+																			entityCluster.setNvmActiveEnergy(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		else if(field.equals("Operation.GriSwCnt")) { entityCluster.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Metering.TotFeedTms")) { entityCluster.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.TotW")) { 
+																			entityCluster.setGridMs_TotW(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
+																			entityCluster.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001); 
+																		}
+																		
+																		else if(field.equals("GridMs.Hz")) { entityCluster.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Isolation.FltA")) { entityCluster.setIsolation_FltA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Isolation.LeakRis")) { entityCluster.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Vol[A]")) { entityCluster.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Vol[B]")) { entityCluster.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Amp[A]")) { entityCluster.setDcMs_AmpA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Amp[B]")) { entityCluster.setDcMs_AmpB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsA")) { entityCluster.setGridMs_PhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsB")) { entityCluster.setGridMs_PhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.PhV.phsC")) { entityCluster.setGridMs_PhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsA")) { entityCluster.setGridMs_A_phsA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsB")) { entityCluster.setGridMs_A_phsB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("GridMs.A.phsC")) { entityCluster.setGridMs_A_phsC(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Watt[A]")) { entityCluster.setDcMs_WattA(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("DcMs.Watt[B]")) { entityCluster.setDcMs_WattB(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Operation.Health")) { entityCluster.setOperation_Health(mean != null ? mean : null); }
+																		else if(field.equals("Operation.Evt.Prio")) { entityCluster.setOperation_Evt_Prio(mean != null ? mean : null); }
+																		else if(field.equals( "Operation.Evt.Msg")) { entityCluster.setOperation_Evt_Msg(mean != null ? mean : null); }
+																		else if(field.equals("Operation.Evt.Dsc")) { entityCluster.setOperation_Evt_Dsc(mean != null ? mean : null); }
+																		else if(field.equals("InOut.AnInA1")) { entityCluster.setInOut_AnInA1(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("InOut.AnInA2")) { entityCluster.setInOut_AnInA2(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("InOut.AnInA3")) { entityCluster.setInOut_AnInA3(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("InOut.AnInVol4")) { entityCluster.setInOut_AnInVol4(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		else if(field.equals("Env.ExInsol")) { entityCluster.setEnv_ExInsol(mean != null  ? Double.parseDouble(mean) : 0.001); }
+																		break;
+																
 																	case "model_sma_inverter_stp1200tlus10":
 																		entitySMA12k.setTime(formatterUtcDateTime);
 																		if(field.equals("Metering.TotWhOut")) { 
@@ -786,11 +835,26 @@ public class FTPUploadServerController extends BaseController {
 													}
 													
 													switch (deviceItem.getDevice_group_table()) {
-													case "model_sma_inverter_stp1200tlus10":
+													case "model_sma_cluster_controller":
+														serviceUmg604.insertModelSmaClusterController(entityCluster);
+														// Update last value
+														if(entityCluster.getNvmActivePower() >= 0) {
+															deviceUpdateE.setLast_updated(entitySMA12k.getTime());
+															deviceUpdateE.setLast_value(entityCluster.getNvmActivePower() >= 0 ? entityCluster.getNvmActivePower() : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+														}
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
 														
+														deviceUpdateE.setId(entitySMA12k.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														break;
+													
+													case "model_sma_inverter_stp1200tlus10":
 														serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
-//														
-//														// Update last value
+														// Update last value
 														if(entitySMA12k.getNvmActivePower() >= 0) {
 															deviceUpdateE.setLast_updated(entitySMA12k.getTime());
 															deviceUpdateE.setLast_value(entitySMA12k.getNvmActivePower() >= 0 ? entitySMA12k.getNvmActivePower() : null);
@@ -802,7 +866,6 @@ public class FTPUploadServerController extends BaseController {
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
-														
 														deviceUpdateE.setId(entitySMA12k.getId_device());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
@@ -874,10 +937,10 @@ public class FTPUploadServerController extends BaseController {
 											}
 											
 											// Delete file from server
-//											File logFile = new File(fileXML);
-//											if(logFile.delete()){  
-//												System.out.println("Delete file: " + fileXML);  
-//											}
+											File logFile = new File(fileXML);
+											if(logFile.delete()){  
+												System.out.println("Delete file: " + fileXML);  
+											}
 										}
 									}
 								}
