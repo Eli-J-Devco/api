@@ -937,6 +937,7 @@ public class FTPUploadServerController extends BaseController {
 											}
 											
 											// Delete file from server
+											
 											File logFile = new File(fileXML);
 											if(logFile.delete()){  
 												System.out.println("Delete file: " + fileXML);  
