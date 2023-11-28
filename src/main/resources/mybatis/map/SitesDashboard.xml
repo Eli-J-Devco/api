@@ -628,12 +628,34 @@
 	</select>
 	
 	<select id="getLastUpdated" resultType="Map">
-		SELECT		
+		SELECT
+			<choose>
+				<when test="id_device_type == 1">
+					(IF(dv.nvmActivePower = -1 or dv.nvmActivePower IS NULL, "N/A", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
+				</when>
+				<when test="id_device_type == 3">
+					(IF(dv.nvmActivePower = -1 or dv.nvmActivePower IS NULL, "N/A", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
+				</when>
+				<when test="id_device_type == 4">
+					(IF(dv.nvm_irradiance = -1 or dv.nvm_irradiance IS NULL, "N/A", CONCAT_WS(" ", ROUND(dv.nvm_irradiance, 2), "W/m²" )))
+				</when>
+				<when test="id_device_type == 12">
+					(IF(dv.nvm_irradiance = -1 or dv.nvmActivePower IS NULL, "N/A", CONCAT_WS(" ", ROUND(dv.nvmActivePower, 2), "kW" )))
+				</when>
+				<otherwise>
+					"N/A"
+				</otherwise>
+			</choose> AS key_indicator,
+			
 			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS time
+			
 		FROM
 			${datatablename} dv
 
 		WHERE dv.id_device = #{id}
+		<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 4">
+				AND dv.error = 0
+		</if>
 		ORDER BY dv.time DESC
 		LIMIT 1
 	</select>
