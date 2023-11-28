@@ -69,35 +69,36 @@
 			IF(eer.total_error, eer.total_error, 0) AS total_error,
 			IFNULL(er.alerts, JSON_ARRAY()) AS alerts,
 			s.`name`,
-
+			DATE_FORMAT(s.expiration, '%m/%d/%Y') AS expiration,
 			s.kiosk_view,
 			IFNULL(s.ac_capacity, 0) as ac_capacity,
 			IFNULL(s.dc_capacity, 0) as dc_capacity,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			c.name AS company_name,
-			IFNULL(t.irradiance, 0 ) AS irradiance,
-			IF( ivt.activePower IS NULL, ROUND(m.activePower,2), ROUND(ivt.activePower,2)) AS activePower,
 			s.weather_icon,
 			s.weather_description,
 			s.id_company,
 			s.is_rec_report,
 			p.last_updated,
-			p.times_ago,
 			p.times_ago_unit,
 			IFNULL(p.unix_time, 0) AS unix_time,
-			IFNULL(s.eer_last_month, 0) AS EERLastMonth,
-			IFNULL(s.eer_this_month, 0) AS EERThisMonth,
-			ROUND(s.PerformanceRatioYesterday, 1) AS PerformanceRatioYesterday,
 			s.note,
-			IFNULL(ROUND(v.expected_power_virtual,2), ROUND(t.expected_power,2)) AS expected_power,
 			h.is_hiding,
-			im.inverters_meters
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(t.irradiance, 0 ), NULL) AS irradiance,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IF( ivt.activePower IS NULL, ROUND(m.activePower,2), ROUND(ivt.activePower,2)), NULL) AS activePower,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(v.expected_power_virtual,2), ROUND(t.expected_power,2)), NULL) AS expected_power,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.inverters_meters, NULL) AS inverters_meters
 			
 				
 		FROM
 			site s
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			
 			LEFT JOIN (
 				SELECT
@@ -490,6 +491,9 @@
 	                p.last_updated ${order_by}
 	            </when>
 	            
+	       		<when test="sort_column == 'expiration'">
+	                s.expiration ${order_by}
+	            </when>
 	            
 	            <otherwise>
 			      s.`name`, s.id_company ASC

@@ -187,19 +187,19 @@ public class ModelIVTSolaronEXTService extends DB {
 
 	public void checkTriggerAlertModelIVTSolaronEXT(ModelIVTSolaronEXTEntity obj) {
 		// Check device alert by fault code
-		double fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (double) obj.getActive_faults1() : 0;
-		double fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (double) obj.getActive_faults2() : 0;
-		double fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (double) obj.getActive_faults3() : 0;
-		double limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (double) obj.getLimits() : 0;
-		double statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (double) obj.getStatus() : 0;
-		double warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (double) obj.getWarnings1() : 0;
+		long fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (long) obj.getActive_faults1() : 0;
+		long fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (long) obj.getActive_faults2() : 0;
+		long fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (long) obj.getActive_faults3() : 0;
+		long limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (long) obj.getLimits() : 0;
+		long statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (long) obj.getStatus() : 0;
+		long warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (long) obj.getWarnings1() : 0;
 		
 		ModelIVTSolaronEXTEntity rowItem = (ModelIVTSolaronEXTEntity) checkAlertWriteCode(obj);
 		
 		if(warningCode > 0 && rowItem.getTotalWarning() >= 20) {
 			try {
 				
-				String toBinary = Long.toBinaryString(Double.doubleToLongBits(warningCode));
+				String toBinary = Long.toBinaryString(warningCode);
 				System.out.println("warning toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				System.out.println("warning toBinary32Bit: " + toBinary32Bit);
@@ -264,7 +264,7 @@ public class ModelIVTSolaronEXTService extends DB {
 		if(statusCode > 0  && rowItem.getTotalStatus() >= 20) {
 			try {
 //				String toBinary = Integer.toBinaryString(statusCode);
-				String toBinary = Long.toBinaryString(Double.doubleToLongBits(statusCode));
+				String toBinary = Long.toBinaryString(statusCode);
 				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				System.out.println("status toBinary32Bit: " + toBinary32Bit);
@@ -329,7 +329,7 @@ public class ModelIVTSolaronEXTService extends DB {
 		if(limitCode > 0  && rowItem.getTotalLimits() >= 20) {
 			try {
 //				String toBinary = Integer.toBinaryString(limitCode);
-				String toBinary = Long.toBinaryString(Double.doubleToLongBits(limitCode));
+				String toBinary = Long.toBinaryString(limitCode);
 				System.out.println("limits toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				System.out.println("limits toBinary32Bit: " + toBinary32Bit);
@@ -393,7 +393,7 @@ public class ModelIVTSolaronEXTService extends DB {
 		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
 //				String toBinary = Integer.toBinaryString(fault1);
-				String toBinary = Long.toBinaryString(Double.doubleToLongBits(fault1));
+				String toBinary = Long.toBinaryString(fault1);
 				System.out.println("fault1 toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				System.out.println("fault1 toBinary32Bit: " + toBinary32Bit);
@@ -457,7 +457,7 @@ public class ModelIVTSolaronEXTService extends DB {
 		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
 			try {
 //				String toBinary2 = Integer.toBinaryString(fault2);
-				String toBinary2 = Long.toBinaryString(Double.doubleToLongBits(fault2));
+				String toBinary2 = Long.toBinaryString(fault2);
 				
 				System.out.println("fault2 toBinary: " + toBinary2);
 				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
@@ -521,7 +521,7 @@ public class ModelIVTSolaronEXTService extends DB {
 		if (fault3 > 0   && rowItem.getTotalFault3() >= 20) {
 			try {
 //				String toBinary3 = Integer.toBinaryString(fault3);
-				String toBinary3 = Long.toBinaryString(Double.doubleToLongBits(fault3));
+				String toBinary3 = Long.toBinaryString(fault3);
 				
 				System.out.println("fault3 toBinary: " + toBinary3);
 				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");

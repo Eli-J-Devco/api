@@ -195,6 +195,7 @@ public class SiteEntity {
 	private int virtual_status;
 	private String table_data_virtual;
 	private String table_data_report;
+	private String expiration;
 	
 	
 	
@@ -1247,6 +1248,12 @@ public class SiteEntity {
 	}
 	public void setHidden_data_list(List hidden_data_list) {
 		this.hidden_data_list = hidden_data_list;
+	}
+	public String getExpiration() {
+		return expiration;
+	}
+	public void setExpiration(String expiration) {
+		this.expiration = expiration;
 	}
 	
 	

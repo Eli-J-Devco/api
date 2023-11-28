@@ -1979,6 +1979,7 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			r.`status` = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
   	
   	

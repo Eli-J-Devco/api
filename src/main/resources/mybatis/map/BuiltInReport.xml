@@ -244,6 +244,7 @@
 			AND d.is_delete = 0 
 			AND s.id = #{id_site}
 			AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			GROUP BY time_format
 	</select>
@@ -304,6 +305,7 @@
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
 							AND d.`status` = 1 
+							AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 						GROUP BY
 							d.id, time_format
 			      </foreach>
@@ -372,6 +374,7 @@
 			AND d.is_delete = 0 
 			AND s.id = #{id_site}
 			AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY time_format
 	</select>
 	

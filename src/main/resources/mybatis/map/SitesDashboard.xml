@@ -84,7 +84,8 @@
 			s.alert_mail_cc,
 			h.is_hiding,
 			s.table_data_report,
-			s.table_data_virtual
+			s.table_data_virtual,
+			s.expiration
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -449,6 +450,7 @@
 			
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 		ORDER BY
 	        <choose> 
@@ -563,7 +565,8 @@
 		WHERE
 					s.id = #{id_site}
 					AND s.`status` = 1 
-					AND s.is_delete = 0;
+					AND s.is_delete = 0
+					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
 	<select id="getDeviceTableListBySite" resultType="com.nwm.api.entities.SitesDevicesEntity">

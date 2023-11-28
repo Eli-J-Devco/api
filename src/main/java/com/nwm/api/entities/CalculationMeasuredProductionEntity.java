@@ -24,6 +24,7 @@ public class CalculationMeasuredProductionEntity {
 	private String job_tablename;
 	private int id_device_group;
 	private String newtablename;
+	private String device_group_table;
 	
 	
 	
@@ -129,6 +130,12 @@ public class CalculationMeasuredProductionEntity {
 	}
 	public void setJob_tablename(String job_tablename) {
 		this.job_tablename = job_tablename;
+	}
+	public String getDevice_group_table() {
+		return device_group_table;
+	}
+	public void setDevice_group_table(String device_group_table) {
+		this.device_group_table = device_group_table;
 	}
 	
 }

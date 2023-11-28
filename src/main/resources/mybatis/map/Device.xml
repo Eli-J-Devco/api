@@ -600,7 +600,7 @@
 	<insert id="createTableDevice">
 		<choose>  
 	            <when test="id_device_group == 1">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -728,12 +728,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 2">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -760,12 +760,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 3">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -824,12 +824,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 4">
-	                CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	                CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int(11) NOT NULL,
@@ -857,13 +857,13 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>   
 
 	            <when test="id_device_group == 5">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -877,12 +877,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 6">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -930,12 +930,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 8">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -962,12 +962,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 9">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1032,12 +1032,12 @@
 						  `SerialNumber` varchar(200) DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 10">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1121,13 +1121,13 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 
 	            <when test="id_device_group == 12">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1269,12 +1269,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 13">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1317,12 +1317,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 14">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1344,12 +1344,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 15">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1441,13 +1441,13 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
 	            <when test="id_device_group == 17">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1481,12 +1481,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 18">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1562,12 +1562,12 @@
 						  `nvm_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 19">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `id_device` int NOT NULL,
 						  `time` datetime NOT NULL,
@@ -1590,12 +1590,12 @@
 						  `network` varchar(200) DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 20">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1653,12 +1653,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>     
 	            <when test="id_device_group == 21">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1685,12 +1685,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 22">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1737,12 +1737,12 @@
 						  `WindStowTime` double DEFAULT NULL COMMENT 'Wind Stow Time',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 23">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1772,12 +1772,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 24">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1790,12 +1790,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 25">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1821,12 +1821,12 @@
 						  `nvm_temperature` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 27">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					   	  `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1911,12 +1911,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,   
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 28">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -1954,12 +1954,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 29">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2062,12 +2062,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 30">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2080,12 +2080,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 31">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2123,12 +2123,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 32">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2165,12 +2165,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 33">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2211,12 +2211,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 34">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2265,12 +2265,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 35">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2284,12 +2284,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 36">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2317,12 +2317,12 @@
 						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 37">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2336,12 +2336,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 38">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2355,12 +2355,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 39">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2374,12 +2374,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 40">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `id_device` int NOT NULL,
 						  `time` datetime NOT NULL,
@@ -2425,12 +2425,12 @@
 						  `SlotB` varchar(200) DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>    
 	            <when test="id_device_group == 41">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2470,12 +2470,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 42">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2515,12 +2515,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 43">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2569,12 +2569,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 44">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `id_device` int NOT NULL,
 						  `time` datetime NOT NULL,
@@ -2600,12 +2600,12 @@
 						  `NETSTATE` varchar(255) DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 45">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2663,12 +2663,12 @@
 						  `nvm_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 46">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2714,12 +2714,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 47">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2855,12 +2855,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 48">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2921,12 +2921,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 49">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -2946,12 +2946,12 @@
 						  `calculation_clipping` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 50">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -3009,12 +3009,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>    
 	            <when test="id_device_group == 51">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -3086,12 +3086,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 52">
-	            	CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -3183,12 +3183,12 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            <when test="id_device_group == 53">
-	           CREATE TABLE IF NOT EXISTS `data${id}_${datatablename}` 
+	           CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
 					  (
 					      `time` datetime NOT NULL,
 						  `id_device` int NOT NULL,
@@ -3215,7 +3215,7 @@
 						  `MeasuredProduction` double DEFAULT NULL,
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
-						  CONSTRAINT `fk_data${id}_${datatablename}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
@@ -3227,11 +3227,11 @@
 	
 	
 	<insert id="createViewThreeMonthData">
-		CREATE OR REPLACE VIEW `View${id}_${datatablename}` AS
+		CREATE OR REPLACE VIEW `View${id}_${device_group_table}` AS
 		  	SELECT
 				* 
 			FROM
-				`data${id}_${datatablename}` AS dv
+				`data${id}_${device_group_table}` AS dv
 			WHERE
 				( dv.`time` > ( now() + INTERVAL -( 3 ) MONTH )) 
 			ORDER BY dv.`time` DESC;
@@ -3239,11 +3239,11 @@
 	
 	
 	<insert id="createBJobData">
-		CREATE OR REPLACE VIEW `BJob${id}_${datatablename}` AS
+		CREATE OR REPLACE VIEW `BJob${id}_${device_group_table}` AS
 		  	SELECT
 				* 
 			FROM
-				`data${id}_${datatablename}` AS dv
+				`data${id}_${device_group_table}` AS dv
 			WHERE
 				( dv.`time` > ( now() + INTERVAL -( 1 ) DAY ))
 			ORDER BY dv.`time` DESC;
@@ -3271,7 +3271,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `volts_a_n`, `volts_b_n`, `volts_c_n`, `volts_a_b`, `volts_b_c`, `volts_c_a`, `amps_a`, `amps_b`, `amps_c`, `watts_3ph_total`, `vars_3ph_total`, `vas_3ph_total`, `power_factor_3ph_total`, `frequency`, `neutral_current`, `w_hours_received`, `w_hours_delivered`, `w_hours_net`, `w_hours_total`, `var_hours_positive`, `var_hours_negative`, `var_hours_net`, `var_hours_total`, `va_hours_total`, `amps_a_average`, `amps_b_average`, `amps_c_average`, `positive_watts_3ph_average`, `positive_vars_3ph_average`, `negative_watts_3ph_average`, `negative_vars_3ph_average`, `vas_3ph_average`, `positive_pf_3ph_average`, `negative_pf_3ph_average`, `volts_a_n_min`, `volts_b_n_min`, `volts_c_n_min`, `volts_a_b_min`, `volts_b_c_min`, `volts_c_a_min`, `amps_a_min_avg_demand`, `amps_b_min_avg_demand`, `amps_c_min_avg_demand`, `positive_watts_3ph_min_avg_demand`, `positive_vars_3ph_min_avg_demand`, `negative_watts_3ph_min_avg_demand`, `negative_vars_3ph_min_avg_demand`, `vas_3ph_min_avg_demand`, `positive_pf_3ph_min_avg_demand`, `negative_pf_3ph_min_avg_demand`, `frequency_min`, `volts_a_n_max`, `volts_b_n_max`, `volts_c_n_max`, `volts_a_b_max`, `volts_b_c_max`, `volts_c_a_max`, `amps_a_max_avg_demand`, `amps_b_max_avg_demand`, `amps_c_max_avg_demand`, `positive_watts_3ph_max_avg_demand`, `positive_vars_3ph_max_avg_demand`, `negative_watts_3ph_max_avg_demand`, `negative_vars_3ph_max_avg_demand`, `vas_3ph_max_avg_demand`, `positive_pf_3ph_max_avg_demand`, `negative_pf_3ph_max_avg_demand`, `frequency_max`, `volts_a_n_thd`, `volts_b_n_thd`, `volts_c_n_thd`, `amps_a_thd`, `amps_b_thd`, `amps_c_thd`, `phase_a_current_0th`, `phase_a_current_1st`, `phase_a_current_2nd`, `phase_a_current_3rd`, `phase_a_current_4th`, `phase_a_current_5th`, `phase_a_current_6th`, `phase_a_current_7th`, `phase_a_voltage_0th`, `phase_a_voltage_1st`, `phase_a_voltage_2nd`, `phase_a_voltage_3rd`, `phase_b_current_0th`, `phase_b_current_1st`, `phase_b_current_2nd`, `phase_b_current_3rd`, `phase_b_current_4th`, `phase_b_current_5th`, `phase_b_current_6th`, `phase_b_current_7th`, `phase_b_voltage_0th`, `phase_b_voltage_1st`, `phase_b_voltage_2nd`, `phase_b_voltage_3rd`, `phase_c_current_0th`, `phase_c_current_1st`, `phase_c_current_2nd`, `phase_c_current_3rd`, `phase_c_current_4th`, `phase_c_current_5th`, `phase_c_current_6th`, `phase_c_current_7th`, `phase_c_voltage_0th`, `phase_c_voltage_1st`, `phase_c_voltage_2nd`, `phase_c_voltage_3rd`, `angle_phase_a_current`, `angle_phase_b_current`, `angle_phase_c_current`, `angle_volts_a_b`, `angle_volts_b_c`, `angle_volts_c_a`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3283,7 +3283,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `device_type`, `data_model_version`, `operational_mode`, `status_flags`, `sensor1_data`, `panel_temperature`, `external_power_sensor`, `calibration_date`, `error_code`, `protocol_error`, `batch_number`, `serial_number`, `software_version`, `hardware_version`, `node_id`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3295,7 +3295,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `today_kwh`, `ytd_kwh_total`, `life_kwh_total`, `ytd_kwh`, `life_kwh`, `last_15min_kwh`, `timestamp_15minutes`, `last_restart`, `uptime`, `ac_power`, `ac_frequency`, `pv_voltage`, `pv_current`, `common_mode`, `ambient_temperature`, `coolant_temperature`, `reactor_temperature`, `cabinet_temperature`, `bus_voltage`, `ground_current`, `reactive_power`, `active_faults1`, `active_faults2`, `active_faults3`, `status`, `warnings1`, `warnings2_reserved`, `warnings3_reserved`, `limits`, `year`, `month`, `day`, `hour`, `minutes`, `seconds`, `current_time`, `ac_current`, `requset_set_ac_power_limit`, `request_set_instantaneous_reactive_power_set_point`, `autostart_status`, `set_read_reactive_power_mode`, `set_read_p_ac_limit`, `set_read_instantaneous_reactive_power_set_point`, `set_read_power_factor_set_point`, `ac_power_ramp_rate`, `reactive_power_ramp_rate`, `power_factor_ramp_rate`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3307,7 +3307,7 @@
 					SELECT 
 					  `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `total_kwh_delivered`, `volts_a_l_n`, `volts_b_l_n`, `volts_c_l_n`, `current_a`, `current_b`, `current_c`, `dc_output_voltage`, `dc_output_current`, `line_frenquency`, `line_kw`, `inverter_operating_status`, `inverter_fault_word0`, `inverter_fault_word1`, `inverter_fault_word2`, `data_comm_status`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction` 
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>   
@@ -3320,7 +3320,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`, `tcell`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3332,7 +3332,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `today_kwh`, `ytd_kwh_total`, `life_kwh_total`, `ytd_kwh`, `life_kwh`, `last_15min_kwh`, `timestamp_15minutes`, `last_restart`, `uptime`, `ac_power`, `ac_frequency`, `pv_voltage`, `pv_current`, `common_mode`, `ambient_temperature`, `coolant_temperature`, `reactor_temperature`, `cabinet_temperature`, `bus_voltage`, `ground_current`, `reactive_power`, `active_faults1`, `active_faults2`, `active_faults3`, `status`, `warnings1`, `warnings2_reserved`, `warnings3_reserved`, `limits`, `year`, `month`, `day`, `hour`, `minutes`, `seconds`, `current_time`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3344,7 +3344,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `device_type`, `data_model_version`, `operational_mode`, `status_flags`, `sensor1_data`, `panel_temperature`, `external_power_sensor`, `calibration_date`, `error_code`, `protocol_error`, `batch_number`, `serial_number`, `software_version`, `hardware_version`, `node_id`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3356,7 +3356,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOnOff`, `PActiveSet`, `PFactorSet`, `PReactiveSet`, `GridVMax`, `GridVmaxTripT`, `GridVMin`, `GridVminTripT`, `GridFMax`, `GridFMin`, `GridFTripT`, `ActivePower`, `PowerFactor`, `StartDelayTime`, `Risomin`, `PVStartVol`, `DCIMax`, `TambientMax`, `TmoduleMax`, `OffsetDiffMax`, `GridVolUnbalance`, `SoftPowerStep`, `TotalEnergyToEnergy`, `TotalEnergyToday`, `InverterEfficiency`, `PowerFactor1`, `MaxActivePowerToday`, `RunTimeToGrid`, `AC_ActivePower`, `AC_ApparentPower`, `GridVoltageUab`, `GridVoltageUbc`, `GridVoltageUca`, `GridA_PhaseCurrent`, `GridB_PhaseCurrent`, `GridC_PhaseCurrent`, `PV1_Voltage`, `PV1_Current`, `PV2_Voltage`, `PV2_Current`, `PV3_Voltage`, `PV3_Current`, `Grid_Frequency`, `ModuleTemp`, `InternalTemp`, `TransformerTemp`, `InverterModeCode`, `PermanentFaultCode`, `WarnCode`, `FaultCode0`, `FaultCode1`, `FaultCode2`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`, `SerialNumber`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3368,7 +3368,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AccumulatedRealEnergyNet`, `RealEnergyQuadrants14Import`, `RealEnergyQuadrants23Export`, `ReactiveEnergyQuadrant1`, `ReactiveEnergyQuadrant2`, `ReactiveEnergyQuadrant3`, `ReactiveEnergyQuadrant4`, `ApparentEnergyNet`, `ApparentEnergyQuadrants14`, `ApparentEnergyQuadrants23`, `TotalNetInstantaneousRealPower`, `TotalNetInstantaneousReactivePower`, `TotalNetInstantaneousApparentPower`, `TotalPowerFactor`, `VoltageLL3pAve`, `VoltageLN3pAve`, `Current3pAve`, `Frequency`, `TotalRealPowerPresentDemand`, `TotalReactivePowerPresentDemand`, `TotalApparentPowerPresentDemand`, `TotalRealPowerMaxDemandImport`, `TotalReactivePowerMaxDemandImport`, `TotalApparentPowerMaxDemandImport`, `TotalRealPowerMaxDemandExport`, `TotalReactivePowerMaxDemandExport`, `TotalApparentPowerMaxDemandExport`, `AccumulatedRealEnergyPhaseAImport`, `AccumulatedRealEnergyPhaseBImport`, `AccumulatedRealEnergyPhaseCImport`, `AccumulatedRealEnergyPhaseAExport`, `AccumulatedRealEnergyPhaseBExport`, `AccumulatedRealEnergyPhaseCExport`, `AccumulatedQ1ReactiveEnergyPhaseAImport`, `AccumulatedQ1ReactiveEnergyPhaseBImport`, `AccumulatedQ1ReactiveEnergyPhaseCImport`, `AccumulatedQ2ReactiveEnergyPhaseAImport`, `AccumulatedQ2ReactiveEnergyPhaseBImport`, `AccumulatedQ2ReactiveEnergyPhaseCImport`, `AccumulatedQ3ReactiveEnergyPhaseAExport`, `AccumulatedQ3ReactiveEnergyPhaseBExport`, `AccumulatedQ3ReactiveEnergyPhaseCExport`, `AccumulatedQ4ReactiveEnergyPhaseAExport`, `AccumulatedQ4ReactiveEnergyPhaseBExport`, `AccumulatedQ4ReactiveEnergyPhaseCExport`, `AccumulatedApparentEnergyPhaseAImport`, `AccumulatedApparentEnergyPhaseBImport`, `AccumulatedApparentEnergyPhaseCImport`, `AccumulatedApparentEnergyPhaseAExport`, `AccumulatedApparentEnergyPhaseBExport`, `AccumulatedApparentEnergyPhaseCExport`, `RealPowerPhaseA`, `RealPowerPhaseB`, `RealPowerPhaseC`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseAC`, `VoltagePhaseAN`, `VoltagePhaseBN`, `VoltagePhaseCN`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3381,7 +3381,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Software_Identification_Number`, `Fault_Word1`, `Fault_Word2`, `Fault_Word3`, `Fault_Word4`, `Fault_Word5`, `Fault_Word6`, `Fault_Word7`, `Number_of_Faults`, `Program_Checksum`, `Parameter_Checksum`, `DC_Input_Volts`, `DC_Link_Volts`, `DC_Link_Amps`, `DC_Ground_Current`, `Line_Amps_A`, `Line_Amps_B`, `Line_Amps_C`, `Line_Amps_Average`, `Neutral_Current`, `Line_Volts_A`, `Line_Volts_B`, `Line_Volts_C`, `Line_Volts_Average`, `Line_Voltage_Unbalance`, `Line_Current_Unbalance`, `Input_kW`, `Output_kw`, `Output_kvar`, `Output_kva`, `Power_Factor`, `Ground_Impedance`, `String_Amps1`, `String_Amps2`, `String_Amps3`, `String_Amps4`, `String_Amps5`, `String_Amps6`, `String_Amps7`, `String_Amps8`, `String_Amps9`, `String_Amps10`, `String_Amps11`, `String_Amps12`, `String_Amps13`, `String_Amps14`, `String_Amps15`, `String_Amps16`, `String_Amps17`, `String_Amps18`, `String_Amps19`, `String_Amps20`, `String_Amps21`, `String_Amps22`, `String_Amps23`, `String_Amps24`, `String_Amps25`, `String_Amps26`, `String_Amps27`, `String_Amps28`, `String_Amps29`, `String_Amps30`, `String_Amps31`, `String_Amps32`, `String_Amps_Average`, `String_kwh1`, `String_kwh2`, `String_kwh3`, `String_kwh4`, `String_kwh5`, `String_kwh6`, `String_kwh7`, `String_kwh8`, `String_kwh9`, `String_kwh10`, `String_kwh11`, `String_kwh12`, `String_kwh13`, `String_kwh14`, `String_kwh15`, `String_kwh16`, `String_kwh17`, `String_kwh18`, `String_kwh19`, `String_kwh20`, `String_kwh21`, `String_kwh22`, `String_kwh23`, `String_kwh24`, `String_kwh25`, `String_kwh26`, `String_kwh27`, `String_kwh28`, `String_kwh29`, `String_kwh30`, `String_kwh31`, `String_kwh32`, `String_kwh_Average`, `Total_kwh`, `Total_mwh`, `kwh_Today`, `kwh_Yesterday`, `Total_kwh7_days`, `Total_kwh30_days`, `Average_kwh7_days`, `Average_kwh30_Days`, `Average_Line_Frequency`, `Average_Line_Frequency_Error`, `FPGA_Identification_Number`, `DC_Input_Voltage_Timer`, `AC_Line_Voltage_Timer`, `Operating_State`, `Internal_Air_Temperature`, `Inverter_Air_Temperature`, `Heatsink_Temperature1`, `Heatsink_Temperature2`, `Heatsink_Temperature3`, `Heatsink_Temperature4`, `Heatsink_Temperature5`, `Heatsink_Temperature6`, `Heatsink_Maximum_Temparature1`, `Fan_Speed_Command1`, `Heatsink_Maximum_Temperature2`, `Fan_Speed_Command2`, `Number_of_Temperature_Feedbacks`, `Serial_number_word1`, `Serial_number_word2`, `Serial_number_word3`, `Serial_number_word4`, `Number_of_Strings`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3393,7 +3393,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TotalEnergyConsumption`, `TotalRealPower`, `TotalReactivePower`, `TotalApparentPower`, `AverageVoltageLN`, `AverageVoltageLL`, `AverageCurrent`, `TotalSystemPowerFactor`, `Frequency`, `SlidingWindowRealPowerDemand`, `VoltageAN`, `VoltageBN`, `VoltageCN`, `VoltageAB`, `VoltageBC`, `VoltageAC`, `CurrentA`, `CurrentB`, `CurrentC`, `RealPowerA`, `RealPowerB`, `RealPowerC`, `ReactivePowerA`, `ReactivePowerB`, `ReactivePowerC`, `ApparentPowerA`, `ApparentPowerB`, `ApparentPowerC`, `PowerFactorA`, `PowerFactorB`, `PowerFactorC`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3405,7 +3405,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `DeviceType`, `DataModelVersion`, `OperationalMode`, `StatusFlags`, `SunPOATempComp`, `PanelTemperature`, `ExtPowerSensor`, `BatchNumber`, `SerialNumber`, `CalibrationDateYYMMDD`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3417,7 +3417,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePowerTotal`, `ReactivePowerTotal`, `ApparentPowerTotal`, `VoltageAverage`, `VoltageLLAverage`, `CurrentAverage`, `SystemPowerFactor`, `SystemFrequency`, `VoltageAverageAngle`, `SystemQuadrant`, `VoltageA`, `VoltageB`, `VoltageC`, `VoltageAB`, `VoltageBC`, `VoltageAC`, `CurrentA`, `CurrentB`, `CurrentC`, `ActivePowerA`, `ActivePowerB`, `ActivePowerC`, `ReactivePowerA`, `ReactivePowerB`, `ReactivePowerC`, `ApparentPowerA`, `ApparentPowerB`, `ApparentPowerC`, `PowerFactorA`, `PowerFactorB`, `PowerFactorC`, `VoltageAngleAB`, `VoltageAngleBC`, `VoltageAngleCA`, `QuadrantA`, `QuadrantB`, `QuadrantC`, `SlidingWindowPower`, `NetTotalEnergy`, `TotalNetApparentEnergy`, `TotalImportEnergy`, `TotalExportEnergy`, `TotalImportApparentEnergy`, `TotalExportApparentEnergy`, `Q1TotalReactiveEnergy`, `Q2TotalReactiveEnergy`, `Q3TotalReactiveEnergy`, `Q4TotalReactiveEnergy`, `Q1Q2TotalInductiveReactiveEnergy`, `Q3Q4TotalCapacitiveReactiveEnergy`, `NetEnergyA`, `NetEnergyB`, `NetEnergyC`, `NetApparentEnergyA`, `NetApparentEnergyB`, `NetApparentEnergyC`, `ImportEnergyA`, `ImportEnergyB`, `ImportEnergyC`, `ExportEnergyA`, `ExportEnergyB`, `ExportEnergyC`, `ImportApparentEnergyA`, `ImportApparentEnergyB`, `ImportApparentEnergyC`, `ExportApparentEnergyA`, `ExportApparentEnergyB`, `ExportApparentEnergyC`, `Q1ReactiveEnergyA`, `Q1ReactiveEnergyB`, `Q1ReactiveEnergyC`, `Q2ReactiveEnergyA`, `Q2ReactiveEnergyB`, `Q2ReactiveEnergyC`, `Q3ReactiveEnergyA`, `Q3ReactiveEnergyB`, `Q3ReactiveEnergyC`, `Q4ReactiveEnergyA`, `Q4ReactiveEnergyB`, `Q4ReactiveEnergyC`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3430,7 +3430,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AuroraType`, `GridType`, `TransformerType`, `StatesByte0`, `StatesByte1`, `StatesByte2`, `StatesByte3`, `StatesByte4`, `TotalEnergy`, `GridVoltage`, `GridCurrent`, `GridPower`, `Frequency`, `Input1Power`, `Input1Voltage`, `Input1Current`, `Input2Power`, `Input2Voltage`, `Input2Current`, `InverterTemperature`, `BooseterTemperature`, `IslolationResistance`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3442,7 +3442,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `RelativeHumidityActual`, `RelativeHumidityMin`, `RelativeHumidityMax`, `RelativeHumidityAvg`, `RelativeAirPressureActual`, `RelativeAirPressureMin`, `RelativeAirPressureMax`, `RelativeAirPressureAvg`, `WindDirectionActual`, `WindDirectionMin`, `WindDirectionMax`, `WindDirectionVct`, `WindDirectionFast`, `WindDirectionCompassCorrected`, `Compass`, `PrecipitationType`, `WindMeasurementQuality`, `IrradianceActual`, `IrradianceMin`, `IrradianceMax`, `IrradianceAvg`, `AirTemperatureActual`, `AirTemperatureMin`, `AirTemperatureMax`, `AirTemperatureAvg`, `DewPointActual`, `DewPointMin`, `DewPointMax`, `DewPointAvg`, `WindChillTemperature`, `HeatingTemperatureWind`, `HeatingTemperatureR2S`, `WindSpeedActual`, `WindSpeedMin`, `WindSpeedMax`, `WindSpeedAvg`, `WindSpeedVct`, `WindSpeedFast`, `PrecipitationQuantityAbsolute`, `PrecipitationQuantityDifferential`, `PrecipitationIntensity`, `AbsoluteHumidityActual`, `AbsoluteHumidityMin`, `AbsoluteHumidityMax`, `AbsoluteHumidityAvg`, `MixingRatioActual`, `MixingRatioMin`, `MixingRatioMax`, `MixingRatioAvg`, `AbsoluteAirPressureActual`, `AbsoluteAirPressureMin`, `AbsoluteAirPressureMax`, `AbsoluteAirPressureAvg`, `WindSpeedStandardDeviation`, `WindDirectionStandardDeviation`, `WetBulbTemperature`, `SpecificEnthalpy`, `AirDensityActual`, `LeafWetnessActual`, `LeafWetnessMin`, `LeafWetnessMax`, `LeafWetnessAvg`, `LeafWetnessState`, `ExternalTemperature`, `WindValueQualityFast`, `nvm_irradiance`, `nvm_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3454,7 +3454,7 @@
 					SELECT 
 					   `id_device`, `time`, `serialnumber`, `loopname`, `modbusip`, `modbusport`, `modbusdevice`, `modbusdevicename`, `modbusdevicetype`, `modbusdevicetypenumber`, `modbusdeviceclass`, `MemTotal`, `MemFree`, `ipaddr`, `dns1`, `dns2`, `gateway`, `netmask`, `network`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3466,7 +3466,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `InverterIDASCIICHAR0001`, `InverterIDASCIICHAR0203`, `InverterIDASCIICHAR0405`, `InverterIDASCIICHAR0607`, `InverterIDASCIICHAR0809`, `InverterIDASCIICHAR1011`, `InverterIDASCIICHAR1213`, `InverterIDASCIICHAR1415`, `FirmwareVersionASCIICHAR0001`, `FirmwareVersionASCIICHAR0203`, `FirmwareVersionASCIICHAR0405`, `FirmwareVersionASCIICHAR0607`, `MapVersion`, `InverterConfiguration`, `InverterSerialASCIICHAR0001`, `InverterSerialASCIICHAR0203`, `InverterSerialASCIICHAR0405`, `InverterSerialASCIICHAR0607`, `InverterSerialASCIICHAR0809`, `InverterSerialASCIICHAR1011`, `InverterSerialASCIICHAR1213`, `InverterSerialASCIICHAR1415`, `InverterSerialASCIICHAR1617`, `InverterSerialASCIICHAR1819`, `VoltageAN`, `VoltageBN`, `VoltageCN`, `CurrentA`, `CurrentB`, `CurrentC`, `DCInputVoltage`, `DCInputCurrent`, `LineFrequency`, `OutputGeneration`, `TotalEnergyGeneration`, `PVInputVoltage`, `InputGenerationCalculated`, `InverterOperatingStatus`, `MainFault`, `DriveFault`, `VoltageFault`, `GridFault`, `TemperatureFault`, `SystemFault`, `SystemWarnings`, `PVMStatusCodes`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>     
@@ -3478,7 +3478,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `DCVoltage`, `ACPowerOutput`, `ACGridFrequency`, `ACPowerStageCurrent`, `L1toL2ACVoltage`, `L2toL3ACVoltage`, `L1toL3ACVoltage`, `PhaseSequence`, `CumulativeACEnergy`, `CumulativeOngridHours`, `FanOntimeHours`, `ACContactorCycles`, `SlaveID`, `CriticalAlarms`, `InformativeAlarms`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3490,7 +3490,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Mode`, `SubMode`, `MotorStatus`, `ReadAngle`, `SetAngle`, `OptimalAngle`, `WindSpeed`, `TTiTime`, `MotorFault`, `RemoteInterfaceFault`, `InclinometerFault`, `ModbusAddress`, `FirmwareVersion`, `Units`, `InclinometerOffset`, `MotorStopDelay`, `CoastAngle`, `MaxRotationWest`, `MaxRotationEast`, `SoftAngleLimitsEnabled`, `MotorMonitorSampleTime`, `MotorMonitorMinAngle`, `EnableMotorMonitor`, `DeadBand`, `NightTimeStowAltitude`, `NightTimeStowAngle`, `PoleSpacing`, `ModuleWidth`, `MotorPolarity`, `InclinometerPolarity`, `Latitude`, `Longitude`, `LoggingInterval`, `HelicalVarationAngle`, `DriveArmSlope`, `WindConstant`, `WindStowSpeed`, `WindStowTime`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3502,7 +3502,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `VAB`, `VBC`, `VCA`, `CurrentA`, `CurrentB`, `CurrentC`, `ReadPower`, `PVVoltage`, `PVCurrent`, `PVPower`, `GridFrequency`, `SystemState`, `GoalState`, `FaultCode`, `AccumulatedEnergy`, `RMatrixTemp`, `LMatrixTemp`, `IntakeAirTemperature`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3514,7 +3514,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ModuleTemperature`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3526,7 +3526,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `IrradianceTcs`, `IrradianceUs`, `SensorBodyTemperature`, `SensorElectricalResistance`, `ScalingFactorIrradiance`, `ScalingFactorTemperature`, `SensorSerialNumber`, `SensorSensitivity`, `SensorCalibrationDate`, `InternalHumidity`, `TiltAngle`, `TiltAngleaverage`, `FanSpeedRPM`, `HeaterCurrent`, `FanCurrent`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3538,7 +3538,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `E_DAY`, `E_TOTAL`, `E_YEAR`, `OT_AC_TOTAL`, `T_WR`, `U_DC1`, `I_DC1`, `U_DC2`, `I_DC2`, `U_DC3`, `I_DC3`, `U_DC4`, `I_DC4`, `U_DC5`, `I_DC5`, `U_DC6`, `I_DC6`, `U_DC7`, `I_DC7`, `U_DC8`, `I_DC8`, `U_DC9`, `I_DC9`, `U_STR1`, `I_STR1`, `U_STR2`, `I_STR2`, `U_STR3`, `I_STR3`, `U_STR4`, `I_STR4`, `U_STR5`, `I_STR5`, `U_STR6`, `I_STR6`, `U_STR7`, `I_STR7`, `U_STR8`, `I_STR8`, `U_STR9`, `I_STR9`, `U_STR10`, `I_STR10`, `U_STR11`, `I_STR11`, `U_STR12`, `I_STR12`, `U_STR13`, `I_STR13`, `U_STR14`, `I_STR14`, `U_STR15`, `I_STR15`, `U_STR16`, `I_STR16`, `U_STR17`, `I_STR17`, `U_STR18`, `I_STR18`, `P_DC`, `U_AC1`, `U_AC2`, `U_AC3`, `I_AC1`, `I_AC2`, `I_AC3`, `S_AC`, `P_AC`, `Q_AC`, `COS_PHI`, `F_AC`, `FT_AC_DAY`, `R_ISO`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3550,7 +3550,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `M_AC_U1`, `M_AC_U2`, `M_AC_U3`, `M_AC_U_L1L2`, `M_AC_U_L2L3`, `M_AC_U_L3L1`, `M_AC_I1`, `M_AC_I2`, `M_AC_I3`, `M_AC_P1`, `M_AC_P2`, `M_AC_P3`, `M_AC_P`, `M_AC_E_M1`, `M_AC_Q1`, `M_AC_Q2`, `M_AC_Q3`, `M_AC_Q`, `M_AC_S1`, `M_AC_S2`, `M_AC_S3`, `M_AC_S`, `M_AC_PF`, `M_AC_F`, `M_AC_E_EXP`, `M_AC_E_IMP`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3562,7 +3562,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `E_DAY`, `E_TOTAL`, `E_YEAR`, `OT_AC_TOTAL`, `T_WR`, `U_DC1`, `I_DC1`, `U_DC2`, `I_DC2`, `U_DC3`, `I_DC3`, `U_DC4`, `I_DC4`, `U_DC5`, `I_DC5`, `U_DC6`, `I_DC6`, `U_DC7`, `I_DC7`, `U_DC8`, `I_DC8`, `U_DC9`, `I_DC9`, `U_DC10`, `I_DC10`, `U_DC11`, `I_DC11`, `U_DC12`, `I_DC12`, `U_DC13`, `I_DC13`, `U_DC14`, `I_DC14`, `U_DC15`, `I_DC15`, `U_DC16`, `I_DC16`, `U_DC17`, `I_DC17`, `U_DC18`, `I_DC18`, `U_DC19`, `I_DC19`, `U_DC20`, `I_DC20`, `U_STR1`, `I_STR1`, `U_STR2`, `I_STR2`, `U_STR3`, `I_STR3`, `U_STR4`, `I_STR4`, `U_STR5`, `I_STR5`, `U_STR6`, `I_STR6`, `U_STR7`, `I_STR7`, `U_STR8`, `I_STR8`, `U_STR9`, `I_STR9`, `U_STR10`, `I_STR10`, `I_STR11`, `I_STR12`, `I_STR13`, `I_STR14`, `I_STR15`, `I_STR16`, `I_STR17`, `I_STR18`, `I_STR19`, `I_STR20`, `I_STR21`, `I_STR22`, `P_DC`, `U_AC1`, `U_AC2`, `U_AC3`, `I_AC1`, `I_AC2`, `I_AC3`, `S_AC`, `P_AC`, `Q_AC`, `COS_PHI`, `F_AC`, `FT_AC_DAY`, `R_ISO`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3574,7 +3574,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `SRAD_D_H`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3586,7 +3586,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Metering_TotWhOut`, `Operation_GriSwCnt`, `Metering_TotOpTms`, `Metering_TotFeedTms`, `Metering_GridMs_TotWhOut`, `GridMs_TotW`, `GridMs_Hz`, `Isolation_FltA`, `Isolation_LeakRis`, `DcMs_VolA`, `DcMs_VolB`, `DcMs_AmpA`, `DcMs_AmpB`, `DcMs_AmpA1`, `GridMs_PhV_phsA`, `GridMs_PhV_phsB`, `GridMs_PhV_phsC`, `GridMs_A_phsA`, `GridMs_A_phsB`, `GridMs_A_phsC`, `DcMs_WattA`, `DcMs_WattB`, `Operation_Health`, `Operation_Evt_Prio`, `Operation_Evt_Msg`, `Operation_Evt_Dsc`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3598,7 +3598,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Metering_TotWhOut`, `Operation_GriSwCnt`, `Metering_TotOpTms`, `Metering_TotFeedTms`, `Metering_GridMs_TotWhOut`, `GridMs_TotW`, `GridMs_Hz`, `Isolation_FltA`, `Isolation_LeakRis`, `DcMs_VolA`, `DcMs_VolB`, `DcMs_AmpA`, `DcMs_AmpB`, `GridMs_PhV_phsA`, `GridMs_PhV_phsB`, `GridMs_PhV_phsC`, `GridMs_A_phsA`, `GridMs_A_phsB`, `GridMs_A_phsC`, `DcMs_WattA`, `DcMs_WattB`, `Operation_Health`, `Operation_Evt_Prio`, `Operation_Evt_Msg`, `Operation_Evt_Dsc`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3610,7 +3610,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Metering_TotWhOut`, `Operation_GriSwCnt`, `Metering_TotOpTms`, `Metering_TotFeedTms`, `GridMs_TotW`, `GridMs_Hz`, `Isolation_FltA`, `Isolation_LeakRis`, `DcMs_VolA`, `DcMs_VolB`, `DcMs_AmpA`, `DcMs_AmpB`, `GridMs_PhV_phsA`, `GridMs_PhV_phsB`, `GridMs_PhV_phsC`, `GridMs_A_phsA`, `GridMs_A_phsB`, `GridMs_A_phsC`, `DcMs_WattA`, `DcMs_WattB`, `Operation_Health`, `Operation_Evt_Prio`, `Operation_Evt_Msg`, `Operation_Evt_Dsc`, `InOut_AnInA1`, `InOut_AnInA2`, `InOut_AnInA3`, `InOut_AnInVol4`, `Env_ExInsol`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3622,7 +3622,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `C_DeviceAddress`, `C_SunSpec_DID`, `C_SunSpec_Length`, `I_AC_Current`, `I_AC_CurrentA`, `I_AC_CurrentB`, `I_AC_CurrentC`, `I_AC_Current_SF`, `I_AC_VoltageAB`, `I_AC_VoltageBC`, `I_AC_VoltageCA`, `I_AC_VoltageAN`, `I_AC_VoltageBN`, `I_AC_VoltageCN`, `I_AC_Voltage_SF`, `I_AC_Power`, `I_AC_Power_SF`, `I_AC_Frequency`, `I_AC_Frequency_SF`, `I_AC_VA`, `I_AC_VA_SF`, `I_AC_VAR`, `I_AC_VAR_SF`, `I_AC_PF`, `I_AC_PF_SF`, `I_AC_Energy_WH`, `I_AC_Energy_WH_SF`, `I_DC_Current`, `I_DC_Current_SF`, `I_DC_Voltage`, `I_DC_Voltage_SF`, `I_DC_Power`, `I_DC_Power_SF`, `I_Temp_Sink`, `I_Temp_SF`, `I_Status`, `I_Status_Vendor`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3634,7 +3634,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Meter1_ACPower`, `Total_Energy`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3646,7 +3646,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AmbientTemp`, `PVPanelTemp`, `PVPanelTemp1`, `WindSpeed`, `POACMP11`, `IrradiancePOA`, `IMTInternalTemp`, `PVPanelTemp2`, `code_ch0`, `code_ch1`, `code_ch2`, `code_ch3`, `code_ch4`, `code_ch5`, `code_ch6`, `code_ch7`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3658,7 +3658,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Meter2_ACPower`, `Total_Energy`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3670,7 +3670,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Meter3_ACPower`, `Total_Energy`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            	
@@ -3683,7 +3683,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Meter4_ACPower`, `Total_Energy`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3695,7 +3695,7 @@
 					SELECT 
 					   `id_device`, `time`, `SerialNumber`, `ConnectionName`, `ConnectionStatus`, `ConnectionType`, `ConnectionMethod`, `IPAddress`, `DefaultGateway`, `DNSServers`, `MTU`, `IMEI`, `IMSI`, `ICCID`, `SIMSLOT`, `RSSI4`, `SINR4`, `RSRP4`, `RSRQ4`, `Channel4`, `RSSI3`, `SINR3`, `RSRP3`, `RSRQ3`, `Channel3`, `CPULoad`, `ALLDownload`, `ALLUpload`, `ALLTotal`, `CellularDownload`, `CellularUpload`, `CellularTotal`, `DeviceName`, `ProductModel`, `HardwareRevision`, `FirmwareVersion`, `Uptime`, `Mode`, `SystemMode`, `Temperature`, `SlotA`, `SlotB`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>    
@@ -3707,7 +3707,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Fault1`, `Fault2`, `Fault3`, `Fault4`, `GridStatus`, `Status6`, `Status7`, `PCSState`, `DCInputPower`, `DC_Link_Volts`, `DCInputVoltage`, `DCInputCurrent`, `OutputKVAR`, `OutputKW`, `OutputKVA`, `Line_Volts_A_TEST`, `Line_Volts_B_TEST`, `Line_Volts_C_TEST`, `Line_Amps_A_TEST`, `Line_Amps_B_TEST`, `Line_Amps_C_TEST`, `NeutralCurrent`, `StopCode`, `KWHlow`, `KWH`, `PowerFactor`, `LineFreq`, `OutputPowerLimit`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3719,7 +3719,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Fault`, `OperatingState`, `Status`, `EventNumber`, `LifekWhTotal`, `PVCurrent`, `PVVoltage`, `PVPower`, `ACPower`, `ACVoltageAB`, `ACVoltageBC`, `ACVoltageCA`, `ACCurrent`, `ACCurrentL1`, `ACCurrentL2`, `ACCurrentL3`, `ACFrequency`, `ReactivePower`, `ApparentPower`, `PowerFactor`, `ReactivePowerMode`, `PowerFactorFeedback`, `OperatingMode`, `ACPowerLimit`, `ACVoltage`, `HeatSinkTemp`, `InteriorTemperature`, `ExternalTemperature`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3731,7 +3731,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `RealEnergyConsumption`, `TotalInstantaneousRealPower`, `TotalInstantaneousReactivePower`, `TotalInstantaneousApparentPower`, `TotalPowerFactor`, `VoltageLL3pAve`, `VoltageLN3pAve`, `Current3pAve`, `RealPowerPhaseA`, `RealPowerPhaseB`, `RealPowerPhaseC`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseAC`, `VoltagePhaseAN`, `VoltagePhaseBN`, `VoltagePhaseCN`, `CurrentInstantaneousPhaseA`, `CurrentInstantaneousPhaseB`, `CurrentInstantaneousPhaseC`, `Frequency`, `ApparentEnergyConsumption`, `ReactiveEnergyConsumption`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `TotalRealPowerPresentDemand`, `TotalReactivePowerPresentDemand`, `TotalApparentPowerPresentDemand`, `TotalRealPowerMaxDemand`, `TotalReactivePowerMaxDemand`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3743,7 +3743,7 @@
 					SELECT 
 					   `time`, `id_device`, `SerialNumber`, `NETIP`, `DNS1`, `DNS2`, `ETHSTATE`, `ICCID`, `INTSTATE`, `INTSTATE_RAW`, `LTERSRQ`, `LTERSRP`, `NETCHAN`, `ACTIVESIM`, `BANDMODE`, `CIMI`, `NETOP`, `NETPHONE`, `NETRSSI`, `NETSERV`, `NETSERVICE_RAW`, `NETSTATE`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3755,7 +3755,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `RelativeHumidityActual`, `RelativeHumidityMin`, `RelativeHumidityMax`, `RelativeHumidityAvg`, `RelativeAirPressureActual`, `RelativeAirPressureMin`, `RelativeAirPressureMax`, `RelativeAirPressureAvg`, `WindDirectionActual`, `WindDirectionMin`, `WindDirectionMax`, `WindDirectionVct`, `WindDirectionFast`, `WindDirectionCompassCorrected`, `Compass`, `WindMeasurementQuality`, `PrecipitationType`, `GlobalRadiation`, `GlobalRadiation2`, `GlobalRadiation3`, `GlobalRadiation4`, `AirTemperatureCActual`, `AirTemperatureCMin`, `AirTemperatureCMax`, `AirTemperatureCAvg`, `DewPointActual`, `DewPointMin`, `DewPointMax`, `DewPointAvg`, `WindChillTemperature`, `HeatingTemperatureWind`, `HeatingTemperatureR2S`, `WindSpeedActual`, `WindSpeedMin`, `WindSpeedMax`, `WindSpeedAvg`, `WindSpeedVct`, `WindSpeedFast`, `PrecipitationAbsolute`, `PrecipitationDifferential`, `PrecipitationIntensity`, `AirTemperatureFActual`, `AirTemperatureFMin`, `AirTemperatureFMax`, `AirTemperatureFAvg`, `ExternalTemperatureC`, `ExternalTemperatureF`, `nvm_irradiance`, `nvm_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3767,7 +3767,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `GridMs_TotVAr`, `DcMs_Watt0`, `DcMs_Watt1`, `W_phsA`, `W_phsB`, `W_phsC`, `GridMs_TotW`, `GridMs_TotVA`, `A_phsA`, `A_phsB`, `A_phsC`, `GridMs_Hz`, `Isolation_LeakRis`, `DcMs_Vol0`, `DcMs_Vol1`, `PhV_phsA`, `PhV_phsB`, `PhV_phsC`, `DcMs_Amp0`, `DcMs_Amp1`, `TotVAr_Pv`, `VAr_phsA`, `VAr_phsB`, `VAr_phsC`, `VA_phsA`, `VA_phsB`, `VA_phsC`, `TotW_Pv`, `Metering_TotFeedTms`, `Operation_GriSwCnt`, `Metering_TotOpTms`, `Operation_Health`, `Metering_TotWhOut`, `TotWhOut_Pv`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3779,7 +3779,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `LastRestart`, `Uptime`, `Year`, `Month`, `Day`, `Hour`, `Minutes`, `Seconds`, `CurrentTime`, `ACPower`, `ACFrequency`, `PVVoltage`, `PVCurrent`, `CommonMode`, `AmbientTemperature`, `CoolantTemperature`, `ReactorTemperature`, `CabinetTemperature`, `BusVoltage`, `GroundCurrent`, `ReactivePower`, `ACCurrent`, `TodaykWh`, `YTDkWhTotal`, `LifekWhTotal`, `YTDkWh`, `LifekWh`, `Last15MinkWh`, `TimeStamp15Minutes`, `State`, `Limits`, `MasterFault`, `MasterWarning`, `ArrayFault`, `ArrayWarning`, `GridFault`, `GridWarning`, `SystemFault`, `SystemWarning`, `DriveFault`, `DriveWarning`, `TemperatureFault`, `TemperatureWarning`, `CoolingSystemFault`, `CoolingSystemWarning`, `ElectricInterlockFault`, `ElectricInterlockWarning`, `PowerSupplyFault`, `PowerSupplyWarning`, `RequestSetACPowerLimit`, `LowerRangeOfACPowerLimit`, `UpperRangeOfACPowerLimit`, `RequestSetInstantaneousReactivePowerSetPoint`, `LowerRangeOfInstantaneousReactivePowerSetPoint`, `UpperRangeOfInstantaneousReactivePowerSetPoint`, `EnableDisableTheUnit`, `SetReadReactivePowerMode`, `SetReadPACLimit`, `SetReadInstantaneousReactivePowerSetPoint`, `SetReadPowerFactorSetPoint`, `ACPowerRampRate`, `ReactivePowerRampRate`, `PowerFactorRampRate`, `ReactivePowerSignConvention`, `DCS_N`, `DCS_StCtcr`, `DCS_StCpt`, `DCS_EvtFlt`, `DCS_EvtWrn`, `DCS_StVnd`, `DCS_DCA`, `DCS_DCADif`, `DCS_DCV`, `DCS_Tmp`, `DCS_InId01`, `DCS_InFlt01`, `DCS_InWrn01`, `DCS_InPDCA01`, `DCS_InNDCA01`, `DCS_InId02`, `DCS_InFlt02`, `DCS_InWrn02`, `DCS_InPDCA02`, `DCS_InNDCA02`, `DCS_InId03`, `DCS_InFlt03`, `DCS_InWrn03`, `DCS_InPDCA03`, `DCS_InNDCA03`, `DCS_InId04`, `DCS_InFlt04`, `DCS_InWrn04`, `DCS_InPDCA04`, `DCS_InNDCA04`, `DCS_InId05`, `DCS_InFlt05`, `DCS_InWrn05`, `DCS_InPDCA05`, `DCS_InNDCA05`, `DCS_InId06`, `DCS_InFlt06`, `DCS_InWrn06`, `DCS_InPDCA06`, `DCS_InNDCA06`, `DCS_InId07`, `DCS_InFlt07`, `DCS_InWrn07`, `DCS_InPDCA07`, `DCS_InNDCA07`, `DCS_InId08`, `DCS_InFlt08`, `DCS_InWrn08`, `DCS_InPDCA08`, `DCS_InNDCA08`, `DCS_InId09`, `DCS_InFlt09`, `DCS_InWrn09`, `DCS_InPDCA09`, `DCS_InNDCA09`, `DCS_InId10`, `DCS_InFlt10`, `DCS_InWrn10`, `DCS_InPDCA10`, `DCS_InNDCA10`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3791,7 +3791,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `VA_phsA`, `VA_phsB`, `DcMs_Vol0`, `DcMs_Vol1`, `DcMs_Vol2`, `DcMs_Vol3`, `DcMs_Vol4`, `DcMs_Vol5`, `TotW_Pv`, `Isolation_LeakRis`, `PhV_phsC`, `GridMs_Hz`, `W_phsB`, `GridMs_TotW`, `W_phsC`, `VAr_phsC`, `DcMs_Watt0`, `DcMs_Watt1`, `DcMs_Watt2`, `DcMs_Watt3`, `DcMs_Watt4`, `DcMs_Watt5`, `W_phsA`, `VAr_phsB`, `TotVAr_Pv`, `PhV_phsA2B`, `VAr_phsA`, `GridMs_TotVA`, `GridMs_TotVAr`, `DcMs_Amp0`, `DcMs_Amp1`, `DcMs_Amp2`, `DcMs_Amp3`, `DcMs_Amp4`, `DcMs_Amp5`, `PhV_phsB2C`, `PhV_phsB`, `A_phsA`, `PhV_phsC2A`, `A_phsB`, `PhV_phsA`, `VA_phsC`, `A_phsC`, `Metering_TotWhOut`, `Operation_Health`, `Operation_GriSwCnt`, `TotWhOut_Pv`, `Metering_TotFeedTms`, `Metering_TotOpTms`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3803,7 +3803,7 @@
 					SELECT 
 					   `time`, `id_device`, `nvmActivePower`, `nvmActiveEnergy`, `nvm_irradiance`, `nvm_temperature`, `expected_power_dc`, `expected_power_ac`, `expected_energy`, `r_irradiance`, `total_poa`, `panel_temp`, `ambient_temp`, `calculation_poa`, `calculation_temp`, `calculation_clipping`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3815,7 +3815,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `pt0`, `pt1`, `pt2`, `pt3`, `pt4`, `pt5`, `pt6`, `pt7`, `pt8`, `pt9`, `pt10`, `pt11`, `pt12`, `pt13`, `pt14`, `pt15`, `pt16`, `pt17`, `pt18`, `pt19`, `pt20`, `pt21`, `pt22`, `pt23`, `pt24`, `pt25`, `pt26`, `pt27`, `pt28`, `pt29`, `pt30`, `pt31`, `pt32`, `pt33`, `pt34`, `pt35`, `pt36`, `pt37`, `pt38`, `pt39`, `pt40`, `pt41`, `pt42`, `pt43`, `pt44`, `pt45`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>    
@@ -3827,7 +3827,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `VlnA`, `VlnB`, `VlnC`, `VlnAve`, `VllAb`, `VllAc`, `VllCa`, `VllAve`, `IA`, `IB`, `IC`, `IAve`, `VUnbal`, `IUnbal`, `Freq`, `I4`, `kWA`, `kWB`, `kWC`, `kWTot`, `kVARA`, `kVARB`, `kVARC`, `kVARTot`, `KVAA`, `KVAB`, `KVAC`, `KVATot`, `PFSignA`, `PFSignB`, `PFSignC`, `PFSignTot`, `VIIAveMx`, `IAveMx`, `kWTotMx`, `kVARTotMx`, `kVATotMx`, `FreqMx`, `VIIAveMn`, `IAveMn`, `FreqMn`, `kWSdDelRec`, `kVASdDelRec`, `kVARSdDelRec`, `kWSdMxDR`, `kVASdMxDR`, `kVARSdMxDR`, `PhaseRev`, `kWhDel`, `kWhRec`, `kWhDelRec`, `kWhDel_Rec`, `kVARhDel`, `kVARhRec`, `kVARhDelRec`, `kVARhDel_Rec`, `kVAhDelRec`, `V1THDMx`, `V2THDMx`, `V3THDMx`, `I1THDMx`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3839,7 +3839,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Ia`, `Ib`, `Ic`, `I4`, `I5`, `IAvg`, `IAvgMn`, `IAvgMx`, `IAvgMean`, `Freq`, `FreqMn`, `FreqMx`, `FreqMean`, `VUnbal`, `IUnbal`, `PhaseRev`, `VInA`, `VInB`, `VInC`, `VInAvg`, `VInAvgMx`, `unused1`, `VIIAb`, `VIIBc`, `VIICa`, `VIIAvg`, `VIIAvgMx`, `VIIAvgMean`, `unused2`, `unused3`, `unused4`, `unused5`, `kWA`, `kWB`, `kWC`, `kWTot`, `kWTotMax`, `kVARA`, `kVARB`, `kVARC`, `kVARTot`, `kVARTotMax`, `kVAA`, `kVAB`, `kVAC`, `kVATot`, `kVATotMax`, `unused6`, `kWhDel`, `kWhRec`, `kVARhDel`, `kVARhRec`, `kVARhDelRec`, `unused7`, `unused8`, `unused9`, `unused10`, `unused11`, `unused12`, `unused13`, `unused14`, `unused15`, `unused16`, `unused17`, `PFSignA`, `PFSignB`, `PFSignC`, `PFSignTot`, `V1THDMx`, `V2THDMx`, `V3THDMx`, `I1THDMx`, `I2THDMx`, `I3THDMx`, `I1KFactor`, `I2KFactor`, `I3KFactor`, `I1CrestFactor`, `I2CrestFactor`, `I3CrestFactor`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3851,7 +3851,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `VAB`, `VBC`, `VCA`, `CurrentA`, `CurrentB`, `CurrentC`, `ReadPower`, `PVVoltage`, `PVCurrent`, `PVPower`, `GridFrequency`, `SystemState`, `GoalState`, `FaultCode`, `kWh`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3863,7 +3863,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `T_AMB`, `T_MOD`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3875,7 +3875,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `poa`, `point1`, `point2`, `point3`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3887,7 +3887,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `panel_temp`, `ambient_temp`, `wind_speed`, `solar_irradiation`, `wind_direction`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3899,7 +3899,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AC_CURRENT_A`, `AC_CURRENT_B`, `AC_CURRENT_C`, `AC_POWER`, `AC_VOLTAGE_AB`, `AC_VOLTAGE_BC`, `AC_VOLTAGE_CA`, `DC_CURRENT`, `DC_POWER`, `DC_VOLTAGE`, `ENERGY_DELIVERED`, `FREQUENCY`, `STATUS_FAULT`, `STATUS_GOAL`, `STATUS_INVERTER`, `STATUS_OPERATING`, `STATUS_PV`, `T_LEFT_MATRIX`, `T_RIGHT_MATRIX`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3911,7 +3911,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TRACKER_ADDRESS`, `HOUR`, `MINUTE`, `DAY`, `DIGITAL_INPUTS`, `DIGITAL_OUTPUTS`, `WATCHDOG_COUNTER`, `ANGLE_CALC`, `LATITUDE`, `LONGITUDE`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3923,7 +3923,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `MODE`, `ST_CLEAR_ACCUMULATOR`, `ND_CLEAR_ACCUMULATOR`, `TRACKER_ANGLE_SETPOINT`, `TRACKER_ANGLE`, `NIGHT_STOW_POSITION`, `WIND_STOW_POSITION`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3935,7 +3935,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TotalYield`, `DailyYield`, `ArrayInsulationResistance`, `InteriorTemperature`, `TotalDCPower`, `TotalApparentPower`, `TotalActivePower`, `TotalReactivePower`, `TotalPowerFactor`, `GridFrequency`, `PhaseAVoltage`, `PhaseBVoltage`, `PhaseCVoltage`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3947,7 +3947,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PhaseAVoltage`, `PhaseBVoltage`, `PhaseCVoltage`, `ABLineVoltage`, `BCLineVoltage`, `CALineVoltage`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `PhaseAActivePower`, `PhaseBActivePower`, `PhaseCActivePower`, `TotalActivePower`, `TotalReactivePower`, `TotalApparentPower`, `TotalPowerFactor`, `GridFrequency`, `TotalForwardActiveEnergy`, `TotalReverseActiveEnergy`, `TotalForwardReactiveEnergy`, `TotalReverseReactiveEnergy`, `PhaseAForwardActivePower`, `PhaseBForwardActivePower`, `PhaseCForwardActivePower`, `PhaseAReverseActivePower`, `PhaseBReverseActivePower`, `PhaseCReverseActivePower`, `PhaseAForwardReactivePower`, `PhaseBForwardReactivePower`, `PhaseCForwardReactivePower`, `PhaseAReverseReactivePower`, `PhaseBReverseReactivePower`, `PhaseCReverseReactivePower`, `FlatForwardActiveEnergy`, `PeakForwardActiveEnergy`, `ValleyForwardActiveEnergy`, `FlatReverseActiveEnergy`, `PeakReverseActiveEnergy`, `ValleyReverseActiveEnergy`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>
@@ -3959,7 +3959,7 @@
 					SELECT 
 					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TransientHorizontalIrradiance`, `DailyHorizontalIrradiance`, `AmbientTemperature`, `Temperature`, `WindAngle`, `WindSpeed`, `nvm_irradiance`, `nvm_temperature`, `nvm_panel_temperature`
 					FROM 
-					   ${datatablename}
+					   ${device_group_table}
 					WHERE
 					   id_device = #{id_device};
 	            </when>

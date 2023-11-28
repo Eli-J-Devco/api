@@ -224,7 +224,7 @@ public class CalculationMeasuredProductionController extends BaseController {
 
 			for (int i = 0; i < listDevices.size(); i++) {
 				CalculationMeasuredProductionEntity deviceItem = (CalculationMeasuredProductionEntity) listDevices.get(i);
-				deviceItem.setNewtablename("data"+deviceItem.getId() +"_"+ deviceItem.getDatatablename());
+				deviceItem.setNewtablename("data"+deviceItem.getId() +"_"+ deviceItem.getDevice_group_table());
 				
 				// Create new table 
 				service.insertTable(deviceItem);
