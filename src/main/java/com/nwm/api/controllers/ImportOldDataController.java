@@ -256,6 +256,7 @@ public class ImportOldDataController extends BaseController {
 								if (Lib.isDateValid(r.getCellText(1).toString())) {
 									rowItem.put("time", r.getCellText(1).toString());
 									rowItem.put("local_time", r.getCellText(1).toString());
+									rowItem.put("datatablename", dataFile.getDatatablename());
 									String time = r.getCellText(1).toString();
 									
 									if (time == null || !time.matches("((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01]) ([2][0-3]|[0-1][0-9]|[1-9]):[0-5][0-9]:([0-5][0-9]|[6][0])$")) {
