@@ -4603,6 +4603,7 @@ public class UploadFilesController extends BaseController {
 														dataModelSev.setDatatablename(item.getDatatablename());
 														dataModelSev.setView_tablename(item.getView_tablename());
 														dataModelSev.setJob_tablename(item.getJob_tablename());
+														dataModelSev.setTimezone_value(item.getTimezone_value());
 														
 														serviceModel.insertModelSevSg110cx(dataModelSev);
 														
