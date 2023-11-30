@@ -28,12 +28,14 @@ public class ModelSevSg110cxEntity {
 	private double PhaseACurrent;
 	private double PhaseBCurrent;
 	private double PhaseCCurrent;
+	private double FaultCode;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+	private String timezone_value;
 	
 	
 	
@@ -200,6 +202,18 @@ public class ModelSevSg110cxEntity {
 	}
 	public void setMeasuredProduction(double measuredProduction) {
 		MeasuredProduction = measuredProduction;
+	}
+	public double getFaultCode() {
+		return FaultCode;
+	}
+	public void setFaultCode(double faultCode) {
+		FaultCode = faultCode;
+	}
+	public String getTimezone_value() {
+		return timezone_value;
+	}
+	public void setTimezone_value(String timezone_value) {
+		this.timezone_value = timezone_value;
 	}
 	
 	
