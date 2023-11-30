@@ -86,7 +86,7 @@ public class SitesDashboardService extends DB {
 					long totalError = 0;
 					if(device.get("totalError") != null) {
 						totalError = (long) device.get("totalError");
-					}		
+					}	
 					String key_indicator = (String) device.get("key_indicator");
 					String times_ago_unit = (String) device.get("times_ago_unit");
 					if (last_updated.equals("N/A") || (totalError > 0) || ((id_device_type == 1 || id_device_type == 3 || id_device_type == 4 || id_device_type == 12) && times_ago_unit.equals("day") && key_indicator.equals("N/A"))) {
