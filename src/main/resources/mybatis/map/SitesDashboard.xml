@@ -657,9 +657,9 @@
 			${datatablename} dv
 
 		WHERE dv.id_device = #{id}
-		<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 4">
+		<!--<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 4">
 				AND dv.error = 0
-		</if>
+		</if> -->
 		ORDER BY dv.time DESC
 		LIMIT 1
 	</select>

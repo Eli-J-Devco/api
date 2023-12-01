@@ -877,9 +877,14 @@ public class BatchJobService extends DB {
 						
 						
 						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
+						if (dataReportInverter == null) {
+							dataReportInverter = new SiteDataReportEntity();
+							dataReportInverter.setId_device(deviceItem.getId());
+							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
+							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
+							dataReportInverter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportInverter);
 					}
 					
 					// meter 
@@ -894,9 +899,14 @@ public class BatchJobService extends DB {
 						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIMW", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemMeter.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
+							dataReportMeter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 					
 					// weather station
@@ -908,9 +918,13 @@ public class BatchJobService extends DB {
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemWeather.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 					
 				}
@@ -939,9 +953,14 @@ public class BatchJobService extends DB {
 						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIM", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
+						if (dataReportInverter == null) {
+							dataReportInverter = new SiteDataReportEntity();
+							dataReportInverter.setId_device(deviceItem.getId());
+							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
+							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
+							dataReportInverter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportInverter);
 					}
 					
 					// meter 
@@ -955,9 +974,14 @@ public class BatchJobService extends DB {
 						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemMeter.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
+							dataReportMeter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 				}
 			}
@@ -985,9 +1009,14 @@ public class BatchJobService extends DB {
 						
 						
 						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
+						if (dataReportInverter == null) {
+							dataReportInverter = new SiteDataReportEntity();
+							dataReportInverter.setId_device(deviceItem.getId());
+							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
+							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
+							dataReportInverter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportInverter);
 					}
 					// weather station
 					for (int j = 0; j < dataListWeather.size(); j++) {
@@ -998,9 +1027,13 @@ public class BatchJobService extends DB {
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemWeather.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 				}
 			}
@@ -1024,9 +1057,14 @@ public class BatchJobService extends DB {
 						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemMeter.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
+							dataReportMeter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 					
 					// weather station
@@ -1038,9 +1076,13 @@ public class BatchJobService extends DB {
 						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemWeather.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 				}
 				
@@ -1067,9 +1109,14 @@ public class BatchJobService extends DB {
 						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 
 						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
+						if (dataReportMeter == null) {
+							dataReportMeter = new SiteDataReportEntity();
+							dataReportMeter.setId_device(deviceItemMeter.getId());
+							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
+							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
+							dataReportMeter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportMeter);
 					}
 				}
 			}
@@ -1097,9 +1144,14 @@ public class BatchJobService extends DB {
 						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
 						
 						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIW", deviceItem);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
+						if (dataReportInverter == null) {
+							dataReportInverter = new SiteDataReportEntity();
+							dataReportInverter.setId_device(deviceItem.getId());
+							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
+							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
+							dataReportInverter.setActualGeneration(0.0);
 						}
+						insert("BatchJob.insertSiteDataReport", dataReportInverter);
 					}
 					
 				}

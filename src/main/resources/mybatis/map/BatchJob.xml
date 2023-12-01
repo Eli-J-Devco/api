@@ -835,10 +835,12 @@
 			d.devicename,
 			d.devicename AS export_devicename,
 			d.datatablename,
-			d.id_site
+			d.id_site,
+			s.table_data_report
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dt.id IN(3) 
 			AND d.id_site = #{id}
@@ -852,10 +854,12 @@
 			d.devicename,
 			d.devicename AS export_devicename,
 			d.datatablename,
-			d.id_site
+			d.id_site,
+			s.table_data_report
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dt.id IN(4) 
 			AND d.id_site = #{id}
@@ -870,10 +874,12 @@
 			d.devicename,
 			d.devicename AS export_devicename,
 			d.datatablename,
-			d.id_site
+			d.id_site,
+			s.table_data_report
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dt.id IN(1) 
 			AND d.id_site = #{id}
@@ -898,8 +904,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 		FROM (
 			SELECT 
 				iv.id_site,
@@ -1011,8 +1017,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 		FROM (
 			SELECT 
 				iv.id_site,
@@ -1116,12 +1122,12 @@
 			0 AS InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			0 AS InverterUptimeDaytime,
-			0.001 AS ActualGeneration,
-			0.001 AS EstimatedGeneration,
+			NULL AS ActualGeneration,
+			NULL AS EstimatedGeneration,
 			0 AS EstimatedGenerationIndex,
 			0 AS InverterAvailability,
-			0.001 AS PowerTodayTotal,
-			0.001 AS PowerTodayAVG,
+			NULL AS PowerTodayTotal,
+			NULL AS PowerTodayAVG,
 			ROUND(t.nvm_irradiance, 1) AS POATotal,
 			ROUND(t.avg_nvm_irradiance, 1) AS POAAVG,
 			ROUND(t.avg_nvm_temperature, 1) AS TCellAVG
@@ -1158,137 +1164,52 @@
 	<insert id="insertSiteDataReport" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO ${table_data_report}
 		<trim prefix="(" suffix=")" suffixOverrides=",">
-			<if test="time != null">
 				`time`,
-			</if>
-			<if test="id_device != null">
 				`id_device`,
-			</if>
-			
-			<if test="InverterUptime != 0.001">
 				`InverterUptime`,
-			</if>
-			<if test="DayTime != 0.001">
 				`DayTime`,
-			</if>
-			<if test="InverterUptimeDaytime != 0.001">
 				`InverterUptimeDaytime`,
-			</if>
-			<if test="ActualGeneration != 0.001">
 				`ActualGeneration`,
-			</if>
-			<if test="EstimatedGeneration != 0.001">
 				`EstimatedGeneration`,
-			</if>
-			<if test="EstimatedGenerationIndex != 0.001">
 				`EstimatedGenerationIndex`,
-			</if>
-			<if test="InverterAvailability != 0.001">
 				`InverterAvailability`,
-			</if>
-			<if test="PowerTodayTotal != 0.001">
 				`PowerTodayTotal`,
-			</if>
-
-			<if test="PowerTodayAVG != 0.001">
 				`PowerTodayAVG`,
-			</if>
-
-			<if test="POATotal != 0.001">
 				`POATotal`,
-			</if>
-			<if test="POAAVG != 0.001">
 				`POAAVG`,
-			</if>
-			<if test="TCellAVG != 0.001">
 				`TCellAVG`,
-			</if>
-			
 		</trim>
 		
 		<trim prefix="values (" suffix=")" suffixOverrides=",">
-			<if test="time != null">
 				#{time},
-			</if>
-			<if test="id_device != null">
 				#{id_device},
-			</if>
-			
-			<if test="InverterUptime != 0.001">
 				#{InverterUptime},
-			</if>
-			<if test="DayTime != 0.001">
 				#{DayTime},
-			</if>
-			<if test="InverterUptimeDaytime != 0.001">
 				#{InverterUptimeDaytime},
-			</if>
-			<if test="ActualGeneration != 0.001">
 				#{ActualGeneration},
-			</if>
-			<if test="EstimatedGeneration != 0.001">
 				#{EstimatedGeneration},
-			</if>
-			<if test="EstimatedGenerationIndex != 0.001">
 				#{EstimatedGenerationIndex},
-			</if>
-			<if test="InverterAvailability != 0.001">
 				#{InverterAvailability},
-			</if>
-			<if test="PowerTodayTotal != 0.001">
 				#{PowerTodayTotal},
-			</if>
-			<if test="PowerTodayAVG != 0.001">
 				#{PowerTodayAVG},
-			</if>
-			<if test="POATotal != 0.001">
 				#{POATotal},
-			</if>
-			<if test="POAAVG != 0.001">
 				#{POAAVG},
-			</if>
-			<if test="TCellAVG != 0.001">
 				#{TCellAVG},
-			</if>
 		</trim>
 		
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
-			<if test="InverterUptime != 0.001">
 				`InverterUptime` = #{InverterUptime},
-			</if>
-			<if test="DayTime != 0.001">
 				`DayTime` = #{DayTime},
-			</if>
-			<if test="InverterUptimeDaytime != 0.001">
 				`InverterUptimeDaytime` = #{InverterUptimeDaytime},
-			</if>
-			<if test="ActualGeneration != 0.001">
 				`ActualGeneration` = #{ActualGeneration},
-			</if>
-			<if test="EstimatedGeneration != 0.001">
 				`EstimatedGeneration` = #{EstimatedGeneration},
-			</if>
-			<if test="EstimatedGenerationIndex != 0.001">
 				`EstimatedGenerationIndex` = #{EstimatedGenerationIndex},
-			</if>
-			<if test="InverterAvailability != 0.001">
 				`InverterAvailability` = #{InverterAvailability},
-			</if>
-			<if test="PowerTodayTotal != 0.001">
 				`PowerTodayTotal` = #{PowerTodayTotal},
-			</if>
-			<if test="PowerTodayAVG != 0.001">
 				`PowerTodayAVG` = #{PowerTodayAVG},
-			</if>
-			<if test="POATotal != 0.001">
 				`POATotal` = #{POATotal},
-			</if>
-			<if test="POAAVG != 0.001">
 				`POAAVG` = #{POAAVG},
-			</if>
-			<if test="TCellAVG != 0.001">
 				`TCellAVG` = #{TCellAVG},
-			</if>
 		</trim>
 		
 	</insert>
@@ -1308,8 +1229,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 			
 			
 		FROM (
@@ -1420,8 +1341,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 		FROM (
 			SELECT 
 				iv.id_site,
@@ -1531,8 +1452,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 		FROM (
 			SELECT 
 				iv.id_site,
@@ -1643,8 +1564,8 @@
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
-			0.001 AS POATotal,
-			0.001 AS POAAVG
+			NULL AS POATotal,
+			NULL AS POAAVG
 		FROM (
 			SELECT 
 				iv.id_site,

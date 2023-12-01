@@ -438,7 +438,7 @@ public class CronJobAlertController extends BaseController {
 				bathJobEntity.setId_device_type(obj.getId_device_type());
 				BatchJobTableEntity lastRowItem = service.getLastRowItemResetLastValue(bathJobEntity);
 
-				if (lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() == -1) {
+				if (lastRowItem.getId_device() <= 0 || lastRowItem.getNvmActivePower() <= 0) {
 					DeviceEntity deviceObj = new DeviceEntity();
 					deviceObj.setId(obj.getId());
 					deviceObj.setLast_value(null);

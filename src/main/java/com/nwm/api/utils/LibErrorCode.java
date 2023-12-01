@@ -3500,5 +3500,726 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/*
+	 * get Fault Code from table model_sev_sg110cx
+	 * 
+	 * @return
+	 */
+	public static int GetFaultCodeModelSevSg110cx(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 2:
+			// Grid overvoltage
+			errorCode = 1036;
+			break;
+		case 3:
+			// Grid transient overvoltage
+			errorCode = 1037;
+			break;
+		case 4:
+			// Grid undervoltage
+			errorCode = 1038;
+			break;
+		case 5:
+			// Grid low voltage
+			errorCode = 1039;
+			break;
+		case 7:
+			// AC instantaneous overcurrent
+			errorCode = 1040;
+			break;
+		case 8:
+			// Grid over frequency
+			errorCode = 1041;
+			break;
+		case 9:
+			// Grid underfrequency
+			errorCode = 1042;
+			break;
+		case 10:
+			// Grid power outage
+			errorCode = 1043;
+			break;
+		case 11:
+			// Device abnormal
+			errorCode = 1044;
+			break;
+		case 12:
+			// Excessive leakage current
+			errorCode = 1045;
+			break;
+		case 13:
+			// Grid abnormal
+			errorCode = 1046;
+			break;
+		case 14:
+			// 10-minute grid overvoltage
+			errorCode = 1047;
+			break;
+		case 15:
+			// Grid high voltage
+			errorCode = 1048;
+			break;
+		case 16:
+			// Output overload
+			errorCode = 1049;
+			break;
+		case 17:
+			// Grid voltage unbalance
+			errorCode = 1050;
+			break;
+		case 19:
+			// Device abnormal
+			errorCode = 1051;
+			break;
+		case 20:
+			// Device abnormal
+			errorCode = 1052;
+			break;
+		case 21:
+			// Device abnormal
+			errorCode = 1053;
+			break;
+		case 22:
+			// Device abnormal
+			errorCode = 1054;
+			break;
+		case 23:
+			// PV connection fault
+			errorCode = 1055;
+			break;
+		case 24:
+			// Device abnormal
+			errorCode = 1056;
+			break;
+		case 25:
+			// Device abnormal
+			errorCode = 1057;
+			break;
+		case 30:
+			// Device abnormal
+			errorCode = 1058;
+			break;
+		case 31:
+			// Device abnormal
+			errorCode = 1059;
+			break;
+		case 32:
+			// Device abnormal
+			errorCode = 1060;
+			break;
+		case 33:
+			// Device abnormal
+			errorCode = 1061;
+			break;
+		case 34:
+			// Device abnormal
+			errorCode = 1062;
+			break;
+		case 36:
+			// Excessively high module temperature
+			errorCode = 1063;
+			break;
+		case 37:
+			// Excessively high ambient temperature
+			errorCode = 1064;
+			break;
+		case 38:
+			// Device abnormal
+			errorCode = 1065;
+			break;
+		case 39:
+			// Low system insulation resistance
+			errorCode = 1066;
+			break;
+		case 40:
+			// Device abnormal
+			errorCode = 1067;
+			break;
+		case 41:
+			// Device abnormal
+			errorCode = 1068;
+			break;
+		case 42:
+			// Device abnormal
+			errorCode = 1069;
+			break;
+		case 43:
+			// Low ambient temperature
+			errorCode = 1070;
+			break;
+		case 44:
+			// Device abnormal
+			errorCode = 1071;
+			break;
+		case 45:
+			// Device abnormal
+			errorCode = 1072;
+			break;
+		case 46:
+			// Device abnormal
+			errorCode = 1073;
+			break;
+		case 47:
+			// PV input configuration abnormal
+			errorCode = 1074;
+			break;
+		case 48:
+			// Device abnormal
+			errorCode = 1075;
+			break;
+		case 49:
+			// Device abnormal
+			errorCode = 1076;
+			break;
+		case 50:
+			// Device abnormal
+			errorCode = 1077;
+			break;
+		case 53:
+			// Device abnormal
+			errorCode = 1078;
+			break;
+		case 54:
+			// Device abnormal
+			errorCode = 1079;
+			break;
+		case 55:
+			// Device abnormal
+			errorCode = 1080;
+			break;
+		case 56:
+			// Device abnormal
+			errorCode = 1081;
+			break;
+		case 59:
+			// Device abnormal
+			errorCode = 1082;
+			break;
+		case 60:
+			// Device abnormal
+			errorCode = 1083;
+			break;
+		case 70:
+			// Fan alarm
+			errorCode = 1084;
+			break;
+		case 71:
+			// AC-side SPD alarm
+			errorCode = 1085;
+			break;
+		case 72:
+			// DC-side SPD alarm
+			errorCode = 1086;
+			break;
+		case 74:
+			// Communication alarm
+			errorCode = 1087;
+			break;
+		case 76:
+			// Device abnormal
+			errorCode = 1088;
+			break;
+		case 78:
+			// PV1 abnormal
+			errorCode = 1089;
+			break;
+		case 79:
+			// PV2 abnormal
+			errorCode = 1090;
+			break;
+		case 80:
+			// PV3 abnormal
+			errorCode = 1091;
+			break;
+		case 81:
+			// PV4 abnormal
+			errorCode = 1092;
+			break;
+		case 87:
+			// Electric arc detection module abnormal
+			errorCode = 1093;
+			break;
+		case 88:
+			// Electric arc fault
+			errorCode = 1094;
+			break;
+		case 89:
+			// Electric arc detection disabled
+			errorCode = 1095;
+			break;
+		case 105:
+			// Grid-side protection self-check failure
+			errorCode = 1096;
+			break;
+		case 106:
+			// Grounding cable fault
+			errorCode = 1097;
+			break;
+		case 116:
+			// Device abnormal
+			errorCode = 1098;
+			break;
+		case 117:
+			// Device abnormal
+			errorCode = 1099;
+			break;
+		case 220:
+			// PV5 abnormal
+			errorCode = 1100;
+			break;
+		case 221:
+			// PV6 abnormal
+			errorCode = 1101;
+			break;
+		case 222:
+			// PV7 abnormal
+			errorCode = 1102;
+			break;
+		case 223:
+			// PV8 abnormal
+			errorCode = 1103;
+			break;
+		case 224:
+			// PV9 abnormal
+			errorCode = 1104;
+			break;
+		case 225:
+			// PV10 abnormal
+			errorCode = 1105;
+			break;
+		case 226:
+			// PV11 abnormal
+			errorCode = 1106;
+			break;
+		case 227:
+			// PV12 abnormal
+			errorCode = 1107;
+			break;
+		case 514:
+			// Meter communication abnormal alarm
+			errorCode = 1108;
+			break;
+		case 532:
+			// String 1 reverse connection alarm
+			errorCode = 1109;
+			break;
+		case 533:
+			// String 2 reverse connection alarm
+			errorCode = 1110;
+			break;
+		case 534:
+			// String 3 reverse connection alarm
+			errorCode = 1111;
+			break;
+		case 535:
+			// String 4 reverse connection alarm
+			errorCode = 1112;
+			break;
+		case 536:
+			// String 5 reverse connection alarm
+			errorCode = 1113;
+			break;
+		case 537:
+			// String 6 reverse connection alarm
+			errorCode = 1114;
+			break;
+		case 538:
+			// String 7 reverse connection alarm
+			errorCode = 1115;
+			break;
+		case 539:
+			// String 8 reverse connection alarm
+			errorCode = 1116;
+			break;
+		case 540:
+			// String 9 reverse connection alarm
+			errorCode = 1117;
+			break;
+		case 541:
+			// String 10 reverse connection alarm
+			errorCode = 1118;
+			break;
+		case 542:
+			// String 11 reverse connection alarm
+			errorCode = 1119;
+			break;
+		case 543:
+			// String 12 reverse connection alarm
+			errorCode = 1120;
+			break;
+		case 544:
+			// String 13 reverse connection alarm
+			errorCode = 1121;
+			break;
+		case 545:
+			// String 14 reverse connection alarm
+			errorCode = 1122;
+			break;
+		case 546:
+			// String 15 reverse connection alarm
+			errorCode = 1123;
+			break;
+		case 547:
+			// String 16 reverse connection alarm
+			errorCode = 1124;
+			break;
+		case 564:
+			// String 17 reverse connection alarm
+			errorCode = 1125;
+			break;
+		case 565:
+			// String 18 reverse connection alarm
+			errorCode = 1126;
+			break;
+		case 566:
+			// String 19 reverse connection alarm
+			errorCode = 1127;
+			break;
+		case 567:
+			// String 20 reverse connection alarm
+			errorCode = 1128;
+			break;
+		case 568:
+			// String 21 reverse connection alarm
+			errorCode = 1129;
+			break;
+		case 569:
+			// String 22 reverse connection alarm
+			errorCode = 1130;
+			break;
+		case 570:
+			// String 23 reverse connection alarm
+			errorCode = 1131;
+			break;
+		case 571:
+			// String 24 reverse connection alarm
+			errorCode = 1132;
+			break;
+		case 548:
+			// String 1 abnormal alarm
+			errorCode = 1133;
+			break;
+		case 549:
+			// String 2 abnormal alarm
+			errorCode = 1134;
+			break;
+		case 550:
+			// String 3 abnormal alarm
+			errorCode = 1135;
+			break;
+		case 551:
+			// String 4 abnormal alarm
+			errorCode = 1136;
+			break;
+		case 552:
+			// String 5 abnormal alarm
+			errorCode = 1137;
+			break;
+		case 553:
+			// String 6 abnormal alarm
+			errorCode = 1138;
+			break;
+		case 554:
+			// String 7 abnormal alarm
+			errorCode = 1139;
+			break;
+		case 555:
+			// String 8 abnormal alarm
+			errorCode = 1140;
+			break;
+		case 556:
+			// String 9 abnormal alarm
+			errorCode = 1141;
+			break;
+		case 557:
+			// String 10 abnormal alarm
+			errorCode = 1142;
+			break;
+		case 558:
+			// String 11 abnormal alarm
+			errorCode = 1143;
+			break;
+		case 559:
+			// String 12 abnormal alarm
+			errorCode = 1144;
+			break;
+		case 560:
+			// String 13 abnormal alarm
+			errorCode = 1145;
+			break;
+		case 561:
+			// String 14 abnormal alarm
+			errorCode = 1146;
+			break;
+		case 562:
+			// String 15 abnormal alarm
+			errorCode = 1147;
+			break;
+		case 563:
+			// String 16 abnormal alarm
+			errorCode = 1148;
+			break;
+		case 580:
+			// String 17 abnormal alarm
+			errorCode = 1149;
+			break;
+		case 581:
+			// String 18 abnormal alarm
+			errorCode = 1150;
+			break;
+		case 582:
+			// String 19 abnormal alarm
+			errorCode = 1151;
+			break;
+		case 583:
+			// String 20 abnormal alarm
+			errorCode = 1152;
+			break;
+		case 584:
+			// String 21 abnormal alarm
+			errorCode = 1153;
+			break;
+		case 585:
+			// String 22 abnormal alarm
+			errorCode = 1154;
+			break;
+		case 586:
+			// String 23 abnormal alarm
+			errorCode = 1155;
+			break;
+		case 587:
+			// String 24 abnormal alarm
+			errorCode = 1156;
+			break;
+		case 448:
+			// String 1 reverse connection fault
+			errorCode = 1157;
+			break;
+		case 449:
+			// String 2 reverse connection fault
+			errorCode = 1158;
+			break;
+		case 450:
+			// String 3 reverse connection fault
+			errorCode = 1159;
+			break;
+		case 451:
+			// String 4 reverse connection fault
+			errorCode = 1160;
+			break;
+		case 452:
+			// String 5 reverse connection fault
+			errorCode = 1161;
+			break;
+		case 453:
+			// String 6 reverse connection fault
+			errorCode = 1162;
+			break;
+		case 454:
+			// String 7 reverse connection fault
+			errorCode = 1163;
+			break;
+		case 455:
+			// String 8 reverse connection fault
+			errorCode = 1164;
+			break;
+		case 456:
+			// String 9 reverse connection fault
+			errorCode = 1165;
+			break;
+		case 457:
+			// String 10 reverse connection fault
+			errorCode = 1166;
+			break;
+		case 458:
+			// String 11 reverse connection fault
+			errorCode = 1167;
+			break;
+		case 459:
+			// String 12 reverse connection fault
+			errorCode = 1168;
+			break;
+		case 460:
+			// String 13 reverse connection fault
+			errorCode = 1169;
+			break;
+		case 461:
+			// String 14 reverse connection fault
+			errorCode = 1170;
+			break;
+		case 462:
+			// String 15 reverse connection fault
+			errorCode = 1171;
+			break;
+		case 463:
+			// String 16 reverse connection fault
+			errorCode = 1172;
+			break;
+		case 464:
+			// String 17 reverse connection fault
+			errorCode = 1173;
+			break;
+		case 465:
+			// String 18 reverse connection fault
+			errorCode = 1174;
+			break;
+		case 466:
+			// String 19 reverse connection fault
+			errorCode = 1175;
+			break;
+		case 467:
+			// String 20 reverse connection fault
+			errorCode = 1176;
+			break;
+		case 468:
+			// String 21 reverse connection fault
+			errorCode = 1177;
+			break;
+		case 469:
+			// String 22 reverse connection fault
+			errorCode = 1178;
+			break;
+		case 470:
+			// String 23 reverse connection fault
+			errorCode = 1179;
+			break;
+		case 471:
+			// String 24 reverse connection fault
+			errorCode = 1180;
+			break;
+		case 1500:
+			// PV1 overvoltage
+			errorCode = 1181;
+			break;
+		case 1501:
+			// PV2 overvoltage
+			errorCode = 1182;
+			break;
+		case 1502:
+			// PV3 overvoltage
+			errorCode = 1183;
+			break;
+		case 1503:
+			// PV4 overvoltage
+			errorCode = 1184;
+			break;
+		case 1504:
+			// PV5 overvoltage
+			errorCode = 1185;
+			break;
+		case 1505:
+			// PV6 overvoltage
+			errorCode = 1186;
+			break;
+		case 1506:
+			// PV7 overvoltage
+			errorCode = 1187;
+			break;
+		case 1507:
+			// PV8 overvoltage
+			errorCode = 1188;
+			break;
+		case 1508:
+			// PV9 overvoltage
+			errorCode = 1189;
+			break;
+		case 1509:
+			// PV10 overvoltage
+			errorCode = 1190;
+			break;
+		case 1510:
+			// PV11 overvoltage
+			errorCode = 1191;
+			break;
+		case 1511:
+			// PV12 overvoltage
+			errorCode = 1192;
+			break;
+		case 1512:
+			// PV13 overvoltage
+			errorCode = 1193;
+			break;
+		case 1513:
+			// PV14 overvoltage
+			errorCode = 1194;
+			break;
+		case 1514:
+			// PV15 overvoltage
+			errorCode = 1195;
+			break;
+		case 1515:
+			// PV16 overvoltage
+			errorCode = 1196;
+			break;
+		case 1516:
+			// PV17 overvoltage
+			errorCode = 1197;
+			break;
+		case 1517:
+			// PV18 overvoltage
+			errorCode = 1198;
+			break;
+		case 1518:
+			// PV19 overvoltage
+			errorCode = 1199;
+			break;
+		case 1519:
+			// PV20 overvoltage
+			errorCode = 1200;
+			break;
+		case 1520:
+			// PV21 overvoltage
+			errorCode = 1201;
+			break;
+		case 1521:
+			// PV22 overvoltage
+			errorCode = 1202;
+			break;
+		case 1522:
+			// PV23 overvoltage
+			errorCode = 1203;
+			break;
+		case 1523:
+			// PV24 overvoltage
+			errorCode = 1204;
+			break;
+		case 1524:
+			// PV25 overvoltage
+			errorCode = 1205;
+			break;
+		case 1525:
+			// PV26 overvoltage
+			errorCode = 1206;
+			break;
+		case 1526:
+			// PV27 overvoltage
+			errorCode = 1207;
+			break;
+		case 1527:
+			// PV28 overvoltage
+			errorCode = 1208;
+			break;
+		case 1528:
+			// PV29 overvoltage
+			errorCode = 1209;
+			break;
+		case 1529:
+			// PV30 overvoltage
+			errorCode = 1210;
+			break;
+		case 1530:
+			// PV31 overvoltage
+			errorCode = 1211;
+			break;
+		case 1531:
+			// PV32 overvoltage
+			errorCode = 1212;
+			break;
+		}
+		
+		return errorCode;
+	}
+	
 	
 }

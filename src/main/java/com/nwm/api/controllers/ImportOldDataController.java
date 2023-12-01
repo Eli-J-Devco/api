@@ -32,11 +32,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
-import com.nwm.api.entities.RoleEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.ImportOldDataService;
-import com.nwm.api.services.RoleService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 

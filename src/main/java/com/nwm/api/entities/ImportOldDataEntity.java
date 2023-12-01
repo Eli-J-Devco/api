@@ -37,10 +37,17 @@ public class ImportOldDataEntity{
 	private String file_upload;
 	private String filename;
 	private String device_group_table;
+	private String table_data_report;
 	
 	
 	
 	
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
 	public String getDevice_group_table() {
 		return device_group_table;
 	}
