@@ -119,6 +119,7 @@ public class DeviceEntity {
 	private int id_error;
 	private String error_code;
 	private String device_group_table;
+	private String table_data_report;
 	private int consumption_meter;
 	
 	
@@ -767,6 +768,12 @@ public class DeviceEntity {
 	}
 	public void setVariable_name(String variable_name) {
 		this.variable_name = variable_name;
+	}
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
 	}
 	
 	
