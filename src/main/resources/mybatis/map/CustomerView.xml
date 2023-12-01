@@ -1120,7 +1120,6 @@
 				</when>
 			</choose>
 			ROUND(AVG( IFNULL(sdr.PowerTodayAVG, NULL) ), 1) AS chart_energy_kwh
-			<!-- AVG(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)) AS chart_energy_kwh -->
 		FROM
 			${table_data_report} sdr
 			LEFT JOIN device d ON d.id = sdr.id_device
@@ -1133,7 +1132,7 @@
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
 			<foreach item="hidden" index="index" collection="hidden_data_list">
-				AND CONVERT_TZ( sdr.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+				AND sdr.time NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
 		    </foreach>
 		GROUP BY
 			d.id,
