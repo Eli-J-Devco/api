@@ -544,6 +544,7 @@
 			`ftp_port`,
 			`ftp_folder`,
 			`datalogger_type`,
+			`is_show_each_meter`,
 			`expiration`
 		)VALUES(
 			#{id_company},
@@ -586,6 +587,7 @@
 			#{ftp_port},
 			#{ftp_folder},
 			#{datalogger_type},
+			#{is_show_each_meter},
 			#{expiration}
 		);
 		<selectKey keyProperty="id" resultType="int">
