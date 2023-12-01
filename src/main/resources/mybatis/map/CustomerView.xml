@@ -1133,7 +1133,7 @@
 			AND d.is_delete = 0
 			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
 			<foreach item="hidden" index="index" collection="hidden_data_list">
-				AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+				AND CONVERT_TZ( sdr.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
 		    </foreach>
 		GROUP BY
 			d.id,
