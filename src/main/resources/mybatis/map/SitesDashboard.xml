@@ -85,6 +85,7 @@
 			h.is_hiding,
 			s.table_data_report,
 			s.table_data_virtual,
+			s.is_show_each_meter,		
 			s.expiration
 		FROM
 			site s 

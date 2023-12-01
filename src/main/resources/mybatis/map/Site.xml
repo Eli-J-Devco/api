@@ -637,7 +637,8 @@
 			`ftp_port` = #{ftp_port},
 			`ftp_folder` = #{ftp_folder},
 			`datalogger_type` = #{datalogger_type},
-			`expiration` = #{expiration}
+			`expiration` = #{expiration},
+			`is_show_each_meter` = #{is_show_each_meter}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -698,6 +699,7 @@
 			s.datalogger_type,
 			s.diagram,
 			h.is_hiding,
+			s.is_show_each_meter,
 			COUNT(td.id_site) AS virtual_status
 		FROM
 			site s

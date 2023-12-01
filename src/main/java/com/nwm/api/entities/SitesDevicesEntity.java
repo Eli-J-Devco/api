@@ -126,9 +126,17 @@ public class SitesDevicesEntity {
 	private String table_data_report;
 	private String table_data_virtual;
 	private String expiration;
+	private int is_show_each_meter;
+
 	
 	
 	
+	public int getIs_show_each_meter() {
+		return is_show_each_meter;
+	}
+	public void setIs_show_each_meter(int is_show_each_meter) {
+		this.is_show_each_meter = is_show_each_meter;
+	}
 	public int getIs_supper_admin() {
 		return is_supper_admin;
 	}

@@ -63,6 +63,25 @@ public class CustomerViewService extends DB {
 				
 				case "today":
 						if (obj.getEnable_virtual_device() == 1) {
+							// Show each meter
+							if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+								for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+									Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+									List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+									device.put("hidden_data_list", hiddenDataListDevice);
+									Map<String, Object> deviceItemEach5 = new HashMap<>();
+									device.put("data_send_time", obj.getData_send_time());
+									List dataPower = queryForList("CustomerView.getDataPowerTodayEachMeter", device);
+									if (dataPower.size() > 0) {
+										deviceItemEach5.put("data_energy", dataPower);
+										deviceItemEach5.put("type", "energy");
+										deviceItemEach5.put("devicename", device.get("devicename"));
+										deviceItemEach5.put("deviceType", "meter");
+										dataEnergy.add(deviceItemEach5);
+									}
+								}
+							}
+							
 							obj.setDatatablename(obj.getTable_data_virtual());
 							
 							// get list of time to exclude data from
@@ -135,6 +154,19 @@ public class CustomerViewService extends DB {
 								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
 								List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
 								device.put("hidden_data_list", hiddenDataList);
+								// Show each meter
+								if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+									Map<String, Object> deviceItemEach5 = new HashMap<>();
+									device.put("data_send_time", obj.getData_send_time());
+									List dataPower = queryForList("CustomerView.getDataPowerTodayEachMeter", device);
+									if (dataPower.size() > 0) {
+										deviceItemEach5.put("data_energy", dataPower);
+										deviceItemEach5.put("type", "energy");
+										deviceItemEach5.put("devicename", device.get("devicename"));
+										deviceItemEach5.put("deviceType", "meter");
+										dataEnergy.add(deviceItemEach5);
+									}
+								}
 							}
 							
 							obj.setGroupMeter(dataListDeviceMeter);
@@ -146,6 +178,7 @@ public class CustomerViewService extends DB {
 								deviceItem1.put("deviceType", "meter");
 								dataEnergy.add(deviceItem1);
 							}
+							
 							
 							// Get Irradiance
 							if (dataListDeviceIrr.size() > 0) {
@@ -354,13 +387,53 @@ public class CustomerViewService extends DB {
 						deviceItemM.put("deviceType", "meter");
 						dataEnergy.add(deviceItemM);
 					}
+					
+					// Show each meter 
+					if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+						for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+							Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+							List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+							device.put("hidden_data_list", hiddenDataListDevice);
+							// Show each meter
+							Map<String, Object> deviceItemEach5 = new HashMap<>();
+							device.put("data_send_time", obj.getData_send_time());
+							device.put("table_data_report", obj.getTable_data_report());
+							List dataPower = forCountYTD + 1 <= 5 ? queryForList("CustomerView.getDataPowerCustomAtMost5DaysEachMeter", device) : queryForList("CustomerView.getDataPowerThisMonthEachMeter", device);
+							
+							if (dataPower.size() > 0) {
+								deviceItemEach5.put("data_energy", dataPower);
+								deviceItemEach5.put("type", "energy");
+								deviceItemEach5.put("devicename", device.get("devicename"));
+								deviceItemEach5.put("deviceType", "meter");
+								dataEnergy.add(deviceItemEach5);
+							}
+						}
+					}
 				
 					break;
 				}
 				case "3_day":
 							if (obj.getEnable_virtual_device() == 1) {
-								obj.setDatatablename(obj.getTable_data_virtual());
+								// Show each meter
+								if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+									for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+										Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+										List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+										device.put("hidden_data_list", hiddenDataListDevice);
+										Map<String, Object> deviceItemEach5 = new HashMap<>();
+										device.put("data_send_time", obj.getData_send_time());
+										List dataPower = queryForList("CustomerView.getDataPower3DayEachMeter", device);
+										if (dataPower.size() > 0) {
+											deviceItemEach5.put("data_energy", dataPower);
+											deviceItemEach5.put("type", "energy");
+											deviceItemEach5.put("devicename", device.get("devicename"));
+											deviceItemEach5.put("deviceType", "meter");
+											dataEnergy.add(deviceItemEach5);
+										}
+									}
+								}
 								
+								obj.setDatatablename(obj.getTable_data_virtual());
 								// get list of time to exclude data from
 								List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
 								obj.setHidden_data_list(hiddenDataList);
@@ -431,6 +504,19 @@ public class CustomerViewService extends DB {
 									Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
 									List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
 									device.put("hidden_data_list", hiddenDataList);
+									// Show each meter
+									if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+										Map<String, Object> deviceItemEach5 = new HashMap<>();
+										device.put("data_send_time", obj.getData_send_time());
+										List dataPower = queryForList("CustomerView.getDataPower3DayEachMeter", device);
+										if (dataPower.size() > 0) {
+											deviceItemEach5.put("data_energy", dataPower);
+											deviceItemEach5.put("type", "energy");
+											deviceItemEach5.put("devicename", device.get("devicename"));
+											deviceItemEach5.put("deviceType", "meter");
+											dataEnergy.add(deviceItemEach5);
+										}
+									}
 								}
 								
 								obj.setGroupMeter(dataListDeviceMeter);
@@ -486,6 +572,25 @@ public class CustomerViewService extends DB {
 				case "this_week":
 				case "last_week":
 						if (obj.getEnable_virtual_device() == 1) {
+							// Show each meter
+							if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+								for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+									Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+									List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+									device.put("hidden_data_list", hiddenDataListDevice);
+									Map<String, Object> deviceItemEach5 = new HashMap<>();
+									device.put("data_send_time", obj.getData_send_time());
+									List dataPower = queryForList("CustomerView.getDataEnergyThisWeekEachMeter", device);
+									if (dataPower.size() > 0) {
+										deviceItemEach5.put("data_energy", dataPower);
+										deviceItemEach5.put("type", "energy");
+										deviceItemEach5.put("devicename", device.get("devicename"));
+										deviceItemEach5.put("deviceType", "meter");
+										dataEnergy.add(deviceItemEach5);
+									}
+								}
+							}
+							
 							obj.setDatatablename(obj.getTable_data_virtual());
 							
 							// get list of time to exclude data from
@@ -558,6 +663,19 @@ public class CustomerViewService extends DB {
 								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
 								List hiddenDataList = queryForList("CustomerView.getHiddenDataListByDevice", device);
 								device.put("hidden_data_list", hiddenDataList);
+								// Show each meter
+								if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+									Map<String, Object> deviceItemEach5 = new HashMap<>();
+									device.put("data_send_time", obj.getData_send_time());
+									List dataPower = queryForList("CustomerView.getDataEnergyThisWeekEachMeter", device);
+									if (dataPower.size() > 0) {
+										deviceItemEach5.put("data_energy", dataPower);
+										deviceItemEach5.put("type", "energy");
+										deviceItemEach5.put("devicename", device.get("devicename"));
+										deviceItemEach5.put("deviceType", "meter");
+										dataEnergy.add(deviceItemEach5);
+									}
+								}
 							}
 							
 							obj.setGroupMeter(dataListDeviceMeter);
@@ -612,6 +730,8 @@ public class CustomerViewService extends DB {
 					break;
 				case "last_month":
 				case "this_month":
+					
+					
 					
 					// Create list date 
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
@@ -702,6 +822,27 @@ public class CustomerViewService extends DB {
 						deviceItemM.put("devicename", "Energy output");
 						deviceItemM.put("deviceType", "meter");
 						dataEnergy.add(deviceItemM);
+					}
+					
+					// Show each meter 
+					if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+						for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+							Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+							List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+							device.put("hidden_data_list", hiddenDataListDevice);
+							// Show each meter
+							Map<String, Object> deviceItemEach5 = new HashMap<>();
+							device.put("data_send_time", obj.getData_send_time());
+							device.put("table_data_report", obj.getTable_data_report());
+							List dataPower = queryForList("CustomerView.getDataPowerThisMonthEachMeter", device);
+							if (dataPower.size() > 0) {
+								deviceItemEach5.put("data_energy", dataPower);
+								deviceItemEach5.put("type", "energy");
+								deviceItemEach5.put("devicename", device.get("devicename"));
+								deviceItemEach5.put("deviceType", "meter");
+								dataEnergy.add(deviceItemEach5);
+							}
+						}
 					}
 						
 					break;
@@ -846,11 +987,34 @@ public class CustomerViewService extends DB {
 						deviceItemMYTD.put("devicename", "Energy output");
 						deviceItemMYTD.put("deviceType", "meter");
 						dataEnergy.add(deviceItemMYTD);
-					}							
+					}
+					
+					// Show each meter 
+					if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+						for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+							Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+							List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+							device.put("hidden_data_list", hiddenDataListDevice);
+							// Show each meter
+							Map<String, Object> deviceItemEach5 = new HashMap<>();
+							device.put("data_send_time", obj.getData_send_time());
+							device.put("table_data_report", obj.getTable_data_report());
+							List dataPower = queryForList("CustomerView.getDataPowerThisMonthEachMeter", device);
+							
+							if (dataPower.size() > 0) {
+								deviceItemEach5.put("data_energy", dataPower);
+								deviceItemEach5.put("type", "energy");
+								deviceItemEach5.put("devicename", device.get("devicename"));
+								deviceItemEach5.put("deviceType", "meter");
+								dataEnergy.add(deviceItemEach5);
+							}
+						}
+					}
 					
 					break;
 
-				case "12_month":				
+				case "12_month":
+					
 					// Create list date 
 					SimpleDateFormat dateFormat12 = new SimpleDateFormat("yyyy-MM-dd"); 
 					SimpleDateFormat usFormat12 = new SimpleDateFormat("MM/yyyy");
@@ -988,12 +1152,35 @@ public class CustomerViewService extends DB {
 					
 					Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
 					if (dataPowerM12MonthDay.size() > 0) {
-						deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
+						deviceItemM12MonthDay.put("data_energy", dataPowerM12MonthDay);
 						deviceItemM12MonthDay.put("type", "energy");
 						deviceItemM12MonthDay.put("devicename", "Energy output");
 						deviceItemM12MonthDay.put("deviceType", "meter");
 						dataEnergy.add(deviceItemM12MonthDay);
-					}	
+					}
+					
+					// Show each meter 
+					if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+						for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+							Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+							List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+							device.put("hidden_data_list", hiddenDataListDevice);
+							// Show each meter
+							Map<String, Object> deviceItemEach5 = new HashMap<>();
+							device.put("data_send_time", obj.getData_send_time());
+							device.put("table_data_report", obj.getTable_data_report());
+							List dataPower = queryForList("CustomerView.getDataPowerThisMonthEachMeter", device);
+							
+							if (dataPower.size() > 0) {
+								deviceItemEach5.put("data_energy", dataPower);
+								deviceItemEach5.put("type", "energy");
+								deviceItemEach5.put("devicename", device.get("devicename"));
+								deviceItemEach5.put("deviceType", "meter");
+								dataEnergy.add(deviceItemEach5);
+							}
+						}
+					}
+					
 					break;
 				case "lifetime":
 					// Create list date 
@@ -1117,6 +1304,29 @@ public class CustomerViewService extends DB {
 						deviceItemMLT.put("deviceType", "meter");
 						dataEnergy.add(deviceItemMLT);
 					}
+					
+					// Show each meter 
+					if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
+						for (int i = 0; i < dataListDeviceMeter.size(); i++) {
+							Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
+							List hiddenDataListDevice = queryForList("CustomerView.getHiddenDataListByDevice", device);
+							device.put("hidden_data_list", hiddenDataListDevice);
+							// Show each meter
+							Map<String, Object> deviceItemEach5 = new HashMap<>();
+							device.put("data_send_time", obj.getData_send_time());
+							device.put("table_data_report", obj.getTable_data_report());
+							List dataPower = queryForList("CustomerView.getDataPowerThisMonthEachMeter", device);
+							
+							if (dataPower.size() > 0) {
+								deviceItemEach5.put("data_energy", dataPower);
+								deviceItemEach5.put("type", "energy");
+								deviceItemEach5.put("devicename", device.get("devicename"));
+								deviceItemEach5.put("deviceType", "meter");
+								dataEnergy.add(deviceItemEach5);
+							}
+						}
+					}
+					
 					break;
 				}
 			} else {

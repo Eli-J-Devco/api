@@ -170,6 +170,65 @@
 			t.time_format
 	</select>
 	
+	<select id="getDataPowerTodayEachMeter" resultType="Map" >
+		SELECT
+			m.time,
+			m.time_format,
+			m.time_full,
+			m.download_time,
+			m.categories_time,
+			ROUND(SUM(m.nvmActivePower), 1) AS chart_energy_kwh
+		FROM
+			(
+			SELECT
+				dv.time,
+				<choose>
+					<when test="data_send_time == 1">
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:%i') AS categories_time,
+					</when>
+					<when test="data_send_time == 2">
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:%i') AS categories_time,
+					</when>
+					<when test="data_send_time == 3">
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS download_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00') AS categories_time,
+					</when>
+					<when test="data_send_time == 4">
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b' ) AS categories_time,
+					</when>
+				</choose>
+				AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower 
+			FROM
+				${datatablename} dv
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site 
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				d.id = #{id}
+				AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
+				<foreach item="hidden" index="index" collection="hidden_data_list">
+					AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+			    </foreach>
+				AND s.`status` = 1 
+				AND d.`status` = 1 
+			GROUP BY
+				d.id, time_format
+			) m 
+		GROUP BY
+			m.time_format
+	</select>
+	
 	<select id="getDataVirtualDeviceToday" resultType="Map" >
 		SELECT
 			dv.time,
@@ -299,6 +358,65 @@
 			t.time_format
 	</select>
 	
+	<select id="getDataPower3DayEachMeter" resultType="Map" >
+			SELECT
+				m.time,
+				m.time_format,
+				m.time_full,
+				m.download_time,
+				m.categories_time,
+				ROUND(SUM(m.nvmActivePower), 1) AS chart_energy_kwh
+			FROM
+				(
+				SELECT
+					dv.time,
+					<choose>
+						<when test="data_send_time == 1">
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS download_time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%e. %b %H:%i') AS categories_time,
+						</when>
+						<when test="data_send_time == 2">
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS download_time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%e. %b %H:%i') AS categories_time,
+						</when>
+						<when test="data_send_time == 3">
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:00' ) AS categories_time,
+						</when>
+						<when test="data_send_time == 4">
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+						</when>
+					</choose>
+					AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
+				FROM
+					${datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site 
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					d.id = #{id}
+					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+					<foreach item="hidden" index="index" collection="hidden_data_list">
+						AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+				    </foreach>
+					AND s.`status` = 1 
+					AND d.`status` = 1 
+				GROUP BY
+					d.id, time_format
+				) m 
+			GROUP BY
+				m.time_format
+	</select>
+	
 	<select id="getDataVirtualDevice3Day" resultType="Map" >
 		SELECT
 			dv.time,
@@ -413,6 +531,54 @@
 			) t 
 		GROUP BY
 			t.time_format
+	</select>
+	
+	<select id="getDataEnergyThisWeekEachMeter" resultType="Map" >
+		SELECT
+			dv.time,
+			<choose>
+				<when test="data_send_time == 1">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS download_time,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_full,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%d. %b %H:%i' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 2">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS download_time,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_full,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%d. %b %H:%i' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS download_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b %H:00' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS download_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+				</when>
+			</choose>
+			ROUND(SUM(dv.MeasuredProduction), 1) AS chart_energy_kwh
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.id = #{id}
+			AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+			<foreach item="hidden" index="index" collection="hidden_data_list">
+				AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+		    </foreach>
+			AND s.`status` = 1 
+			AND d.`status` = 1 
+		GROUP BY
+			time_format
+
 	</select>
 	
 	<select id="getDataVirtualDeviceThisWeek" resultType="Map" >
@@ -695,6 +861,57 @@
 		GROUP BY time_format
 	</select>
 	
+	<select id="getDataPowerThisMonthEachMeter" resultType="Map" >
+		SELECT
+			<choose>
+				<when test="data_send_time == 4">
+					DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS download_time,
+					DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS time_format,
+					DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( dv.time, '%m/%d' )
+						ELSE DATE_FORMAT( dv.time, '%b. %Y' )
+					END 
+					AS categories_time,
+				</when>
+				<when test="data_send_time == 5">
+					DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS download_time,
+					FLOOR(DATEDIFF( dv.time, #{start_date}) / 7) AS time_format,
+					DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT( dv.time, '%b. %Y' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 6">
+					DATE_FORMAT( dv.time, '%m/%Y' ) AS download_time,
+					DATE_FORMAT( dv.time, '%m/%Y' ) AS time_format,
+					DATE_FORMAT( dv.time, '%m/%Y' ) AS time_full,
+					DATE_FORMAT( dv.time, '%b. %Y' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 7">
+					DATE_FORMAT( dv.time, '%Y' ) AS download_time,
+					DATE_FORMAT( dv.time, '%Y' ) AS time_format,
+					DATE_FORMAT( dv.time, '%Y' ) AS time_full,
+					DATE_FORMAT( dv.time, '%Y' ) AS categories_time,
+				</when>
+			</choose>
+			IFNULL(ROUND(SUM(dv.ActualGeneration), 1), 0.001) AS chart_energy_kwh
+		FROM
+			${table_data_report} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id = #{id}
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND ( dv.time  BETWEEN #{start_date} AND #{end_date})
+			<foreach item="hidden" index="index" collection="hidden_data_list">
+				AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+		    </foreach>
+		GROUP BY time_format
+	</select>
+	
 	<select id="getDataVirtualDeviceCustom" resultType="Map" >
 		SELECT
 			s.id,
@@ -872,6 +1089,57 @@
 		GROUP BY time_format
 	</select>
 	
+	<select id="getDataPowerCustomAtMost5DaysEachMeter" resultType="Map" >
+		SELECT
+			s.id,
+			d.id_device_type,
+			<choose>
+				<when test="data_send_time == 4">
+					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
+					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 5">
+					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
+					FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
+					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 6">
+					DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
+					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+				</when>
+				<when test="data_send_time == 7">
+					DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
+					DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
+				</when>
+			</choose>
+			ROUND(AVG( IFNULL(sdr.PowerTodayAVG, NULL) ), 1) AS chart_energy_kwh
+			<!-- AVG(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)) AS chart_energy_kwh -->
+		FROM
+			${table_data_report} sdr
+			LEFT JOIN device d ON d.id = sdr.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			s.`status` = 1
+			AND d.`status` = 1
+			AND d.id = #{id}
+			AND s.is_delete = 0
+			AND d.is_delete = 0
+			AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
+			<foreach item="hidden" index="index" collection="hidden_data_list">
+				AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
+		    </foreach>
+		GROUP BY
+			d.id,
+			time_format
+	</select>
+	
 	<select id="getDataVirtualDeviceCustomAtMost5Days" resultType="Map" >
 		SELECT
 			s.id,
@@ -947,14 +1215,7 @@
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
-					<choose>
-						<when test="filterBy == 'year'">
-							DATE_FORMAT( sdr.time, '%b. %Y' )
-						</when>
-						<otherwise>
-							DATE_FORMAT( sdr.time, '%m/%Y' )
-						</otherwise>
-					</choose> AS categories_time,
+					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 7">
 					DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
@@ -1061,14 +1322,7 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_format,
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
-					<choose>
-						<when test="filterBy == 'year'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
-						</when>
-						<otherwise>
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' )
-						</otherwise>
-					</choose> AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 7">
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
