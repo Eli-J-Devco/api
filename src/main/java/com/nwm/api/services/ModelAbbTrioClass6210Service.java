@@ -167,7 +167,6 @@ public class ModelAbbTrioClass6210Service extends DB {
 		if (StatesByte0 > 0 && rowItem.getTotalStatesByte0() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte0ModelABB(StatesByte0);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -237,7 +236,6 @@ public class ModelAbbTrioClass6210Service extends DB {
 		if (StatesByte1 > 0 && rowItem.getTotalStatesByte1() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte1ModelABB(StatesByte1);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -307,7 +305,6 @@ public class ModelAbbTrioClass6210Service extends DB {
 		if (StatesByte2 > 0 && rowItem.getTotalStatesByte2() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte2ModelABB(StatesByte2);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -378,7 +375,7 @@ public class ModelAbbTrioClass6210Service extends DB {
 		if (StatesByte4 > 0 && rowItem.getTotalStatesByte4() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetStatesByte4ModelABB(StatesByte4);
-				System.out.println("status errorId: " + errorId);
+				
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());

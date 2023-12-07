@@ -114,14 +114,12 @@ public class FTPUploadServerController extends BaseController {
 					String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 							Constants.uploadRootPathConfigKey) + "/" + siteItem.getId();
 					
-					System.out.println("remoteDirPath: " + remoteDirPath + " - date: " + tzInAmerica);
 					
-//					remoteDirPath = "/SMAFTP/B2399/XML/2023/11/20231121";
+//					remoteDirPath = "/SMAFTP/LagunaWoods_Laundry24/XML/2023/12/20231206";
 //					if(siteItem.getId() == 147) {
 //						remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230615";
 //					}
 
-					System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					FTPClient ftpClient = new FTPClient();
 
 					try {
@@ -136,7 +134,6 @@ public class FTPUploadServerController extends BaseController {
 						}
 						downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath, siteItem.getId());
 					} catch (IOException ex) {
-						System.out.println("Oops! Something wrong happened");
 						ex.printStackTrace();
 					} finally {
 						// logs out and disconnects from server
@@ -293,7 +290,6 @@ public class FTPUploadServerController extends BaseController {
 																String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 																
 																
-																System.out.println("Cron job FTP upload: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 																if (deviceItem.getId() > 0) {
 																	// Insert to datatable
@@ -937,11 +933,9 @@ public class FTPUploadServerController extends BaseController {
 											}
 											
 											// Delete file from server
-//											
-//											File logFile = new File(fileXML);
-//											if(logFile.delete()){  
-//												System.out.println("Delete file: " + fileXML);  
-//											}
+											
+											File logFile = new File(fileXML);
+											logFile.delete();
 										}
 									}
 								}
@@ -952,7 +946,6 @@ public class FTPUploadServerController extends BaseController {
 						
 
 					} catch (IOException ex) {
-						System.out.println("Oops! Something wrong happened");
 						ex.printStackTrace();
 					}
 				}
@@ -1014,11 +1007,6 @@ public class FTPUploadServerController extends BaseController {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site);
@@ -1028,8 +1016,6 @@ public class FTPUploadServerController extends BaseController {
 					File f = new File(newDirPath);
 					// create the directory in saveDir
 					File fDir = new File(saveDir + parentDir);
-					if(fDir.mkdirs()) { System.out.println("Full directory structure created ... ");
-					} else { System.out.println("Oops!!! Folder exits."); }
 
 					if (!f.exists()) {
 						// do something
@@ -1067,7 +1053,6 @@ public class FTPUploadServerController extends BaseController {
 									
 									File logFile = new File(fileZip);
 									if(logFile.delete()){  
-										System.out.println("Delete file zip: " + fileZip);  
 									}
 									
 								}
@@ -1078,25 +1063,13 @@ public class FTPUploadServerController extends BaseController {
 							zis.close();
 							
 							
-							boolean deleted = ftpClient.deleteFile(filePath);
-						    if (deleted) {
-						        System.out.println("The file was deleted successfully.");
-						    } else {
-						        System.out.println("Could not delete the file.");
-						    }
-						    
+							ftpClient.deleteFile(filePath);
 
-						} else {
-							 System.out.println("COULD NOT download the file: " + filePath);
 						}
-					} else {
-						 System.out.println("File not exits.");
 					}
 
 				}
 			}
-		} else {
-			System.out.println("Error. File does not exist");
 		}
 	}
 	
@@ -1160,7 +1133,6 @@ public class FTPUploadServerController extends BaseController {
 				BatchJobTableEntity lastRow = service.getLastRowItemUpdateDate(obj);
 				DeviceEntity deviceUpdateE = new DeviceEntity();
 				if(lastRow.getNvmActivePower() >= 0) {
-					System.out.println("Last_updated: " + lastRow.getTime());
 					deviceUpdateE.setId(deviceItem.getId());
 					deviceUpdateE.setLast_updated(lastRow.getTime());
 				} else {

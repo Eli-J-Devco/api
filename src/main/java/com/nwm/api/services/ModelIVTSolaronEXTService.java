@@ -200,16 +200,13 @@ public class ModelIVTSolaronEXTService extends DB {
 			try {
 				
 				String toBinary = Long.toBinaryString(warningCode);
-				System.out.println("warning toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("warning toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetWarningsCodeModelIVTSolaronEXT(v);
-						System.out.println("warning errorId: " + errorId);
 						
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
@@ -265,16 +262,13 @@ public class ModelIVTSolaronEXTService extends DB {
 			try {
 //				String toBinary = Integer.toBinaryString(statusCode);
 				String toBinary = Long.toBinaryString(statusCode);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetStatusCodeModelIVTSolaronEXT(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -330,16 +324,13 @@ public class ModelIVTSolaronEXTService extends DB {
 			try {
 //				String toBinary = Integer.toBinaryString(limitCode);
 				String toBinary = Long.toBinaryString(limitCode);
-				System.out.println("limits toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("limits toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
 					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetLimitCodeModelIVTSolaronEXT(v);
-						System.out.println("limits errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -394,9 +385,7 @@ public class ModelIVTSolaronEXTService extends DB {
 			try {
 //				String toBinary = Integer.toBinaryString(fault1);
 				String toBinary = Long.toBinaryString(fault1);
-				System.out.println("fault1 toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("fault1 toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -404,7 +393,6 @@ public class ModelIVTSolaronEXTService extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v, 1);
-						System.out.println("fault1 errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -459,9 +447,7 @@ public class ModelIVTSolaronEXTService extends DB {
 //				String toBinary2 = Integer.toBinaryString(fault2);
 				String toBinary2 = Long.toBinaryString(fault2);
 				
-				System.out.println("fault2 toBinary: " + toBinary2);
 				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
-				System.out.println("fault2 toBinary32Bit: " + toBinary32Bit2);
 				int v2 = 0;
 				for (int b2 = toBinary32Bit2.length() - 1; b2 >= 0; b2--) {
 					int index2 = b2;
@@ -469,7 +455,6 @@ public class ModelIVTSolaronEXTService extends DB {
 							.parseInt(toBinary32Bit2.substring(index2, Math.min(index2 + 1, toBinary32Bit2.length())));
 					if (bitLevel2 == 1) {
 						int errorId2 = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v2, 2);
-						System.out.println("fault2 errorId: " + errorId2);
 						if (errorId2 > 0) {
 							AlertEntity alertDeviceItem2 = new AlertEntity();
 							alertDeviceItem2.setId_device(obj.getId_device());
@@ -523,9 +508,7 @@ public class ModelIVTSolaronEXTService extends DB {
 //				String toBinary3 = Integer.toBinaryString(fault3);
 				String toBinary3 = Long.toBinaryString(fault3);
 				
-				System.out.println("fault3 toBinary: " + toBinary3);
 				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");
-				System.out.println("fault3 toBinary32Bit: " + toBinary32Bit3);
 				int v3 = 0;
 				for (int b3 = toBinary32Bit3.length() - 1; b3 >= 0; b3--) {
 					int index3 = b3;
@@ -533,7 +516,6 @@ public class ModelIVTSolaronEXTService extends DB {
 							.parseInt(toBinary32Bit3.substring(index3, Math.min(index3 + 1, toBinary32Bit3.length())));
 					if (bitLevel3 == 1) {
 						int errorId3 = LibErrorCode.GetErrorCodeModelIVTSolaronEXT(v3, 3);
-						System.out.println("fault3 errorId: " + errorId3);
 						if (errorId3 > 0) {
 							AlertEntity alertDeviceItem3 = new AlertEntity();
 							alertDeviceItem3.setId_device(obj.getId_device());

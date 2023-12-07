@@ -733,7 +733,6 @@ public class BatchJob {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Error check no production: " + e);
 			log.error(e);
 		}
 	}
@@ -950,7 +949,6 @@ public class BatchJob {
 			}
 
 		} catch (Exception e) {
-			System.out.println("Error: check no communication " + e);
 			log.error(e);
 		}
 	}
@@ -991,7 +989,6 @@ public class BatchJob {
 			}
 
 		} catch (Exception e) {
-			System.out.println("Error: reset last value " + e);
 			log.error(e);
 		}
 
@@ -1027,7 +1024,6 @@ public class BatchJob {
 				}
 
 				BatchJobTableEntity lastRowItem = service.getLastRowItem(bathJobEntity);
-				System.out.println("Run batchJob close alert from datalogger: " + obj.getId());
 				if (lastRowItem.getError() == 0) {
 //		        	Close all alert by datalogger
 //		    	    get all error by id_device_group, type datalogger alert
@@ -1049,7 +1045,6 @@ public class BatchJob {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println("Error: close alert from dataloggger " + e);
 			log.error(e);
 		}
 
@@ -1070,7 +1065,6 @@ public class BatchJob {
 			}
 
 		} catch (Exception e) {
-			System.out.println("Error: check no communication " + e);
 			log.error(e);
 		}
 	}
@@ -1090,7 +1084,6 @@ public class BatchJob {
 			}
 
 		} catch (Exception e) {
-			System.out.println("Error: check no communication " + e);
 			log.error(e);
 		}
 	}
@@ -1186,7 +1179,6 @@ public class BatchJob {
 				break;
 			}
 		} catch (Exception e) {
-			System.out.println("Error: sent mail report on schedule " + e);
 			log.error(e);
 		}
 	}
@@ -1814,7 +1806,6 @@ public class BatchJob {
 		}
 		for (int i = 0; i < listDevice.size(); i++) {
 			DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
-			System.out.println("id site: " + deviceItem.getId_site());
 			listDataloggerStructure(deviceItem.getSsh_user(), deviceItem.getSsh_pass(), deviceItem.getSsh_host(),
 					Integer.parseInt(deviceItem.getSsh_port()), deviceItem.getId());
 		}
@@ -1856,7 +1847,6 @@ public class BatchJob {
 				channel.setOutputStream(responseStream);
 				InputStream is = channel.getInputStream();
 				channel.connect();
-				System.out.println("channel.isConnected(): " + channel.isConnected());
 				while (channel.isConnected()) {
 					Thread.sleep(100);
 				}
@@ -1906,7 +1896,6 @@ public class BatchJob {
 					dataloggerModem.insertModelDatalogger(dataloggerEntity);
 
 					// MemFree
-					System.out.println("MemFree: " + MemFree);
 					
 					if (MemFree != null) {
 						deviceUpdateE.setLast_updated(dataloggerEntity.getTime());
@@ -1974,7 +1963,6 @@ public class BatchJob {
 				serviceD.updateLastUpdated(deviceUpdateE);
 			} 
 			catch (Exception ex) {
-				System.out.println(ex);
 			} 
 			
 			finally {
@@ -2033,7 +2021,6 @@ public class BatchJob {
 					remoteDirPath = "/SMAFTP/PeninsulaPlastics/XML/2023/06/20230613";
 				}
 
-				System.out.println(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 				FTPClient ftpClient = new FTPClient();
 
 				try {
@@ -2048,7 +2035,6 @@ public class BatchJob {
 					}
 		            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath, siteItem.getId());
 				} catch (IOException ex) {
-					System.out.println("Oops! Something wrong happened");
 					ex.printStackTrace();
 				} finally {
 					// logs out and disconnects from server
@@ -2113,11 +2099,6 @@ public class BatchJob {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site);
@@ -2127,8 +2108,7 @@ public class BatchJob {
 					File f = new File(newDirPath);
 					// create the directory in saveDir
 					File fDir = new File(saveDir + parentDir);
-					if(fDir.mkdirs()) { System.out.println("Full directory structure created ... ");
-					} else { System.out.println("Oops!!! Folder exits."); }
+					fDir.mkdirs();
 
 					if (!f.exists()) {
 						// do something
@@ -2166,7 +2146,6 @@ public class BatchJob {
 									
 									File logFile = new File(fileZip);
 									if(logFile.delete()){  
-										System.out.println("Delete file zip: " + fileZip);  
 									}
 									
 								}
@@ -2178,24 +2157,13 @@ public class BatchJob {
 							
 							
 							boolean deleted = ftpClient.deleteFile(filePath);
-						    if (deleted) {
-						        System.out.println("The file was deleted successfully.");
-						    } else {
-						        System.out.println("Could not delete the file.");
-						    }
 						    
 
-						} else {
-							 System.out.println("COULD NOT download the file: " + filePath);
 						}
-					} else {
-						 System.out.println("File not exits.");
 					}
 
 				}
 			}
-		} else {
-			System.out.println("Error.");
 		}
 	}
 
@@ -2333,7 +2301,6 @@ public class BatchJob {
 															String formatterUtcDateTime = utcDateTime.format(targetFormatter);
 															entitySMA3000.setTime(formatterUtcDateTime);
 															
-															System.out.println("modbusdevicenumber: "+ modbusdevicenumber + "-----" + deviceItem.getModbusdevicenumber());
 
 //															DeviceEntity device = new DeviceEntity();
 //															for(int j = 0; j < listDevice.size(); j++ ) {
@@ -2754,7 +2721,6 @@ public class BatchJob {
 										// Delete file from server
 										File logFile = new File(fileXML);
 										if(logFile.delete()){  
-											System.out.println("Delete file: " + fileXML);  
 										}
 									}
 								}
@@ -2766,7 +2732,6 @@ public class BatchJob {
 					
 
 				} catch (IOException ex) {
-					System.out.println("Oops! Something wrong happened");
 					ex.printStackTrace();
 				}
 			}

@@ -522,7 +522,6 @@ public class BuiltInReportController extends BaseController {
 			cell10.setCellValue("The Modeled Generation is predicted by PVWatts Calculator.");
 			
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -1294,7 +1293,6 @@ public class BuiltInReportController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -2254,7 +2252,6 @@ public class BuiltInReportController extends BaseController {
 				cell10.setCellValue("The Modeled Generation is predicted by PVWatts Calculator.");
 				
 			} catch (Exception e) {
-				System.out.println(e);
 			}
 
 		}

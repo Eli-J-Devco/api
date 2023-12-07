@@ -45,11 +45,9 @@ public class DB {
 			} catch (Exception ex1) {
 				sqlMap = null;
 				dbLog.error(ex1);
-				System.out.println(ex1);
 			}
 		} catch (Throwable ex) {
 			sqlMap = null;
-			System.out.println(ex);
 			dbLog.error(ex);
 			dbLog.error("connect DB unSuccessful");
 			throw new ExceptionInInitializerError(ex);

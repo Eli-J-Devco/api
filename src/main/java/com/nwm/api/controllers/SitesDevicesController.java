@@ -907,7 +907,6 @@ public class SitesDevicesController extends BaseController {
 //						Thread.sleep(1000); 
 //					}
 			        String responseString = new String(responseStream.toByteArray());
-			        System.out.println(responseString);
 			        
 					if(obj.getId_device_group() == 19) {
 						return this.jsonResult(true, "Data logger reboot successfully", null, 1);
@@ -998,7 +997,6 @@ public class SitesDevicesController extends BaseController {
 					
 					try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
 						for (String line = br.readLine(); line != null; line = br.readLine()) {
-							System.out.println("Line: " + line);
 							commandResult.add(line.toString());
 						}
 						
@@ -1063,11 +1061,8 @@ public class SitesDevicesController extends BaseController {
 				
 				
 				File myObj = new File(source);
-				if (myObj.createNewFile()) {
-					System.out.println("File created: " + myObj.getName());
-				} else {
-					System.out.println("File already exists.");
-				}
+				myObj.createNewFile();
+
 				
 				List commandResult = obj.getCommandResult();
 				
@@ -1098,14 +1093,9 @@ public class SitesDevicesController extends BaseController {
 			            String firstRemoteFile = des;
 			            InputStream inputStream = new FileInputStream(firstLocalFile);
 			 
-			            System.out.println("Start uploading first file");
 			            boolean done = ftpClient.storeFile(firstRemoteFile, inputStream);
 			            inputStream.close();
-			            if (done) {
-			                System.out.println("The first file is uploaded successfully.");
-			            }
 			        } catch (IOException ex) {
-			            System.out.println("Error: " + ex.getMessage());
 			            ex.printStackTrace();
 			        } finally {
 			            try {

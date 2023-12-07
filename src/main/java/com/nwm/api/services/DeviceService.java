@@ -354,7 +354,6 @@ public class DeviceService extends DB {
 			alertDeviceItem.setId_error(lowProduction);
 			
 			if (actualPowerToRatingPower < 50) {
-				System.out.println("status errorId: " + lowProduction);
 				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
 				boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
 				if (!checkAlertExist && errorExits) {

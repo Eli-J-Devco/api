@@ -207,9 +207,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 		if (faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(faultCode2);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -217,7 +215,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode2ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -270,9 +267,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode1);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -280,7 +275,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode1ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -333,9 +327,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 			try {
 				String toBinary = Integer.toBinaryString(faultCode0);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -343,7 +335,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetFaultCode0ModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -396,9 +387,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 
 			try {
 				String toBinary = Integer.toBinaryString(WarnCode);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -406,7 +395,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetWarningCodeModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());
@@ -458,9 +446,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 		if (PermanentFaultCode > 0 && rowItem.getTotalPermanentFaultCode() >= 20) {
 			try {
 				String toBinary = Integer.toBinaryString(PermanentFaultCode);
-				System.out.println("status toBinary: " + toBinary);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
-				System.out.println("status toBinary32Bit: " + toBinary32Bit);
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
 					int index = b;
@@ -468,7 +454,6 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 							.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
 					if (bitLevel == 1) {
 						int errorId = LibErrorCode.GetPermanentFaultCodeModelSolectria(v);
-						System.out.println("status errorId: " + errorId);
 						if (errorId > 0) {
 							AlertEntity alertDeviceItem = new AlertEntity();
 							alertDeviceItem.setId_device(obj.getId_device());

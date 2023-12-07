@@ -159,8 +159,7 @@ public class ModelXantrexGT500EService extends DB {
 		
 		if(faultCode > 0 && rowItem.getTotalFaultCode() >= 20) {
 			try {
-				int errorId = LibErrorCode.GetAlertModelXantrexGT500E(faultCode);
-				System.out.println("status errorId: " + errorId);		
+				int errorId = LibErrorCode.GetAlertModelXantrexGT500E(faultCode);	
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());

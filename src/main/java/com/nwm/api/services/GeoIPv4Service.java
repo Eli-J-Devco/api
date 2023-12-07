@@ -21,9 +21,7 @@ public class GeoIPv4Service{
             		GeoIPv4Service.class.getResource(filePath).getFile(),
                     LookupService.GEOIP_MEMORY_CACHE);
 
-            System.out.println("GeoIP Database loaded: " + lookUp.getDatabaseInfo());
         } catch (IOException e) {
-            System.out.println("Could not load geo ip database: " + e.getMessage());
         }
     }
 

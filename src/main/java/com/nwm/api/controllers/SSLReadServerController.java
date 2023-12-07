@@ -962,7 +962,6 @@ public class SSLReadServerController extends BaseController {
 				        }
 				        
 				        String responseString = new String(responseStream.toByteArray());
-				        System.out.println(responseString);
 				        
 
 //						channel = (ChannelExec) session.openChannel("exec");
@@ -1006,13 +1005,11 @@ public class SSLReadServerController extends BaseController {
 //				        
 //						
 //						String responseString = new String(responseStream.toByteArray());
-//				        System.out.println(responseString);
 				        
 				        
 //						try (BufferedReader br = new BufferedReader(new InputStreamReader(isDns1))) {
 //						for (String line = br.readLine(); line != null; line = br.readLine()) {
 //
-//							System.out.println(line);
 //							if (line.contains("cpuload CPU Load") && !line.contains("awk ")) {
 ////								CPULoad = line.split(":")[1];
 ////								CPULoad = CPULoad.replace("%", "");

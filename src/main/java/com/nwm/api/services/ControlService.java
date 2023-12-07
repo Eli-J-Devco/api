@@ -112,7 +112,6 @@ public class ControlService extends DB {
 				}
 			}
 
-			System.out.println("test: " + arrBytes);
 
 			try {
 				// Open TCP Connection

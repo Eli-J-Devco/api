@@ -86,18 +86,15 @@ public class BatchJobSMAFTP {
 	            ftpClient.connect(server, port);
 	            int replyCode = ftpClient.getReplyCode();
 	            if (!FTPReply.isPositiveCompletion(replyCode)) {
-	                System.out.println("Connect failed");
 	                return;
 	            }
 	            boolean success = ftpClient.login(user, pass);
 	            if (!success) {
-	                System.out.println("Could not login to the server");
 	                return;
 	            }
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
-	            System.out.println("Oops! Something wrong happened");
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
@@ -166,11 +163,6 @@ public class BatchJobSMAFTP {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir);
@@ -459,20 +451,9 @@ public class BatchJobSMAFTP {
 
 							// Delete file upload
 		                    File logFile = new File(newDirPath);
-							if(logFile.delete()){  
-								System.out.println("Deleted file: " + newDirPath);  
-							}
+		                    logFile.delete();
 
-							// Delete file for FTP
-//							boolean deleted = ftpClient.deleteFile(filePath);
-//							if (deleted) {
-//				                System.out.println("The file was deleted successfully.");
-//				            } else {
-//				                System.out.println("Could not delete the  file, it may not exist.");
-//				            }
 
-						} else {
-							System.out.println("COULD NOT download the file: " + filePath);
 						}
 					}
 
@@ -489,7 +470,6 @@ public class BatchJobSMAFTP {
 	            values.add(rowScanner.next());
 	        }
 	    }
-	    System.out.println("line: " + values);
 	    return values;
 	}
 	

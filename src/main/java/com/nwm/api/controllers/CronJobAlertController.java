@@ -361,7 +361,6 @@ public class CronJobAlertController extends BaseController {
 				}
 
 				BatchJobTableEntity lastRowItem = service.getLastRowItem(bathJobEntity);
-				System.out.println("Run batchJob close alert from datalogger: " + obj.getId());
 				if (lastRowItem.getError() == 0 && lastRowItem.getId_device() > 0) {
 					// Close all alert by datalogger
 					entityError.setId_device_group(obj.getId_device_group());

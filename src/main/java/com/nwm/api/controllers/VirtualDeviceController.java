@@ -153,12 +153,10 @@ public class VirtualDeviceController extends BaseController {
 					for(int t = 0; t <= setTime; t++) {
 						cal.setTime(currentDate);
 						cal.add(Calendar.DATE, t);
-						System.out.println("Log virtual device date: "+ dateFormat.format(cal.getTime()) + " 00:00:00");
 						
 						siteItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
 						siteItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
 						
-						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
 						
@@ -244,7 +242,6 @@ public class VirtualDeviceController extends BaseController {
 
 			for (int i = 0; i < listDevice.size(); i++) {
 				DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
-				System.out.println(deviceItem.getId());
 				
 				service.updateDeviceMeasuredProduction(deviceItem);
 			}
@@ -386,12 +383,10 @@ public class VirtualDeviceController extends BaseController {
 					for(int t = 0; t <= setTime; t++) {
 						cal.setTime(currentDate);
 						cal.add(Calendar.DATE, t);
-						System.out.println("Log virtual device date: "+ dateFormat.format(cal.getTime()) + " 00:00:00");
 						
 						siteItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
 						siteItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
 						
-						System.out.println("end date: " + siteItem.getEnd_date());
 						
 						List<?> dataPower = service.getDataPower(siteItem);
 						

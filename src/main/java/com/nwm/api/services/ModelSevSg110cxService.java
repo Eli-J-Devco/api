@@ -156,7 +156,6 @@ public class ModelSevSg110cxService extends DB {
 		if (faultCode > 0 && rowItem.getFaultCode() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetFaultCodeModelSevSg110cx(faultCode);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());

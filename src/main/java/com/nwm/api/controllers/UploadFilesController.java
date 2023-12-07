@@ -194,25 +194,7 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "FILETIME", required = false) String filetime) {
 
 //		public String message = " ";
-		
-		if(serialnumber.equals("001EC605699B")) {
-			System.out.println("---------------------------------start------------------------------");
-			System.out.println("SENDDATATRACE: " + senddatatrace);
-			System.out.println("MODE: " + mode);
-			System.out.println("SERIALNUMBER: " + serialnumber);
-			System.out.println("PASSWORD: " + password);
-			System.out.println("LOOPNAME: " + loopname);
-			System.out.println("MODBUSIP: " + modbusip);
-			System.out.println("MODBUSPORT: " + modbusport);
-			System.out.println("MODBUSDEVICE: " + modbusdevice);
-			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			System.out.println("-------------------------------end--------------------------------");
-		}
-//		
-		
+
 		try {
 
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
@@ -327,7 +309,10 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// OutputGeneration
-													deviceUpdateE.setLast_updated(dataModelPVPowered.getTime());
+													if(dataModelPVPowered.getOutputGeneration() != 0.001 && dataModelPVPowered.getOutputGeneration() >= 0){
+														deviceUpdateE.setLast_updated(dataModelPVPowered.getTime());
+													}
+
 													deviceUpdateE.setLast_value(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
 													deviceUpdateE.setField_value1(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
 													
@@ -373,8 +358,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){    
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -382,8 +366,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -430,6 +413,9 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// watts_3ph_total
+													if(dataModelShark100.getWatts_3ph_total() != 0.001 && dataModelShark100.getWatts_3ph_total() >= 0){
+														deviceUpdateE.setLast_updated(dataModelShark100.getTime());
+													}
 													deviceUpdateE.setLast_updated(dataModelShark100.getTime());
 													deviceUpdateE.setLast_value(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
 													deviceUpdateE.setField_value1(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
@@ -477,8 +463,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){    
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -486,8 +471,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){    
@@ -534,7 +518,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// sensor1_data
-													deviceUpdateE.setLast_updated(dataModelRTC30000.getTime());
+													
+													if(dataModelRTC30000.getSensor1_data() != 0.001 && dataModelRTC30000.getSensor1_data() >= 0){
+														deviceUpdateE.setLast_updated(dataModelRTC30000.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
 													deviceUpdateE.setField_value1(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
 													
@@ -572,8 +560,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -581,8 +568,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -632,7 +618,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// Sensor1_data
-													deviceUpdateE.setLast_updated(dataKippZonen.getTime());
+													
+													if(dataKippZonen.getSensor1_data() != 0.001 && dataKippZonen.getSensor1_data() >= 0){
+														deviceUpdateE.setLast_updated(dataKippZonen.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
 													deviceUpdateE.setField_value1(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
 													
@@ -671,7 +661,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -680,7 +669,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -728,7 +716,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ac_power
-													deviceUpdateE.setLast_updated(dataModelIVTSolaronEXT.getTime());
+													
+													if(dataModelIVTSolaronEXT.getAc_power()  != 0.001 && dataModelIVTSolaronEXT.getAc_power()  >= 0){
+														deviceUpdateE.setLast_updated(dataModelIVTSolaronEXT.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
 													deviceUpdateE.setField_value1(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
 													
@@ -774,7 +766,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -782,8 +773,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
@@ -830,7 +820,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// IrradianceTcs
-													deviceUpdateE.setLast_updated(dataModelHukselfluxSr30d1DeviceclassV0.getTime());
+													
+													if(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 && dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs()  >= 0){
+														deviceUpdateE.setLast_updated(dataModelHukselfluxSr30d1DeviceclassV0.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
 													deviceUpdateE.setField_value1(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
 													
@@ -869,7 +863,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -877,8 +870,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
@@ -924,7 +916,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// irradiance
-													deviceUpdateE.setLast_updated(dataModelIMTSolarClass.getTime());
+													
+													if(dataModelIMTSolarClass.getIrradiance() != 0.001 && dataModelIMTSolarClass.getIrradiance()  >= 0){
+														deviceUpdateE.setLast_updated(dataModelIMTSolarClass.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
 													deviceUpdateE.setField_value1(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
 													
@@ -962,8 +958,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -971,8 +966,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
@@ -1017,7 +1011,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ModuleTemperature
-													deviceUpdateE.setLast_updated(dataModelIMTSolarTmodulClass8006.getTime());
+													if(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 && dataModelIMTSolarTmodulClass8006.getModuleTemperature() >= 0){
+														deviceUpdateE.setLast_updated(dataModelIMTSolarTmodulClass8006.getTime());
+													}
+													
+													
 													deviceUpdateE.setLast_value(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
 													deviceUpdateE.setField_value1(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
 													
@@ -1056,7 +1054,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1064,8 +1061,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -1111,7 +1107,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// ac_power
-													deviceUpdateE.setLast_updated(dataModelAdvancedEnergySolaron.getTime());
+													
+													if(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 && dataModelAdvancedEnergySolaron.getAc_power() >= 0){
+														deviceUpdateE.setLast_updated(dataModelAdvancedEnergySolaron.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
 													deviceUpdateE.setField_value1(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
 													
@@ -1133,7 +1133,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -1158,8 +1157,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1167,12 +1165,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -1217,7 +1213,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// Irradiance
-													deviceUpdateE.setLast_updated(dataPVMet100.getTime());
+													
+													if(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 && dataPVMet100.getTransientHorizontalIrradiance() >= 0){
+														deviceUpdateE.setLast_updated(dataPVMet100.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
 													deviceUpdateE.setField_value1(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
 													
@@ -1255,8 +1255,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){    
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1264,8 +1263,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -1312,7 +1310,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// line_kw
-													deviceUpdateE.setLast_updated(dataModelPVPInverter.getTime());
+													
+													if(dataModelPVPInverter.getLine_kw() != 0.001 && dataModelPVPInverter.getLine_kw() >= 0){
+														deviceUpdateE.setLast_updated(dataModelPVPInverter.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
 													deviceUpdateE.setField_value1(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
 													
@@ -1357,8 +1359,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1366,8 +1367,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -1395,7 +1395,6 @@ public class UploadFilesController extends BaseController {
 													dataModelChint.setView_tablename(item.getView_tablename());
 													dataModelChint.setJob_tablename(item.getJob_tablename());
 													
-													System.out.println("id device: " + dataModelChint.getId_device() + " - word1: "+ dataModelChint.getTime() + "\n");
 													
 													// scaling device parameter
 													if (scaledDeviceParameters.size() > 0) {
@@ -1417,7 +1416,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// AC_ActivePower
-													deviceUpdateE.setLast_updated(dataModelChint.getTime());
+													
+													if(dataModelChint.getAC_ActivePower() != 0.001 && dataModelChint.getAC_ActivePower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelChint.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
 													deviceUpdateE.setField_value1(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
 													
@@ -1464,21 +1467,15 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-//														if(logFile.delete()){  
-////															System.out.println(logFile.getName() + " deleted .log");  
-//														}
+														logFile.delete();
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
 																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
-														
-//														if(logGzFile.delete()) {  
-////															System.out.println(logGzFile.getName() + " deleted .log.gz");   
-//														}		
+														logGzFile.delete();	
 													}  
 													catch(Exception e){  
-//														System.out.println("Error: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -1521,7 +1518,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// TotalNetInstantaneousRealPower
-													deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+													
+													if(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 && dataModelVeris.getTotalNetInstantaneousRealPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
 													deviceUpdateE.setField_value1(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
 													
@@ -1566,8 +1567,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1576,7 +1576,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1622,7 +1621,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													//Output_kw
-													deviceUpdateE.setLast_updated(dataModelSatcon.getTime());
+													
+													if(dataModelSatcon.getOutput_kw() != 0.001 && dataModelSatcon.getOutput_kw() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSatcon.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
 													deviceUpdateE.setField_value1(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
 													
@@ -1668,7 +1671,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1677,7 +1679,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -1724,7 +1725,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// TotalRealPower
-													deviceUpdateE.setLast_updated(dataModelElkor.getTime());
+													
+													if(dataModelElkor.getTotalRealPower() != 0.001 && dataModelElkor.getTotalRealPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelElkor.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
 													deviceUpdateE.setField_value1(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
 													
@@ -1770,7 +1775,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1778,8 +1782,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -1827,7 +1830,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// SunPOATempComp
-													deviceUpdateE.setLast_updated(dataModelWkipp.getTime());
+													
+													if(dataModelWkipp.getSunPOATempComp() != 0.001 && dataModelWkipp.getSunPOATempComp() >= 0){
+														deviceUpdateE.setLast_updated(dataModelWkipp.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
 													deviceUpdateE.setField_value1(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
 
@@ -1866,7 +1873,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1874,8 +1880,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -1922,7 +1927,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ActivePowerTotal
-													deviceUpdateE.setLast_updated(dataModelElkorP.getTime());
+													
+													if(dataModelElkorP.getActivePowerTotal() != 0.001 && dataModelElkorP.getActivePowerTotal() >= 0){
+														deviceUpdateE.setLast_updated(dataModelElkorP.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
 													deviceUpdateE.setField_value1(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
 													
@@ -1969,7 +1978,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -1977,8 +1985,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -2026,7 +2033,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// GridPower
-													deviceUpdateE.setLast_updated(dataModelABB.getTime());
+													
+													if(dataModelABB.getGridPower() != 0.001 && dataModelABB.getGridPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelABB.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
 													deviceUpdateE.setField_value1(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
 													
@@ -2071,8 +2082,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2081,7 +2091,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -2128,7 +2137,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// AirTemperatureActual
-													deviceUpdateE.setLast_updated(dataModelLufftC.getTime());
+													
+													if(dataModelLufftC.getAirTemperatureActual() != 0.001 && dataModelLufftC.getAirTemperatureActual() >= 0){
+														deviceUpdateE.setLast_updated(dataModelLufftC.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
 													deviceUpdateE.setField_value1(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
 													
@@ -2167,7 +2180,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2176,7 +2188,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -2222,7 +2233,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// AirTemperatureActual
-													deviceUpdateE.setLast_updated(dataModelLufft.getTime());
+													
+													if(dataModelLufft.getAirTemperatureCActual() != 0.001 && dataModelLufft.getAirTemperatureCActual() >= 0){
+														deviceUpdateE.setLast_updated(dataModelLufft.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
 													deviceUpdateE.setField_value1(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
 													
@@ -2261,7 +2276,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2269,8 +2283,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
@@ -2316,7 +2329,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// ACPowerOutput
-													deviceUpdateE.setLast_updated(dataModelSolectria226.getTime());
+													
+													if(dataModelSolectria226.getACPowerOutput() != 0.001 && dataModelSolectria226.getACPowerOutput() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSolectria226.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
 													deviceUpdateE.setField_value1(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
 													
@@ -2361,8 +2378,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2370,8 +2386,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
@@ -2430,7 +2445,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -2455,8 +2469,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2464,12 +2477,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -2514,7 +2525,11 @@ public class UploadFilesController extends BaseController {
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													
 													// I_AC_Power
-													deviceUpdateE.setLast_updated(dataModelSET.getTime());
+													
+													if(dataModelSET.getI_AC_Power() != 0.001 && dataModelSET.getI_AC_Power() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSET.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
 													deviceUpdateE.setField_value1(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
 													
@@ -2560,7 +2575,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2569,7 +2583,6 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
@@ -2618,7 +2631,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ReadPower
-													deviceUpdateE.setLast_updated(dataModelXantrex.getTime());
+													
+													if(dataModelXantrex.getReadPower() != 0.001 && dataModelXantrex.getReadPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelXantrex.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 													deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 													
@@ -2639,7 +2656,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -2665,7 +2681,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2673,12 +2688,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {    
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -2722,7 +2735,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// POACMP11
-													deviceUpdateE.setLast_updated(dataModelAdam4017.getTime());
+													
+													if(dataModelAdam4017.getPOACMP11() != 0.001 && dataModelAdam4017.getPOACMP11() >= 0){
+														deviceUpdateE.setLast_updated(dataModelAdam4017.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
 													deviceUpdateE.setField_value1(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
 													
@@ -2743,7 +2760,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -2763,7 +2779,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2772,11 +2787,9 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -2820,7 +2833,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter1_ACPower
-													deviceUpdateE.setLast_updated(dataModelCSM1.getTime());
+													
+													if(dataModelCSM1.getMeter1_ACPower() != 0.001 && dataModelCSM1.getMeter1_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelCSM1.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
 													deviceUpdateE.setField_value1(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
 													
@@ -2840,7 +2857,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -2865,8 +2881,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2875,11 +2890,9 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -2922,7 +2935,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter2_ACPower
-													deviceUpdateE.setLast_updated(dataModelCSM2.getTime());
+													
+													if(dataModelCSM2.getMeter2_ACPower() != 0.001 && dataModelCSM2.getMeter2_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelCSM2.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
 													deviceUpdateE.setField_value1(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
 													
@@ -2942,7 +2959,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -2968,7 +2984,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -2976,12 +2991,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -3023,7 +3036,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter3_ACPower
-													deviceUpdateE.setLast_updated(dataModelCSM3.getTime());
+													
+													if(dataModelCSM3.getMeter3_ACPower()  != 0.001 && dataModelCSM3.getMeter3_ACPower()  >= 0){
+														deviceUpdateE.setLast_updated(dataModelCSM3.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
 													deviceUpdateE.setField_value1(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
 													
@@ -3043,7 +3060,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -3069,7 +3085,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3078,11 +3093,9 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -3125,7 +3138,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter4_ACPower
-													deviceUpdateE.setLast_updated(dataModelCSM4.getTime());
+													
+													if(dataModelCSM4.getMeter4_ACPower() != 0.001 && dataModelCSM4.getMeter4_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelCSM4.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
 													deviceUpdateE.setField_value1(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
 													
@@ -3145,7 +3162,6 @@ public class UploadFilesController extends BaseController {
 //														errorItem.setId_device_group(item.getId_device_group());
 //														errorItem.setError_code(words.get(1));
 //														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //														if(rowItemError.getId() > 0) {
 //															AlertEntity alertItem = new AlertEntity();
 //															alertItem.setId_device(item.getId());
@@ -3170,8 +3186,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3179,12 +3194,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -3227,7 +3240,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// OutputKW
-														deviceUpdateE.setLast_updated(dataModelSatcon225.getTime());
+														
+														if(dataModelSatcon225.getLineFreq() != 0.001 && dataModelSatcon225.getLineFreq() >= 0){
+															deviceUpdateE.setLast_updated(dataModelSatcon225.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
 														deviceUpdateE.setField_value1(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
 													
@@ -3273,8 +3290,7 @@ public class UploadFilesController extends BaseController {
 													try  
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
+														if(logFile.delete()){   
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3282,12 +3298,10 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -3331,7 +3345,11 @@ public class UploadFilesController extends BaseController {
 													
 													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ACPower
-													deviceUpdateE.setLast_updated(dataModelSunnyClass9775.getTime());
+													
+													if(dataModelSunnyClass9775.getACPower() != 0.001 && dataModelSunnyClass9775.getACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSunnyClass9775.getTime());
+													}
+													
 													deviceUpdateE.setLast_value(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
 													deviceUpdateE.setField_value1(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
 													
@@ -3378,7 +3396,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3387,11 +3404,9 @@ public class UploadFilesController extends BaseController {
 														File logGzFile = new File(path.toString());
 														
 														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
 														}		
 													}  
 													catch(Exception e){  
-//														System.out.println("e1: " + e);
 														e.printStackTrace();  
 													}
 												}
@@ -3433,7 +3448,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// TotalInstantaneousRealPower
-														deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+														
+														if(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 && dataModelVeris.getTotalInstantaneousRealPower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
 														deviceUpdateE.setField_value1(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
 														
@@ -3479,7 +3498,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3488,7 +3506,6 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
@@ -3533,7 +3550,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// AC Power
-														deviceUpdateE.setLast_updated(dataModelAE1000NX.getTime());
+														
+														if(dataModelAE1000NX.getACPower() != 0.001 && dataModelAE1000NX.getACPower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelAE1000NX.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
 														deviceUpdateE.setField_value1(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
 														
@@ -3579,7 +3600,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3588,7 +3608,6 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
@@ -3634,7 +3653,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// pt33
-														deviceUpdateE.setLast_updated(dataModelAesTx.getTime());
+														
+														if(dataModelAesTx.getPt33() != 0.001 && dataModelAesTx.getPt33() >= 0){
+															deviceUpdateE.setLast_updated(dataModelAesTx.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
 														deviceUpdateE.setField_value1(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
 														
@@ -3676,18 +3699,14 @@ public class UploadFilesController extends BaseController {
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
-															}
-															
+															logFile.delete();
+
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
 																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
 																	+ timeStamp + ".log.gz");
 															File logGzFile = new File(path.toString());
 															
-															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
-															}		
+															logGzFile.delete();		
 														}  
 														catch(Exception e){  
 															e.printStackTrace();  
@@ -3733,7 +3752,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
-														deviceUpdateE.setLast_updated(dataModelIon.getTime());
+														
+														if(dataModelIon.getKWTot() != 0.001 && dataModelIon.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataModelIon.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
 														deviceUpdateE.setField_value1(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
 														
@@ -3776,7 +3799,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3785,7 +3807,6 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
@@ -3832,7 +3853,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
-														deviceUpdateE.setLast_updated(dataModelPM7650.getTime());
+														
+														if(dataModelPM7650.getkWTot() != 0.001 && dataModelPM7650.getkWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataModelPM7650.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
 														deviceUpdateE.setField_value1(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
 														
@@ -3875,7 +3900,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3884,7 +3908,6 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
@@ -3930,7 +3953,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// ReadPower
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														
+														if(dataModelXantrex.getReadPower() != 0.001 && dataModelXantrex.getReadPower() >= 0){
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														}
+														
 														deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 														deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
 														
@@ -3951,7 +3978,6 @@ public class UploadFilesController extends BaseController {
 //															errorItem.setId_device_group(item.getId_device_group());
 //															errorItem.setError_code(words.get(1));
 //															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //															if(rowItemError.getId() > 0) {
 //																AlertEntity alertItem = new AlertEntity();
 //																alertItem.setId_device(item.getId());
@@ -3977,7 +4003,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -3986,11 +4011,9 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
-//															System.out.println("e1: " + e);
 															e.printStackTrace();  
 														}
 													}
@@ -4034,7 +4057,11 @@ public class UploadFilesController extends BaseController {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														
 														// T_AMB
-														deviceUpdateE.setLast_updated(dataModel.getTime());
+														
+														if(dataModel.getT_AMB() != 0.001 && dataModel.getT_AMB() >= 0){
+															deviceUpdateE.setLast_updated(dataModel.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
 														deviceUpdateE.setField_value1(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
 														
@@ -4073,7 +4100,6 @@ public class UploadFilesController extends BaseController {
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
 															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -4081,8 +4107,7 @@ public class UploadFilesController extends BaseController {
 																	+ timeStamp + ".log.gz");
 															File logGzFile = new File(path.toString());
 															
-															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
+															if(logGzFile.delete()) {     
 															}		
 														}  
 														catch(Exception e){  
@@ -4130,7 +4155,11 @@ public class UploadFilesController extends BaseController {
 														
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// ReadPower
-														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														
+														if(dataModelPy.getPoa() != 0.001 && dataModelPy.getPoa() >= 0){
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														}
+														
 														deviceUpdateE.setLast_value(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
 														deviceUpdateE.setField_value1(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
 														
@@ -4148,7 +4177,6 @@ public class UploadFilesController extends BaseController {
 //															errorItem.setId_device_group(item.getId_device_group());
 //															errorItem.setError_code(words.get(1));
 //															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //															if(rowItemError.getId() > 0) {
 //																AlertEntity alertItem = new AlertEntity();
 //																alertItem.setId_device(item.getId());
@@ -4173,8 +4201,7 @@ public class UploadFilesController extends BaseController {
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
+															if(logFile.delete()){   
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -4182,12 +4209,10 @@ public class UploadFilesController extends BaseController {
 																	+ timeStamp + ".log.gz");
 															File logGzFile = new File(path.toString());
 															
-															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
+															if(logGzFile.delete()) {     
 															}		
 														}  
 														catch(Exception e){  
-//															System.out.println("e1: " + e);
 															e.printStackTrace();  
 														}
 													}
@@ -4232,7 +4257,11 @@ public class UploadFilesController extends BaseController {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														
 														// solar_irradiation
-														deviceUpdateE.setLast_updated(dataModel.getTime());
+														
+														if(dataModel.getSolar_irradiation() != 0.001 && dataModel.getSolar_irradiation() >= 0){
+															deviceUpdateE.setLast_updated(dataModel.getTime());
+														}
+														
 														deviceUpdateE.setLast_value(dataModel.getSolar_irradiation() != 0.001 ? dataModel.getSolar_irradiation() : null);
 														deviceUpdateE.setField_value1(dataModel.getSolar_irradiation() != 0.001 ? dataModel.getSolar_irradiation() : null);
 														
@@ -4270,8 +4299,7 @@ public class UploadFilesController extends BaseController {
 														try  
 														{ 
 															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-//																System.out.println(logFile.getName() + " deleted .log");  
+															if(logFile.delete()){    
 															}
 															
 															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -4280,7 +4308,6 @@ public class UploadFilesController extends BaseController {
 															File logGzFile = new File(path.toString());
 															
 															if(logGzFile.delete()) {  
-//																System.out.println(logGzFile.getName() + " deleted .log.gz");   
 															}		
 														}  
 														catch(Exception e){  
@@ -4327,7 +4354,10 @@ public class UploadFilesController extends BaseController {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														
 														// solar_irradiation
-														deviceUpdateE.setLast_updated(dataModel.getTime());
+														
+														if(dataModel.getAC_POWER() != 0.001 && dataModel.getAC_POWER() >= 0){
+															deviceUpdateE.setLast_updated(dataModel.getTime());
+														}
 														deviceUpdateE.setLast_value(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
 														deviceUpdateE.setField_value1(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
 														
@@ -4423,7 +4453,6 @@ public class UploadFilesController extends BaseController {
 //															errorItem.setId_device_group(item.getId_device_group());
 //															errorItem.setError_code(words.get(1));
 //															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //															if(rowItemError.getId() > 0) {
 //																AlertEntity alertItem = new AlertEntity();
 //																alertItem.setId_device(item.getId());
@@ -4503,7 +4532,6 @@ public class UploadFilesController extends BaseController {
 //															errorItem.setId_device_group(item.getId_device_group());
 //															errorItem.setError_code(words.get(1));
 //															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //															if(rowItemError.getId() > 0) {
 //																AlertEntity alertItem = new AlertEntity();
 //																alertItem.setId_device(item.getId());
@@ -4560,7 +4588,10 @@ public class UploadFilesController extends BaseController {
 														
 														// ac power
 														if(!Lib.isBlank(words.get(10))) {
-															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															if(power != 0.001 && power >= 0){
+																deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															}
+															
 															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(10)) ? power : null);
 															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(10)) ? power : null);
 														} else {
@@ -4584,7 +4615,6 @@ public class UploadFilesController extends BaseController {
 //															errorItem.setId_device_group(item.getId_device_group());
 //															errorItem.setError_code(words.get(1));
 //															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															System.out.println("ID Device: " + item.getId()  + "Error_code: " + words.get(1) + " - Device group: " + item.getId_device_group() + "- Id error: " + rowItemError.getId() );
 //															if(rowItemError.getId() > 0) {
 //																AlertEntity alertItem = new AlertEntity();
 //																alertItem.setId_device(item.getId());
@@ -4663,7 +4693,11 @@ public class UploadFilesController extends BaseController {
 														DeviceEntity deviceUpdateE = new DeviceEntity();
 														
 														// TotalActivePower
-														deviceUpdateE.setLast_updated(dataModelElsterA1700.getTime());
+														if(dataModelElsterA1700.getTotalActivePower() != 0.001 && dataModelElsterA1700.getTotalActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelElsterA1700.getTime());
+														}
+														
+														
 														deviceUpdateE.setLast_value(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
 														deviceUpdateE.setField_value1(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
 														
@@ -4804,9 +4838,7 @@ public class UploadFilesController extends BaseController {
 						
 					} catch (Exception e) {
 						message = "\nSUCCESS\n";
-//						System.out.println("e2: " + e);
 						// TODO Auto-generated catch block
-//						System.out.println("e: " + e);
 //						e.printStackTrace();
 					}finally{}
 
@@ -4818,7 +4850,6 @@ public class UploadFilesController extends BaseController {
 				
 			}
 			
-//			System.out.println("message: " + message);
 			return message;
 
 		} catch (Exception e) {
@@ -4855,7 +4886,6 @@ public class UploadFilesController extends BaseController {
 		
 		try {
 
-//			System.out.println("-------------------------------start--------------------------------");
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 
@@ -5087,7 +5117,6 @@ public class UploadFilesController extends BaseController {
 													{ 
 														File logFile = new File(root.resolve(fileName).toString());
 														if(logFile.delete()){  
-//															System.out.println(logFile.getName() + " deleted .log");  
 														}
 														
 														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
@@ -5095,8 +5124,7 @@ public class UploadFilesController extends BaseController {
 																+ timeStamp + ".log.gz");
 														File logGzFile = new File(path.toString());
 														
-														if(logGzFile.delete()) {  
-//															System.out.println(logGzFile.getName() + " deleted .log.gz");   
+														if(logGzFile.delete()) {     
 														}		
 													}  
 													catch(Exception e){  

@@ -927,7 +927,6 @@ Lib {
 		Date todate;
 		try {
 			todate = df.parse(aS);
-			// System.out.println("Today = " + df.format(todate));
 		} catch (Exception e) {
 			return null;
 		}
@@ -942,10 +941,8 @@ Lib {
 		Date todate;
 		try {
 			todate = df.parse(aS);
-			// System.out.println("Today = " + df.format(todate));
 		} catch (Exception e) {
 			return null;
-//			return StringToDate(aS);
 		}
 		return todate;
 
@@ -2567,12 +2564,9 @@ Lib {
 		Calendar cal = Calendar.getInstance(TimeZone.getDefault());
 		cal.add(Calendar.DAY_OF_MONTH, 2);
 		int day = cal.get(Calendar.DAY_OF_WEEK);
-		System.out.println(day);
-		System.out.println(checkBitOnOff(93, 0));
 //		SecretCards cet = new SecretCards();
 //		String k = cet.encrypt("1,419");
 //		String value = cet.decrypt(k);
-//		System.out.println(k);
 		// DOB: 18/10/2013 - 16/10/2018
 //		String a = getAge(18, 10, 2013, 16, 10, 2018);
 //		a = getAge(18, 10, 2013, 1, 10, 2018);
@@ -2581,7 +2575,6 @@ Lib {
 //		a = getAge(18, 10, 2013, 18, 10, 2018);
 //		a = getAge(26, 7, 2014, 6, 6, 2018);
 //		a = getAge(13, 6, 2016, 6, 6, 2018);
-//		System.out.println("Stt:" + a);
 	}
 
 	public static int getQuarterOfYear(int month) {

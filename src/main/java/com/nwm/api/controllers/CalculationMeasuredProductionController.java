@@ -89,7 +89,6 @@ public class CalculationMeasuredProductionController extends BaseController {
 				for(int t = 0; t <= day; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println("Calculation Measured productuon: "+ dateFormat.format(cal.getTime()) + " 00:00:00");
 					deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
 					deviceItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
 					service.updateMeasuredProduction(deviceItem);

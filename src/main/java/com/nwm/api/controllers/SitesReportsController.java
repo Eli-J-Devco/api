@@ -654,8 +654,6 @@ public class SitesReportsController extends BaseController {
 //	        is.close();
 //	        fos.close();
 //	
-//	        System.out.println("Got Repsonse");
-//	        System.out.println(response);
 
 //			if (result) {
 //				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
@@ -747,7 +745,6 @@ public class SitesReportsController extends BaseController {
 
 		// Create file excel
 		createOutputFile(workbook, excelFilePath);
-		System.out.println("Done!!!");
 	}
 
 	// Create dummy data
@@ -1420,7 +1417,6 @@ public class SitesReportsController extends BaseController {
 //	        cell.setCellStyle(cellStyle);
 //	        cell.setCellValue("Total money");
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -2330,7 +2326,6 @@ public class SitesReportsController extends BaseController {
 				cell9.setCellValue((double) values.get(j));
 			}
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}

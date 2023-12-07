@@ -862,7 +862,6 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println("Generate Report: " + dateFormat.format(cal.getTime()));
 					// inverter 
 					for (int i = 0; i < dataListInverter.size(); i++) {
 						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
@@ -937,7 +936,6 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println("Generate Report inverter, meter: " + dateFormat.format(cal.getTime()));
 
 					// inverter 
 					for (int k = 0; k < dataListInverter.size(); k++) {
@@ -993,7 +991,6 @@ public class BatchJobService extends DB {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
 					
-					System.out.println("Generate Report inverter, weather: " + dateFormat.format(cal.getTime()));
 					//inverter
 					
 					for (int i = 0; i < dataListInverter.size(); i++) {
@@ -1045,7 +1042,6 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
 					// meter 
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
@@ -1097,7 +1093,6 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
 					// meter 
 					for (int j = 0; j < dataListMeter.size(); j++) {
 						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
@@ -1127,7 +1122,6 @@ public class BatchJobService extends DB {
 				for(int t = 0; t <= setTime; t++) {
 					cal.setTime(currentDate);
 					cal.add(Calendar.DATE, t);
-					System.out.println(dateFormat.format(cal.getTime()));
 
 					// inverter 
 					for (int k = 0; k < dataListInverter.size(); k++) {
@@ -1220,19 +1214,11 @@ public class BatchJobService extends DB {
 					}
 				}
 				
-				System.out.println("---------------------------------------------------------");
-				System.out.println("actualPower: " + actualPower);
-				System.out.println("POA: " + POA);
-				System.out.println("sytemSite: " + sytemSite);
-				System.out.println("PVModuleTemperature: " + PVModuleTemperature);
-				System.out.println("temperature: " + temperature);
-				System.out.println("STCTemperature: " + STCTemperature);
 				
 				if(POA != 0) {
 					PerformanceRatioYesterday = (actualPower / ((POA / globaSolarIrradiance) * sytemSite * (1 + PVModuleTemperature * (temperature - STCTemperature)))) * 100;
 				}
 				
-				System.out.println("PerformanceRatioYesterday: " + PerformanceRatioYesterday);
 			}
 			
 			

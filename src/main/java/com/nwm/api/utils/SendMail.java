@@ -126,7 +126,6 @@ public class SendMail {
             
             Transport.send(message);
             flg = true;
-            System.out.println("Done");
 
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -220,12 +219,9 @@ public class SendMail {
 
 			// Send the email.
 			transport.sendMessage(msg, msg.getAllRecipients());
-			System.out.println("Sent.");
 			flg = true;
 		} catch (Exception ex) {
 			flg = false;
-			System.out.println("The email was not sent.");
-			System.out.println("Error message: " + ex.getMessage());
 		} finally {
 			// Close and terminate the connection.
 			transport.close();
@@ -264,12 +260,9 @@ public class SendMail {
 			SMTPTransport t = (SMTPTransport) session.getTransport("smtps");
 			t.connect(mail_smtp_server, login, pwd);
 			t.sendMessage(msg, msg.getAllRecipients());
-			System.out.println("Response: " + t.getLastServerResponse());
 			t.close();
 			flg = true;
-			System.out.println("SendMail:Message sent OK.");
 		} catch (MessagingException e) {
-			System.out.println("SendMail:Message sent NG.");
 			e.printStackTrace();
 			flg = false;
 		}

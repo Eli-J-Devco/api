@@ -199,7 +199,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (PVMStatusCodes > 0 && rowItem.getTotalPVMStatusCodes() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetPVMStatusCodesModelPVP260(PVMStatusCodes);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -249,7 +248,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (SystemWarnings > 0 && rowItem.getTotalSystemWarnings() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetSystemWarningsModelPVP260(SystemWarnings);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -299,7 +297,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (SystemFault > 0 && rowItem.getTotalSystemFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetSystemFaultModelPVP260(SystemFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -349,7 +346,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (TemperatureFault > 0 && rowItem.getTotalTemperatureFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetTemperatureFaultModelPVP260(TemperatureFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -399,7 +395,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (GridFault > 0 && rowItem.getTotalGridFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetGridFaultModelPVP260(GridFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -449,7 +444,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (VoltageFault > 0 && rowItem.getTotalVoltageFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetVoltageFaultModelPVP260(VoltageFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -500,7 +494,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (DriveFault > 0 && rowItem.getTotalDriveFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetDriveFaultModelPVP260(DriveFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -550,7 +543,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (MainFault > 0 && rowItem.getTotalMainFault() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetMainFaultModelPVP260(MainFault);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());
@@ -600,7 +592,6 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 		if (InverterOperatingStatus > 0 && rowItem.getTotalInverterOperatingStatus() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetInverterOperatingStatusModelPVP260(InverterOperatingStatus);
-				System.out.println("status errorId: " + errorId);
 				if (errorId > 0) {
 					AlertEntity alertDeviceItem = new AlertEntity();
 					alertDeviceItem.setId_device(obj.getId_device());

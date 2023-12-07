@@ -564,7 +564,6 @@ public class ReportsController extends BaseController {
 					}
 				}
 			} catch (Exception e) {
-				System.out.println(e);
 			}
 
 		}
@@ -1436,7 +1435,6 @@ public class ReportsController extends BaseController {
 			}
 			
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -2789,7 +2787,6 @@ public class ReportsController extends BaseController {
 				}
 				
 			} catch (Exception e) {
-				System.out.println(e);
 			}
 
 		}
@@ -4081,7 +4078,6 @@ public class ReportsController extends BaseController {
 				cell9.setCellValue( (double)item.get("energy_this_month")  );
 			}
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -5275,7 +5271,6 @@ public class ReportsController extends BaseController {
 						}
 					}
 				} catch (Exception e) {
-					System.out.println(e);
 				}
 
 			}
@@ -6126,8 +6121,6 @@ public class ReportsController extends BaseController {
 //	        is.close();
 //	        fos.close();
 //	
-//	        System.out.println("Got Repsonse");
-//	        System.out.println(response);
 
 //			if (result) {
 //				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
@@ -6219,7 +6212,6 @@ public class ReportsController extends BaseController {
 
 		// Create file excel
 		createOutputFile(workbook, excelFilePath);
-		System.out.println("Done!!!");
 	}
 
 	// Create dummy data
@@ -6892,7 +6884,6 @@ public class ReportsController extends BaseController {
 //	        cell.setCellStyle(cellStyle);
 //	        cell.setCellValue("Total money");
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -7290,7 +7281,6 @@ public class ReportsController extends BaseController {
 			cell83.setCellValue(df.format((totalActual / totalEstimated) * 100));
 			
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 
 	}
@@ -7462,7 +7452,6 @@ public class ReportsController extends BaseController {
 				}
 			}
 		} catch (Exception e) {
-			System.out.println(e);
 		}
 	}
 

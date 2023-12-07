@@ -101,7 +101,6 @@ public class BatchJobFTP {
 	            downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath);
 	            
 	        } catch (IOException ex) {
-	            System.out.println("Oops! Something wrong happened");
 	            ex.printStackTrace();
 	        } finally {
 	            // logs out and disconnects from server
@@ -170,11 +169,6 @@ public class BatchJobFTP {
 					// create the directory in saveDir
 					File newDir = new File(newDirPath);
 					boolean created = newDir.mkdirs();
-					if (created) {
-						System.out.println("CREATED the directory: " + newDirPath);
-					} else {
-						System.out.println("COULD NOT create the directory: " + newDirPath);
-					}
 
 					// download the sub directory
 					downloadDirectory(ftpClient, dirToList, currentFileName, saveDir);
@@ -1020,29 +1014,18 @@ public class BatchJobFTP {
 							}
 							// Delete file upload
 							File logFile = new File(newDirPath);
-							if (logFile.delete()) {
-								//System.out.println("Deleted file: " + newDirPath);
-							}
+							logFile.delete();
+
 
 							// Delete file for FTP
 							boolean deleted = ftpClient.deleteFile(filePath);
-							if (deleted) {
-								//System.out.println("The file was deleted successfully.");
-							} else {
-								//System.out.println("Could not delete the  file, it may not exist.");
-							}
 
-						} else {
-							//System.out.println("COULD NOT download the file: " + filePath);
+
 						}
-					} else {
-						//System.out.println("File not exits.");
 					}
 
 				}
 			}
-		} else {
-			System.out.println("Error.");
 		}
 	}
 	

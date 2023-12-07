@@ -106,7 +106,6 @@ public class MiniSiteService extends DB {
 					Date lastDayOfMonth = calM.getTime();  
 
 			        SimpleDateFormat lastofmonthFormat = new SimpleDateFormat("dd");
-			        System.out.println("Last Day of Month: " + lastofmonthFormat.format(lastDayOfMonth)); 
 			        int lofmonth = Integer.parseInt(lastofmonthFormat.format(lastDayOfMonth));
 			        
 			        SimpleDateFormat catMFormat = new SimpleDateFormat("MM/dd");
