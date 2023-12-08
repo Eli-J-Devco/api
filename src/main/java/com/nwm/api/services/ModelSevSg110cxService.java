@@ -60,6 +60,13 @@ public class ModelSevSg110cxService extends DB {
 				dataModelSev.setPhaseCCurrent(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModelSev.setFaultCode(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				
+				dataModelSev.setNominalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModelSev.setNominalActivePower(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModelSev.setBusVoltage(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
+				dataModelSev.setNegativeVoltageToGround(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
+				dataModelSev.setWorkState1(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
+				dataModelSev.setWorkState2(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
+				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSev.setNvmActivePower(power);
@@ -149,6 +156,8 @@ public class ModelSevSg110cxService extends DB {
 		// Check device alert by fault code
 		
 		int faultCode = (obj.getFaultCode() > 0 && obj.getFaultCode() != 0.001) ? (int) obj.getFaultCode() : 0;
+		int workState1 = (obj.getWorkState1() > 0 && obj.getWorkState1() != 0.001) ? (int) obj.getWorkState1() : 0;
+		int workState2 = (obj.getWorkState2() > 0 && obj.getWorkState2() != 0.001) ? (int) obj.getWorkState2() : 0;
 		
 		ModelSevSg110cxEntity rowItem = (ModelSevSg110cxEntity) checkAlertWriteCode(obj);
 		

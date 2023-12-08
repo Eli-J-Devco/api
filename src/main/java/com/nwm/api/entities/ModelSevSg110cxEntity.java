@@ -29,6 +29,12 @@ public class ModelSevSg110cxEntity {
 	private double PhaseBCurrent;
 	private double PhaseCCurrent;
 	private double FaultCode;
+	private double NominalReactivePower;
+	private double NominalActivePower;
+	private double BusVoltage;
+	private double NegativeVoltageToGround;
+	private double WorkState1;
+	private double WorkState2;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
@@ -36,10 +42,67 @@ public class ModelSevSg110cxEntity {
 	private String view_tablename;
 	private String job_tablename;
 	private String timezone_value;
+	private int totalFaultCode;
+	private int totalWorkState1;
+	private int totalWorkState2;
 	
 	
 	
 	
+	public int getTotalFaultCode() {
+		return totalFaultCode;
+	}
+	public void setTotalFaultCode(int totalFaultCode) {
+		this.totalFaultCode = totalFaultCode;
+	}
+	public int getTotalWorkState1() {
+		return totalWorkState1;
+	}
+	public void setTotalWorkState1(int totalWorkState1) {
+		this.totalWorkState1 = totalWorkState1;
+	}
+	public int getTotalWorkState2() {
+		return totalWorkState2;
+	}
+	public void setTotalWorkState2(int totalWorkState2) {
+		this.totalWorkState2 = totalWorkState2;
+	}
+	public double getNominalReactivePower() {
+		return NominalReactivePower;
+	}
+	public void setNominalReactivePower(double nominalReactivePower) {
+		NominalReactivePower = nominalReactivePower;
+	}
+	public double getNominalActivePower() {
+		return NominalActivePower;
+	}
+	public void setNominalActivePower(double nominalActivePower) {
+		NominalActivePower = nominalActivePower;
+	}
+	public double getBusVoltage() {
+		return BusVoltage;
+	}
+	public void setBusVoltage(double busVoltage) {
+		BusVoltage = busVoltage;
+	}
+	public double getNegativeVoltageToGround() {
+		return NegativeVoltageToGround;
+	}
+	public void setNegativeVoltageToGround(double negativeVoltageToGround) {
+		NegativeVoltageToGround = negativeVoltageToGround;
+	}
+	public double getWorkState1() {
+		return WorkState1;
+	}
+	public void setWorkState1(double workState1) {
+		WorkState1 = workState1;
+	}
+	public double getWorkState2() {
+		return WorkState2;
+	}
+	public void setWorkState2(double workState2) {
+		WorkState2 = workState2;
+	}
 	public String getDatatablename() {
 		return datatablename;
 	}

@@ -26,6 +26,15 @@
 		<result property="PhaseACurrent" column="PhaseACurrent" />
 		<result property="PhaseBCurrent" column="PhaseBCurrent" />
 		<result property="PhaseCCurrent" column="PhaseCCurrent" />
+		
+		<result property="FaultCode" column="FaultCode" />
+		<result property="NominalReactivePower" column="NominalReactivePower" />
+		<result property="NominalActivePower" column="NominalActivePower" />
+		<result property="BusVoltage" column="BusVoltage" />
+		<result property="NegativeVoltageToGround" column="NegativeVoltageToGround" />
+		<result property="WorkState1" column="WorkState1" />
+		<result property="WorkState2" column="WorkState2" />
+		
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
@@ -102,6 +111,38 @@
 			<if test="PhaseCCurrent != 0.001">
 				`PhaseCCurrent`,
 			</if>
+			
+			
+			
+			<if test="FaultCode != 0.001">
+				`FaultCode`,
+			</if>
+			
+			<if test="NominalReactivePower != 0.001">
+				`NominalReactivePower`,
+			</if>
+			
+			<if test="NominalActivePower != 0.001">
+				`NominalActivePower`,
+			</if>
+			
+			<if test="BusVoltage != 0.001">
+				`BusVoltage`,
+			</if>
+			
+			<if test="NegativeVoltageToGround != 0.001">
+				`NegativeVoltageToGround`,
+			</if>
+			
+			<if test="WorkState1 != 0.001">
+				`WorkState1`,
+			</if>
+			
+			<if test="WorkState2 != 0.001">
+				`WorkState2`,
+			</if>
+			
+			
 			
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower`,
@@ -182,6 +223,34 @@
 				#{PhaseCCurrent},
 			</if>
 			
+			<if test="FaultCode != 0.001">
+				#{FaultCode},
+			</if>
+			
+			<if test="NominalReactivePower != 0.001">
+				#{NominalReactivePower},
+			</if>
+			
+			<if test="NominalActivePower != 0.001">
+				#{NominalActivePower},
+			</if>
+			
+			<if test="BusVoltage != 0.001">
+				#{BusVoltage},
+			</if>
+			
+			<if test="NegativeVoltageToGround != 0.001">
+				#{NegativeVoltageToGround},
+			</if>
+			
+			<if test="WorkState1 != 0.001">
+				#{WorkState1},
+			</if>
+			
+			<if test="WorkState2 != 0.001">
+				#{WorkState2},
+			</if>
+			
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
 			</if>
@@ -257,6 +326,35 @@
 				`PhaseCCurrent` = #{PhaseCCurrent},
 			</if>
 			
+			
+			<if test="FaultCode != 0.001">
+				`FaultCode` = #{FaultCode},
+			</if>
+			
+			<if test="NominalReactivePower != 0.001">
+				`NominalReactivePower` = #{NominalReactivePower},
+			</if>
+			
+			<if test="NominalActivePower != 0.001">
+				`NominalActivePower` = #{NominalActivePower},
+			</if>
+			
+			<if test="BusVoltage != 0.001">
+				`BusVoltage` = #{BusVoltage},
+			</if>
+			
+			<if test="NegativeVoltageToGround != 0.001">
+				`NegativeVoltageToGround` = #{NegativeVoltageToGround},
+			</if>
+			
+			<if test="WorkState1 != 0.001">
+				`WorkState1` = #{WorkState1},
+			</if>
+			
+			<if test="WorkState2 != 0.001">
+				`WorkState2` = #{WorkState2},
+			</if>
+			
 			<if test="nvmActivePower != 0.001">
 				`nvmActivePower` = #{nvmActivePower},
 			</if>
@@ -289,11 +387,15 @@
 	
 	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelSevSg110cxEntity">
     	SELECT
-			SUM( t.FaultCode ) AS FaultCode
+			SUM( t.FaultCode ) AS totalFaultCode,
+			SUM( t.WorkState1 ) AS totalWorkState1,
+			SUM( t.WorkState2 ) AS totalWorkState2
 		FROM
 			(
 			SELECT
-				IF(m.FaultCode > 0, 1, 0) AS FaultCode
+				IF(m.FaultCode > 0, 1, 0) AS FaultCode,
+				IF(m.WorkState1 > 0, 1, 0) AS WorkState1,
+				IF(m.WorkState2 > 0, 1, 0) AS WorkState2
 			FROM
 				${datatablename} m
 			WHERE
