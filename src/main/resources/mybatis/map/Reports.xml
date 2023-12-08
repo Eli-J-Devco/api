@@ -348,6 +348,7 @@
 			r.id,
 			s.id AS id_site,
 			s.`name` AS site_name,
+			s.table_data_report,
 			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,

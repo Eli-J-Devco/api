@@ -229,6 +229,7 @@ public class ReportsService extends DB {
 				return null;
 			}
 			
+			obj.setTable_data_report(dataObj.getTable_data_report());
 			List dataListInverter = queryForList("Reports.getListDeviceTypeInverter", obj);
 			List dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
 			
@@ -271,6 +272,7 @@ public class ReportsService extends DB {
 				return null;
 			}
 			
+			obj.setTable_data_report(dataObj.getTable_data_report());
 			List dataEnergy = queryForList("Reports.getDataEnergyQurterlyReport", obj);
 			if (dataEnergy.size() > 0) {
 				dataObj.setDataReports(dataEnergy);
@@ -674,6 +676,7 @@ public class ReportsService extends DB {
 				return null;
 			}
 			
+			obj.setTable_data_report(dataObj.getTable_data_report());
 			if (dataObj.getType_report() == 1) {
 				List dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
 				if (dataEnergy.size() > 0) {
@@ -858,6 +861,7 @@ public class ReportsService extends DB {
 				return null;
 			}
 			
+			obj.setTable_data_report(dataObj.getTable_data_report());
 			List dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
 			if (dataPower.size() > 0 ) {
 				dataObj.setDataReports(dataPower);
