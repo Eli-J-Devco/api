@@ -3963,6 +3963,18 @@
 					WHERE
 					   id_device = #{id_device};
 	            </when>
+							<when test="id_device_group == 64">
+	            	<!-- model_sungrow_logger1000 -->
+		           INSERT IGNORE INTO ${newtablename}(
+					`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TotalNumberOfConnectedDevices`, `TotalFaultDeviceNumber`, `TotalActivePower`, `DailyYield`, `TotalReactivePower`, `TotalYield`, `DigitalInputState`, `PT1001`, `PT1002`, `ADC1Voltage`, `ADC1Current`, `ADC2Voltage`, `ADC2Current`, `ADC3Voltage`, `ADC3Current`, `ADC4Voltage`, `ADC4Current`, `Longitude`, `Latitude`, `MaxTotalRatedActivePower`, `MinTotalRatedActivePower`, `MaxTotalRatedReactivePower`, `MinTotalRatedReactivePower`, `ActualTotalInverterActivePower`, `ActualTotalInverterReactivePower`, `OnOffStateOfDataLogger`, `LockingStateOfDataLogger`, `MinAdjustableActivePower`, `MaxAdjustableActivePower`, `MinAdjustableReactivePower`, `MaxAdjustableReactivePower`, `RatedActivePower`, `RatedReactivePower`, `NumberOfOnGridDevices`, `NumberOfOffGridDevices`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT 
+					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `TotalNumberOfConnectedDevices`, `TotalFaultDeviceNumber`, `TotalActivePower`, `DailyYield`, `TotalReactivePower`, `TotalYield`, `DigitalInputState`, `PT1001`, `PT1002`, `ADC1Voltage`, `ADC1Current`, `ADC2Voltage`, `ADC2Current`, `ADC3Voltage`, `ADC3Current`, `ADC4Voltage`, `ADC4Current`, `Longitude`, `Latitude`, `MaxTotalRatedActivePower`, `MinTotalRatedActivePower`, `MaxTotalRatedReactivePower`, `MinTotalRatedReactivePower`, `ActualTotalInverterActivePower`, `ActualTotalInverterReactivePower`, `OnOffStateOfDataLogger`, `LockingStateOfDataLogger`, `MinAdjustableActivePower`, `MaxAdjustableActivePower`, `MinAdjustableReactivePower`, `MaxAdjustableReactivePower`, `RatedActivePower`, `RatedReactivePower`, `NumberOfOnGridDevices`, `NumberOfOffGridDevices`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					   ${device_group_table}
+					WHERE
+					   id_device = #{id_device};
+	            </when>
 	                                                          
 	        </choose> 
 	        

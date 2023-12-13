@@ -693,7 +693,10 @@ public class BatchJob {
 										case "model_sma_inverter_stp62us41":
 											noProduction = 972;
 											break;
-											
+										case "model_sungrow_logger1000":
+											noProduction = 1214;
+											break;
+
 										}
 
 										BatchJobTableEntity rowItem = service
@@ -909,6 +912,10 @@ public class BatchJob {
 										case "model_sma_inverter_stp62us41":
 											noCommunication = 971;
 											break;
+										case "model_sungrow_logger1000":
+											noCommunication = 1213;
+											break;
+
 										}
 
 										BatchJobTableEntity lastRowItem = service
