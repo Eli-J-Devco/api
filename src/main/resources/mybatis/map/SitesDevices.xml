@@ -204,6 +204,8 @@
 
 				WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
+				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				ELSE "N/A"
 			END AS key_indicator,
 			IFNULL(p.totalError, 0 ) AS totalError,

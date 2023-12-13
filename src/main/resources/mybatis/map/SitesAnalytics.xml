@@ -94,6 +94,34 @@
 			d.job_tablename,
 			d.id_device_group,
 			
+			<if test="table_name == 'model_ae_refusol'">
+				IFNULL(ROUND(AVG(dv.ACPower), 2), 0.001) AS ACPower,
+				IFNULL(ROUND(AVG(dv.ACVoltageAverageRMS), 2), 0.001) AS ACVoltageAverageRMS,
+				IFNULL(ROUND(AVG(dv.ACVoltage1RMS), 2), 0.001) AS ACVoltage1RMS,
+				IFNULL(ROUND(AVG(dv.ACVoltage2RMS), 2), 0.001) AS ACVoltage2RMS,
+				IFNULL(ROUND(AVG(dv.ACVoltage3RMS), 2), 0.001) AS ACVoltage3RMS,
+				IFNULL(ROUND(AVG(dv.ACCurrentSum), 2), 0.001) AS ACCurrentSum,
+				IFNULL(ROUND(AVG(dv.ACCurrent1), 2), 0.001) AS ACCurrent1,
+				IFNULL(ROUND(AVG(dv.ACCurrent2), 2), 0.001) AS ACCurrent2,
+				IFNULL(ROUND(AVG(dv.ACCurrent3), 2), 0.001) AS ACCurrent3,
+				IFNULL(ROUND(AVG(dv.ACFrequency1), 2), 0.001) AS ACFrequency1,
+				IFNULL(ROUND(AVG(dv.ACFrequency2), 2), 0.001) AS ACFrequency2,
+				IFNULL(ROUND(AVG(dv.ACFrequency3), 2), 0.001) AS ACFrequency3,
+				IFNULL(ROUND(AVG(dv.DCPower), 2), 0.001) AS DCPower,
+				IFNULL(ROUND(AVG(dv.DCVoltage), 2), 0.001) AS DCVoltage,
+				IFNULL(ROUND(AVG(dv.DCCurrent), 2), 0.001) AS DCCurrent,
+				IFNULL(ROUND(AVG(dv.HeatSink), 2), 0.001) AS HeatSink,
+				IFNULL(ROUND(AVG(dv.Interior), 2), 0.001) AS Interior,
+				IFNULL(ROUND(AVG(dv.Irradiation), 2), 0.001) AS Irradiation,
+				IFNULL(ROUND(AVG(dv.Panel), 2), 0.001) AS Panel,
+				IFNULL(ROUND(AVG(dv.DailyYield), 2), 0.001) AS DailyYield,
+				IFNULL(ROUND(AVG(dv.TotalYield), 2), 0.001) AS TotalYield,
+				IFNULL(ROUND(AVG(dv.OperatingHours), 2), 0.001) AS OperatingHours,
+				IFNULL(ROUND(AVG(dv.Status), 2), 0.001) AS Status,
+				IFNULL(ROUND(AVG(dv.ErrorMessageCode), 2), 0.001) AS ErrorMessageCode,
+			</if>
+			
+			
 			<if test="table_name == 'model_elster_a1700'">
 				IFNULL(ROUND(AVG(dv.PhaseAVoltage), 2), 0.001) AS PhaseAVoltage,
 				IFNULL(ROUND(AVG(dv.PhaseBVoltage), 2), 0.001) AS PhaseBVoltage,
