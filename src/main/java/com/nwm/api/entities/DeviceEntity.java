@@ -121,6 +121,7 @@ public class DeviceEntity {
 	private String device_group_table;
 	private String table_data_report;
 	private int consumption_meter;
+	private String datalogger_table;
 	
 	
 	
@@ -774,6 +775,12 @@ public class DeviceEntity {
 	}
 	public void setTable_data_report(String table_data_report) {
 		this.table_data_report = table_data_report;
+	}
+	public String getDatalogger_table() {
+		return datalogger_table;
+	}
+	public void setDatalogger_table(String datalogger_table) {
+		this.datalogger_table = datalogger_table;
 	}
 	
 	

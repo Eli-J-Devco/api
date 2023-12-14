@@ -4869,7 +4869,7 @@ public class UploadFilesController extends BaseController {
 										// Save to datalogger
 										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
 										dataloggerEntity.setId_device(item.getId());
-										dataloggerEntity.setDatatablename(item.getDatatablename());
+										dataloggerEntity.setDatatablename(item.getDatalogger_table());
 										dataloggerEntity.setView_tablename(item.getView_tablename());
 										dataloggerEntity.setJob_tablename(item.getJob_tablename());
 										
