@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="ModelSungrowLogger1000">
+  	<resultMap id="ModelSungrowLogger1000Map"
+		type="com.nwm.api.entities.ModelSungrowLogger1000Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		<result property="TotalNumberOfConnectedDevices" column="TotalNumberOfConnectedDevices" />
+		<result property="TotalFaultDeviceNumber" column="TotalFaultDeviceNumber" />
+		<result property="TotalActivePower" column="TotalActivePower" />
+		<result property="DailyYield" column="DailyYield" />
+		<result property="TotalReactivePower" column="TotalReactivePower" />
+		<result property="TotalYield" column="TotalYield" />
+		<result property="DigitalInputState" column="DigitalInputState" />
+		<result property="PT1001" column="PT1001" />
+		<result property="PT1002" column="PT1002" />
+		<result property="ADC1Voltage" column="ADC1Voltage" />
+		<result property="ADC1Current" column="ADC1Current" />
+		<result property="ADC2Voltage" column="ADC2Voltage" />
+		<result property="ADC2Current" column="ADC2Current" />
+		<result property="ADC3Voltage" column="ADC3Voltage" />
+		<result property="ADC3Current" column="ADC3Current" />
+		<result property="ADC4Voltage" column="ADC4Voltage" />
+		<result property="ADC4Current" column="ADC4Current" />
+		<result property="Longitude" column="Longitude" />
+		<result property="Latitude" column="Latitude" />
+		<result property="MaxTotalRatedActivePower" column="MaxTotalRatedActivePower" />
+		<result property="MinTotalRatedActivePower" column="MinTotalRatedActivePower" />
+		<result property="MaxTotalRatedReactivePower" column="MaxTotalRatedReactivePower" />
+		<result property="MinTotalRatedReactivePower" column="MinTotalRatedReactivePower" />
+		<result property="ActualTotalInverterActivePower" column="ActualTotalInverterActivePower" />
+		<result property="ActualTotalInverterReactivePower" column="ActualTotalInverterReactivePower" />
+		<result property="OnOffStateOfDataLogger" column="OnOffStateOfDataLogger" />
+		<result property="LockingStateOfDataLogger" column="LockingStateOfDataLogger" />
+		<result property="MinAdjustableActivePower" column="MinAdjustableActivePower" />
+		<result property="MaxAdjustableActivePower" column="MaxAdjustableActivePower" />
+		<result property="MinAdjustableReactivePower" column="MinAdjustableReactivePower" />
+		<result property="MaxAdjustableReactivePower" column="MaxAdjustableReactivePower" />
+		<result property="RatedActivePower" column="RatedActivePower" />
+		<result property="RatedReactivePower" column="RatedReactivePower" />
+		<result property="NumberOfOnGridDevices" column="NumberOfOnGridDevices" />
+		<result property="NumberOfOffGridDevices" column="NumberOfOffGridDevices" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+  	
+  	<insert id="insertModelSungrowLogger1000" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="TotalNumberOfConnectedDevices != 0.001">
+			`TotalNumberOfConnectedDevices`,
+			</if>
+			<if test="TotalFaultDeviceNumber != 0.001">
+			  `TotalFaultDeviceNumber`,
+			  </if>
+			<if test="TotalActivePower != 0.001">
+			  `TotalActivePower`,
+			  </if>
+
+			<if test="DailyYield != 0.001">
+			  `DailyYield`,
+			  </if>
+			<if test="TotalReactivePower != 0.001">
+			  `TotalReactivePower`,
+			  </if>
+			<if test="TotalYield != 0.001">
+			  `TotalYield`,
+			  </if>
+			<if test="DigitalInputState != 0.001">
+			  `DigitalInputState`,
+			  </if>
+			<if test="PT1001 != 0.001">
+			  `PT1001`,
+			  </if>
+			<if test="PT1002 != 0.001">
+			  `PT1002`,
+			  </if>
+			<if test="ADC1Voltage != 0.001">
+			  `ADC1Voltage`,
+			  </if>
+			<if test="ADC1Current != 0.001">
+			  `ADC1Current`,
+			  </if>
+			<if test="ADC2Voltage != 0.001">
+			  `ADC2Voltage`,
+			  </if>
+			<if test="ADC2Current != 0.001">
+			  `ADC2Current`,
+			  </if>
+			<if test="ADC3Voltage != 0.001">
+			  `ADC3Voltage`,
+			  </if>
+			<if test="ADC3Current != 0.001">
+			  `ADC3Current`,
+			  </if>
+			<if test="ADC4Voltage != 0.001">
+			  `ADC4Voltage`,
+			  </if>
+			<if test="ADC4Current != 0.001">
+			  `ADC4Current`,
+			  </if>
+			<if test="Longitude != 0.001">
+			  `Longitude`,
+			  </if>
+			<if test="Latitude != 0.001">
+			  `Latitude`,
+			  </if>
+			<if test="MaxTotalRatedActivePower != 0.001">
+			  `MaxTotalRatedActivePower`,
+			  </if>
+			<if test="MinTotalRatedActivePower != 0.001">
+			  `MinTotalRatedActivePower`,
+			  </if>
+			<if test="MaxTotalRatedReactivePower != 0.001">
+			  `MaxTotalRatedReactivePower`,
+			  </if>
+			<if test="MinTotalRatedReactivePower != 0.001">
+			  `MinTotalRatedReactivePower`,
+			  </if>
+			<if test="ActualTotalInverterActivePower != 0.001">
+			  `ActualTotalInverterActivePower`,
+			  </if>
+			<if test="ActualTotalInverterReactivePower != 0.001">
+			  `ActualTotalInverterReactivePower`,
+			  </if>
+			<if test="OnOffStateOfDataLogger != 0.001">
+			  `OnOffStateOfDataLogger`,
+			  </if>
+			<if test="LockingStateOfDataLogger != 0.001">
+			  `LockingStateOfDataLogger`,
+			  </if>
+			<if test="MinAdjustableActivePower != 0.001">
+			  `MinAdjustableActivePower`,
+			  </if>
+			<if test="MaxAdjustableActivePower != 0.001">
+			  `MaxAdjustableActivePower`,
+			  </if>
+			<if test="MinAdjustableReactivePower != 0.001">
+			  `MinAdjustableReactivePower`,
+			  </if>
+			<if test="MaxAdjustableReactivePower != 0.001">
+			  `MaxAdjustableReactivePower`,
+			  </if>
+			<if test="RatedActivePower != 0.001">
+			  `RatedActivePower`,
+			  </if>
+			<if test="RatedReactivePower != 0.001">
+			  `RatedReactivePower`,
+			  </if>
+			<if test="NumberOfOnGridDevices != 0.001">
+			  `NumberOfOnGridDevices`,
+			  </if>
+			  
+			  <if test="NumberOfOffGridDevices != 0.001">
+			  `NumberOfOffGridDevices`,
+			  </if>
+		  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="TotalNumberOfConnectedDevices != 0.001">
+			#{TotalNumberOfConnectedDevices},
+			</if>
+			<if test="TotalFaultDeviceNumber != 0.001">
+			  #{TotalFaultDeviceNumber},
+			  </if>
+			<if test="TotalActivePower != 0.001">
+			  #{TotalActivePower},
+			  </if>
+
+			<if test="DailyYield != 0.001">
+			  #{DailyYield},
+			  </if>
+			<if test="TotalReactivePower != 0.001">
+			  #{TotalReactivePower},
+			  </if>
+			<if test="TotalYield != 0.001">
+			  #{TotalYield},
+			  </if>
+			<if test="DigitalInputState != 0.001">
+			  #{DigitalInputState},
+			  </if>
+			<if test="PT1001 != 0.001">
+			  #{PT1001},
+			  </if>
+			<if test="PT1002 != 0.001">
+			  #{PT1002},
+			  </if>
+			<if test="ADC1Voltage != 0.001">
+			  #{ADC1Voltage},
+			  </if>
+			<if test="ADC1Current != 0.001">
+			  #{ADC1Current},
+			  </if>
+			<if test="ADC2Voltage != 0.001">
+			  #{ADC2Voltage},
+			  </if>
+			<if test="ADC2Current != 0.001">
+			  #{ADC2Current},
+			  </if>
+			<if test="ADC3Voltage != 0.001">
+			  #{ADC3Voltage},
+			  </if>
+			<if test="ADC3Current != 0.001">
+			  #{ADC3Current},
+			  </if>
+			<if test="ADC4Voltage != 0.001">
+			  #{ADC4Voltage},
+			  </if>
+			<if test="ADC4Current != 0.001">
+			  #{ADC4Current},
+			  </if>
+			<if test="Longitude != 0.001">
+			  #{Longitude},
+			  </if>
+			<if test="Latitude != 0.001">
+			  #{Latitude},
+			  </if>
+			<if test="MaxTotalRatedActivePower != 0.001">
+			  #{MaxTotalRatedActivePower},
+			  </if>
+			<if test="MinTotalRatedActivePower != 0.001">
+			  #{MinTotalRatedActivePower},
+			  </if>
+			<if test="MaxTotalRatedReactivePower != 0.001">
+			  #{MaxTotalRatedReactivePower},
+			  </if>
+			<if test="MinTotalRatedReactivePower != 0.001">
+			  #{MinTotalRatedReactivePower},
+			  </if>
+			<if test="ActualTotalInverterActivePower != 0.001">
+			  #{ActualTotalInverterActivePower},
+			  </if>
+			<if test="ActualTotalInverterReactivePower != 0.001">
+			  #{ActualTotalInverterReactivePower},
+			  </if>
+			<if test="OnOffStateOfDataLogger != 0.001">
+			  #{OnOffStateOfDataLogger},
+			  </if>
+			<if test="LockingStateOfDataLogger != 0.001">
+			  #{LockingStateOfDataLogger},
+			  </if>
+			<if test="MinAdjustableActivePower != 0.001">
+			  #{MinAdjustableActivePower},
+			  </if>
+			<if test="MaxAdjustableActivePower != 0.001">
+			  #{MaxAdjustableActivePower},
+			  </if>
+			<if test="MinAdjustableReactivePower != 0.001">
+			  #{MinAdjustableReactivePower},
+			  </if>
+			<if test="MaxAdjustableReactivePower != 0.001">
+			  #{MaxAdjustableReactivePower},
+			  </if>
+			<if test="RatedActivePower != 0.001">
+			  #{RatedActivePower},
+			  </if>
+			<if test="RatedReactivePower != 0.001">
+			  #{RatedReactivePower},
+			  </if>
+			<if test="NumberOfOnGridDevices != 0.001">
+			  #{NumberOfOnGridDevices},
+			  </if>
+			  
+			  <if test="NumberOfOffGridDevices != 0.001">
+			  #{NumberOfOffGridDevices},
+			  </if>
+
+			<if test="nvmActivePower != 0.001">
+			  ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  ROUND(#{nvmActiveEnergy}, 2),
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+			
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="TotalNumberOfConnectedDevices != 0.001">
+			 `TotalNumberOfConnectedDevices` = #{TotalNumberOfConnectedDevices},
+			</if>
+			<if test="TotalFaultDeviceNumber != 0.001">
+			  `TotalFaultDeviceNumber` = #{TotalFaultDeviceNumber},
+			  </if>
+			<if test="TotalActivePower != 0.001">
+			  `TotalActivePower` = #{TotalActivePower},
+			  </if>
+
+			<if test="DailyYield != 0.001">
+			  `DailyYield` = #{DailyYield},
+			  </if>
+			<if test="TotalReactivePower != 0.001">
+			  `TotalReactivePower` = #{TotalReactivePower},
+			  </if>
+			<if test="TotalYield != 0.001">
+			  `TotalYield` = #{TotalYield},
+			  </if>
+			<if test="DigitalInputState != 0.001">
+			  `DigitalInputState` = #{DigitalInputState},
+			  </if>
+			<if test="PT1001 != 0.001">
+			  `PT1001` = #{PT1001},
+			  </if>
+			<if test="PT1002 != 0.001">
+			  `PT1002` = #{PT1002},
+			  </if>
+			<if test="ADC1Voltage != 0.001">
+			  `ADC1Voltage` = #{ADC1Voltage},
+			  </if>
+			<if test="ADC1Current != 0.001">
+			  `ADC1Current` = #{ADC1Current},
+			  </if>
+			<if test="ADC2Voltage != 0.001">
+			  `ADC2Voltage` = #{ADC2Voltage},
+			  </if>
+			<if test="ADC2Current != 0.001">
+			  `ADC2Current` = #{ADC2Current},
+			  </if>
+			<if test="ADC3Voltage != 0.001">
+			  `ADC3Voltage` = #{ADC3Voltage},
+			  </if>
+			<if test="ADC3Current != 0.001">
+			  `ADC3Current` = #{ADC3Current},
+			  </if>
+			<if test="ADC4Voltage != 0.001">
+			  `ADC4Voltage` = #{ADC4Voltage},
+			  </if>
+			<if test="ADC4Current != 0.001">
+			  `ADC4Current` = #{ADC4Current},
+			  </if>
+			<if test="Longitude != 0.001">
+			  `Longitude` = #{Longitude},
+			  </if>
+			<if test="Latitude != 0.001">
+			  `Latitude` = #{Latitude},
+			  </if>
+			<if test="MaxTotalRatedActivePower != 0.001">
+			  `MaxTotalRatedActivePower` = #{MaxTotalRatedActivePower},
+			  </if>
+			<if test="MinTotalRatedActivePower != 0.001">
+			  `MinTotalRatedActivePower` = #{MinTotalRatedActivePower},
+			  </if>
+			<if test="MaxTotalRatedReactivePower != 0.001">
+			  `MaxTotalRatedReactivePower` = #{MaxTotalRatedReactivePower},
+			  </if>
+			<if test="MinTotalRatedReactivePower != 0.001">
+			  `MinTotalRatedReactivePower` = #{MinTotalRatedReactivePower},
+			  </if>
+			<if test="ActualTotalInverterActivePower != 0.001">
+			  `ActualTotalInverterActivePower` = #{ActualTotalInverterActivePower},
+			  </if>
+			<if test="ActualTotalInverterReactivePower != 0.001">
+			  `ActualTotalInverterReactivePower` = #{ActualTotalInverterReactivePower},
+			  </if>
+			<if test="OnOffStateOfDataLogger != 0.001">
+			  `OnOffStateOfDataLogger` = #{OnOffStateOfDataLogger},
+			  </if>
+			<if test="LockingStateOfDataLogger != 0.001">
+			  `LockingStateOfDataLogger` = #{LockingStateOfDataLogger},
+			  </if>
+			<if test="MinAdjustableActivePower != 0.001">
+			  `MinAdjustableActivePower` = #{MinAdjustableActivePower},
+			  </if>
+			<if test="MaxAdjustableActivePower != 0.001">
+			  `MaxAdjustableActivePower` = #{MaxAdjustableActivePower},
+			  </if>
+			<if test="MinAdjustableReactivePower != 0.001">
+			  `MinAdjustableReactivePower` = #{MinAdjustableReactivePower},
+			  </if>
+			<if test="MaxAdjustableReactivePower != 0.001">
+			  `MaxAdjustableReactivePower` = #{MaxAdjustableReactivePower},
+			  </if>
+			<if test="RatedActivePower != 0.001">
+			  `RatedActivePower` = #{RatedActivePower},
+			  </if>
+			<if test="RatedReactivePower != 0.001">
+			  `RatedReactivePower` = #{RatedReactivePower},
+			  </if>
+			<if test="NumberOfOnGridDevices != 0.001">
+			  `NumberOfOnGridDevices` = #{NumberOfOnGridDevices},
+			  </if>
+			  
+			  <if test="NumberOfOffGridDevices != 0.001">
+			  `NumberOfOffGridDevices` = #{NumberOfOffGridDevices},
+			  </if>
+			  
+			  
+			<if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+			
+			
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSungrowLogger1000Entity">
+		SELECT
+			* 
+		FROM
+			${view_tablename} dv 
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+  	</select>
+  	
+  </mapper> 

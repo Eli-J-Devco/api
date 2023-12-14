@@ -25,12 +25,14 @@ import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ModelSungrowLogger1000Entity;
 import com.nwm.api.entities.ModelSungrowSg110cxEntity;
 import com.nwm.api.entities.ModelSungrowSg50cxEntity;
 import com.nwm.api.entities.ModelSungrowUmg604Entity;
 import com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity;
 import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.ModelSungrowLogger1000Service;
 import com.nwm.api.services.ModelSungrowSg110cxService;
 import com.nwm.api.services.ModelSungrowSg50cxService;
 import com.nwm.api.services.ModelSungrowUmg604Service;
@@ -249,6 +251,7 @@ public class BatchJobFTP {
 										ModelSungrowSg110cxService serviceUmgSg110 = new ModelSungrowSg110cxService();
 										ModelSungrowSg50cxService serviceUmgSg50 = new ModelSungrowSg50cxService();
 										ModelSungrowWeatherPvmet75200Service serviceSW = new ModelSungrowWeatherPvmet75200Service();
+										ModelSungrowLogger1000Service serviceSL1000 = new ModelSungrowLogger1000Service();
 										DeviceService serviceD = new DeviceService();
 										timestamp = timestamp.replace("Z", "");
 
@@ -994,6 +997,139 @@ public class BatchJobFTP {
 													deviceUpdateE.setLast_updated(formatterUtcDateTime);
 													deviceUpdateE.setLast_value(
 															entitySg50.getP_DC() >= 0 ? entitySg50.getP_DC() : null);
+												} else {
+													deviceUpdateE.setLast_updated(null);
+													deviceUpdateE.setLast_value(null);
+												}
+
+												deviceUpdateE.setId(rowItem.getId());
+												serviceD.updateLastUpdated(deviceUpdateE);
+												break;
+												
+											case "model_sungrow_logger1000":
+												ModelSungrowLogger1000Entity entitySg1000 = new ModelSungrowLogger1000Entity();
+												entitySg1000.setId_device(rowItem.getId());
+												entitySg1000.setError(0);
+												entitySg1000.setHigh_alarm(0);
+												entitySg1000.setLow_alarm(0);
+												entitySg1000.setTime(formatterUtcDateTime);
+												for (int j = 0; j < aceList.getLength(); j++) {
+													Element mv = (Element) aceList.item(j);
+													if ((mv.getAttribute("t")).equals("TotalNumberOfConnectedDevices")) {
+														entitySg1000.setTotalNumberOfConnectedDevices(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("TotalFaultDeviceNumber")) {
+														entitySg1000.setTotalFaultDeviceNumber(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("TotalActivePower")) {
+														entitySg1000.setTotalActivePower(Double.parseDouble(mv.getAttribute("v")));
+														entitySg1000.setNvmActivePower(
+																Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("DailyYield")) {
+														entitySg1000.setDailyYield(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("TotalReactivePower")) {
+														entitySg1000.setTotalReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("TotalYield")) {
+														entitySg1000.setTotalYield(Double.parseDouble(mv.getAttribute("v")));
+														entitySg1000.setNvmActiveEnergy(
+																Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("DigitalInputState")) {
+														entitySg1000.setDigitalInputState(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("PT1001")) {
+														entitySg1000.setPT1001(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("PT1002")) {
+														entitySg1000.setPT1002(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC1Voltage")) {
+														entitySg1000.setADC1Voltage(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC1Current")) {
+														entitySg1000.setADC1Current(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC2Voltage")) {
+														entitySg1000.setADC2Voltage(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("ADC2Current")) {
+														entitySg1000.setADC2Current(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("ADC3Voltage")) {
+														entitySg1000.setADC3Voltage(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC3Current")) {
+														entitySg1000.setADC3Current(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC4Voltage")) {
+														entitySg1000.setADC4Voltage(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ADC4Current")) {
+														entitySg1000.setADC4Current(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("Longitude")) {
+														entitySg1000.setLongitude(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("Latitude")) {
+														entitySg1000.setLatitude(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("MaxTotalRatedActivePower")) {
+														entitySg1000.setMaxTotalRatedActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MinTotalRatedActivePower")) {
+														entitySg1000.setMinTotalRatedActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MaxTotalRatedReactivePower")) {
+														entitySg1000.setMaxTotalRatedReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MinTotalRatedReactivePower")) {
+														entitySg1000.setMinTotalRatedReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("ActualTotalInverterActivePower")) {
+														entitySg1000.setActualTotalInverterActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("ActualTotalInverterReactivePower")) {
+														entitySg1000.setActualTotalInverterReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("OnOffStateOfDataLogger")) {
+														entitySg1000.setOnOffStateOfDataLogger(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("LockingStateOfDataLogger")) {
+														entitySg1000.setLockingStateOfDataLogger(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MinAdjustableActivePower")) {
+														entitySg1000.setMinAdjustableActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MaxAdjustableActivePower")) {
+														entitySg1000.setMaxAdjustableActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MinAdjustableReactivePower")) {
+														entitySg1000.setMinAdjustableReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("MaxAdjustableReactivePower")) {
+														entitySg1000.setMaxAdjustableReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}													
+													if ((mv.getAttribute("t")).equals("RatedActivePower")) {
+														entitySg1000.setRatedActivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("RatedReactivePower")) {
+														entitySg1000.setRatedReactivePower(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("NumberOfOnGridDevices")) {
+														entitySg1000.setNumberOfOnGridDevices(Double.parseDouble(mv.getAttribute("v")));
+													}
+													if ((mv.getAttribute("t")).equals("NumberOfOffGridDevices")) {
+														entitySg1000.setNumberOfOffGridDevices(Double.parseDouble(mv.getAttribute("v")));
+													}
+												}
+												serviceSL1000.insertModelSungrowLogger1000(entitySg1000);
+												if (entitySg1000.getTotalActivePower() >= 0) {
+													deviceUpdateE.setLast_updated(formatterUtcDateTime);
+													deviceUpdateE.setLast_value(
+															entitySg1000.getTotalActivePower() >= 0 ? entitySg1000.getTotalActivePower() : null);
 												} else {
 													deviceUpdateE.setLast_updated(null);
 													deviceUpdateE.setLast_value(null);
