@@ -33,8 +33,8 @@ public class ModelAeRefusolEntity {
 	private double DailyYield;
 	private double TotalYield;
 	private double OperatingHours;
-	private double Status;
-	private double ErrorMessageCode;
+	private String Status;
+	private String ErrorMessageCode;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
@@ -203,16 +203,16 @@ public class ModelAeRefusolEntity {
 	public void setOperatingHours(double operatingHours) {
 		OperatingHours = operatingHours;
 	}
-	public double getStatus() {
+	public String getStatus() {
 		return Status;
 	}
-	public void setStatus(double status) {
+	public void setStatus(String status) {
 		Status = status;
 	}
-	public double getErrorMessageCode() {
+	public String getErrorMessageCode() {
 		return ErrorMessageCode;
 	}
-	public void setErrorMessageCode(double errorMessageCode) {
+	public void setErrorMessageCode(String errorMessageCode) {
 		ErrorMessageCode = errorMessageCode;
 	}
 	public double getNvmActivePower() {
@@ -251,7 +251,6 @@ public class ModelAeRefusolEntity {
 	public void setJob_tablename(String job_tablename) {
 		this.job_tablename = job_tablename;
 	}
-	
 	
 
 }

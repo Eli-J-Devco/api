@@ -132,10 +132,10 @@
 			<if test="OperatingHours != 0.001">
 				`OperatingHours`,
 			</if>
-			<if test="Status != 0.001">
+			<if test="Status != '0.001'">
 				`Status`,
 			</if>
-			<if test="ErrorMessageCode != 0.001">
+			<if test="ErrorMessageCode != '0.001'">
 				`ErrorMessageCode`,
 			</if>
 			
@@ -235,10 +235,10 @@
             <if test="OperatingHours != 0.001">
                 #{OperatingHours},
             </if>
-            <if test="Status != 0.001">
+            <if test="Status != '0.001'">
                 #{Status},
             </if>
-            <if test="ErrorMessageCode != 0.001">
+            <if test="ErrorMessageCode != '0.001'">
                 #{ErrorMessageCode},
             </if>
             
@@ -338,10 +338,10 @@
             <if test="OperatingHours != 0.001">
                 `OperatingHours` = #{OperatingHours},
             </if>
-            <if test="Status != 0.001">
+            <if test="Status != '0.001'">
                 `Status` = #{Status},
             </if>
-            <if test="ErrorMessageCode != 0.001">
+            <if test="ErrorMessageCode != '0.001'">
                 `ErrorMessageCode` = #{ErrorMessageCode},
             </if>
             

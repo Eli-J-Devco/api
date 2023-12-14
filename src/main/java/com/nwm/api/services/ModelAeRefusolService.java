@@ -59,8 +59,8 @@ public class ModelAeRefusolService extends DB {
 				dataModelAeR.setDailyYield(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModelAeR.setTotalYield(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				dataModelAeR.setOperatingHours(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
-				dataModelAeR.setStatus(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
-				dataModelAeR.setErrorMessageCode(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
+				dataModelAeR.setStatus(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001");
+				dataModelAeR.setErrorMessageCode(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001");
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
