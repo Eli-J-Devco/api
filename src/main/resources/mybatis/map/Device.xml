@@ -38,6 +38,7 @@
 		<result property="hidden" column="hidden" />
 		<result property="virtual_device_type" column="virtual_device_type" />
 		<result property="is_supper_admin" column="is_supper_admin" />
+		<result property="datalogger_table" column="datalogger_table" />
 		
 		
 		
@@ -78,12 +79,22 @@
 			d.virtual_device_type,
 			d.view_tablename,
 			d.job_tablename,
-			dg.table_name  AS device_group_table
+			dg.table_name  AS device_group_table,
+			dl.datalogger_table
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			LEFT JOIN (
+				SELECT
+					datatablename AS datalogger_table,
+					serial_number
+				FROM device
+				WHERE
+					serial_number = #{serial_number}
+					AND id_device_type = 5
+			) dl ON dl.serial_number = d.serial_number
 		WHERE
 			d.serial_number = #{serial_number}
 			GROUP BY d.id
@@ -1588,7 +1599,7 @@
 						  `gateway` varchar(200) DEFAULT NULL,
 						  `netmask` varchar(200) DEFAULT NULL,
 						  `network` varchar(200) DEFAULT NULL,
-						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  PRIMARY KEY (`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 					  )
