@@ -19,6 +19,16 @@ public class ModelIMTSolarTmodulClass8006Entity {
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+private int enable_alert;
+	
+	
+	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
 	
 	
 	

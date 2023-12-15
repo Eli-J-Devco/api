@@ -39,6 +39,8 @@
 		<result property="virtual_device_type" column="virtual_device_type" />
 		<result property="is_supper_admin" column="is_supper_admin" />
 		<result property="datalogger_table" column="datalogger_table" />
+		<result property="enable_alert" column="enable_alert" />
+		
 		
 		
 		
@@ -80,7 +82,8 @@
 			d.view_tablename,
 			d.job_tablename,
 			dg.table_name  AS device_group_table,
-			dl.datalogger_table
+			dl.datalogger_table,
+			s.enable_alert
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site

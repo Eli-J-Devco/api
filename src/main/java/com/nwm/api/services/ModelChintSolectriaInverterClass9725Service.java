@@ -152,7 +152,7 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 			ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 			int hours = zdtNowLosAngeles.getHour();
 
-			if (hours >= 9 && hours <= 17) {
+			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelChintSolectriaInverterClass9725(obj);
 			}
 

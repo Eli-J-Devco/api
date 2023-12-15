@@ -45,6 +45,16 @@ public class ModelSevSg110cxEntity {
 	private int totalFaultCode;
 	private int totalWorkState1;
 	private int totalWorkState2;
+private int enable_alert;
+	
+	
+	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
 	
 	
 	

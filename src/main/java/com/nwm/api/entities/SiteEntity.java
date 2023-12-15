@@ -197,9 +197,16 @@ public class SiteEntity {
 	private String table_data_report;
 	private String expiration;
 	private int is_show_each_meter;
+	private int enable_alert;
 	
 	
 	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
 	public int getIs_show_each_meter() {
 		return is_show_each_meter;
 	}

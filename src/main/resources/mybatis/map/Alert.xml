@@ -297,6 +297,7 @@
 			
 			WHERE e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 			AND l.is_delete = 0
+			AND s.enable_alert = 1
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
@@ -428,6 +429,7 @@
 			
 			WHERE  e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 			AND l.is_delete = 0 
+			AND s.enable_alert = 1
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
 				AND l.resolved = 0
@@ -535,8 +537,10 @@
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE s.id_customer = #{id_customer} 
-				AND s.id = #{id_site} AND l.id = #{id}
+			WHERE s.enable_alert = 1 
+				AND s.id_customer = #{id_customer} 
+				AND s.id = #{id_site} 
+				AND l.id = #{id}
 
 			LIMIT 1;
   	</select>
@@ -813,6 +817,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE e.`status` = 1 AND e.is_delete = 0
+			AND s.enable_alert = 1
 			AND l.is_delete = 0
 			<if test="view_history == 'active'">
 				AND l.status = 1
@@ -902,7 +907,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE  e.`status` = 1 AND e.is_delete = 0
-			
+			AND s.enable_alert = 1
 			<if test="view_history == 'active'">
 				AND l.status = 1
 				AND l.resolved = 0
@@ -953,6 +958,7 @@
 			AND a.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND s.enable_alert = 1
 			
 			
 			<if test="customer_type == '1d607a2011ba58ed52cc32db71ffd37d' and id_sites != null and !id_sites.isEmpty()">
@@ -1018,6 +1024,7 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE e.`status` = 1 AND e.is_delete = 0 AND s.id = #{id_site} 
 			AND l.is_delete = 0
+			AND s.enable_alert = 1
 			<if test="view_history == 'active'">
 				AND l.status = 1
 			</if>
@@ -1183,6 +1190,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
+				AND s.enable_alert = 1
 				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
@@ -1280,7 +1288,8 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			a.id = #{id};
+			s.enable_alert = 1
+			AND a.id = #{id};
   	</select>
   	
   	
@@ -1334,6 +1343,7 @@
 					WHERE a.`status` = 1
 					AND d.`status` = 1
 					AND s.`status` = 1
+					AND s.enable_alert = 1
 					GROUP BY d.id_site
 					ORDER BY a.start_date DESC
 			)al ON al.id = s.id
@@ -1424,6 +1434,7 @@
 			)g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
+			AND s.enable_alert = 1
 			AND s.is_delete = 0 
 			AND d.`status` = 1
 			AND d.is_delete = 0
@@ -1500,6 +1511,7 @@
 				WHERE a.is_delete = 0
 					AND e.`status` = 1
 					AND e.`is_delete` = 0
+					AND s.enable_alert = 1
 					
 					<if test="view_history != 'filter'">
 						AND a.`status` = 1
@@ -1771,6 +1783,7 @@
 			WHERE e.`status` = 1 
 			AND e.is_delete = 0
 			AND l.is_delete = 0
+			AND s.enable_alert = 1
 			AND s.id = #{id}
 			
 			<if test="id_levels != null and !id_levels.isEmpty()">

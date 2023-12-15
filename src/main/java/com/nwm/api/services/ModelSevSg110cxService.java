@@ -114,7 +114,7 @@ public class ModelSevSg110cxService extends DB {
 			ZonedDateTime zdtNow = ZonedDateTime.now(zoneId);
 			int hours = zdtNow.getHour();
 
-			if (hours >= 9 && hours <= 17) {
+			if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
 				checkTriggerAlertModelSevSg110cx(obj);
 			}
 			

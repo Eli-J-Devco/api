@@ -2465,6 +2465,7 @@ public class UploadFilesController extends BaseController {
 													dataModelTTiTracker.setDatatablename(item.getDatatablename());
 													dataModelTTiTracker.setView_tablename(item.getView_tablename());
 													dataModelTTiTracker.setJob_tablename(item.getJob_tablename());
+													dataModelTTiTracker.setEnable_alert(item.getEnable_alert());
 													
 													serviceModelTTiTracker.insertModelTTiTracker(dataModelTTiTracker);
 													

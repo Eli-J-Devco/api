@@ -122,9 +122,16 @@ public class DeviceEntity {
 	private String table_data_report;
 	private int consumption_meter;
 	private String datalogger_table;
+	private int enable_alert;
 	
 	
 	
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
+	}
 	public String getDevice_group_table() {
 		return device_group_table;
 	}

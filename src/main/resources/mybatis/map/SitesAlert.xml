@@ -287,7 +287,7 @@
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 AND e.is_delete = 0 AND s.id = #{id_site}
+			WHERE e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0 AND s.id = #{id_site}
 			AND l.is_delete = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
@@ -383,7 +383,7 @@
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE  e.`status` = 1 AND e.is_delete = 0  AND s.id = #{id_site}
+			WHERE  e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0  AND s.id = #{id_site}
 			AND l.is_delete = 0
 			
 			<if test="date_from != null and date_to != null">
@@ -496,6 +496,7 @@
 				AND a.is_delete = 0
 				AND e.is_delete = 0
 				AND d.`status` = 1
+				AND s.enable_alert = 1
 				AND d.is_delete = 0
 				AND d.id_site = #{id_site}
 				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
@@ -568,7 +569,8 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			a.id = #{id};
+			s.enable_alert = 1
+			AND a.id = #{id};
   	</select>
   	
 

@@ -144,10 +144,10 @@ public class ModelIVTSolaronEXTService extends DB {
 	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
-//	        if(hours >=9 && hours <= 17) {
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
 	        	checkTriggerAlertModelIVTSolaronEXT(obj);
 	        	
-//	        }
+	        }
 	        
 	        return true;
 		} catch (Exception ex) {

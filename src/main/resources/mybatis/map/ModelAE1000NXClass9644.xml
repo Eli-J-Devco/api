@@ -1349,9 +1349,12 @@
 	
 	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAE1000NXClass9644Entity">
 		SELECT
-			* 
+			dv.*,
+			s.enable_alert
 		FROM
 			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dv.id_device = #{id_device}
 		ORDER BY
