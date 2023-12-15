@@ -28,7 +28,7 @@ public class ModelCampellScientificMeter4Service extends DB {
 			if (words.size() > 0) {
 				ModelCampellScientificMeter4Entity dataModelCSM4 = new ModelCampellScientificMeter4Entity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				dataModelCSM4.setTime(words.get(0).replace("'", ""));
 				dataModelCSM4.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelCSM4.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));

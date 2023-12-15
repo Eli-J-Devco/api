@@ -26,7 +26,7 @@ public class ModelSunnyCentralClass9775InverterService extends DB{
 				ModelSunnyCentralClass9775InverterEntity dataModelSunnyCentralClass9775Inverter = new ModelSunnyCentralClass9775InverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelSunnyCentralClass9775Inverter.setTime(words.get(0).replace("'", ""));
 				dataModelSunnyCentralClass9775Inverter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

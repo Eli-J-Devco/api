@@ -37,7 +37,7 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 				ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = new ModelPVPowered3550260500kwInverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelPVPowered.setTime(words.get(0).replace("'", ""));
 				dataModelPVPowered.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

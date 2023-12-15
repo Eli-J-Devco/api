@@ -28,7 +28,7 @@ public class ModelXantrexInverterService extends DB {
 				ModelXantrexInverterEntity dataModelXantrex = new ModelXantrexInverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelXantrex.setTime(words.get(0).replace("'", ""));
 				dataModelXantrex.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

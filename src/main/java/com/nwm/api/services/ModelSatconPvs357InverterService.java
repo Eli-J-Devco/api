@@ -37,7 +37,7 @@ public class ModelSatconPvs357InverterService extends DB {
 				ModelSatconPvs357InverterEntity dataModelSatcon = new ModelSatconPvs357InverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelSatcon.setTime(words.get(0).replace("'", ""));
 				dataModelSatcon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

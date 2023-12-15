@@ -29,7 +29,7 @@ public class ModelPowerMeasurementIon7650Service extends DB {
 				ModelPowerMeasurementIon7650Entity dataModelPP7650 = new ModelPowerMeasurementIon7650Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelPP7650.setTime(words.get(0).replace("'", ""));
 				dataModelPP7650.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

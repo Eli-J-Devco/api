@@ -29,7 +29,7 @@ public class ModelElsterA1700Service extends DB {
 				ModelElsterA1700Entity dataModelElsterA1700 = new ModelElsterA1700Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelElsterA1700.setTime(words.get(0).replace("'", ""));
 				dataModelElsterA1700.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

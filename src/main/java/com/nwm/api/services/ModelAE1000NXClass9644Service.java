@@ -31,7 +31,7 @@ public class ModelAE1000NXClass9644Service extends DB {
 				ModelAE1000NXClass9644Entity dataModelAE1000NX = new ModelAE1000NXClass9644Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelAE1000NX.setTime(words.get(0).replace("'", ""));
 				dataModelAE1000NX.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

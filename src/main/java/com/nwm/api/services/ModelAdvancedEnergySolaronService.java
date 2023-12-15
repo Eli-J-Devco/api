@@ -36,7 +36,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 			if (words.size() > 0) {
 				ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = new ModelAdvancedEnergySolaronEntity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
-				if(power < 0) { power = 0.0; };
+		
 				dataModelAdvancedEnergySolaron.setTime(words.get(0).replace("'", ""));
 				dataModelAdvancedEnergySolaron.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelAdvancedEnergySolaron.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));

@@ -30,7 +30,7 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 				ModelVerisIndustriesE50c2aEntity dataModelVeris = new ModelVerisIndustriesE50c2aEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelVeris.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));

@@ -37,9 +37,8 @@ public class ModelAbbTrioClass6210Service extends DB {
 			if (words.size() > 0) {
 				ModelAbbTrioClass6210Entity dataModelABB = new ModelAbbTrioClass6210Entity();
 				
-				DecimalFormat df = new DecimalFormat("#.0");
-				double power = !Lib.isBlank(words.get(15)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(15)) / 1000)) : 0.001;
-				if(power < 0) { power = 0.0; };
+				
+				double power = !Lib.isBlank(words.get(15)) ? Double.parseDouble(words.get(15)) : 0.001;
 				
 				dataModelABB.setTime(words.get(0).replace("'", ""));
 				dataModelABB.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

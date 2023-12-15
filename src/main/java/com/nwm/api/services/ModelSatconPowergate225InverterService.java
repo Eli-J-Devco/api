@@ -35,7 +35,7 @@ public class ModelSatconPowergate225InverterService extends DB {
 			if (words.size() > 0) {
 				ModelSatconPowergate225InverterEntity dataModelSatcon225 = new ModelSatconPowergate225InverterEntity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				dataModelSatcon225.setTime(words.get(0).replace("'", ""));
 				dataModelSatcon225.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelSatcon225.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));

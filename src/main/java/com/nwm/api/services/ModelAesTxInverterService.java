@@ -28,7 +28,7 @@ public class ModelAesTxInverterService extends DB {
 				ModelAesTxInverterEntity dataModelAesTxInverter = new ModelAesTxInverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelAesTxInverter.setTime(words.get(0).replace("'", ""));
 				dataModelAesTxInverter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

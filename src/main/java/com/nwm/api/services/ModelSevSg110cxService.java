@@ -36,7 +36,7 @@ public class ModelSevSg110cxService extends DB {
 				ModelSevSg110cxEntity dataModelSev = new ModelSevSg110cxEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelSev.setTime(words.get(0).replace("'", ""));
 				dataModelSev.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

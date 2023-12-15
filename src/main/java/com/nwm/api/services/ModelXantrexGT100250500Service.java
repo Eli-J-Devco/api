@@ -36,7 +36,7 @@ public class ModelXantrexGT100250500Service extends DB {
 				ModelXantrexGT100250500Entity dataModelXantrex = new ModelXantrexGT100250500Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelXantrex.setTime(words.get(0).replace("'", ""));
 				dataModelXantrex.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

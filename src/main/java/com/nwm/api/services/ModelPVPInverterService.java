@@ -30,7 +30,7 @@ public class ModelPVPInverterService extends DB {
 				ModelPVPInverterEntity dataModelPVPInverter = new ModelPVPInverterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelPVPInverter.setTime(words.get(0).replace("'", ""));
 				dataModelPVPInverter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

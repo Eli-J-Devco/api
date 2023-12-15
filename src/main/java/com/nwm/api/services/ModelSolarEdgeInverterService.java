@@ -30,10 +30,10 @@ public class ModelSolarEdgeInverterService extends DB {
 				ModelSolarEdgeInverterEntity dataModelSEI = new ModelSolarEdgeInverterEntity();
 				
 				DecimalFormat df = new DecimalFormat("#.0");
-				double power = !Lib.isBlank(words.get(19)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(19)) / 1000)) : 0.001;
-				if(power < 0) { power = 0.0; };
+				double power = !Lib.isBlank(words.get(19)) ? Double.parseDouble(words.get(19)) : 0.001;
 				
-				double nvmActiveEnergy = !Lib.isBlank(words.get(29)) ? Double.parseDouble(df.format(Double.parseDouble(words.get(29)) / 1000)) : 0.001;
+				
+				double nvmActiveEnergy = !Lib.isBlank(words.get(29)) ? Double.parseDouble(words.get(29)) : 0.001;
 				
 				dataModelSEI.setTime(words.get(0).replace("'", ""));
 				dataModelSEI.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

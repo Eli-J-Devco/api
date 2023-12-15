@@ -35,7 +35,7 @@ public class ModelXantrexGT500EService extends DB {
 				ModelXantrexGT500EEntity dataModelXantrex = new ModelXantrexGT500EEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelXantrex.setTime(words.get(0).replace("'", ""));
 				dataModelXantrex.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

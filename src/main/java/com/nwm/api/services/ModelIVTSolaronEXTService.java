@@ -36,7 +36,7 @@ public class ModelIVTSolaronEXTService extends DB {
 				ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = new ModelIVTSolaronEXTEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
-				if(power < 0) { power = 0.0; };
+				
 				
 				dataModelIVTSolaronEXT.setTime(words.get(0).replace("'", ""));
 				dataModelIVTSolaronEXT.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

@@ -30,7 +30,6 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				ModelElkorWattsonPVMeterEntity dataModelElkor = new ModelElkorWattsonPVMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				if(power < 0) { power = 0.0; };
 				
 				dataModelElkor.setTime(words.get(0).replace("'", ""));
 				dataModelElkor.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
