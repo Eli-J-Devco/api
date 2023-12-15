@@ -41,7 +41,7 @@ public class ModelAeRefusolEntity {
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
-private int enable_alert;
+	private int enable_alert;
 	
 	
 	
