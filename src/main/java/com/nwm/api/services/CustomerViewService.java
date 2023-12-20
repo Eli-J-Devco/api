@@ -1152,7 +1152,7 @@ public class CustomerViewService extends DB {
 					
 					Map<String, Object> deviceItemM12MonthDay = new HashMap<>();
 					if (dataPowerM12MonthDay.size() > 0) {
-						deviceItemM12MonthDay.put("data_energy", dataPowerM12MonthDay);
+						deviceItemM12MonthDay.put("data_energy", dataNew12MonthDay);
 						deviceItemM12MonthDay.put("type", "energy");
 						deviceItemM12MonthDay.put("devicename", "Energy output");
 						deviceItemM12MonthDay.put("deviceType", "meter");
