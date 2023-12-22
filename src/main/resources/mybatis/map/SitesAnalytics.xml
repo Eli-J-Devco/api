@@ -116,7 +116,7 @@
 			
 			<!-- Energy & Measured Production calculation field -->
 			<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 8 or id_device_type == 9">
-				IFNULL(ROUND(SUM(MeasuredProduction), 2), 0.001) AS Energy,
+				IFNULL(ROUND(SUM(Energy), 2), 0.001) AS Energy,
 				<choose>
 					<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
 						IFNULL(ROUND(AVG(nvmActivePower), 2), 0.001)
