@@ -267,6 +267,41 @@ public class ImportOldDataController extends BaseController {
 									
 									switch (dataFile.getDevice_group_table()) {
 									
+									case "model_ae_refusol":
+										rowItem.put("id_device", !r.getCellText(2).toString().equals("") ? r.getCellText(2).toString() : "0");
+										rowItem.put("error", !r.getCellText(3).toString().equals("") ? r.getCellText(3).toString() : "0");
+										rowItem.put("low_alarm", !r.getCellText(4).toString().equals("") ? r.getCellText(4).toString() : "0");
+										rowItem.put("high_alarm", !r.getCellText(5).toString().equals("") ? r.getCellText(5).toString() : "0");
+										rowItem.put("ACPower", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+										rowItem.put("ACVoltageAverageRMS", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+										rowItem.put("ACVoltage1RMS", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+										rowItem.put("ACVoltage2RMS", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+										rowItem.put("ACVoltage3RMS", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+										rowItem.put("ACCurrentSum", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+										rowItem.put("ACCurrent1", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+										rowItem.put("ACCurrent2", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+										rowItem.put("ACCurrent3", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+										rowItem.put("ACFrequency1", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+										rowItem.put("ACFrequency2", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+										rowItem.put("ACFrequency3", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+										rowItem.put("DCPower", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+										rowItem.put("DCVoltage", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+										rowItem.put("DCCurrent", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+										rowItem.put("HeatSink", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+										rowItem.put("Interior", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+										rowItem.put("Irradiation", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+										rowItem.put("Panel", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+										rowItem.put("DailyYield", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+										rowItem.put("TotalYield", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+										rowItem.put("OperatingHours", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+										rowItem.put("Status", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+										rowItem.put("ErrorMessageCode", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+										rowItem.put("nvmActivePower", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+										rowItem.put("nvmActiveEnergy", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+										rowItem.put("MeasuredProduction", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+										
+										break;
+									
 									case "model_sunny_central_class9775_inverter":
 										rowItem.put("id_device", r.getCellText(2).toString());
 										rowItem.put("error", r.getCellText(3).toString());

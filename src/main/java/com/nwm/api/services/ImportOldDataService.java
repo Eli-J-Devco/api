@@ -135,6 +135,12 @@ public class ImportOldDataService extends DB {
 			}
 			
 			switch (obj.getDevice_group_table()) {
+			case "model_ae_refusol":
+				obj.setId_device_type(1);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelAeRefusol.insertModelAeRefusol", dataList.get(i));					
+				}			
+				break;
 			
 			case "model_xantrex_inverter":
 				obj.setId_device_type(1);
