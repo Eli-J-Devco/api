@@ -242,7 +242,8 @@
 					s.start_date_time,
 					s.end_date_time,
 					d.id,
-					u.nvmActivePower
+					u.nvmActivePower,
+					u.nvmActiveEnergy
 				FROM
 					${datatablename} u
 					LEFT JOIN device d ON d.id = u.id_device
