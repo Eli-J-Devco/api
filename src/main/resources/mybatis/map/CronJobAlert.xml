@@ -422,7 +422,8 @@
 	
 	<select id="getListSiteSentMailAlert" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
-			s.*
+			s.*,
+			SHA1(s.id) AS hash_id
 		FROM
 			site AS s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone

@@ -484,12 +484,12 @@ public class CronJobAlertController extends BaseController {
 			if (listSite == null || listSite.size() == 0) {
 				return null;
 			}
-			SecretCards secretCard = new SecretCards();
+//			SecretCards secretCard = new SecretCards();
 
 			for (int i = 0; i < listSite.size(); i++) {
 				SiteEntity siteObj = (SiteEntity) listSite.get(i);
-				String id = String.valueOf(siteObj.getId());
-				String hash_id = secretCard.encrypt(id).toLowerCase();
+//				String id = String.valueOf(siteObj.getId());
+				String hash_id = siteObj.getHash_id();
 				String domain = Lib.getDomain();
 
 				List listAlertOpenBySite = service.getListAlertOpenBySite(siteObj);
