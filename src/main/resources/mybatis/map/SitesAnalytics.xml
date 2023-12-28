@@ -2174,10 +2174,10 @@
 							* 24 * 7
 						</when>
 						<when test="data_send_time == 7">
-							* 24 * DAYOFMONTH(LAST_DAY(time_full))
+							* 24 * DAYOFMONTH(LAST_DAY(time_group_by))
 						</when>
 						<when test="data_send_time == 8">
-							* 24 * DAYOFYEAR(DATE_FORMAT(time_full, '%Y-12-31'))
+							* 24 * DAYOFYEAR(DATE_FORMAT(time_group_by, '%Y-12-31'))
 						</when>
 					</choose> AS expected_energy,
 				<choose>
