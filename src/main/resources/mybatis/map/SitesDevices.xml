@@ -351,7 +351,7 @@
 				SELECT COUNT(a.id) AS total_error, d.id_site 
 				FROM device d 
 					LEFT JOIN alert a ON a.id_device = d.id
-				WHERE SHA1(d.id_site) = #{hash_id} OR d.id_site = #{id_site} AND d.`status` = 1 AND a.`status` = 1
+				WHERE SHA1(d.id_site) = #{hash_id_site} AND d.`status` = 1 AND a.`status` = 1
 			)g ON g.id_site = d.id_site
 		WHERE
 			SHA1(d.id) = #{hash_id}
