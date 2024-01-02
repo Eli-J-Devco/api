@@ -269,8 +269,8 @@
 				SELECT
 					t.`offset`,
 					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
-					IFNULL( IF(dv.nvmActivePower <![CDATA[<]]> 0 , 0 , dv.nvmActivePower), 0 ) AS power,
-					IFNULL( SUM(dv.MeasuredProduction), 0) AS energy
+					IF(dv.nvmActivePower <![CDATA[<]]> 0 , 0 , dv.nvmActivePower) AS power,
+					SUM(dv.MeasuredProduction) AS energy
 				FROM
 					${item.datatablename} dv
 					LEFT JOIN device d ON d.id = dv.id_device
@@ -301,7 +301,7 @@
 					NULL AS energy,
 					NULL AS irradiance,
 					
-					IFNULL(AVG(w.temperature), 0) AS temperature,
+					AVG(w.temperature) AS temperature,
 					NULL AS rpoa,
 					NULL AS ambient_temp,
 					NULL AS calculation_poa,
@@ -317,10 +317,10 @@
 						NULL AS irradiance,
 						<if test="pv_model == 2">
 						IF(dv.error = 0,
-						IF(IFNULL(dv.nvm_panel_temperature, 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_panel_temperature), 0), IFNULL(AVG(dv.nvm_temperature), 0)), IFNULL(AVG(dv.nvm_panel_temperature), NULL)) AS temperature,
+						IF(IFNULL(dv.nvm_panel_temperature, 0) <![CDATA[>]]> 0, AVG(dv.nvm_panel_temperature), AVG(dv.nvm_temperature)), AVG(dv.nvm_panel_temperature)) AS temperature,
 						</if>
 						<if test="pv_model == 1 || pv_model == 3">
-						IF(IFNULL(dv.nvm_temperature, 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_temperature), 0), 0) AS temperature,
+						IF(dv.nvm_temperature <![CDATA[<]]> 0, 0, AVG(dv.nvm_temperature)) AS temperature,
 						</if>
 						NULL AS rpoa,
 						NULL AS ambient_temp,
@@ -357,7 +357,7 @@
 						NULL AS energy,
 						NULL AS irradiance,
 						NULL AS temperature,
-						IF(IFNULL(AVG(dv.nvm_irradiance), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS rpoa,
+						IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS rpoa,
 						
 						NULL AS ambient_temp,
 						NULL AS calculation_poa,
@@ -391,7 +391,7 @@
 					i.time_format,
 					NULL AS power,
 					NULL AS energy,
-					IFNULL(AVG(i.irradiance), 0) AS irradiance,
+					AVG(i.irradiance) AS irradiance,
 					
 					NULL AS temperature,
 					NULL AS rpoa,
@@ -408,7 +408,7 @@
 						NULL AS power,
 						NULL AS energy,
 						IF(dv.error = 0,
-						IF(IFNULL(AVG(dv.nvm_irradiance), 0) <![CDATA[>]]> 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0), IFNULL(AVG(dv.nvm_irradiance), NULL)) AS irradiance,
+						IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)), AVG(dv.nvm_irradiance)) AS irradiance,
 						
 						NULL AS temperature,
 						NULL AS rpoa,
@@ -449,7 +449,7 @@
 						NULL AS irradiance,
 						NULL AS temperature,
 						NULL AS rpoa,
-						IFNULL(dv.nvm_temperature, 0) AS ambient_temp,
+						dv.nvm_temperature AS ambient_temp,
 						
 						NULL AS calculation_poa,
 						NULL AS calculation_temp,
@@ -566,7 +566,7 @@
 									t.`offset`,
 									d.rating_ac_power,
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time} ), '%Y-%m-%d %H:%i:00' ) AS time_format,
-									IFNULL( dv.nvmActivePower, 0 ) AS power,
+									dv.nvmActivePower AS power,
 								IF
 									(
 										MIN( dv.nvmActiveEnergy ) IS NULL 
@@ -665,7 +665,7 @@
 														NULL AS power,
 														NULL AS energy,
 														NULL AS irradiance,
-														IF(IFNULL(dv.nvm_temperature, 0) > 0, IFNULL(AVG(dv.nvm_temperature), 0), 0) AS temperature,
+														IF(dv.nvm_temperature <![CDATA[<]]> 0, 0, AVG(dv.nvm_temperature)) AS temperature,
 														NULL AS rpoa,
 														NULL AS ambient_temp,
 														NULL AS calculation_poa,
@@ -714,7 +714,7 @@
 													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 													NULL AS power,
 													NULL AS energy,
-													IF(IFNULL(AVG(dv.nvm_irradiance), 0) > 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS irradiance,
+													IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS irradiance,
 													NULL AS temperature,
 													NULL AS rpoa,
 													NULL AS ambient_temp,
@@ -763,7 +763,7 @@
 													NULL AS energy,
 													NULL AS irradiance,
 													NULL AS temperature,
-													IF(IFNULL(AVG(dv.nvm_irradiance), 0) > 0, IFNULL(AVG(dv.nvm_irradiance), 0), 0) AS rpoa,
+													IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS rpoa,
 													NULL AS ambient_temp,
 													NULL AS calculation_poa,
 													NULL AS calculation_temp,
@@ -813,7 +813,7 @@
 													NULL AS irradiance,
 													NULL AS temperature,
 													NULL AS rpoa,
-													IFNULL(dv.nvm_temperature, 0) AS ambient_temp,
+													dv.nvm_temperature AS ambient_temp,
 													NULL AS calculation_poa,
 													NULL AS calculation_temp,
 													NULL AS calculation_clipping
