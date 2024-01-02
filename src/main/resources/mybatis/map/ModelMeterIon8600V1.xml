@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMeterIon8600V1">
+	<resultMap id="ModelMeterIon8600V1Map"
+		type="com.nwm.api.entities.ModelMeterIon8600V1Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		<result property="Frequency" column="Frequency" />
+		<result property="VAN" column="VAN" />
+		<result property="VlnC" column="VlnC" />
+		<result property="VlnAve" column="VlnAve" />
+		<result property="VllAb" column="VllAb" />
+		<result property="VllAc" column="VllAc" />
+		<result property="VllCa" column="VllCa" />
+		<result property="VllAve" column="VllAve" />
+		<result property="IA" column="IA" />
+		<result property="IB" column="IB" />
+		<result property="IC" column="IC" />
+		<result property="IAve" column="IAve" />
+		<result property="VUnbal" column="VUnbal" />
+		<result property="IUnbal" column="IUnbal" />
+		<result property="Freq" column="Freq" />
+		<result property="I4" column="I4" />
+		<result property="kWA" column="kWA" />
+		<result property="kWB" column="kWB" />
+		<result property="kWC" column="kWC" />
+		<result property="kWTot" column="kWTot" />
+		<result property="kVARA" column="kVARA" />
+		<result property="kVARB" column="kVARB" />
+		<result property="kVARC" column="kVARC" />
+		<result property="kVARTot" column="kVARTot" />
+		<result property="KVAA" column="KVAA" />
+		<result property="KVAB" column="KVAB" />
+		<result property="KVAC" column="KVAC" />
+		<result property="KVATot" column="KVATot" />
+		<result property="PFSignA" column="PFSignA" />
+		<result property="PFSignB" column="PFSignB" />
+		<result property="PFSignC" column="PFSignC" />
+		<result property="PFSignTot" column="PFSignTot" />
+		<result property="VIIAveMx" column="VIIAveMx" />
+		<result property="IAveMx" column="IAveMx" />
+		<result property="kWTotMx" column="kWTotMx" />
+		<result property="kVARTotMx" column="kVARTotMx" />
+		<result property="kVATotMx" column="kVATotMx" />
+		<result property="FreqMx" column="FreqMx" />
+		<result property="VIIAveMn" column="VIIAveMn" />
+		<result property="IAveMn" column="IAveMn" />
+		<result property="FreqMn" column="FreqMn" />
+		<result property="kWSdDelRec" column="kWSdDelRec" />
+		<result property="kVASdDelRec" column="kVASdDelRec" />
+		<result property="kVARSdDelRec" column="kVARSdDelRec" />
+		<result property="kWSdMxDR" column="kWSdMxDR" />
+		<result property="kVASdMxDR" column="kVASdMxDR" />
+		<result property="kVARSdMxDR" column="kVARSdMxDR" />
+		<result property="PhaseRev" column="PhaseRev" />
+		<result property="kWhDel" column="kWhDel" />
+		<result property="kWhRec" column="kWhRec" />
+		<result property="kWhDelRec" column="kWhDelRec" />
+		<result property="kWhDel_Rec" column="kWhDel_Rec" />
+		<result property="kVARhDel" column="kVARhDel" />
+		<result property="kVARhRec" column="kVARhRec" />
+		<result property="kVARhDelRec" column="kVARhDelRec" />
+		<result property="kVARhDel_Rec" column="kVARhDel_Rec" />
+		<result property="kVAhDelRec" column="kVAhDelRec" />
+		<result property="V1THDMx" column="V1THDMx" />
+		<result property="V2THDMx" column="V2THDMx" />
+		<result property="V3THDMx" column="V3THDMx" />
+		<result property="I1THDMx" column="I1THDMx" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelMeterIon8600V1"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Frequency != 0.001">
+				`Frequency`,
+			</if>
+			<if test="VAN != 0.001">
+				`VAN`,
+			</if>
+			<if test="VlnC != 0.001">
+				`VlnC`,
+			</if>
+			<if test="VlnAve != 0.001">
+				`VlnAve`,
+			</if>
+			<if test="VllAb != 0.001">
+				`VllAb`,
+			</if>
+			<if test="VllAc != 0.001">
+				`VllAc`,
+			</if>
+			<if test="VllCa != 0.001">
+				`VllCa`,
+			</if>
+			<if test="VllAve != 0.001">
+				`VllAve`,
+			</if>
+			
+			<if test="IA != 0.001">
+				`IA`,
+			</if>
+			<if test="IB != 0.001">
+				`IB`,
+			</if>
+			<if test="IC != 0.001">
+				`IC`,
+			</if>
+			<if test="IAve != 0.001">
+				`IAve`,
+			</if>
+			<if test="VUnbal != 0.001">
+				`VUnbal`,
+			</if>
+			<if test="IUnbal != 0.001">
+				`IUnbal`,
+			</if>
+			<if test="Freq != 0.001">
+				`Freq`,
+			</if>
+			<if test="I4 != 0.001">
+				`I4`,
+			</if>
+			<if test="kWA != 0.001">
+				`kWA`,
+			</if>
+			<if test="kWB != 0.001">
+				`kWB`,
+			</if>
+			<if test="kWC != 0.001">
+				`kWC`,
+			</if>
+			<if test="kWTot != 0.001">
+				`kWTot`,
+			</if>
+			<if test="kVARA != 0.001">
+				`kVARA`,
+			</if>
+			<if test="kVARB != 0.001">
+				`kVARB`,
+			</if>
+			<if test="kVARC != 0.001">
+				`kVARC`,
+			</if>
+			<if test="kVARTot != 0.001">
+				`kVARTot`,
+			</if>
+			<if test="KVAA != 0.001">
+				`KVAA`,
+			</if>
+			<if test="KVAB != 0.001">
+				`KVAB`,
+			</if>
+			<if test="KVAC != 0.001">
+				`KVAC`,
+			</if>
+			<if test="KVATot != 0.001">
+				`KVATot`,
+			</if>
+			<if test="PFSignA != 0.001">
+				`PFSignA`,
+			</if>
+			<if test="PFSignB != 0.001">
+				`PFSignB`,
+			</if>
+			<if test="PFSignC != 0.001">
+				`PFSignC`,
+			</if>
+			<if test="PFSignTot != 0.001">
+				`PFSignTot`,
+			</if>
+			<if test="VIIAveMx != 0.001">
+				`VIIAveMx`,
+			</if>
+			<if test="IAveMx != 0.001">
+				`IAveMx`,
+			</if>
+			<if test="kWTotMx != 0.001">
+				`kWTotMx`,
+			</if>
+			<if test="kVARTotMx != 0.001">
+				`kVARTotMx`,
+			</if>
+			<if test="kVATotMx != 0.001">
+				`kVATotMx`,
+			</if>
+			<if test="FreqMx != 0.001">
+				`FreqMx`,
+			</if>
+			<if test="VIIAveMn != 0.001">
+				`VIIAveMn`,
+			</if>
+			<if test="IAveMn != 0.001">
+				`IAveMn`,
+			</if>
+			
+			<if test="FreqMn != 0.001">
+				`FreqMn`,
+			</if>
+			<if test="kWSdDelRec != 0.001">
+				`kWSdDelRec`,
+			</if>
+			<if test="kVASdDelRec != 0.001">
+				`kVASdDelRec`,
+			</if>
+			<if test="kVARSdDelRec != 0.001">
+				`kVARSdDelRec`,
+			</if>
+			<if test="kWSdMxDR != 0.001">
+				`kWSdMxDR`,
+			</if>
+			<if test="kVASdMxDR != 0.001">
+				`kVASdMxDR`,
+			</if>
+			<if test="kVARSdMxDR != 0.001">
+				`kVARSdMxDR`,
+			</if>
+			<if test="PhaseRev != 0.001">
+				`PhaseRev`,
+			</if>
+			<if test="kWhDel != 0.001">
+				`kWhDel`,
+			</if>
+			<if test="kWhRec != 0.001">
+				`kWhRec`,
+			</if>
+			<if test="kWhDelRec != 0.001">
+				`kWhDelRec`,
+			</if>
+			<if test="kWhDel_Rec != 0.001">
+				`kWhDel_Rec`,
+			</if>
+			<if test="kVARhDel != 0.001">
+				`kVARhDel`,
+			</if>
+			<if test="kVARhRec != 0.001">
+				`kVARhRec`,
+			</if>
+			<if test="kVARhDelRec != 0.001">
+				`kVARhDelRec`,
+			</if>
+			<if test="kVARhDel_Rec != 0.001">
+				`kVARhDel_Rec`,
+			</if>
+			<if test="kVAhDelRec != 0.001">
+				`kVAhDelRec`,
+			</if>
+			<if test="V1THDMx != 0.001">
+				`V1THDMx`,
+			</if>
+			<if test="V2THDMx != 0.001">
+				`V2THDMx`,
+			</if>
+			<if test="V3THDMx != 0.001">
+				`V3THDMx`,
+			</if>
+			<if test="I1THDMx != 0.001">
+				`I1THDMx`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Frequency != 0.001">
+				#{Frequency},
+			</if>
+			<if test="VAN != 0.001">
+				#{VAN},
+			</if>
+			<if test="VlnC != 0.001">
+				#{VlnC},
+			</if>
+			<if test="VlnAve != 0.001">
+				#{VlnAve},
+			</if>
+			<if test="VllAb != 0.001">
+				#{VllAb},
+			</if>
+			<if test="VllAc != 0.001">
+				#{VllAc},
+			</if>
+			<if test="VllCa != 0.001">
+				#{VllCa},
+			</if>
+			<if test="VllAve != 0.001">
+				#{VllAve},
+			</if>
+			<if test="IA != 0.001">
+				#{IA},
+			</if>
+			<if test="IB != 0.001">
+				#{IB},
+			</if>
+			<if test="IC != 0.001">
+				#{IC},
+			</if>
+			<if test="IAve != 0.001">
+				#{IAve},
+			</if>
+			<if test="VUnbal != 0.001">
+				#{VUnbal},
+			</if>
+			<if test="IUnbal != 0.001">
+				#{IUnbal},
+			</if>
+			<if test="Freq != 0.001">
+				#{Freq},
+			</if>
+			<if test="I4 != 0.001">
+				#{I4},
+			</if>
+			<if test="kWA != 0.001">
+				#{kWA},
+			</if>
+			<if test="kWB != 0.001">
+				#{kWB},
+			</if>
+			<if test="kWC != 0.001">
+				#{kWC},
+			</if>
+			<if test="kWTot != 0.001">
+				#{kWTot},
+			</if>
+			<if test="kVARA != 0.001">
+				#{kVARA},
+			</if>
+			<if test="kVARB != 0.001">
+				#{kVARB},
+			</if>
+			<if test="kVARC != 0.001">
+				#{kVARC},
+			</if>
+			<if test="kVARTot != 0.001">
+				#{kVARTot},
+			</if>
+			<if test="KVAA != 0.001">
+				#{KVAA},
+			</if>
+			<if test="KVAB != 0.001">
+				#{KVAB},
+			</if>
+			<if test="KVAC != 0.001">
+				#{KVAC},
+			</if>
+			<if test="KVATot != 0.001">
+				#{KVATot},
+			</if>
+			<if test="PFSignA != 0.001">
+				#{PFSignA},
+			</if>
+			<if test="PFSignB != 0.001">
+				#{PFSignB},
+			</if>
+			<if test="PFSignC != 0.001">
+				#{PFSignC},
+			</if>
+			<if test="PFSignTot != 0.001">
+				#{PFSignTot},
+			</if>
+			<if test="VIIAveMx != 0.001">
+				#{VIIAveMx},
+			</if>
+			<if test="IAveMx != 0.001">
+				#{IAveMx},
+			</if>
+			<if test="kWTotMx != 0.001">
+				#{kWTotMx},
+			</if>
+			<if test="kVARTotMx != 0.001">
+				#{kVARTotMx},
+			</if>
+			<if test="kVATotMx != 0.001">
+				#{kVATotMx},
+			</if>
+			<if test="FreqMx != 0.001">
+				#{FreqMx},
+			</if>
+			<if test="VIIAveMn != 0.001">
+				#{VIIAveMn},
+			</if>
+			<if test="IAveMn != 0.001">
+				#{IAveMn},
+			</if>
+			
+			<if test="FreqMn != 0.001">
+				#{FreqMn},
+			</if>
+			<if test="kWSdDelRec != 0.001">
+				#{kWSdDelRec},
+			</if>
+			<if test="kVASdDelRec != 0.001">
+				#{kVASdDelRec},
+			</if>
+			<if test="kVARSdDelRec != 0.001">
+				#{kVARSdDelRec},
+			</if>
+			<if test="kWSdMxDR != 0.001">
+				#{kWSdMxDR},
+			</if>
+			<if test="kVASdMxDR != 0.001">
+				#{kVASdMxDR},
+			</if>
+			<if test="kVARSdMxDR != 0.001">
+				#{kVARSdMxDR},
+			</if>
+			<if test="PhaseRev != 0.001">
+				#{PhaseRev},
+			</if>
+			<if test="kWhDel != 0.001">
+				#{kWhDel},
+			</if>
+			<if test="kWhRec != 0.001">
+				#{kWhRec},
+			</if>
+			<if test="kWhDelRec != 0.001">
+				#{kWhDelRec},
+			</if>
+			<if test="kWhDel_Rec != 0.001">
+				#{kWhDel_Rec},
+			</if>
+			<if test="kVARhDel != 0.001">
+				#{kVARhDel},
+			</if>
+			<if test="kVARhRec != 0.001">
+				#{kVARhRec},
+			</if>
+			<if test="kVARhDelRec != 0.001">
+				#{kVARhDelRec},
+			</if>
+			<if test="kVARhDel_Rec != 0.001">
+				#{kVARhDel_Rec},
+			</if>
+			<if test="kVAhDelRec != 0.001">
+				#{kVAhDelRec},
+			</if>
+			<if test="V1THDMx != 0.001">
+				#{V1THDMx},
+			</if>
+			<if test="V2THDMx != 0.001">
+				#{V2THDMx},
+			</if>
+			<if test="V3THDMx != 0.001">
+				#{V3THDMx},
+			</if>
+			<if test="I1THDMx != 0.001">
+				#{I1THDMx},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Frequency != 0.001">
+				`Frequency` = #{Frequency},
+			</if>
+			<if test="VAN != 0.001">
+				`VAN` = #{VAN},
+			</if>
+			<if test="VlnC != 0.001">
+				`VlnAve` = #{VlnC},
+			</if>
+			<if test="VlnAve != 0.001">
+				`VlnAve` = #{VlnAve},
+			</if>
+			<if test="VllAb != 0.001">
+				`VllAb` = #{VllAb},
+			</if>
+			<if test="VllAc != 0.001">
+				`VllAc` = #{VllAc},
+			</if>
+			<if test="VllCa != 0.001">
+				`VllCa` = #{VllCa},
+			</if>
+			
+			<if test="VllAve != 0.001">
+				`VllAve` = #{VllAve},
+			</if>
+			
+			<if test="IA != 0.001">
+				`IA` = #{IA},
+			</if>
+			<if test="IB != 0.001">
+				`IB` = #{IB},
+			</if>
+			<if test="IC != 0.001">
+				`IC` = #{IC},
+			</if>
+			<if test="IAve != 0.001">
+				`IAve` = #{IAve},
+			</if>
+			<if test="VUnbal != 0.001">
+				`VUnbal` = #{VUnbal},
+			</if>
+			<if test="IUnbal != 0.001">
+				`IUnbal` = #{IUnbal},
+			</if>
+			<if test="Freq != 0.001">
+				`Freq` = #{Freq},
+			</if>
+			<if test="I4 != 0.001">
+				`I4` = #{I4},
+			</if>
+			<if test="kWA != 0.001">
+				`kWA` = #{kWA},
+			</if>
+			<if test="kWB != 0.001">
+				`kWB` = #{kWB},
+			</if>
+			<if test="kWC != 0.001">
+				`kWC` = #{kWC},
+			</if>
+			<if test="kWTot != 0.001">
+				`kWTot` = #{kWTot},
+			</if>
+			<if test="kVARA != 0.001">
+				`kVARA` = #{kVARA},
+			</if>
+			<if test="kVARB != 0.001">
+				`kVARB` = #{kVARB},
+			</if>
+			<if test="kVARC != 0.001">
+				`kVARC` = #{kVARC},
+			</if>
+			<if test="kVARTot != 0.001">
+				`kVARTot` = #{kVARTot},
+			</if>
+			<if test="KVAA != 0.001">
+				`KVAA` = #{KVAA},
+			</if>
+			<if test="KVAB != 0.001">
+				`KVAB` = #{KVAB},
+			</if>
+			<if test="KVAC != 0.001">
+				`KVAC` = #{KVAC},
+			</if>
+			<if test="KVATot != 0.001">
+				`KVATot` = #{KVATot},
+			</if>
+			<if test="PFSignA != 0.001">
+				`PFSignA` = #{PFSignA},
+			</if>
+			<if test="PFSignB != 0.001">
+				`PFSignB` = #{PFSignB},
+			</if>
+			<if test="PFSignC != 0.001">
+				`PFSignC` = #{PFSignC},
+			</if>
+			<if test="PFSignTot != 0.001">
+				`PFSignTot` = #{PFSignTot},
+			</if>
+			<if test="VIIAveMx != 0.001">
+				`VIIAveMx` = #{VIIAveMx},
+			</if>
+			<if test="IAveMx != 0.001">
+				`IAveMx` = #{IAveMx},
+			</if>
+			<if test="kWTotMx != 0.001">
+				`kWTotMx` = #{kWTotMx},
+			</if>
+			<if test="kVARTotMx != 0.001">
+				`kVARTotMx` = #{kVARTotMx},
+			</if>
+			<if test="kVATotMx != 0.001">
+				`kVATotMx` = #{kVATotMx},
+			</if>
+			<if test="FreqMx != 0.001">
+				`FreqMx` = #{FreqMx},
+			</if>
+			<if test="VIIAveMn != 0.001">
+				`VIIAveMn` = #{VIIAveMn},
+			</if>
+			<if test="IAveMn != 0.001">
+				`IAveMn` = #{IAveMn},
+			</if>
+			
+			<if test="FreqMn != 0.001">
+				`FreqMn` = #{FreqMn},
+			</if>
+			<if test="kWSdDelRec != 0.001">
+				`kWSdDelRec` = #{kWSdDelRec},
+			</if>
+			<if test="kVASdDelRec != 0.001">
+				`kVASdDelRec` = #{kVASdDelRec},
+			</if>
+			<if test="kVARSdDelRec != 0.001">
+				`kVARSdDelRec` = #{kVARSdDelRec},
+			</if>
+			<if test="kWSdMxDR != 0.001">
+				`kWSdMxDR` = #{kWSdMxDR},
+			</if>
+			<if test="kVASdMxDR != 0.001">
+				`kVASdMxDR` = #{kVASdMxDR},
+			</if>
+			<if test="kVARSdMxDR != 0.001">
+				`kVARSdMxDR` = #{kVARSdMxDR},
+			</if>
+			<if test="PhaseRev != 0.001">
+				`PhaseRev` = #{PhaseRev},
+			</if>
+			<if test="kWhDel != 0.001">
+				`kWhDel` = #{kWhDel},
+			</if>
+			<if test="kWhRec != 0.001">
+				`kWhRec` = #{kWhRec},
+			</if>
+			<if test="kWhDelRec != 0.001">
+				`kWhDelRec` = #{kWhDelRec},
+			</if>
+			<if test="kWhDel_Rec != 0.001">
+				`kWhDel_Rec` = #{kWhDel_Rec},
+			</if>
+			<if test="kVARhDel != 0.001">
+				`kVARhDel` = #{kVARhDel},
+			</if>
+			<if test="kVARhRec != 0.001">
+				`kVARhRec` = #{kVARhRec},
+			</if>
+			<if test="kVARhDelRec != 0.001">
+				`kVARhDelRec` = #{kVARhDelRec},
+			</if>
+			<if test="kVARhDel_Rec != 0.001">
+				`kVARhDel_Rec` = #{kVARhDel_Rec},
+			</if>
+			<if test="kVAhDelRec != 0.001">
+				`kVAhDelRec` = #{kVAhDelRec},
+			</if>
+			<if test="V1THDMx != 0.001">
+				`V1THDMx` = #{V1THDMx},
+			</if>
+			<if test="V2THDMx != 0.001">
+				`V2THDMx` = #{V2THDMx},
+			</if>
+			<if test="V3THDMx != 0.001">
+				`V3THDMx` = #{V3THDMx},
+			</if>
+			<if test="I1THDMx != 0.001">
+				`I1THDMx` = #{I1THDMx},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelMeterIon8600V1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+
+</mapper> 
