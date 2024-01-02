@@ -2137,11 +2137,11 @@
 			</if>
 			
 			<if test="table_name == 'model_eri_weather_icp_class8050'">
-				  IFNULL(ROUND(AVG(panel_temp), 2), 0.001) AS T_AMB,
-			      IFNULL(ROUND(AVG(ambient_temp), 2), 0.001) AS T_MOD,
-			      IFNULL(ROUND(AVG(wind_speed), 2), 0.001) AS T_MOD,
-			      IFNULL(ROUND(AVG(solar_irradiation), 2), 0.001) AS T_MOD,
-			      IFNULL(ROUND(AVG(wind_direction), 2), 0.001) AS T_MOD
+				  IFNULL(ROUND(AVG(panel_temp), 2), 0.001) AS panel_temp,
+			      IFNULL(ROUND(AVG(ambient_temp), 2), 0.001) AS ambient_temp,
+			      IFNULL(ROUND(AVG(wind_speed), 2), 0.001) AS wind_speed,
+						IFNULL(ROUND(IF(AVG(solar_irradiation) <![CDATA[<]]> 0, 0, AVG(solar_irradiation)), 2), 0.001) AS solar_irradiation,
+			      IFNULL(ROUND(AVG(wind_direction), 2), 0.001) AS wind_direction
 			</if>
 			
 			<if test="table_name == 'model_virtual_meter_or_inverter'">
@@ -4289,11 +4289,11 @@
 				</if>
 				
 				<if test="table_name == 'model_eri_weather_icp_class8050'">
-					  AVG(dv.panel_temp) AS T_AMB,
-				      AVG(dv.ambient_temp) AS T_MOD,
-				      AVG(dv.wind_speed) AS T_MOD,
-				      AVG(dv.solar_irradiation) AS T_MOD,
-				      AVG(dv.wind_direction) AS T_MOD,
+					  AVG(dv.panel_temp) AS panel_temp,
+				      AVG(dv.ambient_temp) AS ambient_temp,
+				      AVG(dv.wind_speed) AS wind_speed,
+							IF(AVG(dv.solar_irradiation) <![CDATA[<]]> 0, 0, AVG(dv.solar_irradiation  )) AS solar_irradiation,
+				      AVG(dv.wind_direction) AS wind_direction,
 				</if>
 				
 				<if test="table_name == 'model_virtual_meter_or_inverter'">
