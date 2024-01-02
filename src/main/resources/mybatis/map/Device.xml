@@ -3989,6 +3989,18 @@
 					WHERE
 					   id_device = #{id_device};
 	            </when>
+							<when test="id_device_group == 65">
+	            	<!-- model_meter_ion_8600v1 -->
+		           INSERT IGNORE INTO ${newtablename}(
+					`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Frequency`, `VAN`, `VlnC`, `VlnAve`, `VllAb`, `VllAc`, `VllCa`, `VllAve`, `IA`, `IB`, `IC`, `IAve`, `VUnbal`, `IUnbal`, `Freq`, `I4`, `kWA`, `kWB`, `kWC`, `kWTot`, `kVARA`, `kVARB`, `kVARC`, `kVARTot`, `KVAA`, `KVAB`, `KVAC`, `KVATot`, `PFSignA`, `PFSignB`, `PFSignC`, `PFSignTot`, `VIIAveMx`, `IAveMx`, `kWTotMx`, `kVARTotMx`, `kVATotMx`, `FreqMx`, `VIIAveMn`, `IAveMn`, `FreqMn`, `kWSdDelRec`, `kVASdDelRec`, `kVARSdDelRec`, `kWSdMxDR`, `kVASdMxDR`, `kVARSdMxDR`, `PhaseRev`, `kWhDel`, `kWhRec`, `kWhDelRec`, `kWhDel_Rec`, `kVARhDel`, `kVARhRec`, `kVARhDelRec`, `kVARhDel_Rec`, `kVAhDelRec`, `V1THDMx`, `V2THDMx`, `V3THDMx`, `I1THDMx`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT 
+					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Frequency`, `VAN`, `VlnC`, `VlnAve`, `VllAb`, `VllAc`, `VllCa`, `VllAve`, `IA`, `IB`, `IC`, `IAve`, `VUnbal`, `IUnbal`, `Freq`, `I4`, `kWA`, `kWB`, `kWC`, `kWTot`, `kVARA`, `kVARB`, `kVARC`, `kVARTot`, `KVAA`, `KVAB`, `KVAC`, `KVATot`, `PFSignA`, `PFSignB`, `PFSignC`, `PFSignTot`, `VIIAveMx`, `IAveMx`, `kWTotMx`, `kVARTotMx`, `kVATotMx`, `FreqMx`, `VIIAveMn`, `IAveMn`, `FreqMn`, `kWSdDelRec`, `kVASdDelRec`, `kVARSdDelRec`, `kWSdMxDR`, `kVASdMxDR`, `kVARSdMxDR`, `PhaseRev`, `kWhDel`, `kWhRec`, `kWhDelRec`, `kWhDel_Rec`, `kVARhDel`, `kVARhRec`, `kVARhDelRec`, `kVARhDel_Rec`, `kVAhDelRec`, `V1THDMx`, `V2THDMx`, `V3THDMx`, `I1THDMx`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					   ${device_group_table}
+					WHERE
+					   id_device = #{id_device};
+	            </when>
 	                                                          
 	        </choose> 
 	        
