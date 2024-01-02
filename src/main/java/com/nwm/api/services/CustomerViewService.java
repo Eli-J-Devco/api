@@ -1090,7 +1090,7 @@ public class CustomerViewService extends DB {
 								headerDate12.setDownload_time(usFormat12.format(cal12.getTime()));
 								headerDate12.setTime_full(usFormat12.format(cal12.getTime()));
 								headerDate12.setTime_format(usFormat12.format(cal12.getTime()));
-								headerDate12.setCategories_time(catFormat12.format(cal12.getTime()));
+								headerDate12.setCategories_time(catFormat12MonthDay.format(cal12.getTime()));
 								headerDate12.setChart_energy_kwh(0.001);
 								headerDate12.setExpected_power(0.001);
 								headerDate12.setNvm_irradiance(0.001);
@@ -1187,7 +1187,7 @@ public class CustomerViewService extends DB {
 					SimpleDateFormat dateFormatLT = new SimpleDateFormat("yyyy-MM-dd"); 
 					SimpleDateFormat usFormatLTMonth = new SimpleDateFormat("MM/yyyy");
 					SimpleDateFormat usFormatLTYear = new SimpleDateFormat("yyyy");
-					SimpleDateFormat catFormatLTMonth = new SimpleDateFormat("MM/yyyy");
+					SimpleDateFormat catFormatLTMonth = new SimpleDateFormat("MMM. yyyy");
 					SimpleDateFormat catFormatLTYear = new SimpleDateFormat("yyyy");
 					Date startDateLT = dateFormatLT.parse(obj.getStart_date() + " AM");
 					Calendar calLT = Calendar.getInstance();
@@ -2209,7 +2209,7 @@ public class CustomerViewService extends DB {
 										headerDate12.setDownload_time(usFormat12.format(cal12.getTime()));
 										headerDate12.setTime_full(usFormat12.format(cal12.getTime()));
 										headerDate12.setTime_format(usFormat12.format(cal12.getTime()));
-										headerDate12.setCategories_time(catFormat12.format(cal12.getTime()));
+										headerDate12.setCategories_time(catFormat12MonthDay.format(cal12.getTime()));
 										headerDate12.setChart_energy_kwh(0.001);
 										headerDate12.setExpected_power(0.001);
 										headerDate12.setNvm_irradiance(0.001);
@@ -2283,7 +2283,7 @@ public class CustomerViewService extends DB {
 							SimpleDateFormat dateFormatLT = new SimpleDateFormat("yyyy-MM-dd"); 
 							SimpleDateFormat usFormatLTMonth = new SimpleDateFormat("MM/yyyy");
 							SimpleDateFormat usFormatLTYear = new SimpleDateFormat("yyyy");
-							SimpleDateFormat catFormatLTMonth = new SimpleDateFormat("MM/yyyy");
+							SimpleDateFormat catFormatLTMonth = new SimpleDateFormat("MMM. yyyy");
 							SimpleDateFormat catFormatLTYear = new SimpleDateFormat("yyyy");
 							Date startDateLT = dateFormatLT.parse(obj.getStart_date() + " AM");
 							Calendar calLT = Calendar.getInstance();
