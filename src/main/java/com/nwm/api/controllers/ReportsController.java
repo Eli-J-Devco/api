@@ -3915,7 +3915,7 @@ public class ReportsController extends BaseController {
 				String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 						Constants.mailFromContact);
 				String msgTemplate = Constants.getMailTempleteByState(15);
-				String body = String.format(msgTemplate, obj.getCustomer_name(), "Renewable Energy Credits", "", "", "", "");
+				String body = String.format(msgTemplate, "Customer", "Renewable Energy Credits", "", "", "", "");
 				String mailTo = obj.getSubscribers();
 				String subject = Constants.getMailSubjectByState(15);
 				String tags = "report_REC";
