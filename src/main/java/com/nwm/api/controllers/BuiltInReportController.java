@@ -558,6 +558,8 @@ public class BuiltInReportController extends BaseController {
 					for (int s = 0; s < sites.size(); s++) {
 						SiteEntity siteItem = (SiteEntity) sites.get(s);
 						obj.setId_site(siteItem.getId());
+						String table_data_virtual = service.getTableDataVirtual(obj);
+						obj.setTable_data_virtual(table_data_virtual);
 						ViewReportEntity dataObj = (ViewReportEntity) service.getAnnuallyBuitInReport(obj);
 						List dataExports = dataObj.getDataReports();
 						
@@ -1355,6 +1357,8 @@ public class BuiltInReportController extends BaseController {
 					for (int s = 0; s < sites.size(); s++) {
 						SiteEntity siteItem = (SiteEntity) sites.get(s);
 						obj.setId_site(siteItem.getId());
+						String table_data_virtual = service.getTableDataVirtual(obj);
+						obj.setTable_data_virtual(table_data_virtual);
 						ViewReportEntity dataObj = (ViewReportEntity) service.getWeeklyBuiltInReport(obj);
 						List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
 						
