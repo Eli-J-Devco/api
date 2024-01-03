@@ -79,7 +79,7 @@
 		
 	
 	
-		UPDATE model_shark100 dv
+		UPDATE ${datatablename} dv
 		JOIN (
 					SELECT
 						dv.time,

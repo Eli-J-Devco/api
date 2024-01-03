@@ -109,7 +109,7 @@ public class ModelMeterIon8600Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelIon.setNvmActivePower(power);
-				dataModelIon.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
+				dataModelIon.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
 				
 				return dataModelIon;
 				
