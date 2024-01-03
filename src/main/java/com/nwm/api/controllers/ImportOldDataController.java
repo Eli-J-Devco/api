@@ -502,7 +502,7 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("kVATotMx", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
 										rowItem.put("FreqMx", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
 										rowItem.put("VIIAveMn", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
-										
+//										
 										rowItem.put("IAveMn", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
 										rowItem.put("FreqMn", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
 										rowItem.put("kWSdDelRec", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
@@ -519,12 +519,12 @@ public class ImportOldDataController extends BaseController {
 										rowItem.put("kVARhDel", !r.getCellText(57).toString().equals("") ? r.getCellText(57).toString() : "0.001");
 										rowItem.put("kVARhRec", !r.getCellText(58).toString().equals("") ? r.getCellText(58).toString() : "0.001");
 										rowItem.put("kVARhDelRec", !r.getCellText(59).toString().equals("") ? r.getCellText(59).toString() : "0.001");
-										rowItem.put("kVARhDel_Rec", !r.getCellText(60).toString().equals("") ? r.getCellText(60).toString() : "0.001");
-										rowItem.put("kVAhDelRec", !r.getCellText(61).toString().equals("") ? r.getCellText(61).toString() : "0.001");
-										rowItem.put("V1THDMx", !r.getCellText(62).toString().equals("") ? r.getCellText(62).toString() : "0.001");
-										rowItem.put("V2THDMx", !r.getCellText(63).toString().equals("") ? r.getCellText(63).toString() : "0.001");
-										rowItem.put("V3THDMx", !r.getCellText(64).toString().equals("") ? r.getCellText(64).toString() : "0.001");
-										rowItem.put("I1THDMx", !r.getCellText(65).toString().equals("") ? r.getCellText(65).toString() : "0.001");
+//										rowItem.put("kVARhDel_Rec", !r.getCellText(60).toString().equals("") ? r.getCellText(60).toString() : "0.001");
+//										rowItem.put("kVAhDelRec", !r.getCellText(61).toString().equals("") ? r.getCellText(61).toString() : "0.001");
+//										rowItem.put("V1THDMx", !r.getCellText(62).toString().equals("") ? r.getCellText(62).toString() : "0.001");
+//										rowItem.put("V2THDMx", !r.getCellText(63).toString().equals("") ? r.getCellText(63).toString() : "0.001");
+//										rowItem.put("V3THDMx", !r.getCellText(64).toString().equals("") ? r.getCellText(64).toString() : "0.001");
+//										rowItem.put("I1THDMx", !r.getCellText(65).toString().equals("") ? r.getCellText(65).toString() : "0.001");
 										rowItem.put("nvmActivePower", !r.getCellText(66).toString().equals("") ? r.getCellText(66).toString() : "0.001");
 										rowItem.put("nvmActiveEnergy", !r.getCellText(67).toString().equals("") ? r.getCellText(67).toString() : "0.001");
 										rowItem.put("MeasuredProduction", !r.getCellText(68).toString().equals("") ? r.getCellText(68).toString() : "0.001");
