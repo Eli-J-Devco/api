@@ -1092,7 +1092,7 @@ public class FTPUploadServerController extends BaseController {
 
 		File parentDir = downloadFile.getParentFile();
 		if (!parentDir.exists()) {
-			parentDir.mkdir();
+			parentDir.mkdirs();
 		}
 
 		OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(downloadFile));
