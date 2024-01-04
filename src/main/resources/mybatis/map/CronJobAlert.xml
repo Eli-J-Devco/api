@@ -233,7 +233,7 @@
 			t.end_date_time,
 			t.id,
 			IF( SUM(t.nvmActivePower) = 0.01, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
-			COUNT( IF( (t.nvmActivePower = 0.001 || t.nvmActivePower = 0) <![CDATA[&&]]> t.nvmActiveEnergy > 0 , 1, NULL)) AS count_item
+			COUNT( IF( (t.nvmActivePower = 0.001 || t.nvmActivePower <![CDATA[<=]]> 0) <![CDATA[&&]]> t.nvmActiveEnergy > 0 , 1, NULL)) AS count_item
 		FROM (
 			SELECT
 					`time`,
