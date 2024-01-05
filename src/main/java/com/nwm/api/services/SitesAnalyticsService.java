@@ -89,7 +89,6 @@ public class SitesAnalyticsService extends DB {
 					} else {
 						maps.put("datatablename", map.get("view_tablename"));
 					}
-					
 					maps.put("id", map.get("id"));
 					maps.put("device_name", map.get("devicename"));
 					maps.put("id_device_group", map.get("id_device_group"));
@@ -100,7 +99,7 @@ public class SitesAnalyticsService extends DB {
 					maps.put("hidden_data_list", hiddenDataList);
 					
 					// get device's common model table
-					Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().contains(deviceGroup.get("table_name"))).findFirst().get();
+					Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
 					maps.put("table_name", modelTable.get("table_name"));
 					
 					if ((int) map.get("id_device_type") == 12) maps.put("datatablename", map.get("table_data_virtual"));
