@@ -27,7 +27,6 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.CronJobAlertService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.SecretCards;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.Translator;
 
