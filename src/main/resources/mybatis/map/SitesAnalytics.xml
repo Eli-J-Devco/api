@@ -2211,6 +2211,30 @@
 			      IFNULL(ROUND(AVG(wind_direction), 2), 0.001) AS wind_direction
 			</if>
 			
+			<if test="table_name == 'model_dts_measurelogic_demand_meter'">
+				  IFNULL(ROUND(AVG(Voltage_LN_1), 2), 0.001) AS Voltage_LN_1,
+			      IFNULL(ROUND(AVG(Voltage_LN_2), 2), 0.001) AS Voltage_LN_2,
+			      IFNULL(ROUND(AVG(Voltage_LN_3), 2), 0.001) AS Voltage_LN_3,
+			      IFNULL(ROUND(AVG(Voltage_LL_Average), 2), 0.001) AS Voltage_LL_Average,
+			      IFNULL(ROUND(AVG(Current_1), 2), 0.001) AS Current_1,
+			      IFNULL(ROUND(AVG(Current_2), 2), 0.001) AS Current_2,
+			      IFNULL(ROUND(AVG(Current_3), 2), 0.001) AS Current_3,
+			      IFNULL(ROUND(AVG(Current_Total), 2), 0.001) AS Current_Total,
+			      IFNULL(ROUND(AVG(Current_Neutral), 2), 0.001) AS Current_Neutral,
+			      IFNULL(ROUND(AVG(Frequency_Average), 2), 0.001) AS Frequency_Average,
+			      IFNULL(ROUND(AVG(PowerP_Total), 2), 0.001) AS PowerP_Total,
+			      IFNULL(ROUND(AVG(PowerS_Total), 2), 0.001) AS PowerS_Total,
+			      IFNULL(ROUND(AVG(PowerQ_Total), 2), 0.001) AS PowerQ_Total,
+			      IFNULL(ROUND(AVG(PowerFactor_DTS_Overall), 2), 0.001) AS PowerFactor_DTS_Overall,
+			      IFNULL(ROUND(AVG(EnergyP_Total), 2), 0.001) AS EnergyP_Total,
+			      IFNULL(ROUND(AVG(EnergyS_Total), 2), 0.001) AS EnergyS_Total,
+			      IFNULL(ROUND(AVG(EnergyQ_Total), 2), 0.001) AS EnergyQ_Total,
+			      IFNULL(ROUND(AVG(EnergyP_Total_Imp), 2), 0.001) AS EnergyP_Total_Imp,
+			      IFNULL(ROUND(AVG(EnergyP_Total_Exp), 2), 0.001) AS EnergyP_Total_Exp,
+			      IFNULL(ROUND(AVG(EnergyQ_Total_Imp), 2), 0.001) AS EnergyQ_Total_Imp,
+			      IFNULL(ROUND(AVG(EnergyQ_Total_Exp), 2), 0.001) AS EnergyQ_Total_Exp
+			</if>
+			
 			<if test="table_name == 'model_virtual_meter_or_inverter'">
 				IFNULL(ROUND(AVG(nvmActivePower), 2), 0.001) AS nvmActivePower,
 				IFNULL(ROUND(SUM(nvmActiveEnergy), 2), 0.001) AS nvmActiveEnergy,
@@ -4432,6 +4456,33 @@
 							IF(AVG(dv.solar_irradiation) <![CDATA[<]]> 0, 0, AVG(dv.solar_irradiation  )) AS solar_irradiation,
 				      AVG(dv.wind_direction) AS wind_direction,
 				</if>
+				
+				<if test="table_name == 'model_dts_measurelogic_demand_meter'">
+				  AVG(dv.Voltage_LN_1) AS Voltage_LN_1,
+			      AVG(dv.Voltage_LN_2) AS Voltage_LN_2,
+			      AVG(dv.Voltage_LN_3) AS Voltage_LN_3,
+			      AVG(dv.Voltage_LL_Average) AS Voltage_LL_Average,
+			      AVG(dv.Current_1) AS Current_1,
+			      AVG(dv.Current_2) AS Current_2,
+			      AVG(dv.Current_3) AS Current_3,
+			      AVG(dv.Current_Total) AS Current_Total,
+			      AVG(dv.Current_Neutral) AS Current_Neutral,
+			      AVG(dv.Frequency_Average) AS Frequency_Average,
+			      AVG(dv.PowerP_Total) AS PowerP_Total,
+			      AVG(dv.PowerS_Total) AS PowerS_Total,
+			      AVG(dv.PowerQ_Total) AS PowerQ_Total,
+			      AVG(dv.PowerFactor_DTS_Overall) AS PowerFactor_DTS_Overall,
+			      AVG(dv.EnergyP_Total) AS EnergyP_Total,
+			      AVG(dv.EnergyS_Total) AS EnergyS_Total,
+			      AVG(dv.EnergyQ_Total) AS EnergyQ_Total,
+			      AVG(dv.EnergyP_Total_Imp) AS EnergyP_Total_Imp,
+			      AVG(dv.EnergyP_Total_Exp) AS EnergyP_Total_Exp,
+			      AVG(dv.EnergyQ_Total_Imp) AS EnergyQ_Total_Imp,
+			      AVG(dv.EnergyQ_Total_Exp) AS EnergyQ_Total_Exp,
+			      
+				  AVG(dv.nvmActivePower) AS nvmActivePower,
+				  AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
+			</if>
 				
 				<if test="table_name == 'model_virtual_meter_or_inverter'">
 					AVG(dv.nvmActivePower) AS nvmActivePower,

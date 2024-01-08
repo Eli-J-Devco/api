@@ -327,6 +327,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelElsterA1700.insertModelElsterA1700", dataList.get(i));					
 				}				
 				break;
+			case "model_dts_measurelogic_demand_meter":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelDTSMeasurelogicDemandMeter.insertModelDTSMeasurelogicDemandMeter", dataList.get(i));					
+				}				
+				break;
 			}
 
 			session.commit();
@@ -1987,6 +1993,35 @@ public class ImportOldDataService extends DB {
 		rowItem.put("nvmActivePower", !r.getCellText(122).toString().equals("") ? r.getCellText(122).toString() : "0.001");
 		rowItem.put("nvmActiveEnergy", !r.getCellText(123).toString().equals("") ? r.getCellText(123).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(124).toString().equals("") ? r.getCellText(124).toString() : "0.001");
+		
+		return rowItem;
+	}
+	
+	public Object setModelDTSMeasurelogicDemandMeter(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("Voltage_LN_1", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Voltage_LN_2", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Voltage_LN_3", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Voltage_LL_Average", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Current_1", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("Current_2", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Current_3", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Current_Total", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Current_Neutral", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Frequency_Average", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("PowerP_Total", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("PowerS_Total", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("PowerQ_Total", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("PowerFactor_DTS_Overall", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("EnergyP_Total", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("EnergyS_Total", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("EnergyQ_Total", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		rowItem.put("EnergyP_Total_Imp", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("EnergyP_Total_Exp", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("EnergyQ_Total_Imp", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("EnergyQ_Total_Exp", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
 		
 		return rowItem;
 	}

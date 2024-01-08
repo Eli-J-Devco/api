@@ -394,6 +394,10 @@ public class ImportOldDataController extends BaseController {
 									case "model_elster_a1700":
 										service.setModelElsterA1700(rowItem, r);
 										break;
+										
+									case "model_dts_measurelogic_demand_meter":
+										service.setModelDTSMeasurelogicDemandMeter(rowItem, r);
+										break;
 									}
 									
 									

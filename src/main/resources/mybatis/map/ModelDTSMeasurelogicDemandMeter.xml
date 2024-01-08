@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelDTSMeasurelogicDemandMeter">
+	<resultMap id="ModelDTSMeasurelogicDemandMeterMap" type="com.nwm.api.entities.ModelDTSMeasurelogicDemandMeterEntity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="Voltage_LN_1" column="Voltage_LN_1" />
+		   <result property="Voltage_LN_2" column="Voltage_LN_2" />
+		   <result property="Voltage_LN_3" column="Voltage_LN_3" />
+		   <result property="Voltage_LL_Average" column="Voltage_LL_Average" />
+		   <result property="Current_1" column="Current_1" />
+		   <result property="Current_2" column="Current_2" />
+		   <result property="Current_3" column="Current_3" />
+		   <result property="Current_Total" column="Current_Total" />
+		   <result property="Current_Neutral" column="Current_Neutral" />
+		   <result property="Frequency_Average" column="Frequency_Average" />
+		   <result property="PowerP_Total" column="PowerP_Total" />
+		   <result property="PowerS_Total" column="PowerS_Total" />
+		   <result property="PowerQ_Total" column="PowerQ_Total" />
+		   <result property="PowerFactor_DTS_Overall" column="PowerFactor_DTS_Overall" />
+		   <result property="EnergyP_Total" column="EnergyP_Total" />
+		   <result property="EnergyS_Total" column="EnergyS_Total" />
+		   <result property="EnergyQ_Total" column="EnergyQ_Total" />
+		   <result property="EnergyP_Total_Imp" column="EnergyP_Total_Imp" />
+		   <result property="EnergyP_Total_Exp" column="EnergyP_Total_Exp" />
+		   <result property="EnergyQ_Total_Imp" column="EnergyQ_Total_Imp" />
+		   <result property="EnergyQ_Total_Exp" column="EnergyQ_Total_Exp" />
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelDTSMeasurelogicDemandMeter" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  <if test="Voltage_LN_1 != 0.001" >
+                `Voltage_LN_1`,
+          </if>
+          <if test="Voltage_LN_2 != 0.001" >
+                `Voltage_LN_2`,
+          </if>
+          <if test="Voltage_LN_3 != 0.001" >
+                `Voltage_LN_3`,
+          </if>
+          <if test="Voltage_LL_Average != 0.001" >
+                `Voltage_LL_Average`,
+          </if>
+          <if test="Current_1 != 0.001" >
+                `Current_1`,
+          </if>
+          <if test="Current_2 != 0.001" >
+                `Current_2`,
+          </if>
+          <if test="Current_3 != 0.001" >
+                `Current_3`,
+          </if>
+          <if test="Current_Total != 0.001" >
+               `Current_Total`, 
+          </if>
+          <if test="Current_Neutral != 0.001" >
+                `Current_Neutral`,
+          </if>
+          <if test="Frequency_Average != 0.001" >
+                `Frequency_Average`,
+          </if>
+          <if test="PowerP_Total != 0.001" >
+                `PowerP_Total`,
+          </if>
+          <if test="PowerS_Total != 0.001" >
+                `PowerS_Total`,
+          </if>
+          <if test="PowerQ_Total != 0.001" >
+                `PowerQ_Total`,
+          </if>
+          <if test="PowerFactor_DTS_Overall != 0.001" >
+                `PowerFactor_DTS_Overall`,
+          </if>
+          <if test="EnergyP_Total != 0.001" >
+                `EnergyP_Total`,
+          </if>
+          <if test="EnergyS_Total != 0.001" >
+                `EnergyS_Total`,
+          </if>
+          <if test="EnergyQ_Total != 0.001" >
+                `EnergyQ_Total`,
+          </if>
+          <if test="EnergyP_Total_Imp != 0.001" >
+                `EnergyP_Total_Imp`,
+          </if>
+          <if test="EnergyP_Total_Exp != 0.001" >
+                `EnergyP_Total_Exp`,
+          </if>
+          <if test="EnergyQ_Total_Imp != 0.001" >
+                `EnergyQ_Total_Imp`,
+          </if>
+          <if test="EnergyQ_Total_Exp != 0.001" >
+                `EnergyQ_Total_Exp`,
+          </if>
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="Voltage_LN_1 != 0.001" >
+	                #{Voltage_LN_1},
+	          </if>
+	          <if test="Voltage_LN_2 != 0.001" >
+	                #{Voltage_LN_2},
+	          </if>
+	          <if test="Voltage_LN_3 != 0.001" >
+	                #{Voltage_LN_3},
+	          </if>
+	          <if test="Voltage_LL_Average != 0.001" >
+	                #{Voltage_LL_Average},
+	          </if>
+	          <if test="Current_1 != 0.001" >
+	                #{Current_1},
+	          </if>
+	          <if test="Current_2 != 0.001" >
+	                #{Current_2},
+	          </if>
+	          <if test="Current_3 != 0.001" >
+	                #{Current_3},
+	          </if>
+	          <if test="Current_Total != 0.001" >
+	               #{Current_Total}, 
+	          </if>
+	          <if test="Current_Neutral != 0.001" >
+	                #{Current_Neutral},
+	          </if>
+	          <if test="Frequency_Average != 0.001" >
+	                #{Frequency_Average},
+	          </if>
+	          <if test="PowerP_Total != 0.001" >
+	                #{PowerP_Total},
+	          </if>
+	          <if test="PowerS_Total != 0.001" >
+	                #{PowerS_Total},
+	          </if>
+	          <if test="PowerQ_Total != 0.001" >
+	                #{PowerQ_Total},
+	          </if>
+	          <if test="PowerFactor_DTS_Overall != 0.001" >
+	                #{PowerFactor_DTS_Overall},
+	          </if>
+	          <if test="EnergyP_Total != 0.001" >
+	                #{EnergyP_Total},
+	          </if>
+	          <if test="EnergyS_Total != 0.001" >
+	                #{EnergyS_Total},
+	          </if>
+	          <if test="EnergyQ_Total != 0.001" >
+	                #{EnergyQ_Total},
+	          </if>
+	          <if test="EnergyP_Total_Imp != 0.001" >
+	                #{EnergyP_Total_Imp},
+	          </if>
+	          <if test="EnergyP_Total_Exp != 0.001" >
+	                #{EnergyP_Total_Exp},
+	          </if>
+	          <if test="EnergyQ_Total_Imp != 0.001" >
+	                #{EnergyQ_Total_Imp},
+	          </if>
+	          <if test="EnergyQ_Total_Exp != 0.001" >
+	                #{EnergyQ_Total_Exp},
+	          </if>
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="Voltage_LN_1 != 0.001" >
+	                Voltage_LN_1 = #{Voltage_LN_1},
+	          </if>
+	          <if test="Voltage_LN_2 != 0.001" >
+	                Voltage_LN_2 = #{Voltage_LN_2},
+	          </if>
+	          <if test="Voltage_LN_3 != 0.001" >
+	                Voltage_LN_3 = #{Voltage_LN_3},
+	          </if>
+	          <if test="Voltage_LL_Average != 0.001" >
+	                Voltage_LL_Average = #{Voltage_LL_Average},
+	          </if>
+	          <if test="Current_1 != 0.001" >
+	                Current_1 = #{Current_1},
+	          </if>
+	          <if test="Current_2 != 0.001" >
+	                Current_2 = #{Current_2},
+	          </if>
+	          <if test="Current_3 != 0.001" >
+	                Current_3 = #{Current_3},
+	          </if>
+	          <if test="Current_Total != 0.001" >
+	               Current_Total = #{Current_Total}, 
+	          </if>
+	          <if test="Current_Neutral != 0.001" >
+	                Current_Neutral = #{Current_Neutral},
+	          </if>
+	          <if test="Frequency_Average != 0.001" >
+	                Frequency_Average = #{Frequency_Average},
+	          </if>
+	          <if test="PowerP_Total != 0.001" >
+	                PowerP_Total = #{PowerP_Total},
+	          </if>
+	          <if test="PowerS_Total != 0.001" >
+	                PowerS_Total = #{PowerS_Total},
+	          </if>
+	          <if test="PowerQ_Total != 0.001" >
+	                PowerQ_Total = #{PowerQ_Total},
+	          </if>
+	          <if test="PowerFactor_DTS_Overall != 0.001" >
+	                PowerFactor_DTS_Overall = #{PowerFactor_DTS_Overall},
+	          </if>
+	          <if test="EnergyP_Total != 0.001" >
+	                EnergyP_Total = #{EnergyP_Total},
+	          </if>
+	          <if test="EnergyS_Total != 0.001" >
+	                EnergyS_Total = #{EnergyS_Total},
+	          </if>
+	          <if test="EnergyQ_Total != 0.001" >
+	                EnergyQ_Total = #{EnergyQ_Total},
+	          </if>
+	          <if test="EnergyP_Total_Imp != 0.001" >
+	                EnergyP_Total_Imp = #{EnergyP_Total_Imp},
+	          </if>
+	          <if test="EnergyP_Total_Exp != 0.001" >
+	                EnergyP_Total_Exp = #{EnergyP_Total_Exp},
+	          </if>
+	          <if test="EnergyQ_Total_Imp != 0.001" >
+	                EnergyQ_Total_Imp = #{EnergyQ_Total_Imp},
+	          </if>
+	          <if test="EnergyQ_Total_Exp != 0.001" >
+	                EnergyQ_Total_Exp = #{EnergyQ_Total_Exp},
+	          </if>
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelDTSMeasurelogicDemandMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

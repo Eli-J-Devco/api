@@ -915,6 +915,9 @@ public class BatchJob {
 										case "model_sungrow_logger1000":
 											noCommunication = 1213;
 											break;
+										case "model_dts_measurelogic_demand_meter":
+											noCommunication = 1223;
+											break;
 
 										}
 
