@@ -143,6 +143,13 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelAeRefusol.insertModelAeRefusol", dataList.get(i));					
 				}			
 				break;
+				
+			case "model_janitza_umg604pro":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelJanitzaUmg604pro.insertModelJanitzaUmg604pro", dataList.get(i));					
+				}				
+				break;
 			
 			case "model_xantrex_inverter":
 				obj.setId_device_type(1);
@@ -1990,9 +1997,9 @@ public class ImportOldDataService extends DB {
 		rowItem.put("FlatReverseActiveEnergy", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
 		rowItem.put("PeakReverseActiveEnergy", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
 		rowItem.put("ValleyReverseActiveEnergy", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
-		rowItem.put("nvmActivePower", !r.getCellText(122).toString().equals("") ? r.getCellText(122).toString() : "0.001");
-		rowItem.put("nvmActiveEnergy", !r.getCellText(123).toString().equals("") ? r.getCellText(123).toString() : "0.001");
-		rowItem.put("MeasuredProduction", !r.getCellText(124).toString().equals("") ? r.getCellText(124).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
 		
 		return rowItem;
 	}
@@ -2023,6 +2030,58 @@ public class ImportOldDataService extends DB {
 		rowItem.put("nvmActiveEnergy", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
 		
+		return rowItem;
+	}
+	
+	public Object setModelJanitzaUmg604pro(HashMap<String, String> rowItem, Row r) {		
+		rowItem.put("PhaseAVoltage", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("PhaseBVoltage", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("PhaseCVoltage", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("ABVoltage", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("BCVoltage", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("CAVoltage", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("PhaseACurrent", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("PhaseBCurrent", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("PhaseCCurrent", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("TotalCurrent", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("PhaseAPower", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("PhaseBPower", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("PhaseCPower", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("TotalPower", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("PhaseAApparentPower", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("PhaseBApparentPower", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("PhaseCApparentPower", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		
+		rowItem.put("TotalApparentPower", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("PhaseAReactivePower", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("PhaseBReactivePower", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("PhaseCReactivePower", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("TotalReactivePower", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("PhaseAPowerFactor", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("PhaseBPowerFactor", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+		rowItem.put("PhaseCPowerFactor", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+		rowItem.put("PowerFactor", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+		rowItem.put("Frequency", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+		rowItem.put("TotalForwardActiveEnergy", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+		rowItem.put("TotalReverseActiveEnergy", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+		rowItem.put("TotalForwardReactiveEnergy", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+		rowItem.put("TotalReverseReactiveEnergy", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+		rowItem.put("PhaseAForwardActiveEnergy", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("PhaseBForwardActiveEnergy", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("PhaseCForwardActiveEnergy", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("PhaseAReverseActiveEnergy", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("PhaseBReverseActiveEnergy", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("PhaseCReverseActiveEnergy", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("PhaseAForwardReactiveEnergy", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+		
+		rowItem.put("PhaseBForwardReactiveEnergy", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+		rowItem.put("PhaseCForwardReactiveEnergy", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		rowItem.put("PhaseAReverseReactiveEnergy", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("PhaseBReverseReactiveEnergy", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
+		rowItem.put("PhaseCReverseReactiveEnergy", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(50).toString().equals("") ? r.getCellText(50).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(51).toString().equals("") ? r.getCellText(51).toString() : "0.001");
 		return rowItem;
 	}
 }
