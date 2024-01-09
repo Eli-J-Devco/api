@@ -2339,7 +2339,10 @@
 					AVG(dv.TotalYield) AS TotalYield,
 					AVG(dv.OperatingHours) AS OperatingHours,
 					AVG(dv.Status) AS Status,
-					AVG(dv.ErrorMessageCode) AS ErrorMessageCode
+					AVG(dv.ErrorMessageCode) AS ErrorMessageCode,
+					
+					AVG(dv.nvmActivePower) AS nvmActivePower,
+					AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
 				</if>
 				
 				
@@ -2582,7 +2585,9 @@
 			        AVG(dv.PhaseAReverseReactiveEnergy) AS PhaseAReverseReactiveEnergy,
 			        
 			        AVG(dv.PhaseBReverseReactiveEnergy) AS PhaseBReverseReactiveEnergy,
-			        AVG(dv.PhaseCReverseReactiveEnergy) AS PhaseCReverseReactiveEnergy
+			        AVG(dv.PhaseCReverseReactiveEnergy) AS PhaseCReverseReactiveEnergy,
+			        AVG(dv.nvmActivePower) AS nvmActivePower,
+					AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
 			      </if>
 				
 				<if test="table_name == 'model_meter_ion_8600'">
