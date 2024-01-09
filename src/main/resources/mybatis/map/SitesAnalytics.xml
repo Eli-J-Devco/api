@@ -2339,10 +2339,7 @@
 					AVG(dv.TotalYield) AS TotalYield,
 					AVG(dv.OperatingHours) AS OperatingHours,
 					AVG(dv.Status) AS Status,
-					AVG(dv.ErrorMessageCode) AS ErrorMessageCode,
-					
-					AVG(dv.nvmActivePower) AS nvmActivePower,
-					AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
+					AVG(dv.ErrorMessageCode) AS ErrorMessageCode
 				</if>
 				
 				
