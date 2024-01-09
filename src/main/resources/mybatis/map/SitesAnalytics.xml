@@ -339,6 +339,56 @@
 				IFNULL(ROUND(AVG(point3), 2), 0.001) AS point3
 			</if>
 			
+			<if test="table_name == 'model_janitza_umg604pro'">
+				IFNULL(ROUND(AVG(PhaseAVoltage), 2), 0.001) AS PhaseAVoltage,
+				IFNULL(ROUND(AVG(PhaseBVoltage), 2), 0.001) AS PhaseBVoltage,
+				IFNULL(ROUND(AVG(PhaseCVoltage), 2), 0.001) AS PhaseCVoltage,
+				IFNULL(ROUND(AVG(ABVoltage), 2), 0.001) AS ABVoltage,
+				IFNULL(ROUND(AVG(BCVoltage), 2), 0.001) AS BCVoltage,
+				IFNULL(ROUND(AVG(CAVoltage), 2), 0.001) AS CAVoltage,
+				IFNULL(ROUND(AVG(PhaseACurrent), 2), 0.001) AS PhaseACurrent,
+				IFNULL(ROUND(AVG(PhaseBCurrent), 2), 0.001) AS PhaseBCurrent,
+				IFNULL(ROUND(AVG(PhaseCCurrent), 2), 0.001) AS PhaseCCurrent,
+				IFNULL(ROUND(AVG(TotalCurrent), 2), 0.001) AS TotalCurrent,
+				IFNULL(ROUND(AVG(PhaseAPower), 2), 0.001) AS PhaseAPower,
+				
+				IFNULL(ROUND(AVG(PhaseBPower), 2), 0.001) AS PhaseBPower,
+				IFNULL(ROUND(AVG(PhaseCPower), 2), 0.001) AS PhaseCPower,
+				IFNULL(ROUND(AVG(TotalPower), 2), 0.001) AS TotalPower,
+				IFNULL(ROUND(AVG(PhaseAApparentPower), 2), 0.001) AS PhaseAApparentPower,
+				IFNULL(ROUND(AVG(PhaseBApparentPower), 2), 0.001) AS PhaseBApparentPower,
+				IFNULL(ROUND(AVG(PhaseCApparentPower), 2), 0.001) AS PhaseCApparentPower,
+				IFNULL(ROUND(AVG(TotalApparentPower), 2), 0.001) AS TotalApparentPower,
+				IFNULL(ROUND(AVG(PhaseAReactivePower), 2), 0.001) AS PhaseAReactivePower,
+				IFNULL(ROUND(AVG(PhaseBReactivePower), 2), 0.001) AS PhaseBReactivePower,
+				IFNULL(ROUND(AVG(PhaseCReactivePower), 2), 0.001) AS PhaseCReactivePower,
+				
+				IFNULL(ROUND(AVG(TotalReactivePower), 2), 0.001) AS TotalReactivePower,
+				IFNULL(ROUND(AVG(PhaseAPowerFactor), 2), 0.001) AS PhaseAPowerFactor,
+				IFNULL(ROUND(AVG(PhaseBPowerFactor), 2), 0.001) AS PhaseBPowerFactor,
+				IFNULL(ROUND(AVG(PhaseCPowerFactor), 2), 0.001) AS PhaseCPowerFactor,
+				IFNULL(ROUND(AVG(PowerFactor), 2), 0.001) AS PowerFactor,
+				IFNULL(ROUND(AVG(Frequency), 2), 0.001) AS Frequency,
+				IFNULL(ROUND(AVG(TotalForwardActiveEnergy), 2), 0.001) AS TotalForwardActiveEnergy,
+				IFNULL(ROUND(AVG(TotalReverseActiveEnergy), 2), 0.001) AS TotalReverseActiveEnergy,
+				IFNULL(ROUND(AVG(TotalForwardReactiveEnergy), 2), 0.001) AS TotalForwardReactiveEnergy,
+				IFNULL(ROUND(AVG(TotalReverseReactiveEnergy), 2), 0.001) AS TotalReverseReactiveEnergy,
+				
+				IFNULL(ROUND(AVG(PhaseAForwardActiveEnergy), 2), 0.001) AS PhaseAForwardActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseBForwardActiveEnergy), 2), 0.001) AS PhaseBForwardActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseCForwardActiveEnergy), 2), 0.001) AS PhaseCForwardActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseAReverseActiveEnergy), 2), 0.001) AS PhaseAReverseActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseBReverseActiveEnergy), 2), 0.001) AS PhaseBReverseActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseCReverseActiveEnergy), 2), 0.001) AS PhaseCReverseActiveEnergy,
+				IFNULL(ROUND(AVG(PhaseAForwardReactiveEnergy), 2), 0.001) AS PhaseAForwardReactiveEnergy,
+				IFNULL(ROUND(AVG(PhaseBForwardReactiveEnergy), 2), 0.001) AS PhaseBForwardReactiveEnergy,
+				IFNULL(ROUND(AVG(PhaseCForwardReactiveEnergy), 2), 0.001) AS PhaseCForwardReactiveEnergy,
+				IFNULL(ROUND(AVG(PhaseAReverseReactiveEnergy), 2), 0.001) AS PhaseAReverseReactiveEnergy,
+				
+				IFNULL(ROUND(AVG(PhaseBReverseReactiveEnergy), 2), 0.001) AS PhaseBReverseReactiveEnergy,
+				IFNULL(ROUND(AVG(PhaseCReverseReactiveEnergy), 2), 0.001) AS PhaseCReverseReactiveEnergy
+			</if>
+			
 			
 			<if test="table_name == 'model_meter_ion_8600'">
 				IFNULL(ROUND(AVG(VlnA), 2), 0.001) AS VlnA,
@@ -2487,6 +2537,56 @@
 					AVG(dv.point2) AS point2,
 					AVG(dv.point3) AS point3,
 				</if>
+				
+				<if test="table_name == 'model_janitza_umg604pro'">
+			        AVG(dv.PhaseAVoltage) AS PhaseAVoltage,
+			        AVG(dv.PhaseBVoltage) AS PhaseBVoltage,
+			        AVG(dv.PhaseCVoltage) AS PhaseCVoltage,
+			        AVG(dv.ABVoltage) AS ABVoltage,
+			        AVG(dv.BCVoltage) AS BCVoltage,
+			        AVG(dv.CAVoltage) AS CAVoltage,
+			        AVG(dv.PhaseACurrent) AS PhaseACurrent,
+			        AVG(dv.PhaseBCurrent) AS PhaseBCurrent,
+			        AVG(dv.PhaseCCurrent) AS PhaseCCurrent,
+			        AVG(dv.TotalCurrent) AS TotalCurrent,
+			        AVG(dv.PhaseAPower) AS PhaseAPower,
+			        
+			        AVG(dv.PhaseBPower) AS PhaseBPower,
+			        AVG(dv.PhaseCPower) AS PhaseCPower,
+			        AVG(dv.TotalPower) AS TotalPower,
+			        AVG(dv.PhaseAApparentPower) AS PhaseAApparentPower,
+			        AVG(dv.PhaseBApparentPower) AS PhaseBApparentPower,
+			        AVG(dv.PhaseCApparentPower) AS PhaseCApparentPower,
+			        AVG(dv.TotalApparentPower) AS TotalApparentPower,
+			        AVG(dv.PhaseAReactivePower) AS PhaseAReactivePower,
+			        AVG(dv.PhaseBReactivePower) AS PhaseBReactivePower,
+			        AVG(dv.PhaseCReactivePower) AS PhaseCReactivePower,
+			        
+			        AVG(dv.TotalReactivePower) AS TotalReactivePower,
+			        AVG(dv.PhaseAPowerFactor) AS PhaseAPowerFactor,
+			        AVG(dv.PhaseBPowerFactor) AS PhaseBPowerFactor,
+			        AVG(dv.PhaseCPowerFactor) AS PhaseCPowerFactor,
+			        AVG(dv.PowerFactor) AS PowerFactor,
+			        AVG(dv.Frequency) AS Frequency,
+			        AVG(dv.TotalForwardActiveEnergy) AS TotalForwardActiveEnergy,
+			        AVG(dv.TotalReverseActiveEnergy) AS TotalReverseActiveEnergy,
+			        AVG(dv.TotalForwardReactiveEnergy) AS TotalForwardReactiveEnergy,
+			        AVG(dv.TotalReverseReactiveEnergy) AS TotalReverseReactiveEnergy,
+			        
+			        AVG(dv.PhaseAForwardActiveEnergy) AS PhaseAForwardActiveEnergy,
+			        AVG(dv.PhaseBForwardActiveEnergy) AS PhaseBForwardActiveEnergy,
+			        AVG(dv.PhaseCForwardActiveEnergy) AS PhaseCForwardActiveEnergy,
+			        AVG(dv.PhaseAReverseActiveEnergy) AS PhaseAReverseActiveEnergy,
+			        AVG(dv.PhaseBReverseActiveEnergy) AS PhaseBReverseActiveEnergy,
+			        AVG(dv.PhaseCReverseActiveEnergy) AS PhaseCReverseActiveEnergy,
+			        AVG(dv.PhaseAForwardReactiveEnergy) AS PhaseAForwardReactiveEnergy,
+			        AVG(dv.PhaseBForwardReactiveEnergy) AS PhaseBForwardReactiveEnergy,
+			        AVG(dv.PhaseCForwardReactiveEnergy) AS PhaseCForwardReactiveEnergy,
+			        AVG(dv.PhaseAReverseReactiveEnergy) AS PhaseAReverseReactiveEnergy,
+			        
+			        AVG(dv.PhaseBReverseReactiveEnergy) AS PhaseBReverseReactiveEnergy,
+			        AVG(dv.PhaseCReverseReactiveEnergy) AS PhaseCReverseReactiveEnergy
+			      </if>
 				
 				<if test="table_name == 'model_meter_ion_8600'">
 					AVG(dv.VlnA) AS VlnA,
