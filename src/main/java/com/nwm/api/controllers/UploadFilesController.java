@@ -51,6 +51,7 @@ import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
 import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
 import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
+import com.nwm.api.entities.ModelJanitzaUmg604proEntity;
 import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
@@ -104,6 +105,7 @@ import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
 import com.nwm.api.services.ModelIMTSolarClass8000Service;
 import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
 import com.nwm.api.services.ModelIVTSolaronEXTService;
+import com.nwm.api.services.ModelJanitzaUmg604proService;
 import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
 import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
@@ -5142,6 +5144,109 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataModelDTSMeter);
+														
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
+												
+												
+											case "model_janitza_umg604pro":
+												ModelJanitzaUmg604proService serviceModelJan = new ModelJanitzaUmg604proService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelJanitzaUmg604proEntity dataModelJan = serviceModelJan.setModelJanitzaUmg604pro(line);
+														dataModelJan.setId_device(item.getId());
+														dataModelJan.setDatatablename(item.getDatatablename());
+														dataModelJan.setView_tablename(item.getView_tablename());
+														dataModelJan.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelJanitzaUmg604proEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelJan);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelJan, scaledValue);
+																if (slug.equals("TotalPower")) dataModelJan.setNvmActivePower(scaledValue);
+																if (slug.equals("TotalForwardActiveEnergy")) dataModelJan.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// PowerFactor_DTS_Overall
+														if(dataModelJan.getTotalPower() != 0.001 && dataModelJan.getTotalPower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelJan.getTime());
+														}
+														
+														
+														deviceUpdateE.setLast_value(dataModelJan.getTotalPower() != 0.001 ? dataModelJan.getTotalPower() : null);
+														deviceUpdateE.setField_value1(dataModelJan.getTotalPower() != 0.001 ? dataModelJan.getTotalPower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelJan.insertModelJanitzaUmg604pro(dataModelJan);
 														
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {

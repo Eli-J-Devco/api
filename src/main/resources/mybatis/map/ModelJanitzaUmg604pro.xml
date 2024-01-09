@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelJanitzaUmg604pro">
+	<resultMap id="ModelJanitzaUmg604proMap"
+		type="com.nwm.api.entities.ModelJanitzaUmg604proEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		
+		<result property="PhaseAVoltage" column="PhaseAVoltage" />
+		  <result property="PhaseBVoltage" column="PhaseBVoltage" />
+		  <result property="PhaseCVoltage" column="PhaseCVoltage" />
+		  <result property="ABVoltage" column="ABVoltage" />
+		  <result property="BCVoltage" column="BCVoltage" />
+		  <result property="CAVoltage" column="CAVoltage" />
+		  <result property="PhaseACurrent" column="PhaseACurrent" />
+		  <result property="PhaseBCurrent" column="PhaseBCurrent" />
+		  <result property="PhaseCCurrent" column="PhaseCCurrent" />
+		  <result property="TotalCurrent" column="TotalCurrent" />
+		  <result property="PhaseAPower" column="PhaseAPower" />
+		  <result property="PhaseBPower" column="PhaseBPower" />
+		  <result property="PhaseCPower" column="PhaseCPower" />
+		  <result property="TotalPower" column="TotalPower" />
+		  <result property="PhaseAApparentPower" column="PhaseAApparentPower" />
+		  <result property="PhaseBApparentPower" column="PhaseBApparentPower" />
+		  <result property="PhaseCApparentPower" column="PhaseCApparentPower" />
+		  <result property="TotalApparentPower" column="TotalApparentPower" />
+		  <result property="PhaseAReactivePower" column="PhaseAReactivePower" />
+		  <result property="PhaseBReactivePower" column="PhaseBReactivePower" />
+		  <result property="PhaseCReactivePower" column="PhaseCReactivePower" />
+		  <result property="TotalReactivePower" column="TotalReactivePower" />
+		  <result property="PhaseAPowerFactor" column="PhaseAPowerFactor" />
+		  <result property="PhaseBPowerFactor" column="PhaseBPowerFactor" />
+		  <result property="PhaseCPowerFactor" column="PhaseCPowerFactor" />
+		  <result property="PowerFactor" column="PowerFactor" />
+		  <result property="Frequency" column="Frequency" />
+		  <result property="TotalForwardActiveEnergy" column="TotalForwardActiveEnergy" />
+		  <result property="TotalReverseActiveEnergy" column="TotalReverseActiveEnergy" />
+		  <result property="TotalForwardReactiveEnergy" column="TotalForwardReactiveEnergy" />
+		  <result property="TotalReverseReactiveEnergy" column="TotalReverseReactiveEnergy" />
+		  <result property="PhaseAForwardActiveEnergy" column="PhaseAForwardActiveEnergy" />
+		  <result property="PhaseBForwardActiveEnergy" column="PhaseBForwardActiveEnergy" />
+		  <result property="PhaseCForwardActiveEnergy" column="PhaseCForwardActiveEnergy" />
+		  <result property="PhaseAReverseActiveEnergy" column="PhaseAReverseActiveEnergy" />
+		  <result property="PhaseBReverseActiveEnergy" column="PhaseBReverseActiveEnergy" />
+		  <result property="PhaseCReverseActiveEnergy" column="PhaseCReverseActiveEnergy" />
+		  <result property="PhaseAForwardReactiveEnergy" column="PhaseAForwardReactiveEnergy" />
+		  <result property="PhaseBForwardReactiveEnergy" column="PhaseBForwardReactiveEnergy" />
+		  <result property="PhaseCForwardReactiveEnergy" column="PhaseCForwardReactiveEnergy" />
+		  <result property="PhaseAReverseReactiveEnergy" column="PhaseAReverseReactiveEnergy" />
+		  <result property="PhaseBReverseReactiveEnergy" column="PhaseBReverseReactiveEnergy" />
+		  <result property="PhaseCReverseReactiveEnergy" column="PhaseCReverseReactiveEnergy" />
+  
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelJanitzaUmg604pro"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="PhaseAVoltage != 0.001">
+				`PhaseAVoltage`,
+			</if>
+			<if test="PhaseBVoltage != 0.001">
+				`PhaseBVoltage`,
+			</if>
+			<if test="PhaseCVoltage != 0.001">
+				`PhaseCVoltage`,
+			</if>
+			<if test="ABVoltage != 0.001">
+				`ABVoltage`,
+			</if>
+			<if test="BCVoltage != 0.001">
+				`BCVoltage`,
+			</if>
+			<if test="CAVoltage != 0.001">
+				`CAVoltage`,
+			</if>
+			<if test="PhaseACurrent != 0.001">
+				`PhaseACurrent`,
+			</if>
+			<if test="PhaseBCurrent != 0.001">
+				`PhaseBCurrent`,
+			</if>
+			
+			<if test="PhaseCCurrent != 0.001">
+				`PhaseCCurrent`,
+			</if>
+			<if test="TotalCurrent != 0.001">
+				`TotalCurrent`,
+			</if>
+			<if test="PhaseAPower != 0.001">
+				`PhaseAPower`,
+			</if>
+			<if test="PhaseBPower != 0.001">
+				`PhaseBPower`,
+			</if>
+			<if test="PhaseCPower != 0.001">
+				`PhaseCPower`,
+			</if>
+			<if test="TotalPower != 0.001">
+				`TotalPower`,
+			</if>
+			<if test="PhaseAApparentPower != 0.001">
+				`PhaseAApparentPower`,
+			</if>
+			<if test="PhaseBApparentPower != 0.001">
+				`PhaseBApparentPower`,
+			</if>
+			<if test="PhaseCApparentPower != 0.001">
+				`PhaseCApparentPower`,
+			</if>
+			<if test="TotalApparentPower != 0.001">
+				`TotalApparentPower`,
+			</if>
+			<if test="PhaseAReactivePower != 0.001">
+				`PhaseAReactivePower`,
+			</if>
+			<if test="PhaseBReactivePower != 0.001">
+				`PhaseBReactivePower`,
+			</if>
+			<if test="PhaseCReactivePower != 0.001">
+				`PhaseCReactivePower`,
+			</if>
+			<if test="TotalReactivePower != 0.001">
+				`TotalReactivePower`,
+			</if>
+			<if test="PhaseAPowerFactor != 0.001">
+				`PhaseAPowerFactor`,
+			</if>
+			<if test="PhaseBPowerFactor != 0.001">
+				`PhaseBPowerFactor`,
+			</if>
+			<if test="PhaseCPowerFactor != 0.001">
+				`PhaseCPowerFactor`,
+			</if>
+			<if test="PowerFactor != 0.001">
+				`PowerFactor`,
+			</if>
+			<if test="Frequency != 0.001">
+				`Frequency`,
+			</if>
+			<if test="TotalForwardActiveEnergy != 0.001">
+				`TotalForwardActiveEnergy`,
+			</if>
+			<if test="TotalReverseActiveEnergy != 0.001">
+				`TotalReverseActiveEnergy`,
+			</if>
+			<if test="TotalForwardReactiveEnergy != 0.001">
+				`TotalForwardReactiveEnergy`,
+			</if>
+			<if test="TotalReverseReactiveEnergy != 0.001">
+				`TotalReverseReactiveEnergy`,
+			</if>
+			<if test="PhaseAForwardActiveEnergy != 0.001">
+				`PhaseAForwardActiveEnergy`,
+			</if>
+			<if test="PhaseBForwardActiveEnergy != 0.001">
+				`PhaseBForwardActiveEnergy`,
+			</if>
+			<if test="PhaseCForwardActiveEnergy != 0.001">
+				`PhaseCForwardActiveEnergy`,
+			</if>
+			<if test="PhaseAReverseActiveEnergy != 0.001">
+				`PhaseAReverseActiveEnergy`,
+			</if>
+			<if test="PhaseBReverseActiveEnergy != 0.001">
+				`PhaseBReverseActiveEnergy`,
+			</if>
+			<if test="PhaseCReverseActiveEnergy != 0.001">
+				`PhaseCReverseActiveEnergy`,
+			</if>
+			<if test="PhaseAForwardReactiveEnergy != 0.001">
+				`PhaseAForwardReactiveEnergy`,
+			</if>
+			<if test="PhaseBForwardReactiveEnergy != 0.001">
+				`PhaseBForwardReactiveEnergy`,
+			</if>
+			<if test="PhaseCForwardReactiveEnergy != 0.001">
+				`PhaseCForwardReactiveEnergy`,
+			</if>
+			
+			<if test="PhaseAReverseReactiveEnergy != 0.001">
+				`PhaseAReverseReactiveEnergy`,
+			</if>
+			<if test="PhaseBReverseReactiveEnergy != 0.001">
+				`PhaseBReverseReactiveEnergy`,
+			</if>
+			<if test="PhaseCReverseReactiveEnergy != 0.001">
+				`PhaseCReverseReactiveEnergy`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="PhaseAVoltage != 0.001">
+        #{PhaseAVoltage},
+      </if>
+      <if test="PhaseBVoltage != 0.001">
+        #{PhaseBVoltage},
+      </if>
+      <if test="PhaseCVoltage != 0.001">
+        #{PhaseCVoltage},
+      </if>
+      <if test="ABVoltage != 0.001">
+        #{ABVoltage},
+      </if>
+      <if test="BCVoltage != 0.001">
+        #{BCVoltage},
+      </if>
+      <if test="CAVoltage != 0.001">
+        #{CAVoltage},
+      </if>
+      <if test="PhaseACurrent != 0.001">
+        #{PhaseACurrent},
+      </if>
+      <if test="PhaseBCurrent != 0.001">
+        #{PhaseBCurrent},
+      </if>
+      
+      <if test="PhaseCCurrent != 0.001">
+        #{PhaseCCurrent},
+      </if>
+      <if test="TotalCurrent != 0.001">
+        #{TotalCurrent},
+      </if>
+      <if test="PhaseAPower != 0.001">
+        #{PhaseAPower},
+      </if>
+      <if test="PhaseBPower != 0.001">
+        #{PhaseBPower},
+      </if>
+      <if test="PhaseCPower != 0.001">
+        #{PhaseCPower},
+      </if>
+      <if test="TotalPower != 0.001">
+        #{TotalPower},
+      </if>
+      <if test="PhaseAApparentPower != 0.001">
+        #{PhaseAApparentPower},
+      </if>
+      <if test="PhaseBApparentPower != 0.001">
+        #{PhaseBApparentPower},
+      </if>
+      <if test="PhaseCApparentPower != 0.001">
+        #{PhaseCApparentPower},
+      </if>
+      <if test="TotalApparentPower != 0.001">
+        #{TotalApparentPower},
+      </if>
+      <if test="PhaseAReactivePower != 0.001">
+        #{PhaseAReactivePower},
+      </if>
+      <if test="PhaseBReactivePower != 0.001">
+        #{PhaseBReactivePower},
+      </if>
+      <if test="PhaseCReactivePower != 0.001">
+        #{PhaseCReactivePower},
+      </if>
+      <if test="TotalReactivePower != 0.001">
+        #{TotalReactivePower},
+      </if>
+      <if test="PhaseAPowerFactor != 0.001">
+        #{PhaseAPowerFactor},
+      </if>
+      <if test="PhaseBPowerFactor != 0.001">
+        #{PhaseBPowerFactor},
+      </if>
+      <if test="PhaseCPowerFactor != 0.001">
+        #{PhaseCPowerFactor},
+      </if>
+      <if test="PowerFactor != 0.001">
+        #{PowerFactor},
+      </if>
+      <if test="Frequency != 0.001">
+        #{Frequency},
+      </if>
+      <if test="TotalForwardActiveEnergy != 0.001">
+        #{TotalForwardActiveEnergy},
+      </if>
+      <if test="TotalReverseActiveEnergy != 0.001">
+        #{TotalReverseActiveEnergy},
+      </if>
+      <if test="TotalForwardReactiveEnergy != 0.001">
+        #{TotalForwardReactiveEnergy},
+      </if>
+      <if test="TotalReverseReactiveEnergy != 0.001">
+        #{TotalReverseReactiveEnergy},
+      </if>
+      <if test="PhaseAForwardActiveEnergy != 0.001">
+        #{PhaseAForwardActiveEnergy},
+      </if>
+      <if test="PhaseBForwardActiveEnergy != 0.001">
+        #{PhaseBForwardActiveEnergy},
+      </if>
+      <if test="PhaseCForwardActiveEnergy != 0.001">
+        #{PhaseCForwardActiveEnergy},
+      </if>
+      <if test="PhaseAReverseActiveEnergy != 0.001">
+        #{PhaseAReverseActiveEnergy},
+      </if>
+      <if test="PhaseBReverseActiveEnergy != 0.001">
+        #{PhaseBReverseActiveEnergy},
+      </if>
+      <if test="PhaseCReverseActiveEnergy != 0.001">
+        #{PhaseCReverseActiveEnergy},
+      </if>
+      <if test="PhaseAForwardReactiveEnergy != 0.001">
+        #{PhaseAForwardReactiveEnergy},
+      </if>
+      <if test="PhaseBForwardReactiveEnergy != 0.001">
+        #{PhaseBForwardReactiveEnergy},
+      </if>
+      <if test="PhaseCForwardReactiveEnergy != 0.001">
+        #{PhaseCForwardReactiveEnergy},
+      </if>
+      
+      <if test="PhaseAReverseReactiveEnergy != 0.001">
+        #{PhaseAReverseReactiveEnergy},
+      </if>
+      <if test="PhaseBReverseReactiveEnergy != 0.001">
+        #{PhaseBReverseReactiveEnergy},
+      </if>
+      <if test="PhaseCReverseReactiveEnergy != 0.001">
+        #{PhaseCReverseReactiveEnergy},
+      </if>
+      
+      <if test="nvmActivePower != 0.001">
+        #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001">
+        #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001">
+        #{MeasuredProduction},
+      </if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="PhaseAVoltage != 0.001">
+        `PhaseAVoltage` = #{PhaseAVoltage},
+      </if>
+      <if test="PhaseBVoltage != 0.001">
+        `PhaseBVoltage` = #{PhaseBVoltage},
+      </if>
+      <if test="PhaseCVoltage != 0.001">
+        `PhaseCVoltage` = #{PhaseCVoltage},
+      </if>
+      <if test="ABVoltage != 0.001">
+        `ABVoltage` = #{ABVoltage},
+      </if>
+      <if test="BCVoltage != 0.001">
+        `BCVoltage` = #{BCVoltage},
+      </if>
+      <if test="CAVoltage != 0.001">
+        `CAVoltage` = #{CAVoltage},
+      </if>
+      <if test="PhaseACurrent != 0.001">
+        `PhaseACurrent` = #{PhaseACurrent},
+      </if>
+      <if test="PhaseBCurrent != 0.001">
+        `PhaseBCurrent` = #{PhaseBCurrent},
+      </if>
+      
+      <if test="PhaseCCurrent != 0.001">
+        `PhaseCCurrent` = #{PhaseCCurrent},
+      </if>
+      <if test="TotalCurrent != 0.001">
+        `TotalCurrent` = #{TotalCurrent},
+      </if>
+      <if test="PhaseAPower != 0.001">
+        `PhaseAPower` = #{PhaseAPower},
+      </if>
+      <if test="PhaseBPower != 0.001">
+        `PhaseBPower` = #{PhaseBPower},
+      </if>
+      <if test="PhaseCPower != 0.001">
+        `PhaseCPower` = #{PhaseCPower},
+      </if>
+      <if test="TotalPower != 0.001">
+        `TotalPower` = #{TotalPower},
+      </if>
+      <if test="PhaseAApparentPower != 0.001">
+        `PhaseAApparentPower` = #{PhaseAApparentPower},
+      </if>
+      <if test="PhaseBApparentPower != 0.001">
+        `PhaseBApparentPower` = #{PhaseBApparentPower},
+      </if>
+      <if test="PhaseCApparentPower != 0.001">
+        `PhaseCApparentPower` = #{PhaseCApparentPower},
+      </if>
+      <if test="TotalApparentPower != 0.001">
+        `TotalApparentPower` = #{TotalApparentPower},
+      </if>
+      <if test="PhaseAReactivePower != 0.001">
+        `PhaseAReactivePower` = #{PhaseAReactivePower},
+      </if>
+      <if test="PhaseBReactivePower != 0.001">
+        `PhaseBReactivePower` = #{PhaseBReactivePower},
+      </if>
+      <if test="PhaseCReactivePower != 0.001">
+        `PhaseCReactivePower` = #{PhaseCReactivePower},
+      </if>
+      <if test="TotalReactivePower != 0.001">
+        `TotalReactivePower` = #{TotalReactivePower},
+      </if>
+      <if test="PhaseAPowerFactor != 0.001">
+        `PhaseAPowerFactor` = #{PhaseAPowerFactor},
+      </if>
+      <if test="PhaseBPowerFactor != 0.001">
+        `PhaseBPowerFactor` = #{PhaseBPowerFactor},
+      </if>
+      <if test="PhaseCPowerFactor != 0.001">
+        `PhaseCPowerFactor` = #{PhaseCPowerFactor},
+      </if>
+      <if test="PowerFactor != 0.001">
+        `PowerFactor` = #{PowerFactor},
+      </if>
+      <if test="Frequency != 0.001">
+        `Frequency` = #{Frequency},
+      </if>
+      <if test="TotalForwardActiveEnergy != 0.001">
+        `TotalForwardActiveEnergy` = #{TotalForwardActiveEnergy},
+      </if>
+      <if test="TotalReverseActiveEnergy != 0.001">
+        `TotalReverseActiveEnergy` = #{TotalReverseActiveEnergy},
+      </if>
+      <if test="TotalForwardReactiveEnergy != 0.001">
+        `TotalForwardReactiveEnergy` = #{TotalForwardReactiveEnergy},
+      </if>
+      <if test="TotalReverseReactiveEnergy != 0.001">
+        `TotalReverseReactiveEnergy` = #{TotalReverseReactiveEnergy},
+      </if>
+      <if test="PhaseAForwardActiveEnergy != 0.001">
+        `PhaseAForwardActiveEnergy` = #{PhaseAForwardActiveEnergy},
+      </if>
+      <if test="PhaseBForwardActiveEnergy != 0.001">
+        `PhaseBForwardActiveEnergy` = #{PhaseBForwardActiveEnergy},
+      </if>
+      <if test="PhaseCForwardActiveEnergy != 0.001">
+        `PhaseCForwardActiveEnergy` = #{PhaseCForwardActiveEnergy},
+      </if>
+      <if test="PhaseAReverseActiveEnergy != 0.001">
+        `PhaseAReverseActiveEnergy` = #{PhaseAReverseActiveEnergy},
+      </if>
+      <if test="PhaseBReverseActiveEnergy != 0.001">
+        `PhaseBReverseActiveEnergy` = #{PhaseBReverseActiveEnergy},
+      </if>
+      <if test="PhaseCReverseActiveEnergy != 0.001">
+        `PhaseCReverseActiveEnergy` = #{PhaseCReverseActiveEnergy},
+      </if>
+      <if test="PhaseAForwardReactiveEnergy != 0.001">
+        `PhaseAForwardReactiveEnergy` = #{PhaseAForwardReactiveEnergy},
+      </if>
+      <if test="PhaseBForwardReactiveEnergy != 0.001">
+        `PhaseBForwardReactiveEnergy` = #{PhaseBForwardReactiveEnergy},
+      </if>
+      <if test="PhaseCForwardReactiveEnergy != 0.001">
+        `PhaseCForwardReactiveEnergy` = #{PhaseCForwardReactiveEnergy},
+      </if>
+      
+      <if test="PhaseAReverseReactiveEnergy != 0.001">
+        `PhaseAReverseReactiveEnergy` = #{PhaseAReverseReactiveEnergy},
+      </if>
+      <if test="PhaseBReverseReactiveEnergy != 0.001">
+        `PhaseBReverseReactiveEnergy` = #{PhaseBReverseReactiveEnergy},
+      </if>
+      <if test="PhaseCReverseReactiveEnergy != 0.001">
+        `PhaseCReverseReactiveEnergy` = #{PhaseCReverseReactiveEnergy},
+      </if>
+      
+      <if test="nvmActivePower != 0.001">
+        `nvmActivePower` = #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001">
+        `nvmActiveEnergy` = #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001">
+        `MeasuredProduction` = #{MeasuredProduction},
+      </if>
+			
+		</trim>
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelJanitzaUmg604proEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+
+</mapper> 

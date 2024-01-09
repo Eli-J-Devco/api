@@ -121,6 +121,8 @@
 		<mapper resource="mybatis/map/ModelElsterA1700.xml"/>
 		<mapper resource="mybatis/map/ModelAeRefusol.xml"/>
 		<mapper resource="mybatis/map/ModelDTSMeasurelogicDemandMeter.xml"/>
+		<mapper resource="mybatis/map/ModelJanitzaUmg604pro.xml"/>
+		
 		
 		
 		
