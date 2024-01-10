@@ -1462,7 +1462,7 @@
 				  IFNULL(ROUND(IF(AVG(DailyHorizontalIrradiance) <![CDATA[<]]> 0, 0, AVG(DailyHorizontalIrradiance)), 2), 0.001) AS DailyHorizontalIrradiance,
 				  
 			      IFNULL(ROUND(AVG(AmbientTemperature), 2), 0.001) AS AmbientTemperature,
-			      IFNULL(ROUND(AVG(Temperature), 2), 0.001) AS Temperature_PV_Module,
+			      IFNULL(ROUND(AVG(Temperature), 2), 0.001) AS Temperature,
 			      IFNULL(ROUND(AVG(WindAngle), 2), 0.001) AS WindAngle,
 			      IFNULL(ROUND(AVG(WindSpeed), 2), 0.001) AS WindSpeed
 			</if>
@@ -3725,7 +3725,7 @@
 					  IF(AVG(dv.DailyHorizontalIrradiance) <![CDATA[<]]> 0, 0, AVG(dv.DailyHorizontalIrradiance)) AS DailyHorizontalIrradiance,
 					  
 				      AVG(dv.AmbientTemperature) AS AmbientTemperature,
-				      AVG(dv.Temperature) AS Temperature_PV_Module,
+				      AVG(dv.Temperature) AS Temperature,
 				      AVG(dv.WindAngle) AS WindAngle,
 				      AVG(dv.WindSpeed) AS WindSpeed,
 				</if>
