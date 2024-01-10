@@ -136,7 +136,7 @@ public class ModelLeviton70D48000Service extends DB {
 	
 	public boolean insertModelLeviton70D48000(ModelLeviton70D48000Entity obj) {
 		try {
-			ModelLeviton70D48000Entity dataObj = (ModelLeviton70D48000Entity) queryForObject("ModelLeviton70D4800.getLastRow", obj);
+			ModelLeviton70D48000Entity dataObj = (ModelLeviton70D48000Entity) queryForObject("ModelLeviton70D48000.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
@@ -149,7 +149,7 @@ public class ModelLeviton70D48000Service extends DB {
 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
-			 Object insertId = insert("ModelLeviton70D4800.insertModelLeviton70D4800", obj);
+			 Object insertId = insert("ModelLeviton70D48000.insertModelLeviton70D48000", obj);
 		        if(insertId == null ) {
 		        	return false;
 		        }
