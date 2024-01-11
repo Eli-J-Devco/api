@@ -586,9 +586,15 @@
 			s.id,
 			s.`name`,
 			s.`name` AS text,
+			s.id_site_group,
+			s.id_site_sub_group,
+			sg.name AS site_group_name,
+			ssg.name AS site_sub_group_name,
 			1 AS active 
 		FROM
 			site s
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 		WHERE s.is_delete = 0 AND s.`status` = 1
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
