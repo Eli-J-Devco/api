@@ -729,10 +729,13 @@ public class BuiltInReportController extends BaseController {
 							
 							// first bar chart
 							XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+							
 							XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 							leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 							leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 							leftAxis.setTitle("kWh");
+							if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 		
 							XDDFChartData data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 							XDDFBarChartData bar = (XDDFBarChartData) data;
@@ -776,11 +779,13 @@ public class BuiltInReportController extends BaseController {
 							// bottom axis must be there but must not be visible
 							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 							bottomAxis.setVisible(false);
+							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 		
 							XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 							rightAxis.setCrosses(AxisCrosses.MAX);
 							rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 							rightAxis.setTitle("%"); // comment
+							if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
 		
 							// set correct cross axis
 							bottomAxis.crossAxis(rightAxis);
@@ -1508,10 +1513,13 @@ public class BuiltInReportController extends BaseController {
 							
 							// bar chart
 							XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+							
 							XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 							leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 							leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 							leftAxis.setTitle("kWh");
+							if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 		
 							XDDFBarChartData data = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 							data.setBarDirection(BarDirection.COL);
@@ -1540,11 +1548,13 @@ public class BuiltInReportController extends BaseController {
 							// bottom axis must be there but must not be visible
 							bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 							bottomAxis.setVisible(false);
+							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 		
 							XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 							rightAxis.setCrosses(AxisCrosses.MAX);
 							rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 							rightAxis.setTitle("%"); // comment
+							if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
 		
 							// set correct cross axis
 							bottomAxis.crossAxis(rightAxis);

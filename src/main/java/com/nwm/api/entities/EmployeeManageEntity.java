@@ -57,8 +57,15 @@ public class EmployeeManageEntity{
 	private int is_send_email_unblock;
 	private String hash_id_user;
 	private String created_by;
+	private int id_company;
 	
 	
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
 	public String getHash_id_user() {
 		return hash_id_user;
 	}

@@ -680,11 +680,14 @@ public class ReportsController extends BaseController {
 						
 						// create axis
 						XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						
 						XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 						leftAxis.setTitle("kW");
 						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setMinimum(0);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 			
 						// create data and series
 						XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
@@ -708,6 +711,7 @@ public class ReportsController extends BaseController {
 						rightAxis.crossAxis(bottomAxis);
 						rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						rightAxis.setMinimum(0);
+						if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
 
 						// create data and series
 						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
@@ -730,6 +734,8 @@ public class ReportsController extends BaseController {
 						bottomAxis.crossAxis(rightAxis3);
 						rightAxis3.crossAxis(bottomAxis);
 						rightAxis3.setMinimum(0);
+						if (rightAxis3.hasNumberFormat()) rightAxis3.setNumberFormat("#,##0.00");
+						
 						// create data and series
 						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis3);
 						series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
@@ -1614,10 +1620,13 @@ public class ReportsController extends BaseController {
 
 					// first bar chart
 					XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+					if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+					
 					XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 					leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 					leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 					leftAxis.setTitle("GENERATION (KWH)");
+					if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 
 					XDDFChartData data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 					XDDFBarChartData bar = (XDDFBarChartData) data;
@@ -1648,11 +1657,13 @@ public class ReportsController extends BaseController {
 					// bottom axis must be there but must not be visible
 					bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 					bottomAxis.setVisible(false);
+					if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 
 					XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 					rightAxis.setCrosses(AxisCrosses.MAX);
 					rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 					rightAxis.setTitle("PERFORMANCE INDEX (%)"); // comment
+					if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
 
 					// set correct cross axis
 					bottomAxis.crossAxis(rightAxis);
@@ -2956,12 +2967,15 @@ public class ReportsController extends BaseController {
 	
 						// first bar chart
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						bottomAxis.setMajorTickMark(AxisTickMark.NONE);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						
 						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setTitle("");
 						leftAxis.setMajorTickMark(AxisTickMark.NONE);
-						bottomAxis.setMajorTickMark(AxisTickMark.NONE);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 	
 						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 						XDDFBarChartData bar = (XDDFBarChartData) data;
@@ -2998,11 +3012,14 @@ public class ReportsController extends BaseController {
 					    // create the axes
 					    bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 					    bottomAxis.setMajorTickMark(AxisTickMark.NONE);
+					    if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+					    
 					    leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 					    leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 					    leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setTitle("");
 						leftAxis.setMajorTickMark(AxisTickMark.NONE);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 					    
 					   // create chart data
 					    data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
@@ -4384,11 +4401,14 @@ public class ReportsController extends BaseController {
 						
 						// first bar chart
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+
 						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setTitle("GENERATION (KWH)");
 						leftAxis.setMinimum(0);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 						
 						
 						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
@@ -4415,12 +4435,13 @@ public class ReportsController extends BaseController {
 						// bottom axis must be there but must not be visible
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 						bottomAxis.setVisible(false);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 						
 						XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 						rightAxis.setCrosses(AxisCrosses.MAX);
 						rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						rightAxis.setTitle("PERFORMANCE INDEX (%)");
-//					
+						if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
 						
 						// set correct cross axis
 						bottomAxis.crossAxis(rightAxis);
@@ -4449,11 +4470,14 @@ public class ReportsController extends BaseController {
 						// create the axes
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 						bottomAxis.setVisible(false);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						
 						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setTitle("GENERATION (KWH)");
 						leftAxis.setMinimum(0);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 						
 						// create chart data
 						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
@@ -5389,6 +5413,7 @@ public class ReportsController extends BaseController {
 							
 							// create axis
 							XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 							
 							XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 							leftAxis.setTitle("kWh");
@@ -5399,6 +5424,7 @@ public class ReportsController extends BaseController {
 							byte[] color = {(byte) 240, (byte) 240, (byte) 240};
 							lineProperties.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(color)));
 							leftAxis.getOrAddMajorGridProperties().setLineProperties(lineProperties);
+							if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 				
 							// create data and series
 							XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);

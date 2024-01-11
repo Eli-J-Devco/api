@@ -16,6 +16,7 @@
 		<result property="table_column" column="table_column" />
 		<result property="alert_filter" column="alert_filter" />
 		<result property="hash_id_user" column="hash_id_user" />
+		<result property="id_company" column="id_company" />
 		
 	</resultMap>
 	
@@ -55,6 +56,7 @@
 		<result property="failed_attempt" column="failed_attempt" />
 		<result property="account_locked" column="account_locked" />
 		<result property="lock_time" column="lock_time" />
+		<result property="id_company" column="id_company" />
 		
 	</resultMap>
 	
@@ -114,6 +116,7 @@
 			SHA2(u.`id`, 256) AS hash_id_user,
 			u.failed_attempt,
 			u.is_send_email_unblock,
+			u.id_company,
 			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
 			( SELECT `value` FROM system_setup WHERE type = 'time_account_locked' ) AS time_account_locked
 			
@@ -214,7 +217,8 @@
 			e.failed_attempt,
 			e.lock_time,
 			e.created_by,
-			SHA2(e.`id`, 256) AS hash_id_user
+			SHA2(e.`id`, 256) AS hash_id_user,
+			e.id_company
 		FROM
 			`employee` e	
 			
@@ -452,7 +456,8 @@
 			birthday,
 			skype,
 			created_by,
-			created_date
+			created_date,
+			id_company
 		)VALUES(
 			#{first_name},
 			#{last_name},
@@ -464,7 +469,8 @@
 			#{birthday},
 			#{skype},
 			#{created_by},
-			NOW()
+			NOW(),
+			id_company
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -514,7 +520,8 @@
 			`birthday` = #{birthday},
 			`skype` = #{skype},
 			`updated_by` = #{created_by},
-			`updated_date` = NOW()
+			`updated_date` = NOW(),
+			`id_company` = #{id_company}
 			
 		WHERE
 			`id` = #{id}

@@ -1186,9 +1186,9 @@
 							(
 							SELECT
 								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i %p') AS time_format,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i %p') AS categories_time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:00') AS hour_time,
 								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
 							FROM
@@ -1238,9 +1238,9 @@
 							(
 							SELECT
 								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i %p') AS time_format,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i %p') AS categories_time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
 								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:00') AS hour_time,
 								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
 							FROM
@@ -1290,9 +1290,9 @@
 							(
 							SELECT
 								dv.time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i %p' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00 %p' ) AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
 								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
 							FROM

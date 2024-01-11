@@ -58,10 +58,17 @@ public class UserEntity implements UserDetails, Authentication{
 	private int max_failed_attempt;
 	private double time_account_locked;
 	private int is_send_email_unblock;
+	private int id_company;
 	
 	
 	
 	
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
 	public int getIs_send_email_unblock() {
 		return is_send_email_unblock;
 	}

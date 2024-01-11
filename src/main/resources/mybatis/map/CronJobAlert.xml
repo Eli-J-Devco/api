@@ -316,8 +316,10 @@
   	</select>
   	
   	<select id="getLastRowItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
+			
     	SELECT 
 			t.time,
+			t.id,
 			t.devicename,
 			t.id_device,
 			t.nvmActivePower,
@@ -332,6 +334,7 @@
 		    		IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
 		    		u.nvmActiveEnergy,
 		    		d.devicename,
+		    		d.id,
 		    		IF(u.nvmActivePower = 0 <![CDATA[&&]]> u.nvmActiveEnergy = 0 , 1, NULL) AS count_is_comm
 		 FROM ${datatablename} u
 		
