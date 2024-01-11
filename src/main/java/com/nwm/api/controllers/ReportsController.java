@@ -1657,6 +1657,7 @@ public class ReportsController extends BaseController {
 					// bottom axis must be there but must not be visible
 					bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 					bottomAxis.setVisible(false);
+					if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 
 					XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 					rightAxis.setCrosses(AxisCrosses.MAX);
@@ -4434,6 +4435,7 @@ public class ReportsController extends BaseController {
 						// bottom axis must be there but must not be visible
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 						bottomAxis.setVisible(false);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
 						
 						XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
 						rightAxis.setCrosses(AxisCrosses.MAX);
@@ -4468,11 +4470,14 @@ public class ReportsController extends BaseController {
 						// create the axes
 						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 						bottomAxis.setVisible(false);
+						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						
 						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
 						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
 						leftAxis.setTitle("GENERATION (KWH)");
 						leftAxis.setMinimum(0);
+						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 						
 						// create chart data
 						data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
