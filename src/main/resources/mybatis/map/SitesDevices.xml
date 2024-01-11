@@ -211,7 +211,11 @@
 				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2) )))
-
+				
+				WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
+				WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				ELSE "N/A"
 			END AS key_indicator,
 			IFNULL(p.totalError, 0 ) AS totalError,
