@@ -733,7 +733,7 @@
   	</select>
   	
   	
-  	<select id="getLastRowItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
+  	<!-- <select id="getLastRowItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
     	SELECT
     		u.`time`, 
     		u.`id_device`, 
@@ -750,12 +750,10 @@
 		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -45 MINUTE) , '%Y-%m-%d %H:%i:%s')
 		AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> convert_tz( #{current_time},  t.`offset`, '+00:00')
 		
-		<!-- AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ( DATE_ADD( NOW() ,INTERVAL -30 MINUTE) , '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s') 
 		
-		AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00") -->
 		
 		ORDER BY u.time DESC LIMIT 1;
-  	</select>
+  	</select> -->
   	
   	<select id="getAlertDetail" resultType="com.nwm.api.entities.AlertEntity">
     	SELECT
