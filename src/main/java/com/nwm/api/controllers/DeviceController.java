@@ -246,6 +246,25 @@ public class DeviceController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list device parameter by device group
+	 * @author duy.phan
+	 * @since 2024-01-15
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-scaled-parameter-by-device-group")
+	public Object getListScaledParameterByDeviceGroup(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			List data = service.getListScaledParameterByDeviceGroup(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description update device parameter scale
 	 * @author Hung.Bui
 	 * @since 2023-08-28

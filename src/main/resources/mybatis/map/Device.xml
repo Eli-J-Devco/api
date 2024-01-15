@@ -579,6 +579,28 @@
 		ORDER BY dp.id
 	</select>
 	
+	<select id="getListScaledParameterByDeviceGroup" resultType="Map">
+		SELECT 
+			dp.id,
+			CONCAT(dp.`name`, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			dp.`name` AS parameter_name,
+			dps.scale
+			
+		FROM 
+			device_parameter_scale dps
+			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
+			LEFT JOIN device d ON d.id = dps.id_device
+		WHERE
+			d.id_device_group = #{id_device_group}
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dps.scale is not null
+			GROUP BY dps.scale, dps.id_device_parameter
+			ORDER BY dp.`name`
+	</select>
+	
 	<select id="getListScaledDeviceParameter" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			dps.scale AS parameter_scale,

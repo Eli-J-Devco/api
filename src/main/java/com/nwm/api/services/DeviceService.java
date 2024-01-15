@@ -394,6 +394,26 @@ public class DeviceService extends DB {
 	}
 	
 	/**
+	 * @description Get list device parameter
+	 * @author duy.phan
+	 * @since 2024-01-15
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListScaledParameterByDeviceGroup(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListScaledParameterByDeviceGroup", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
 	 * @description Get list device parameter having scale setting
 	 * @author Hung.Bui
 	 * @since 2023-08-28
