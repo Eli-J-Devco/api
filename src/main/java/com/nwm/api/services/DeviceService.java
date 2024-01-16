@@ -189,14 +189,14 @@ public class DeviceService extends DB {
 		try {
 			Object insertId =  session.insert("Device.insertDevice", obj);
 			if(insertId != null && insertId instanceof Integer && obj.getId() > 0) {
-				// Create table, view, BJob
-//				session.insert("Device.createTableDevice", obj);
-//				session.insert("Device.createViewThreeMonthData", obj);
-//				session.insert("Device.createBJobData", obj);
-//				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDatatablename());
-//				obj.setView_tablename("view" + obj.getId() + "_"+ obj.getDatatablename());
-//				obj.setJob_tablename("bjob" + obj.getId() + "_"+ obj.getDatatablename());
-//				session.update("Device.updateTableDevice", obj);
+//				 Create table, view, BJob
+				session.insert("Device.createTableDevice", obj);
+				session.insert("Device.createViewThreeMonthData", obj);
+				session.insert("Device.createBJobData", obj);
+				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDatatablename());
+				obj.setView_tablename("view" + obj.getId() + "_"+ obj.getDatatablename());
+				obj.setJob_tablename("bjob" + obj.getId() + "_"+ obj.getDatatablename());
+				session.update("Device.updateTableDevice", obj);
 				
 			} else {
 				throw new Exception();
@@ -212,24 +212,6 @@ public class DeviceService extends DB {
 		} finally {
 			session.close();
 		}	
-		
-//		try
-//	    {
-//	       Object insertId = insert("Device.insertDevice", obj);
-//	       if(insertId != null && insertId instanceof Integer) {
-//	    	   
-//	    	   // Create table, view, BJob
-//	    	   
-//	    	   return obj;
-//	       }else {
-//	    	   return null;
-//	       }
-//	    }
-//	    catch(Exception ex)
-//	    {
-//	        log.error("insert", ex);
-//	        return null;
-//	    }	
 	}
 	
 	/**
