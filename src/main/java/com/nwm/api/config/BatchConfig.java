@@ -238,23 +238,23 @@ public class BatchConfig {
 	 * @author Long.Pham
 	 * @since 2023-01-04
 	 */
-	@Scheduled(cron = "0 */5 * * * *")
-	public void readFolderFTP() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		BatchJobFTP job = new BatchJobFTP(); 
-		switch (env) {
-		case "test":
-//			job.readFolderFTP();
-			break;
-		case "staging":
-		case "prod":
-//			job.readFolderFTP();
-			break;
-		}
-		
-		
-	}
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void readFolderFTP() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		BatchJobFTP job = new BatchJobFTP(); 
+//		switch (env) {
+//		case "test":
+////			job.readFolderFTP();
+//			break;
+//		case "staging":
+//		case "prod":
+////			job.readFolderFTP();
+//			break;
+//		}
+//		
+//		
+//	}
 	
 	
 	private static String readProperty(ResourceBundle resourceBundle, String key, String defaultValue) {
@@ -270,22 +270,22 @@ public class BatchConfig {
 	 * @author Long.Pham
 	 * @since 2023-01-30
 	 */
-	@Scheduled(cron = "0 */5 * * * *")
-	public void readFolderSMAFTP() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		BatchJobSMAFTP job = new BatchJobSMAFTP();
-		switch (env) {
-		case "test":
-//			job.readFolderSMAFTP();
-			break;
-		case "staging":
-		case "prod":
-//			job.readFolderSMAFTP();
-			break;
-		}
-	}
-	
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void readFolderSMAFTP() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		BatchJobSMAFTP job = new BatchJobSMAFTP();
+//		switch (env) {
+//		case "test":
+////			job.readFolderSMAFTP();
+//			break;
+//		case "staging":
+//		case "prod":
+////			job.readFolderSMAFTP();
+//			break;
+//		}
+//	}
+//	
 	
 //	/**
 //	 * @description get sunrise sunset
