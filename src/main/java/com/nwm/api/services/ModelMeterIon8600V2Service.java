@@ -1,14 +1,21 @@
+/********************************************************
+* Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+* All rights reserved.
+* 
+*********************************************************/
 package com.nwm.api.services;
+
 
 import java.util.List;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.ModelMeterIon8600V1Entity;
+import com.nwm.api.entities.ModelMeterIon8600Entity;
+import com.nwm.api.entities.ModelMeterIon8600V2Entity;
 import com.nwm.api.utils.Lib;
 
-public class ModelMeterIon8600V1Service extends DB{
+public class ModelMeterIon8600V2Service extends DB {
 	/**
 	 * @description set data 
 	 * @author long.pham
@@ -16,11 +23,11 @@ public class ModelMeterIon8600V1Service extends DB{
 	 * @param data
 	 */
 	
-	public ModelMeterIon8600V1Entity setModelMeterIon8600V1(String line) {
+	public ModelMeterIon8600V2Entity setModelMeterIon8600V2(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
-				ModelMeterIon8600V1Entity dataModelIon = new ModelMeterIon8600V1Entity();
+				ModelMeterIon8600V2Entity dataModelIon = new ModelMeterIon8600V2Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
 				
@@ -30,8 +37,8 @@ public class ModelMeterIon8600V1Service extends DB{
 				dataModelIon.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelIon.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelIon.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelIon.setVAN(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelIon.setVlnA(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelIon.setVlnB(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelIon.setVlnC(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelIon.setVlnAve(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelIon.setVllAb(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -103,21 +110,22 @@ public class ModelMeterIon8600V1Service extends DB{
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelIon.setNvmActivePower(power);
-				dataModelIon.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
+				dataModelIon.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
 				
 				return dataModelIon;
 				
 			} else {
-				return new ModelMeterIon8600V1Entity();
+				return new ModelMeterIon8600V2Entity();
 			}
 			
 			
 		} catch (Exception ex) {
 			log.error("insert", ex);
-			return new ModelMeterIon8600V1Entity();
+			return new ModelMeterIon8600V2Entity();
 		}
 	}
-	
+
+
 	/**
 	 * @description insert data from datalogger to model_meter_ion_8600
 	 * @author long.pham
@@ -125,9 +133,9 @@ public class ModelMeterIon8600V1Service extends DB{
 	 * @param data from datalogger
 	 */
 	
-	public boolean insertModelMeterIon8600V1(ModelMeterIon8600V1Entity obj) {
+	public boolean insertModelMeterIon8600V2(ModelMeterIon8600V2Entity obj) {
 		try {
-			ModelMeterIon8600V1Entity dataObj = (ModelMeterIon8600V1Entity) queryForObject("ModelMeterIon8600V1.getLastRow", obj);
+			ModelMeterIon8600V2Entity dataObj = (ModelMeterIon8600V2Entity) queryForObject("ModelMeterIon8600.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
@@ -140,7 +148,7 @@ public class ModelMeterIon8600V1Service extends DB{
 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
-			 Object insertId = insert("ModelMeterIon8600V1.insertModelMeterIon8600V1", obj);
+			 Object insertId = insert("ModelMeterIon8600V2.insertModelMeterIon8600V2", obj);
 		        if(insertId == null ) {
 		        	return false;
 		        }
@@ -151,4 +159,5 @@ public class ModelMeterIon8600V1Service extends DB{
 		}
 
 	}
+
 }

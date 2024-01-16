@@ -215,6 +215,10 @@ public class SiteService extends DB {
 				// Update table virtual and table report
 				obj.setTable_data_report("site" + insertLastId + "_data_report");
 				obj.setTable_data_virtual("model"+ insertLastId + "_virtual_meter_or_inverter");
+				
+				// Create table site data report and table virtual meter
+				session.insert("Site.createTableReportSite", obj);
+				session.insert("Site.createTableVirtualDeviceSite", obj);
 				session.insert("Site.updateTableVirtualAndReport", obj);
 				
 				

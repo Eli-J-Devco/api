@@ -493,6 +493,62 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	
+	<insert id="createTableReportSite">
+		CREATE TABLE IF NOT EXISTS `site${id}_data_report` 
+		  (
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `InverterUptime` int(2) DEFAULT NULL,
+			  `DayTime` int(2) DEFAULT NULL,
+			  `InverterUptimeDaytime` double DEFAULT NULL COMMENT 'Inverter Uptime/Daytime',
+			  `ActualGeneration` double DEFAULT NULL COMMENT 'Actual Generation',
+			  `EstimatedGeneration` double DEFAULT NULL COMMENT 'Estimated Generation',
+			  `EstimatedGenerationIndex` double DEFAULT NULL COMMENT 'Estimated Generation Index (%)',
+			  `InverterAvailability` double DEFAULT NULL COMMENT 'Inverter Availability',
+			  `PowerTodayTotal` double DEFAULT NULL,
+			  `PowerTodayAVG` double DEFAULT NULL,
+			  `POATotal` double DEFAULT NULL,
+			  `POAAVG` double DEFAULT NULL,
+			  `TCellAVG` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_report${id}_site_data_report` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
+	
+	
+	
+	
+	<insert id="createTableVirtualDeviceSite">
+		CREATE TABLE IF NOT EXISTS `model${id}_virtual_meter_or_inverter`
+		  (
+		  	  `time` datetime NOT NULL,
+			  `id_device` int(11) NOT NULL,
+			  `nvmActivePower` double DEFAULT NULL,
+			  `nvmActiveEnergy` double DEFAULT NULL,
+			  `nvm_irradiance` double DEFAULT NULL,
+			  `nvm_temperature` double DEFAULT NULL,
+			  `expected_power_dc` double DEFAULT NULL,
+			  `expected_power_ac` double DEFAULT NULL,
+			  `expected_energy` double DEFAULT NULL,
+			  `r_irradiance` double DEFAULT NULL,
+			  `total_poa` double DEFAULT NULL,
+			  `panel_temp` double DEFAULT NULL,
+			  `ambient_temp` double DEFAULT NULL,
+			  `calculation_poa` double DEFAULT NULL,
+			  `calculation_temp` double DEFAULT NULL,
+			  `calculation_clipping` double DEFAULT NULL,
+			  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+			  KEY `id_device` (`id_device`),
+			  CONSTRAINT `fk_model_virtual_device${id}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+		  )
+		  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</insert>
+	
   	
   	
   	
