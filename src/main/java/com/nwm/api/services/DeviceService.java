@@ -193,9 +193,9 @@ public class DeviceService extends DB {
 				session.insert("Device.createTableDevice", obj);
 				session.insert("Device.createViewThreeMonthData", obj);
 				session.insert("Device.createBJobData", obj);
-				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDatatablename());
-				obj.setView_tablename("view" + obj.getId() + "_"+ obj.getDatatablename());
-				obj.setJob_tablename("bjob" + obj.getId() + "_"+ obj.getDatatablename());
+				obj.setDatatablename("data" + obj.getId() + "_"+ obj.getDevice_group_table());
+				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
+				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
 				session.update("Device.updateTableDevice", obj);
 				
 			} else {
