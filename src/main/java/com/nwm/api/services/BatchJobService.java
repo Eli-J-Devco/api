@@ -1430,7 +1430,7 @@ public class BatchJobService extends DB {
 			if (rowItem == null)
 				return new BatchJobTableEntity();
 		} catch (Exception ex) {
-			log.error("BatchJob.getLastRowItem", ex);
+			log.error("BatchJob.getLastRowItemUpdateDate", ex);
 			return new BatchJobTableEntity();
 		}
 		return rowItem;
