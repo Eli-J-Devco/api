@@ -235,6 +235,7 @@
 			IFNULL(DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS last_updated,
 			t.offset,
 			p.totalError,
+			p.id_error_level,
 			d.hidden,
 			CASE
 			
@@ -434,7 +435,7 @@
 
 	
 			CASE
-				WHEN d.last_updated is null THEN 'N/A'
+				WHEN d.last_updated is null AND d.id_device_type != 12 THEN 'N/A'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
@@ -450,6 +451,7 @@
 			LEFT JOIN(
 				SELECT 
 					a.id_device,
+					e.id_error_level,
 					COUNT(a.id) AS totalError
 				FROM
 					alert a
@@ -678,9 +680,15 @@
 			${datatablename} dv
 
 		WHERE dv.id_device = #{id}
-		<!--<if test="id_device_type == 1 or id_device_type == 3 or id_device_type == 4">
-				AND dv.error = 0
-		</if> -->
+		<if test="id_device_type == 1 or id_device_type == 3">
+				AND dv.error = 0 AND dv.nvmActivePower IS NOT NULL
+		</if>
+		
+		<if test="id_device_type == 4">
+				AND dv.error = 0 AND dv.nvm_irradiance IS NOT NULL
+		</if>
+		
+		
 		ORDER BY dv.time DESC
 		LIMIT 1
 	</select>
