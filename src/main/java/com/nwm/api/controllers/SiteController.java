@@ -6,6 +6,7 @@
 package com.nwm.api.controllers;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.services.AWSService;
 import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -27,6 +29,9 @@ import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 @ApiIgnore
 @RequestMapping("/site")
 public class SiteController extends BaseController {
+	
+	@Autowired
+	private AWSService awsService;
 	
 	/**
 	 * @description Get detail site 
@@ -182,82 +187,41 @@ public class SiteController extends BaseController {
 	public Object saveRole(@Valid @RequestBody SiteEntity obj) {
 		try {
 			SiteService service = new SiteService();
-			String fileName = "";
-			String saveDir = "";
-			String fileNameLogo = "";
-			String saveDirLogo = "";
-			String fileNameDiagram = "";
-			String saveDirDiagram = "";
+			
+			if(!Lib.isBlank(obj.getFile_upload())) {
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + saveFileName);
+				obj.setGallery(filePath);
+			}
+			
+			if(!Lib.isBlank(obj.getFile_site_logo_upload())){
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + saveFileName);
+				obj.setSite_logo(filePath);
+			}
+			
+			if(!Lib.isBlank(obj.getFile_diagram_upload())) {
+				String saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
+				String fileName = randomAlphabetic(16);
+				String saveFileName = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileName, saveDir);
+				String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram) + "/" + saveFileName);
+				obj.setDiagram(filePath);
+			}
+			
 			if (obj.getScreen_mode() == 1) {
-				
-				if(!Lib.isBlank(obj.getFile_upload())) {
-					saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-					fileName = randomAlphabetic(16);
-					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileName);
-				}
-				
-				
-				if(!Lib.isBlank(obj.getFile_site_logo_upload())){
-					saveDirLogo = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-					fileNameLogo = randomAlphabetic(16);
-					String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
-					obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-					obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-				}
-				
-				if(!Lib.isBlank(obj.getFile_diagram_upload())) {
-					saveDirDiagram = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
-					fileNameDiagram = randomAlphabetic(16);
-					String saveFileNameDiagram = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileNameDiagram, saveDirDiagram);
-					obj.setDiagram(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram)+"/"+saveFileNameDiagram);
-				}
-				
-				
-				
 				SiteEntity data = service.insertSite(obj);
-				if (data != null) {
-					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
-				} else {
-					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
-				}
+				return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			} else {
-				if (obj.getScreen_mode() == 2) {
-					if(!Lib.isBlank(obj.getFile_upload())) {
-						saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-						fileName = randomAlphabetic(16);
-						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setGallery(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileName);
-					}
-					
-					
-					if(!Lib.isBlank(obj.getFile_site_logo_upload())) {
-						saveDirLogo = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery);
-						fileNameLogo = randomAlphabetic(16);
-						String saveFileNameLogo = Lib.uploadFromBase64(obj.getFile_site_logo_upload(), fileNameLogo, saveDirLogo);
-						obj.setSite_logo(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery)+"/"+saveFileNameLogo);
-					}
-					
-					if(!Lib.isBlank(obj.getFile_diagram_upload())) {
-						saveDirDiagram = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram);
-						fileNameDiagram = randomAlphabetic(16);
-						String saveFileNameDiagram = Lib.uploadFromBase64(obj.getFile_diagram_upload(), fileNameDiagram, saveDirDiagram);
-						obj.setDiagram(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyDiagram)+"/"+saveFileNameDiagram);
-					}
-					
-					boolean insert = service.updateSite(obj);
-					if (insert == true) {
-						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
-					} else {
-						return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
-					}
-				} else {
-					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
-				}
+				boolean insert = service.updateSite(obj);
+				return insert ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1) : this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 			}
 		} catch (Exception e) {
-			// log error
-			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+			log.error(e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 		}
 	}
 	
