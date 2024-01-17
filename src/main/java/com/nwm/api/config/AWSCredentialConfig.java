@@ -6,8 +6,7 @@ import org.springframework.context.annotation.Configuration;
 
 import com.nwm.api.utils.FLLogger;
 
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
@@ -22,10 +21,6 @@ public class AWSCredentialConfig {
 	private String roleSessionName;
 	@Value("${aws.regionName}")
 	private String regionName;
-	@Value("${aws.accessKey}")
-	private String accessKey;
-	@Value("${aws.secretKey}")
-	private String secretKey;
 	
 	protected final FLLogger logger = FLLogger.getLogger("AWSCredentialConfig");
 	
@@ -33,8 +28,8 @@ public class AWSCredentialConfig {
 	public StsAssumeRoleCredentialsProvider credentialsProvider() {
         try {
         	StsClient stsClient = StsClient.builder()
-    			.region(Region.of(regionName))
-    			.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
+    			.region(Region.of(this.regionName))
+    			.credentialsProvider(ProfileCredentialsProvider.create())
     			.build();
         	
         	AssumeRoleRequest roleRequest = AssumeRoleRequest.builder()
