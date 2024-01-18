@@ -368,7 +368,7 @@
 		</trim>
 	</insert>
 	
-	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+	<select id="getListTriggerFaultCode" resultType="Map">
 		SELECT
 			l.id,
 			l.id_error,
