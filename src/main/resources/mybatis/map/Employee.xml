@@ -548,7 +548,7 @@
     	SELECT
     		table_column
 		FROM `employee` u
-		WHERE u.id = #{value};
+		WHERE u.id = #{id};
   	</select>
   	
   	<select id="getAlertFilterEmployeeById" resultMap="EmployeeMap"  parameterType="int">
