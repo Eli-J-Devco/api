@@ -5100,7 +5100,7 @@ public class UploadFilesController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(dataModelSG1000, scaledValue);
-																if (slug.equals("ACPower")) dataModelSG1000.setNvmActivePower(scaledValue);
+																if (slug.equals("TotalActivePower")) dataModelSG1000.setNvmActivePower(scaledValue);
 															}
 														}
 														

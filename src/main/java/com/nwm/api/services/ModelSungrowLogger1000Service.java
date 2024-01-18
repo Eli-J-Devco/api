@@ -75,7 +75,7 @@ public class ModelSungrowLogger1000Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSG1000.setNvmActivePower(power);
-				dataModelSG1000.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModelSG1000.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				
 				return dataModelSG1000;
 				
