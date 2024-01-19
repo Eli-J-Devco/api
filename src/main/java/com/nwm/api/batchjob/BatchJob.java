@@ -696,6 +696,9 @@ public class BatchJob {
 //										case "model_sungrow_logger1000":
 //											noProduction = 1214;
 //											break;
+//										case "model_acu_rev_production_meter":
+//											noProduction = 1225;
+//											break;
 //
 //										}
 //
@@ -917,6 +920,8 @@ public class BatchJob {
 //											break;
 //										case "model_dts_measurelogic_demand_meter":
 //											noCommunication = 1223;
+//										case "model_dts_measurelogic_demand_meter":
+//											noCommunication = 1224;
 //											break;
 //
 //										}
