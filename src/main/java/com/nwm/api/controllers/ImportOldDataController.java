@@ -380,8 +380,13 @@ public class ImportOldDataController extends BaseController {
 										case "model_dts_measurelogic_demand_meter":
 											service.setModelDTSMeasurelogicDemandMeter(rowItem, r);
 											break;
+											
 										case "model_janitza_umg604pro":
 											service.setModelJanitzaUmg604pro(rowItem, r);
+											break;
+											
+										case "model_acu_rev_production_meter":
+											service.setModelAcuRevProductionMeter(rowItem, r);
 											break;
 										}
 										
