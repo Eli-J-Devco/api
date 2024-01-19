@@ -4035,6 +4035,18 @@
 					WHERE
 					    id_device = #{id_device};
 	            </when>
+				<when test="id_device_group == 72">
+	            	<!-- model_acu_rev_production_meter -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AveragePhaseVoltage`, `PhaseAVoltage`, `PhaseBVoltage`, `PhaseCVoltage`, `AverageLineVoltage`, `LineVoltageAB`, `LineVoltageBC`, `LineVoltageCA`, `Frequency`, `TotalCurrent`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `TotalRealPower`, `PhaseAPower`, `PhaseBPower`, `PhaseCPower`, `TotalApparentPower`, `PhaseAApparentPower`, `PhaseBApparentPower`, `PhaseCApparentPower`, `TotalReactivePower`, `PhaseAReactivePower`, `PhaseBReactivePower`, `PhaseCReactivePower`, `TotalPowerFactor`, `PhaseAPowerFactor`, `PhaseBPowerFactor`, `PhaseCPowerFactor`, `NeutralCurrent`, `Temperature`, `TotalExportedEnergy`, `PhaseAExportedEnergy`, `PhaseBExportedEnergy`, `PhaseCExportedEnergy`, `TotalImportedEnergy`, `PhaseAImportedEnergy`, `PhaseBImportedEnergy`, `PhaseCImportedEnergy`, `TotalExportedApparentEnergy`, `PhaseAExportedApparentEnergy`, `PhaseBExportedApparentEnergy`, `PhaseCExportedApparentEnergy`, `TotalImportedApparentEnergy`, `PhaseAImportedApparentEnergy`, `PhaseBImportedApparentEnergy`, `PhaseCImportedApparentEnergy`, `TotalPowerDemand`, `TotalReactivePowerDemand`, `TotalApparentPowerDemand`, `PhaseACurrentDemand`, `PhaseBCurrentDemand`, `PhaseCCurrentDemand`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AveragePhaseVoltage`, `PhaseAVoltage`, `PhaseBVoltage`, `PhaseCVoltage`, `AverageLineVoltage`, `LineVoltageAB`, `LineVoltageBC`, `LineVoltageCA`, `Frequency`, `TotalCurrent`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `TotalRealPower`, `PhaseAPower`, `PhaseBPower`, `PhaseCPower`, `TotalApparentPower`, `PhaseAApparentPower`, `PhaseBApparentPower`, `PhaseCApparentPower`, `TotalReactivePower`, `PhaseAReactivePower`, `PhaseBReactivePower`, `PhaseCReactivePower`, `TotalPowerFactor`, `PhaseAPowerFactor`, `PhaseBPowerFactor`, `PhaseCPowerFactor`, `NeutralCurrent`, `Temperature`, `TotalExportedEnergy`, `PhaseAExportedEnergy`, `PhaseBExportedEnergy`, `PhaseCExportedEnergy`, `TotalImportedEnergy`, `PhaseAImportedEnergy`, `PhaseBImportedEnergy`, `PhaseCImportedEnergy`, `TotalExportedApparentEnergy`, `PhaseAExportedApparentEnergy`, `PhaseBExportedApparentEnergy`, `PhaseCExportedApparentEnergy`, `TotalImportedApparentEnergy`, `PhaseAImportedApparentEnergy`, `PhaseBImportedApparentEnergy`, `PhaseCImportedApparentEnergy`, `TotalPowerDemand`, `TotalReactivePowerDemand`, `TotalApparentPowerDemand`, `PhaseACurrentDemand`, `PhaseBCurrentDemand`, `PhaseCCurrentDemand`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
 	                                                          
 	        </choose> 
 	        

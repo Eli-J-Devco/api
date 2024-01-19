@@ -32,6 +32,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
+import com.nwm.api.entities.ModelAcuRevProductionMeterEntity;
 import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.entities.ModelAeRefusolEntity;
@@ -88,6 +89,7 @@ import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelAbbTrioClass6210Service;
+import com.nwm.api.services.ModelAcuRevProductionMeterService;
 import com.nwm.api.services.ModelAdam4017WSClass8110Nelis190Service;
 import com.nwm.api.services.ModelAdvancedEnergySolaronService;
 import com.nwm.api.services.ModelAeRefusolService;
@@ -5479,6 +5481,105 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+											case "model_acu_rev_production_meter":
+												ModelAcuRevProductionMeterService serviceModelAcuRevMeter = new ModelAcuRevProductionMeterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelAcuRevProductionMeterEntity dataModelAcuRevMeter = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line);
+														dataModelAcuRevMeter.setId_device(item.getId());
+														dataModelAcuRevMeter.setDatatablename(item.getDatatablename());
+														dataModelAcuRevMeter.setView_tablename(item.getView_tablename());
+														dataModelAcuRevMeter.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelDTSMeasurelogicDemandMeterEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAcuRevMeter);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelAcuRevMeter, scaledValue);
+																if (slug.equals("TotalRealPower")) dataModelAcuRevMeter.setNvmActivePower(scaledValue);
+																if (slug.equals("TotalExportedEnergy")) dataModelAcuRevMeter.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// TotalRealPower
+														if(dataModelAcuRevMeter.getTotalRealPower() != 0.001 && dataModelAcuRevMeter.getTotalRealPower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelAcuRevMeter.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelAcuRevMeter.getTotalRealPower() != 0.001 ? dataModelAcuRevMeter.getTotalRealPower() : null);
+														deviceUpdateE.setField_value1(dataModelAcuRevMeter.getTotalRealPower() != 0.001 ? dataModelAcuRevMeter.getTotalRealPower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataModelAcuRevMeter);
+														
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;	
 											
 										}
 										
