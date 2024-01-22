@@ -84,9 +84,8 @@
 			IFNULL(p.unix_time, 0) AS unix_time,
 			s.note,
 			h.is_hiding,
-			IF(t.id_device_type = 4, 1, 0) AS is_weather_station,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(t.irradiance, 0), NULL) AS irradiance,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
@@ -148,6 +147,8 @@
 						WHEN d.datatablename LIKE '%model_poa_temp' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename LIKE '%model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename LIKE '%model_pyranometer_poa' THEN ROUND( SUM(d.last_value), 2)
+						WHEN d.datatablename LIKE '%model_pvmet_100' THEN ROUND( SUM(d.last_value), 2)
+						WHEN d.datatablename LIKE '%model_sungrow_weather_pvmet75200' THEN ROUND( SUM(d.last_value), 2)					
 						ELSE "N/A"
 				 	END AS irradiance,
 				 	
