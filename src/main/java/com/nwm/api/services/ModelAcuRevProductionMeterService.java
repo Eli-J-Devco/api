@@ -91,7 +91,7 @@ public class ModelAcuRevProductionMeterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelAcuRevMeter.setNvmActivePower(power);
-				dataModelAcuRevMeter.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
+				dataModelAcuRevMeter.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				
 				return dataModelAcuRevMeter;
 				
