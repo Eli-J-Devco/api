@@ -353,11 +353,7 @@ public class CronJobAlertController extends BaseController {
 				BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
 				bathJobEntity.setCurrent_time(sDateUTC);
 				bathJobEntity.setId_device(obj.getId());
-				if (obj.getJob_tablename() != null) {
-					bathJobEntity.setDatatablename(obj.getJob_tablename());
-				} else {
-					bathJobEntity.setDatatablename(obj.getView_tablename());
-				}
+				bathJobEntity.setDatatablename(obj.getDatatablename());
 
 				BatchJobTableEntity lastRowItem = service.getLastRowItem(bathJobEntity);
 				if (lastRowItem.getError() == 0 && lastRowItem.getId_device() > 0) {
