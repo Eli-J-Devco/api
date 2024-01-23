@@ -11,7 +11,6 @@ import java.util.List;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.ModelMeterIon8600Entity;
 import com.nwm.api.entities.ModelMeterIon8600V2Entity;
 import com.nwm.api.utils.Lib;
 
@@ -135,7 +134,7 @@ public class ModelMeterIon8600V2Service extends DB {
 	
 	public boolean insertModelMeterIon8600V2(ModelMeterIon8600V2Entity obj) {
 		try {
-			ModelMeterIon8600V2Entity dataObj = (ModelMeterIon8600V2Entity) queryForObject("ModelMeterIon8600.getLastRow", obj);
+			ModelMeterIon8600V2Entity dataObj = (ModelMeterIon8600V2Entity) queryForObject("ModelMeterIon8600V2.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
