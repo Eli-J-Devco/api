@@ -272,6 +272,10 @@ public class ImportOldDataController extends BaseController {
 										case "model_meter_ion_8600v1":
 											service.setModelMeterIon8600V1(rowItem, r);
 											break;	
+										
+										case "model_meter_ion_8600v2":
+											service.setModelMeterIon8600V2(rowItem, r);
+											break;	
 											
 										case "model_hukseflux_sr30d1_deviceclass_v0":
 											service.setModelHukselfluxSr30d1DeviceclassV0(rowItem, r);	
