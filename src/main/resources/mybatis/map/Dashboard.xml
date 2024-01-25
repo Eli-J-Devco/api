@@ -246,7 +246,6 @@
 			    </otherwise>                                                  
 	        </choose>
 	        
-			LIMIT 40;
 	</select>
 	
 	
@@ -258,7 +257,7 @@
 			s.dc_capacity,
 			meter.power_today_meter,
 			inv.power_today_inverter,
-			IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) AS power_today,
+			ROUND(IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter), 1) AS power_today,
 			ep.expected,
 			h.is_hiding,
 			ROUND((IF(meter.power_today_meter IS NOT NULL || meter.power_today_meter >=0 ,meter.power_today_meter,inv.power_today_inverter) / ep.expected)*100, 1)AS a_e 
@@ -320,7 +319,7 @@
 					LEFT JOIN site s ON s.id = ee.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
-					ee.`year` = DATE_FORMAT('2022-08-10', '%Y')	
+					ee.`year` = DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d')	
 					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			)ep ON ep.id_site = s.id
 			
