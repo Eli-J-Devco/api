@@ -392,6 +392,11 @@ public class ImportOldDataController extends BaseController {
 										case "model_acu_rev_production_meter":
 											service.setModelAcuRevProductionMeter(rowItem, r);
 											break;
+										
+										case "model_solaredge_inverter":
+											service.setModelSolaredgeInverter(rowItem, r);
+											break;
+											
 										}
 										
 		
