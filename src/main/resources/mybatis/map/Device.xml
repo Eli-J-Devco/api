@@ -92,15 +92,20 @@
 			LEFT JOIN (
 				SELECT
 					datatablename AS datalogger_table,
-					serial_number
+					serial_number,
+					id_site
 				FROM device
 				WHERE
 					serial_number = #{serial_number}
 					AND id_device_type = 5
-			) dl ON dl.serial_number = d.serial_number
+			) dl ON dl.serial_number = d.serial_number AND dl.id_site = s.id
 		WHERE
 			d.serial_number = #{serial_number}
-			GROUP BY d.id
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.`status` = 1
+			AND s.is_delete = 0
+		GROUP BY d.id
 	</select>
 	
 	<select id="getListByDeviceType" resultMap="DeviceMap">

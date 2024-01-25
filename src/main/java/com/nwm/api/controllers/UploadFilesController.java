@@ -5505,7 +5505,7 @@ public class UploadFilesController extends BaseController {
 																String slug = scaledDeviceParameter.getParameter_slug();
 																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelDTSMeasurelogicDemandMeterEntity.class);
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAcuRevProductionMeterEntity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAcuRevMeter);
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
@@ -5659,7 +5659,7 @@ public class UploadFilesController extends BaseController {
 						}
 						
 					} catch (Exception e) {
-						message = "\nSUCCESS\n";
+						message = "\nFAILURE\n";
 						// TODO Auto-generated catch block
 //						e.printStackTrace();
 					}finally{}
