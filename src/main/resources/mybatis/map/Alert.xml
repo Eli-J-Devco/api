@@ -386,7 +386,7 @@
 			    </when>
 			    
 			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
+			      ORDER BY el.`name` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'message'">
@@ -415,6 +415,10 @@
 			    
 			    <when test="sort_column == 'device_type_name'">
 			      ORDER BY dt.name ${order_by}
+			    </when>
+			    
+			    <when test="sort_column == 'key_indicator'">
+			      ORDER BY d.field_value1 ${order_by}
 			    </when>
 			    
 			    
