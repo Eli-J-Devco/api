@@ -581,6 +581,7 @@
 			AND d.is_delete = 0
 			AND dp.status = 1
 			AND dp.is_delete = 0
+			AND dp.is_calculation IS NULL
 		ORDER BY dp.id
 	</select>
 	
