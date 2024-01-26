@@ -172,6 +172,7 @@ public class VirtualDeviceController extends BaseController {
 					// Updated last data
 					VirtualDeviceEntity lastItem = new VirtualDeviceEntity();
 					lastItem.setId_device(siteItem.getId_device());
+					lastItem.setTable_data_virtual(siteItem.getTable_data_virtual());
 					lastItem = service.getLastRowVirtualDevice(lastItem);
 					
 					DeviceEntity deviceEntity = new DeviceEntity();

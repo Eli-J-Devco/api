@@ -878,7 +878,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelVirtualMeterOrInverter v 
+			${table_data_virtual} v 
 		WHERE
 			v.id_device = #{id_device} 
 		ORDER BY
