@@ -590,7 +590,7 @@
 													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} )* #{level_sent_time}),'%Y-%m-%d %H:%i:00' ) AS time_format,
 													MIN( dv.nvmActiveEnergy ) AS nvmActiveEnergy 
 												FROM
-													model_chint_solectria_inverter_class9725 dv
+													${item.datatablename} dv
 													LEFT JOIN device d ON d.id = dv.id_device
 													LEFT JOIN site s ON s.id = d.id_site
 													LEFT JOIN time_zone t ON t.id = s.id_time_zone 
@@ -878,7 +878,7 @@
 		SELECT
 			* 
 		FROM
-			ViewModelVirtualMeterOrInverter v 
+			${table_data_virtual} v 
 		WHERE
 			v.id_device = #{id_device} 
 		ORDER BY

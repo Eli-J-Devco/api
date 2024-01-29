@@ -1861,6 +1861,7 @@
 						  `FanCurrent` double DEFAULT NULL COMMENT 'Fan Current',
 						  `nvm_irradiance` double DEFAULT NULL,
 						  `nvm_temperature` double DEFAULT NULL,
+						  `nvm_panel_temperature` double DEFAULT '0',
 						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
 						  KEY `id_device` (`id_device`),
 						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
