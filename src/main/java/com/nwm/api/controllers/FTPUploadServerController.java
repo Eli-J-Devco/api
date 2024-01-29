@@ -1128,6 +1128,7 @@ public class FTPUploadServerController extends BaseController {
 				DeviceEntity deviceItem = (DeviceEntity) listDevice.get(i);
 				BatchJobTableEntity obj = new BatchJobTableEntity();
 				obj.setId_device(deviceItem.getId());
+				String datatablename = deviceItem.getDatatablename();
 				obj.setDatatablename(deviceItem.getView_tablename());
 				
 				BatchJobTableEntity lastRow = service.getLastRowItemUpdateDate(obj);
@@ -1135,10 +1136,16 @@ public class FTPUploadServerController extends BaseController {
 				if(lastRow.getNvmActivePower() >= 0) {
 					deviceUpdateE.setId(deviceItem.getId());
 					deviceUpdateE.setLast_updated(lastRow.getTime());
+					// check lastRow if lastRow not in View Table 
+					if(lastRow.getTime() == null) {
+						obj.setDatatablename(datatablename);
+						BatchJobTableEntity lastRowDatatablename = service.getLastRowItemUpdateDate(obj);
+						deviceUpdateE.setLast_updated(lastRowDatatablename.getTime());
+					}
 				} else {
 					deviceUpdateE.setLast_updated(null);
 				}
-				
+				System.out.println("id ::: " + deviceUpdateE.getId());
 				service.updateLastUpdatedCronJob(deviceUpdateE);
 				
 			}
