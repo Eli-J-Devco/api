@@ -4795,6 +4795,20 @@
 					WHERE
 					   id_device = #{id_device};
 	            </when>
+	            
+	            <when test="id_device_group == 63">
+		           <!-- model_ae_refusol -->
+		           INSERT IGNORE INTO ${newtablename}(
+					`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ACPower`, `ACVoltageAverageRMS`, `ACVoltage1RMS`, `ACVoltage2RMS`, `ACVoltage3RMS`, `ACCurrentSum`, `ACCurrent1`, `ACCurrent2`, `ACCurrent3`, `ACFrequency1`, `ACFrequency2`, `ACFrequency3`, `DCPower`, `DCVoltage`, `DCCurrent`, `HeatSink`, `Interior`, `Irradiation`, `Panel`, `DailyYield`, `TotalYield`, `OperatingHours`, `Status`, `ErrorMessageCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT 
+					   `time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ACPower`, `ACVoltageAverageRMS`, `ACVoltage1RMS`, `ACVoltage2RMS`, `ACVoltage3RMS`, `ACCurrentSum`, `ACCurrent1`, `ACCurrent2`, `ACCurrent3`, `ACFrequency1`, `ACFrequency2`, `ACFrequency3`, `DCPower`, `DCVoltage`, `DCCurrent`, `HeatSink`, `Interior`, `Irradiation`, `Panel`, `DailyYield`, `TotalYield`, `OperatingHours`, `Status`, `ErrorMessageCode`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					   ${device_group_table}
+					WHERE
+					   id_device = #{id_device};
+	            </when>
+	            
 				<when test="id_device_group == 64">
 	            	<!-- model_sungrow_logger1000 -->
 		           INSERT IGNORE INTO ${newtablename}(
