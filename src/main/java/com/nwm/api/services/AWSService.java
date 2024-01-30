@@ -47,6 +47,13 @@ public class AWSService {
 				.source(Paths.get(localFilePath))
 				.build();
 			
+			System.out.println("localFilePath: " + localFilePath);
+			System.out.println("awsFilePath: " + awsFilePath);
+			System.out.println("rootFolder: " + this.rootFolder);
+			
+			System.out.println("regionName: " + this.regionName);
+			
+			
 			// upload file to s3
 			FileUpload fileUpload = transferManager.uploadFile(uploadFileRequest);
 			fileUpload.completionFuture().join();
@@ -55,8 +62,11 @@ public class AWSService {
 			GetUrlRequest objectUrlRequest = GetUrlRequest.builder().key(this.rootFolder + "/" + awsFilePath).bucket(this.bucketName).build();
 			URL objecUrl = s3AsyncClient.utilities().getUrl(objectUrlRequest);
 			
+			System.out.println("objecUrl.toString(): " + objecUrl.toString());
+			
 			return objecUrl.toString();
 		} catch (Exception e) {
+			System.out.println("e: " + e);
 			throw new Exception(e);
 		}
 	}
