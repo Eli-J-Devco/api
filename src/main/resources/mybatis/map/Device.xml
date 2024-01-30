@@ -3071,6 +3071,7 @@
 						  `VllAb` double DEFAULT NULL,
 						  `VllAc` double DEFAULT NULL,
 						  `VllCa` double DEFAULT NULL,
+						  `VllAve` double DEFAULT NULL,
 						  `IA` double DEFAULT NULL,
 						  `IB` double DEFAULT NULL,
 						  `IC` double DEFAULT NULL,
