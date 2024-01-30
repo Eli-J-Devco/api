@@ -1145,7 +1145,6 @@ public class FTPUploadServerController extends BaseController {
 				} else {
 					deviceUpdateE.setLast_updated(null);
 				}
-				System.out.println("id ::: " + deviceUpdateE.getId());
 				service.updateLastUpdatedCronJob(deviceUpdateE);
 				
 			}
