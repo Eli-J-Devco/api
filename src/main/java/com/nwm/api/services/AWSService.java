@@ -1,6 +1,5 @@
 package com.nwm.api.services;
 
-import java.net.URL;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.sts.auth.StsAssumeRoleCredentialsProvider;
 import software.amazon.awssdk.transfer.s3.S3TransferManager;
 import software.amazon.awssdk.transfer.s3.model.FileUpload;
@@ -53,12 +51,7 @@ public class AWSService {
 			FileUpload fileUpload = transferManager.uploadFile(uploadFileRequest);
 			fileUpload.completionFuture().join();
 			
-			// get file url from s3
-			GetUrlRequest objectUrlRequest = GetUrlRequest.builder().key(this.rootFolder + "/" + awsFilePath).bucket(this.bucketName).build();
-			URL objecUrl = s3AsyncClient.utilities().getUrl(objectUrlRequest);
-			
-			
-			return objecUrl.toString();
+			return this.rootFolder + "/" + awsFilePath;
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
