@@ -75,7 +75,9 @@
 			IF(m.ac_power > 0 ,m.ac_power,t.ac_power) AS ac_power,
 			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)), FORMAT(ROUND((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)) * 0.0117, 0), 0) , 0) AS total_tree,
 			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)), FORMAT(ROUND(((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)) * 392), 0), 0) , 0) AS total_co2,
-			t.`value` AS timezone_value
+			t.`value` AS timezone_value,
+			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device,
+			s.table_data_virtual
 		FROM
 			site s 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -102,6 +104,16 @@
 				AND d.is_delete = 0
 				AND d.id_device_type = 1
 			)t ON t.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
+				WHERE d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.hidden = 0
+				AND d.virtual_device_type IS NOT NULL
+				AND d.virtual_device_type != ''
+				AND SHA1(d.id_site) = #{hash_id}
+			)v ON v.id_site = s.id
 			
 		WHERE
 			SHA1( s.id ) = #{hash_id}
@@ -308,7 +320,6 @@
 				FROM
 					(
 						<foreach collection="groupDevices" item="item" index="index" separator="union all">
-						<![CDATA[
 							SELECT
 								m.time,
 								m.time_format,
@@ -324,7 +335,7 @@
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00 %p' ) AS categories_time,
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
-									MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS nvmActiveEnergy 
+									SUM(dv.MeasuredProduction) AS nvmActiveEnergy 
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
@@ -342,7 +353,6 @@
 								) m 
 							GROUP BY
 								m.time_format
-							]]>
 				      </foreach>
 					) t 
 				GROUP BY
@@ -539,6 +549,31 @@
 				DATE_FORMAT( sd.time, '%Y' )
 		</if>
 		
+	</select>
+	
+	<select id="getDataVirtualDeviceToday" resultType="Map" >
+		SELECT
+			dv.time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y/%m/%d %H:00 %p' ) AS time_format,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00 %p' ) AS categories_time,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
+			ROUND(SUM( dv.nvmActiveEnergy ), 1 ) AS nvmActiveEnergy,
+			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+
+		FROM
+			${table_data_virtual} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.id = #{id}
+			AND d.id_device_type = 12
+			AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+			AND s.`status` = 1 
+			AND d.`status` = 1 
+		GROUP BY
+			time_format
 	</select>
 	
 </mapper>
