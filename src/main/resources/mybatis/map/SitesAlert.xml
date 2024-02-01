@@ -529,6 +529,11 @@
 				e.id_error_level = 11
 				AND a.`status` = 1 
 				AND e.`status` = 1 
+				AND a.is_delete = 0
+				AND e.is_delete = 0
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND s.enable_alert = 1
 				AND d.id_site = #{id_site}
 				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			GROUP BY
@@ -552,6 +557,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
+				AND s.enable_alert = 1
 				AND d.id_site = #{id_site}
 				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		) AS totalError
