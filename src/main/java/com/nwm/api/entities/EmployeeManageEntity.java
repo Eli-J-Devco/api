@@ -45,6 +45,8 @@ public class EmployeeManageEntity{
 	private String label;
 	private int value;
 	private String table_column;
+	private String table_order;
+	private String table_width;
 	private String last_login;
 	private String offset_timezone;
 	private String page_login;
@@ -113,6 +115,18 @@ public class EmployeeManageEntity{
 	}
 	public void setTable_column(String table_column) {
 		this.table_column = table_column;
+	}
+	public String getTable_order() {
+		return table_order;
+	}
+	public void setTable_order(String table_order) {
+		this.table_order = table_order;
+	}
+	public String getTable_width() {
+		return table_width;
+	}
+	public void setTable_width(String table_width) {
+		this.table_width = table_width;
 	}
 	public String getText() {
 		return text;
