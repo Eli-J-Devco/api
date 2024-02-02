@@ -558,8 +558,8 @@
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00 %p' ) AS categories_time,
 			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
-			ROUND(SUM( dv.nvmActiveEnergy ), 1 ) AS nvmActiveEnergy,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
+			IFNULL(ROUND(SUM( dv.nvmActiveEnergy ), 1 ), 0) AS nvmActiveEnergy,
+			IFNULL(ROUND(AVG( dv.nvm_irradiance ), 1 ), 0) AS nvm_irradiance
 
 		FROM
 			${table_data_virtual} dv
