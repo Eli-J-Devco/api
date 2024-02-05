@@ -1403,6 +1403,7 @@ public class BuiltInReportController extends BaseController {
 							dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
 							dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
 							dataObj.setSite_name(siteItem.getName());
+							dataObj.setData_intervals(obj.getData_intervals());
 							
 							
 							ArrayList<String> categories = new ArrayList<String>();
@@ -1473,7 +1474,7 @@ public class BuiltInReportController extends BaseController {
 						    XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
 							
 							//====== first line chart============================================================
-							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 15, 8, 27);
+							anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, categories.size() + 8, 8, categories.size() + 8 + 12);
 							chart = drawing1.createChart(anchor1);
 							chart.setTitleText("Performance");
 							chart.getFormattedTitle().getParagraph(0).addDefaultRunProperties().setFontSize(14d);
@@ -1593,10 +1594,29 @@ public class BuiltInReportController extends BaseController {
 					}
 					
 					// Write the output to a file
+					String reportInterval = "(Daily Interval)";
+					switch (obj.getData_intervals()) {
+						case 1:
+							reportInterval = "(5-minute Interval)";
+							break;
+							
+						case 2:
+							reportInterval = "(15-minute Interval)";
+							break;
+							
+						case 3:
+							reportInterval = "(Hourly Interval)";
+							break;
+							
+						case 4:
+						default:
+							reportInterval = "(Daily Interval)";
+							break;
+					}
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String dir = uploadRootPath() + "/"
 							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/Weekly Production Trend Report (Daily Interval)_" + timeStamp + ".xlsx";
+					String fileName = dir + "/Weekly Production Trend Report " + reportInterval + "_" + timeStamp + ".xlsx";
 					
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
@@ -1604,7 +1624,7 @@ public class BuiltInReportController extends BaseController {
 								Constants.mailFromContact);
 
 						String msgTemplate = Constants.getMailTempleteByState(18);
-						String body = String.format(msgTemplate, "Customer", "WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL) ", "", "");
+						String body = String.format(msgTemplate, "Customer", "WEEKLY PRODUCTION TREND REPORT " + reportInterval.toUpperCase() + " ", "", "");
 						String mailTo = obj.getSubscribers();
 						String subject = Constants.getMailSubjectByState(18);
 
@@ -1992,8 +2012,27 @@ public class BuiltInReportController extends BaseController {
 				cellStyleHeader.setVerticalAlignment(VerticalAlignment.CENTER);
 				cellStyleHeader.setAlignment(HorizontalAlignment.CENTER);
 				
+				String reportInterval = "(Daily Interval)";
+				switch (dataObj.getData_intervals()) {
+					case 1:
+						reportInterval = "(5-minute Interval)";
+						break;
+						
+					case 2:
+						reportInterval = "(15-minute Interval)";
+						break;
+						
+					case 3:
+						reportInterval = "(Hourly Interval)";
+						break;
+						
+					case 4:
+					default:
+						reportInterval = "(Daily Interval)";
+						break;
+				}
 				cell.setCellStyle(cellStyleHeader);
-				cell.setCellValue("WEEKLY PRODUCTION TREND REPORT (DAILY INTERVAL)");
+				cell.setCellValue("WEEKLY PRODUCTION TREND REPORT " + reportInterval.toUpperCase());
 				
 				
 				

@@ -129,11 +129,43 @@ public class BuiltInReportService extends DB {
 			
 			List<WeeklyDateEntity> categories = new ArrayList<WeeklyDateEntity> ();
 			int forCount = 7;
+			int calAmount = 1440;
+			
+			switch (obj.getData_intervals()) {
+				case 1:
+					forCount = 7 * 24 * 12;
+					calAmount = 5;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+					break;
+					
+				case 2:
+					forCount = 7 * 24 * 4;
+					calAmount = 15;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+					break;
+					
+				case 3:
+					forCount = 7 * 24;
+					calAmount = 60;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+					break;
+					
+				case 4:
+				default:
+					forCount = 7;
+					calAmount = 1440;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+					break;
+			}
 			
 			for(int t = 0; t < forCount; t++) {
 				cal.setTime(startDate);
 				WeeklyDateEntity headerDate = new WeeklyDateEntity();
-				cal.add(Calendar.DATE, t);
+				cal.add(Calendar.MINUTE, t * calAmount);
 				headerDate.setTime_format(dateFormat.format(cal.getTime()));
 				headerDate.setCategories_time(catFormat.format(cal.getTime()));
 				headerDate.setActualGeneration(0.0);

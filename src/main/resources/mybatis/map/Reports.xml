@@ -190,9 +190,9 @@
 		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
+		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Production Trend Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Production Trend Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Production Trend Report")
 		    		END
 		    	ELSE s.`name`
 			END	AS report_name,
