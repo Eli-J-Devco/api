@@ -5,6 +5,9 @@
 *********************************************************/
 package com.nwm.api.services;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -61,12 +64,112 @@ public class BuiltInReportService extends DB {
 	public Object getAnnuallyBuitInReport(ViewReportEntity obj) {
 		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
+			// Create list date
+			SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+			Date startDate = startDateFormat.parse(obj.getStart_date());
+			Calendar cal = Calendar.getInstance();
+			
+			List<WeeklyDateEntity> categories = new ArrayList<WeeklyDateEntity> ();
+			SimpleDateFormat dateFormat; 
+			SimpleDateFormat catFormat;
+			int forCount;
+			int calField;
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startLocalDateTime = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
+			LocalDateTime endLocalDateTime = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
+			
+			switch (obj.getData_intervals()) {
+				case 3:
+					forCount = (int) (24 * (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1));
+					calField = Calendar.HOUR_OF_DAY;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+					break;
+					
+				case 4:
+					forCount = (int) (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1);
+					calField = Calendar.DAY_OF_YEAR;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+					break;
+					
+				case 5:
+					forCount = (int) (ChronoUnit.WEEKS.between(startLocalDateTime, endLocalDateTime) + 1);
+					calField = Calendar.WEEK_OF_YEAR;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+					break;
+					
+				case 6:
+				default:
+					forCount = (int) (ChronoUnit.MONTHS.between(startLocalDateTime, endLocalDateTime) + 1);
+					calField = Calendar.MONTH;
+					dateFormat = new SimpleDateFormat("MMM-yy");
+					catFormat = new SimpleDateFormat("MMM-yy");
+					break;
+			}
+			
+			for(int t = 0; t < forCount; t++) {
+				cal.setTime(startDate);
+				WeeklyDateEntity headerDate = new WeeklyDateEntity();
+				cal.add(calField, t);
+				headerDate.setTime_format(dateFormat.format(cal.getTime()));
+				headerDate.setCategories_time(catFormat.format(cal.getTime()));
+				headerDate.setActualGeneration(0.0);
+				headerDate.setExpectedGeneration(0.0);
+				headerDate.setModeledGeneration(0.0);
+				headerDate.setPoa(0.0);
+				headerDate.setExpectedGenerationIndex(0.0);
+				headerDate.setModeledGenerationIndex(0.0);
+				categories.add(headerDate);
+			}
 			
 			List data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
+			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
 			
-			if (data.size() > 0) {
-				dataObj.setDataReports(data);
+			if (categories.size() > 0) {
+				for (WeeklyDateEntity item : categories) {
+					boolean flag = false;
+					WeeklyDateEntity mapItem = new WeeklyDateEntity();
+					
+					if (data != null && data.size() > 0) {
+						for(int v = 0; v < data.size(); v++) {
+							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
+							String categoriesTime = item.getTime_format();
+							String powerTime = itemT.get("time_format").toString();
+							
+							if (categoriesTime.equals(powerTime)) {
+								flag = true;
+								mapItem.setTime_format(itemT.get("time_format").toString());
+								mapItem.setCategories_time(itemT.get("categories_time").toString());
+								mapItem.setSiteName(itemT.get("name").toString());
+								mapItem.setActualGeneration(Double.parseDouble(itemT.get("ActualGeneration").toString()));
+								mapItem.setExpectedGeneration(Double.parseDouble(itemT.get("ExpectedGeneration").toString()));
+								mapItem.setModeledGeneration(Double.parseDouble(itemT.get("ModeledGeneration").toString()));
+								mapItem.setPoa(Double.parseDouble(itemT.get("POA").toString()));
+								mapItem.setExpectedGenerationIndex(Double.parseDouble(itemT.get("ExpectedGenerationIndex").toString()));
+								mapItem.setModeledGenerationIndex(Double.parseDouble(itemT.get("ModeledGenerationIndex").toString()));
+								break;
+							}
+						}
+					}
+					
+					if(flag == false) {
+						mapItem.setTime_format(item.getTime_format());
+						mapItem.setCategories_time(item.getCategories_time());
+						mapItem.setActualGeneration(item.getActualGeneration());
+						mapItem.setExpectedGeneration(item.getExpectedGeneration());
+						mapItem.setModeledGeneration(item.getModeledGeneration());
+						mapItem.setPoa(item.getPoa());
+						mapItem.setExpectedGenerationIndex(item.getExpectedGenerationIndex());
+						mapItem.setModeledGenerationIndex(item.getModeledGenerationIndex());
+					}
+					
+					dataNew.add(mapItem);
+				}
 			}
+			
+			dataObj.setDataReports(dataNew);
 			
 			return dataObj;
 		} catch (Exception ex) {
