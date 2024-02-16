@@ -590,7 +590,8 @@
 			dp.id,
 			CONCAT(dp.`name`, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dp.`name` AS parameter_name,
-			dps.scale
+			dps.scale,
+			replace(dps.scale, ' ', '') AS scaleWithoutSpace
 			
 		FROM 
 			device_parameter_scale dps
@@ -603,7 +604,7 @@
 			AND dp.status = 1
 			AND dp.is_delete = 0
 			AND dps.scale is not null
-			GROUP BY dps.scale, dps.id_device_parameter
+			GROUP BY scaleWithoutSpace, dps.id_device_parameter
 			ORDER BY dp.`name`
 	</select>
 	
