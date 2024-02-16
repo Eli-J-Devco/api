@@ -97,6 +97,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
+import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
@@ -947,13 +948,12 @@ public class BuiltInReportController extends BaseController {
 						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date convertedDate = dateFormat.parse(obj.getEnd_date());
 						Date start = dateFormat.parse(obj.getStart_date());
-						String lastOfMonth = new SimpleDateFormat("dd").format(convertedDate);
 						
 						dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(start) );
 						dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
 						dataObj.setData_intervals(obj.getData_intervals());
 						
-						List dataExports = dataObj.getDataReports();
+						List<MonthlyProductionTrendReportEntity> dataExports = dataObj.getDataReports();
 						
 						if (dataObj != null) {
 							XSSFSheet chartSheet = document.createSheet(WorkbookUtil.createSafeSheetName(siteItem.getName()));
@@ -984,52 +984,17 @@ public class BuiltInReportController extends BaseController {
 							Picture pict = drawing.createPicture(anchor, pictureIdx);
 							// Reset the image to the original size
 							pict.resize(1.0, 3.8);
-
+							
 							ArrayList<String> categories = new ArrayList<String>();
-							SimpleDateFormat dateFormatCategories = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
-							
-							if(Integer.parseInt(lastOfMonth) > 0) {
-								for(int i = 0; i < Integer.parseInt(lastOfMonth); i++) {
-									Date startDate = dateFormat.parse(obj.getStart_date());
-									Calendar newCalendar = Calendar.getInstance();
-									newCalendar.setTime(startDate);
-									newCalendar.add(Calendar.DATE, i);
-									
-									if(obj.getData_intervals() == 2) {
-										for(int j = 0; j < 96; j++) {
-											Calendar itemCalendar = Calendar.getInstance();
-											itemCalendar.setTime(newCalendar.getTime());
-											itemCalendar.add(Calendar.MINUTE, j * 15);
-											categories.add(dateFormatCategories.format(itemCalendar.getTime()));
-										}
-									} else if(obj.getData_intervals() == 1) {
-										for(int j = 0; j < 288; j++) {
-											Calendar itemCalendar = Calendar.getInstance();
-											itemCalendar.setTime(newCalendar.getTime());
-											itemCalendar.add(Calendar.MINUTE, j * 5);
-											categories.add(dateFormatCategories.format(itemCalendar.getTime()));
-										}
-									}
-								}
-							}
-							
-							
 							ArrayList<Double> dataGeneration = new ArrayList<Double>();
-							for(int i = 0; i < categories.size(); i++) {
-								if(dataExports != null && dataExports.size() > 0) {
-									Double dataMonthly = 0.0;
-									for( int j = 0; j < dataExports.size(); j++){
-										Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
-										String date = (String) item.get("time_full");
-										if(date.equals( categories.get(i))) {
-											dataMonthly = (Double) item.get("monthlyProduction");
-										}
-									}
-									
-									dataGeneration.add(dataMonthly);
-								} else {
-									dataGeneration.add(0.0);
+							
+							if(dataExports != null && dataExports.size() > 0) {
+								for( int i = 0; i < dataExports.size(); i++){
+									MonthlyProductionTrendReportEntity item = (MonthlyProductionTrendReportEntity) dataExports.get(i);
+									categories.add(item.getTime_full());
+									dataGeneration.add(item.getMonthlyProduction());
 								}
+								
 							}
 							
 							writeHeaderMonthTrendReport(chartSheet, 0, categories, dataGeneration, dataObj);
@@ -1038,16 +1003,34 @@ public class BuiltInReportController extends BaseController {
 					}
 					
 					// Write the output to a file
+					String reportInterval;
+					switch (obj.getData_intervals()) {
+						case 1:
+							reportInterval = "(5-minute Interval)";
+							break;
+							
+						case 2:
+						default:
+							reportInterval = "(15-minute Interval)";
+							break;
+							
+						case 3:
+							reportInterval = "(Hourly Interval)";
+							break;
+							
+						case 4:
+							reportInterval = "(Daily Interval)";
+							break;
+							
+						case 5:
+							reportInterval = "(Weekly Interval)";
+							break;
+					}
+
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String dir = uploadRootPath() + "/"
 							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = "";
-					if(obj.getData_intervals() == 1) {
-						fileName = dir + "/Monthly Portfolio Production Report (5min Interval)_" + timeStamp + ".xlsx";
-					} else {
-						fileName = dir + "/Monthly Portfolio Production Report (15min Interval)_" + timeStamp + ".xlsx";
-					}
-					
+					String fileName = dir + "/Monthly Production Trend Report " + reportInterval + "_" + timeStamp + ".xlsx";
 					
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
@@ -1055,7 +1038,7 @@ public class BuiltInReportController extends BaseController {
 								Constants.mailFromContact);
 
 						String msgTemplate = Constants.getMailTempleteByState(19);
-						String body = String.format(msgTemplate, "Customer", "Monthly Portfolio Production Report", "", "");
+						String body = String.format(msgTemplate, "Customer", "MONTHLY PRODUCTION TREND REPORT " + reportInterval.toUpperCase() + " ", "", "");
 						String mailTo = obj.getSubscribers();
 						String subject = Constants.getMailSubjectByState(19);
 
@@ -1173,12 +1156,31 @@ public class BuiltInReportController extends BaseController {
 			cellStyleHeader.setVerticalAlignment(VerticalAlignment.CENTER);
 			cellStyleHeader.setAlignment(HorizontalAlignment.CENTER);
 			
-			cell.setCellStyle(cellStyleHeader);
-			if(dataObj.getData_intervals() == 1) {
-				cell.setCellValue("Monthly Portfolio Production Report (5min Interval)");
-			} else if(dataObj.getData_intervals() == 2) {
-				cell.setCellValue("Monthly Portfolio Production Report (15min Interval)");
+			String reportInterval;
+			switch (dataObj.getData_intervals()) {
+				case 1:
+					reportInterval = "(5-minute Interval)";
+					break;
+					
+				case 2:
+				default:
+					reportInterval = "(15-minute Interval)";
+					break;
+					
+				case 3:
+					reportInterval = "(Hourly Interval)";
+					break;
+					
+				case 4:
+					reportInterval = "(Daily Interval)";
+					break;
+					
+				case 5:
+					reportInterval = "(Weekly Interval)";
+					break;
 			}
+			cell.setCellStyle(cellStyleHeader);
+			cell.setCellValue("MONTHLY PRODUCTION TREND REPORT " + reportInterval.toUpperCase());
 							
 			// Create font
 			Font font1 = sheet.getWorkbook().createFont();

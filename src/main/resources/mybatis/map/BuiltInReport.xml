@@ -322,11 +322,11 @@
 	
 	
 	
-	<select id="getMonthlyTrendBuitInReport" resultType="Map" >
+	<select id="getMonthlyTrendBuitInReport" resultType="com.nwm.api.entities.MonthlyProductionTrendReportEntity" >
 		SELECT
 				t.time_format,
 				t.time_full,
-				t.name,
+				t.name AS site_name,
 				IFNULL(ROUND(SUM( t.monthlyProduction)), 0.001)  AS monthlyProduction
 				
 			FROM
@@ -335,14 +335,32 @@
 						SELECT
 							dv.time,
 							s.name,
-							<if test="data_intervals == 1">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
-							</if>
-							<if test="data_intervals == 2">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
-							</if>
+							<choose>
+								<when test="data_intervals == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
+								</when>
+								<when test="data_intervals == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+								</when>
+								<when test="data_intervals == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
+								</when>
+								<when test="data_intervals == 4">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+								</when>
+								<when test="data_intervals == 5">
+									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS time_full,
+								</when>
+								<otherwise>
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+								</otherwise>
+							</choose>
 							
 							IFNULL(SUM(dv.MeasuredProduction), 0) AS monthlyProduction 
 						FROM

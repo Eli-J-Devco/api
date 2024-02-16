@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
 
@@ -188,23 +189,116 @@ public class BuiltInReportService extends DB {
 	public Object getMonthlyTrendBuitInReport(ViewReportEntity obj) {
 		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
+			// Create list date
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
+			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
+			
+			Date startDate = dateFormat.parse(obj.getStart_date());
+			Calendar cal = Calendar.getInstance();
+			
+			List<MonthlyProductionTrendReportEntity> categories = new ArrayList<MonthlyProductionTrendReportEntity>();
+			int forCount;
+			int calAmount;
+			cal.setTime(startDate);
+			int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+			
+			switch (obj.getData_intervals()) {
+				case 1:
+					forCount = daysInMonth * 24 * 12;
+					calAmount = 5;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+					break;
+					
+				case 2:
+				default:
+					forCount = daysInMonth * 24 * 4;
+					calAmount = 15;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+					break;
+					
+				case 3:
+					forCount = daysInMonth * 24;
+					calAmount = 60;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+					break;
+					
+				case 4:
+					forCount = daysInMonth;
+					calAmount = 1440;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+					break;
+					
+				case 5:
+					forCount = (int) Math.ceil(daysInMonth / 7);
+					calAmount = 10080;
+					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+					break;
+			}
+			
+			for(int t = 0; t < forCount; t++) {
+				cal.setTime(startDate);
+				MonthlyProductionTrendReportEntity headerDate = new MonthlyProductionTrendReportEntity();
+				cal.add(Calendar.MINUTE, t * calAmount);
+				headerDate.setTime_format(dateFormat.format(cal.getTime()));
+				headerDate.setTime_full(catFormat.format(cal.getTime()));
+				headerDate.setMonthlyProduction(0.0);
+				categories.add(headerDate);
+			}
+			
 			List dataListDeviceMeter = queryForList("BuiltInReport.getListDeviceTypeMeter", obj);
 			
-			if(dataListDeviceMeter.size() > 0 ) {
+			if(dataListDeviceMeter.size() > 0) {
 				obj.setGroupDevices(dataListDeviceMeter);
-				List data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-				if (data.size() > 0) {
-					dataObj.setDataReports(data);
-				}
 			} else {
 				List dataListInverter = queryForList("BuiltInReport.getListDeviceTypeInverter", obj);
+				
 				if(dataListInverter.size() > 0) {
 					obj.setGroupDevices(dataListInverter);
-					List dataPower = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-					if (dataPower.size() > 0) {
-						dataObj.setDataReports(dataPower);
+				}
+			}
+			
+			if (obj.getGroupDevices().size() > 0) {
+				List<MonthlyProductionTrendReportEntity> data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
+				List<MonthlyProductionTrendReportEntity> dataNew = new ArrayList<MonthlyProductionTrendReportEntity>();
+				
+				if (categories.size() > 0) {
+					for (MonthlyProductionTrendReportEntity item : categories) {
+						boolean flag = false;
+						MonthlyProductionTrendReportEntity mapItem = new MonthlyProductionTrendReportEntity();
+						
+						if (data != null && data.size() > 0) {
+							for(int v = 0; v < data.size(); v++) {
+								MonthlyProductionTrendReportEntity itemT = (MonthlyProductionTrendReportEntity) data.get(v);
+								String categoriesTime = item.getTime_format();
+								String powerTime = itemT.getTime_format();
+								
+								if (categoriesTime.equals(powerTime)) {
+									flag = true;
+									mapItem.setTime_format(itemT.getTime_format());
+									mapItem.setTime_full(itemT.getTime_full());
+									mapItem.setMonthlyProduction(itemT.getMonthlyProduction());
+									dataObj.setSite_name(itemT.getSite_name());
+									break;
+								}
+							}
+						}
+						
+						if(flag == false) {
+							mapItem.setTime_format(item.getTime_format());
+							mapItem.setTime_full(item.getTime_full());
+							mapItem.setMonthlyProduction(item.getMonthlyProduction());
+						}
+						
+						dataNew.add(mapItem);
 					}
-				} 
+				}
+				
+				dataObj.setDataReports(dataNew);
 			}
 			
 			return dataObj;
