@@ -400,6 +400,10 @@ public class ImportOldDataController extends BaseController {
 										case "model_phoenix_contact_quint_ups":
 											service.setModelPhoenixContactQuintUPS(rowItem, r);
 											break;
+										
+										case "model_sma_inverter_12_15_20_24_30tlus10":
+											service.setModelSmaInverterStp1215202430Tlus10(rowItem, r);
+											break;
 											
 										}
 										
