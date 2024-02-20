@@ -190,9 +190,9 @@
 		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
+		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Production Trend Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Production Trend Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Production Trend Report")
 		    		END
 		    	ELSE s.`name`
 			END	AS report_name,
@@ -507,29 +507,6 @@
 			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY s.id, DATE_FORMAT( sdr.time , "%Y-%m/%d")
 	</select>
-	
-	<select id="getDataEnergyMonthlyBuiltinReport" resultType="Map" >
-		SELECT
-			s.id,
-			s.`name`,
-			DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
-			
-		FROM
-			${table_data_report} sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND s.id = #{id_site}
-			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY s.id, time_format
-	</select>
-	
 	
 	<select id="getListSiteREC" resultType="Map" >
 		SELECT

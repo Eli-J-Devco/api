@@ -188,8 +188,28 @@
 	
 	<select id="getDataAnnualTrendReport" resultType="Map" >
 		SELECT
-			DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
-			DATE_FORMAT( vir.time, '%b-%Y' ) AS categories_time,
+			<choose>
+				<when test="data_intervals == 3">
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+				</when>
+				<when test="data_intervals == 4">
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
+				</when>
+				<when test="data_intervals == 5">
+					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
+					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS categories_time,
+				</when>
+				<when test="data_intervals == 6">
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
+				</when>
+				<otherwise>
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
+				</otherwise>
+			</choose>
 			IFNULL(ROUND(SUM(vir.nvmActiveEnergy), 0), 0) AS ActualGeneration,
 			IFNULL(ROUND(SUM(vir.expected_energy), 0), 0) AS ExpectedGeneration,
 			IFNULL(ROUND(AVG(vir.nvm_irradiance), 2), 0) AS POA,
@@ -209,26 +229,57 @@
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 			END
+			<choose>
+				<when test="data_intervals == 3">
+					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) / 24
+				</when>
+				<when test="data_intervals == 4">
+					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
+				</when>
+				<when test="data_intervals == 5">
+					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) * 7
+				</when>
+				<when test="data_intervals == 6">
+				</when>
+				<otherwise>
+				</otherwise>
+			</choose>
 			, 0) AS ModeledGeneration,
 			
 			IFNULL(ROUND( (SUM(vir.nvmActiveEnergy) / SUM(vir.expected_energy)) * 100, 1), 0) AS ExpectedGenerationIndex,
 			
 			IFNULL(
-			ROUND( (SUM(vir.nvmActiveEnergy) / 
-				CASE
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-					 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
-				END) * 100, 1)
+				ROUND( (SUM(vir.nvmActiveEnergy) / 
+					CASE
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
+					END) * 100
+					<choose>
+						<when test="data_intervals == 3">
+							* 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
+						</when>
+						<when test="data_intervals == 4">
+							* DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
+						</when>
+						<when test="data_intervals == 5">
+							/ 7 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
+						</when>
+						<when test="data_intervals == 6">
+						</when>
+						<otherwise>
+						</otherwise>
+					</choose>
+				, 1)
 			, 0)
 			AS ModeledGenerationIndex,
 			s.name
@@ -271,11 +322,11 @@
 	
 	
 	
-	<select id="getMonthlyTrendBuitInReport" resultType="Map" >
+	<select id="getMonthlyTrendBuitInReport" resultType="com.nwm.api.entities.MonthlyProductionTrendReportEntity" >
 		SELECT
 				t.time_format,
 				t.time_full,
-				t.name,
+				t.name AS site_name,
 				IFNULL(ROUND(SUM( t.monthlyProduction)), 0.001)  AS monthlyProduction
 				
 			FROM
@@ -284,14 +335,32 @@
 						SELECT
 							dv.time,
 							s.name,
-							<if test="data_intervals == 1">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
-							</if>
-							<if test="data_intervals == 2">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
-							</if>
+							<choose>
+								<when test="data_intervals == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
+								</when>
+								<when test="data_intervals == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+								</when>
+								<when test="data_intervals == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
+								</when>
+								<when test="data_intervals == 4">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+								</when>
+								<when test="data_intervals == 5">
+									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS time_full,
+								</when>
+								<otherwise>
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+								</otherwise>
+							</choose>
 							
 							IFNULL(SUM(dv.MeasuredProduction), 0) AS monthlyProduction 
 						FROM
@@ -316,8 +385,28 @@
 	
 	<select id="getDataWeeklyTrendReport" resultType="Map" >
 		SELECT
-			DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-			DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
+			<choose>
+				<when test="data_intervals == 1">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+				</when>
+				<when test="data_intervals == 2">
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+				</when>
+				<when test="data_intervals == 3">
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+				</when>
+				<when test="data_intervals == 4">
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
+				</when>
+				<otherwise>
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
+					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
+				</otherwise>
+			</choose>
 			IFNULL(ROUND(SUM(vir.nvmActiveEnergy), 0), 0) AS ActualGeneration,
 			IFNULL(ROUND(SUM(vir.expected_energy), 0), 0) AS ExpectedGeneration,
 			IFNULL(ROUND(AVG(vir.nvm_irradiance), 2), 0) AS POA,
@@ -338,6 +427,21 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END / DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
+					<choose>
+						<when test="data_intervals == 1">
+							/ 24 / 12
+						</when>
+						<when test="data_intervals == 2">
+							/ 24 / 4
+						</when>
+						<when test="data_intervals == 3">
+							/ 24
+						</when>
+						<when test="data_intervals == 4">
+						</when>
+						<otherwise>
+						</otherwise>
+					</choose>
 				, 0)
 			, 0) AS ModeledGeneration,
 			
@@ -359,6 +463,21 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) ) * 100
+					<choose>
+						<when test="data_intervals == 1">
+							* 24 * 12
+						</when>
+						<when test="data_intervals == 2">
+							* 24 * 4
+						</when>
+						<when test="data_intervals == 3">
+							* 24
+						</when>
+						<when test="data_intervals == 4">
+						</when>
+						<otherwise>
+						</otherwise>
+					</choose>
 				, 1)
 			, 0) AS ModeledGenerationIndex,
 			s.name
