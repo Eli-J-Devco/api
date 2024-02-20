@@ -699,6 +699,9 @@ public class BatchJob {
 //										case "model_acu_rev_production_meter":
 //											noProduction = 1225;
 //											break;
+//										case "model_sma_inverter_12_15_20_24_30tlus10":
+//											noProduction = 1226;
+//											break;
 //
 //										}
 //
@@ -920,8 +923,11 @@ public class BatchJob {
 //											break;
 //										case "model_dts_measurelogic_demand_meter":
 //											noCommunication = 1223;
-//										case "model_dts_measurelogic_demand_meter":
+//										case "model_acu_rev_production_meter":
 //											noCommunication = 1224;
+//											break;
+//										case "model_sma_inverter_12_15_20_24_30tlus10":
+//											noCommunication = 1227;
 //											break;
 //
 //										}

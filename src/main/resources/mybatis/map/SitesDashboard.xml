@@ -427,6 +427,8 @@
 				
 				WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
 				
+				WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
 				ELSE "N/A"
 			END AS key_indicator,
 			

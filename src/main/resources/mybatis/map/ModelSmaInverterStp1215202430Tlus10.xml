@@ -1,0 +1,428 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmaInverterStp1215202430Tlus10">
+	<resultMap id="ModelSmaInverterStp1215202430Tlus10Map" type="com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity">
+			<result property="time" column="time" />
+			<result property="id_device" column="id_device" />
+			<result property="error" column="error" />
+			<result property="low_alarm" column="low_alarm" />
+			<result property="high_alarm" column="high_alarm" />
+			
+			<result property="Power" column="Power" />
+			<result property="Power_L1" column="Power_L1" />
+			<result property="Power_L2" column="Power_L2" />
+			<result property="Power_L3" column="Power_L3" />
+			<result property="Grid_voltage_phase_L1" column="Grid_voltage_phase_L1" />
+			<result property="Grid_voltage_phase_L2" column="Grid_voltage_phase_L2" />
+			<result property="Grid_voltage_phase_L3" column="Grid_voltage_phase_L3" />
+			<result property="Grid_current_phase_L1" column="Grid_current_phase_L1" />
+			<result property="Grid_current_phase_L2" column="Grid_current_phase_L2" />
+			<result property="Grid_current_phase_L3" column="Grid_current_phase_L3" />
+			<result property="Grid_frequency" column="Grid_frequency" />
+			<result property="Reactive_power" column="Reactive_power" />
+			<result property="Reactive_power_L1" column="Reactive_power_L1" />
+			<result property="Reactive_power_L2" column="Reactive_power_L2" />
+			<result property="Reactive_power_L3" column="Reactive_power_L3" />
+			<result property="Apparent_power" column="Apparent_power" />
+			<result property="Apparent_power_L1" column="Apparent_power_L1" />
+			<result property="Apparent_power_L2" column="Apparent_power_L2" />
+			<result property="Apparent_power_L3" column="Apparent_power_L3" />
+			<result property="Daily_yield" column="Daily_yield" />
+			<result property="Total_yield" column="Total_yield" />
+			<result property="Operating_time" column="Operating_time" />
+			<result property="Feed_in_time" column="Feed_in_time" />
+			<result property="DC_current_input_1" column="DC_current_input_1" />
+			<result property="DC_current_input_2" column="DC_current_input_2" />
+			<result property="DC_voltage_input_1" column="DC_voltage_input_1" />
+			<result property="DC_voltage_input_2" column="DC_voltage_input_2" />
+			<result property="DC_power_input_1" column="DC_power_input_1" />
+			<result property="DC_power_input_2" column="DC_power_input_2" />
+			<result property="Displacement_Power_Factor" column="Displacement_Power_Factor" />
+			<result property="Event_Message" column="Event_Message" />
+
+		    <result property="nvmActivePower" column="nvmActivePower" />
+		    <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		    <result property="MeasuredProduction" column="MeasuredProduction" />
+		    <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+	</resultMap>
+
+	<insert id="insertModelSmaInverterStp1215202430Tlus10" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+	        	`time`,
+	        </if>
+			<if test="id_device != 0.001" >
+	            `id_device`,
+	        </if>
+			<if test="error != 0.001" >
+	            `error`,
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm`,
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm`,
+	        </if>
+			<if test="Power != 0.001" >
+				`Power`,
+			</if>
+			<if test="Power_L1 != 0.001" >
+				`Power_L1`,
+			</if>
+			<if test="Power_L2 != 0.001" >
+				`Power_L2`,
+			</if>
+			<if test="Power_L3 != 0.001" >
+				`Power_L3`,
+			</if>
+			<if test="Grid_voltage_phase_L1 != 0.001" >
+				`Grid_voltage_phase_L1`,
+			</if>
+			<if test="Grid_voltage_phase_L2 != 0.001" >
+				`Grid_voltage_phase_L2`,
+			</if>
+			<if test="Grid_voltage_phase_L3 != 0.001" >
+				`Grid_voltage_phase_L3`,
+			</if>
+			<if test="Grid_current_phase_L1 != 0.001" >
+				`Grid_current_phase_L1`,
+			</if>
+			<if test="Grid_current_phase_L2 != 0.001" >
+				`Grid_current_phase_L2`,
+			</if>
+			<if test="Grid_current_phase_L3 != 0.001" >
+				`Grid_current_phase_L3`,
+			</if>
+			<if test="Grid_frequency != 0.001" >
+				`Grid_frequency`,
+			</if>
+			<if test="Reactive_power != 0.001" >
+				`Reactive_power`,
+			</if>
+			<if test="Reactive_power_L1 != 0.001" >
+				`Reactive_power_L1`,
+			</if>
+			<if test="Reactive_power_L2 != 0.001" >
+				`Reactive_power_L2`,
+			</if>
+			<if test="Reactive_power_L3 != 0.001" >
+				`Reactive_power_L3`,
+			</if>
+			<if test="Apparent_power != 0.001" >
+				`Apparent_power`,
+			</if>
+			<if test="Apparent_power_L1 != 0.001" >
+				`Apparent_power_L1`,
+			</if>
+			<if test="Apparent_power_L2 != 0.001" >
+				`Apparent_power_L2`,
+			</if>
+			<if test="Apparent_power_L3 != 0.001" >
+				`Apparent_power_L3`,
+			</if>
+			<if test="Daily_yield != 0.001" >
+				`Daily_yield`,
+			</if>
+			<if test="Total_yield != 0.001" >
+				`Total_yield`,
+			</if>
+			<if test="Operating_time != 0.001" >
+				`Operating_time`,
+			</if>
+			<if test="Feed_in_time != 0.001" >
+				`Feed_in_time`,
+			</if>
+			<if test="DC_current_input_1 != 0.001" >
+				`DC_current_input_1`,
+			</if>
+			<if test="DC_current_input_2 != 0.001" >
+				`DC_current_input_2`,
+			</if>
+			<if test="DC_voltage_input_1 != 0.001" >
+				`DC_voltage_input_1`,
+			</if>
+			<if test="DC_voltage_input_2 != 0.001" >
+				`DC_voltage_input_2`,
+			</if>
+			<if test="DC_power_input_1 != 0.001" >
+				`DC_power_input_1`,
+			</if>
+			<if test="DC_power_input_2 != 0.001" >
+				`DC_power_input_2`,
+			</if>
+			<if test="Displacement_Power_Factor != 0.001" >
+				`Displacement_Power_Factor`,
+			</if>
+			<if test="Event_Message != 0.001" >
+				`Event_Message`,
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			  	`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+                #{time},
+	        </if>
+			<if test="id_device != 0.001" >
+                #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	#{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	        	#{high_alarm},
+	        </if>
+			<if test="Power != 0.001" >
+				#{Power},
+			</if>
+			<if test="Power_L1 != 0.001" >
+				#{Power_L1},
+			</if>
+			<if test="Power_L2 != 0.001" >
+				#{Power_L2},
+			</if>
+			<if test="Power_L3 != 0.001" >
+				#{Power_L3},
+			</if>
+			<if test="Grid_voltage_phase_L1 != 0.001" >
+				#{Grid_voltage_phase_L1},
+			</if>
+			<if test="Grid_voltage_phase_L2 != 0.001" >
+				#{Grid_voltage_phase_L2},
+			</if>
+			<if test="Grid_voltage_phase_L3 != 0.001" >
+				#{Grid_voltage_phase_L3},
+			</if>
+			<if test="Grid_current_phase_L1 != 0.001" >
+				#{Grid_current_phase_L1},
+			</if>
+			<if test="Grid_current_phase_L2 != 0.001" >
+				#{Grid_current_phase_L2},
+			</if>
+			<if test="Grid_current_phase_L3 != 0.001" >
+				#{Grid_current_phase_L3},
+			</if>
+			<if test="Grid_frequency != 0.001" >
+				#{Grid_frequency},
+			</if>
+			<if test="Reactive_power != 0.001" >
+				#{Reactive_power},
+			</if>
+			<if test="Reactive_power_L1 != 0.001" >
+				#{Reactive_power_L1},
+			</if>
+			<if test="Reactive_power_L2 != 0.001" >
+				#{Reactive_power_L2},
+			</if>
+			<if test="Reactive_power_L3 != 0.001" >
+				#{Reactive_power_L3},
+			</if>
+			<if test="Apparent_power != 0.001" >
+				#{Apparent_power},
+			</if>
+			<if test="Apparent_power_L1 != 0.001" >
+				#{Apparent_power_L1},
+			</if>
+			<if test="Apparent_power_L2 != 0.001" >
+				#{Apparent_power_L2},
+			</if>
+			<if test="Apparent_power_L3 != 0.001" >
+				#{Apparent_power_L3},
+			</if>
+			<if test="Daily_yield != 0.001" >
+				#{Daily_yield},
+			</if>
+			<if test="Total_yield != 0.001" >
+				#{Total_yield},
+			</if>
+			<if test="Operating_time != 0.001" >
+				#{Operating_time},
+			</if>
+			<if test="Feed_in_time != 0.001" >
+				#{Feed_in_time},
+			</if>
+			<if test="DC_current_input_1 != 0.001" >
+				#{DC_current_input_1},
+			</if>
+			<if test="DC_current_input_2 != 0.001" >
+				#{DC_current_input_2},
+			</if>
+			<if test="DC_voltage_input_1 != 0.001" >
+				#{DC_voltage_input_1},
+			</if>
+			<if test="DC_voltage_input_2 != 0.001" >
+				#{DC_voltage_input_2},
+			</if>
+			<if test="DC_power_input_1 != 0.001" >
+				#{DC_power_input_1},
+			</if>
+			<if test="DC_power_input_2 != 0.001" >
+				#{DC_power_input_2},
+			</if>
+			<if test="Displacement_Power_Factor != 0.001" >
+				#{Displacement_Power_Factor},
+			</if>
+			<if test="Event_Message != 0.001" >
+				#{Event_Message},
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	        	`id_device` = #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	`error` = #{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm` = #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm` = #{high_alarm},
+	        </if>
+			<if test="Power != 0.001" >
+				`Power` = #{Power},
+			</if>
+			<if test="Power_L1 != 0.001" >
+				`Power_L1` = #{Power_L1},
+			</if>
+			<if test="Power_L2 != 0.001" >
+				`Power_L2` = #{Power_L2},
+			</if>
+			<if test="Power_L3 != 0.001" >
+				`Power_L3` = #{Power_L3},
+			</if>
+			<if test="Grid_voltage_phase_L1 != 0.001" >
+				`Grid_voltage_phase_L1` = #{Grid_voltage_phase_L1},
+			</if>
+			<if test="Grid_voltage_phase_L2 != 0.001" >
+				`Grid_voltage_phase_L2` = #{Grid_voltage_phase_L2},
+			</if>
+			<if test="Grid_voltage_phase_L3 != 0.001" >
+				`Grid_voltage_phase_L3` = #{Grid_voltage_phase_L3},
+			</if>
+			<if test="Grid_current_phase_L1 != 0.001" >
+				`Grid_current_phase_L1` = #{Grid_current_phase_L1},
+			</if>
+			<if test="Grid_current_phase_L2 != 0.001" >
+				`Grid_current_phase_L2` = #{Grid_current_phase_L2},
+			</if>
+			<if test="Grid_current_phase_L3 != 0.001" >
+				`Grid_current_phase_L3` = #{Grid_current_phase_L3},
+			</if>
+			<if test="Grid_frequency != 0.001" >
+				`Grid_frequency` = #{Grid_frequency},
+			</if>
+			<if test="Reactive_power != 0.001" >
+				`Reactive_power` = #{Reactive_power},
+			</if>
+			<if test="Reactive_power_L1 != 0.001" >
+				`Reactive_power_L1` = #{Reactive_power_L1},
+			</if>
+			<if test="Reactive_power_L2 != 0.001" >
+				`Reactive_power_L2` = #{Reactive_power_L2},
+			</if>
+			<if test="Reactive_power_L3 != 0.001" >
+				`Reactive_power_L3` = #{Reactive_power_L3},
+			</if>
+			<if test="Apparent_power != 0.001" >
+				`Apparent_power` = #{Apparent_power},
+			</if>
+			<if test="Apparent_power_L1 != 0.001" >
+				`Apparent_power_L1` = #{Apparent_power_L1},
+			</if>
+			<if test="Apparent_power_L2 != 0.001" >
+				`Apparent_power_L2` = #{Apparent_power_L2},
+			</if>
+			<if test="Apparent_power_L3 != 0.001" >
+				`Apparent_power_L3` = #{Apparent_power_L3},
+			</if>
+			<if test="Daily_yield != 0.001" >
+				`Daily_yield` = #{Daily_yield},
+			</if>
+			<if test="Total_yield != 0.001" >
+				`Total_yield` = #{Total_yield},
+			</if>
+			<if test="Operating_time != 0.001" >
+				`Operating_time` = #{Operating_time},
+			</if>
+			<if test="Feed_in_time != 0.001" >
+				`Feed_in_time` = #{Feed_in_time},
+			</if>
+			<if test="DC_current_input_1 != 0.001" >
+				`DC_current_input_1` = #{DC_current_input_1},
+			</if>
+			<if test="DC_current_input_2 != 0.001" >
+				`DC_current_input_2` = #{DC_current_input_2},
+			</if>
+			<if test="DC_voltage_input_1 != 0.001" >
+				`DC_voltage_input_1` = #{DC_voltage_input_1},
+			</if>
+			<if test="DC_voltage_input_2 != 0.001" >
+				`DC_voltage_input_2` = #{DC_voltage_input_2},
+			</if>
+			<if test="DC_power_input_1 != 0.001" >
+				`DC_power_input_1` = #{DC_power_input_1},
+			</if>
+			<if test="DC_power_input_2 != 0.001" >
+				`DC_power_input_2` = #{DC_power_input_2},
+			</if>
+			<if test="Displacement_Power_Factor != 0.001" >
+				`Displacement_Power_Factor` = #{Displacement_Power_Factor},
+			</if>
+			<if test="Event_Message != 0.001" >
+				`Event_Message` = #{Event_Message},
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			 	`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			 	`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+</mapper> 
