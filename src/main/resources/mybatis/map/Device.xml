@@ -4051,6 +4051,60 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            
+	            <when test="id_device_group == 73">
+	           		CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					(
+					    `time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int DEFAULT NULL,
+						`low_alarm` int DEFAULT NULL,
+						`high_alarm` int DEFAULT NULL,
+						`ActualInputVoltage` double DEFAULT NULL,
+						`ActualInputCurrent` double DEFAULT NULL,
+						`ActualOutputVoltage` double DEFAULT NULL,
+						`ActualOutputCurrent` double DEFAULT NULL,
+						`BatteryActualVoltage` double DEFAULT NULL,
+						`BatteryChargeCurrent` double DEFAULT NULL,
+						`BatteryTemperature` double DEFAULT NULL,
+						`DeviceTemperature` double DEFAULT NULL,
+						`StateofCharge` double DEFAULT NULL,
+						`StateofChargeRemainingTime` double DEFAULT NULL,
+						`StateofChargeRemainingTimetoPCShutdown` double DEFAULT NULL,
+						`StateofHealth` double DEFAULT NULL,
+						`StateofHealthRemainingLifetime` double DEFAULT NULL,
+						`NumberofDevices` double DEFAULT NULL,
+						`OperationTime` double DEFAULT NULL,
+						`BatteryModeTime` double DEFAULT NULL,
+						`StatusAlarm` double DEFAULT NULL,
+						`StatusWarning` double DEFAULT NULL,
+						`Battery1StateofCharge` double DEFAULT NULL,
+						`Battery1StateofHealth` double DEFAULT NULL,
+						`Battery1Temperature` double DEFAULT NULL,
+						`Battery1StateofFuse` double DEFAULT NULL,
+						`Battery1ActualInternalVoltage` double DEFAULT NULL,
+						`Battery1ActualBlockVoltage` double DEFAULT NULL,
+						`Battery1InstalledCapacity` double DEFAULT NULL,
+						`Battery1NominalResistance` double DEFAULT NULL,
+						`Battery1MaxTemperature` double DEFAULT NULL,
+						`Battery1MinTemperature` double DEFAULT NULL,
+						`Battery1NominalLifetime` double DEFAULT NULL,
+						`Battery1MaxChargeCurrent` double DEFAULT NULL,
+						`Battery1ChargeAbsorptionVoltage` double DEFAULT NULL,
+						`Battery1ChargeEndvoltage` double DEFAULT NULL,
+						`Battery1ChargeTemperatureCoefficient` double DEFAULT NULL,
+						`Battery1DischargeEndvoltage` double DEFAULT NULL,
+						`Battery1MaxDischargeCurrent` double DEFAULT NULL,
+						`Battery1MaxTemperatureWarning` double DEFAULT NULL,
+						`Battery1MinTemperatureWarning` double DEFAULT NULL,
+						`Battery1DischargeEndvoltageLowCurrent` double DEFAULT NULL,
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 
 	                                                          
 	        </choose> 

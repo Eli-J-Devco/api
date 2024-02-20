@@ -397,6 +397,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelSolaredgeInverter(rowItem, r);
 											break;
 											
+										case "model_phoenix_contact_quint_ups":
+											service.setModelPhoenixContactQuintUPS(rowItem, r);
+											break;
+											
 										}
 										
 		

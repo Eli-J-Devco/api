@@ -4221,5 +4221,295 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/**
+	 * get alarm codes from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetAlarmCodeModelPhoenixContactQuintUPS(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Alarm battery (collective alarm Bit 2 - 21)
+			errorCode = 1228;
+			break;
+		case 2:
+			// Replace Battery (collective alarm Bit 7 - 13, Bit 15 - 17)
+			errorCode = 1229;
+			break;
+		case 3:
+			// Battery not detected (battery presence test negative)
+			errorCode = 1230;
+			break;
+		case 4:
+			// Fuses check negative
+			errorCode = 1231;
+			break;
+		case 5:
+			// Detected battery technologies are inconsitent
+			errorCode = 1232;
+			break;
+		case 6:
+			// Battery temperature out of specification
+			errorCode = 1233;
+			break;
+		case 7:
+			// Battery end of lifetime - exhausted battery has been installed - first quality test negative	
+			errorCode = 1234;
+			break;
+		case 8:
+			// Battery end of lifetime - battery exhausted
+			errorCode = 1235;
+			break;
+		case 9:
+			// Battery end of lifetime - Battery exhausted - Discharge test with internal resistor compared to reference test is negative
+			errorCode = 1236;
+			break;
+		case 10:
+			// Battery end of lifetime - Battery voltage low during charging
+			errorCode = 1237;
+			break;
+		case 11:
+			// Battery end of lifetime - Charging time exeeded - Battery has been charged too long
+			errorCode = 1238;
+			break;
+		case 12:
+			// Battery end of lifetime - Battery exhausted - Difference of the battery block voltages too high
+			errorCode = 1239;
+			break;
+		case 13:
+			// Capacity test negative - Battery capacity (SOC) <80 %, after complete discharge test
+			errorCode = 1240;
+			break;
+		case 14:
+			// Capacity test negative - compared to runtime choosen through mode selector
+			errorCode = 1241;
+			break;
+		case 15:
+			// Battery end of lifetime - SOH under threshold - SOH value too low (connected to 0x106C)
+			errorCode = 1242;
+			break;
+		case 16:
+			// Battery end of lifetime - Residual lifetime reached - Lifetime too low (connected to 0x106D)
+			errorCode = 1243;
+			break;
+		case 17:
+			// Battery end of lifetime - User replace time reached (connected to 0x1068)
+			errorCode = 1244;
+			break;
+		case 18:
+			// Battery is discharged (collective alarm Bit 19-Bit 21)
+			errorCode = 1245;
+			break;
+		case 19:
+			// Battery low - Alarm battery voltage under threshold, User value (connected to 0x1069)
+			errorCode = 1246;
+			break;
+		case 20:
+			// Battery low - Alarm battery charge under threshold, User value (connected to 0x106A)
+			errorCode = 1247;
+			break;
+		case 21:
+			// Battery low - Alarm residual time under threshold, User value (connected to 0x106B)
+			errorCode = 1248;
+			break;
+		case 22:
+			// Reserved
+			errorCode = 1249;
+			break;
+		case 23:
+			// Device fail (collectice alarm Bit 24-28)
+			errorCode = 1250;
+			break;
+		case 24:
+			// Output 1 fail (e.g. Overload cutoff)
+			errorCode = 1251;
+			break;
+		case 25:
+			// Reserved
+			errorCode = 1252;
+			break;
+		case 26:
+			// Reserved
+			errorCode = 1253;
+			break;
+		case 27:
+			// Reserved
+			errorCode = 1254;
+			break;
+		case 28:
+			// Reserved
+			errorCode = 1255;
+			break;
+		case 29:
+			// Reserved
+			errorCode = 1256;
+			break;
+		case 30:
+			// Service mode is active
+			errorCode = 1257;
+			break;
+		case 31:
+			// Reserved
+			errorCode = 1258;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	/**
+	 * get warning codes from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetWarningCodeModelPhoenixContactQuintUPS(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+		case 1:
+			// Warning battery (collective warning Bit 2 - 14)	
+			errorCode = 1259;
+			break;
+		case 2:
+			// Battery communication fault
+			errorCode = 1260;
+			break;
+		case 3:
+			// Service mode quit without battery change	
+			errorCode = 1261;
+			break;
+		case 4:
+			// More/less batteries detected than user configured
+			errorCode = 1262;
+			break;
+		case 5:
+			// Reserved	
+			errorCode = 1263;
+			break;
+		case 6:
+			// Battery temperature - temperature out of battery nominal values	
+			errorCode = 1264;
+			break;
+		case 7:
+			// Additional installed batteries detected
+			errorCode = 1265;
+			break;
+		case 8:
+			// Detected battery capacities are inconsistent
+			errorCode = 1266;
+			break;
+		case 9:
+			// Connected battery capacity too high; long recharging time
+			errorCode = 1267;
+			break;
+		case 10:
+			// Connected battery capacity too small; can't supply full output current
+			errorCode = 1268;
+			break;
+		case 11:
+			// High temperature drop between battery modules
+			errorCode = 1269;
+			break;
+		case 12:
+			// Battery end of lifetime - SOH under threshold - SOH value too low (connected to 0x1071)
+			errorCode = 1270;
+			break;
+		case 13:
+			// Battery end of lifetime - Residual lifetime reached - Lifetime too low (connected to 0x1072)
+			errorCode = 1271;
+			break;
+		case 14:
+			// Any user counter reached end value	
+			errorCode = 1272;
+			break;
+		case 15:
+			// Reserved	
+			errorCode = 1273;
+			break;
+		case 16:
+			// Battery is discharged (collective warning Bit 17-19)
+			errorCode = 1274;
+			break;
+		case 17:
+			// Battery low - Warning battery voltage under threshold, user value (connected to 0x106E)
+			errorCode = 1275;
+			break;
+		case 18:
+			// Battery low - Warming battery charge under threshold, user value (connected to 0x106F)
+			errorCode = 1276;
+			break;
+		case 19:
+			// Battery low - Warning residual time under threshold, user value (connected to 0x1070)
+			errorCode = 1277;
+			break;
+		case 20:
+			// Reserved
+			errorCode = 1278;
+			break;
+		case 21:
+			// Reserved
+			errorCode = 1279;
+			break;
+		case 22:
+			// Device function are not optimal (collective warning Bit 23 - 29)	
+			errorCode = 1280;
+			break;
+		case 23:
+			// Reserved
+			errorCode = 1281;
+			break;
+		case 24:
+			// Communication fault to host
+			errorCode = 1282;
+			break;
+		case 25:
+			// Remote connected to SGND
+			errorCode = 1283;
+			break;
+		case 26:
+			// Service mode button or mode selector switch deactivated
+			errorCode = 1284;
+			break;
+		case 27:
+			// Out of specification - out of ambient condition
+			errorCode = 1285;
+			break;
+		case 28:
+			// Reserved
+			errorCode = 1286;
+			break;
+		case 29:
+			// Reserved
+			errorCode = 1287;
+			break;
+		case 30:
+			// Reserved
+			errorCode = 1288;
+			break;
+		case 31:
+			// Reserved
+			errorCode = 1289;
+			break;
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get Fuse 1 Status Code from table model_phoenix_contact_quint_ups
+	 * 
+	 * @return
+	 */
+	public static int GetFuse1CodeModelPhoenixContactQuintUPS(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 23867:
+			// Fuse broken
+			errorCode = 1290;
+			break;
+		}
+		
+		return errorCode;
+	}
 	
 }

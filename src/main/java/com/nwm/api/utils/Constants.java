@@ -172,6 +172,7 @@ public class Constants {
     public static final int SUB_TRACT_MINUTE = -15;
     public static final int NO_COMMUNICATION  = 1001; // "nvm_1001";
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
+    public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
     
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;

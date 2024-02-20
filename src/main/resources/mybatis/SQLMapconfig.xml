@@ -125,6 +125,7 @@
 		<mapper resource="mybatis/map/ModelJanitzaUmg604pro.xml"/>
 		<mapper resource="mybatis/map/ModelLeviton70D48000.xml"/>
 		<mapper resource="mybatis/map/ModelAcuRevProductionMeter.xml"/>
+		<mapper resource="mybatis/map/ModelPhoenixContactQuintUPS.xml"/>
 		
 		
 		

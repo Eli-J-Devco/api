@@ -1,0 +1,517 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPhoenixContactQuintUPS">
+	<resultMap id="ModelPhoenixContactQuintUPSMap" type="com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity">
+			<result property="time" column="time" />
+			<result property="id_device" column="id_device" />
+			<result property="error" column="error" />
+			<result property="low_alarm" column="low_alarm" />
+			<result property="high_alarm" column="high_alarm" />
+			
+			<result property="ActualInputVoltage" column="ActualInputVoltage" />
+			<result property="ActualInputCurrent" column="ActualInputCurrent" />
+			<result property="ActualOutputVoltage" column="ActualOutputVoltage" />
+			<result property="ActualOutputCurrent" column="ActualOutputCurrent" />
+			<result property="BatteryActualVoltage" column="BatteryActualVoltage" />
+			<result property="BatteryChargeCurrent" column="BatteryChargeCurrent" />
+			<result property="BatteryTemperature" column="BatteryTemperature" />
+			<result property="DeviceTemperature" column="DeviceTemperature" />
+			<result property="StateofCharge" column="StateofCharge" />
+			<result property="StateofChargeRemainingTime" column="StateofChargeRemainingTime" />
+			<result property="StateofChargeRemainingTimetoPCShutdown" column="StateofChargeRemainingTimetoPCShutdown" />
+			<result property="StateofHealth" column="StateofHealth" />
+			<result property="StateofHealthRemainingLifetime" column="StateofHealthRemainingLifetime" />
+			<result property="NumberofDevices" column="NumberofDevices" />
+			<result property="OperationTime" column="OperationTime" />
+			<result property="BatteryModeTime" column="BatteryModeTime" />
+			<result property="StatusAlarm" column="StatusAlarm" />
+			<result property="StatusWarning" column="StatusWarning" />
+			<result property="Battery1StateofCharge" column="Battery1StateofCharge" />
+			<result property="Battery1StateofHealth" column="Battery1StateofHealth" />
+			<result property="Battery1Temperature" column="Battery1Temperature" />
+			<result property="Battery1StateofFuse" column="Battery1StateofFuse" />
+			<result property="Battery1ActualInternalVoltage" column="Battery1ActualInternalVoltage" />
+			<result property="Battery1ActualBlockVoltage" column="Battery1ActualBlockVoltage" />
+			<result property="Battery1InstalledCapacity" column="Battery1InstalledCapacity" />
+			<result property="Battery1NominalResistance" column="Battery1NominalResistance" />
+			<result property="Battery1MaxTemperature" column="Battery1MaxTemperature" />
+			<result property="Battery1MinTemperature" column="Battery1MinTemperature" />
+			<result property="Battery1NominalLifetime" column="Battery1NominalLifetime" />
+			<result property="Battery1MaxChargeCurrent" column="Battery1MaxChargeCurrent" />
+			<result property="Battery1ChargeAbsorptionVoltage" column="Battery1ChargeAbsorptionVoltage" />
+			<result property="Battery1ChargeEndvoltage" column="Battery1ChargeEndvoltage" />
+			<result property="Battery1ChargeTemperatureCoefficient" column="Battery1ChargeTemperatureCoefficient" />
+			<result property="Battery1DischargeEndvoltage" column="Battery1DischargeEndvoltage" />
+			<result property="Battery1MaxDischargeCurrent" column="Battery1MaxDischargeCurrent" />
+			<result property="Battery1MaxTemperatureWarning" column="Battery1MaxTemperatureWarning" />
+			<result property="Battery1MinTemperatureWarning" column="Battery1MinTemperatureWarning" />
+			<result property="Battery1DischargeEndvoltageLowCurrent" column="Battery1DischargeEndvoltageLowCurrent" />
+
+		    <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+	</resultMap>
+
+	<insert id="insertModelPhoenixContactQuintUPS" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+	        	`time`,
+	        </if>
+			<if test="id_device != 0.001" >
+	            `id_device`,
+	        </if>
+			<if test="error != 0.001" >
+	            `error`,
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm`,
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm`,
+	        </if>
+			<if test="ActualInputVoltage != 0.001" >
+				`ActualInputVoltage`,
+			</if>
+			<if test="ActualInputCurrent != 0.001" >
+				`ActualInputCurrent`,
+			</if>
+			<if test="ActualOutputVoltage != 0.001" >
+				`ActualOutputVoltage`,
+			</if>
+			<if test="ActualOutputCurrent != 0.001" >
+				`ActualOutputCurrent`,
+			</if>
+			<if test="BatteryActualVoltage != 0.001" >
+				`BatteryActualVoltage`,
+			</if>
+			<if test="BatteryChargeCurrent != 0.001" >
+				`BatteryChargeCurrent`,
+			</if>
+			<if test="BatteryTemperature != 0.001" >
+				`BatteryTemperature`,
+			</if>
+			<if test="DeviceTemperature != 0.001" >
+				`DeviceTemperature`,
+			</if>
+			<if test="StateofCharge != 0.001" >
+				`StateofCharge`,
+			</if>
+			<if test="StateofChargeRemainingTime != 0.001" >
+				`StateofChargeRemainingTime`,
+			</if>
+			<if test="StateofChargeRemainingTimetoPCShutdown != 0.001" >
+				`StateofChargeRemainingTimetoPCShutdown`,
+			</if>
+			<if test="StateofHealth != 0.001" >
+				`StateofHealth`,
+			</if>
+			<if test="StateofHealthRemainingLifetime != 0.001" >
+				`StateofHealthRemainingLifetime`,
+			</if>
+			<if test="NumberofDevices != 0.001" >
+				`NumberofDevices`,
+			</if>
+			<if test="OperationTime != 0.001" >
+				`OperationTime`,
+			</if>
+			<if test="BatteryModeTime != 0.001" >
+				`BatteryModeTime`,
+			</if>
+			<if test="StatusAlarm != 0.001" >
+				`StatusAlarm`,
+			</if>
+			<if test="StatusWarning != 0.001" >
+				`StatusWarning`,
+			</if>
+			<if test="Battery1StateofCharge != 0.001" >
+				`Battery1StateofCharge`,
+			</if>
+			<if test="Battery1StateofHealth != 0.001" >
+				`Battery1StateofHealth`,
+			</if>
+			<if test="Battery1Temperature != 0.001" >
+				`Battery1Temperature`,
+			</if>
+			<if test="Battery1StateofFuse != 0.001" >
+				`Battery1StateofFuse`,
+			</if>
+			<if test="Battery1ActualInternalVoltage != 0.001" >
+				`Battery1ActualInternalVoltage`,
+			</if>
+			<if test="Battery1ActualBlockVoltage != 0.001" >
+				`Battery1ActualBlockVoltage`,
+			</if>
+			<if test="Battery1InstalledCapacity != 0.001" >
+				`Battery1InstalledCapacity`,
+			</if>
+			<if test="Battery1NominalResistance != 0.001" >
+				`Battery1NominalResistance`,
+			</if>
+			<if test="Battery1MaxTemperature != 0.001" >
+				`Battery1MaxTemperature`,
+			</if>
+			<if test="Battery1MinTemperature != 0.001" >
+				`Battery1MinTemperature`,
+			</if>
+			<if test="Battery1NominalLifetime != 0.001" >
+				`Battery1NominalLifetime`,
+			</if>
+			<if test="Battery1MaxChargeCurrent != 0.001" >
+				`Battery1MaxChargeCurrent`,
+			</if>
+			<if test="Battery1ChargeAbsorptionVoltage != 0.001" >
+				`Battery1ChargeAbsorptionVoltage`,
+			</if>
+			<if test="Battery1ChargeEndvoltage != 0.001" >
+				`Battery1ChargeEndvoltage`,
+			</if>
+			<if test="Battery1ChargeTemperatureCoefficient != 0.001" >
+				`Battery1ChargeTemperatureCoefficient`,
+			</if>
+			<if test="Battery1DischargeEndvoltage != 0.001" >
+				`Battery1DischargeEndvoltage`,
+			</if>
+			<if test="Battery1MaxDischargeCurrent != 0.001" >
+				`Battery1MaxDischargeCurrent`,
+			</if>
+			<if test="Battery1MaxTemperatureWarning != 0.001" >
+				`Battery1MaxTemperatureWarning`,
+			</if>
+			<if test="Battery1MinTemperatureWarning != 0.001" >
+				`Battery1MinTemperatureWarning`,
+			</if>
+			<if test="Battery1DischargeEndvoltageLowCurrent != 0.001" >
+				`Battery1DischargeEndvoltageLowCurrent`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+                #{time},
+	        </if>
+			<if test="id_device != 0.001" >
+                #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	#{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	        	#{high_alarm},
+	        </if>
+			<if test="ActualInputVoltage != 0.001" >
+				#{ActualInputVoltage},
+			</if>
+			<if test="ActualInputCurrent != 0.001" >
+				#{ActualInputCurrent},
+			</if>
+			<if test="ActualOutputVoltage != 0.001" >
+				#{ActualOutputVoltage},
+			</if>
+			<if test="ActualOutputCurrent != 0.001" >
+				#{ActualOutputCurrent},
+			</if>
+			<if test="BatteryActualVoltage != 0.001" >
+				#{BatteryActualVoltage},
+			</if>
+			<if test="BatteryChargeCurrent != 0.001" >
+				#{BatteryChargeCurrent},
+			</if>
+			<if test="BatteryTemperature != 0.001" >
+				#{BatteryTemperature},
+			</if>
+			<if test="DeviceTemperature != 0.001" >
+				#{DeviceTemperature},
+			</if>
+			<if test="StateofCharge != 0.001" >
+				#{StateofCharge},
+			</if>
+			<if test="StateofChargeRemainingTime != 0.001" >
+				#{StateofChargeRemainingTime},
+			</if>
+			<if test="StateofChargeRemainingTimetoPCShutdown != 0.001" >
+				#{StateofChargeRemainingTimetoPCShutdown},
+			</if>
+			<if test="StateofHealth != 0.001" >
+				#{StateofHealth},
+			</if>
+			<if test="StateofHealthRemainingLifetime != 0.001" >
+				#{StateofHealthRemainingLifetime},
+			</if>
+			<if test="NumberofDevices != 0.001" >
+				#{NumberofDevices},
+			</if>
+			<if test="OperationTime != 0.001" >
+				#{OperationTime},
+			</if>
+			<if test="BatteryModeTime != 0.001" >
+				#{BatteryModeTime},
+			</if>
+			<if test="StatusAlarm != 0.001" >
+				#{StatusAlarm},
+			</if>
+			<if test="StatusWarning != 0.001" >
+				#{StatusWarning},
+			</if>
+			<if test="Battery1StateofCharge != 0.001" >
+				#{Battery1StateofCharge},
+			</if>
+			<if test="Battery1StateofHealth != 0.001" >
+				#{Battery1StateofHealth},
+			</if>
+			<if test="Battery1Temperature != 0.001" >
+				#{Battery1Temperature},
+			</if>
+			<if test="Battery1StateofFuse != 0.001" >
+				#{Battery1StateofFuse},
+			</if>
+			<if test="Battery1ActualInternalVoltage != 0.001" >
+				#{Battery1ActualInternalVoltage},
+			</if>
+			<if test="Battery1ActualBlockVoltage != 0.001" >
+				#{Battery1ActualBlockVoltage},
+			</if>
+			<if test="Battery1InstalledCapacity != 0.001" >
+				#{Battery1InstalledCapacity},
+			</if>
+			<if test="Battery1NominalResistance != 0.001" >
+				#{Battery1NominalResistance},
+			</if>
+			<if test="Battery1MaxTemperature != 0.001" >
+				#{Battery1MaxTemperature},
+			</if>
+			<if test="Battery1MinTemperature != 0.001" >
+				#{Battery1MinTemperature},
+			</if>
+			<if test="Battery1NominalLifetime != 0.001" >
+				#{Battery1NominalLifetime},
+			</if>
+			<if test="Battery1MaxChargeCurrent != 0.001" >
+				#{Battery1MaxChargeCurrent},
+			</if>
+			<if test="Battery1ChargeAbsorptionVoltage != 0.001" >
+				#{Battery1ChargeAbsorptionVoltage},
+			</if>
+			<if test="Battery1ChargeEndvoltage != 0.001" >
+				#{Battery1ChargeEndvoltage},
+			</if>
+			<if test="Battery1ChargeTemperatureCoefficient != 0.001" >
+				#{Battery1ChargeTemperatureCoefficient},
+			</if>
+			<if test="Battery1DischargeEndvoltage != 0.001" >
+				#{Battery1DischargeEndvoltage},
+			</if>
+			<if test="Battery1MaxDischargeCurrent != 0.001" >
+				#{Battery1MaxDischargeCurrent},
+			</if>
+			<if test="Battery1MaxTemperatureWarning != 0.001" >
+				#{Battery1MaxTemperatureWarning},
+			</if>
+			<if test="Battery1MinTemperatureWarning != 0.001" >
+				#{Battery1MinTemperatureWarning},
+			</if>
+			<if test="Battery1DischargeEndvoltageLowCurrent != 0.001" >
+				#{Battery1DischargeEndvoltageLowCurrent},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	        	`id_device` = #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	`error` = #{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm` = #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm` = #{high_alarm},
+	        </if>
+			<if test="ActualInputVoltage != 0.001" >
+				`ActualInputVoltage` = #{ActualInputVoltage},
+			</if>
+			<if test="ActualInputCurrent != 0.001" >
+				`ActualInputCurrent` = #{ActualInputCurrent},
+			</if>
+			<if test="ActualOutputVoltage != 0.001" >
+				`ActualOutputVoltage` = #{ActualOutputVoltage},
+			</if>
+			<if test="ActualOutputCurrent != 0.001" >
+				`ActualOutputCurrent` = #{ActualOutputCurrent},
+			</if>
+			<if test="BatteryActualVoltage != 0.001" >
+				`BatteryActualVoltage` = #{BatteryActualVoltage},
+			</if>
+			<if test="BatteryChargeCurrent != 0.001" >
+				`BatteryChargeCurrent` = #{BatteryChargeCurrent},
+			</if>
+			<if test="BatteryTemperature != 0.001" >
+				`BatteryTemperature` = #{BatteryTemperature},
+			</if>
+			<if test="DeviceTemperature != 0.001" >
+				`DeviceTemperature` = #{DeviceTemperature},
+			</if>
+			<if test="StateofCharge != 0.001" >
+				`StateofCharge` = #{StateofCharge},
+			</if>
+			<if test="StateofChargeRemainingTime != 0.001" >
+				`StateofChargeRemainingTime` = #{StateofChargeRemainingTime},
+			</if>
+			<if test="StateofChargeRemainingTimetoPCShutdown != 0.001" >
+				`StateofChargeRemainingTimetoPCShutdown` = #{StateofChargeRemainingTimetoPCShutdown},
+			</if>
+			<if test="StateofHealth != 0.001" >
+				`StateofHealth` = #{StateofHealth},
+			</if>
+			<if test="StateofHealthRemainingLifetime != 0.001" >
+				`StateofHealthRemainingLifetime` = #{StateofHealthRemainingLifetime},
+			</if>
+			<if test="NumberofDevices != 0.001" >
+				`NumberofDevices` = #{NumberofDevices},
+			</if>
+			<if test="OperationTime != 0.001" >
+				`OperationTime` = #{OperationTime},
+			</if>
+			<if test="BatteryModeTime != 0.001" >
+				`BatteryModeTime` = #{BatteryModeTime},
+			</if>
+			<if test="StatusAlarm != 0.001" >
+				`StatusAlarm` = #{StatusAlarm},
+			</if>
+			<if test="StatusWarning != 0.001" >
+				`StatusWarning` = #{StatusWarning},
+			</if>
+			<if test="Battery1StateofCharge != 0.001" >
+				`Battery1StateofCharge` = #{Battery1StateofCharge},
+			</if>
+			<if test="Battery1StateofHealth != 0.001" >
+				`Battery1StateofHealth` = #{Battery1StateofHealth},
+			</if>
+			<if test="Battery1Temperature != 0.001" >
+				`Battery1Temperature` = #{Battery1Temperature},
+			</if>
+			<if test="Battery1StateofFuse != 0.001" >
+				`Battery1StateofFuse` = #{Battery1StateofFuse},
+			</if>
+			<if test="Battery1ActualInternalVoltage != 0.001" >
+				`Battery1ActualInternalVoltage` = #{Battery1ActualInternalVoltage},
+			</if>
+			<if test="Battery1ActualBlockVoltage != 0.001" >
+				`Battery1ActualBlockVoltage` = #{Battery1ActualBlockVoltage},
+			</if>
+			<if test="Battery1InstalledCapacity != 0.001" >
+				`Battery1InstalledCapacity` = #{Battery1InstalledCapacity},
+			</if>
+			<if test="Battery1NominalResistance != 0.001" >
+				`Battery1NominalResistance` = #{Battery1NominalResistance},
+			</if>
+			<if test="Battery1MaxTemperature != 0.001" >
+				`Battery1MaxTemperature` = #{Battery1MaxTemperature},
+			</if>
+			<if test="Battery1MinTemperature != 0.001" >
+				`Battery1MinTemperature` = #{Battery1MinTemperature},
+			</if>
+			<if test="Battery1NominalLifetime != 0.001" >
+				`Battery1NominalLifetime` = #{Battery1NominalLifetime},
+			</if>
+			<if test="Battery1MaxChargeCurrent != 0.001" >
+				`Battery1MaxChargeCurrent` = #{Battery1MaxChargeCurrent},
+			</if>
+			<if test="Battery1ChargeAbsorptionVoltage != 0.001" >
+				`Battery1ChargeAbsorptionVoltage` = #{Battery1ChargeAbsorptionVoltage},
+			</if>
+			<if test="Battery1ChargeEndvoltage != 0.001" >
+				`Battery1ChargeEndvoltage` = #{Battery1ChargeEndvoltage},
+			</if>
+			<if test="Battery1ChargeTemperatureCoefficient != 0.001" >
+				`Battery1ChargeTemperatureCoefficient` = #{Battery1ChargeTemperatureCoefficient},
+			</if>
+			<if test="Battery1DischargeEndvoltage != 0.001" >
+				`Battery1DischargeEndvoltage` = #{Battery1DischargeEndvoltage},
+			</if>
+			<if test="Battery1MaxDischargeCurrent != 0.001" >
+				`Battery1MaxDischargeCurrent` = #{Battery1MaxDischargeCurrent},
+			</if>
+			<if test="Battery1MaxTemperatureWarning != 0.001" >
+				`Battery1MaxTemperatureWarning` = #{Battery1MaxTemperatureWarning},
+			</if>
+			<if test="Battery1MinTemperatureWarning != 0.001" >
+				`Battery1MinTemperatureWarning` = #{Battery1MinTemperatureWarning},
+			</if>
+			<if test="Battery1DischargeEndvoltageLowCurrent != 0.001" >
+				`Battery1DischargeEndvoltageLowCurrent` = #{Battery1DischargeEndvoltageLowCurrent},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity">
+    	SELECT
+			SUM( t.StatusAlarm ) AS totalAlarm,
+			SUM( t.StatusWarning ) AS totalWarning,
+			SUM( t.Battery1StateofFuse ) AS totalFuse1
+		FROM
+			(
+				SELECT
+					IF(m.StatusAlarm > 0, 1, 0) AS StatusAlarm,
+					IF(m.StatusWarning > 0, 1, 0) AS StatusWarning,
+					IF(m.Battery1StateofFuse > 0, 1, 0) AS Battery1StateofFuse
+				FROM
+					${datatablename} m
+				WHERE
+					id_device = #{id_device}
+				ORDER BY
+					time DESC 
+				LIMIT 20
+			) t
+  	</select>
+  	
+  	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(1229,1229,1230,1231,1232,1233,1234,1235,1236,1237,1238,1239,1240,1241,1242,1243,1244,1245,1246,1247,1248,1249,1250,1251,1252,1253,1254,1255,1256,1257,1258)
+			</if>
+			
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(1259,1260,1261,1262,1263,1264,1265,1266,1267,1268,1269,1270,1271,1272,1273,1274,1275,1276,1277,1278,1279,1280,1281,1282,1283,1284,1285,1286,1287,1288,1289)
+			</if>
+			
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(1290)
+			</if>
+	</select>
+	
+</mapper> 
