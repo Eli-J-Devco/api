@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="SitesAnalytics">
-	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.SitesDevicesEntity" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+	<select id="getListDeviceBySite" resultType="Map">
 		SELECT
 			d.serial_number,
 			d.id,
@@ -34,7 +34,7 @@
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
-	<select id="getListDeviceParameter" resultType="com.nwm.api.entities.DeviceParameterEntity" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+	<select id="getListDeviceParameter" resultType="Map">
 		SELECT
 			dp.id,
 			dp.`name`,
@@ -2514,39 +2514,42 @@
 				IFNULL(ROUND(AVG(Battery1DischargeEndvoltageLowCurrent), 2), 0.001) AS Battery1DischargeEndvoltageLowCurrent
 			</if>
 
-			<if test="table_name == 'model_sma_inverter_12_15_20_24_30tlus10'">
-        IFNULL(ROUND(AVG(Power), 2), 0.001) AS Power,
-        IFNULL(ROUND(AVG(Power_L1), 2), 0.001) AS Power_L1,
-        IFNULL(ROUND(AVG(Power_L2), 2), 0.001) AS Power_L2,
-        IFNULL(ROUND(AVG(Power_L3), 2), 0.001) AS Power_L3,
-        IFNULL(ROUND(AVG(Grid_voltage_phase_L1), 2), 0.001) AS Grid_voltage_phase_L1,
-        IFNULL(ROUND(AVG(Grid_voltage_phase_L2), 2), 0.001) AS Grid_voltage_phase_L2,
-        IFNULL(ROUND(AVG(Grid_voltage_phase_L3), 2), 0.001) AS Grid_voltage_phase_L3,
-        IFNULL(ROUND(AVG(Grid_current_phase_L1), 2), 0.001) AS Grid_current_phase_L1,
-        IFNULL(ROUND(AVG(Grid_current_phase_L2), 2), 0.001) AS Grid_current_phase_L2,
-        IFNULL(ROUND(AVG(Grid_current_phase_L3), 2), 0.001) AS Grid_current_phase_L3,
-        IFNULL(ROUND(AVG(Grid_frequency), 2), 0.001) AS Grid_frequency,
-        IFNULL(ROUND(AVG(Reactive_power), 2), 0.001) AS Reactive_power,
-        IFNULL(ROUND(AVG(Reactive_power_L1), 2), 0.001) AS Reactive_power_L1,
-        IFNULL(ROUND(AVG(Reactive_power_L2), 2), 0.001) AS Reactive_power_L2,
-        IFNULL(ROUND(AVG(Reactive_power_L3), 2), 0.001) AS Reactive_power_L3,
-        IFNULL(ROUND(AVG(Apparent_power), 2), 0.001) AS Apparent_power,
-        IFNULL(ROUND(AVG(Apparent_power_L1), 2), 0.001) AS Apparent_power_L1,
-        IFNULL(ROUND(AVG(Apparent_power_L2), 2), 0.001) AS Apparent_power_L2,
-        IFNULL(ROUND(AVG(Apparent_power_L3), 2), 0.001) AS Apparent_power_L3,
-        IFNULL(ROUND(AVG(Daily_yield), 2), 0.001) AS Daily_yield,
-        IFNULL(ROUND(AVG(Total_yield), 2), 0.001) AS Total_yield,
-        IFNULL(ROUND(AVG(Operating_time), 2), 0.001) AS Operating_time,
-        IFNULL(ROUND(AVG(Feed_in_time), 2), 0.001) AS Feed_in_time,
-        IFNULL(ROUND(AVG(DC_current_input_1), 2), 0.001) AS DC_current_input_1,
-        IFNULL(ROUND(AVG(DC_current_input_2), 2), 0.001) AS DC_current_input_2,
-        IFNULL(ROUND(AVG(DC_voltage_input_1), 2), 0.001) AS DC_voltage_input_1,
-        IFNULL(ROUND(AVG(DC_voltage_input_2), 2), 0.001) AS DC_voltage_input_2,
-        IFNULL(ROUND(AVG(DC_power_input_1), 2), 0.001) AS DC_power_input_1,
-        IFNULL(ROUND(AVG(DC_power_input_2), 2), 0.001) AS DC_power_input_2,
-        IFNULL(ROUND(AVG(Displacement_Power_Factor), 2), 0.001) AS Displacement_Power_Factor,
-        IFNULL(ROUND(AVG(Event_Message), 2), 0.001) AS Event_Message,
-      </if>
+			<if test="table_name == 'model_sma_inverter_12_15_20_24_30tlus10'"> 
+			      IFNULL(ROUND(IF(AVG(Power) <![CDATA[<]]> 0, 0, AVG(Power)), 2), 0.001) AS Power,
+			      
+			      IFNULL(ROUND(AVG(Power_L1), 2), 0.001) AS Power_L1,
+			      IFNULL(ROUND(AVG(Power_L2), 2), 0.001) AS Power_L2,
+			      IFNULL(ROUND(AVG(Power_L3), 2), 0.001) AS Power_L3,
+			      IFNULL(ROUND(AVG(Grid_voltage_phase_L1), 2), 0.001) AS Grid_voltage_phase_L1,
+			      IFNULL(ROUND(AVG(Grid_voltage_phase_L2), 2), 0.001) AS Grid_voltage_phase_L2,
+			      IFNULL(ROUND(AVG(Grid_voltage_phase_L3), 2), 0.001) AS Grid_voltage_phase_L3,
+			      IFNULL(ROUND(AVG(Grid_current_phase_L1), 2), 0.001) AS Grid_current_phase_L1,
+			      IFNULL(ROUND(AVG(Grid_current_phase_L2), 2), 0.001) AS Grid_current_phase_L2,
+			      IFNULL(ROUND(AVG(Grid_current_phase_L3), 2), 0.001) AS Grid_current_phase_L3,
+			      IFNULL(ROUND(AVG(Grid_frequency), 2), 0.001) AS Grid_frequency,
+			      IFNULL(ROUND(AVG(Reactive_power), 2), 0.001) AS Reactive_power,
+			      IFNULL(ROUND(AVG(Reactive_power_L1), 2), 0.001) AS Reactive_power_L1,
+			      IFNULL(ROUND(AVG(Reactive_power_L2), 2), 0.001) AS Reactive_power_L2,
+			      IFNULL(ROUND(AVG(Reactive_power_L3), 2), 0.001) AS Reactive_power_L3,
+			      IFNULL(ROUND(AVG(Apparent_power), 2), 0.001) AS Apparent_power,
+			      IFNULL(ROUND(AVG(Apparent_power_L1), 2), 0.001) AS Apparent_power_L1,
+			      IFNULL(ROUND(AVG(Apparent_power_L2), 2), 0.001) AS Apparent_power_L2,
+			      IFNULL(ROUND(AVG(Apparent_power_L3), 2), 0.001) AS Apparent_power_L3,
+			      IFNULL(ROUND(AVG(Daily_yield), 2), 0.001) AS Daily_yield,
+			      IFNULL(ROUND(AVG(Total_yield), 2), 0.001) AS Total_yield,
+			      IFNULL(ROUND(AVG(Operating_time), 2), 0.001) AS Operating_time,
+			      IFNULL(ROUND(AVG(Feed_in_time), 2), 0.001) AS Feed_in_time,
+			      IFNULL(ROUND(AVG(DC_current_input_1), 2), 0.001) AS DC_current_input_1,
+			      IFNULL(ROUND(AVG(DC_current_input_2), 2), 0.001) AS DC_current_input_2,
+			      IFNULL(ROUND(AVG(DC_voltage_input_1), 2), 0.001) AS DC_voltage_input_1,
+			      IFNULL(ROUND(AVG(DC_voltage_input_2), 2), 0.001) AS DC_voltage_input_2,
+			      IFNULL(ROUND(AVG(DC_power_input_1), 2), 0.001) AS DC_power_input_1,
+			      IFNULL(ROUND(AVG(DC_power_input_2), 2), 0.001) AS DC_power_input_2,
+			      IFNULL(ROUND(AVG(Displacement_Power_Factor), 2), 0.001) AS Displacement_Power_Factor,
+			      IFNULL(ROUND(AVG(Event_Message), 2), 0.001) AS Event_Message,
+			      IFNULL(ROUND(AVG(Serial_Number), 2), 0.001) AS Serial_Number
+			      
+			</if>
 			
 			<if test="table_name == 'model_virtual_meter_or_inverter'">
 				IFNULL(ROUND(AVG(nvmActivePower), 2), 0.001) AS nvmActivePower,
@@ -5088,41 +5091,42 @@
 				</if>
 
 				<if test="table_name == 'model_sma_inverter_12_15_20_24_30tlus10'">
-          AVG(dv.Power) AS Power,
-          AVG(dv.Power_L1) AS Power_L1,
-          AVG(dv.Power_L2) AS Power_L2,
-          AVG(dv.Power_L3) AS Power_L3,
-          AVG(dv.Grid_voltage_phase_L1) AS Grid_voltage_phase_L1,
-          AVG(dv.Grid_voltage_phase_L2) AS Grid_voltage_phase_L2,
-          AVG(dv.Grid_voltage_phase_L3) AS Grid_voltage_phase_L3,
-          AVG(dv.Grid_current_phase_L1) AS Grid_current_phase_L1,
-          AVG(dv.Grid_current_phase_L2) AS Grid_current_phase_L2,
-          AVG(dv.Grid_current_phase_L3) AS Grid_current_phase_L3,
-          AVG(dv.Grid_frequency) AS Grid_frequency,
-          AVG(dv.Reactive_power) AS Reactive_power,
-          AVG(dv.Reactive_power_L1) AS Reactive_power_L1,
-          AVG(dv.Reactive_power_L2) AS Reactive_power_L2,
-          AVG(dv.Reactive_power_L3) AS Reactive_power_L3,
-          AVG(dv.Apparent_power) AS Apparent_power,
-          AVG(dv.Apparent_power_L1) AS Apparent_power_L1,
-          AVG(dv.Apparent_power_L2) AS Apparent_power_L2,
-          AVG(dv.Apparent_power_L3) AS Apparent_power_L3,
-          AVG(dv.Daily_yield) AS Daily_yield,
-          AVG(dv.Total_yield) AS Total_yield,
-          AVG(dv.Operating_time) AS Operating_time,
-          AVG(dv.Feed_in_time) AS Feed_in_time,
-          AVG(dv.DC_current_input_1) AS DC_current_input_1,
-          AVG(dv.DC_current_input_2) AS DC_current_input_2,
-          AVG(dv.DC_voltage_input_1) AS DC_voltage_input_1,
-          AVG(dv.DC_voltage_input_2) AS DC_voltage_input_2,
-          AVG(dv.DC_power_input_1) AS DC_power_input_1,
-          AVG(dv.DC_power_input_2) AS DC_power_input_2,
-          AVG(dv.Displacement_Power_Factor) AS Displacement_Power_Factor,
-          AVG(dv.Event_Message) AS Event_Message,
-
-          AVG(dv.nvmActivePower) AS nvmActivePower,
-          AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
-        </if>
+		          AVG(dv.Power) AS Power,
+		          AVG(dv.Power_L1) AS Power_L1,
+		          AVG(dv.Power_L2) AS Power_L2,
+		          AVG(dv.Power_L3) AS Power_L3,
+		          AVG(dv.Grid_voltage_phase_L1) AS Grid_voltage_phase_L1,
+		          AVG(dv.Grid_voltage_phase_L2) AS Grid_voltage_phase_L2,
+		          AVG(dv.Grid_voltage_phase_L3) AS Grid_voltage_phase_L3,
+		          AVG(dv.Grid_current_phase_L1) AS Grid_current_phase_L1,
+		          AVG(dv.Grid_current_phase_L2) AS Grid_current_phase_L2,
+		          AVG(dv.Grid_current_phase_L3) AS Grid_current_phase_L3,
+		          AVG(dv.Grid_frequency) AS Grid_frequency,
+		          AVG(dv.Reactive_power) AS Reactive_power,
+		          AVG(dv.Reactive_power_L1) AS Reactive_power_L1,
+		          AVG(dv.Reactive_power_L2) AS Reactive_power_L2,
+		          AVG(dv.Reactive_power_L3) AS Reactive_power_L3,
+		          AVG(dv.Apparent_power) AS Apparent_power,
+		          AVG(dv.Apparent_power_L1) AS Apparent_power_L1,
+		          AVG(dv.Apparent_power_L2) AS Apparent_power_L2,
+		          AVG(dv.Apparent_power_L3) AS Apparent_power_L3,
+		          AVG(dv.Daily_yield) AS Daily_yield,
+		          AVG(dv.Total_yield) AS Total_yield,
+		          AVG(dv.Operating_time) AS Operating_time,
+		          AVG(dv.Feed_in_time) AS Feed_in_time,
+		          AVG(dv.DC_current_input_1) AS DC_current_input_1,
+		          AVG(dv.DC_current_input_2) AS DC_current_input_2,
+		          AVG(dv.DC_voltage_input_1) AS DC_voltage_input_1,
+		          AVG(dv.DC_voltage_input_2) AS DC_voltage_input_2,
+		          AVG(dv.DC_power_input_1) AS DC_power_input_1,
+		          AVG(dv.DC_power_input_2) AS DC_power_input_2,
+		          AVG(dv.Displacement_Power_Factor) AS Displacement_Power_Factor,
+		          AVG(dv.Event_Message) AS Event_Message,
+		          AVG(dv.Serial_Number) AS Serial_Number,
+		
+		          AVG(dv.nvmActivePower) AS nvmActivePower,
+		          AVG(dv.nvmActiveEnergy) AS nvmActiveEnergy,
+		        </if>
 				
 				<if test="table_name == 'model_virtual_meter_or_inverter'">
 					AVG(dv.nvmActivePower) AS nvmActivePower,
