@@ -188,7 +188,7 @@
 			IF(s.`hidden` = 1, 1, 0) AS hidden,
 			s.virtual_device_type,
 			s.ip_address,
-			s.consumption_meter
+			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
