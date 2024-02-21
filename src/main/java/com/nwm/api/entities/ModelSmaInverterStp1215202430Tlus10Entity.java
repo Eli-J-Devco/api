@@ -43,6 +43,7 @@ public class ModelSmaInverterStp1215202430Tlus10Entity {
 	private double DC_power_input_2;
 	private double Displacement_Power_Factor;
 	private double Event_Message;
+	private double Serial_Number;
 	
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
@@ -52,6 +53,13 @@ public class ModelSmaInverterStp1215202430Tlus10Entity {
 	private String job_tablename;
 	private int enable_alert;
 	
+	
+	public double getSerial_Number() {
+		return Serial_Number;
+	}
+	public void setSerial_Number(double serial_Number) {
+		Serial_Number = serial_Number;
+	}
 	public String getTime() {
 		return time;
 	}

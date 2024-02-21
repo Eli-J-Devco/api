@@ -2373,9 +2373,10 @@ public class ImportOldDataService extends DB {
 		rowItem.put("DC_power_input_2", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
 		rowItem.put("Displacement_Power_Factor", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
 		rowItem.put("Event_Message", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
-		rowItem.put("nvmActivePower", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
-		rowItem.put("nvmActiveEnergy", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
-		rowItem.put("MeasuredProduction", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("Serial_Number", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
 		return rowItem;
 	}
 }

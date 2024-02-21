@@ -67,6 +67,7 @@ public class ModelSmaInverterStp1215202430Tlus10Service extends DB {
 				dataModelSmaTlus10.setDC_power_input_2(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
 				dataModelSmaTlus10.setDisplacement_Power_Factor(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
 				dataModelSmaTlus10.setEvent_Message(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
+				dataModelSmaTlus10.setSerial_Number(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
 
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
