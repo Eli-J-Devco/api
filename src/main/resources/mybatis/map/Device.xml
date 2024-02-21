@@ -4107,7 +4107,7 @@
 	            </when>
 
 
-							<when test="id_device_group == 74">
+				<when test="id_device_group == 74">
              CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
             (
                 `time` datetime NOT NULL,
@@ -4146,6 +4146,7 @@
               `DC_power_input_2` double DEFAULT NULL,
               `Displacement_Power_Factor` double DEFAULT NULL,
               `Event_Message` double DEFAULT NULL,
+              `Serial_Number` double DEFAULT NULL,
               `nvmActivePower` double DEFAULT NULL,
               `nvmActiveEnergy` double DEFAULT NULL,
               `MeasuredProduction` double DEFAULT NULL,

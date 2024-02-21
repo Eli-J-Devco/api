@@ -41,6 +41,7 @@
 			<result property="DC_power_input_2" column="DC_power_input_2" />
 			<result property="Displacement_Power_Factor" column="Displacement_Power_Factor" />
 			<result property="Event_Message" column="Event_Message" />
+			<result property="Serial_Number" column="Serial_Number" />
 
 		    <result property="nvmActivePower" column="nvmActivePower" />
 		    <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
@@ -160,6 +161,9 @@
 			</if>
 			<if test="Event_Message != 0.001" >
 				`Event_Message`,
+			</if>
+			<if test="Serial_Number != 0.001" >
+				`Serial_Number`,
 			</if>
 			<if test="nvmActivePower != 0.001" >
 			  	`nvmActivePower`,
@@ -281,6 +285,9 @@
 			<if test="Event_Message != 0.001" >
 				#{Event_Message},
 			</if>
+			<if test="Serial_Number != 0.001" >
+				#{Serial_Number},
+			</if>
 			<if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			</if>
@@ -398,6 +405,9 @@
 			</if>
 			<if test="Event_Message != 0.001" >
 				`Event_Message` = #{Event_Message},
+			</if>
+			<if test="Serial_Number != 0.001" >
+				`Serial_Number` = #{Serial_Number},
 			</if>
 			<if test="nvmActivePower != 0.001" >
 			 	`nvmActivePower` = #{nvmActivePower},

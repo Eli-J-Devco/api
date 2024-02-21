@@ -36,9 +36,9 @@ public class SitesAnalyticsService extends DB {
 			List dataList = queryForList("SitesAnalytics.getListDeviceBySite", obj);
 			if(dataList.size() > 0) {
 				for(int i =0; i< dataList.size(); i++) {
-					SitesDevicesEntity item = (SitesDevicesEntity)dataList.get(i);
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
 					List dataListParameter = queryForList("SitesAnalytics.getListDeviceParameter", item);
-					item.setDataParameter(dataListParameter);
+					item.put("dataParameter", dataListParameter);
 					dataListNew.add(item);
 				}
 			}
