@@ -51,7 +51,7 @@ public class AWSService {
 			FileUpload fileUpload = transferManager.uploadFile(uploadFileRequest);
 			fileUpload.completionFuture().join();
 			
-			return this.rootFolder + "/" + awsFilePath;
+			return  "/" + this.rootFolder + "/" + awsFilePath;
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
