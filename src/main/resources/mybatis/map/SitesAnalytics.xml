@@ -35,31 +35,31 @@
 	</select>
 	
 	<select id="getListDeviceParameter" resultType="Map">
-		SELECT
-			dp.id,
-			dp.`name`,
-			dp.standard_name,
-			dp.slug,
-			dp.unit,
-			dp.value_chart_tool,
-			dp.chart_type,
-			dp.description,
-			dp.register,
-			dp.hide,
-			dp.standard_alert_message,
-			d.id AS id_device,
-			d.id_device_type,
-			d.id_device_group,
-			dp.is_checked,
-			dp.is_calculation,
-			dp.is_common,
-			dp.menu_order
-		FROM
-			device d
-			LEFT JOIN device_group dg ON dg.id = d.id_device_group 
-			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
-		WHERE
-			d.id = #{id} AND d.`status` = 1 AND dp.is_delete = 0 AND dp.`status` = 1 AND dp.is_filter = 1 ORDER BY menu_order DESC;
+		<foreach item="item" index="index" collection="list" separator="UNION">
+			SELECT
+				dp.id,
+				dp.`name`,
+				dp.standard_name,
+				dp.slug,
+				dp.unit,
+				dp.value_chart_tool,
+				dp.chart_type,
+				dp.hide,
+				d.id AS id_device,
+				d.id_device_type,
+				d.id_device_group,
+				dp.is_checked,
+				dp.is_calculation,
+				IF(dp.is_common = 1, 1, 0) AS is_common,
+				dp.menu_order
+			FROM
+				device d
+				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
+				LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+			WHERE
+				d.id = #{item.id} AND d.`status` = 1 AND dp.is_delete = 0 AND dp.`status` = 1 AND dp.is_filter = 1
+		</foreach>
+		ORDER BY id_device_group ASC, menu_order DESC;
 	</select>
 	
 	<select id="getHiddenDataListByDevice" resultType="Map">
