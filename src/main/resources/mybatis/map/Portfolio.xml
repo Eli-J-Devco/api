@@ -109,23 +109,13 @@
 			) h ON h.id_site = s.id
 			
 			LEFT JOIN (
-				SELECT
-					b.id_device,
+				SELECT 
 					d.id_site,
-					b.expected_power_ac AS expected_power_virtual
+					IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual
 				FROM
-					BJobModelVirtualMeterOrInverter b
-					LEFT JOIN device d ON d.id = b.id_device
-					LEFT JOIN (
-							SELECT 
-								max(b.time) As max_time
-							FROM
-								BJobModelVirtualMeterOrInverter b
-								GROUP BY b.id_device
-						) bb ON bb.max_time = b.time
-					WHERE
-						b.time = bb.max_time
-						GROUP BY b.id_device
+					device d
+				WHERE
+					d.id_device_type = 12
 			)v ON v.id_site = s.id
 			
 			

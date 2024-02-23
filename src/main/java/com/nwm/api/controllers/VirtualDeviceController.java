@@ -182,7 +182,7 @@ public class VirtualDeviceController extends BaseController {
 						deviceEntity.setLast_updated(lastItem.getTime());
 						deviceEntity.setLast_value(lastItem.getNvmActivePower());
 						deviceEntity.setField_value1(lastItem.getNvmActivePower());
-						deviceEntity.setField_value2(lastItem.getNvmActiveEnergy());
+						deviceEntity.setField_value2(lastItem.getExpected_power_ac());
 						deviceEntity.setField_value3(lastItem.getNvm_irradiance());
 					} else {
 						deviceEntity.setLast_updated(null);

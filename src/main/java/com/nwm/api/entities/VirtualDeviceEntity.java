@@ -37,6 +37,7 @@ public class VirtualDeviceEntity {
 	private double nvm_irradiance;
 	private double dc_capacity = 0;
 	private double ac_capacity = 0;
+	private double expected_power_ac;
 	
 	private double pv_module_temperature_coeff;
 	private double global_solar_irradiance_at_stc;
@@ -69,6 +70,12 @@ public class VirtualDeviceEntity {
 	
 	
 	
+	public double getExpected_power_ac() {
+		return expected_power_ac;
+	}
+	public void setExpected_power_ac(double expected_power_ac) {
+		this.expected_power_ac = expected_power_ac;
+	}
 	public String getBuilt_since() {
 		return built_since;
 	}
