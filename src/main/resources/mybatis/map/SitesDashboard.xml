@@ -51,7 +51,6 @@
 			s.cf_alert_threshold,
 			s.unit_type_temp,
 			s.unit_wind_speed,
-			IF(s.cf_email_subscribers IS NULL || s.cf_email_subscribers = '',t.cf_email_subscribers,s.cf_email_subscribers) AS cf_email_subscribers,
 			g.total_error,
 			s.display_time_format,
 			s.display_date_format,
@@ -80,7 +79,12 @@
 			s.transformer_losses,
 			s.soiling,
 			s.other_losses,
-			s.alert_mail_bcc,
+			IF(s.alert_mail_bcc IS NULL || s.alert_mail_bcc = '', t.alert_mail_bcc, s.alert_mail_bcc) AS alert_mail_bcc,
+			
+			
+			IF(s.cf_email_subscribers IS NULL || s.cf_email_subscribers = '', 'support@nwemon.com', s.cf_email_subscribers) AS cf_email_subscribers,
+			
+			
 			s.alert_mail_cc,
 			h.is_hiding,
 			s.table_data_report,
@@ -103,10 +107,11 @@
 			) h ON h.id_site = s.id
 			
 			LEFT JOIN (
-				SELECT sem.id_site, GROUP_CONCAT(e.email) AS cf_email_subscribers FROM site_employee_map sem
+				SELECT sem.id_site, GROUP_CONCAT(e.email) AS alert_mail_bcc FROM site_employee_map sem
 				LEFT JOIN employee e ON e.id = sem.id_employee
 				WHERE 
 				SHA1(sem.id_site) = #{hash_id}
+				AND e.id = #{id_employee}
 			)t ON t.id_site = s.id
 			
 			LEFT JOIN(

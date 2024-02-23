@@ -17,15 +17,17 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="active" column="active" />
 		<result property="id_icon" column="id_icon" />
+		<result property="label" column="label" />
 	</resultMap>
 	
 
 	
 
-	<select id="getList" resultMap="ErrorLevelMap" parameterType="String">
+	<select id="getList" resultMap="Map">
 		SELECT
 			t.*,
 			t.name AS text,
+			t.name AS label,
 			0 as active
 		FROM
 			error_level AS t
