@@ -127,10 +127,17 @@ public class SitesDevicesEntity {
 	private String table_data_virtual;
 	private String expiration;
 	private int is_show_each_meter;
+	private List errorLevel;
 
 	
 	
 	
+	public List getErrorLevel() {
+		return errorLevel;
+	}
+	public void setErrorLevel(List errorLevel) {
+		this.errorLevel = errorLevel;
+	}
 	public int getIs_show_each_meter() {
 		return is_show_each_meter;
 	}

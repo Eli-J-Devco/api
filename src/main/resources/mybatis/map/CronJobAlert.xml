@@ -459,8 +459,21 @@
 		WHERE
 			d.`status` = 1 
 			AND d.id_site  = #{id}
-			AND a.open_send_mail = 0 AND a.`status` = 1
+			AND a.open_send_mail = 0
+			AND a.`status` = 1
+			<if test="errorLevel != null and !errorLevel.isEmpty()">
+				AND e.id_error_level IN (
+					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = 136 GROUP BY m.id_error_level
+				)
+			</if>
 			ORDER BY a.`status` DESC
+	</select>
+	
+	
+	<select id="getListErrorLevel" resultType="Map" >
+		SELECT id_error_level
+		FROM error_level_site_map m 
+		WHERE m.id_site = #{id} GROUP BY m.id_error_level
 	</select>
 	
 	<update id="updateOpenSentAlert">

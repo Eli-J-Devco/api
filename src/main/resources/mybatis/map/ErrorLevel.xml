@@ -23,11 +23,12 @@
 
 	
 
-	<select id="getList" resultMap="Map">
+	<select id="getList" resultType="Map">
 		SELECT
 			t.*,
 			t.name AS text,
 			t.name AS label,
+			t.id AS value,
 			0 as active
 		FROM
 			error_level AS t

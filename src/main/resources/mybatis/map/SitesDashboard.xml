@@ -164,6 +164,20 @@
 	</select>
 	
 	
+	 
+	
+	<select id="getListErrorLevel" resultType="Map">
+		SELECT
+			m.*
+			
+		FROM
+			error_level_site_map m
+		WHERE
+			SHA1(m.id_site) = #{hash_id} GROUP BY m.id_error_level
+	</select>
+	
+	
+	
 	<select id="getListAlertByIdDevice" resultType="Map">
 		SELECT
 			l.id,

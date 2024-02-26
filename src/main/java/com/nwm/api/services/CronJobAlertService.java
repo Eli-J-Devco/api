@@ -91,6 +91,9 @@ public class CronJobAlertService extends DB {
 	public List getListAlertOpenBySite(SiteEntity obj) {
 		List dataList = new ArrayList();
 		try {
+			List errorLevel = queryForList("CronJobAlert.getListErrorLevel", obj);
+			
+			obj.setErrorLevel(errorLevel);
 			dataList = queryForList("CronJobAlert.getListAlertOpenBySite", obj);
 			if (dataList == null)
 				return new ArrayList();

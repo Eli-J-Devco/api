@@ -39,6 +39,12 @@ public class SitesDevicesService extends DB {
 			List listDeviceDisableAlert = new ArrayList();
 			listDeviceDisableAlert = queryForList("SitesDashboard.getListDeviceIsDisableAlert", obj);	
 			dataObj.setDeviceDisableAlerts(listDeviceDisableAlert);
+			// Get list error level
+			
+			List errorLevel = new ArrayList();
+			errorLevel = queryForList("SitesDashboard.getListErrorLevel", obj);
+			dataObj.setErrorLevel(errorLevel);
+			
 			
 			if (dataObj == null)
 				return new SitesDevicesEntity();

@@ -198,9 +198,16 @@ public class SiteEntity {
 	private String expiration;
 	private int is_show_each_meter;
 	private int enable_alert;
+	private List errorLevel;
 	
 	
 	
+	public List getErrorLevel() {
+		return errorLevel;
+	}
+	public void setErrorLevel(List errorLevel) {
+		this.errorLevel = errorLevel;
+	}
 	public int getEnable_alert() {
 		return enable_alert;
 	}

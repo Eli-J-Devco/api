@@ -21,8 +21,8 @@ public class SiteConfigService extends DB {
 	 * @since 2022-07-27
 	 * @param id
 	 */
-	public boolean updateSiteConfig(SitesDevicesEntity obj){
-		
+	public boolean updateSiteConfig(SitesDevicesEntity obj) {
+
 		SqlSession session = this.beginTransaction();
 		try {
 			session.update("SiteConfig.updateSiteConfig", obj);
@@ -34,6 +34,15 @@ public class SiteConfigService extends DB {
 					session.update("SiteConfig.enableDeviceDisableAlert", item);
 				}
 			}
+
+			List errorLevel = obj.getErrorLevel();
+
+			// Delete error_level_site_map
+			session.update("SiteConfig.deleteErrorLevelSiteMap", obj);
+			if (errorLevel.size() > 0) {
+				session.update("SiteConfig.insertErrorLevelSiteMap", obj);
+			}
+
 			session.commit();
 			return true;
 		} catch (Exception ex) {

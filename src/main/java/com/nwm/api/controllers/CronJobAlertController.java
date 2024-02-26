@@ -475,6 +475,7 @@ public class CronJobAlertController extends BaseController {
 			// Get list site
 			SiteEntity siteEntity = new SiteEntity();
 			siteEntity.setId(id_site);
+			siteEntity.setId_site(id_site);
 			List listSite = service.getListSiteSentMailAlert(siteEntity);
 			if (listSite == null || listSite.size() == 0) {
 				return null;
