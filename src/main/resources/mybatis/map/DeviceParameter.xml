@@ -54,6 +54,50 @@
 			dp.id
 	</select>
 	
+	
+	<select id="getAllSiteByDeviceGroup" resultType="Map">
+		SELECT
+			d.id_site,
+			dg.group_name,
+			s.`name` AS site_name
+		FROM
+			device d 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND d.id_device_group = #{id_device_group}
+		GROUP BY
+			d.id_site,
+			d.id_device_group 
+		ORDER BY s.id DESC 
+		LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalAllSiteByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
+    	SELECT
+			count(*) AS totalRow 
+		FROM
+			(
+			SELECT
+				d.id_site,
+				dg.group_name,
+				s.`name` AS site_name 
+			FROM
+				device d
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
+			WHERE
+				d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.id_device_group = #{id_device_group}
+			GROUP BY
+				d.id_site,
+			d.id_device_group 
+			)t
+  	</select>
+  	
+	
 	<select id="getListDeviceGroup" resultType="Map">
 		SELECT
 			dg.id,
@@ -65,15 +109,52 @@
 			dg.notes,
 			DATE_FORMAT(dg.created_date, "%Y/%d/%m %H:%i:%s") AS date_added,
 			CONCAT( DATE_FORMAT(dg.updated_date, "%H:%i %m/%d/%Y") , ' by ', dg.updated_by) AS last_modified,
-			dg.table_name
+			dg.table_name,
+			t.sites_using,
+			t.sites_name
 		FROM
 			device_group AS dg
 			LEFT JOIN device_type dt ON dt.id = dg.id_device_type
+			LEFT JOIN (
+				SELECT
+					t.id_device_group,
+					COUNT( t.id_site ) AS sites_using,
+					substring_index(group_concat(t.site_name SEPARATOR ','), ',', 5) AS sites_name
+				FROM
+					(
+					SELECT
+						d.*,
+						s.`name` AS site_name 
+					FROM
+						device d 
+						LEFT JOIN site s ON s.id = d.id_site
+					WHERE
+						d.`status` = 1 
+					GROUP BY
+						d.id_site,
+						d.id_device_group 
+					) t 
+				GROUP BY
+					t.id_device_group
+			)t ON dg.id = t.id_device_group
 		WHERE
+		
+		
+		
 			dg.`status` = 1 AND dg.is_delete = 0
 			<if test="keyword != null">
 				AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
 			</if>
+			
+			<if test="deviceType != null and !deviceType.isEmpty()">
+				AND dg.id_device_type IN(
+				<foreach item="item" index="index" collection="deviceType" separator=",">
+			        #{item.id_device_type}
+			    </foreach>
+				)
+			</if>
+			
+			
 	    ORDER BY
 	        <choose>  
 	            <when test="sort_column == 'id'">
@@ -101,6 +182,13 @@
 		<if test="keyword != null">
 			AND dg.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
+		<if test="deviceType != null and !deviceType.isEmpty()">
+				AND dg.id_device_type IN(
+				<foreach item="item" index="index" collection="deviceType" separator=",">
+			        #{item.id_device_type}
+			    </foreach>
+				)
+			</if>
   	</select>
 	
 	<select id="getListParameterByDeviceGroup" resultType="Map">

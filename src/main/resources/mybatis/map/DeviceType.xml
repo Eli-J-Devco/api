@@ -16,6 +16,8 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="alias" column="alias" />
 		<result property="color" column="color" />
+		<result property="label" column="label" />
+		<result property="value" column="value" />
 	</resultMap>
 	
 
@@ -24,7 +26,9 @@
 	<select id="getList" resultMap="DeviceTypeMap" parameterType="String">
 		SELECT
 			t.*,
-			t.name AS text
+			t.name AS text,
+			t.name AS label,
+			t.id AS value
 		FROM
 			device_type AS t
 		WHERE

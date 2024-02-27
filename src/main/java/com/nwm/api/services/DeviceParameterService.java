@@ -91,6 +91,37 @@ public class DeviceParameterService extends DB {
 			return 0;
 		}
 	}
+	
+	
+	
+	/**
+	 * @description Get all site by device group
+	 * @author Long.Pham
+	 * @since 2024-02-27
+	 * @return data (status, message, array, total_row)
+	 */
+	
+	public List getAllSiteByDeviceGroup(DeviceParameterEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceParameter.getAllSiteByDeviceGroup", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	public int getTotalAllSiteByDeviceGroup(DeviceParameterEntity obj) {
+		try {
+			return (int)queryForObject("DeviceParameter.getTotalAllSiteByDeviceGroup", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	
 	/**
 	 * @description Get list parameter by device group
 	 * @author Hung.Bui

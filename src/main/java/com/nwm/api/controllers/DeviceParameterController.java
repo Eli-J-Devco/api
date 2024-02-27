@@ -68,6 +68,32 @@ public class DeviceParameterController extends BaseController {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description Get list device group
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/get-all-site-by-device-group")
+	public Object getAllSiteByDeviceGroup(@RequestBody DeviceParameterEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.getAllSiteByDeviceGroup(obj);
+			int totalRecord = service.getTotalAllSiteByDeviceGroup(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	/**
 	 * @description Get list device group
 	 * @author Hung.Bui
