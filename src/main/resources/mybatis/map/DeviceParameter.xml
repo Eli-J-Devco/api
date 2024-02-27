@@ -60,7 +60,12 @@
 			dg.group_name AS name,
 			dt.name AS device_type,
 			dg.`status`,
-			dg.is_delete
+			dg.is_delete,
+			dg.manufacture,
+			dg.notes,
+			DATE_FORMAT(dg.created_date, "%Y/%d/%m %H:%i:%s") AS date_added,
+			CONCAT( DATE_FORMAT(dg.updated_date, "%H:%i %m/%d/%Y") , ' by ', dg.updated_by) AS last_modified,
+			dg.table_name
 		FROM
 			device_group AS dg
 			LEFT JOIN device_type dt ON dt.id = dg.id_device_type
@@ -164,6 +169,19 @@
 		UPDATE `device_parameters`
 		SET
 			`standard_name` = #{standard_name}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<update id="updateDeviceGroup">
+		UPDATE `device_group`
+		SET
+			`group_name` = #{group_name},
+			`manufacture` = #{manufacture},
+			`notes` = #{notes},
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by}
 		WHERE
 			`id` = #{id}
 	</update>

@@ -10,9 +10,8 @@ import java.util.List;
 public class UploadScadaEntity {
 	private int id_channel;
 	private int id_device;
-	private List datas;
+	private Object datas;
 	private String datetime;
-	
 	public int getId_channel() {
 		return id_channel;
 	}
@@ -25,10 +24,10 @@ public class UploadScadaEntity {
 	public void setId_device(int id_device) {
 		this.id_device = id_device;
 	}
-	public List getDatas() {
+	public Object getDatas() {
 		return datas;
 	}
-	public void setDatas(List datas) {
+	public void setDatas(Object datas) {
 		this.datas = datas;
 	}
 	public String getDatetime() {
@@ -37,6 +36,8 @@ public class UploadScadaEntity {
 	public void setDatetime(String datetime) {
 		this.datetime = datetime;
 	}
+	
+	
 	
 	
 	

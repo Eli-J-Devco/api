@@ -12,6 +12,7 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 
 public class DeviceParameterService extends DB {
@@ -160,6 +161,26 @@ public class DeviceParameterService extends DB {
 			return true;
 		}catch (Exception ex) {
 			log.error("DeviceParameter.updateDeviceParameter", ex);
+			return false;
+		}
+	}
+	
+	
+	
+	/**
+	 * @description update device parameter
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @param id
+	 */
+	public boolean updateDeviceGroup(DeviceGroupEntity obj){
+		SqlSession session = this.beginTransaction();
+		try{
+			session.update("DeviceParameter.updateDeviceGroup", obj);
+			session.commit();
+			return true;
+		}catch (Exception ex) {
+			log.error("DeviceParameter.updateDeviceGroup", ex);
 			return false;
 		}
 	}
