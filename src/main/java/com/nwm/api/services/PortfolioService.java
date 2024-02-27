@@ -69,11 +69,11 @@ public class PortfolioService extends DB {
 						
 						
 						Double diff = Double.parseDouble(device.get("diff").toString()) ;
-						Double active_power = Double.parseDouble(device.get("active_power").toString()) ;
+						Double active_power = device.get("active_power") == null ? null : Double.parseDouble(device.get("active_power").toString()) ;
 						
 						int id_device_type = Integer.parseInt(device.get("id_device_type").toString()) ;
 						if (id_device_type == 1) {
-							if (diff > 49 || active_power <= 0.09 || active_power == 0.001) {
+							if (diff > 49 || active_power == null || active_power <= 0.09) {
 								red_inverter.add(device);
 							} else if (diff <= 49 && diff >= 10) {
 								yellow_inverter.add(device);
@@ -81,7 +81,7 @@ public class PortfolioService extends DB {
 								green_inverter.add(device);
 							}
 						} else {
-							if (diff > 49 || active_power <= 0.09 || active_power == 0.001) {
+							if (diff > 49 || active_power == null || active_power <= 0.09) {
 								red_meter.add(device);
 							} else if (diff <= 49 && diff >= 10) {
 								yellow_meter.add(device);

@@ -256,9 +256,9 @@
 					SELECT 
 						g.*,
 						IF(g.id_device_type = 1,
-						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_inverter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_inverter), 2))
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_inverter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_inverter * 100), 1))
 						, 'diff', IF(g.optimal_ratio_inverter = 0, 0, ROUND(IFNULL(((g.optimal_ratio_inverter - g.percent_power_status) * 100 / g.optimal_ratio_inverter), 0), 1)) ),
-						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_meter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_meter), 2))
+						JSON_OBJECT('id_site', g.id_site, 'id_device_type', g.id_device_type, 'id', g.id ,'device_name', g.devicename, 'active_power', g.active_power, 'radio_inverter', IF(g.percent_power_status = 0 OR g.optimal_ratio_meter = 0,0, ROUND((g.percent_power_status / g.optimal_ratio_meter * 100), 1))
 						, 'diff', IF(g.optimal_ratio_meter = 0, 0, ROUND(IFNULL(((g.optimal_ratio_meter - g.percent_power_status) * 100 / g.optimal_ratio_meter), 0), 1)) )
 						 ) AS obj_device
 					FROM (
@@ -267,7 +267,7 @@
 							d.devicename,
 							d.id_site,
 							d.id_device_type,
-							IFNULL(d.last_value, 0) as active_power,
+							d.last_value as active_power,
 							IFNULL((
 								SELECT 
 									d.last_value / d.rating_ac_power * 100
