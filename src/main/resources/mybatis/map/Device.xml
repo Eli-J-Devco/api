@@ -188,10 +188,18 @@
 			IF(s.`hidden` = 1, 1, 0) AS hidden,
 			s.virtual_device_type,
 			s.ip_address,
+			si.communication,
+			si.ftp_server,
+			si.ftp_user,
+			si.ftp_pass,
+			si.ftp_port,
+			si.ftp_folder,
+			si.datalogger_type,
 			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
+			LEFT JOIN site si ON si.id = s.id_site
 		WHERE s.id_site = #{id_site}
 		<if test="keyword != null">
 			 AND s.devicename LIKE CONCAT("%",#{keyword}, "%")
@@ -224,8 +232,6 @@
 			      s.id DESC
 			    </otherwise>                                                  
 	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
 	</select>
 	
   	
@@ -239,6 +245,20 @@
 		</if> 
   	</select>
   	
+  	<update id="updateFTPSite" parameterType="com.nwm.api.entities.DeviceEntity">
+		  UPDATE
+		  	`site`
+		  SET
+		  	`communication` = #{communication},
+		  	`ftp_server` = #{ftp_server},
+		  	`ftp_user` = #{ftp_user},
+		  	`ftp_pass` = #{ftp_pass},
+		  	`ftp_port` = #{ftp_port},
+		  	`ftp_folder` = #{ftp_folder},
+		  	`datalogger_type` = #{datalogger_type}
+		  WHERE
+		  	`id` = #{id_site}
+	</update>
   	
   	<update id="updateStatus">
 		UPDATE `device`
