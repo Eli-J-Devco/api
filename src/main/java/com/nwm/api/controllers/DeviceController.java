@@ -15,7 +15,6 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.utils.Constants;
 
-import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
 import springfox.documentation.annotations.ApiIgnore;
@@ -35,13 +34,9 @@ public class DeviceController extends BaseController {
 	@PostMapping("/list-device-by-site")
 	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			DeviceService service = new DeviceService();
 			List data = service.getListDeviceBySite(obj);
-			int totalRecord = service.getDeviceBySiteTotalRecord(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

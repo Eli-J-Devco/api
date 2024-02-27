@@ -197,7 +197,7 @@ public class DeviceService extends DB {
 				obj.setView_tablename("View" + obj.getId() + "_"+ obj.getDevice_group_table());
 				obj.setJob_tablename("BJob" + obj.getId() + "_"+ obj.getDevice_group_table());
 				session.update("Device.updateTableDevice", obj);
-				
+				session.update("Device.updateFTPSite", obj);
 			} else {
 				throw new Exception();
 			}
@@ -220,11 +220,18 @@ public class DeviceService extends DB {
 	 * @since 2021-01-12
 	 */
 	public boolean updateDevice(DeviceEntity obj){
-		try{
-			return update("Device.updateDevice", obj)>0;
-		}catch (Exception ex) {
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("Device.updateDevice", obj);
+			session.update("Device.updateFTPSite", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
 			log.error("Device.updateDevice", ex);
 			return false;
+		} finally {
+			session.close();
 		}
 	}
 	

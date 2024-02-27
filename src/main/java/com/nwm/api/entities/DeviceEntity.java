@@ -5,9 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class DeviceEntity {
@@ -124,6 +122,13 @@ public class DeviceEntity {
 	private String datalogger_table;
 	private int enable_alert;
 	
+	private String communication;
+	private String ftp_server;
+	private String ftp_user;
+	private String ftp_pass;
+	private String ftp_port;
+	private String ftp_folder;
+	private int datalogger_type;
 	
 	
 	public int getEnable_alert() {
@@ -788,6 +793,48 @@ public class DeviceEntity {
 	}
 	public void setDatalogger_table(String datalogger_table) {
 		this.datalogger_table = datalogger_table;
+	}
+	public String getCommunication() {
+		return communication;
+	}
+	public void setCommunication(String communication) {
+		this.communication = communication;
+	}
+	public String getFtp_server() {
+		return ftp_server;
+	}
+	public void setFtp_server(String ftp_server) {
+		this.ftp_server = ftp_server;
+	}
+	public String getFtp_user() {
+		return ftp_user;
+	}
+	public void setFtp_user(String ftp_user) {
+		this.ftp_user = ftp_user;
+	}
+	public String getFtp_pass() {
+		return ftp_pass;
+	}
+	public void setFtp_pass(String ftp_pass) {
+		this.ftp_pass = ftp_pass;
+	}
+	public String getFtp_port() {
+		return ftp_port;
+	}
+	public void setFtp_port(String ftp_port) {
+		this.ftp_port = ftp_port;
+	}
+	public String getFtp_folder() {
+		return ftp_folder;
+	}
+	public void setFtp_folder(String ftp_folder) {
+		this.ftp_folder = ftp_folder;
+	}
+	public int getDatalogger_type() {
+		return datalogger_type;
+	}
+	public void setDatalogger_type(int datalogger_type) {
+		this.datalogger_type = datalogger_type;
 	}
 	
 	
