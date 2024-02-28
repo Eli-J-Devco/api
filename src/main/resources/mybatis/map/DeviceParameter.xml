@@ -168,6 +168,30 @@
 	                dt.name ${order_by}
 	            </when>
 	            
+	            <when test="sort_column == 'table_name'">
+	                dg.table_name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'date_added'">
+	                dg.created_date ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'last_modified'">
+	                dg.updated_date ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'notes'">
+	                dg.notes ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'manufacture'">
+	                dg.manufacture ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'sites_using'">
+	                sites_using ${order_by}
+	            </when>
+	            
 	            <otherwise>
 			      dg.id DESC
 			    </otherwise>                                                  
