@@ -32,6 +32,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
+import com.nwm.api.entities.ModelAbbUnoDm1250tpPlusEntity;
 import com.nwm.api.entities.ModelAcuRevProductionMeterEntity;
 import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
@@ -54,6 +55,7 @@ import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
 import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
 import com.nwm.api.entities.ModelJanitzaUmg604proEntity;
 import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
+import com.nwm.api.entities.ModelKlea220pEntity;
 import com.nwm.api.entities.ModelLeviton70D48000Entity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
@@ -91,6 +93,7 @@ import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelAbbTrioClass6210Service;
+import com.nwm.api.services.ModelAbbUnoDm1250tpPlusService;
 import com.nwm.api.services.ModelAcuRevProductionMeterService;
 import com.nwm.api.services.ModelAdam4017WSClass8110Nelis190Service;
 import com.nwm.api.services.ModelAdvancedEnergySolaronService;
@@ -113,6 +116,7 @@ import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
 import com.nwm.api.services.ModelIVTSolaronEXTService;
 import com.nwm.api.services.ModelJanitzaUmg604proService;
 import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
+import com.nwm.api.services.ModelKlea220pService;
 import com.nwm.api.services.ModelLeviton70D48000Service;
 import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
@@ -178,7 +182,7 @@ public class UploadFilesController extends BaseController {
 	 * @description upload files datalogger and insert datalogger to database
 	 * @author long.pham
 	 * @since 2020-08-19
-	 * @params RequestParam, files
+	 * @params RequestParam, files 
 	 */
 
 //	@SuppressWarnings("unchecked")
@@ -219,6 +223,23 @@ public class UploadFilesController extends BaseController {
 
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
+			
+			System.out.println("SENDDATATRACE: " + senddatatrace);
+			System.out.println("MODE: " + mode);
+			System.out.println("SERIALNUMBER: " + serialnumber);
+			System.out.println("PASSWORD: " + password);
+			System.out.println("LOOPNAME: " + loopname);
+			System.out.println("MODBUSIP: " + modbusip);
+			System.out.println("MODBUSPORT: " + modbusport);
+			System.out.println("MODBUSDEVICE: " + modbusdevice);
+			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+			System.out.println("MD5CHECKSUM: " + md5checksum);
+			System.out.println("FILESIZE: " + filesize);
+			System.out.println("FILETIME: " + filetime);
+			
 
 			if (mode.equals(LOGFILEUPLOAD) && files.length > 0) {
 				Arrays.asList(files).stream().forEach(file -> {
@@ -5752,6 +5773,206 @@ public class UploadFilesController extends BaseController {
 						//                            }
 						                            
 						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataModelSma30Tlus10);
+						                            
+						                            // low production alert
+						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+						                              item.setLast_updated(deviceUpdateE.getLast_updated());
+						                              serviceD.checkLowProduction(item);
+						                            }
+						                            
+						                            try  
+						                            { 
+						                              File logFile = new File(root.resolve(fileName).toString());
+						                              if(logFile.delete()){  }
+						                              
+						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+						                                  + timeStamp + ".log.gz");
+						                              File logGzFile = new File(path.toString());
+						                              
+						                              if(logGzFile.delete()) {  }   
+						                            }  
+						                            catch(Exception e){  
+						                              e.printStackTrace();  
+						                            }
+						                            
+						                          }
+						                        }
+						                        
+						                        break;	
+						                        
+						                        
+											case "model_abb_uno_dm_1250tp_plus":
+												ModelAbbUnoDm1250tpPlusService serviceModelSma1250Tlus = new ModelAbbUnoDm1250tpPlusService();
+						                        // Check insert database status
+						                        while ((line = br.readLine()) != null) {
+						                          sb.append(line); // appends line to string buffer
+						                          sb.append("\n"); // line feed
+						                          // Convert string to array
+						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+						                          if (words.size() > 0) {
+						                            
+						                        	  ModelAbbUnoDm1250tpPlusEntity dataModelSma1250Tlus = serviceModelSma1250Tlus.setModelAbbUnoDm1250tpPlus(line);
+						                        	  dataModelSma1250Tlus.setId_device(item.getId());
+						                        	  dataModelSma1250Tlus.setDatatablename(item.getDatatablename());
+						                        	  dataModelSma1250Tlus.setView_tablename(item.getView_tablename());
+						                        	  dataModelSma1250Tlus.setJob_tablename(item.getJob_tablename());
+						                            
+						                            // scaling device parameter
+						                            if (scaledDeviceParameters.size() > 0) {
+						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+						                                String slug = scaledDeviceParameter.getParameter_slug();
+						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+						                                String variableName = scaledDeviceParameter.getVariable_name();
+						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbUnoDm1250tpPlusEntity.class);
+						                                Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSma1250Tlus);
+						                                if (initialValue == 0.001) continue;
+						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+						                                pd.getWriteMethod().invoke(dataModelSma1250Tlus, scaledValue);
+						                                if (slug.equals("PowerAC")) dataModelSma1250Tlus.setNvmActivePower(scaledValue);
+						                                if (slug.equals("Energytotal")) dataModelSma1250Tlus.setNvmActiveEnergy(scaledValue);
+						                              }
+						                            }
+						                            
+						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                            
+						                            // lPower
+						                            if(dataModelSma1250Tlus.getPowerAC() != 0.001 && dataModelSma1250Tlus.getPowerAC() >= 0){
+						                              deviceUpdateE.setLast_updated(dataModelSma1250Tlus.getTime());
+						                            }
+						                            
+						                            deviceUpdateE.setLast_value(dataModelSma1250Tlus.getPowerAC() != 0.001 ? dataModelSma1250Tlus.getPowerAC() : null);
+						                            deviceUpdateE.setField_value1(dataModelSma1250Tlus.getPowerAC() != 0.001 ? dataModelSma1250Tlus.getPowerAC() : null);
+						                            
+						                            deviceUpdateE.setField_value2(null);
+						                            deviceUpdateE.setField_value3(null);
+						                            
+						                            deviceUpdateE.setId(item.getId());
+						                            serviceD.updateLastUpdated(deviceUpdateE);
+						                            
+						                            // Insert alert
+						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+						//                              // Check error code
+						//                              BatchJobService service = new BatchJobService();
+						//                              ErrorEntity errorItem = new ErrorEntity();
+						//                              errorItem.setId_device_group(item.getId_device_group());
+						//                              errorItem.setError_code(words.get(1));
+						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
+						//                              if(rowItemError.getId() > 0) {
+						//                                AlertEntity alertItem = new AlertEntity();
+						//                                alertItem.setId_device(item.getId());
+						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
+						//                                alertItem.setId_error(rowItemError.getId());
+						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
+						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
+						//                                  // Insert alert
+						//                                  service.insertAlert(alertItem);
+						//                                }
+						//                              }
+						//                            }
+						                            
+						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataModelSma1250Tlus);
+						                            
+						                            // low production alert
+						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+						                              item.setLast_updated(deviceUpdateE.getLast_updated());
+						                              serviceD.checkLowProduction(item);
+						                            }
+						                            
+						                            try  
+						                            { 
+						                              File logFile = new File(root.resolve(fileName).toString());
+						                              if(logFile.delete()){  }
+						                              
+						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+						                                  + timeStamp + ".log.gz");
+						                              File logGzFile = new File(path.toString());
+						                              
+						                              if(logGzFile.delete()) {  }   
+						                            }  
+						                            catch(Exception e){  
+						                              e.printStackTrace();  
+						                            }
+						                            
+						                          }
+						                        }
+						                        
+						                        break;	
+						                        
+						                        
+											case "model_klea_220p":
+												ModelKlea220pService serviceModelKlea = new ModelKlea220pService();
+						                        // Check insert database status
+						                        while ((line = br.readLine()) != null) {
+						                          sb.append(line); // appends line to string buffer
+						                          sb.append("\n"); // line feed
+						                          // Convert string to array
+						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+						                          if (words.size() > 0) {
+						                            
+						                        	  ModelKlea220pEntity dataModelKlea = serviceModelKlea.setModelKlea220p(line);
+						                        	  dataModelKlea.setId_device(item.getId());
+						                        	  dataModelKlea.setDatatablename(item.getDatatablename());
+						                        	  dataModelKlea.setView_tablename(item.getView_tablename());
+						                        	  dataModelKlea.setJob_tablename(item.getJob_tablename());
+						                            
+						                            // scaling device parameter
+						                            if (scaledDeviceParameters.size() > 0) {
+						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+						                                String slug = scaledDeviceParameter.getParameter_slug();
+						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+						                                String variableName = scaledDeviceParameter.getVariable_name();
+						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKlea220pEntity.class);
+						                                Double initialValue = (Double) pd.getReadMethod().invoke(dataModelKlea);
+						                                if (initialValue == 0.001) continue;
+						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+						                                pd.getWriteMethod().invoke(dataModelKlea, scaledValue);
+						                                if (slug.equals("TotalActivePower")) dataModelKlea.setNvmActivePower(scaledValue);
+						                                if (slug.equals("Energytotal")) dataModelKlea.setNvmActiveEnergy(scaledValue);
+						                              }
+						                            }
+						                            
+						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                            
+						                            // lPower
+						                            if(dataModelKlea.getTotalActivePower() != 0.001 && dataModelKlea.getTotalActivePower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataModelKlea.getTime());
+						                            }
+						                            
+						                            deviceUpdateE.setLast_value(dataModelKlea.getTotalActivePower() != 0.001 ? dataModelKlea.getTotalActivePower() : null);
+						                            deviceUpdateE.setField_value1(dataModelKlea.getTotalActivePower() != 0.001 ? dataModelKlea.getTotalActivePower() : null);
+						                            
+						                            deviceUpdateE.setField_value2(null);
+						                            deviceUpdateE.setField_value3(null);
+						                            
+						                            deviceUpdateE.setId(item.getId());
+						                            serviceD.updateLastUpdated(deviceUpdateE);
+						                            
+						                            // Insert alert
+						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+						//                              // Check error code
+						//                              BatchJobService service = new BatchJobService();
+						//                              ErrorEntity errorItem = new ErrorEntity();
+						//                              errorItem.setId_device_group(item.getId_device_group());
+						//                              errorItem.setError_code(words.get(1));
+						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
+						//                              if(rowItemError.getId() > 0) {
+						//                                AlertEntity alertItem = new AlertEntity();
+						//                                alertItem.setId_device(item.getId());
+						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
+						//                                alertItem.setId_error(rowItemError.getId());
+						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
+						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
+						//                                  // Insert alert
+						//                                  service.insertAlert(alertItem);
+						//                                }
+						//                              }
+						//                            }
+						                            
+						                            serviceModelKlea.insertModelKlea220p(dataModelKlea);
 						                            
 						                            // low production alert
 						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {

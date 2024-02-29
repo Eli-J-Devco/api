@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAbbUnoDm1250tpPlus">
+	<resultMap id="ModelAbbUnoDm1250tpPlusMap"
+		type="com.nwm.api.entities.ModelAbbUnoDm1250tpPlusEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		
+		
+		<result property="Powerfactorcosphi" column="Powerfactorcosphi" />
+		<result property="Energytotal" column="Energytotal" />
+		<result property="Gridfrequency" column="Gridfrequency" />
+		<result property="CurrentAC" column="CurrentAC" />
+		<result property="CurrentDCtotal" column="CurrentDCtotal" />
+		
+		<result property="PowerAC" column="PowerAC" />
+		<result property="VoltageAC" column="VoltageAC" />
+		<result property="VoltageACphase1" column="VoltageACphase1" />
+		<result property="VoltageACphase2" column="VoltageACphase2" />
+		<result property="VoltageACphase3" column="VoltageACphase3" />
+		<result property="PhasevoltageL1L2" column="PhasevoltageL1L2" />
+		<result property="PhasevoltageL2L3" column="PhasevoltageL2L3" />
+		<result property="PhasevoltageL3L1" column="PhasevoltageL3L1" />
+		<result property="VoltageDC" column="VoltageDC" />
+		<result property="CabinetTemperature" column="CabinetTemperature" />
+		<result property="HeatSinkTemperature" column="HeatSinkTemperature" />
+		<result property="OtherTemperature" column="OtherTemperature" />
+		<result property="Apparentpower" column="Apparentpower" />
+		<result property="Reactivepower" column="Reactivepower" />
+		
+		<result property="DCCurrentChanel1" column="DCCurrentChanel1" />
+		<result property="DCVoltageChanel1" column="DCVoltageChanel1" />
+		<result property="DCPowerChanel1" column="DCPowerChanel1" />
+		<result property="OperatingStateChanel1" column="OperatingStateChanel1" />
+		<result property="DCCurrentChanel2" column="DCCurrentChanel2" />
+		<result property="DCVoltageChanel2" column="DCVoltageChanel2" />
+		<result property="DCPowerChanel2" column="DCPowerChanel2" />
+		<result property="OperatingStateChanel2" column="OperatingStateChanel2" />
+		<result property="Inverterstate" column="Inverterstate" />
+		<result property="Alarmstate" column="Alarmstate" />
+		<result property="GlobalState" column="GlobalState" />
+		<result property="WMax" column="WMax" />
+		
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelAbbUnoDm1250tpPlus" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Powerfactorcosphi != 0.001">
+			`Powerfactorcosphi`,
+			</if>
+			<if test="Energytotal != 0.001">
+			`Energytotal`,
+			</if>
+			<if test="Gridfrequency != 0.001">
+			`Gridfrequency`,
+			</if>
+			<if test="CurrentAC != 0.001">
+			`CurrentAC`,
+			</if>
+			
+			<if test="CurrentDCtotal != 0.001">
+			`CurrentDCtotal`,
+			</if>
+			
+			<if test="PowerAC != 0.001">
+			`PowerAC`,
+			</if>
+			<if test="VoltageAC != 0.001">
+			`VoltageAC`,
+			</if>
+			<if test="VoltageACphase1 != 0.001">
+			`VoltageACphase1`,
+			</if>
+			<if test="VoltageACphase2 != 0.001">
+			`VoltageACphase2`,
+			</if>
+			<if test="VoltageACphase3 != 0.001">
+			`VoltageACphase3`,
+			</if>
+			<if test="PhasevoltageL1L2 != 0.001">
+			`PhasevoltageL1L2`,
+			</if>
+			<if test="PhasevoltageL2L3 != 0.001">
+			`PhasevoltageL2L3`,
+			</if>
+			<if test="PhasevoltageL3L1 != 0.001">
+			`PhasevoltageL3L1`,
+			</if>
+			<if test="VoltageDC != 0.001">
+			`VoltageDC`,
+			</if>
+			<if test="CabinetTemperature != 0.001">
+			`CabinetTemperature`,
+			</if>
+			<if test="HeatSinkTemperature != 0.001">
+			`HeatSinkTemperature`,
+			</if>
+			<if test="OtherTemperature != 0.001">
+			`OtherTemperature`,
+			</if>
+			<if test="Apparentpower != 0.001">
+			`Apparentpower`,
+			</if>
+			<if test="Reactivepower != 0.001">
+			`Reactivepower`,
+			</if>
+			
+			<if test="DCCurrentChanel1 != 0.001">
+			`DCCurrentChanel1`,
+			</if>
+			<if test="DCVoltageChanel1 != 0.001">
+			`DCVoltageChanel1`,
+			</if>
+			<if test="DCPowerChanel1 != 0.001">
+			`DCPowerChanel1`,
+			</if>
+			<if test="OperatingStateChanel1 != 0.001">
+			`OperatingStateChanel1`,
+			</if>
+			<if test="DCCurrentChanel2 != 0.001">
+			`DCCurrentChanel2`,
+			</if>
+			<if test="DCVoltageChanel2 != 0.001">
+			`DCVoltageChanel2`,
+			</if>
+			<if test="DCPowerChanel2 != 0.001">
+			`DCPowerChanel2`,
+			</if>
+			<if test="OperatingStateChanel2 != 0.001">
+			`OperatingStateChanel2`,
+			</if>
+			<if test="Inverterstate != 0.001">
+			`Inverterstate`,
+			</if>
+			<if test="Alarmstate != 0.001">
+			`Alarmstate`,
+			</if>
+			
+			<if test="GlobalState != 0.001">
+			`GlobalState`,
+			</if>
+			<if test="WMax != 0.001">
+			`WMax`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy`,
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Powerfactorcosphi != 0.001">
+			#{Powerfactorcosphi},
+			</if>
+			<if test="Energytotal != 0.001">
+			#{Energytotal},
+			</if>
+			<if test="Gridfrequency != 0.001">
+			#{Gridfrequency},
+			</if>
+			<if test="CurrentAC != 0.001">
+			#{CurrentAC},
+			</if>
+			
+			<if test="CurrentDCtotal != 0.001">
+			#{CurrentDCtotal},
+			</if>
+			
+			<if test="PowerAC != 0.001">
+			#{PowerAC},
+			</if>
+			<if test="VoltageAC != 0.001">
+			#{VoltageAC},
+			</if>
+			<if test="VoltageACphase1 != 0.001">
+			#{VoltageACphase1},
+			</if>
+			<if test="VoltageACphase2 != 0.001">
+			#{VoltageACphase2},
+			</if>
+			<if test="VoltageACphase3 != 0.001">
+			#{VoltageACphase3},
+			</if>
+			<if test="PhasevoltageL1L2 != 0.001">
+			#{PhasevoltageL1L2},
+			</if>
+			<if test="PhasevoltageL2L3 != 0.001">
+			#{PhasevoltageL2L3},
+			</if>
+			<if test="PhasevoltageL3L1 != 0.001">
+			#{PhasevoltageL3L1},
+			</if>
+			<if test="VoltageDC != 0.001">
+			#{VoltageDC},
+			</if>
+			<if test="CabinetTemperature != 0.001">
+			#{CabinetTemperature},
+			</if>
+			<if test="HeatSinkTemperature != 0.001">
+			#{HeatSinkTemperature},
+			</if>
+			<if test="OtherTemperature != 0.001">
+			#{OtherTemperature},
+			</if>
+			<if test="Apparentpower != 0.001">
+			#{Apparentpower},
+			</if>
+			<if test="Reactivepower != 0.001">
+			#{Reactivepower},
+			</if>
+			
+			<if test="DCCurrentChanel1 != 0.001">
+			#{DCCurrentChanel1},
+			</if>
+			<if test="DCVoltageChanel1 != 0.001">
+			#{DCVoltageChanel1},
+			</if>
+			<if test="DCPowerChanel1 != 0.001">
+			#{DCPowerChanel1},
+			</if>
+			<if test="OperatingStateChanel1 != 0.001">
+			#{OperatingStateChanel1},
+			</if>
+			<if test="DCCurrentChanel2 != 0.001">
+			#{DCCurrentChanel2},
+			</if>
+			<if test="DCVoltageChanel2 != 0.001">
+			#{DCVoltageChanel2},
+			</if>
+			<if test="DCPowerChanel2 != 0.001">
+			#{DCPowerChanel2},
+			</if>
+			<if test="OperatingStateChanel2 != 0.001">
+			#{OperatingStateChanel2},
+			</if>
+			<if test="Inverterstate != 0.001">
+			#{Inverterstate},
+			</if>
+			<if test="Alarmstate != 0.001">
+			#{Alarmstate},
+			</if>
+			
+			<if test="GlobalState != 0.001">
+			#{GlobalState},
+			</if>
+			<if test="WMax != 0.001">
+			#{WMax},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			#{nvmActiveEnergy},
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			
+			<if test="Powerfactorcosphi != 0.001">
+			`Powerfactorcosphi` = #{Powerfactorcosphi},
+			</if>
+			<if test="Energytotal != 0.001">
+			`Energytotal` = #{Energytotal},
+			</if>
+			<if test="Gridfrequency != 0.001">
+			`Gridfrequency` = #{Gridfrequency},
+			</if>
+			<if test="CurrentAC != 0.001">
+			`CurrentAC` = #{CurrentAC},
+			</if>
+			
+			<if test="CurrentDCtotal != 0.001">
+			`CurrentDCtotal` = #{CurrentDCtotal},
+			</if>
+			
+			<if test="PowerAC != 0.001">
+			`PowerAC` = #{PowerAC},
+			</if>
+			<if test="VoltageAC != 0.001">
+			`VoltageAC` = #{VoltageAC},
+			</if>
+			<if test="VoltageACphase1 != 0.001">
+			`VoltageACphase1` = #{VoltageACphase1},
+			</if>
+			<if test="VoltageACphase2 != 0.001">
+			`VoltageACphase2` = #{VoltageACphase2},
+			</if>
+			<if test="VoltageACphase3 != 0.001">
+			`VoltageACphase3` = #{VoltageACphase3},
+			</if>
+			<if test="PhasevoltageL1L2 != 0.001">
+			`PhasevoltageL1L2` = #{PhasevoltageL1L2},
+			</if>
+			<if test="PhasevoltageL2L3 != 0.001">
+			`PhasevoltageL2L3` = #{PhasevoltageL2L3},
+			</if>
+			<if test="PhasevoltageL3L1 != 0.001">
+			`PhasevoltageL3L1` = #{PhasevoltageL3L1},
+			</if>
+			<if test="VoltageDC != 0.001">
+			`VoltageDC` = #{VoltageDC},
+			</if>
+			<if test="CabinetTemperature != 0.001">
+			`CabinetTemperature` = #{CabinetTemperature},
+			</if>
+			<if test="HeatSinkTemperature != 0.001">
+			`HeatSinkTemperature` = #{HeatSinkTemperature},
+			</if>
+			<if test="OtherTemperature != 0.001">
+			`OtherTemperature` = #{OtherTemperature},
+			</if>
+			<if test="Apparentpower != 0.001">
+			`Apparentpower` = #{Apparentpower},
+			</if>
+			<if test="Reactivepower != 0.001">
+			`Reactivepower` = #{Reactivepower},
+			</if>
+			
+			<if test="DCCurrentChanel1 != 0.001">
+			`DCCurrentChanel1` = #{DCCurrentChanel1},
+			</if>
+			<if test="DCVoltageChanel1 != 0.001">
+			`DCVoltageChanel1` = #{DCVoltageChanel1},
+			</if>
+			<if test="DCPowerChanel1 != 0.001">
+			`DCPowerChanel1` = #{DCPowerChanel1},
+			</if>
+			<if test="OperatingStateChanel1 != 0.001">
+			`OperatingStateChanel1` = #{OperatingStateChanel1},
+			</if>
+			<if test="DCCurrentChanel2 != 0.001">
+			`DCCurrentChanel2` = #{DCCurrentChanel2},
+			</if>
+			<if test="DCVoltageChanel2 != 0.001">
+			`DCVoltageChanel2` = #{DCVoltageChanel2},
+			</if>
+			<if test="DCPowerChanel2 != 0.001">
+			`DCPowerChanel2` = #{DCPowerChanel2},
+			</if>
+			<if test="OperatingStateChanel2 != 0.001">
+			`OperatingStateChanel2` = #{OperatingStateChanel2},
+			</if>
+			<if test="Inverterstate != 0.001">
+			`Inverterstate` = #{Inverterstate},
+			</if>
+			<if test="Alarmstate != 0.001">
+			`Alarmstate` = #{Alarmstate},
+			</if>
+			
+			<if test="GlobalState != 0.001">
+			`GlobalState` = #{GlobalState},
+			</if>
+			<if test="WMax != 0.001">
+			`WMax` = #{WMax},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+			`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+			`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+		
+		
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAbbUnoDm1250tpPlusEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

@@ -127,20 +127,12 @@
 		<mapper resource="mybatis/map/ModelAcuRevProductionMeter.xml"/>
 		<mapper resource="mybatis/map/ModelPhoenixContactQuintUPS.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp1215202430Tlus10.xml"/>
+		<mapper resource="mybatis/map/ModelAbbUnoDm1250tpPlus.xml"/>
+		<mapper resource="mybatis/map/ModelKlea220p.xml"/>
 		
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+
 		
 		
 		
