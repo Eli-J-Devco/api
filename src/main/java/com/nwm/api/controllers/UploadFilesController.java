@@ -240,6 +240,8 @@ public class UploadFilesController extends BaseController {
 			System.out.println("FILESIZE: " + filesize);
 			System.out.println("FILETIME: " + filetime);
 			
+			System.out.println("FILE: " + files.length);
+			
 
 			if (mode.equals(LOGFILEUPLOAD) && files.length > 0) {
 				Arrays.asList(files).stream().forEach(file -> {
@@ -5811,7 +5813,7 @@ public class UploadFilesController extends BaseController {
 						                          // Convert string to array
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
-						                            
+						                        	  
 						                        	  ModelAbbUnoDm1250tpPlusEntity dataModelSma1250Tlus = serviceModelSma1250Tlus.setModelAbbUnoDm1250tpPlus(line);
 						                        	  dataModelSma1250Tlus.setId_device(item.getId());
 						                        	  dataModelSma1250Tlus.setDatatablename(item.getDatatablename());
@@ -5911,7 +5913,7 @@ public class UploadFilesController extends BaseController {
 						                          // Convert string to array
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
-						                            
+						                        	  
 						                        	  ModelKlea220pEntity dataModelKlea = serviceModelKlea.setModelKlea220p(line);
 						                        	  dataModelKlea.setId_device(item.getId());
 						                        	  dataModelKlea.setDatatablename(item.getDatatablename());
@@ -6088,7 +6090,7 @@ public class UploadFilesController extends BaseController {
 				message = "\nSUCCESS\n";
 			} else {
 //				message = "Mode type test " + mode + " not supported by this sample script.";
-				message = "\nSUCCESS\n";
+				message = "\nFAILURE\n";
 				
 			}
 			

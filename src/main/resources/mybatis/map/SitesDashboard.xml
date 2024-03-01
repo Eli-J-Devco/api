@@ -79,7 +79,7 @@
 			s.transformer_losses,
 			s.soiling,
 			s.other_losses,
-			IF(s.alert_mail_bcc IS NULL || s.alert_mail_bcc = '', t.alert_mail_bcc, s.alert_mail_bcc) AS alert_mail_bcc,
+			IF(s.alert_mail_bcc IS NULL || s.alert_mail_bcc = '', '', s.alert_mail_bcc) AS alert_mail_bcc,
 			
 			
 			IF(s.cf_email_subscribers IS NULL || s.cf_email_subscribers = '', 'support@nwemon.com', s.cf_email_subscribers) AS cf_email_subscribers,

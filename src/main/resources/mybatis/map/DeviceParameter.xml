@@ -142,8 +142,17 @@
 		
 		
 			dg.`status` = 1 AND dg.is_delete = 0
-			<if test="keyword != null">
+			
+			<if test="keyword != null and filterBy == 'group_name'">
 				AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and filterBy == 'manufacture'">
+				AND dg.manufacture LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and filterBy == 'table_name'">
+				AND dg.table_name LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 			<if test="deviceType != null and !deviceType.isEmpty()">
@@ -203,9 +212,19 @@
     	SELECT count(*) as totalRow
 		FROM device_group dg
 		WHERE dg.`status` = 1 AND dg.is_delete = 0
-		<if test="keyword != null">
-			AND dg.name LIKE CONCAT("%",#{keyword}, "%")
-		</if> 
+		
+		<if test="keyword != null and filterBy == 'group_name'">
+			AND dg.group_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+		
+		<if test="keyword != null and filterBy == 'manufacture'">
+			AND dg.manufacture LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+		
+		<if test="keyword != null and filterBy == 'table_name'">
+			AND dg.table_name LIKE CONCAT("%",#{keyword}, "%")
+		</if>
+			
 		<if test="deviceType != null and !deviceType.isEmpty()">
 				AND dg.id_device_type IN(
 				<foreach item="item" index="index" collection="deviceType" separator=",">

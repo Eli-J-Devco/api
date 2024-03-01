@@ -33,9 +33,16 @@ public class DeviceGroupEntity{
 	private int screen_mode;
 	private String notes;
 	private String manufacture;
+	private String filterBy;
 	
 	
 	
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
 	public String getNotes() {
 		return notes;
 	}

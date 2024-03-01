@@ -46,9 +46,18 @@ public class DeviceParameterEntity{
 	private int id_categorize_data;
 	private String scale;
 	private List deviceType;
+	private String filterBy;
 	
 	
 	
+	
+	
+	public String getFilterBy() {
+		return filterBy;
+	}
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
+	}
 	public List getDeviceType() {
 		return deviceType;
 	}
