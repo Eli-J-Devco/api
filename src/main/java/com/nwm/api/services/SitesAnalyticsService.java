@@ -81,14 +81,13 @@ public class SitesAnalyticsService extends DB {
 					ListenableFuture<Map<String, Object>> future = executor.submit(new Callable<Map<String, Object>>() {
 			            public Map<String, Object> call() throws Exception {
 							Map<String, Object> map = (Map<String, Object>) dataDevice.get(k);
-							Map<String, Object> maps = new HashMap<>();
 							
-							maps.put("filterBy", obj.getFilterBy());
-							maps.put("start_date", obj.getStart_date());
-							maps.put("end_date", obj.getEnd_date());
+							map.put("filterBy", obj.getFilterBy());
+							map.put("start_date", obj.getStart_date());
+							map.put("end_date", obj.getEnd_date());
 							int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
-							maps.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
-							maps.put("data_send_time", obj.getData_send_time());
+							map.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
+							map.put("data_send_time", obj.getData_send_time());
 							Date dt = new Date();
 							Calendar c = Calendar.getInstance(); 
 							c.setTime(dt); 
@@ -97,27 +96,28 @@ public class SitesAnalyticsService extends DB {
 							Date d1 = dateFor.parse(obj.getStart_date());
 							Date d2 = dateFor.parse(dateFor.format(c.getTime()));
 							if(d1.compareTo(d2) < 0) {
-								maps.put("datatablename", map.get("datatablename"));
+								map.put("datatablename", map.get("datatablename"));
 							} else {
-								maps.put("datatablename", map.get("view_tablename"));
+								map.put("datatablename", map.get("view_tablename"));
 							}
+							
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
+							map.put("hidden_data_list", hiddenDataList);
+							
+							// get device's common model table
+							Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
+							map.put("table_name", modelTable.get("table_name"));
+							
+							if ((int) map.get("id_device_type") == 12) map.put("datatablename", map.get("table_data_virtual"));
+							
+							List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
+							
+							Map<String, Object> maps = new HashMap<>();
 							maps.put("id", map.get("id"));
 							maps.put("device_name", map.get("devicename"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
-							
-							// get list of time to exclude data from
-							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
-							maps.put("hidden_data_list", hiddenDataList);
-							
-							// get device's common model table
-							Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
-							maps.put("table_name", modelTable.get("table_name"));
-							
-							if ((int) map.get("id_device_type") == 12) maps.put("datatablename", map.get("table_data_virtual"));
-							
-							List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", maps);
-							
 							maps.put("data", getDataChartParameter);
 							return maps;
 			            }
