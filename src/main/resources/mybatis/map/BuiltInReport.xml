@@ -189,7 +189,7 @@
 	<select id="getDataAnnualTrendReport" resultType="Map" >
 		SELECT
 			<choose>
-				<when test="data_intervals == 3">
+				<!--<when test="data_intervals == 3">
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
 				</when>
@@ -200,7 +200,7 @@
 				<when test="data_intervals == 5">
 					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
 					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS categories_time,
-				</when>
+				</when>-->
 				<when test="data_intervals == 6">
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
@@ -230,7 +230,7 @@
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 			END
 			<choose>
-				<when test="data_intervals == 3">
+				<!--<when test="data_intervals == 3">
 					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) / 24
 				</when>
 				<when test="data_intervals == 4">
@@ -238,7 +238,7 @@
 				</when>
 				<when test="data_intervals == 5">
 					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) * 7
-				</when>
+				</when>-->
 				<when test="data_intervals == 6">
 				</when>
 				<otherwise>
@@ -265,7 +265,7 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END) * 100
 					<choose>
-						<when test="data_intervals == 3">
+						<!--<when test="data_intervals == 3">
 							* 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
 						</when>
 						<when test="data_intervals == 4">
@@ -273,7 +273,7 @@
 						</when>
 						<when test="data_intervals == 5">
 							/ 7 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-						</when>
+						</when>-->
 						<when test="data_intervals == 6">
 						</when>
 						<otherwise>
@@ -336,15 +336,15 @@
 							dv.time,
 							s.name,
 							<choose>
-								<when test="data_intervals == 1">
+								<!--<when test="data_intervals == 1">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
-								</when>
+								</when>-->
 								<when test="data_intervals == 2">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
 								</when>
-								<when test="data_intervals == 3">
+								<!--<when test="data_intervals == 3">
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
 								</when>
@@ -355,10 +355,14 @@
 								<when test="data_intervals == 5">
 									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
 									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS time_full,
+								</when>-->
+								<when test="data_intervals == 6">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_full,
 								</when>
 								<otherwise>
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_full,
 								</otherwise>
 							</choose>
 							
@@ -386,7 +390,7 @@
 	<select id="getDataWeeklyTrendReport" resultType="Map" >
 		SELECT
 			<choose>
-				<when test="data_intervals == 1">
+				<!--<when test="data_intervals == 1">
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
 					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 				</when>
@@ -397,7 +401,7 @@
 				<when test="data_intervals == 3">
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-				</when>
+				</when>-->
 				<when test="data_intervals == 4">
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
@@ -428,7 +432,7 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END / DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
 					<choose>
-						<when test="data_intervals == 1">
+						<!--<when test="data_intervals == 1">
 							/ 24 / 12
 						</when>
 						<when test="data_intervals == 2">
@@ -436,7 +440,7 @@
 						</when>
 						<when test="data_intervals == 3">
 							/ 24
-						</when>
+						</when>-->
 						<when test="data_intervals == 4">
 						</when>
 						<otherwise>
@@ -464,7 +468,7 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) ) * 100
 					<choose>
-						<when test="data_intervals == 1">
+						<!--<when test="data_intervals == 1">
 							* 24 * 12
 						</when>
 						<when test="data_intervals == 2">
@@ -472,7 +476,7 @@
 						</when>
 						<when test="data_intervals == 3">
 							* 24
-						</when>
+						</when>-->
 						<when test="data_intervals == 4">
 						</when>
 						<otherwise>
