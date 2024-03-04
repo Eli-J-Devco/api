@@ -593,4 +593,23 @@ public class CronJobAlertService extends DB {
 		}
 	}
 
+	
+	/**
+	 * @description get list device
+	 * @author long.pham
+	 * @since 2023-07-20
+	 */
+	
+	public List getListSiteLowProduction(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListSiteLowProduction", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 }

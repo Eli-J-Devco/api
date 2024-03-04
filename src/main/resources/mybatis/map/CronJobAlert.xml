@@ -656,5 +656,35 @@
 		WHERE
 			s.`id` = #{id}
 	</update>
+	
+	<select id="getListSiteLowProduction" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.ac_capacity,
+			s.dc_capacity,
+			COUNT(IF(d.id_device_type = 1, 1, NULL)) AS totalInverter,
+			COUNT(IF(d.id_device_type = 3, 1, NULL)) AS totalMeter,
+			GROUP_CONCAT(DISTINCT CASE WHEN d.id_device_type IN(1,3) THEN d.id_device_group ELSE NULL END SEPARATOR ',') AS listGroup
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+			LEFT JOIN device d ON d.id_site = s.id
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			<if test="id != null and id != 0">
+				AND s.id = #{id}
+			</if>
+			GROUP BY s.id
+			
+	</select>
+	
   	
 </mapper>

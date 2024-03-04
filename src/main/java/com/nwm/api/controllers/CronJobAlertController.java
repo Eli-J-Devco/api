@@ -808,4 +808,124 @@ public class CronJobAlertController extends BaseController {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description get no communication
+	 * @author long.pham
+	 * @since 2023-07-20
+	 * @return {}
+	 */
+	@GetMapping("/get-low-production")
+	@ResponseBody
+	public Object getLowProduction(@RequestParam Map<String, Object> params) {
+		try {
+			String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
+			String token = (String) params.get("token");
+			if (token == null || token == "" || !token.equals(privateKey)) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+
+			String idSite = (String) params.get("id_site");
+			int id_site = 0;
+
+			if (idSite != null && Integer.parseInt(idSite) > 0) {
+				id_site = Integer.parseInt(idSite);
+			}
+
+			CronJobAlertService service = new CronJobAlertService();
+			SiteEntity entity = new SiteEntity();
+			entity.setId(id_site);
+
+			// Get list site
+			List<?> listSites = service.getListSiteLowProduction(entity);
+			if (listSites.size() > 0) {
+				for (int s = 0; s < listSites.size(); s++) {
+					SiteEntity objSite = (SiteEntity) listSites.get(s);
+					
+//					BatchJobTableEntity bathJobEntity = new BatchJobTableEntity();
+//
+//					ZoneId zoneIdLosAngeles = ZoneId.of(objSite.getTime_zone_value()); // "America/Los_Angeles"
+//					ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+//					int hourOfDay = zdtNowLosAngeles.getHour();
+//
+//					Date now = new Date();
+//					// UTC
+//					TimeZone.setDefault(TimeZone.getTimeZone(objSite.getTime_zone_value()));
+//					SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+//					String CurrentDate = format.format(now);
+//
+//					SimpleDateFormat formatUTC = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//					TimeZone tzUTC = TimeZone.getTimeZone("UTC");
+//					formatUTC.setTimeZone(tzUTC);
+//					String sDateUTC = formatUTC.format(now);
+//					
+//
+//					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
+//						// Check alert datalogger no communication
+//						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
+//						if (objDatalogger.getId() > 0) {
+//							// Get list device meter and inverter
+//							DeviceEntity dEntity = new DeviceEntity();
+//							dEntity.setId_site(objSite.getId());
+//							List<?> listDeviceBySite = service.getListMeterAndInverterBySite(dEntity);
+//							if (listDeviceBySite.size() > 0) {
+//								for (int i = 0; i < listDeviceBySite.size(); i++) {
+//									DeviceEntity obj = (DeviceEntity) listDeviceBySite.get(i);
+//									if (obj.getTimezone_value() != null) {
+//										// No Production
+//										bathJobEntity.setId(obj.getId());
+//										bathJobEntity.setCurrent_time(CurrentDate);
+//										bathJobEntity.setStart_date_time(obj.getStart_date_time());
+//										bathJobEntity.setEnd_date_time(obj.getEnd_date_time());
+//
+//										if (obj.getJob_tablename() != null) {
+//											bathJobEntity.setDatatablename(obj.getJob_tablename());
+//										} else {
+//											bathJobEntity.setDatatablename(obj.getDatatablename());
+//										}
+//
+//										bathJobEntity.setId_device(obj.getId());
+//										int noProduction = obj.getId_error() > 0 ? obj.getId_error() : 0;
+//
+//										BatchJobTableEntity rowItem = service.getLastRowItemCheckNoProduction(bathJobEntity);
+//										if (rowItem.getNvmActivePower() != 0.001) {
+//										
+//											if ((rowItem.getId_device() > 0 && (rowItem.getCount_item() == 10 )) ) {
+//												AlertEntity alertItem = new AlertEntity();
+//												alertItem.setId_device(obj.getId());
+//												alertItem.setId_error(noProduction);
+//												alertItem.setStart_date( !Lib.isBlank(rowItem.getTime()) ? rowItem.getTime() : sDateUTC);
+//												// Check error exits
+//												boolean checkAlertExist = service.checkAlertExist(alertItem);
+//												if (!checkAlertExist && alertItem.getId_device() > 0 && alertItem.getId_error() > 0) {
+//													// Insert error
+//													service.insertAlert(alertItem);
+//												}
+//											} else {
+//												// Close alert no production
+//												bathJobEntity.setId_error(noProduction);
+//												BatchJobTableEntity rowItemRemove = service.getRowItemAlert(bathJobEntity);
+//												rowItemRemove.setEnd_date(sDateUTC);
+//												if (rowItemRemove.getId() > 0) {
+//													service.updateCloseAlert(rowItemRemove);
+//												}
+//											}
+//										}
+//
+//									}
+//								}
+//							}
+//						}
+//					}
+				}
+			}
+		
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }
