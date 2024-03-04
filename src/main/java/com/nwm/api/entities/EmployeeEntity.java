@@ -44,8 +44,15 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	private String hash_id_user;
 	private String logo;
 	private int id_company;
+	private String note;
 	
 	
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
 	public int getId_company() {
 		return id_company;
 	}

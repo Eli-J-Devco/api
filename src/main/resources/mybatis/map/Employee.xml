@@ -57,6 +57,7 @@
 		<result property="account_locked" column="account_locked" />
 		<result property="lock_time" column="lock_time" />
 		<result property="id_company" column="id_company" />
+		<result property="note" column="note" />
 		
 	</resultMap>
 	
@@ -218,7 +219,8 @@
 			e.lock_time,
 			e.created_by,
 			SHA2(e.`id`, 256) AS hash_id_user,
-			e.id_company
+			e.id_company,
+			e.note
 		FROM
 			`employee` e	
 			
@@ -457,7 +459,8 @@
 			skype,
 			created_by,
 			created_date,
-			id_company
+			id_company,
+			note
 		)VALUES(
 			#{first_name},
 			#{last_name},
@@ -470,7 +473,8 @@
 			#{skype},
 			#{created_by},
 			NOW(),
-			id_company
+			#{id_company},
+			#{note}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -521,7 +525,8 @@
 			`skype` = #{skype},
 			`updated_by` = #{created_by},
 			`updated_date` = NOW(),
-			`id_company` = #{id_company}
+			`id_company` = #{id_company},
+			`note` = #{note}
 			
 		WHERE
 			`id` = #{id}
