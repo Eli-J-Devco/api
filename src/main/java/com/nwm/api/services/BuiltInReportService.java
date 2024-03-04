@@ -80,26 +80,26 @@ public class BuiltInReportService extends DB {
 			LocalDateTime endLocalDateTime = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
 			
 			switch (obj.getData_intervals()) {
-				case 3:
-					forCount = (int) (24 * (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1));
-					calField = Calendar.HOUR_OF_DAY;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-					break;
-					
-				case 4:
-					forCount = (int) (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1);
-					calField = Calendar.DAY_OF_YEAR;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-					break;
-					
-				case 5:
-					forCount = (int) (ChronoUnit.WEEKS.between(startLocalDateTime, endLocalDateTime) + 1);
-					calField = Calendar.WEEK_OF_YEAR;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-					break;
+//				case 3:
+//					forCount = (int) (24 * (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1));
+//					calField = Calendar.HOUR_OF_DAY;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+//					break;
+//					
+//				case 4:
+//					forCount = (int) (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1);
+//					calField = Calendar.DAY_OF_YEAR;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+//					break;
+//					
+//				case 5:
+//					forCount = (int) (ChronoUnit.WEEKS.between(startLocalDateTime, endLocalDateTime) + 1);
+//					calField = Calendar.WEEK_OF_YEAR;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+//					break;
 					
 				case 6:
 				default:
@@ -203,40 +203,47 @@ public class BuiltInReportService extends DB {
 			int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 			
 			switch (obj.getData_intervals()) {
-				case 1:
-					forCount = daysInMonth * 24 * 12;
-					calAmount = 5;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-					break;
+//				case 1:
+//					forCount = daysInMonth * 24 * 12;
+//					calAmount = 5;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
+//					break;
 					
 				case 2:
-				default:
 					forCount = daysInMonth * 24 * 4;
 					calAmount = 15;
 					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
 					break;
 					
-				case 3:
-					forCount = daysInMonth * 24;
-					calAmount = 60;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-					break;
-					
-				case 4:
-					forCount = daysInMonth;
-					calAmount = 1440;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-					break;
-					
-				case 5:
-					forCount = (int) Math.ceil(daysInMonth / 7);
-					calAmount = 10080;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+//				case 3:
+//					forCount = daysInMonth * 24;
+//					calAmount = 60;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+//					break;
+//					
+//				case 4:
+//					forCount = daysInMonth;
+//					calAmount = 1440;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+//					break;
+//					
+//				case 5:
+//					forCount = (int) Math.ceil(daysInMonth / 7);
+//					calAmount = 10080;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
+//					break;
+				
+				case 6:
+				default:
+					forCount = 1;
+					calAmount = daysInMonth * 1440;
+					dateFormat = new SimpleDateFormat("MMM-yy");
+					catFormat = new SimpleDateFormat("MMM-yy");
 					break;
 			}
 			
@@ -329,26 +336,26 @@ public class BuiltInReportService extends DB {
 			int calAmount = 1440;
 			
 			switch (obj.getData_intervals()) {
-				case 1:
-					forCount = 7 * 24 * 12;
-					calAmount = 5;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-					break;
-					
-				case 2:
-					forCount = 7 * 24 * 4;
-					calAmount = 15;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-					break;
-					
-				case 3:
-					forCount = 7 * 24;
-					calAmount = 60;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-					break;
+//				case 1:
+//					forCount = 7 * 24 * 12;
+//					calAmount = 5;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+//					break;
+//					
+//				case 2:
+//					forCount = 7 * 24 * 4;
+//					calAmount = 15;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+//					break;
+//					
+//				case 3:
+//					forCount = 7 * 24;
+//					calAmount = 60;
+//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
+//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
+//					break;
 					
 				case 4:
 				default:
