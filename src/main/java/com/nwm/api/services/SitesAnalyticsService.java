@@ -88,6 +88,15 @@ public class SitesAnalyticsService extends DB {
 							int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
 							map.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 							map.put("data_send_time", obj.getData_send_time());
+							
+							// get list of time to exclude data from
+							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
+							map.put("hidden_data_list", hiddenDataList);
+							
+							// get device's common model table
+							Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
+							map.put("table_name", modelTable.get("table_name"));
+							
 							Date dt = new Date();
 							Calendar c = Calendar.getInstance(); 
 							c.setTime(dt); 
@@ -100,14 +109,6 @@ public class SitesAnalyticsService extends DB {
 							} else {
 								map.put("datatablename", map.get("view_tablename"));
 							}
-							
-							// get list of time to exclude data from
-							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
-							map.put("hidden_data_list", hiddenDataList);
-							
-							// get device's common model table
-							Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
-							map.put("table_name", modelTable.get("table_name"));
 							
 							if ((int) map.get("id_device_type") == 12) map.put("datatablename", map.get("table_data_virtual"));
 							
