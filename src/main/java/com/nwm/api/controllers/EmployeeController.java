@@ -19,10 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.CustomerEntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
-import com.nwm.api.services.CustomerService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;

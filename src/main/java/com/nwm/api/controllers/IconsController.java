@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,14 +20,15 @@ import com.nwm.api.entities.IconsEntity;
 import com.nwm.api.services.IconsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-
+import com.nwm.api.services.AWSService;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/icons")
 public class IconsController extends BaseController {
-
+	@Autowired
+	private AWSService awsService;
 	/**
 	 * @description Get list icon
 	 * @author long.pham
@@ -133,7 +135,9 @@ public class IconsController extends BaseController {
 					saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons);
 					fileName = randomAlphabetic(16);
 					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons)+"/"+saveFileName);
+//					obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons)+"/"+saveFileName);
+					String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons) + "/" + saveFileName);
+					obj.setIcon(filePath);
 				}
 				
 				IconsEntity data = service.insertIcon(obj);
@@ -148,7 +152,9 @@ public class IconsController extends BaseController {
 						saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons);
 						fileName = randomAlphabetic(16);
 						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons)+"/"+saveFileName);
+//						obj.setIcon(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons)+"/"+saveFileName);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons) + "/" + saveFileName);
+						obj.setIcon(filePath);
 					}
 					
 					boolean insert = service.updateIcon(obj);
