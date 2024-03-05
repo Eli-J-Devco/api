@@ -129,8 +129,14 @@ public class DeviceEntity {
 	private String ftp_port;
 	private String ftp_folder;
 	private int datalogger_type;
-	
-	
+	private double power_now;
+
+	public double getPower_now() {
+		return power_now;
+	}
+	public void setPower_now(double power_now) {
+		this.power_now = power_now;
+	}
 	public int getEnable_alert() {
 		return enable_alert;
 	}

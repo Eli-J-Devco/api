@@ -199,9 +199,30 @@ public class SiteEntity {
 	private int is_show_each_meter;
 	private int enable_alert;
 	private List errorLevel;
+	private int totalInverter;
+	private int totalMeter;
+	private String listGroup;
 	
 	
 	
+	public int getTotalInverter() {
+		return totalInverter;
+	}
+	public void setTotalInverter(int totalInverter) {
+		this.totalInverter = totalInverter;
+	}
+	public int getTotalMeter() {
+		return totalMeter;
+	}
+	public void setTotalMeter(int totalMeter) {
+		this.totalMeter = totalMeter;
+	}
+	public String getListGroup() {
+		return listGroup;
+	}
+	public void setListGroup(String listGroup) {
+		this.listGroup = listGroup;
+	}
 	public List getErrorLevel() {
 		return errorLevel;
 	}

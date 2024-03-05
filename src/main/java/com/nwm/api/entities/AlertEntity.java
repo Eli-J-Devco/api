@@ -83,8 +83,16 @@ public class AlertEntity {
 	
 	private String alert_mail_bcc;
 	private String alert_mail_cc;
+	private List listDevices;
 	
 	
+	
+	public List getListDevices() {
+		return listDevices;
+	}
+	public void setListDevices(List listDevices) {
+		this.listDevices = listDevices;
+	}
 	public String getAlert_mail_bcc() {
 		return alert_mail_bcc;
 	}
