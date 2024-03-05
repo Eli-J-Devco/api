@@ -144,7 +144,7 @@
 	<update id="updateDeviceResetDisableAlert">
 		UPDATE `device`
 		SET
-			`disable_alert` = 0
+			`disable_alert` = 1
 		WHERE
 			`id_site` = #{id}
 	</update>
@@ -153,7 +153,7 @@
 	<update id="enableDeviceDisableAlert">
 		UPDATE `device`
 		SET
-			`disable_alert` = 1
+			`disable_alert` = 0
 		WHERE
 			`id` = #{id} AND `id_site` = #{id_site}
 	</update>

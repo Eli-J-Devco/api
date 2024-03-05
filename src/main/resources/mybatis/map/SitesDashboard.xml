@@ -160,7 +160,7 @@
 		FROM
 			device d
 		WHERE
-			SHA1(d.id_site) = #{hash_id} AND d.disable_alert = 1
+			SHA1(d.id_site) = #{hash_id} AND d.disable_alert = 0
 	</select>
 	
 	
