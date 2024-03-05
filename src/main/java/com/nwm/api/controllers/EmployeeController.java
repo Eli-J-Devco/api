@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,12 +31,14 @@ import com.nwm.api.utils.Translator;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
+import com.nwm.api.services.AWSService;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/employee")
 public class EmployeeController extends BaseController {
-
+	@Autowired
+	private AWSService awsService;
 	/**
 	 * @description Get list role
 	 * @author long.pham
@@ -104,8 +107,11 @@ public class EmployeeController extends BaseController {
 							Constants.uploadFilePathConfigKeyAvatar);
 					fileName = randomAlphabetic(16);
 					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-					obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
-							Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					obj.setAvatar(filePath);
+					
+//					obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
+//							Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
 				}
 
 				EmployeeManageEntity data = service.insertEmployee(obj);
@@ -164,8 +170,11 @@ public class EmployeeController extends BaseController {
 								Constants.uploadFilePathConfigKeyAvatar);
 						fileName = randomAlphabetic(16);
 						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
-						obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
-								Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						obj.setAvatar(filePath);
+						
+//						obj.setAvatar(Lib.getReourcePropValue(Constants.appConfigFileName,
+//								Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
 					}
 
 					boolean checkEmployeeEmailExist = service.checkEmployeeEmailExist(obj);
