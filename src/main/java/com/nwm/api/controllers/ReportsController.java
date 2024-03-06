@@ -723,28 +723,30 @@ public class ReportsController extends BaseController {
 			
 						solidLineSeries(data, 0, PresetColor.LIGHT_STEEL_BLUE);
 						
+						if (dataObj.isHave_poa()) {
+							// three line chart
+							XDDFValueAxis rightAxis3 = chart.createValueAxis(AxisPosition.RIGHT);
+							rightAxis3.setCrosses(AxisCrosses.MAX);
+							rightAxis3.setTitle("W/m2");
+							rightAxis3.setCrossBetween(AxisCrossBetween.BETWEEN);
+				
+							// set correct cross axis
+							bottomAxis.crossAxis(rightAxis3);
+							rightAxis3.crossAxis(bottomAxis);
+							rightAxis3.setMinimum(0);
+							if (rightAxis3.hasNumberFormat()) rightAxis3.setNumberFormat("#,##0.00");
+							
+							// create data and series
+							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis3);
+							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
+							series.setTitle("Irradiance (W/m2)", new CellReference(chartSheet.getSheetName(), 24, 9, true, true));
+							series.setSmooth(false);
+							series.setMarkerStyle(MarkerStyle.NONE);
+	
+							chart.plot(data);
+							solidLineSeries(data, 0, PresetColor.DARK_ORANGE);
+						}
 						
-						// three line chart
-						XDDFValueAxis rightAxis3 = chart.createValueAxis(AxisPosition.RIGHT);
-						rightAxis3.setCrosses(AxisCrosses.MAX);
-						rightAxis3.setTitle("W/m2");
-						rightAxis3.setCrossBetween(AxisCrossBetween.BETWEEN);
-			
-						// set correct cross axis
-						bottomAxis.crossAxis(rightAxis3);
-						rightAxis3.crossAxis(bottomAxis);
-						rightAxis3.setMinimum(0);
-						if (rightAxis3.hasNumberFormat()) rightAxis3.setNumberFormat("#,##0.00");
-						
-						// create data and series
-						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis3);
-						series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
-						series.setTitle("Irradiance (W/m2)", new CellReference(chartSheet.getSheetName(), 24, 9, true, true));
-						series.setSmooth(false);
-						series.setMarkerStyle(MarkerStyle.NONE);
-
-						chart.plot(data);
-						solidLineSeries(data, 0, PresetColor.DARK_ORANGE);
 						// create legend
 						XDDFChartLegend legend = chart.getOrAddLegend();
 						legend.setPosition(LegendPosition.BOTTOM);
@@ -949,19 +951,21 @@ public class ReportsController extends BaseController {
 						plot.mapDatasetToRangeAxis(1, 1);
 						
 						// irradiance line chart
-						XYLineAndShapeRenderer irradianceRenderer = new XYLineAndShapeRenderer(true, false);
-						irradianceRenderer.setSeriesPaint(0, new Color(255, 129, 39));
-						irradianceRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
-
-						NumberAxis irradianceAxis = new NumberAxis("W/m2");
-						irradianceAxis.setTickMarkInsideLength(tickMarkLength);
-						irradianceAxis.setTickMarkOutsideLength(tickMarkLength);
-						irradianceAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
-						
-						plot.setRenderer(2, irradianceRenderer);
-						plot.setRangeAxis(2, irradianceAxis);
-						plot.setDataset(2, irradianceDataset);
-						plot.mapDatasetToRangeAxis(2, 2);
+						if (dataObj.isHave_poa()) {
+							XYLineAndShapeRenderer irradianceRenderer = new XYLineAndShapeRenderer(true, false);
+							irradianceRenderer.setSeriesPaint(0, new Color(255, 129, 39));
+							irradianceRenderer.setSeriesStroke(0, new BasicStroke(seriesStroke));
+	
+							NumberAxis irradianceAxis = new NumberAxis("W/m2");
+							irradianceAxis.setTickMarkInsideLength(tickMarkLength);
+							irradianceAxis.setTickMarkOutsideLength(tickMarkLength);
+							irradianceAxis.setTickMarkStroke(new BasicStroke(tickMarkStroke));
+							
+							plot.setRenderer(2, irradianceRenderer);
+							plot.setRangeAxis(2, irradianceAxis);
+							plot.setDataset(2, irradianceDataset);
+							plot.mapDatasetToRangeAxis(2, 2);
+						}
 						
 						// plot and return image
 						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
@@ -2137,7 +2141,7 @@ public class ReportsController extends BaseController {
 				DecimalFormat df = new DecimalFormat("###,###");
 				DecimalFormat dfp = new DecimalFormat("###,##0.0");
 				DecimalFormat dfp4 = new DecimalFormat("###,##0.0000");
-				boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
+				boolean quarterlyReportByDay = dataObj.getData_intervals() == Constants.DAILY_INTERVAL;
 				// create CellStyle
 				CellStyle cellStyle = createStyleForHeader(sheet);
 				cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -2816,7 +2820,7 @@ public class ReportsController extends BaseController {
 				ReportsService service = new ReportsService();
 				ViewReportEntity dataObj = (ViewReportEntity) service.getQuarterlyReport(obj);
 				if (dataObj != null) {
-					boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
+					boolean quarterlyReportByDay = dataObj.getData_intervals() == Constants.DAILY_INTERVAL;
 
 					SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -3324,7 +3328,7 @@ public class ReportsController extends BaseController {
 				ViewReportEntity dataObj = (ViewReportEntity) service.getQuarterlyReport(obj);
 				
 				if (dataObj != null) {
-					boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
+					boolean quarterlyReportByDay = dataObj.getData_intervals() == Constants.DAILY_INTERVAL;
 
 					SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -5188,12 +5192,22 @@ public class ReportsController extends BaseController {
 							Date dateTo = dateFormat.parse(obj.getDate_to());
 							
 							// select format based on intervals
-							if (obj.getData_intervals() == 11 ) {
-								format = dayFormat;
-							} else if (obj.getData_intervals() == 12) {
-								format = monthFormat;
-							} else if (obj.getData_intervals() == 13) {
-								format = yearFormat;
+							switch (obj.getData_intervals()) {
+								case Constants.DAILY_INTERVAL:
+									format = dayFormat;
+									break;
+									
+								case Constants.MONTHLY_INTERVAL:
+									format = monthFormat;
+									break;
+									
+								case Constants.ANNUALLY_INTERVAL:
+									format = yearFormat;
+									break;
+	
+								default:
+									format = monthFormat;
+									break;
 							}
 							
 							Calendar calQ = Calendar.getInstance();
@@ -5378,15 +5392,26 @@ public class ReportsController extends BaseController {
 					Date dateTo = dateFormat.parse(obj.getDate_to());
 					
 					// select format based on intervals
-					if (obj.getData_intervals() == 11 ) {
-						format = dayFormat;
-						dateTickUnitType = DateTickUnitType.DAY;
-					} else if (obj.getData_intervals() == 12) {
-						format = monthFormat;
-						dateTickUnitType = DateTickUnitType.MONTH;
-					} else if (obj.getData_intervals() == 13) {
-						format = yearFormat;
-						dateTickUnitType = DateTickUnitType.YEAR;
+					switch (obj.getData_intervals()) {
+						case Constants.DAILY_INTERVAL:
+							format = dayFormat;
+							dateTickUnitType = DateTickUnitType.DAY;
+							break;
+							
+						case Constants.MONTHLY_INTERVAL:
+							format = monthFormat;
+							dateTickUnitType = DateTickUnitType.MONTH;
+							break;
+							
+						case Constants.ANNUALLY_INTERVAL:
+							format = yearFormat;
+							dateTickUnitType = DateTickUnitType.YEAR;
+							break;
+	
+						default:
+							format = monthFormat;
+							dateTickUnitType = DateTickUnitType.MONTH;
+							break;
 					}
 					
 					Calendar calQ = Calendar.getInstance();
@@ -5483,12 +5508,22 @@ public class ReportsController extends BaseController {
 						double actual = itemActual <= 0 ? 0 : (itemActual == 0.001 ? 0 : itemActual);
 						
 						RegularTimePeriod period = null;
-						if (obj.getData_intervals() == 11 ) {
-							period = new Day(format.parse(itemCategoryTime));
-						} else if (obj.getData_intervals() == 12) {
-							period = new Month(format.parse(itemCategoryTime));
-						} else if (obj.getData_intervals() == 13) {
-							period = new Year(format.parse(itemCategoryTime));
+						switch (obj.getData_intervals()) {
+							case Constants.DAILY_INTERVAL:
+								period = new Day(format.parse(itemCategoryTime));
+								break;
+								
+							case Constants.MONTHLY_INTERVAL:
+								period = new Month(format.parse(itemCategoryTime));
+								break;
+								
+							case Constants.ANNUALLY_INTERVAL:
+								period = new Year(format.parse(itemCategoryTime));
+								break;
+		
+							default:
+								period = new Month(format.parse(itemCategoryTime));
+								break;
 						}
 						powerSeries.add(period, actual);
 					}

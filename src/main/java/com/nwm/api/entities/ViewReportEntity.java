@@ -51,6 +51,7 @@ public class ViewReportEntity {
 	private String days_week;
 	private String offset_timezone;
 	private int is_supper_admin;
+	private boolean have_poa;
 	
 	
 	private int type_report;
@@ -356,6 +357,12 @@ public class ViewReportEntity {
 	}
 	public void setTable_data_virtual(String table_data_virtual) {
 		this.table_data_virtual = table_data_virtual;
+	}
+	public boolean isHave_poa() {
+		return have_poa;
+	}
+	public void setHave_poa(boolean have_poa) {
+		this.have_poa = have_poa;
 	}
 	
 	
