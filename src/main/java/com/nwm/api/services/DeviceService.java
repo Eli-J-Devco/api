@@ -383,6 +383,26 @@ public class DeviceService extends DB {
 	}
 	
 	/**
+	 * @description Get list device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceFilterParameter(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceFilterParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
 	 * @description Get list device parameter
 	 * @author duy.phan
 	 * @since 2024-01-15
@@ -438,6 +458,26 @@ public class DeviceService extends DB {
 	        return true;
 		} catch (Exception ex) {
 			log.error("Device.saveDeviceParameterScale", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device, id_device_parameter, min_value, max_value
+	 */
+	public boolean saveDeviceFilterParameter(DeviceEntity obj) {
+		try {
+			if (obj.getId() == 0 || obj.getId_device_parameter() == 0) return false;
+			Object insertId = insert("Device.saveDeviceFilterParameter", obj);
+			if(insertId == null) {
+				return false;
+			}
+			return true;
+		} catch (Exception ex) {
+			log.error("Device.saveDeviceFilterParameter", ex);
 			return false;
 		}
 	}

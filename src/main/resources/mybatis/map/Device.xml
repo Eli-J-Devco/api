@@ -605,6 +605,27 @@
 		ORDER BY dp.id
 	</select>
 	
+	<select id="getListDeviceFilterParameter" resultType="Map">
+		SELECT
+			dp.id,
+			dp.`name`,
+			CONCAT(dp.`name`, IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
+			dpf.min_value,
+			dpf.max_value
+		FROM
+			device_parameters dp
+			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
+			LEFT JOIN device_parameter_filter dpf ON dpf.id_device_parameter = dp.id AND dpf.id_device = d.id
+		WHERE
+			d.id = #{id}
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_calculation IS NULL
+		ORDER BY dp.id
+	</select>
+	
 	<select id="getListScaledParameterByDeviceGroup" resultType="Map">
 		SELECT 
 			dp.id,
@@ -657,6 +678,24 @@
 			`id_device_parameter` = VALUES(id_device_parameter),
 			`scale` = VALUES(scale),
 			`variable_name` = VALUES(variable_name)
+	</insert>
+	
+	<insert id="saveDeviceFilterParameter">
+		INSERT INTO `device_parameter_filter` (
+			`id_device`,
+			`id_device_parameter`,
+			`min_value`,
+			`max_value`
+		) VALUES (
+			#{id},
+			#{id_device_parameter},
+			#{min_value},
+			#{max_value}
+		) ON DUPLICATE KEY UPDATE
+			`id_device` = VALUES(id_device),
+			`id_device_parameter` = VALUES(id_device_parameter),
+			`min_value` = VALUES(min_value),
+			`max_value` = VALUES(max_value)
 	</insert>
 	
 	

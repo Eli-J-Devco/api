@@ -74,6 +74,18 @@
 			AND is_delete = 0
 	</select>
 	
+	<select id="getFilterParamsByDevice" resultType="Map">
+		SELECT
+			id_device,
+			id_device_parameter,
+			min_value,
+			max_value
+		FROM
+			device_parameter_filter
+		WHERE
+			id_device = #{id}
+	</select>
+	
 	<select id="getDeviceGroupsList" resultType="Map">
 		SELECT
 			table_name
@@ -93,7 +105,6 @@
 		SELECT
 			time,
 			id_device,
-			is_checked,
 			id_device_group,
 			time_full,
 			categories_time,
@@ -214,7 +225,6 @@
 									IFNULL(ROUND(SUM(MeasuredProduction), 2), 0.001) AS MeasuredProduction
 								</otherwise>
 							</choose>
-							
 						</when>
 						
 						<otherwise>
@@ -222,13 +232,16 @@
 						</otherwise>
 					</choose>
 				</if>
+				
+				<if test="param.is_checked != 1">
+					${param.slug}
+				</if>
 			</foreach>
 			
 		FROM (
 			SELECT
 				dv.time,
 				dv.id_device,
-				0 AS is_checked,
 				d.id_device_group,
 				
 				<foreach collection="dataParameter" item="param" separator="," close=",">
@@ -346,6 +359,10 @@
 								AVG(dv.${param.slug}) AS ${param.slug}
 							</otherwise>
 						</choose>
+					</if>
+					
+					<if test="param.is_checked != 1">
+						NULL AS ${param.slug}
 					</if>
 				</foreach>
 				

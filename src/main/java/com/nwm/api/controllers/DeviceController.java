@@ -241,6 +241,25 @@ public class DeviceController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-device-filter-parameter")
+	public Object getListDeviceFilterParameter(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			List data = service.getListDeviceFilterParameter(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description Get list device parameter by device group
 	 * @author duy.phan
 	 * @since 2024-01-15
@@ -282,6 +301,27 @@ public class DeviceController extends BaseController {
 				return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
 			}
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device, id_device_parameter, min_value, max_value
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/save-device-filter-parameter")
+	public Object saveDeviceFilterParameter(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			return service.saveDeviceFilterParameter(obj) ?
+				this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1)
+				:
+				this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);

@@ -121,6 +121,8 @@ public class DeviceEntity {
 	private int consumption_meter;
 	private String datalogger_table;
 	private int enable_alert;
+	private Integer max_value;
+	private Integer min_value;
 	
 	private String communication;
 	private String ftp_server;
@@ -841,6 +843,18 @@ public class DeviceEntity {
 	}
 	public void setDatalogger_type(int datalogger_type) {
 		this.datalogger_type = datalogger_type;
+	}
+	public Integer getMax_value() {
+		return max_value;
+	}
+	public void setMax_value(Integer max_value) {
+		this.max_value = max_value;
+	}
+	public Integer getMin_value() {
+		return min_value;
+	}
+	public void setMin_value(Integer min_value) {
+		this.min_value = min_value;
 	}
 	
 	

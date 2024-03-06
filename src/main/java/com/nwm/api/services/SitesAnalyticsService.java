@@ -114,11 +114,15 @@ public class SitesAnalyticsService extends DB {
 							
 							List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
 							
+							// get list of filter parameters
+							List filterParamsList = queryForList("SitesAnalytics.getFilterParamsByDevice", map);
+							
 							Map<String, Object> maps = new HashMap<>();
 							maps.put("id", map.get("id"));
 							maps.put("device_name", map.get("devicename"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
+							maps.put("filter_params", filterParamsList);
 							maps.put("data", getDataChartParameter);
 							return maps;
 			            }
