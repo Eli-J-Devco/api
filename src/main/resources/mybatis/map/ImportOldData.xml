@@ -37,6 +37,7 @@
 			d.id AS `value`,
 			dg.group_name AS device_group_name,
 			dg.table_name,
+			d.datatablename,
 			tz.offset
 		FROM
 			device AS d
