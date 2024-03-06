@@ -89,8 +89,8 @@
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IF( ivt.activePower IS NULL, ROUND(m.activePower,2), ROUND(ivt.activePower,2)), NULL) AS activePower,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(v.expected_power_virtual,2), ROUND(t.expected_power,2)), NULL) AS expected_power,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IF(v.activePower IS NULL, IF( ivt.activePower IS NULL, ROUND(m.activePower,1), ROUND(ivt.activePower,1)), ROUND(v.activePower, 1)), NULL) AS activePower,
+			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(v.expected_power_virtual,1), ROUND(t.expected_power,1)), NULL) AS expected_power,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.inverters_meters, NULL) AS inverters_meters
 			
 				
@@ -111,7 +111,8 @@
 			LEFT JOIN (
 				SELECT 
 					d.id_site,
-					IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual
+					IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual,
+					IF(d.last_value > 0, d.last_value, NULL) AS activePower
 				FROM
 					device d
 				WHERE
@@ -183,7 +184,9 @@
 					LEFT JOIN device d ON d.id_site = s.id 
 				WHERE
 					d.id_device_type = 1
-					AND s.`status` = 1 
+					AND s.`status` = 1
+					AND s.is_delete = 0
+					AND d.is_delete = 0 
 					AND d.`status` = 1 
 				GROUP BY
 					s.id
@@ -198,7 +201,10 @@
 					LEFT JOIN device d ON d.id_site = s.id 
 				WHERE
 					d.id_device_type = 3
+					AND d.consumption_meter = 0
+					AND d.is_delete = 0
 					AND s.`status` = 1 
+					AND s.is_delete = 0
 					AND d.`status` = 1 
 				GROUP BY
 					s.id
@@ -444,8 +450,8 @@
 	                s.PerformanceRatioYesterday ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'PerformanceIndexNow'">
-	               IF( ivt.activePower IS NULL, m.activePower, ivt.activePower) / t.expected_power ${order_by}
+	            <when test="sort_column == 'PerformanceIndexNow'">           
+	               IF(v.activePower IS NULL, IF( ivt.activePower IS NULL, ROUND(m.activePower,1), ROUND(ivt.activePower,1)), ROUND(v.activePower, 1)) / IFNULL(ROUND(v.expected_power_virtual,1), ROUND(t.expected_power,1)) ${order_by}
 	            </when>
 	            
 	       		<when test="sort_column == 'total_error'">
