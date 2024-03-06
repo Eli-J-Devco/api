@@ -26,6 +26,7 @@ import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.utils.Constants;
 
 public class ReportsService extends DB {
 	
@@ -189,6 +190,8 @@ public class ReportsService extends DB {
 					dataObj.setDataReports(dataNewIrr);
 				}
 			}
+			
+			dataObj.setHave_poa(dataListDeviceIrr.size() > 0);
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
@@ -286,7 +289,7 @@ public class ReportsService extends DB {
 			SimpleDateFormat catFormat;
 			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
 			
-			boolean quarterlyReportByDay = dataObj.getData_intervals() == 11;
+			boolean quarterlyReportByDay = dataObj.getData_intervals() == Constants.DAILY_INTERVAL;
 			
 			if (quarterlyReportByDay) {
 				dateFormat = new SimpleDateFormat("yyyy-MM-dd");

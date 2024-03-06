@@ -634,12 +634,15 @@
 			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY s.id,
 			<choose>
-				<when test="data_intervals == 11">
+				<when test="data_intervals == 4">
 					time_format_by_day
 				</when>
-				<when test="data_intervals == 12">
+				<when test="data_intervals == 6">
 					time_format
 				</when>
+				<otherwise>
+					time_format
+				</otherwise>
 			</choose>
 		
 	</select>
@@ -1088,15 +1091,18 @@
 				DATE_FORMAT( sdr.time, '%m' ) AS month,
 				DATE_FORMAT( sdr.time, '%Y' ) AS year,
 				<choose>
-					<when test="data_intervals == 11">
+					<when test="data_intervals == 4">
 						DATE_FORMAT( sdr.time, '%m/%d/%Y' )
 					</when>
-					<when test="data_intervals == 12">
+					<when test="data_intervals == 6">
 						DATE_FORMAT( sdr.time , "%m/%Y" )
 					</when>
-					<when test="data_intervals == 13">
+					<when test="data_intervals == 7">
 						DATE_FORMAT( sdr.time , "%Y" )
 					</when>
+					<otherwise>
+						DATE_FORMAT( sdr.time , "%m/%Y" )
+					</otherwise>
 				</choose>
 				AS categories_time,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
@@ -1123,15 +1129,18 @@
 			GROUP BY 
 				s.id,
 				<choose>
-					<when test="data_intervals == 11">
+					<when test="data_intervals == 4">
 						DATE_FORMAT( sdr.time , "%Y-%m-%d")
 					</when>
-					<when test="data_intervals == 12">
+					<when test="data_intervals == 6">
 						DATE_FORMAT( sdr.time , "%Y-%m")
 					</when>
-					<when test="data_intervals == 13">
+					<when test="data_intervals == 7">
 						DATE_FORMAT( sdr.time , "%Y")
 					</when>
+					<otherwise>
+						DATE_FORMAT( sdr.time , "%Y-%m")
+					</otherwise>
 				</choose>
 	</select>
 	
