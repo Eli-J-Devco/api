@@ -6072,6 +6072,8 @@ public class UploadFilesController extends BaseController {
 								}
 								
 								fr.close(); // close
+							}else {
+								message = "\nFAILURE\n";
 							}
 							
 							
