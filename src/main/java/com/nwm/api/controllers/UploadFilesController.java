@@ -6402,7 +6402,7 @@ public class UploadFilesController extends BaseController {
 					}
 
 				});
-				message = "\nSUCCESS\n";
+//				message = "\nSUCCESS\n";
 			} else {
 				message = "Mode type test " + mode + " not supported by this sample script.";
 				
