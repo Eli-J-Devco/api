@@ -335,7 +335,7 @@
 		    		u.nvmActiveEnergy,
 		    		d.devicename,
 		    		d.id,
-		    		IF(u.nvmActivePower = 0 <![CDATA[&&]]> u.nvmActiveEnergy = 0 , 1, NULL) AS count_is_comm
+		    		IF((u.nvmActivePower = 0 <![CDATA[&&]]> u.nvmActiveEnergy = 0) || (u.nvmActivePower IS NULL <![CDATA[&&]]> u.nvmActiveEnergy IS NULL) , 1, NULL) AS count_is_comm
 		 FROM ${datatablename} u
 		
 				LEFT JOIN device d ON u.id_device = d.id
