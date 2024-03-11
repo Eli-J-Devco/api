@@ -6068,6 +6068,7 @@ public class UploadFilesController extends BaseController {
 											dataloggerService.insertModelDatalogger(dataloggerEntity);
 										}
 									}
+									message = "\nFAILURE\n";
 									
 								}
 								
@@ -6089,7 +6090,7 @@ public class UploadFilesController extends BaseController {
 					}finally{}
 
 				});
-				message = "\nSUCCESS\n";
+//				message = "\nSUCCESS\n";
 			} else {
 //				message = "Mode type test " + mode + " not supported by this sample script.";
 				message = "\nFAILURE\n";
