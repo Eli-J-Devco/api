@@ -6032,6 +6032,7 @@ public class UploadFilesController extends BaseController {
 										ModelDataloggerService dataloggerService = new ModelDataloggerService();
 										dataloggerService.insertModelDatalogger(dataloggerEntity);
 										
+										message = "\nSUCCESS\n";
 									} else {
 										// Set last update for datalogger 
 										// DeviceEntity deviceObject = dataDevice.stream().filter(device -> "model_datalogger".equals(device.getDatatablename())).findAny().orElse(null);
@@ -6068,7 +6069,6 @@ public class UploadFilesController extends BaseController {
 											dataloggerService.insertModelDatalogger(dataloggerEntity);
 										}
 									}
-									message = "\nFAILURE\n";
 									
 								}
 								
