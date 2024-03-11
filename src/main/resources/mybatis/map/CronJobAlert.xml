@@ -667,6 +667,7 @@
 			s.end_date_time,
 			COUNT(IF(d.id_device_type = 1, 1, NULL)) AS totalInverter,
 			COUNT(IF(d.id_device_type = 3, 1, NULL)) AS totalMeter,
+			COUNT(IF(d.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
 			GROUP_CONCAT(DISTINCT CASE WHEN d.id_device_type IN(1,3) THEN d.id_device_group ELSE NULL END SEPARATOR ',') AS listGroup
 		FROM
 			site s
@@ -693,7 +694,7 @@
 			d.datatablename,
 			d.view_tablename,
 			d.job_tablename,
-			IFNULL( d.last_value, 0 ) AS power_now,
+			IFNULL( d.energy_three_days, 0 ) AS power_now,
 			e.error_code,
 			e.id AS id_error,
 			DATE_FORMAT(d.last_updated, '%Y-%m-%d %H:%i:%s') AS last_updated

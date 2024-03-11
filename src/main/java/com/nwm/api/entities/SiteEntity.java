@@ -202,9 +202,16 @@ public class SiteEntity {
 	private int totalInverter;
 	private int totalMeter;
 	private String listGroup;
+	private int totalWeatherStation;
 	
 	
 	
+	public int getTotalWeatherStation() {
+		return totalWeatherStation;
+	}
+	public void setTotalWeatherStation(int totalWeatherStation) {
+		this.totalWeatherStation = totalWeatherStation;
+	}
 	public int getTotalInverter() {
 		return totalInverter;
 	}
