@@ -22,6 +22,8 @@ import java.lang.management.MemoryUsage;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -2715,6 +2717,8 @@ Lib {
 				extension = "jpg";
 				break;
 			}
+			
+			Files.createDirectories(Paths.get(saveDir));
 			String directory = saveDir + "/" + fileName + "." + extension;
 
 			new FileOutputStream(directory).write(imageByte);
