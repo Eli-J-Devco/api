@@ -15,9 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.nwm.api.batchjob.BatchJob;
-import com.nwm.api.batchjob.BatchJobFTP;
-import com.nwm.api.batchjob.BatchJobSMAFTP;
-import com.nwm.api.utils.Constants;
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -44,11 +41,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */5 * * * *")
-	public void startBatchJobUpdateEnergyLifetime() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobUpdateEnergyLifetime();
-	}
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void startBatchJobUpdateEnergyLifetime() throws Exception {
+//		BatchJob job =new BatchJob(); 
+//		job.runCronJobUpdateEnergyLifetime();
+//	}
 	
 	
 	
@@ -59,11 +56,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */5 * * * *")
-	public void startBatchJobUpdateEnergyToday() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobUpdateEnergyToday();
-	}
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void startBatchJobUpdateEnergyToday() throws Exception {
+//		BatchJob job =new BatchJob(); 
+//		job.runCronJobUpdateEnergyToday();
+//	}
 	
 	
 	/**
@@ -73,11 +70,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */5 * * * *")
-	public void startBatchJobUpdateEnergyThisMonth() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobUpdateEnergyThisMonth();
-	}
+//	@Scheduled(cron = "0 */5 * * * *")
+//	public void startBatchJobUpdateEnergyThisMonth() throws Exception {
+//		BatchJob job =new BatchJob(); 
+//		job.runCronJobUpdateEnergyThisMonth();
+//	}
 	
 	
 	

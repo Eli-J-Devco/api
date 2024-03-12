@@ -209,7 +209,7 @@
   
 	
 	
-	<select id="getLastValueLifetime" resultType="com.nwm.api.entities.DeviceEntity">
+	<!-- <select id="getLastValueLifetime" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			dv.id_device AS id,
 			nvmActiveEnergy AS energy_lifetime 
@@ -222,9 +222,9 @@
 			dv.time DESC 
 			LIMIT 1;
 			
-	</select>
+	</select> -->
 	
-	<select id="getLastValueEnergyToday" resultType="com.nwm.api.entities.DeviceEntity" >
+	<!-- <select id="getLastValueEnergyToday" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
 			d.id_site,
 			d.id,
@@ -244,10 +244,10 @@
 			AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{current_time}, '%Y-%m-%d')
 			AND s.`status` = 1 
 			AND d.`status` = 1 
-	</select>
+	</select> -->
 	
 	
-	<select id="getDataDeviceEnergyThisMonth" resultType="com.nwm.api.entities.DeviceEntity" >
+	<!-- <select id="getDataDeviceEnergyThisMonth" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
 			d.id_site,
 			d.id,
@@ -267,34 +267,34 @@
 			AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{current_time}, '%Y-%m')
 			AND s.`status` = 1 
 			AND d.`status` = 1 
-	</select>
+	</select> -->
 	
-	<update id="updateDataDeviceEnergyThisMonth">
+	<!-- <update id="updateDataDeviceEnergyThisMonth">
 		UPDATE `device`
 		SET
 			`energy_this_month` = #{energy_this_month}
 		WHERE
 			`id` = #{id}
-	</update>
+	</update> --> 
 	
 	
-	<update id="updateDataDeviceLifetime">
+	<!-- <update id="updateDataDeviceLifetime">
 		UPDATE `device`
 		SET
 			`energy_lifetime` = #{energy_lifetime}
 		WHERE
 			`id` = #{id}
-	</update>
+	</update> -->
 	
 	
 	
-	<update id="updateDataDeviceEnergyToday">
+	<!-- <update id="updateDataDeviceEnergyToday">
 		UPDATE `device`
 		SET
 			`energy_today` = #{energy_today}
 		WHERE
 			`id` = #{id}
-	</update>
+	</update> --> 
 	
 
 	<select id="getListMeterAndInverter" resultType="com.nwm.api.entities.DeviceEntity" >

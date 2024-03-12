@@ -344,18 +344,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getLastValueLifetime", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceUpdateLifetime(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueLifetime", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueLifetime", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 
 	
 	/**
@@ -364,14 +364,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceLifetime(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceLifetime", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceLifetime", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceLifetime(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceLifetime", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceLifetime", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	/** 
@@ -381,18 +381,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceUpdateEnergyToday(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueEnergyToday", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getLastValueEnergyToday", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceUpdateEnergyToday(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getLastValueEnergyToday", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getLastValueEnergyToday", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 	
 	
 	
@@ -403,18 +403,18 @@ public class BatchJobService extends DB {
 	 * @param {}
 	 */
 
-	public DeviceEntity getDataDeviceEnergyThisMonth(DeviceEntity obj) {
-		DeviceEntity rowItem = new DeviceEntity();
-		try {
-			rowItem = (DeviceEntity) queryForObject("BatchJob.getDataDeviceEnergyThisMonth", obj);
-			if (rowItem == null)
-				return new DeviceEntity();
-		} catch (Exception ex) {
-			log.error("BatchJob.getDataDeviceEnergyThisMonth", ex);
-			return new DeviceEntity();
-		}
-		return rowItem;
-	}
+//	public DeviceEntity getDataDeviceEnergyThisMonth(DeviceEntity obj) {
+//		DeviceEntity rowItem = new DeviceEntity();
+//		try {
+//			rowItem = (DeviceEntity) queryForObject("BatchJob.getDataDeviceEnergyThisMonth", obj);
+//			if (rowItem == null)
+//				return new DeviceEntity();
+//		} catch (Exception ex) {
+//			log.error("BatchJob.getDataDeviceEnergyThisMonth", ex);
+//			return new DeviceEntity();
+//		}
+//		return rowItem;
+//	}
 	
 	/**
 	 * @description update time last_updated
@@ -422,14 +422,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceEnergyToday(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceEnergyToday", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceEnergyToday", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceEnergyToday(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceEnergyToday", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceEnergyToday", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	
@@ -439,14 +439,14 @@ public class BatchJobService extends DB {
 	 * @since 2022-02-09
 	 * @param id, last_updated
 	 */
-	public boolean  updateDataDeviceEnergyThisMonth(DeviceEntity obj) {
-		try {
-			return update("BatchJob.updateDataDeviceEnergyThisMonth", obj) > 0;
-		} catch (Exception ex) {
-			log.error("Device.updateDataDeviceEnergyThisMonth", ex);
-			return false;
-		}
-	}
+//	public boolean  updateDataDeviceEnergyThisMonth(DeviceEntity obj) {
+//		try {
+//			return update("BatchJob.updateDataDeviceEnergyThisMonth", obj) > 0;
+//		} catch (Exception ex) {
+//			log.error("Device.updateDataDeviceEnergyThisMonth", ex);
+//			return false;
+//		}
+//	}
 	
 	
 	/**
