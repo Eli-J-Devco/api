@@ -241,6 +241,7 @@
 			dp.standard_name,
 			dp.`status`,
 			dp.is_delete,
+			IF(dp.is_common = 1, 1, 0) AS is_common,
 			ct.id AS id_categorize_data,
 			ct.name AS categorize_data_name
 		FROM
@@ -255,13 +256,22 @@
 	        <choose>  
 	            <when test="sort_column == 'id'">
 	                dp.id ${order_by}
-	            </when>         
-	            <when test="sort_column == 'register_name'">
+	            </when>     
+	                
+	            <when test="sort_column == 'name'">
 	                dp.name ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'standard_name'">
 	                dp.standard_name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'categorize_data_name'">
+	                ct.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'is_common'">
+	                dp.is_common ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -299,6 +309,7 @@
 	<update id="updateDeviceParameter">
 		UPDATE `device_parameters`
 		SET
+			`is_common` = #{is_common},
 			`standard_name` = #{standard_name}
 		WHERE
 			`id` = #{id}

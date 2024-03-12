@@ -191,8 +191,11 @@ public class DeviceParameterService extends DB {
 			session.commit();
 			return true;
 		}catch (Exception ex) {
+			session.rollback();
 			log.error("DeviceParameter.updateDeviceParameter", ex);
 			return false;
+		}finally {
+			session.close();
 		}
 	}
 	
@@ -205,11 +208,8 @@ public class DeviceParameterService extends DB {
 	 * @param id
 	 */
 	public boolean updateDeviceGroup(DeviceGroupEntity obj){
-		SqlSession session = this.beginTransaction();
 		try{
-			session.update("DeviceParameter.updateDeviceGroup", obj);
-			session.commit();
-			return true;
+			return update("DeviceParameter.updateDeviceGroup", obj) > 0;
 		}catch (Exception ex) {
 			log.error("DeviceParameter.updateDeviceGroup", ex);
 			return false;
