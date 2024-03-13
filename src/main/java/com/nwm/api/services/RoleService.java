@@ -104,6 +104,23 @@ public class RoleService extends DB {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description update screen
+	 * @author long.pham
+	 * @since 2024-03-13
+	 * @param id
+	 */
+	public boolean updateScreen(ScreenEntity obj){
+		try{
+			return update("Role.updateScreen", obj)>0;
+		}catch (Exception ex) {
+			log.error("Role.updateScreen", ex);
+			return false;
+		}
+	}
+	
 	/**
 	 * @description delete role
 	 * @author long.pham

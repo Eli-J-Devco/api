@@ -41,6 +41,9 @@
 			<result property="sort_by" column="sort_by" />
 			<result property="limit" column="limit" />
 			<result property="offset" column="offset" />
+			<result property="link_demo" column="link_demo" />
+			<result property="description" column="description" />
+			
 	</resultMap>	
 		
 	<select id="getList" resultMap="RoleMap" >
@@ -117,6 +120,8 @@
 			s.`level`,
 			s.parent,
 			s.path,
+			s.link_demo,
+			s.description,
 			rcs.auths,
 			rcs.id_role,
 			0 AS collapse,
@@ -168,6 +173,18 @@
 		WHERE
 			id_screen = #{id_screen} AND id_role = #{id_role}
 	</update>
+	
+	
+	
+	<update id="updateScreen">
+		UPDATE `screen`
+		SET
+			`screen_name` = #{screen_name},
+			`description` = #{description}
+		WHERE
+			id = #{id}
+	</update>
+	
 	
 	<insert id="insertRoleScreenMap">
 		INSERT INTO `role_screen_map`(
