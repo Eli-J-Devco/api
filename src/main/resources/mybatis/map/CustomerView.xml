@@ -3046,6 +3046,10 @@
 			      ORDER BY d.`devicename` ${order_by}
 			    </when>
 			    
+			    <when test="sort_column == 'times_ago'">
+			      ORDER BY l.start_date ${order_by}
+			    </when>
+			    
 			    <when test="sort_column == 'start_date'">
 			      ORDER BY l.`start_date` ${order_by}
 			    </when>
