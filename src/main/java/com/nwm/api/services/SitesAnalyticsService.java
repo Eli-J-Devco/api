@@ -12,14 +12,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
@@ -72,20 +67,30 @@ public class SitesAnalyticsService extends DB {
 			List<Map<String, String>> deviceGroupsList = queryForList("SitesAnalytics.getDeviceGroupsList", obj);
 						
 			if(dataDevice.size() > 0 && deviceGroupsList.size() > 0) {
-				ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
-				List<ListenableFuture<Map<String, Object>>> list = new ArrayList<ListenableFuture<Map<String, Object>>>();
+				List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
+				
+				int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
+				
+				Date dt = new Date();
+				Calendar c = Calendar.getInstance(); 
+				c.setTime(dt); 
+				c.add(Calendar.MONTH, -3);
+				SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+				Date d1 = dateFor.parse(obj.getStart_date());
+				Date d2 = dateFor.parse(dateFor.format(c.getTime()));
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
 					int k = i;
 					
-					ListenableFuture<Map<String, Object>> future = executor.submit(new Callable<Map<String, Object>>() {
-			            public Map<String, Object> call() throws Exception {
+					CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+						Map<String, Object> maps = new HashMap<>();
+						
+						try {
 							Map<String, Object> map = (Map<String, Object>) dataDevice.get(k);
 							
 							map.put("filterBy", obj.getFilterBy());
 							map.put("start_date", obj.getStart_date());
 							map.put("end_date", obj.getEnd_date());
-							int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
 							map.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 							map.put("data_send_time", obj.getData_send_time());
 							
@@ -97,13 +102,6 @@ public class SitesAnalyticsService extends DB {
 							Map<String, String> modelTable = deviceGroupsList.stream().filter(deviceGroup -> map.get("datatablename").toString().endsWith(deviceGroup.get("table_name"))).findFirst().get();
 							map.put("table_name", modelTable.get("table_name"));
 							
-							Date dt = new Date();
-							Calendar c = Calendar.getInstance(); 
-							c.setTime(dt); 
-							c.add(Calendar.MONTH, -3);
-							SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-							Date d1 = dateFor.parse(obj.getStart_date());
-							Date d2 = dateFor.parse(dateFor.format(c.getTime()));
 							if(d1.compareTo(d2) < 0) {
 								map.put("datatablename", map.get("datatablename"));
 							} else {
@@ -117,22 +115,24 @@ public class SitesAnalyticsService extends DB {
 							// get list of filter parameters
 							List filterParamsList = queryForList("SitesAnalytics.getFilterParamsByDevice", map);
 							
-							Map<String, Object> maps = new HashMap<>();
 							maps.put("id", map.get("id"));
 							maps.put("device_name", map.get("devicename"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
 							maps.put("filter_params", filterParamsList);
 							maps.put("data", getDataChartParameter);
-							return maps;
-			            }
-			        });
+						} catch (Exception ex) {
+							log.error("getChartParameterDevice", ex);
+						}
+						
+						return maps;
+					});
 					
 					list.add(future);
 				}
 				
-			    ListenableFuture<List<Map<String, Object>>> combinedFutures = Futures.allAsList(list);
-			    List<Map<String, Object>> deviceDataList = combinedFutures.get();
+				CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
+				List<Map<String, Object>> deviceDataList = combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
 			    deviceDataList.forEach(data -> dataList.add(data));
 			}
 			return dataList;
