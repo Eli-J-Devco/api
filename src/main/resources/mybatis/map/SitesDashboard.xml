@@ -452,6 +452,8 @@
 				
 				WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
+				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				ELSE "N/A"
 			END AS key_indicator,
 			

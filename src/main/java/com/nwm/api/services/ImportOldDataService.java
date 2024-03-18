@@ -374,6 +374,13 @@ public class ImportOldDataService extends DB {
 		          session.insert("ModelSmaInverterStp1215202430Tlus10.insertModelSmaInverterStp1215202430Tlus10", dataList.get(i));         
 		        }       
 		        break;
+		        
+			case "model_meter_ion_6200":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelMeterIon6200.insertModelMeterIon6200", dataList.get(i));         
+				}       
+				break;
 				
 			}
 
@@ -2377,6 +2384,75 @@ public class ImportOldDataService extends DB {
 		rowItem.put("nvmActivePower", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
 		rowItem.put("nvmActiveEnergy", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		return rowItem;
+	}
+	
+	public Object setModelMeterIon6200(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("Vlna", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Vlnb", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Vlnc", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Vlnave", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Vllab", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("Vllbc", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Vllca", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Vllave", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Ia", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Ib", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("Ic", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("Iave", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("Idemand", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("Ipeakdemand", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("I4", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("Frequency", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("PFsigntotal", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		rowItem.put("PFsigna", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("PFsignb", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("PFsignc", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("kWtotal", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("kVARtotal", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("kVAtotal", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("kWa", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+		rowItem.put("kWb", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+		rowItem.put("kWc", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+		rowItem.put("kVARa", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+		rowItem.put("kVARb", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+		rowItem.put("kVARc", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+		rowItem.put("kVAa", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+		rowItem.put("kVAb", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+		rowItem.put("kVAc", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("kWdemand", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("kWpeakdemand", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("kVARdemand", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("kVAdemand", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("kVARpeakdemand", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("kVApeakdemand", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+		rowItem.put("kWhdel", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+		rowItem.put("kWhrec", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		rowItem.put("kVARhdel", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("kVARhrec", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
+		rowItem.put("kVAhdelrec", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
+		rowItem.put("V1THD", !r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
+		rowItem.put("V2THD", !r.getCellText(50).toString().equals("") ? r.getCellText(50).toString() : "0.001");
+		rowItem.put("V3THD", !r.getCellText(51).toString().equals("") ? r.getCellText(51).toString() : "0.001");
+		rowItem.put("I1THD", !r.getCellText(52).toString().equals("") ? r.getCellText(52).toString() : "0.001");
+		rowItem.put("I2THD", !r.getCellText(53).toString().equals("") ? r.getCellText(53).toString() : "0.001");
+		rowItem.put("I3THD", !r.getCellText(54).toString().equals("") ? r.getCellText(54).toString() : "0.001");
+		rowItem.put("Iademand", !r.getCellText(55).toString().equals("") ? r.getCellText(55).toString() : "0.001");
+		rowItem.put("Ibdemand", !r.getCellText(56).toString().equals("") ? r.getCellText(56).toString() : "0.001");
+		rowItem.put("Icdemand", !r.getCellText(57).toString().equals("") ? r.getCellText(57).toString() : "0.001");
+		rowItem.put("Iapeakdemand", !r.getCellText(58).toString().equals("") ? r.getCellText(58).toString() : "0.001");
+		rowItem.put("Ibpeakdemand", !r.getCellText(59).toString().equals("") ? r.getCellText(59).toString() : "0.001");
+		rowItem.put("Icpeakdemand", !r.getCellText(60).toString().equals("") ? r.getCellText(60).toString() : "0.001");
+		rowItem.put("kWhadel", !r.getCellText(61).toString().equals("") ? r.getCellText(61).toString() : "0.001");
+		rowItem.put("kWhbdel", !r.getCellText(62).toString().equals("") ? r.getCellText(62).toString() : "0.001");
+		rowItem.put("kWhcdel", !r.getCellText(63).toString().equals("") ? r.getCellText(63).toString() : "0.001");
+		rowItem.put("kWharec", !r.getCellText(64).toString().equals("") ? r.getCellText(64).toString() : "0.001");
+		rowItem.put("kWhbrec", !r.getCellText(65).toString().equals("") ? r.getCellText(65).toString() : "0.001");
+		rowItem.put("kWhcrec", !r.getCellText(66).toString().equals("") ? r.getCellText(66).toString() : "0.001");
+		
+		rowItem.put("nvmActivePower", !r.getCellText(67).toString().equals("") ? r.getCellText(67).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(68).toString().equals("") ? r.getCellText(68).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(69).toString().equals("") ? r.getCellText(69).toString() : "0.001");
 		return rowItem;
 	}
 }

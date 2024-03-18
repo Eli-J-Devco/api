@@ -405,6 +405,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelSmaInverterStp1215202430Tlus10(rowItem, r);
 											break;
 											
+										case "model_meter_ion_6200":
+											service.setModelMeterIon6200(rowItem, r);
+											break;
+											
 										}
 										
 		
