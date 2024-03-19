@@ -136,11 +136,11 @@ public class ModelIVTSolaronEXTService extends DB {
 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
-//		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
-//	        if(insertId == null ) {
-//	        	return false;
-//	        }
-//	        
+		 	Object insertId = insert("ModelIVTSolaronEXT.insertModelIVTSolaronEXT", obj);
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
 	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
