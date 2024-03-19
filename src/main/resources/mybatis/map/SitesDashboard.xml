@@ -452,6 +452,8 @@
 				
 				WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
+				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				ELSE "N/A"
 			END AS key_indicator,
 			
@@ -496,7 +498,7 @@
 					AND d.`status` = 1
 					AND s.enable_alert = 1
 					AND d.is_delete = 0
-					
+					AND (e.id_error_level = 32 || e.id_error_level = 33)
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
 			) p ON p.id_device = d.id
@@ -703,6 +705,19 @@
 					"N/A"
 				</otherwise>
 			</choose> AS key_indicator,
+			CASE
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( dv.time, '+00:00', #{offset} ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i') ) 
+				ELSE 0
+			END AS times_ago,
+
+	
+			CASE
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+			END AS times_ago_unit,
 			
 			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS time
 			

@@ -1,0 +1,658 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelMeterIon6200">
+
+	<insert id="insertModelMeterIon6200" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			
+			<if test="Vlna != 0.001" >
+				`Vlna`,
+			</if>
+			<if test="Vlnb != 0.001" >
+				`Vlnb`,
+			</if>
+			<if test="Vlnc != 0.001" >
+				`Vlnc`,
+			</if>
+			<if test="Vlnave != 0.001" >
+				`Vlnave`,
+			</if>
+			<if test="Vllab != 0.001" >
+				`Vllab`,
+			</if>
+			<if test="Vllbc != 0.001" >
+				`Vllbc`,
+			</if>
+			<if test="Vllca != 0.001" >
+				`Vllca`,
+			</if>
+			<if test="Vllave != 0.001" >
+				`Vllave`,
+			</if>
+			<if test="Ia != 0.001" >
+				`Ia`,
+			</if>
+			<if test="Ib != 0.001" >
+				`Ib`,
+			</if>
+			<if test="Ic != 0.001" >
+				`Ic`,
+			</if>
+			<if test="Iave != 0.001" >
+				`Iave`,
+			</if>
+			<if test="Idemand != 0.001" >
+				`Idemand`,
+			</if>
+			<if test="Ipeakdemand != 0.001" >
+				`Ipeakdemand`,
+			</if>
+			<if test="I4 != 0.001" >
+				`I4`,
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency`,
+			</if>
+			<if test="PFsigntotal != 0.001" >
+				`PFsigntotal`,
+			</if>
+			<if test="PFsigna != 0.001" >
+				`PFsigna`,
+			</if>
+			<if test="PFsignb != 0.001" >
+				`PFsignb`,
+			</if>
+			<if test="PFsignc != 0.001" >
+				`PFsignc`,
+			</if>
+			<if test="kWtotal != 0.001" >
+				`kWtotal`,
+			</if>
+			<if test="kVARtotal != 0.001" >
+				`kVARtotal`,
+			</if>
+			<if test="kVAtotal != 0.001" >
+				`kVAtotal`,
+			</if>
+			<if test="kWa != 0.001" >
+				`kWa`,
+			</if>
+			<if test="kWb != 0.001" >
+				`kWb`,
+			</if>
+			<if test="kWc != 0.001" >
+				`kWc`,
+			</if>
+			<if test="kVARa != 0.001" >
+				`kVARa`,
+			</if>
+			<if test="kVARb != 0.001" >
+				`kVARb`,
+			</if>
+			<if test="kVARc != 0.001" >
+				`kVARc`,
+			</if>
+			<if test="kVAa != 0.001" >
+				`kVAa`,
+			</if>
+			<if test="kVAb != 0.001" >
+				`kVAb`,
+			</if>
+			<if test="kVAc != 0.001" >
+				`kVAc`,
+			</if>
+			<if test="kWdemand != 0.001" >
+				`kWdemand`,
+			</if>
+			<if test="kWpeakdemand != 0.001" >
+				`kWpeakdemand`,
+			</if>
+			<if test="kVARdemand != 0.001" >
+				`kVARdemand`,
+			</if>
+			<if test="kVAdemand != 0.001" >
+				`kVAdemand`,
+			</if>
+			<if test="kVARpeakdemand != 0.001" >
+				`kVARpeakdemand`,
+			</if>
+			<if test="kVApeakdemand != 0.001" >
+				`kVApeakdemand`,
+			</if>
+			<if test="kWhdel != 0.001" >
+				`kWhdel`,
+			</if>
+			<if test="kWhrec != 0.001" >
+				`kWhrec`,
+			</if>
+			<if test="kVARhdel != 0.001" >
+				`kVARhdel`,
+			</if>
+			<if test="kVARhrec != 0.001" >
+				`kVARhrec`,
+			</if>
+			<if test="kVAhdelrec != 0.001" >
+				`kVAhdelrec`,
+			</if>
+			<if test="V1THD != 0.001" >
+				`V1THD`,
+			</if>
+			<if test="V2THD != 0.001" >
+				`V2THD`,
+			</if>
+			<if test="V3THD != 0.001" >
+				`V3THD`,
+			</if>
+			<if test="I1THD != 0.001" >
+				`I1THD`,
+			</if>
+			<if test="I2THD != 0.001" >
+				`I2THD`,
+			</if>
+			<if test="I3THD != 0.001" >
+				`I3THD`,
+			</if>
+			<if test="Iademand != 0.001" >
+				`Iademand`,
+			</if>
+			<if test="Ibdemand != 0.001" >
+				`Ibdemand`,
+			</if>
+			<if test="Icdemand != 0.001" >
+				`Icdemand`,
+			</if>
+			<if test="Iapeakdemand != 0.001" >
+				`Iapeakdemand`,
+			</if>
+			<if test="Ibpeakdemand != 0.001" >
+				`Ibpeakdemand`,
+			</if>
+			<if test="Icpeakdemand != 0.001" >
+				`Icpeakdemand`,
+			</if>
+			<if test="kWhadel != 0.001" >
+				`kWhadel`,
+			</if>
+			<if test="kWhbdel != 0.001" >
+				`kWhbdel`,
+			</if>
+			<if test="kWhcdel != 0.001" >
+				`kWhcdel`,
+			</if>
+			<if test="kWharec != 0.001" >
+				`kWharec`,
+			</if>
+			<if test="kWhbrec != 0.001" >
+				`kWhbrec`,
+			</if>
+			<if test="kWhcrec != 0.001" >
+				`kWhcrec`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Vlna != 0.001" >
+				#{Vlna},
+			</if>
+			<if test="Vlnb != 0.001" >
+				#{Vlnb},
+			</if>
+			<if test="Vlnc != 0.001" >
+				#{Vlnc},
+			</if>
+			<if test="Vlnave != 0.001" >
+				#{Vlnave},
+			</if>
+			<if test="Vllab != 0.001" >
+				#{Vllab},
+			</if>
+			<if test="Vllbc != 0.001" >
+				#{Vllbc},
+			</if>
+			<if test="Vllca != 0.001" >
+				#{Vllca},
+			</if>
+			<if test="Vllave != 0.001" >
+				#{Vllave},
+			</if>
+			<if test="Ia != 0.001" >
+				#{Ia},
+			</if>
+			<if test="Ib != 0.001" >
+				#{Ib},
+			</if>
+			<if test="Ic != 0.001" >
+				#{Ic},
+			</if>
+			<if test="Iave != 0.001" >
+				#{Iave},
+			</if>
+			<if test="Idemand != 0.001" >
+				#{Idemand},
+			</if>
+			<if test="Ipeakdemand != 0.001" >
+				#{Ipeakdemand},
+			</if>
+			<if test="I4 != 0.001" >
+				#{I4},
+			</if>
+			<if test="Frequency != 0.001" >
+				#{Frequency},
+			</if>
+			<if test="PFsigntotal != 0.001" >
+				#{PFsigntotal},
+			</if>
+			<if test="PFsigna != 0.001" >
+				#{PFsigna},
+			</if>
+			<if test="PFsignb != 0.001" >
+				#{PFsignb},
+			</if>
+			<if test="PFsignc != 0.001" >
+				#{PFsignc},
+			</if>
+			<if test="kWtotal != 0.001" >
+				#{kWtotal},
+			</if>
+			<if test="kVARtotal != 0.001" >
+				#{kVARtotal},
+			</if>
+			<if test="kVAtotal != 0.001" >
+				#{kVAtotal},
+			</if>
+			<if test="kWa != 0.001" >
+				#{kWa},
+			</if>
+			<if test="kWb != 0.001" >
+				#{kWb},
+			</if>
+			<if test="kWc != 0.001" >
+				#{kWc},
+			</if>
+			<if test="kVARa != 0.001" >
+				#{kVARa},
+			</if>
+			<if test="kVARb != 0.001" >
+				#{kVARb},
+			</if>
+			<if test="kVARc != 0.001" >
+				#{kVARc},
+			</if>
+			<if test="kVAa != 0.001" >
+				#{kVAa},
+			</if>
+			<if test="kVAb != 0.001" >
+				#{kVAb},
+			</if>
+			<if test="kVAc != 0.001" >
+				#{kVAc},
+			</if>
+			<if test="kWdemand != 0.001" >
+				#{kWdemand},
+			</if>
+			<if test="kWpeakdemand != 0.001" >
+				#{kWpeakdemand},
+			</if>
+			<if test="kVARdemand != 0.001" >
+				#{kVARdemand},
+			</if>
+			<if test="kVAdemand != 0.001" >
+				#{kVAdemand},
+			</if>
+			<if test="kVARpeakdemand != 0.001" >
+				#{kVARpeakdemand},
+			</if>
+			<if test="kVApeakdemand != 0.001" >
+				#{kVApeakdemand},
+			</if>
+			<if test="kWhdel != 0.001" >
+				#{kWhdel},
+			</if>
+			<if test="kWhrec != 0.001" >
+				#{kWhrec},
+			</if>
+			<if test="kVARhdel != 0.001" >
+				#{kVARhdel},
+			</if>
+			<if test="kVARhrec != 0.001" >
+				#{kVARhrec},
+			</if>
+			<if test="kVAhdelrec != 0.001" >
+				#{kVAhdelrec},
+			</if>
+			<if test="V1THD != 0.001" >
+				#{V1THD},
+			</if>
+			<if test="V2THD != 0.001" >
+				#{V2THD},
+			</if>
+			<if test="V3THD != 0.001" >
+				#{V3THD},
+			</if>
+			<if test="I1THD != 0.001" >
+				#{I1THD},
+			</if>
+			<if test="I2THD != 0.001" >
+				#{I2THD},
+			</if>
+			<if test="I3THD != 0.001" >
+				#{I3THD},
+			</if>
+			<if test="Iademand != 0.001" >
+				#{Iademand},
+			</if>
+			<if test="Ibdemand != 0.001" >
+				#{Ibdemand},
+			</if>
+			<if test="Icdemand != 0.001" >
+				#{Icdemand},
+			</if>
+			<if test="Iapeakdemand != 0.001" >
+				#{Iapeakdemand},
+			</if>
+			<if test="Ibpeakdemand != 0.001" >
+				#{Ibpeakdemand},
+			</if>
+			<if test="Icpeakdemand != 0.001" >
+				#{Icpeakdemand},
+			</if>
+			<if test="kWhadel != 0.001" >
+				#{kWhadel},
+			</if>
+			<if test="kWhbdel != 0.001" >
+				#{kWhbdel},
+			</if>
+			<if test="kWhcdel != 0.001" >
+				#{kWhcdel},
+			</if>
+			<if test="kWharec != 0.001" >
+				#{kWharec},
+			</if>
+			<if test="kWhbrec != 0.001" >
+				#{kWhbrec},
+			</if>
+			<if test="kWhcrec != 0.001" >
+				#{kWhcrec},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Vlna != 0.001" >
+				`Vlna` = #{Vlna},
+			</if>
+			<if test="Vlnb != 0.001" >
+				`Vlnb` = #{Vlnb},
+			</if>
+			<if test="Vlnc != 0.001" >
+				`Vlnc` = #{Vlnc},
+			</if>
+			<if test="Vlnave != 0.001" >
+				`Vlnave` = #{Vlnave},
+			</if>
+			<if test="Vllab != 0.001" >
+				`Vllab` = #{Vllab},
+			</if>
+			<if test="Vllbc != 0.001" >
+				`Vllbc` = #{Vllbc},
+			</if>
+			<if test="Vllca != 0.001" >
+				`Vllca` = #{Vllca},
+			</if>
+			<if test="Vllave != 0.001" >
+				`Vllave` = #{Vllave},
+			</if>
+			<if test="Ia != 0.001" >
+				`Ia` = #{Ia},
+			</if>
+			<if test="Ib != 0.001" >
+				`Ib` = #{Ib},
+			</if>
+			<if test="Ic != 0.001" >
+				`Ic` = #{Ic},
+			</if>
+			<if test="Iave != 0.001" >
+				`Iave` = #{Iave},
+			</if>
+			<if test="Idemand != 0.001" >
+				`Idemand` = #{Idemand},
+			</if>
+			<if test="Ipeakdemand != 0.001" >
+				`Ipeakdemand` = #{Ipeakdemand},
+			</if>
+			<if test="I4 != 0.001" >
+				`I4` = #{I4},
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency` = #{Frequency},
+			</if>
+			<if test="PFsigntotal != 0.001" >
+				`PFsigntotal` = #{PFsigntotal},
+			</if>
+			<if test="PFsigna != 0.001" >
+				`PFsigna` = #{PFsigna},
+			</if>
+			<if test="PFsignb != 0.001" >
+				`PFsignb` = #{PFsignb},
+			</if>
+			<if test="PFsignc != 0.001" >
+				`PFsignc` = #{PFsignc},
+			</if>
+			<if test="kWtotal != 0.001" >
+				`kWtotal` = #{kWtotal},
+			</if>
+			<if test="kVARtotal != 0.001" >
+				`kVARtotal` = #{kVARtotal},
+			</if>
+			<if test="kVAtotal != 0.001" >
+				`kVAtotal` = #{kVAtotal},
+			</if>
+			<if test="kWa != 0.001" >
+				`kWa` = #{kWa},
+			</if>
+			<if test="kWb != 0.001" >
+				`kWb` = #{kWb},
+			</if>
+			<if test="kWc != 0.001" >
+				`kWc` = #{kWc},
+			</if>
+			<if test="kVARa != 0.001" >
+				`kVARa` = #{kVARa},
+			</if>
+			<if test="kVARb != 0.001" >
+				`kVARb` = #{kVARb},
+			</if>
+			<if test="kVARc != 0.001" >
+				`kVARc` = #{kVARc},
+			</if>
+			<if test="kVAa != 0.001" >
+				`kVAa` = #{kVAa},
+			</if>
+			<if test="kVAb != 0.001" >
+				`kVAb` = #{kVAb},
+			</if>
+			<if test="kVAc != 0.001" >
+				`kVAc` = #{kVAc},
+			</if>
+			<if test="kWdemand != 0.001" >
+				`kWdemand` = #{kWdemand},
+			</if>
+			<if test="kWpeakdemand != 0.001" >
+				`kWpeakdemand` = #{kWpeakdemand},
+			</if>
+			<if test="kVARdemand != 0.001" >
+				`kVARdemand` = #{kVARdemand},
+			</if>
+			<if test="kVAdemand != 0.001" >
+				`kVAdemand` = #{kVAdemand},
+			</if>
+			<if test="kVARpeakdemand != 0.001" >
+				`kVARpeakdemand` = #{kVARpeakdemand},
+			</if>
+			<if test="kVApeakdemand != 0.001" >
+				`kVApeakdemand` = #{kVApeakdemand},
+			</if>
+			<if test="kWhdel != 0.001" >
+				`kWhdel` = #{kWhdel},
+			</if>
+			<if test="kWhrec != 0.001" >
+				`kWhrec` = #{kWhrec},
+			</if>
+			<if test="kVARhdel != 0.001" >
+				`kVARhdel` = #{kVARhdel},
+			</if>
+			<if test="kVARhrec != 0.001" >
+				`kVARhrec` = #{kVARhrec},
+			</if>
+			<if test="kVAhdelrec != 0.001" >
+				`kVAhdelrec` = #{kVAhdelrec},
+			</if>
+			<if test="V1THD != 0.001" >
+				`V1THD` = #{V1THD},
+			</if>
+			<if test="V2THD != 0.001" >
+				`V2THD` = #{V2THD},
+			</if>
+			<if test="V3THD != 0.001" >
+				`V3THD` = #{V3THD},
+			</if>
+			<if test="I1THD != 0.001" >
+				`I1THD` = #{I1THD},
+			</if>
+			<if test="I2THD != 0.001" >
+				`I2THD` = #{I2THD},
+			</if>
+			<if test="I3THD != 0.001" >
+				`I3THD` = #{I3THD},
+			</if>
+			<if test="Iademand != 0.001" >
+				`Iademand` = #{Iademand},
+			</if>
+			<if test="Ibdemand != 0.001" >
+				`Ibdemand` = #{Ibdemand},
+			</if>
+			<if test="Icdemand != 0.001" >
+				`Icdemand` = #{Icdemand},
+			</if>
+			<if test="Iapeakdemand != 0.001" >
+				`Iapeakdemand` = #{Iapeakdemand},
+			</if>
+			<if test="Ibpeakdemand != 0.001" >
+				`Ibpeakdemand` = #{Ibpeakdemand},
+			</if>
+			<if test="Icpeakdemand != 0.001" >
+				`Icpeakdemand` = #{Icpeakdemand},
+			</if>
+			<if test="kWhadel != 0.001" >
+				`kWhadel` = #{kWhadel},
+			</if>
+			<if test="kWhbdel != 0.001" >
+				`kWhbdel` = #{kWhbdel},
+			</if>
+			<if test="kWhcdel != 0.001" >
+				`kWhcdel` = #{kWhcdel},
+			</if>
+			<if test="kWharec != 0.001" >
+				`kWharec` = #{kWharec},
+			</if>
+			<if test="kWhbrec != 0.001" >
+				`kWhbrec` = #{kWhbrec},
+			</if>
+			<if test="kWhcrec != 0.001" >
+				`kWhcrec` = #{kWhcrec},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelMeterIon6200Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
