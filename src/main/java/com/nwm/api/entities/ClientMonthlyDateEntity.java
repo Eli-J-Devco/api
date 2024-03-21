@@ -5,6 +5,9 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientMonthlyDateEntity{
 	
 	private String download_time;
@@ -14,6 +17,10 @@ public class ClientMonthlyDateEntity{
 	private Double chart_energy_kwh;
 	private Double nvm_irradiance;
 	private Double expected_power;
+	private Double expected_energy;
+	private Double nvmActivePower;
+	private Double nvmActiveEnergy;
+	
 	public String getDownload_time() {
 		return download_time;
 	}
@@ -56,7 +63,22 @@ public class ClientMonthlyDateEntity{
 	public void setExpected_power(Double expected_power) {
 		this.expected_power = expected_power;
 	}
-	
-	
-	
+	public Double getExpected_energy() {
+		return expected_energy;
+	}
+	public void setExpected_energy(Double expected_energy) {
+		this.expected_energy = expected_energy;
+	}
+	public Double getNvmActivePower() {
+		return nvmActivePower;
+	}
+	public void setNvmActivePower(Double nvmActivePower) {
+		this.nvmActivePower = nvmActivePower;
+	}
+	public Double getNvmActiveEnergy() {
+		return nvmActiveEnergy;
+	}
+	public void setNvmActiveEnergy(Double nvmActiveEnergy) {
+		this.nvmActiveEnergy = nvmActiveEnergy;
+	}
 }
