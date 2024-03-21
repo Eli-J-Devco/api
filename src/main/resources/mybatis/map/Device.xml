@@ -4403,6 +4403,61 @@
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
+				
+				<when test="id_device_group == 78">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+						`RealEnergyConsumption` double DEFAULT NULL,
+						`TotalInstantaneousRealPower` double DEFAULT NULL,
+						`TotalInstantaneousReactivePower` double DEFAULT NULL,
+						`TotalInstantaneousApparentPower` double DEFAULT NULL,
+						`TotalPowerFactor` double DEFAULT NULL,
+						`VoltageLL3pAve` double DEFAULT NULL,
+						`VoltageLN3pAve` double DEFAULT NULL,
+						`Current3pAve` double DEFAULT NULL,
+						`RealPowerPhaseA` double DEFAULT NULL,
+						`RealPowerPhaseB` double DEFAULT NULL,
+						`RealPowerPhaseC` double DEFAULT NULL,
+						`PowerFactorPhaseA` double DEFAULT NULL,
+						`PowerFactorPhaseB` double DEFAULT NULL,
+						`PowerFactorPhaseC` double DEFAULT NULL,
+						`VoltagePhaseAB` double DEFAULT NULL,
+						`VoltagePhaseBC` double DEFAULT NULL,
+						`VoltagePhaseAC` double DEFAULT NULL,
+						`VoltagePhaseAN` double DEFAULT NULL,
+						`VoltagePhaseBN` double DEFAULT NULL,
+						`VoltagePhaseCN` double DEFAULT NULL,
+						`CurrentInstantaneousPhaseA` double DEFAULT NULL,
+						`CurrentInstantaneousPhaseB` double DEFAULT NULL,
+						`CurrentInstantaneousPhaseC` double DEFAULT NULL,
+						`Frequency` double DEFAULT NULL,
+						`ApparentEnergyConsumption` double DEFAULT NULL,
+						`ReactiveEnergyConsumption` double DEFAULT NULL,
+						`ApparentPowerPhaseA` double DEFAULT NULL,
+						`ApparentPowerPhaseB` double DEFAULT NULL,
+						`ApparentPowerPhaseC` double DEFAULT NULL,
+						`ReactivePowerPhaseA` double DEFAULT NULL,
+						`ReactivePowerPhaseB` double DEFAULT NULL,
+						`ReactivePowerPhaseC` double DEFAULT NULL,
+						`TotalRealPowerPresentDemand` double DEFAULT NULL,
+						`TotalReactivePowerPresentDemand` double DEFAULT NULL,
+						`TotalApparentPowerPresentDemand` double DEFAULT NULL,
+						`TotalRealPowerMaxDemand` double DEFAULT NULL,
+						`TotalReactivePowerMaxDemand` double DEFAULT NULL,
+						`nvmActivePower` double DEFAULT NULL,
+						`nvmActiveEnergy` double DEFAULT NULL,
+						`MeasuredProduction` double DEFAULT NULL,   
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
 	                                                          
 	        </choose> 
 	        
