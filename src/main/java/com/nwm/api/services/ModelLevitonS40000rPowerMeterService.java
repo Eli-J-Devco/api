@@ -36,8 +36,8 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModel.setRealEnergyConsumption(power);
-				dataModel.setTotalInstantaneousRealPower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModel.setRealEnergyConsumption(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setTotalInstantaneousRealPower(power);
 				dataModel.setTotalInstantaneousReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setTotalInstantaneousApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModel.setTotalPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
