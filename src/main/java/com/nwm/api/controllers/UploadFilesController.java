@@ -57,6 +57,7 @@ import com.nwm.api.entities.ModelJanitzaUmg604proEntity;
 import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
 import com.nwm.api.entities.ModelKlea220pEntity;
 import com.nwm.api.entities.ModelLeviton70D48000Entity;
+import com.nwm.api.entities.ModelLevitonS40000rPowerMeterEntity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
 import com.nwm.api.entities.ModelMeterIon6200Entity;
@@ -119,6 +120,7 @@ import com.nwm.api.services.ModelJanitzaUmg604proService;
 import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
 import com.nwm.api.services.ModelKlea220pService;
 import com.nwm.api.services.ModelLeviton70D48000Service;
+import com.nwm.api.services.ModelLevitonS40000rPowerMeterService;
 import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
 import com.nwm.api.services.ModelMeterIon6200Service;
@@ -6078,10 +6080,10 @@ public class UploadFilesController extends BaseController {
 						                            serviceModelMeterIon6200.insertModelMeterIon6200(data);
 						                            
 						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item);
-						                            }
+//						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+//						                              item.setLast_updated(deviceUpdateE.getLast_updated());
+//						                              serviceD.checkLowProduction(item);
+//						                            }
 						                            
 						                            try  
 						                            { 
@@ -6103,6 +6105,107 @@ public class UploadFilesController extends BaseController {
 						                        }
 						                        
 						                        break;
+						                        
+						                        
+											case "model_leviton_s40000r_power_meter":
+												ModelLevitonS40000rPowerMeterService serviceModelMeterS40000 = new ModelLevitonS40000rPowerMeterService();
+						                        // Check insert database status
+						                        while ((line = br.readLine()) != null) {
+						                          sb.append(line); // appends line to string buffer
+						                          sb.append("\n"); // line feed
+						                          // Convert string to array
+						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+						                          if (words.size() > 0) {
+						                        	  
+						                        	  ModelLevitonS40000rPowerMeterEntity data = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line);
+						                        	  data.setId_device(item.getId());
+						                        	  data.setDatatablename(item.getDatatablename());
+						                        	  data.setView_tablename(item.getView_tablename());
+						                        	  data.setJob_tablename(item.getJob_tablename());
+						                            
+						                            // scaling device parameter
+						                            if (scaledDeviceParameters.size() > 0) {
+						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+						                                String slug = scaledDeviceParameter.getParameter_slug();
+						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+						                                String variableName = scaledDeviceParameter.getVariable_name();
+						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLevitonS40000rPowerMeterEntity.class);
+						                                Double initialValue = (Double) pd.getReadMethod().invoke(data);
+						                                if (initialValue == 0.001) continue;
+						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+						                                pd.getWriteMethod().invoke(data, scaledValue);
+						                                if (slug.equals("TotalInstantaneousRealPower")) data.setNvmActivePower(scaledValue);
+						                                if (slug.equals("RealEnergyConsumption")) data.setNvmActiveEnergy(scaledValue);
+						                              }
+						                            }
+						                            
+						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                            
+						                            // kWtotal
+						                            if(data.getTotalInstantaneousRealPower() != 0.001 && data.getTotalInstantaneousRealPower() >= 0){
+						                              deviceUpdateE.setLast_updated(data.getTime());
+						                            }
+						                            
+						                            deviceUpdateE.setLast_value(data.getTotalInstantaneousRealPower() != 0.001 ? data.getTotalInstantaneousRealPower() : null);
+						                            deviceUpdateE.setField_value1(data.getTotalInstantaneousRealPower() != 0.001 ? data.getTotalInstantaneousRealPower() : null);
+						                            
+						                            deviceUpdateE.setField_value2(null);
+						                            deviceUpdateE.setField_value3(null);
+						                            
+						                            deviceUpdateE.setId(item.getId());
+						                            serviceD.updateLastUpdated(deviceUpdateE);
+						                            
+						                            // Insert alert
+						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+						//                              // Check error code
+						//                              BatchJobService service = new BatchJobService();
+						//                              ErrorEntity errorItem = new ErrorEntity();
+						//                              errorItem.setId_device_group(item.getId_device_group());
+						//                              errorItem.setError_code(words.get(1));
+						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
+						//                              if(rowItemError.getId() > 0) {
+						//                                AlertEntity alertItem = new AlertEntity();
+						//                                alertItem.setId_device(item.getId());
+						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
+						//                                alertItem.setId_error(rowItemError.getId());
+						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
+						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
+						//                                  // Insert alert
+						//                                  service.insertAlert(alertItem);
+						//                                }
+						//                              }
+						//                            }
+						                            
+						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(data);
+						                            
+						                            // low production alert
+//						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+//						                              item.setLast_updated(deviceUpdateE.getLast_updated());
+//						                              serviceD.checkLowProduction(item);
+//						                            }
+						                            
+						                            try  
+						                            { 
+						                              File logFile = new File(root.resolve(fileName).toString());
+						                              if(logFile.delete()){  }
+						                              
+						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+						                                  + timeStamp + ".log.gz");
+						                              File logGzFile = new File(path.toString());
+						                              
+						                              if(logGzFile.delete()) {  }   
+						                            }  
+						                            catch(Exception e){  
+						                              e.printStackTrace();  
+						                            }
+						                            
+						                          }
+						                        }
+						                        
+						                        break;
+						                        
 											
 										}
 										

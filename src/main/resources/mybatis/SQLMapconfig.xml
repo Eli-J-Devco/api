@@ -130,6 +130,8 @@
 		<mapper resource="mybatis/map/ModelAbbUnoDm1250tpPlus.xml"/>
 		<mapper resource="mybatis/map/ModelKlea220p.xml"/>
 		<mapper resource="mybatis/map/ModelMeterIon6200.xml"/>
+		<mapper resource="mybatis/map/ModelLevitonS40000rPowerMeter.xml"/>
+		
 		
 		
 		
