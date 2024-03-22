@@ -131,6 +131,8 @@
 		<mapper resource="mybatis/map/ModelKlea220p.xml"/>
 		<mapper resource="mybatis/map/ModelMeterIon6200.xml"/>
 		<mapper resource="mybatis/map/ModelLevitonS40000rPowerMeter.xml"/>
+		<mapper resource="mybatis/map/ModelLevitonAbviusA891123Channel.xml"/>
+		
 		
 		
 		

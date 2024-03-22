@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelLevitonAbviusA891123Channel">
+	<resultMap id="ModelLevitonAbviusA891123ChannelMap" type="com.nwm.api.entities.ModelLevitonAbviusA891123ChannelEntity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="field0" column="field0" />
+		   <result property="field1" column="field1" />
+		   <result property="field2" column="field2" />
+		   <result property="field3" column="field3" />
+		   <result property="field4" column="field4" />
+		   <result property="field5" column="field5" />
+		   <result property="field6" column="field6" />
+		   <result property="field7" column="field7" />
+		   <result property="field8" column="field8" />
+		   <result property="field9" column="field9" />
+		   <result property="field10" column="field10" />
+		   <result property="field11" column="field11" />
+		   <result property="field12" column="field12" />
+		   <result property="field13" column="field13" />
+		   <result property="field14" column="field14" />
+		   <result property="field15" column="field15" />
+		   <result property="field16" column="field16" />
+		   <result property="field17" column="field17" />
+		   <result property="field18" column="field18" />
+		   <result property="field19" column="field19" />
+		   <result property="field20" column="field20" />
+		   <result property="field21" column="field21" />
+		   <result property="field22" column="field22" />
+		   <result property="field23" column="field23" />
+		   <result property="field24" column="field24" />
+		   <result property="field25" column="field25" />
+		   <result property="field26" column="field26" />
+		   <result property="field27" column="field27" />
+		   <result property="field28" column="field28" />
+		   <result property="field29" column="field29" />
+		   <result property="field30" column="field30" />
+		   <result property="field31" column="field31" />
+		   <result property="field32" column="field32" />
+		   <result property="field33" column="field33" />
+		   <result property="field34" column="field34" />
+		   <result property="field35" column="field35" />
+		   <result property="field36" column="field36" />
+		   <result property="field37" column="field37" />
+		   <result property="field38" column="field38" />
+		   <result property="field39" column="field39" />
+		   <result property="field40" column="field40" />
+		   <result property="field41" column="field41" />
+		   <result property="field42" column="field42" />
+		   <result property="field43" column="field43" />
+		   <result property="field44" column="field44" />
+		   <result property="field45" column="field45" />
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+		   <result property="view_tablename" column="view_tablename" />
+		   <result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelLevitonAbviusA891123Channel" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="field0 != 0.001" >
+                `field0`,
+          </if>
+          <if test="field1 != 0.001" >
+                `field1`,
+          </if>
+          <if test="field2 != 0.001" >
+                `field2`,
+          </if>
+          <if test="field3 != 0.001" >
+                `field3`,
+          </if>
+          <if test="field4 != 0.001" >
+                `field4`,
+          </if>
+          <if test="field5 != 0.001" >
+                `field5`,
+          </if>
+          <if test="field6 != 0.001" >
+                `field6`,
+          </if>
+          <if test="field7 != 0.001" >
+               `field7`, 
+          </if>
+          <if test="field8 != 0.001" >
+                `field8`,
+          </if>
+          <if test="field9 != 0.001" >
+                `field9`,
+          </if>
+          <if test="field10 != 0.001" >
+                `field10`,
+          </if>
+          <if test="field11 != 0.001" >
+                `field11`,
+          </if>
+          <if test="field12 != 0.001" >
+                `field12`,
+          </if>
+          <if test="field13 != 0.001" >
+                `field13`,
+          </if>
+          <if test="field14 != 0.001" >
+                `field14`,
+          </if>
+          <if test="field15 != 0.001" >
+                `field15`,
+          </if>
+          <if test="field16 != 0.001" >
+                `field16`,
+          </if>
+          <if test="field17 != 0.001" >
+                `field17`,
+          </if>
+          <if test="field18 != 0.001" >
+                `field18`,
+          </if>
+          <if test="field19 != 0.001" >
+                `field19`,
+          </if>
+          <if test="field20 != 0.001" >
+                `field20`,
+          </if>
+          <if test="field21 != 0.001" >
+                `field21`,
+          </if>
+          <if test="field22 != 0.001" >
+                `field22`,
+          </if>
+          <if test="field23 != 0.001" >
+                `field23`,
+          </if>
+          <if test="field24 != 0.001" >
+                `field24`,
+          </if>
+          <if test="field25 != 0.001" >
+                `field25`,
+          </if>
+
+          <if test="field26 != 0.001" >
+                `field26`,
+          </if>
+          <if test="field27 != 0.001" >
+                `field27`,
+          </if>
+          <if test="field28 != 0.001" >
+                `field28`,
+          </if>
+          <if test="field29 != 0.001" >
+                `field29`,
+          </if>
+          <if test="field30 != 0.001" >
+                `field30`,
+          </if>
+          <if test="field31 != 0.001" >
+                `field31`,
+          </if>
+          <if test="field32 != 0.001" >
+                `field32`,
+          </if>
+          <if test="field33 != 0.001" >
+                `field33`,
+          </if>
+          <if test="field34 != 0.001" >
+                `field34`,
+          </if>
+          <if test="field35 != 0.001" >
+               `field35`, 
+          </if>
+          <if test="field36 != 0.001" >
+                `field36`,
+          </if>
+          <if test="field37 != 0.001" >
+                `field37`,
+          </if>
+          <if test="field38 != 0.001" >
+                `field38`,
+          </if>
+          <if test="field39 != 0.001" >
+                `field39`,
+          </if>
+          <if test="field40 != 0.001" >
+                `field40`,
+          </if>
+          <if test="field41 != 0.001" >
+                `field41`,
+          </if>
+          <if test="field42 != 0.001" >
+                `field42`,
+          </if>
+          <if test="field43 != 0.001" >
+                `field43`,
+          </if>
+          <if test="field44 != 0.001" >
+                `field44`,
+          </if>
+          <if test="field45 != 0.001" >
+                `field45`,
+          </if>
+          
+          <if test="nvmActivePower != 0.001">
+			  `nvmActivePower`,
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy`,
+			  </if>
+			
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+          
+		  
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="field0 != 0.001" >
+                #{field0},
+          </if>
+          <if test="field1 != 0.001" >
+                #{field1},
+          </if>
+          <if test="field2 != 0.001" >
+                #{field2},
+          </if>
+          <if test="field3 != 0.001" >
+                #{field3},
+          </if>
+          <if test="field4 != 0.001" >
+                #{field4},
+          </if>
+          <if test="field5 != 0.001" >
+                #{field5},
+          </if>
+          <if test="field6 != 0.001" >
+                #{field6},
+          </if>
+          <if test="field7 != 0.001" >
+               #{field7}, 
+          </if>
+          <if test="field8 != 0.001" >
+                #{field8},
+          </if>
+          <if test="field9 != 0.001" >
+                #{field9},
+          </if>
+          <if test="field10 != 0.001" >
+                #{field10},
+          </if>
+          <if test="field11 != 0.001" >
+                #{field11},
+          </if>
+          <if test="field12 != 0.001" >
+                #{field12},
+          </if>
+          <if test="field13 != 0.001" >
+                #{field13},
+          </if>
+          <if test="field14 != 0.001" >
+                #{field14},
+          </if>
+          <if test="field15 != 0.001" >
+                #{field15},
+          </if>
+          <if test="field16 != 0.001" >
+                #{field16},
+          </if>
+          <if test="field17 != 0.001" >
+                #{field17},
+          </if>
+          <if test="field18 != 0.001" >
+                #{field18},
+          </if>
+          <if test="field19 != 0.001" >
+                #{field19},
+          </if>
+          <if test="field20 != 0.001" >
+                #{field20},
+          </if>
+          <if test="field21 != 0.001" >
+                #{field21},
+          </if>
+          <if test="field22 != 0.001" >
+                #{field22},
+          </if>
+          <if test="field23 != 0.001" >
+                #{field23},
+          </if>
+          <if test="field24 != 0.001" >
+                #{field24},
+          </if>
+          <if test="field25 != 0.001" >
+                #{field25},
+          </if>
+
+          <if test="field26 != 0.001" >
+                #{field26},
+          </if>
+          <if test="field27 != 0.001" >
+                #{field27},
+          </if>
+          <if test="field28 != 0.001" >
+                #{field28},
+          </if>
+          <if test="field29 != 0.001" >
+                #{field29},
+          </if>
+          <if test="field30 != 0.001" >
+                #{field30},
+          </if>
+          <if test="field31 != 0.001" >
+                #{field31},
+          </if>
+          <if test="field32 != 0.001" >
+                #{field32},
+          </if>
+          <if test="field33 != 0.001" >
+                #{field33},
+          </if>
+          <if test="field34 != 0.001" >
+                #{field34},
+          </if>
+          <if test="field35 != 0.001" >
+               #{field35}, 
+          </if>
+          <if test="field36 != 0.001" >
+                #{field36},
+          </if>
+          <if test="field37 != 0.001" >
+                #{field37},
+          </if>
+          <if test="field38 != 0.001" >
+                #{field38},
+          </if>
+          <if test="field39 != 0.001" >
+                #{field39},
+          </if>
+          <if test="field40 != 0.001" >
+                #{field40},
+          </if>
+          <if test="field41 != 0.001" >
+                #{field41},
+          </if>
+          <if test="field42 != 0.001" >
+                #{field42},
+          </if>
+          <if test="field43 != 0.001" >
+                #{field43},
+          </if>
+          <if test="field44 != 0.001" >
+                #{field44},
+          </if>
+          <if test="field45 != 0.001" >
+                #{field45},
+          </if>
+          
+          <if test="nvmActivePower != 0.001">
+			  ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  ROUND(#{nvmActiveEnergy}, 2),
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="field0 != 0.001" >
+                `field0` = #{field0},
+          </if>
+          <if test="field1 != 0.001" >
+                `field1` =#{field1},
+          </if>
+          <if test="field2 != 0.001" >
+                `field2` =#{field2},
+          </if>
+          <if test="field3 != 0.001" >
+                `field3` =#{field3},
+          </if>
+          <if test="field4 != 0.001" >
+                `field4` =#{field4},
+          </if>
+          <if test="field5 != 0.001" >
+                `field5` =#{field5},
+          </if>
+          <if test="field6 != 0.001" >
+                `field6` =#{field6},
+          </if>
+          <if test="field7 != 0.001" >
+               `field7` =#{field7}, 
+          </if>
+          <if test="field8 != 0.001" >
+                `field8` =#{field8},
+          </if>
+          <if test="field9 != 0.001" >
+                `field9` = #{field9},
+          </if>
+          <if test="field10 != 0.001" >
+                `field10` = #{field10},
+          </if>
+          <if test="field11 != 0.001" >
+                `field11` = #{field11},
+          </if>
+          <if test="field12 != 0.001" >
+                `field12` = #{field12},
+          </if>
+          <if test="field13 != 0.001" >
+                `field13` = #{field13},
+          </if>
+          <if test="field14 != 0.001" >
+                `field14` = #{field14},
+          </if>
+          <if test="field15 != 0.001" >
+                `field15` = #{field15},
+          </if>
+          <if test="field16 != 0.001" >
+                `field16` = #{field16},
+          </if>
+          <if test="field17 != 0.001" >
+                `field17` = #{field17},
+          </if>
+          <if test="field18 != 0.001" >
+                `field18` = #{field18},
+          </if>
+          <if test="field19 != 0.001" >
+                `field19` = #{field19},
+          </if>
+          <if test="field20 != 0.001" >
+                `field20` = #{field20},
+          </if>
+          <if test="field21 != 0.001" >
+                `field21` = #{field21},
+          </if>
+          <if test="field22 != 0.001" >
+                `field22` = #{field22},
+          </if>
+          <if test="field23 != 0.001" >
+                `field23` = #{field23},
+          </if>
+          <if test="field24 != 0.001" >
+                `field24` = #{field24},
+          </if>
+          <if test="field25 != 0.001" >
+                `field25` = #{field25},
+          </if>
+
+          <if test="field26 != 0.001" >
+                `field26` = #{field26},
+          </if>
+          <if test="field27 != 0.001" >
+                `field27` = #{field27},
+          </if>
+          <if test="field28 != 0.001" >
+                `field28` = #{field28},
+          </if>
+          <if test="field29 != 0.001" >
+                `field29` = #{field29},
+          </if>
+          <if test="field30 != 0.001" >
+               `field30` =  #{field30},
+          </if>
+          <if test="field31 != 0.001" >
+                `field31` = #{field31},
+          </if>
+          <if test="field32 != 0.001" >
+                `field32` = #{field32},
+          </if>
+          <if test="field33 != 0.001" >
+                `field33` = #{field33},
+          </if>
+          <if test="field34 != 0.001" >
+                `field34` = #{field34},
+          </if>
+          <if test="field35 != 0.001" >
+              `field35` = #{field35}, 
+          </if>
+          <if test="field36 != 0.001" >
+                `field36` = #{field36},
+          </if>
+          <if test="field37 != 0.001" >
+                `field37` = #{field37},
+          </if>
+          <if test="field38 != 0.001" >
+                `field38` = #{field38},
+          </if>
+          <if test="field39 != 0.001" >
+                `field39` = #{field39},
+          </if>
+          <if test="field40 != 0.001" >
+                `field40` = #{field40},
+          </if>
+          <if test="field41 != 0.001" >
+                `field41` = #{field41},
+          </if>
+          <if test="field42 != 0.001" >
+                `field42` = #{field42},
+          </if>
+          <if test="field43 != 0.001" >
+                `field43` = #{field43},
+          </if>
+          <if test="field44 != 0.001" >
+                `field44` = #{field44},
+          </if>
+          <if test="field45 != 0.001" >
+                `field45` = #{field45},
+          </if>
+          
+          <if test="nvmActivePower != 0.001">
+			  `nvmActivePower` = ROUND(#{nvmActivePower}, 2),
+			  </if>
+			<if test="nvmActiveEnergy != 0.001">
+			  `nvmActiveEnergy` = ROUND(#{nvmActiveEnergy}, 2),
+			  
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelLevitonAbviusA891123ChannelEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

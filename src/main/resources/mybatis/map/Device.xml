@@ -4458,6 +4458,70 @@
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
+				
+				<when test="id_device_group == 79">
+					CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					(
+						`time` datetime NOT NULL,
+						`id_device` int NOT NULL,
+						`error` int unsigned DEFAULT '0',
+						`low_alarm` int unsigned DEFAULT '0',
+						`high_alarm` int unsigned DEFAULT '0',
+						`field0` double DEFAULT NULL,
+						`field1` double DEFAULT NULL,
+						`field2` double DEFAULT NULL,
+						`field3` double DEFAULT NULL,
+						`field4` double DEFAULT NULL,
+						`field5` double DEFAULT NULL,
+						`field6` double DEFAULT NULL,
+						`field7` double DEFAULT NULL,
+						`field8` double DEFAULT NULL,
+						`field9` double DEFAULT NULL,
+						`field10` double DEFAULT NULL,
+						`field11` double DEFAULT NULL,
+						`field12` double DEFAULT NULL,
+						`field13` double DEFAULT NULL,
+						`field14` double DEFAULT NULL,
+						`field15` double DEFAULT NULL,
+						`field16` double DEFAULT NULL,
+						`field17` double DEFAULT NULL,
+						`field18` double DEFAULT NULL,
+						`field19` double DEFAULT NULL,
+						`field20` double DEFAULT NULL,
+						`field21` double DEFAULT NULL,
+						`field22` double DEFAULT NULL,
+						`field23` double DEFAULT NULL,
+						`field24` double DEFAULT NULL,
+						`field25` double DEFAULT NULL,
+						`field26` double DEFAULT NULL,
+						`field27` double DEFAULT NULL,
+						`field28` double DEFAULT NULL,
+						`field29` double DEFAULT NULL,
+						`field30` double DEFAULT NULL,
+						`field31` double DEFAULT NULL,
+						`field32` double DEFAULT NULL,
+						`field33` double DEFAULT NULL,
+						`field34` double DEFAULT NULL,
+						`field35` double DEFAULT NULL,
+						`field36` double DEFAULT NULL,
+						`field37` double DEFAULT NULL,
+						`field38` double DEFAULT NULL,
+						`field39` double DEFAULT NULL,
+						`field40` double DEFAULT NULL,
+						`field41` double DEFAULT NULL,
+						`field42` double DEFAULT NULL,
+						`field43` double DEFAULT NULL,
+						`field44` double DEFAULT NULL,
+						`field45` double DEFAULT NULL,
+						`nvmActivePower` double DEFAULT NULL,
+						`nvmActiveEnergy` double DEFAULT NULL,
+						`MeasuredProduction` double DEFAULT NULL,   
+						PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						KEY `id_device` (`id_device`),
+						CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					)
+					ENGINE=InnoDB DEFAULT CHARSET=utf8;
+				</when>
 	                                                          
 	        </choose> 
 	        
