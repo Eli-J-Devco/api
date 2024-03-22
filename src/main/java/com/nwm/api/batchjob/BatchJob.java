@@ -703,6 +703,9 @@ public class BatchJob {
 //										case "model_sma_inverter_12_15_20_24_30tlus10":
 //											noProduction = 1226;
 //											break;
+//										case "model_meter_ion_6200":
+//											noProduction = 1305;
+//											break;
 //
 //										}
 //
@@ -929,6 +932,9 @@ public class BatchJob {
 //											break;
 //										case "model_sma_inverter_12_15_20_24_30tlus10":
 //											noCommunication = 1227;
+//											break;
+//										case "model_meter_ion_6200":
+//											noCommunication = 1306;
 //											break;
 //
 //										}
