@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WidgetGroup">
+	<resultMap id="WidgetGroupMap"
+		type="com.nwm.api.entities.WidgetGroupEntity">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="text" column="text" />
+		<result property="value" column="value" />
+		<result property="offset" column="offset" />
+		<result property="status" column="status" />
+		<result property="parent" column="parent" />
+		<result property="description" column="description" />
+		<result property="id_site" column="id_site" />
+		<result property="label" column="label" />
+	</resultMap>
+	
+
+	
+
+	<select id="getList" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			t.id AS value
+		FROM
+			widget_group AS t
+		WHERE
+			t.`status` = 1 AND id_site = #{id_site}
+		ORDER BY id, parent DESC;
+	</select>
+	
+	
+	<select id="getListRoot" resultType="Map">
+		SELECT
+			t.*,
+			t.name AS text,
+			t.name AS label,
+			t.id AS value
+		FROM
+			widget_group AS t
+		WHERE
+			t.`status` = 1 AND `parent` = 0 OR `parent` IS NULL
+		ORDER BY `name` ASC;
+	</select>
+	
+	
+	<select id="getListManage" resultType="Map" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.`description`,
+			s.`status`,
+			s.id_site
+		FROM
+			widget_group s 
+		WHERE s.`status` = 1
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 	
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'name'">
+	                s.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'status'">
+	                `status` ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+  	
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.WidgetGroupEntity">
+    	SELECT count(*) as totalRow
+		FROM widget_group s WHERE s.is_delete = 0
+		<if test="keyword != null">
+			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		</if> 
+  	</select>
+  	
+  	
+  	<update id="updateStatus">
+		UPDATE `widget_group`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+	<update id="delete">
+		UPDATE `widget_group`
+		SET
+			`is_delete` = #{is_delete}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<insert id="insertWidgetGroup" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `widget_group`(
+			`name`,
+			`description`,
+			`id_site`,
+			`parent`
+		)VALUES(
+			#{name},
+			#{description},
+			#{id_site},
+			#{parent}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<update id="updateWidgetGroup">
+		UPDATE `widget_group`
+		SET
+			`name` = #{name},
+			`description` = #{description},
+			`parent` = #{parent}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+</mapper>
