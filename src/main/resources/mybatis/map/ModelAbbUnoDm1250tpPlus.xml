@@ -11,41 +11,59 @@
 		<result property="low_alarm" column="low_alarm" />
 		<result property="high_alarm" column="high_alarm" />
 		
-		
-		<result property="Powerfactorcosphi" column="Powerfactorcosphi" />
-		<result property="Energytotal" column="Energytotal" />
-		<result property="Gridfrequency" column="Gridfrequency" />
-		<result property="CurrentAC" column="CurrentAC" />
-		<result property="CurrentDCtotal" column="CurrentDCtotal" />
-		
-		<result property="PowerAC" column="PowerAC" />
-		<result property="VoltageAC" column="VoltageAC" />
-		<result property="VoltageACphase1" column="VoltageACphase1" />
-		<result property="VoltageACphase2" column="VoltageACphase2" />
-		<result property="VoltageACphase3" column="VoltageACphase3" />
-		<result property="PhasevoltageL1L2" column="PhasevoltageL1L2" />
-		<result property="PhasevoltageL2L3" column="PhasevoltageL2L3" />
-		<result property="PhasevoltageL3L1" column="PhasevoltageL3L1" />
-		<result property="VoltageDC" column="VoltageDC" />
+		<result property="TotalEnergy" column="TotalEnergy" />
+		<result property="Wmax" column="Wmax" />
+		<result property="ACActivePower" column="ACActivePower" />
+		<result property="ACReactivePower" column="ACReactivePower" />
+		<result property="ACApparentPower" column="ACApparentPower" />
+		<result property="ACPowerFactor" column="ACPowerFactor" />
+		<result property="ACGridFrequency" column="ACGridFrequency" />
+		<result property="ACVoltagePhaseAB" column="ACVoltagePhaseAB" />
+		<result property="ACVoltagePhaseBC" column="ACVoltagePhaseBC" />
+		<result property="ACVoltagePhaseCA" column="ACVoltagePhaseCA" />
+		<result property="ACVoltagePhaseAN" column="ACVoltagePhaseAN" />
+		<result property="ACVoltagePhaseBN" column="ACVoltagePhaseBN" />
+		<result property="ACVoltagePhaseCN" column="ACVoltagePhaseCN" />
+		<result property="ACCurrent" column="ACCurrent" />
+		<result property="ACCurrentPhaseA" column="ACCurrentPhaseA" />
+		<result property="ACCurrentPhaseB" column="ACCurrentPhaseB" />
+		<result property="ACCurrentPhaseC" column="ACCurrentPhaseC" />
+		<result property="DCVoltage" column="DCVoltage" />
+		<result property="DCCurrent" column="DCCurrent" />
+		<result property="DCPowerChanel1" column="DCPowerChanel1" />
+		<result property="DCVoltageChanel1" column="DCVoltageChanel1" />
+		<result property="DCCurrentChanel1" column="DCCurrentChanel1" />
+		<result property="DCOperatingStateChanel1" column="DCOperatingStateChanel1" />
+		<result property="DCPowerChanel2" column="DCPowerChanel2" />
+		<result property="DCVoltageChanel2" column="DCVoltageChanel2" />
+		<result property="DCCurrentChanel2" column="DCCurrentChanel2" />
+		<result property="DCOperatingStateChanel2" column="DCOperatingStateChanel2" />
+		<result property="MPPT1" column="MPPT1" />
+		<result property="MPPT1Voltage" column="MPPT1Voltage" />
+		<result property="MPPT1Current" column="MPPT1Current" />
+		<result property="MPTT2" column="MPTT2" />
+		<result property="MPPT2Voltage" column="MPPT2Voltage" />
+		<result property="MPPT2Current" column="MPPT2Current" />
+		<result property="STRING1" column="STRING1" />
+		<result property="STRING2" column="STRING2" />
+		<result property="Panel1" column="Panel1" />
+		<result property="Panel2" column="Panel2" />
+		<result property="Panel3" column="Panel3" />
+		<result property="Panel4" column="Panel4" />
+		<result property="OperatingState" column="OperatingState" />
+		<result property="Alarmstate" column="Alarmstate" />
+		<result property="GlobalState" column="GlobalState" />
 		<result property="CabinetTemperature" column="CabinetTemperature" />
 		<result property="HeatSinkTemperature" column="HeatSinkTemperature" />
 		<result property="OtherTemperature" column="OtherTemperature" />
-		<result property="Apparentpower" column="Apparentpower" />
-		<result property="Reactivepower" column="Reactivepower" />
-		
-		<result property="DCCurrentChanel1" column="DCCurrentChanel1" />
-		<result property="DCVoltageChanel1" column="DCVoltageChanel1" />
-		<result property="DCPowerChanel1" column="DCPowerChanel1" />
-		<result property="OperatingStateChanel1" column="OperatingStateChanel1" />
-		<result property="DCCurrentChanel2" column="DCCurrentChanel2" />
-		<result property="DCVoltageChanel2" column="DCVoltageChanel2" />
-		<result property="DCPowerChanel2" column="DCPowerChanel2" />
-		<result property="OperatingStateChanel2" column="OperatingStateChanel2" />
-		<result property="Inverterstate" column="Inverterstate" />
-		<result property="Alarmstate" column="Alarmstate" />
-		<result property="GlobalState" column="GlobalState" />
-		<result property="WMax" column="WMax" />
-		
+		<result property="WMaxPercent" column="WMaxPercent" />
+		<result property="WMaxPercentEnable" column="WMaxPercentEnable" />
+		<result property="PFSet" column="PFSet" />
+		<result property="PFSetEnable" column="PFSetEnable" />
+		<result property="VarMaxPercent" column="VarMaxPercent" />
+		<result property="VarMaxPercentEnable" column="VarMaxPercentEnable" />
+		<result property="ControlINV" column="ControlINV" />
+
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
@@ -74,102 +92,162 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm`,
 			</if>
-			<if test="Powerfactorcosphi != 0.001">
-			`Powerfactorcosphi`,
-			</if>
-			<if test="Energytotal != 0.001">
-			`Energytotal`,
-			</if>
-			<if test="Gridfrequency != 0.001">
-			`Gridfrequency`,
-			</if>
-			<if test="CurrentAC != 0.001">
-			`CurrentAC`,
-			</if>
 			
-			<if test="CurrentDCtotal != 0.001">
-			`CurrentDCtotal`,
+			<if test="TotalEnergy != 0.001" >
+				`TotalEnergy`,
 			</if>
-			
-			<if test="PowerAC != 0.001">
-			`PowerAC`,
+			<if test="Wmax != 0.001" >
+				`Wmax`,
 			</if>
-			<if test="VoltageAC != 0.001">
-			`VoltageAC`,
+			<if test="ACActivePower != 0.001" >
+				`ACActivePower`,
 			</if>
-			<if test="VoltageACphase1 != 0.001">
-			`VoltageACphase1`,
+			<if test="ACReactivePower != 0.001" >
+				`ACReactivePower`,
 			</if>
-			<if test="VoltageACphase2 != 0.001">
-			`VoltageACphase2`,
+			<if test="ACApparentPower != 0.001" >
+				`ACApparentPower`,
 			</if>
-			<if test="VoltageACphase3 != 0.001">
-			`VoltageACphase3`,
+			<if test="ACPowerFactor != 0.001" >
+				`ACPowerFactor`,
 			</if>
-			<if test="PhasevoltageL1L2 != 0.001">
-			`PhasevoltageL1L2`,
+			<if test="ACGridFrequency != 0.001" >
+				`ACGridFrequency`,
 			</if>
-			<if test="PhasevoltageL2L3 != 0.001">
-			`PhasevoltageL2L3`,
+			<if test="ACVoltagePhaseAB != 0.001" >
+				`ACVoltagePhaseAB`,
 			</if>
-			<if test="PhasevoltageL3L1 != 0.001">
-			`PhasevoltageL3L1`,
+			<if test="ACVoltagePhaseBC != 0.001" >
+				`ACVoltagePhaseBC`,
 			</if>
-			<if test="VoltageDC != 0.001">
-			`VoltageDC`,
+			<if test="ACVoltagePhaseCA != 0.001" >
+				`ACVoltagePhaseCA`,
 			</if>
-			<if test="CabinetTemperature != 0.001">
-			`CabinetTemperature`,
+			<if test="ACVoltagePhaseAN != 0.001" >
+				`ACVoltagePhaseAN`,
 			</if>
-			<if test="HeatSinkTemperature != 0.001">
-			`HeatSinkTemperature`,
+			<if test="ACVoltagePhaseBN != 0.001" >
+				`ACVoltagePhaseBN`,
 			</if>
-			<if test="OtherTemperature != 0.001">
-			`OtherTemperature`,
+			<if test="ACVoltagePhaseCN != 0.001" >
+				`ACVoltagePhaseCN`,
 			</if>
-			<if test="Apparentpower != 0.001">
-			`Apparentpower`,
+			<if test="ACCurrent != 0.001" >
+				`ACCurrent`,
 			</if>
-			<if test="Reactivepower != 0.001">
-			`Reactivepower`,
+			<if test="ACCurrentPhaseA != 0.001" >
+				`ACCurrentPhaseA`,
 			</if>
-			
-			<if test="DCCurrentChanel1 != 0.001">
-			`DCCurrentChanel1`,
+			<if test="ACCurrentPhaseB != 0.001" >
+				`ACCurrentPhaseB`,
 			</if>
-			<if test="DCVoltageChanel1 != 0.001">
-			`DCVoltageChanel1`,
+			<if test="ACCurrentPhaseC != 0.001" >
+				`ACCurrentPhaseC`,
 			</if>
-			<if test="DCPowerChanel1 != 0.001">
-			`DCPowerChanel1`,
+			<if test="DCVoltage != 0.001" >
+				`DCVoltage`,
 			</if>
-			<if test="OperatingStateChanel1 != 0.001">
-			`OperatingStateChanel1`,
+			<if test="DCCurrent != 0.001" >
+				`DCCurrent`,
 			</if>
-			<if test="DCCurrentChanel2 != 0.001">
-			`DCCurrentChanel2`,
+			<if test="DCPowerChanel1 != 0.001" >
+				`DCPowerChanel1`,
 			</if>
-			<if test="DCVoltageChanel2 != 0.001">
-			`DCVoltageChanel2`,
+			<if test="DCVoltageChanel1 != 0.001" >
+				`DCVoltageChanel1`,
 			</if>
-			<if test="DCPowerChanel2 != 0.001">
-			`DCPowerChanel2`,
+			<if test="DCCurrentChanel1 != 0.001" >
+				`DCCurrentChanel1`,
 			</if>
-			<if test="OperatingStateChanel2 != 0.001">
-			`OperatingStateChanel2`,
+			<if test="DCOperatingStateChanel1 != 0.001" >
+				`DCOperatingStateChanel1`,
 			</if>
-			<if test="Inverterstate != 0.001">
-			`Inverterstate`,
+			<if test="DCPowerChanel2 != 0.001" >
+				`DCPowerChanel2`,
 			</if>
-			<if test="Alarmstate != 0.001">
-			`Alarmstate`,
+			<if test="DCVoltageChanel2 != 0.001" >
+				`DCVoltageChanel2`,
 			</if>
-			
-			<if test="GlobalState != 0.001">
-			`GlobalState`,
+			<if test="DCCurrentChanel2 != 0.001" >
+				`DCCurrentChanel2`,
 			</if>
-			<if test="WMax != 0.001">
-			`WMax`,
+			<if test="DCOperatingStateChanel2 != 0.001" >
+				`DCOperatingStateChanel2`,
+			</if>
+			<if test="MPPT1 != 0.001" >
+				`MPPT1`,
+			</if>
+			<if test="MPPT1Voltage != 0.001" >
+				`MPPT1Voltage`,
+			</if>
+			<if test="MPPT1Current != 0.001" >
+				`MPPT1Current`,
+			</if>
+			<if test="MPTT2 != 0.001" >
+				`MPTT2`,
+			</if>
+			<if test="MPPT2Voltage != 0.001" >
+				`MPPT2Voltage`,
+			</if>
+			<if test="MPPT2Current != 0.001" >
+				`MPPT2Current`,
+			</if>
+			<if test="STRING1 != 0.001" >
+				`STRING1`,
+			</if>
+			<if test="STRING2 != 0.001" >
+				`STRING2`,
+			</if>
+			<if test="Panel1 != 0.001" >
+				`Panel1`,
+			</if>
+			<if test="Panel2 != 0.001" >
+				`Panel2`,
+			</if>
+			<if test="Panel3 != 0.001" >
+				`Panel3`,
+			</if>
+			<if test="Panel4 != 0.001" >
+				`Panel4`,
+			</if>
+			<if test="OperatingState != 0.001" >
+				`OperatingState`,
+			</if>
+			<if test="Alarmstate != 0.001" >
+				`Alarmstate`,
+			</if>
+			<if test="GlobalState != 0.001" >
+				`GlobalState`,
+			</if>
+			<if test="CabinetTemperature != 0.001" >
+				`CabinetTemperature`,
+			</if>
+			<if test="HeatSinkTemperature != 0.001" >
+				`HeatSinkTemperature`,
+			</if>
+			<if test="OtherTemperature != 0.001" >
+				`OtherTemperature`,
+			</if>
+			<if test="WMaxPercent != 0.001" >
+				`WMaxPercent`,
+			</if>
+			<if test="WMaxPercentEnable != 0.001" >
+				`WMaxPercentEnable`,
+			</if>
+			<if test="PFSet != 0.001" >
+				`PFSet`,
+			</if>
+			<if test="PFSetEnable != 0.001" >
+				`PFSetEnable`,
+			</if>
+			<if test="VarMaxPercent != 0.001" >
+				`VarMaxPercent`,
+			</if>
+			<if test="VarMaxPercentEnable != 0.001" >
+				`VarMaxPercentEnable`,
+			</if>
+			<if test="ControlINV != 0.001" >
+				`ControlINV`,
 			</if>
 			
 			<if test="nvmActivePower != 0.001">
@@ -201,102 +279,162 @@
 			<if test="high_alarm != 0.001">
 				#{high_alarm},
 			</if>
-			<if test="Powerfactorcosphi != 0.001">
-			#{Powerfactorcosphi},
-			</if>
-			<if test="Energytotal != 0.001">
-			#{Energytotal},
-			</if>
-			<if test="Gridfrequency != 0.001">
-			#{Gridfrequency},
-			</if>
-			<if test="CurrentAC != 0.001">
-			#{CurrentAC},
-			</if>
 			
-			<if test="CurrentDCtotal != 0.001">
-			#{CurrentDCtotal},
+			<if test="TotalEnergy != 0.001" >
+				#{TotalEnergy},
 			</if>
-			
-			<if test="PowerAC != 0.001">
-			#{PowerAC},
+			<if test="Wmax != 0.001" >
+				#{Wmax},
 			</if>
-			<if test="VoltageAC != 0.001">
-			#{VoltageAC},
+			<if test="ACActivePower != 0.001" >
+				#{ACActivePower},
 			</if>
-			<if test="VoltageACphase1 != 0.001">
-			#{VoltageACphase1},
+			<if test="ACReactivePower != 0.001" >
+				#{ACReactivePower},
 			</if>
-			<if test="VoltageACphase2 != 0.001">
-			#{VoltageACphase2},
+			<if test="ACApparentPower != 0.001" >
+				#{ACApparentPower},
 			</if>
-			<if test="VoltageACphase3 != 0.001">
-			#{VoltageACphase3},
+			<if test="ACPowerFactor != 0.001" >
+				#{ACPowerFactor},
 			</if>
-			<if test="PhasevoltageL1L2 != 0.001">
-			#{PhasevoltageL1L2},
+			<if test="ACGridFrequency != 0.001" >
+				#{ACGridFrequency},
 			</if>
-			<if test="PhasevoltageL2L3 != 0.001">
-			#{PhasevoltageL2L3},
+			<if test="ACVoltagePhaseAB != 0.001" >
+				#{ACVoltagePhaseAB},
 			</if>
-			<if test="PhasevoltageL3L1 != 0.001">
-			#{PhasevoltageL3L1},
+			<if test="ACVoltagePhaseBC != 0.001" >
+				#{ACVoltagePhaseBC},
 			</if>
-			<if test="VoltageDC != 0.001">
-			#{VoltageDC},
+			<if test="ACVoltagePhaseCA != 0.001" >
+				#{ACVoltagePhaseCA},
 			</if>
-			<if test="CabinetTemperature != 0.001">
-			#{CabinetTemperature},
+			<if test="ACVoltagePhaseAN != 0.001" >
+				#{ACVoltagePhaseAN},
 			</if>
-			<if test="HeatSinkTemperature != 0.001">
-			#{HeatSinkTemperature},
+			<if test="ACVoltagePhaseBN != 0.001" >
+				#{ACVoltagePhaseBN},
 			</if>
-			<if test="OtherTemperature != 0.001">
-			#{OtherTemperature},
+			<if test="ACVoltagePhaseCN != 0.001" >
+				#{ACVoltagePhaseCN},
 			</if>
-			<if test="Apparentpower != 0.001">
-			#{Apparentpower},
+			<if test="ACCurrent != 0.001" >
+				#{ACCurrent},
 			</if>
-			<if test="Reactivepower != 0.001">
-			#{Reactivepower},
+			<if test="ACCurrentPhaseA != 0.001" >
+				#{ACCurrentPhaseA},
 			</if>
-			
-			<if test="DCCurrentChanel1 != 0.001">
-			#{DCCurrentChanel1},
+			<if test="ACCurrentPhaseB != 0.001" >
+				#{ACCurrentPhaseB},
 			</if>
-			<if test="DCVoltageChanel1 != 0.001">
-			#{DCVoltageChanel1},
+			<if test="ACCurrentPhaseC != 0.001" >
+				#{ACCurrentPhaseC},
 			</if>
-			<if test="DCPowerChanel1 != 0.001">
-			#{DCPowerChanel1},
+			<if test="DCVoltage != 0.001" >
+				#{DCVoltage},
 			</if>
-			<if test="OperatingStateChanel1 != 0.001">
-			#{OperatingStateChanel1},
+			<if test="DCCurrent != 0.001" >
+				#{DCCurrent},
 			</if>
-			<if test="DCCurrentChanel2 != 0.001">
-			#{DCCurrentChanel2},
+			<if test="DCPowerChanel1 != 0.001" >
+				#{DCPowerChanel1},
 			</if>
-			<if test="DCVoltageChanel2 != 0.001">
-			#{DCVoltageChanel2},
+			<if test="DCVoltageChanel1 != 0.001" >
+				#{DCVoltageChanel1},
 			</if>
-			<if test="DCPowerChanel2 != 0.001">
-			#{DCPowerChanel2},
+			<if test="DCCurrentChanel1 != 0.001" >
+				#{DCCurrentChanel1},
 			</if>
-			<if test="OperatingStateChanel2 != 0.001">
-			#{OperatingStateChanel2},
+			<if test="DCOperatingStateChanel1 != 0.001" >
+				#{DCOperatingStateChanel1},
 			</if>
-			<if test="Inverterstate != 0.001">
-			#{Inverterstate},
+			<if test="DCPowerChanel2 != 0.001" >
+				#{DCPowerChanel2},
 			</if>
-			<if test="Alarmstate != 0.001">
-			#{Alarmstate},
+			<if test="DCVoltageChanel2 != 0.001" >
+				#{DCVoltageChanel2},
 			</if>
-			
-			<if test="GlobalState != 0.001">
-			#{GlobalState},
+			<if test="DCCurrentChanel2 != 0.001" >
+				#{DCCurrentChanel2},
 			</if>
-			<if test="WMax != 0.001">
-			#{WMax},
+			<if test="DCOperatingStateChanel2 != 0.001" >
+				#{DCOperatingStateChanel2},
+			</if>
+			<if test="MPPT1 != 0.001" >
+				#{MPPT1},
+			</if>
+			<if test="MPPT1Voltage != 0.001" >
+				#{MPPT1Voltage},
+			</if>
+			<if test="MPPT1Current != 0.001" >
+				#{MPPT1Current},
+			</if>
+			<if test="MPTT2 != 0.001" >
+				#{MPTT2},
+			</if>
+			<if test="MPPT2Voltage != 0.001" >
+				#{MPPT2Voltage},
+			</if>
+			<if test="MPPT2Current != 0.001" >
+				#{MPPT2Current},
+			</if>
+			<if test="STRING1 != 0.001" >
+				#{STRING1},
+			</if>
+			<if test="STRING2 != 0.001" >
+				#{STRING2},
+			</if>
+			<if test="Panel1 != 0.001" >
+				#{Panel1},
+			</if>
+			<if test="Panel2 != 0.001" >
+				#{Panel2},
+			</if>
+			<if test="Panel3 != 0.001" >
+				#{Panel3},
+			</if>
+			<if test="Panel4 != 0.001" >
+				#{Panel4},
+			</if>
+			<if test="OperatingState != 0.001" >
+				#{OperatingState},
+			</if>
+			<if test="Alarmstate != 0.001" >
+				#{Alarmstate},
+			</if>
+			<if test="GlobalState != 0.001" >
+				#{GlobalState},
+			</if>
+			<if test="CabinetTemperature != 0.001" >
+				#{CabinetTemperature},
+			</if>
+			<if test="HeatSinkTemperature != 0.001" >
+				#{HeatSinkTemperature},
+			</if>
+			<if test="OtherTemperature != 0.001" >
+				#{OtherTemperature},
+			</if>
+			<if test="WMaxPercent != 0.001" >
+				#{WMaxPercent},
+			</if>
+			<if test="WMaxPercentEnable != 0.001" >
+				#{WMaxPercentEnable},
+			</if>
+			<if test="PFSet != 0.001" >
+				#{PFSet},
+			</if>
+			<if test="PFSetEnable != 0.001" >
+				#{PFSetEnable},
+			</if>
+			<if test="VarMaxPercent != 0.001" >
+				#{VarMaxPercent},
+			</if>
+			<if test="VarMaxPercentEnable != 0.001" >
+				#{VarMaxPercentEnable},
+			</if>
+			<if test="ControlINV != 0.001" >
+				#{ControlINV},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">
@@ -326,103 +464,161 @@
 				`high_alarm` = #{high_alarm},
 			</if>
 			
-			
-			<if test="Powerfactorcosphi != 0.001">
-			`Powerfactorcosphi` = #{Powerfactorcosphi},
+			<if test="TotalEnergy != 0.001" >
+				`TotalEnergy` = #{TotalEnergy},
 			</if>
-			<if test="Energytotal != 0.001">
-			`Energytotal` = #{Energytotal},
+			<if test="Wmax != 0.001" >
+				`Wmax` = #{Wmax},
 			</if>
-			<if test="Gridfrequency != 0.001">
-			`Gridfrequency` = #{Gridfrequency},
+			<if test="ACActivePower != 0.001" >
+				`ACActivePower` = #{ACActivePower},
 			</if>
-			<if test="CurrentAC != 0.001">
-			`CurrentAC` = #{CurrentAC},
+			<if test="ACReactivePower != 0.001" >
+				`ACReactivePower` = #{ACReactivePower},
 			</if>
-			
-			<if test="CurrentDCtotal != 0.001">
-			`CurrentDCtotal` = #{CurrentDCtotal},
+			<if test="ACApparentPower != 0.001" >
+				`ACApparentPower` = #{ACApparentPower},
 			</if>
-			
-			<if test="PowerAC != 0.001">
-			`PowerAC` = #{PowerAC},
+			<if test="ACPowerFactor != 0.001" >
+				`ACPowerFactor` = #{ACPowerFactor},
 			</if>
-			<if test="VoltageAC != 0.001">
-			`VoltageAC` = #{VoltageAC},
+			<if test="ACGridFrequency != 0.001" >
+				`ACGridFrequency` = #{ACGridFrequency},
 			</if>
-			<if test="VoltageACphase1 != 0.001">
-			`VoltageACphase1` = #{VoltageACphase1},
+			<if test="ACVoltagePhaseAB != 0.001" >
+				`ACVoltagePhaseAB` = #{ACVoltagePhaseAB},
 			</if>
-			<if test="VoltageACphase2 != 0.001">
-			`VoltageACphase2` = #{VoltageACphase2},
+			<if test="ACVoltagePhaseBC != 0.001" >
+				`ACVoltagePhaseBC` = #{ACVoltagePhaseBC},
 			</if>
-			<if test="VoltageACphase3 != 0.001">
-			`VoltageACphase3` = #{VoltageACphase3},
+			<if test="ACVoltagePhaseCA != 0.001" >
+				`ACVoltagePhaseCA` = #{ACVoltagePhaseCA},
 			</if>
-			<if test="PhasevoltageL1L2 != 0.001">
-			`PhasevoltageL1L2` = #{PhasevoltageL1L2},
+			<if test="ACVoltagePhaseAN != 0.001" >
+				`ACVoltagePhaseAN` = #{ACVoltagePhaseAN},
 			</if>
-			<if test="PhasevoltageL2L3 != 0.001">
-			`PhasevoltageL2L3` = #{PhasevoltageL2L3},
+			<if test="ACVoltagePhaseBN != 0.001" >
+				`ACVoltagePhaseBN` = #{ACVoltagePhaseBN},
 			</if>
-			<if test="PhasevoltageL3L1 != 0.001">
-			`PhasevoltageL3L1` = #{PhasevoltageL3L1},
+			<if test="ACVoltagePhaseCN != 0.001" >
+				`ACVoltagePhaseCN` = #{ACVoltagePhaseCN},
 			</if>
-			<if test="VoltageDC != 0.001">
-			`VoltageDC` = #{VoltageDC},
+			<if test="ACCurrent != 0.001" >
+				`ACCurrent` = #{ACCurrent},
 			</if>
-			<if test="CabinetTemperature != 0.001">
-			`CabinetTemperature` = #{CabinetTemperature},
+			<if test="ACCurrentPhaseA != 0.001" >
+				`ACCurrentPhaseA` = #{ACCurrentPhaseA},
 			</if>
-			<if test="HeatSinkTemperature != 0.001">
-			`HeatSinkTemperature` = #{HeatSinkTemperature},
+			<if test="ACCurrentPhaseB != 0.001" >
+				`ACCurrentPhaseB` = #{ACCurrentPhaseB},
 			</if>
-			<if test="OtherTemperature != 0.001">
-			`OtherTemperature` = #{OtherTemperature},
+			<if test="ACCurrentPhaseC != 0.001" >
+				`ACCurrentPhaseC` = #{ACCurrentPhaseC},
 			</if>
-			<if test="Apparentpower != 0.001">
-			`Apparentpower` = #{Apparentpower},
+			<if test="DCVoltage != 0.001" >
+				`DCVoltage` = #{DCVoltage},
 			</if>
-			<if test="Reactivepower != 0.001">
-			`Reactivepower` = #{Reactivepower},
+			<if test="DCCurrent != 0.001" >
+				`DCCurrent` = #{DCCurrent},
 			</if>
-			
-			<if test="DCCurrentChanel1 != 0.001">
-			`DCCurrentChanel1` = #{DCCurrentChanel1},
+			<if test="DCPowerChanel1 != 0.001" >
+				`DCPowerChanel1` = #{DCPowerChanel1},
 			</if>
-			<if test="DCVoltageChanel1 != 0.001">
-			`DCVoltageChanel1` = #{DCVoltageChanel1},
+			<if test="DCVoltageChanel1 != 0.001" >
+				`DCVoltageChanel1` = #{DCVoltageChanel1},
 			</if>
-			<if test="DCPowerChanel1 != 0.001">
-			`DCPowerChanel1` = #{DCPowerChanel1},
+			<if test="DCCurrentChanel1 != 0.001" >
+				`DCCurrentChanel1` = #{DCCurrentChanel1},
 			</if>
-			<if test="OperatingStateChanel1 != 0.001">
-			`OperatingStateChanel1` = #{OperatingStateChanel1},
+			<if test="DCOperatingStateChanel1 != 0.001" >
+				`DCOperatingStateChanel1` = #{DCOperatingStateChanel1},
 			</if>
-			<if test="DCCurrentChanel2 != 0.001">
-			`DCCurrentChanel2` = #{DCCurrentChanel2},
+			<if test="DCPowerChanel2 != 0.001" >
+				`DCPowerChanel2` = #{DCPowerChanel2},
 			</if>
-			<if test="DCVoltageChanel2 != 0.001">
-			`DCVoltageChanel2` = #{DCVoltageChanel2},
+			<if test="DCVoltageChanel2 != 0.001" >
+				`DCVoltageChanel2` = #{DCVoltageChanel2},
 			</if>
-			<if test="DCPowerChanel2 != 0.001">
-			`DCPowerChanel2` = #{DCPowerChanel2},
+			<if test="DCCurrentChanel2 != 0.001" >
+				`DCCurrentChanel2` = #{DCCurrentChanel2},
 			</if>
-			<if test="OperatingStateChanel2 != 0.001">
-			`OperatingStateChanel2` = #{OperatingStateChanel2},
+			<if test="DCOperatingStateChanel2 != 0.001" >
+				`DCOperatingStateChanel2` = #{DCOperatingStateChanel2},
 			</if>
-			<if test="Inverterstate != 0.001">
-			`Inverterstate` = #{Inverterstate},
+			<if test="MPPT1 != 0.001" >
+				`MPPT1` = #{MPPT1},
 			</if>
-			<if test="Alarmstate != 0.001">
-			`Alarmstate` = #{Alarmstate},
+			<if test="MPPT1Voltage != 0.001" >
+				`MPPT1Voltage` = #{MPPT1Voltage},
 			</if>
-			
-			<if test="GlobalState != 0.001">
-			`GlobalState` = #{GlobalState},
+			<if test="MPPT1Current != 0.001" >
+				`MPPT1Current` = #{MPPT1Current},
 			</if>
-			<if test="WMax != 0.001">
-			`WMax` = #{WMax},
+			<if test="MPTT2 != 0.001" >
+				`MPTT2` = #{MPTT2},
+			</if>
+			<if test="MPPT2Voltage != 0.001" >
+				`MPPT2Voltage` = #{MPPT2Voltage},
+			</if>
+			<if test="MPPT2Current != 0.001" >
+				`MPPT2Current` = #{MPPT2Current},
+			</if>
+			<if test="STRING1 != 0.001" >
+				`STRING1` = #{STRING1},
+			</if>
+			<if test="STRING2 != 0.001" >
+				`STRING2` = #{STRING2},
+			</if>
+			<if test="Panel1 != 0.001" >
+				`Panel1` = #{Panel1},
+			</if>
+			<if test="Panel2 != 0.001" >
+				`Panel2` = #{Panel2},
+			</if>
+			<if test="Panel3 != 0.001" >
+				`Panel3` = #{Panel3},
+			</if>
+			<if test="Panel4 != 0.001" >
+				`Panel4` = #{Panel4},
+			</if>
+			<if test="OperatingState != 0.001" >
+				`OperatingState` = #{OperatingState},
+			</if>
+			<if test="Alarmstate != 0.001" >
+				`Alarmstate` = #{Alarmstate},
+			</if>
+			<if test="GlobalState != 0.001" >
+				`GlobalState` = #{GlobalState},
+			</if>
+			<if test="CabinetTemperature != 0.001" >
+				`CabinetTemperature` = #{CabinetTemperature},
+			</if>
+			<if test="HeatSinkTemperature != 0.001" >
+				`HeatSinkTemperature` = #{HeatSinkTemperature},
+			</if>
+			<if test="OtherTemperature != 0.001" >
+				`OtherTemperature` = #{OtherTemperature},
+			</if>
+			<if test="WMaxPercent != 0.001" >
+				`WMaxPercent` = #{WMaxPercent},
+			</if>
+			<if test="WMaxPercentEnable != 0.001" >
+				`WMaxPercentEnable` = #{WMaxPercentEnable},
+			</if>
+			<if test="PFSet != 0.001" >
+				`PFSet` = #{PFSet},
+			</if>
+			<if test="PFSetEnable != 0.001" >
+				`PFSetEnable` = #{PFSetEnable},
+			</if>
+			<if test="VarMaxPercent != 0.001" >
+				`VarMaxPercent` = #{VarMaxPercent},
+			</if>
+			<if test="VarMaxPercentEnable != 0.001" >
+				`VarMaxPercentEnable` = #{VarMaxPercentEnable},
+			</if>
+			<if test="ControlINV != 0.001" >
+				`ControlINV` = #{ControlINV},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">

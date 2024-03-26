@@ -12,49 +12,40 @@
 		<result property="high_alarm" column="high_alarm" />
 		
 		
-		<result property="Phase1VoltageLN" column="Phase1VoltageLN" />
-		<result property="Phase12VoltageLL" column="Phase12VoltageLL" />
-		<result property="Phase1Current" column="Phase1Current" />
-		<result property="Phase1CosPhi" column="Phase1CosPhi" />
-		<result property="Phase1PowerFactor" column="Phase1PowerFactor" />
-		
-		<result property="Phase1ActivePower" column="Phase1ActivePower" />
-		<result property="Phase1ReactivePower" column="Phase1ReactivePower" />
-		<result property="Phase1ApparentPower" column="Phase1ApparentPower" />
-		<result property="Phase1THDV" column="Phase1THDV" />
-		<result property="Phase1THDI" column="Phase1THDI" />
-		<result property="Phase2VoltageLN" column="Phase2VoltageLN" />
-		<result property="Phase23VoltageLL" column="Phase23VoltageLL" />
-		<result property="Phase2Current" column="Phase2Current" />
-		<result property="Phase2Cos" column="Phase2Cos" />
-		<result property="Phase2PowerFactor" column="Phase2PowerFactor" />
-		<result property="Phase2ActivePower" column="Phase2ActivePower" />
-		<result property="Phase2ReactivePower" column="Phase2ReactivePower" />
-		<result property="Phase2ApparentPower" column="Phase2ApparentPower" />
-		<result property="Phase2THDV" column="Phase2THDV" />
-		
-		
-		<result property="Phase2THDI" column="Phase2THDI" />
-		<result property="Phase3VoltageLN" column="Phase3VoltageLN" />
-		<result property="Phase31VoltageLL" column="Phase31VoltageLL" />
-		<result property="Phase3Current" column="Phase3Current" />
-		<result property="Phase3Cos" column="Phase3Cos" />
-		<result property="Phase3PowerFactor" column="Phase3PowerFactor" />
-		<result property="Phase3ActivePower" column="Phase3ActivePower" />
-		<result property="Phase3ReactivePower" column="Phase3ReactivePower" />
-		<result property="Phase3ApparentPower" column="Phase3ApparentPower" />
-		<result property="Phase3THDV" column="Phase3THDV" />
-		<result property="Phase3THDI" column="Phase3THDI" />
-		<result property="AverageVoltageLN" column="AverageVoltageLN" />
-		<result property="AverageVoltageLL" column="AverageVoltageLL" />
-		<result property="TotalCurrent" column="TotalCurrent" />
-		<result property="SystemPowerFactor" column="SystemPowerFactor" />
+		<result property="TotalEnergy" column="TotalEnergy" />
 		<result property="TotalActivePower" column="TotalActivePower" />
 		<result property="TotalReactivePower" column="TotalReactivePower" />
 		<result property="TotalApparentPower" column="TotalApparentPower" />
-		<result property="SystemFrequency" column="SystemFrequency" />
+		<result property="GridFrequency" column="GridFrequency" />
 		<result property="NeutralCurrent" column="NeutralCurrent" />
-		<result property="Energytotal" column="Energytotal" />
+		<result property="TotalCurrent" column="TotalCurrent" />
+		<result property="TotalPowerFactor" column="TotalPowerFactor" />
+		<result property="VoltageLN3phases" column="VoltageLN3phases" />
+		<result property="VoltageLL3phases" column="VoltageLL3phases" />
+		<result property="ActivePowerPhaseA" column="ActivePowerPhaseA" />
+		<result property="ActivePowerPhaseB" column="ActivePowerPhaseB" />
+		<result property="ActivePowerPhaseC" column="ActivePowerPhaseC" />
+		<result property="ReactivePowerPhaseA" column="ReactivePowerPhaseA" />
+		<result property="ReactivePowerPhaseB" column="ReactivePowerPhaseB" />
+		<result property="ReactivePowerPhaseC" column="ReactivePowerPhaseC" />
+		<result property="ApparentPowerPhaseA" column="ApparentPowerPhaseA" />
+		<result property="ApparentPowerPhaseB" column="ApparentPowerPhaseB" />
+		<result property="ApparentPowerPhaseC" column="ApparentPowerPhaseC" />
+		<result property="CosphiPhaseA" column="CosphiPhaseA" />
+		<result property="CosphiPhaseB" column="CosphiPhaseB" />
+		<result property="CosphiPhaseC" column="CosphiPhaseC" />
+		<result property="PowerFactorPhaseA" column="PowerFactorPhaseA" />
+		<result property="PowerFactorPhaseB" column="PowerFactorPhaseB" />
+		<result property="PowerFactorPhaseC" column="PowerFactorPhaseC" />
+		<result property="VoltagePhaseAB" column="VoltagePhaseAB" />
+		<result property="VoltagePhaseBC" column="VoltagePhaseBC" />
+		<result property="VoltagePhaseCA" column="VoltagePhaseCA" />
+		<result property="VoltagePhaseAN" column="VoltagePhaseAN" />
+		<result property="VoltagePhaseBN" column="VoltagePhaseBN" />
+		<result property="VoltagePhaseCN" column="VoltagePhaseCN" />
+		<result property="CurrentPhaseA" column="CurrentPhaseA" />
+		<result property="CurrentPhaseB" column="CurrentPhaseB" />
+		<result property="CurrentPhaseC" column="CurrentPhaseC" />
 		
 		
 		
@@ -86,132 +77,108 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm`,
 			</if>
-			<if test="Phase1VoltageLN != 0.001">
-			`Phase1VoltageLN`,
-			</if>
-			<if test="Phase12VoltageLL != 0.001">
-			`Phase12VoltageLL`,
-			</if>
-			<if test="Phase1Current != 0.001">
-			`Phase1Current`,
-			</if>
-			<if test="Phase1CosPhi != 0.001">
-			`Phase1CosPhi`,
-			</if>
 			
-			<if test="Phase1PowerFactor != 0.001">
-			`Phase1PowerFactor`,
+			<if test="TotalEnergy != 0.001" >
+				`TotalEnergy`,
 			</if>
-			
-			<if test="Phase1ActivePower != 0.001">
-			`Phase1ActivePower`,
+			<if test="TotalActivePower != 0.001" >
+				`TotalActivePower`,
 			</if>
-			<if test="Phase1ReactivePower != 0.001">
-			`Phase1ReactivePower`,
+			<if test="TotalReactivePower != 0.001" >
+				`TotalReactivePower`,
 			</if>
-			<if test="Phase1ApparentPower != 0.001">
-			`Phase1ApparentPower`,
+			<if test="TotalApparentPower != 0.001" >
+				`TotalApparentPower`,
 			</if>
-			<if test="Phase1THDV != 0.001">
-			`Phase1THDV`,
+			<if test="GridFrequency != 0.001" >
+				`GridFrequency`,
 			</if>
-			<if test="Phase1THDI != 0.001">
-			`Phase1THDI`,
+			<if test="NeutralCurrent != 0.001" >
+				`NeutralCurrent`,
 			</if>
-			<if test="Phase2VoltageLN != 0.001">
-			`Phase2VoltageLN`,
+			<if test="TotalCurrent != 0.001" >
+				`TotalCurrent`,
 			</if>
-			<if test="Phase23VoltageLL != 0.001">
-			`Phase23VoltageLL`,
+			<if test="TotalPowerFactor != 0.001" >
+				`TotalPowerFactor`,
 			</if>
-			<if test="Phase2Current != 0.001">
-			`Phase2Current`,
+			<if test="VoltageLN3phases != 0.001" >
+				`VoltageLN3phases`,
 			</if>
-			<if test="Phase2Cos != 0.001">
-			`Phase2Cos`,
+			<if test="VoltageLL3phases != 0.001" >
+				`VoltageLL3phases`,
 			</if>
-			<if test="Phase2PowerFactor != 0.001">
-			`Phase2PowerFactor`,
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA`,
 			</if>
-			<if test="Phase2ActivePower != 0.001">
-			`Phase2ActivePower`,
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB`,
 			</if>
-			<if test="Phase2ReactivePower != 0.001">
-			`Phase2ReactivePower`,
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC`,
 			</if>
-			<if test="Phase2ApparentPower != 0.001">
-			`Phase2ApparentPower`,
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA`,
 			</if>
-			<if test="Phase2THDV != 0.001">
-			`Phase2THDV`,
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB`,
 			</if>
-			
-			
-			
-			
-			
-			<if test="Phase2THDI != 0.001">
-			`Phase2THDI`,
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC`,
 			</if>
-			<if test="Phase3VoltageLN != 0.001">
-			`Phase3VoltageLN`,
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA`,
 			</if>
-			<if test="Phase31VoltageLL != 0.001">
-			`Phase31VoltageLL`,
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB`,
 			</if>
-			<if test="Phase3Current != 0.001">
-			`Phase3Current`,
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC`,
 			</if>
-			<if test="Phase3Cos != 0.001">
-			`Phase3Cos`,
+			<if test="CosphiPhaseA != 0.001" >
+				`CosphiPhaseA`,
 			</if>
-			<if test="Phase3PowerFactor != 0.001">
-			`Phase3PowerFactor`,
+			<if test="CosphiPhaseB != 0.001" >
+				`CosphiPhaseB`,
 			</if>
-			<if test="Phase3ActivePower != 0.001">
-			`Phase3ActivePower`,
+			<if test="CosphiPhaseC != 0.001" >
+				`CosphiPhaseC`,
 			</if>
-			<if test="Phase3ReactivePower != 0.001">
-			`Phase3ReactivePower`,
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA`,
 			</if>
-			<if test="Phase3ApparentPower != 0.001">
-			`Phase3ApparentPower`,
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB`,
 			</if>
-			<if test="Phase3THDV != 0.001">
-			`Phase3THDV`,
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC`,
 			</if>
-			<if test="Phase3THDI != 0.001">
-			`Phase3THDI`,
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB`,
 			</if>
-			<if test="AverageVoltageLN != 0.001">
-			`AverageVoltageLN`,
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC`,
 			</if>
-			<if test="AverageVoltageLL != 0.001">
-			`AverageVoltageLL`,
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA`,
 			</if>
-			<if test="TotalCurrent != 0.001">
-			`TotalCurrent`,
+			<if test="VoltagePhaseAN != 0.001" >
+				`VoltagePhaseAN`,
 			</if>
-			<if test="SystemPowerFactor != 0.001">
-			`SystemPowerFactor`,
+			<if test="VoltagePhaseBN != 0.001" >
+				`VoltagePhaseBN`,
 			</if>
-			<if test="TotalActivePower != 0.001">
-			`TotalActivePower`,
+			<if test="VoltagePhaseCN != 0.001" >
+				`VoltagePhaseCN`,
 			</if>
-			<if test="TotalReactivePower != 0.001">
-			`TotalReactivePower`,
+			<if test="CurrentPhaseA != 0.001" >
+				`CurrentPhaseA`,
 			</if>
-			<if test="TotalApparentPower != 0.001">
-			`TotalApparentPower`,
+			<if test="CurrentPhaseB != 0.001" >
+				`CurrentPhaseB`,
 			</if>
-			<if test="SystemFrequency != 0.001">
-			`SystemFrequency`,
-			</if>
-			<if test="NeutralCurrent != 0.001">
-			`NeutralCurrent`,
-			</if>
-			<if test="Energytotal != 0.001">
-			`Energytotal`,
+			<if test="CurrentPhaseC != 0.001" >
+				`CurrentPhaseC`,
 			</if>
 			
 			
@@ -247,128 +214,108 @@
 			<if test="high_alarm != 0.001">
 				#{high_alarm},
 			</if>
-			<if test="Phase1VoltageLN != 0.001">
-			#{Phase1VoltageLN},
-			</if>
-			<if test="Phase12VoltageLL != 0.001">
-			#{Phase12VoltageLL},
-			</if>
-			<if test="Phase1Current != 0.001">
-			#{Phase1Current},
-			</if>
-			<if test="Phase1CosPhi != 0.001">
-			#{Phase1CosPhi},
-			</if>
 			
-			<if test="Phase1PowerFactor != 0.001">
-			#{Phase1PowerFactor},
+			<if test="TotalEnergy != 0.001" >
+				#{TotalEnergy},
 			</if>
-			
-			<if test="Phase1ActivePower != 0.001">
-			#{Phase1ActivePower},
+			<if test="TotalActivePower != 0.001" >
+				#{TotalActivePower},
 			</if>
-			<if test="Phase1ReactivePower != 0.001">
-			#{Phase1ReactivePower},
+			<if test="TotalReactivePower != 0.001" >
+				#{TotalReactivePower},
 			</if>
-			<if test="Phase1ApparentPower != 0.001">
-			#{Phase1ApparentPower},
+			<if test="TotalApparentPower != 0.001" >
+				#{TotalApparentPower},
 			</if>
-			<if test="Phase1THDV != 0.001">
-			#{Phase1THDV},
+			<if test="GridFrequency != 0.001" >
+				#{GridFrequency},
 			</if>
-			<if test="Phase1THDI != 0.001">
-			#{Phase1THDI},
+			<if test="NeutralCurrent != 0.001" >
+				#{NeutralCurrent},
 			</if>
-			<if test="Phase2VoltageLN != 0.001">
-			#{Phase2VoltageLN},
+			<if test="TotalCurrent != 0.001" >
+				#{TotalCurrent},
 			</if>
-			<if test="Phase23VoltageLL != 0.001">
-			#{Phase23VoltageLL},
+			<if test="TotalPowerFactor != 0.001" >
+				#{TotalPowerFactor},
 			</if>
-			<if test="Phase2Current != 0.001">
-			#{Phase2Current},
+			<if test="VoltageLN3phases != 0.001" >
+				#{VoltageLN3phases},
 			</if>
-			<if test="Phase2Cos != 0.001">
-			#{Phase2Cos},
+			<if test="VoltageLL3phases != 0.001" >
+				#{VoltageLL3phases},
 			</if>
-			<if test="Phase2PowerFactor != 0.001">
-			#{Phase2PowerFactor},
+			<if test="ActivePowerPhaseA != 0.001" >
+				#{ActivePowerPhaseA},
 			</if>
-			<if test="Phase2ActivePower != 0.001">
-			#{Phase2ActivePower},
+			<if test="ActivePowerPhaseB != 0.001" >
+				#{ActivePowerPhaseB},
 			</if>
-			<if test="Phase2ReactivePower != 0.001">
-			#{Phase2ReactivePower},
+			<if test="ActivePowerPhaseC != 0.001" >
+				#{ActivePowerPhaseC},
 			</if>
-			<if test="Phase2ApparentPower != 0.001">
-			#{Phase2ApparentPower},
+			<if test="ReactivePowerPhaseA != 0.001" >
+				#{ReactivePowerPhaseA},
 			</if>
-			<if test="Phase2THDV != 0.001">
-			#{Phase2THDV},
+			<if test="ReactivePowerPhaseB != 0.001" >
+				#{ReactivePowerPhaseB},
 			</if>
-			
-			<if test="Phase2THDI != 0.001">
-			#{Phase2THDI},
+			<if test="ReactivePowerPhaseC != 0.001" >
+				#{ReactivePowerPhaseC},
 			</if>
-			<if test="Phase3VoltageLN != 0.001">
-			#{Phase3VoltageLN},
+			<if test="ApparentPowerPhaseA != 0.001" >
+				#{ApparentPowerPhaseA},
 			</if>
-			<if test="Phase31VoltageLL != 0.001">
-			#{Phase31VoltageLL},
+			<if test="ApparentPowerPhaseB != 0.001" >
+				#{ApparentPowerPhaseB},
 			</if>
-			<if test="Phase3Current != 0.001">
-			#{Phase3Current},
+			<if test="ApparentPowerPhaseC != 0.001" >
+				#{ApparentPowerPhaseC},
 			</if>
-			<if test="Phase3Cos != 0.001">
-			#{Phase3Cos},
+			<if test="CosphiPhaseA != 0.001" >
+				#{CosphiPhaseA},
 			</if>
-			<if test="Phase3PowerFactor != 0.001">
-			#{Phase3PowerFactor},
+			<if test="CosphiPhaseB != 0.001" >
+				#{CosphiPhaseB},
 			</if>
-			<if test="Phase3ActivePower != 0.001">
-			#{Phase3ActivePower},
+			<if test="CosphiPhaseC != 0.001" >
+				#{CosphiPhaseC},
 			</if>
-			<if test="Phase3ReactivePower != 0.001">
-			#{Phase3ReactivePower},
+			<if test="PowerFactorPhaseA != 0.001" >
+				#{PowerFactorPhaseA},
 			</if>
-			<if test="Phase3ApparentPower != 0.001">
-			#{Phase3ApparentPower},
+			<if test="PowerFactorPhaseB != 0.001" >
+				#{PowerFactorPhaseB},
 			</if>
-			<if test="Phase3THDV != 0.001">
-			#{Phase3THDV},
+			<if test="PowerFactorPhaseC != 0.001" >
+				#{PowerFactorPhaseC},
 			</if>
-			<if test="Phase3THDI != 0.001">
-			#{Phase3THDI},
+			<if test="VoltagePhaseAB != 0.001" >
+				#{VoltagePhaseAB},
 			</if>
-			<if test="AverageVoltageLN != 0.001">
-			#{AverageVoltageLN},
+			<if test="VoltagePhaseBC != 0.001" >
+				#{VoltagePhaseBC},
 			</if>
-			<if test="AverageVoltageLL != 0.001">
-			#{AverageVoltageLL},
+			<if test="VoltagePhaseCA != 0.001" >
+				#{VoltagePhaseCA},
 			</if>
-			<if test="TotalCurrent != 0.001">
-			#{TotalCurrent},
+			<if test="VoltagePhaseAN != 0.001" >
+				#{VoltagePhaseAN},
 			</if>
-			<if test="SystemPowerFactor != 0.001">
-			#{SystemPowerFactor},
+			<if test="VoltagePhaseBN != 0.001" >
+				#{VoltagePhaseBN},
 			</if>
-			<if test="TotalActivePower != 0.001">
-			#{TotalActivePower},
+			<if test="VoltagePhaseCN != 0.001" >
+				#{VoltagePhaseCN},
 			</if>
-			<if test="TotalReactivePower != 0.001">
-			#{TotalReactivePower},
+			<if test="CurrentPhaseA != 0.001" >
+				#{CurrentPhaseA},
 			</if>
-			<if test="TotalApparentPower != 0.001">
-			#{TotalApparentPower},
+			<if test="CurrentPhaseB != 0.001" >
+				#{CurrentPhaseB},
 			</if>
-			<if test="SystemFrequency != 0.001">
-			#{SystemFrequency},
-			</if>
-			<if test="NeutralCurrent != 0.001">
-			#{NeutralCurrent},
-			</if>
-			<if test="Energytotal != 0.001">
-			#{Energytotal},
+			<if test="CurrentPhaseC != 0.001" >
+				#{CurrentPhaseC},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">
@@ -399,128 +346,107 @@
 			</if>
 			
 			
-			<if test="Phase1VoltageLN != 0.001">
-			`Phase1VoltageLN` = #{Phase1VoltageLN},
+			<if test="TotalEnergy != 0.001" >
+				`TotalEnergy` = #{TotalEnergy},
 			</if>
-			<if test="Phase12VoltageLL != 0.001">
-			`Phase12VoltageLL` = #{Phase12VoltageLL},
+			<if test="TotalActivePower != 0.001" >
+				`TotalActivePower` = #{TotalActivePower},
 			</if>
-			<if test="Phase1Current != 0.001">
-			`Phase1Current`= #{Phase1Current},
+			<if test="TotalReactivePower != 0.001" >
+				`TotalReactivePower` = #{TotalReactivePower},
 			</if>
-			<if test="Phase1CosPhi != 0.001">
-			`Phase1CosPhi` = #{Phase1CosPhi},
+			<if test="TotalApparentPower != 0.001" >
+				`TotalApparentPower` = #{TotalApparentPower},
 			</if>
-			
-			<if test="Phase1PowerFactor != 0.001">
-			`Phase1PowerFactor` = #{Phase1PowerFactor},
+			<if test="GridFrequency != 0.001" >
+				`GridFrequency` = #{GridFrequency},
 			</if>
-			
-			<if test="Phase1ActivePower != 0.001">
-			`Phase1ActivePower` = #{Phase1ActivePower},
+			<if test="NeutralCurrent != 0.001" >
+				`NeutralCurrent` = #{NeutralCurrent},
 			</if>
-			<if test="Phase1ReactivePower != 0.001">
-			`Phase1ReactivePower` = #{Phase1ReactivePower},
+			<if test="TotalCurrent != 0.001" >
+				`TotalCurrent` = #{TotalCurrent},
 			</if>
-			<if test="Phase1ApparentPower != 0.001">
-			`Phase1ApparentPower` = #{Phase1ApparentPower},
+			<if test="TotalPowerFactor != 0.001" >
+				`TotalPowerFactor` = #{TotalPowerFactor},
 			</if>
-			<if test="Phase1THDV != 0.001">
-			`Phase1THDV` = #{Phase1THDV},
+			<if test="VoltageLN3phases != 0.001" >
+				`VoltageLN3phases` = #{VoltageLN3phases},
 			</if>
-			<if test="Phase1THDI != 0.001">
-			`Phase1THDI` = #{Phase1THDI},
+			<if test="VoltageLL3phases != 0.001" >
+				`VoltageLL3phases` = #{VoltageLL3phases},
 			</if>
-			<if test="Phase2VoltageLN != 0.001">
-			`Phase2VoltageLN` = #{Phase2VoltageLN},
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA` = #{ActivePowerPhaseA},
 			</if>
-			<if test="Phase23VoltageLL != 0.001">
-			`Phase23VoltageLL` = #{Phase23VoltageLL},
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB` = #{ActivePowerPhaseB},
 			</if>
-			<if test="Phase2Current != 0.001">
-			`Phase2Current` = #{Phase2Current},
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC` = #{ActivePowerPhaseC},
 			</if>
-			<if test="Phase2Cos != 0.001">
-			`Phase2Cos` = #{Phase2Cos},
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA` = #{ReactivePowerPhaseA},
 			</if>
-			<if test="Phase2PowerFactor != 0.001">
-			`Phase2PowerFactor` = #{Phase2PowerFactor},
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB` = #{ReactivePowerPhaseB},
 			</if>
-			<if test="Phase2ActivePower != 0.001">
-			`Phase2ActivePower` = #{Phase2ActivePower},
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC` = #{ReactivePowerPhaseC},
 			</if>
-			<if test="Phase2ReactivePower != 0.001">
-			`Phase2ReactivePower` = #{Phase2ReactivePower},
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA` = #{ApparentPowerPhaseA},
 			</if>
-			<if test="Phase2ApparentPower != 0.001">
-			`Phase2ApparentPower` = #{Phase2ApparentPower},
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB` = #{ApparentPowerPhaseB},
 			</if>
-			<if test="Phase2THDV != 0.001">
-			`Phase2THDV` = #{Phase2THDV},
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC` = #{ApparentPowerPhaseC},
 			</if>
-			
-			<if test="Phase2THDI != 0.001">
-			`Phase2THDI` = #{Phase2THDI},
+			<if test="CosphiPhaseA != 0.001" >
+				`CosphiPhaseA` = #{CosphiPhaseA},
 			</if>
-			<if test="Phase3VoltageLN != 0.001">
-			`Phase3VoltageLN` = #{Phase3VoltageLN},
+			<if test="CosphiPhaseB != 0.001" >
+				`CosphiPhaseB` = #{CosphiPhaseB},
 			</if>
-			<if test="Phase31VoltageLL != 0.001">
-			`Phase31VoltageLL` = #{Phase31VoltageLL},
+			<if test="CosphiPhaseC != 0.001" >
+				`CosphiPhaseC` = #{CosphiPhaseC},
 			</if>
-			<if test="Phase3Current != 0.001">
-			`Phase3Current` = #{Phase3Current},
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA` = #{PowerFactorPhaseA},
 			</if>
-			<if test="Phase3Cos != 0.001">
-			`Phase3Cos` = #{Phase3Cos},
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB` = #{PowerFactorPhaseB},
 			</if>
-			<if test="Phase3PowerFactor != 0.001">
-			`Phase3PowerFactor` = #{Phase3PowerFactor},
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC` = #{PowerFactorPhaseC},
 			</if>
-			<if test="Phase3ActivePower != 0.001">
-			`Phase3ActivePower` = #{Phase3ActivePower},
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB` = #{VoltagePhaseAB},
 			</if>
-			<if test="Phase3ReactivePower != 0.001">
-			`Phase3ReactivePower` = #{Phase3ReactivePower},
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC` = #{VoltagePhaseBC},
 			</if>
-			<if test="Phase3ApparentPower != 0.001">
-			`Phase3ApparentPower` = #{Phase3ApparentPower},
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA` = #{VoltagePhaseCA},
 			</if>
-			<if test="Phase3THDV != 0.001">
-			`Phase3THDV` = #{Phase3THDV},
+			<if test="VoltagePhaseAN != 0.001" >
+				`VoltagePhaseAN` = #{VoltagePhaseAN},
 			</if>
-			<if test="Phase3THDI != 0.001">
-			`Phase3THDI` = #{Phase3THDI},
+			<if test="VoltagePhaseBN != 0.001" >
+				`VoltagePhaseBN` = #{VoltagePhaseBN},
 			</if>
-			<if test="AverageVoltageLN != 0.001">
-			`AverageVoltageLN` = #{AverageVoltageLN},
+			<if test="VoltagePhaseCN != 0.001" >
+				`VoltagePhaseCN` = #{VoltagePhaseCN},
 			</if>
-			<if test="AverageVoltageLL != 0.001">
-			`AverageVoltageLL` = #{AverageVoltageLL},
+			<if test="CurrentPhaseA != 0.001" >
+				`CurrentPhaseA` = #{CurrentPhaseA},
 			</if>
-			<if test="TotalCurrent != 0.001">
-			`TotalCurrent` = #{TotalCurrent},
+			<if test="CurrentPhaseB != 0.001" >
+				`CurrentPhaseB` = #{CurrentPhaseB},
 			</if>
-			<if test="SystemPowerFactor != 0.001">
-			`SystemPowerFactor` = #{SystemPowerFactor},
-			</if>
-			<if test="TotalActivePower != 0.001">
-			`TotalActivePower` = #{TotalActivePower},
-			</if>
-			<if test="TotalReactivePower != 0.001">
-			`TotalReactivePower` = #{TotalReactivePower},
-			</if>
-			<if test="TotalApparentPower != 0.001">
-			`TotalApparentPower` = #{TotalApparentPower},
-			</if>
-			<if test="SystemFrequency != 0.001">
-			`SystemFrequency` = #{SystemFrequency},
-			</if>
-			<if test="NeutralCurrent != 0.001">
-			`NeutralCurrent` = #{NeutralCurrent},
-			</if>
-			<if test="Energytotal != 0.001">
-			`Energytotal` = #{Energytotal},
+			<if test="CurrentPhaseC != 0.001" >
+				`CurrentPhaseC` = #{CurrentPhaseC},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">

@@ -5838,20 +5838,20 @@ public class UploadFilesController extends BaseController {
 						                                if (initialValue == 0.001) continue;
 						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 						                                pd.getWriteMethod().invoke(dataModelSma1250Tlus, scaledValue);
-						                                if (slug.equals("PowerAC")) dataModelSma1250Tlus.setNvmActivePower(scaledValue);
-						                                if (slug.equals("Energytotal")) dataModelSma1250Tlus.setNvmActiveEnergy(scaledValue);
+						                                if (slug.equals("ACActivePower")) dataModelSma1250Tlus.setNvmActivePower(scaledValue);
+						                                if (slug.equals("TotalEnergy")) dataModelSma1250Tlus.setNvmActiveEnergy(scaledValue);
 						                              }
 						                            }
 						                            
 						                            DeviceEntity deviceUpdateE = new DeviceEntity();
 						                            
-						                            // lPower
-						                            if(dataModelSma1250Tlus.getPowerAC() != 0.001 && dataModelSma1250Tlus.getPowerAC() >= 0){
+						                            // ACActivePower
+						                            if(dataModelSma1250Tlus.getACActivePower() != 0.001 && dataModelSma1250Tlus.getACActivePower() >= 0){
 						                              deviceUpdateE.setLast_updated(dataModelSma1250Tlus.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(dataModelSma1250Tlus.getPowerAC() != 0.001 ? dataModelSma1250Tlus.getPowerAC() : null);
-						                            deviceUpdateE.setField_value1(dataModelSma1250Tlus.getPowerAC() != 0.001 ? dataModelSma1250Tlus.getPowerAC() : null);
+						                            deviceUpdateE.setLast_value(dataModelSma1250Tlus.getACActivePower() != 0.001 ? dataModelSma1250Tlus.getACActivePower() : null);
+						                            deviceUpdateE.setField_value1(dataModelSma1250Tlus.getACActivePower() != 0.001 ? dataModelSma1250Tlus.getACActivePower() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -5939,13 +5939,13 @@ public class UploadFilesController extends BaseController {
 						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 						                                pd.getWriteMethod().invoke(dataModelKlea, scaledValue);
 						                                if (slug.equals("TotalActivePower")) dataModelKlea.setNvmActivePower(scaledValue);
-						                                if (slug.equals("Energytotal")) dataModelKlea.setNvmActiveEnergy(scaledValue);
+						                                if (slug.equals("TotalEnergy")) dataModelKlea.setNvmActiveEnergy(scaledValue);
 						                              }
 						                            }
 						                            
 						                            DeviceEntity deviceUpdateE = new DeviceEntity();
 						                            
-						                            // lPower
+						                            // TotalActivePower
 						                            if(dataModelKlea.getTotalActivePower() != 0.001 && dataModelKlea.getTotalActivePower() >= 0){
 						                              deviceUpdateE.setLast_updated(dataModelKlea.getTime());
 						                            }

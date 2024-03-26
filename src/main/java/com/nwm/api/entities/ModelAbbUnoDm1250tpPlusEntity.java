@@ -11,37 +11,59 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	private int error;
 	private int low_alarm;
 	private int high_alarm;
-	private double Powerfactorcosphi;
-	private double Energytotal;
-	private double Gridfrequency;
-	private double CurrentAC;
-	private double CurrentDCtotal;
-	private double PowerAC;
-	private double VoltageAC;
-	private double VoltageACphase1;
-	private double VoltageACphase2;
-	private double VoltageACphase3;
-	private double PhasevoltageL1L2;
-	private double PhasevoltageL2L3;
-	private double PhasevoltageL3L1;
-	private double VoltageDC;
+	
+	private double TotalEnergy;
+	private double Wmax;
+	private double ACActivePower;
+	private double ACReactivePower;
+	private double ACApparentPower;
+	private double ACPowerFactor;
+	private double ACGridFrequency;
+	private double ACVoltagePhaseAB;
+	private double ACVoltagePhaseBC;
+	private double ACVoltagePhaseCA;
+	private double ACVoltagePhaseAN;
+	private double ACVoltagePhaseBN;
+	private double ACVoltagePhaseCN;
+	private double ACCurrent;
+	private double ACCurrentPhaseA;
+	private double ACCurrentPhaseB;
+	private double ACCurrentPhaseC;
+	private double DCVoltage;
+	private double DCCurrent;
+	private double DCPowerChanel1;
+	private double DCVoltageChanel1;
+	private double DCCurrentChanel1;
+	private double DCOperatingStateChanel1;
+	private double DCPowerChanel2;
+	private double DCVoltageChanel2;
+	private double DCCurrentChanel2;
+	private double DCOperatingStateChanel2;
+	private double MPPT1;
+	private double MPPT1Voltage;
+	private double MPPT1Current;
+	private double MPTT2;
+	private double MPPT2Voltage;
+	private double MPPT2Current;
+	private double STRING1;
+	private double STRING2;
+	private double Panel1;
+	private double Panel2;
+	private double Panel3;
+	private double Panel4;
+	private double OperatingState;
+	private double Alarmstate;
+	private double GlobalState;
 	private double CabinetTemperature;
 	private double HeatSinkTemperature;
 	private double OtherTemperature;
-	private double Apparentpower;
-	private double Reactivepower;
-	private double DCCurrentChanel1;
-	private double DCVoltageChanel1;
-	private double DCPowerChanel1;
-	private double OperatingStateChanel1;
-	private double DCCurrentChanel2;
-	private double DCVoltageChanel2;
-	private double DCPowerChanel2;
-	private double OperatingStateChanel2;
-	private double Inverterstate;
-	private double Alarmstate;
-	private double GlobalState;
-	private double WMax;
+	private double WMaxPercent;
+	private double WMaxPercentEnable;
+	private double PFSet;
+	private double PFSetEnable;
+	private double VarMaxPercent;
+	private double VarMaxPercentEnable;
+	private double ControlINV;
 	
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
@@ -50,6 +72,7 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	private String view_tablename;
 	private String job_tablename;
 	private int enable_alert;
+	
 	public String getTime() {
 		return time;
 	}
@@ -80,89 +103,257 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	public void setHigh_alarm(int high_alarm) {
 		this.high_alarm = high_alarm;
 	}
-	public double getPowerfactorcosphi() {
-		return Powerfactorcosphi;
+	public double getTotalEnergy() {
+		return TotalEnergy;
 	}
-	public void setPowerfactorcosphi(double powerfactorcosphi) {
-		Powerfactorcosphi = powerfactorcosphi;
+	public void setTotalEnergy(double totalEnergy) {
+		TotalEnergy = totalEnergy;
 	}
-	public double getEnergytotal() {
-		return Energytotal;
+	public double getWmax() {
+		return Wmax;
 	}
-	public void setEnergytotal(double energytotal) {
-		Energytotal = energytotal;
+	public void setWmax(double wmax) {
+		Wmax = wmax;
 	}
-	public double getGridfrequency() {
-		return Gridfrequency;
+	public double getACActivePower() {
+		return ACActivePower;
 	}
-	public void setGridfrequency(double gridfrequency) {
-		Gridfrequency = gridfrequency;
+	public void setACActivePower(double aCActivePower) {
+		ACActivePower = aCActivePower;
 	}
-	public double getCurrentAC() {
-		return CurrentAC;
+	public double getACReactivePower() {
+		return ACReactivePower;
 	}
-	public void setCurrentAC(double currentAC) {
-		CurrentAC = currentAC;
+	public void setACReactivePower(double aCReactivePower) {
+		ACReactivePower = aCReactivePower;
 	}
-	public double getCurrentDCtotal() {
-		return CurrentDCtotal;
+	public double getACApparentPower() {
+		return ACApparentPower;
 	}
-	public void setCurrentDCtotal(double currentDCtotal) {
-		CurrentDCtotal = currentDCtotal;
+	public void setACApparentPower(double aCApparentPower) {
+		ACApparentPower = aCApparentPower;
 	}
-	public double getPowerAC() {
-		return PowerAC;
+	public double getACPowerFactor() {
+		return ACPowerFactor;
 	}
-	public void setPowerAC(double powerAC) {
-		PowerAC = powerAC;
+	public void setACPowerFactor(double aCPowerFactor) {
+		ACPowerFactor = aCPowerFactor;
 	}
-	public double getVoltageAC() {
-		return VoltageAC;
+	public double getACGridFrequency() {
+		return ACGridFrequency;
 	}
-	public void setVoltageAC(double voltageAC) {
-		VoltageAC = voltageAC;
+	public void setACGridFrequency(double aCGridFrequency) {
+		ACGridFrequency = aCGridFrequency;
 	}
-	public double getVoltageACphase1() {
-		return VoltageACphase1;
+	public double getACVoltagePhaseAB() {
+		return ACVoltagePhaseAB;
 	}
-	public void setVoltageACphase1(double voltageACphase1) {
-		VoltageACphase1 = voltageACphase1;
+	public void setACVoltagePhaseAB(double aCVoltagePhaseAB) {
+		ACVoltagePhaseAB = aCVoltagePhaseAB;
 	}
-	public double getVoltageACphase2() {
-		return VoltageACphase2;
+	public double getACVoltagePhaseBC() {
+		return ACVoltagePhaseBC;
 	}
-	public void setVoltageACphase2(double voltageACphase2) {
-		VoltageACphase2 = voltageACphase2;
+	public void setACVoltagePhaseBC(double aCVoltagePhaseBC) {
+		ACVoltagePhaseBC = aCVoltagePhaseBC;
 	}
-	public double getVoltageACphase3() {
-		return VoltageACphase3;
+	public double getACVoltagePhaseCA() {
+		return ACVoltagePhaseCA;
 	}
-	public void setVoltageACphase3(double voltageACphase3) {
-		VoltageACphase3 = voltageACphase3;
+	public void setACVoltagePhaseCA(double aCVoltagePhaseCA) {
+		ACVoltagePhaseCA = aCVoltagePhaseCA;
 	}
-	public double getPhasevoltageL1L2() {
-		return PhasevoltageL1L2;
+	public double getACVoltagePhaseAN() {
+		return ACVoltagePhaseAN;
 	}
-	public void setPhasevoltageL1L2(double phasevoltageL1L2) {
-		PhasevoltageL1L2 = phasevoltageL1L2;
+	public void setACVoltagePhaseAN(double aCVoltagePhaseAN) {
+		ACVoltagePhaseAN = aCVoltagePhaseAN;
 	}
-	public double getPhasevoltageL2L3() {
-		return PhasevoltageL2L3;
+	public double getACVoltagePhaseBN() {
+		return ACVoltagePhaseBN;
 	}
-	public void setPhasevoltageL2L3(double phasevoltageL2L3) {
-		PhasevoltageL2L3 = phasevoltageL2L3;
+	public void setACVoltagePhaseBN(double aCVoltagePhaseBN) {
+		ACVoltagePhaseBN = aCVoltagePhaseBN;
 	}
-	public double getPhasevoltageL3L1() {
-		return PhasevoltageL3L1;
+	public double getACVoltagePhaseCN() {
+		return ACVoltagePhaseCN;
 	}
-	public void setPhasevoltageL3L1(double phasevoltageL3L1) {
-		PhasevoltageL3L1 = phasevoltageL3L1;
+	public void setACVoltagePhaseCN(double aCVoltagePhaseCN) {
+		ACVoltagePhaseCN = aCVoltagePhaseCN;
 	}
-	public double getVoltageDC() {
-		return VoltageDC;
+	public double getACCurrent() {
+		return ACCurrent;
 	}
-	public void setVoltageDC(double voltageDC) {
-		VoltageDC = voltageDC;
+	public void setACCurrent(double aCCurrent) {
+		ACCurrent = aCCurrent;
+	}
+	public double getACCurrentPhaseA() {
+		return ACCurrentPhaseA;
+	}
+	public void setACCurrentPhaseA(double aCCurrentPhaseA) {
+		ACCurrentPhaseA = aCCurrentPhaseA;
+	}
+	public double getACCurrentPhaseB() {
+		return ACCurrentPhaseB;
+	}
+	public void setACCurrentPhaseB(double aCCurrentPhaseB) {
+		ACCurrentPhaseB = aCCurrentPhaseB;
+	}
+	public double getACCurrentPhaseC() {
+		return ACCurrentPhaseC;
+	}
+	public void setACCurrentPhaseC(double aCCurrentPhaseC) {
+		ACCurrentPhaseC = aCCurrentPhaseC;
+	}
+	public double getDCVoltage() {
+		return DCVoltage;
+	}
+	public void setDCVoltage(double dCVoltage) {
+		DCVoltage = dCVoltage;
+	}
+	public double getDCCurrent() {
+		return DCCurrent;
+	}
+	public void setDCCurrent(double dCCurrent) {
+		DCCurrent = dCCurrent;
+	}
+	public double getDCPowerChanel1() {
+		return DCPowerChanel1;
+	}
+	public void setDCPowerChanel1(double dCPowerChanel1) {
+		DCPowerChanel1 = dCPowerChanel1;
+	}
+	public double getDCVoltageChanel1() {
+		return DCVoltageChanel1;
+	}
+	public void setDCVoltageChanel1(double dCVoltageChanel1) {
+		DCVoltageChanel1 = dCVoltageChanel1;
+	}
+	public double getDCCurrentChanel1() {
+		return DCCurrentChanel1;
+	}
+	public void setDCCurrentChanel1(double dCCurrentChanel1) {
+		DCCurrentChanel1 = dCCurrentChanel1;
+	}
+	public double getDCOperatingStateChanel1() {
+		return DCOperatingStateChanel1;
+	}
+	public void setDCOperatingStateChanel1(double dCOperatingStateChanel1) {
+		DCOperatingStateChanel1 = dCOperatingStateChanel1;
+	}
+	public double getDCPowerChanel2() {
+		return DCPowerChanel2;
+	}
+	public void setDCPowerChanel2(double dCPowerChanel2) {
+		DCPowerChanel2 = dCPowerChanel2;
+	}
+	public double getDCVoltageChanel2() {
+		return DCVoltageChanel2;
+	}
+	public void setDCVoltageChanel2(double dCVoltageChanel2) {
+		DCVoltageChanel2 = dCVoltageChanel2;
+	}
+	public double getDCCurrentChanel2() {
+		return DCCurrentChanel2;
+	}
+	public void setDCCurrentChanel2(double dCCurrentChanel2) {
+		DCCurrentChanel2 = dCCurrentChanel2;
+	}
+	public double getDCOperatingStateChanel2() {
+		return DCOperatingStateChanel2;
+	}
+	public void setDCOperatingStateChanel2(double dCOperatingStateChanel2) {
+		DCOperatingStateChanel2 = dCOperatingStateChanel2;
+	}
+	public double getMPPT1() {
+		return MPPT1;
+	}
+	public void setMPPT1(double mPPT1) {
+		MPPT1 = mPPT1;
+	}
+	public double getMPPT1Voltage() {
+		return MPPT1Voltage;
+	}
+	public void setMPPT1Voltage(double mPPT1Voltage) {
+		MPPT1Voltage = mPPT1Voltage;
+	}
+	public double getMPPT1Current() {
+		return MPPT1Current;
+	}
+	public void setMPPT1Current(double mPPT1Current) {
+		MPPT1Current = mPPT1Current;
+	}
+	public double getMPTT2() {
+		return MPTT2;
+	}
+	public void setMPTT2(double mPTT2) {
+		MPTT2 = mPTT2;
+	}
+	public double getMPPT2Voltage() {
+		return MPPT2Voltage;
+	}
+	public void setMPPT2Voltage(double mPPT2Voltage) {
+		MPPT2Voltage = mPPT2Voltage;
+	}
+	public double getMPPT2Current() {
+		return MPPT2Current;
+	}
+	public void setMPPT2Current(double mPPT2Current) {
+		MPPT2Current = mPPT2Current;
+	}
+	public double getSTRING1() {
+		return STRING1;
+	}
+	public void setSTRING1(double sTRING1) {
+		STRING1 = sTRING1;
+	}
+	public double getSTRING2() {
+		return STRING2;
+	}
+	public void setSTRING2(double sTRING2) {
+		STRING2 = sTRING2;
+	}
+	public double getPanel1() {
+		return Panel1;
+	}
+	public void setPanel1(double panel1) {
+		Panel1 = panel1;
+	}
+	public double getPanel2() {
+		return Panel2;
+	}
+	public void setPanel2(double panel2) {
+		Panel2 = panel2;
+	}
+	public double getPanel3() {
+		return Panel3;
+	}
+	public void setPanel3(double panel3) {
+		Panel3 = panel3;
+	}
+	public double getPanel4() {
+		return Panel4;
+	}
+	public void setPanel4(double panel4) {
+		Panel4 = panel4;
+	}
+	public double getOperatingState() {
+		return OperatingState;
+	}
+	public void setOperatingState(double operatingState) {
+		OperatingState = operatingState;
+	}
+	public double getAlarmstate() {
+		return Alarmstate;
+	}
+	public void setAlarmstate(double alarmstate) {
+		Alarmstate = alarmstate;
+	}
+	public double getGlobalState() {
+		return GlobalState;
+	}
+	public void setGlobalState(double globalState) {
+		GlobalState = globalState;
 	}
 	public double getCabinetTemperature() {
 		return CabinetTemperature;
@@ -182,89 +373,47 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	public void setOtherTemperature(double otherTemperature) {
 		OtherTemperature = otherTemperature;
 	}
-	public double getApparentpower() {
-		return Apparentpower;
+	public double getWMaxPercent() {
+		return WMaxPercent;
 	}
-	public void setApparentpower(double apparentpower) {
-		Apparentpower = apparentpower;
+	public void setWMaxPercent(double wMaxPercent) {
+		WMaxPercent = wMaxPercent;
 	}
-	public double getReactivepower() {
-		return Reactivepower;
+	public double getWMaxPercentEnable() {
+		return WMaxPercentEnable;
 	}
-	public void setReactivepower(double reactivepower) {
-		Reactivepower = reactivepower;
+	public void setWMaxPercentEnable(double wMaxPercentEnable) {
+		WMaxPercentEnable = wMaxPercentEnable;
 	}
-	public double getDCCurrentChanel1() {
-		return DCCurrentChanel1;
+	public double getPFSet() {
+		return PFSet;
 	}
-	public void setDCCurrentChanel1(double dCCurrentChanel1) {
-		DCCurrentChanel1 = dCCurrentChanel1;
+	public void setPFSet(double pFSet) {
+		PFSet = pFSet;
 	}
-	public double getDCVoltageChanel1() {
-		return DCVoltageChanel1;
+	public double getPFSetEnable() {
+		return PFSetEnable;
 	}
-	public void setDCVoltageChanel1(double dCVoltageChanel1) {
-		DCVoltageChanel1 = dCVoltageChanel1;
+	public void setPFSetEnable(double pFSetEnable) {
+		PFSetEnable = pFSetEnable;
 	}
-	public double getDCPowerChanel1() {
-		return DCPowerChanel1;
+	public double getVarMaxPercent() {
+		return VarMaxPercent;
 	}
-	public void setDCPowerChanel1(double dCPowerChanel1) {
-		DCPowerChanel1 = dCPowerChanel1;
+	public void setVarMaxPercent(double varMaxPercent) {
+		VarMaxPercent = varMaxPercent;
 	}
-	public double getOperatingStateChanel1() {
-		return OperatingStateChanel1;
+	public double getVarMaxPercentEnable() {
+		return VarMaxPercentEnable;
 	}
-	public void setOperatingStateChanel1(double operatingStateChanel1) {
-		OperatingStateChanel1 = operatingStateChanel1;
+	public void setVarMaxPercentEnable(double varMaxPercentEnable) {
+		VarMaxPercentEnable = varMaxPercentEnable;
 	}
-	public double getDCCurrentChanel2() {
-		return DCCurrentChanel2;
+	public double getControlINV() {
+		return ControlINV;
 	}
-	public void setDCCurrentChanel2(double dCCurrentChanel2) {
-		DCCurrentChanel2 = dCCurrentChanel2;
-	}
-	public double getDCVoltageChanel2() {
-		return DCVoltageChanel2;
-	}
-	public void setDCVoltageChanel2(double dCVoltageChanel2) {
-		DCVoltageChanel2 = dCVoltageChanel2;
-	}
-	public double getDCPowerChanel2() {
-		return DCPowerChanel2;
-	}
-	public void setDCPowerChanel2(double dCPowerChanel2) {
-		DCPowerChanel2 = dCPowerChanel2;
-	}
-	public double getOperatingStateChanel2() {
-		return OperatingStateChanel2;
-	}
-	public void setOperatingStateChanel2(double operatingStateChanel2) {
-		OperatingStateChanel2 = operatingStateChanel2;
-	}
-	public double getInverterstate() {
-		return Inverterstate;
-	}
-	public void setInverterstate(double inverterstate) {
-		Inverterstate = inverterstate;
-	}
-	public double getAlarmstate() {
-		return Alarmstate;
-	}
-	public void setAlarmstate(double alarmstate) {
-		Alarmstate = alarmstate;
-	}
-	public double getGlobalState() {
-		return GlobalState;
-	}
-	public void setGlobalState(double globalState) {
-		GlobalState = globalState;
-	}
-	public double getWMax() {
-		return WMax;
-	}
-	public void setWMax(double wMax) {
-		WMax = wMax;
+	public void setControlINV(double controlINV) {
+		ControlINV = controlINV;
 	}
 	public double getNvmActivePower() {
 		return nvmActivePower;
@@ -308,6 +457,5 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	public void setEnable_alert(int enable_alert) {
 		this.enable_alert = enable_alert;
 	}
-	
 	
 }

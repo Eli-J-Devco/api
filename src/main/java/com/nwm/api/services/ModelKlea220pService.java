@@ -29,7 +29,7 @@ public class ModelKlea220pService extends DB {
 			if (words.size() > 0) {
 				ModelKlea220pEntity dataModel = new ModelKlea220pEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
 				
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
@@ -37,59 +37,44 @@ public class ModelKlea220pService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				
-				dataModel.setPhase1VoltageLN(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModel.setPhase12VoltageLL(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
-				dataModel.setPhase1Current(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
-				dataModel.setPhase1CosPhi(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataModel.setPhase1PowerFactor(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModel.setPhase1ActivePower(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
-				dataModel.setPhase1ReactivePower(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				dataModel.setPhase1ApparentPower(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
-				
-				dataModel.setPhase1THDV(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModel.setPhase1THDI(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModel.setPhase2VoltageLN(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));;
-				dataModel.setPhase23VoltageLL(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));;
-				
-				dataModel.setPhase2Current(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
-				dataModel.setPhase2Cos(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
-				dataModel.setPhase2PowerFactor(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
-				dataModel.setPhase2ActivePower(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
-				
-				dataModel.setPhase2ReactivePower(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
-				dataModel.setPhase2ApparentPower(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
-				dataModel.setPhase2THDV(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
-				
-				dataModel.setPhase2THDI(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
-				dataModel.setPhase3VoltageLN(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
-				dataModel.setPhase31VoltageLL(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
-				dataModel.setPhase3Current(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
-				dataModel.setPhase3Cos(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
-				dataModel.setPhase3PowerFactor(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModel.setPhase3ActivePower(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
-				dataModel.setPhase3ReactivePower(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
-				dataModel.setPhase3ApparentPower(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
-				
-				dataModel.setPhase3THDV(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
-				dataModel.setPhase3THDI(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
-				dataModel.setAverageVoltageLN(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
-				dataModel.setAverageVoltageLL(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
-				dataModel.setTotalCurrent(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModel.setSystemPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
-				dataModel.setTotalActivePower(power);
-				dataModel.setTotalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				
-				
-				dataModel.setTotalApparentPower(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
-				
-				dataModel.setSystemFrequency(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
-				dataModel.setNeutralCurrent(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModel.setEnergytotal(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModel.setTotalEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setTotalActivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModel.setTotalReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
+				dataModel.setTotalApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
+				dataModel.setGridFrequency(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModel.setNeutralCurrent(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModel.setTotalCurrent(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModel.setTotalPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
+				dataModel.setVoltageLN3phases(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
+				dataModel.setVoltageLL3phases(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModel.setActivePowerPhaseA(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
+				dataModel.setActivePowerPhaseB(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
+				dataModel.setActivePowerPhaseC(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
+				dataModel.setReactivePowerPhaseA(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
+				dataModel.setReactivePowerPhaseB(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
+				dataModel.setReactivePowerPhaseC(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
+				dataModel.setApparentPowerPhaseA(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
+				dataModel.setApparentPowerPhaseB(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModel.setApparentPowerPhaseC(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModel.setCosphiPhaseA(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
+				dataModel.setCosphiPhaseB(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
+				dataModel.setCosphiPhaseC(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
+				dataModel.setPowerFactorPhaseA(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
+				dataModel.setPowerFactorPhaseB(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
+				dataModel.setPowerFactorPhaseC(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
+				dataModel.setVoltagePhaseAB(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModel.setVoltagePhaseBC(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModel.setVoltagePhaseCA(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModel.setVoltagePhaseAN(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModel.setVoltagePhaseBN(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
+				dataModel.setVoltagePhaseCN(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
+				dataModel.setCurrentPhaseA(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
+				dataModel.setCurrentPhaseB(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
+				dataModel.setCurrentPhaseC(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
-				Double nvmActiveEnergy = Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001");
+				Double nvmActiveEnergy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				
 				dataModel.setNvmActivePower(power);
 				dataModel.setNvmActiveEnergy(nvmActiveEnergy);

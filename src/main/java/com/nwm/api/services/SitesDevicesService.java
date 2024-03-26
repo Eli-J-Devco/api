@@ -224,4 +224,38 @@ public class SitesDevicesService extends DB {
 		
 	}
 	
+	/**
+	 * @description get list summary device by id_site
+	 * @author Hung.Bui
+	 * @since 2023-06-20
+	 * @param id_site
+	 */
+	
+	public String createVerificationCode(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
+			return "";
+		} catch (Exception ex) {
+			return "";
+		}
+	}
+	
+	/**
+	 * @description get list summary device by id_site
+	 * @author Hung.Bui
+	 * @since 2023-06-20
+	 * @param id_site
+	 */
+	
+	public String sendVerificationCode(String obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
+			return "";
+		} catch (Exception ex) {
+			return "";
+		}
+	}
+	
 }
