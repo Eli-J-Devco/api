@@ -576,8 +576,11 @@
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
 			ROUND(AVG( dv.expected_power_ac )
 				<choose>
+					<when test="data_send_time == 8">
+						/ 60
+					</when>
 					<when test="data_send_time == 1">
-						* 5 / 60
+						/ 12
 					</when>
 					<when test="data_send_time == 2">
 						/ 4
@@ -591,7 +594,7 @@
 					<when test="data_send_time == 5">
 						* 24 *
 						IF(
-							FLOOR(DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, '+00:00', t.`offset` )), CONVERT_TZ( dv.time, '+00:00', t.`offset` )) / 7) >= 1,
+							DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, '+00:00', t.`offset` )), CONVERT_TZ( dv.time, '+00:00', t.`offset` )) >= 7,
 							7,
 							1 + DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, '+00:00', t.`offset` )), CONVERT_TZ( dv.time, '+00:00', t.`offset` ))
 						)
@@ -720,33 +723,26 @@
 		GROUP BY sdr.time
 	</select>
 	
-	<select id="getDataPowerCustom" resultType="Map" >
+	<select id="getDataPowerCustom" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			s.id,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( sdr.time, '%m/%d' )
-						ELSE DATE_FORMAT( sdr.time, '%b. %Y' )
-					END AS categories_time,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 5">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y') AS time_format,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 6">
-					DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 7">
-					DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
@@ -787,13 +783,41 @@
 							1
 						</when>
 						<when test="data_send_time == 5">
-							7
+							IF(
+								DATEDIFF(#{end_date}, sdr.time) >= 7,
+								7,
+								(1 + DATEDIFF(#{end_date}, sdr.time))
+							)
 						</when>
 						<when test="data_send_time == 6">
-							DAYOFMONTH(LAST_DAY(sdr.time))
+							IF(
+								DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
+								(1 + DATEDIFF(#{end_date}, #{start_date})),
+								IF(
+									sdr.time BETWEEN #{start_date} AND LAST_DAY(#{start_date}),
+									(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
+									IF(
+										sdr.time BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
+										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
+										DAYOFMONTH(LAST_DAY(sdr.time))
+									)
+								)
+							)
 						</when>
 						<when test="data_send_time == 7">
-							DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31'))
+							IF(
+								YEAR(#{end_date}) = YEAR(#{start_date}),
+								(1 + DATEDIFF(#{end_date}, #{start_date})),
+								IF(
+									sdr.time BETWEEN #{start_date} AND DATE_FORMAT(#{start_date}, '%Y-12-31'),
+									(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
+									IF(
+										sdr.time BETWEEN DATE_FORMAT(#{end_date}, '%Y-01-01') AND #{end_date},
+										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
+										DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31'))
+									)
+								)
+							)
 						</when>
 					</choose>,
 					1
@@ -873,17 +897,16 @@
 		GROUP BY time_format
 	</select>
 	
-	<select id="getDataVirtualDeviceCustom" resultType="Map" >
+	<select id="getDataVirtualDeviceCustom" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
-			download_time,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT(time_format, '%m/%d/%Y')
+					DATE_FORMAT(time_format, '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -903,13 +926,65 @@
 					IFNULL(ROUND(AVG(expected_power) * 24, 1), 0.001)
 				</when>
 				<when test="data_send_time == 5">
-					IFNULL(ROUND(AVG(expected_power) * 24 * 7, 1), 0.001)
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									DATEDIFF(#{end_date}, time_format) >= 7,
+									7,
+									(1 + DATEDIFF(#{end_date}, time_format))
+								)
+							),
+							1
+						),
+						0.001
+					)
 				</when>
 				<when test="data_send_time == 6">
-					IFNULL(ROUND(AVG(expected_power) * 24 * DAYOFMONTH(LAST_DAY(time_format)), 1), 0.001)
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
+									(1 + DATEDIFF(#{end_date}, #{start_date})),
+									IF(
+										STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN #{start_date} AND LAST_DAY(#{start_date}),
+										(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
+										IF(
+											STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
+											(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
+											DAYOFMONTH(LAST_DAY(time_format))
+										)
+									)
+								)
+							),
+							1
+						),
+						0.001
+					)
 				</when>
 				<when test="data_send_time == 7">
-					IFNULL(ROUND(AVG(expected_power) * 24 * DAYOFYEAR(DATE_FORMAT(time_format, '%Y-12-31')), 1), 0.001)
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									YEAR(#{end_date}) = YEAR(#{start_date}),
+									(1 + DATEDIFF(#{end_date}, #{start_date})),
+									IF(
+										STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN #{start_date} AND DATE_FORMAT(#{start_date}, '%Y-12-31'),
+										(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
+										IF(
+											STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{end_date}, '%Y-01-01') AND #{end_date},
+											(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
+											DAYOFYEAR(DATE_FORMAT(time_format, '%Y-12-31'))
+										)
+									)
+								)
+							),
+							1
+						),
+						0.001
+					)
 				</when>
 			</choose> AS expected_power
 		FROM (
@@ -917,28 +992,21 @@
 				s.id,
 				<choose>
 					<when test="data_send_time == 4">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
-						CASE
-							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( dv.time, '%m/%d' )
-							ELSE DATE_FORMAT( dv.time, '%b. %Y' )
-						END AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 5">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 6">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 7">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
@@ -976,7 +1044,7 @@
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -989,10 +1057,9 @@
 			</choose>
 	</select>
 	
-	<select id="getDataPowerCustomAtMost5Days" resultType="Map" >
+	<select id="getDataPowerCustomAtMost5Days" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
-			download_time,
 			time_format,
 			time_full,
 			categories_time,
@@ -1006,25 +1073,21 @@
 					d.id_device_type,
 					<choose>
 						<when test="data_send_time == 4">
-							DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-							DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-							DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-							DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
+							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
+							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS categories_time,
 						</when>
 						<when test="data_send_time == 5">
-							DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-							FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-							DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+							DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y') AS time_format,
+							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 						</when>
 						<when test="data_send_time == 6">
-							DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 							DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 							DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 						</when>
 						<when test="data_send_time == 7">
-							DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
 							DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 							DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
@@ -1087,31 +1150,27 @@
 		GROUP BY time_format
 	</select>
 	
-	<select id="getDataPowerCustomAtMost5DaysEachMeter" resultType="Map" >
+	<select id="getDataPowerCustomAtMost5DaysEachMeter" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			s.id,
 			d.id_device_type,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-					DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 5">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y') AS time_format,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 6">
-					DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 7">
-					DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
@@ -1137,17 +1196,16 @@
 			time_format
 	</select>
 	
-	<select id="getDataVirtualDeviceCustomAtMost5Days" resultType="Map" >
+	<select id="getDataVirtualDeviceCustomAtMost5Days" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
-			download_time,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT(time_format, '%m/%d/%Y')
+					DATE_FORMAT(time_format, '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -1168,25 +1226,21 @@
 				s.id,
 				<choose>
 					<when test="data_send_time == 4">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 5">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 6">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 7">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
@@ -1224,7 +1278,7 @@
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -1237,30 +1291,26 @@
 			</choose>
 	</select>
 	
-	<select id="getDataPowerYear" resultType="Map" >
+	<select id="getDataPowerYear" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			s.id,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_format,
+					DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 5">
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS download_time,
-					FLOOR(DATEDIFF(sdr.time, #{start_date}) / 7) AS time_format,
-					DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_format,
+					DATE_FORMAT( DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
+					DATE_FORMAT( DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 6">
-					DATE_FORMAT( sdr.time, '%m/%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 				</when>
 				<when test="data_send_time == 7">
-					DATE_FORMAT( sdr.time, '%Y' ) AS download_time,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 					DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 					DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
@@ -1302,19 +1352,47 @@
 							1
 						</when>
 						<when test="data_send_time == 5">
-							7
+							IF(
+								DATEDIFF(#{end_date}, sdr.time) >= 7,
+								7,
+								1 + DATEDIFF(#{end_date}, sdr.time)
+							)
 						</when>
 						<when test="data_send_time == 6">
-							DAYOFMONTH(LAST_DAY(sdr.time))
+							IF(
+								DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
+								(1 + DATEDIFF(#{end_date}, #{start_date})),
+								IF(
+									sdr.time BETWEEN #{start_date} AND LAST_DAY(#{start_date}),
+									(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
+									IF(
+										sdr.time BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
+										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
+										DAYOFMONTH(LAST_DAY(sdr.time))
+									)
+								)
+							)
 						</when>
 						<when test="data_send_time == 7">
-							DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31'))
+							IF(
+								YEAR(#{end_date}) = YEAR(#{start_date}),
+								(1 + DATEDIFF(#{end_date}, #{start_date})),
+								IF(
+									sdr.time BETWEEN #{start_date} AND DATE_FORMAT(#{start_date}, '%Y-12-31'),
+									(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
+									IF(
+										sdr.time BETWEEN DATE_FORMAT(#{end_date}, '%Y-01-01') AND #{end_date},
+										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
+										DAYOFYEAR(DATE_FORMAT(sdr.time, '%Y-12-31'))
+									)
+								)
+							)
 						</when>
 					</choose>,
 					1
 				),
 				0.001
-			) AS expected_energy,
+			) AS expected_power,
 			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
 			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
 		FROM
@@ -1340,17 +1418,16 @@
 		GROUP BY time_format
 	</select>
 	
-	<select id="getDataVirtualDeviceYear" resultType="Map" >
+	<select id="getDataVirtualDeviceYear" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
-			download_time,
 			<choose>
 				<when test="data_send_time == 4">
-					DATE_FORMAT(time_format, '%m/%d/%Y')
+					DATE_FORMAT(time_format, '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -1365,31 +1442,92 @@
 			categories_time,
 			IFNULL(ROUND(SUM(chart_energy_kwh), 1), 0.001) AS chart_energy_kwh,
 			IFNULL(ROUND(AVG(nvm_irradiance), 1), 0.001) AS nvm_irradiance,
-			IFNULL(ROUND(SUM(expected_energy), 0), 0) AS expected_energy
+			<choose>
+				<when test="data_send_time == 4">
+					IFNULL(ROUND(AVG(expected_power) * 24, 1), 0.001)
+				</when>
+				<when test="data_send_time == 5">
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									DATEDIFF(#{end_date}, time_format) >= 7,
+									7,
+									1 + DATEDIFF(#{end_date}, time_format)
+								)
+							),
+							1
+						),
+						0.001
+					)
+				</when>
+				<when test="data_send_time == 6">
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
+									(1 + DATEDIFF(#{end_date}, #{start_date})),
+									IF(
+										STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN #{start_date} AND LAST_DAY(#{start_date}),
+										(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
+										IF(
+											STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{end_date}, '%Y-%m-01') AND #{end_date},
+											(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
+											DAYOFMONTH(LAST_DAY(time_format))
+										)
+									)
+								)
+							),
+							1
+						),
+						0.001
+					)
+				</when>
+				<when test="data_send_time == 7">
+					IFNULL(
+						ROUND(
+							(AVG(expected_power) * 24 *
+								IF(
+									YEAR(#{end_date}) = YEAR(#{start_date}),
+									(1 + DATEDIFF(#{end_date}, #{start_date})),
+									IF(
+										STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN #{start_date} AND DATE_FORMAT(#{start_date}, '%Y-12-31'),
+										(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
+										IF(
+											STR_TO_DATE(time_format, '%Y-%m-%d') BETWEEN DATE_FORMAT(#{end_date}, '%Y-01-01') AND #{end_date},
+											(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
+											DAYOFYEAR(DATE_FORMAT(time_format, '%Y-12-31'))
+										)
+									)
+								)
+							),
+							1
+						),
+						0.001
+					)
+				</when>
+			</choose> AS expected_power
 		FROM (
 			SELECT
 				s.id,
 				<choose>
 					<when test="data_send_time == 4">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 5">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+						DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
+						DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7 )) DAY), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 6">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
 					</when>
 					<when test="data_send_time == 7">
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
@@ -1397,7 +1535,7 @@
 				</choose>
 				SUM(dv.nvmActiveEnergy) AS chart_energy_kwh,
 				AVG(dv.nvm_irradiance) AS nvm_irradiance,
-				SUM(dv.expected_energy) AS expected_energy
+				AVG(dv.expected_power_ac) AS expected_power
 			FROM
 				${datatablename} dv
 				LEFT JOIN device d ON d.id = dv.id_device
@@ -1427,7 +1565,7 @@
 				</when>
 				
 				<when test="data_send_time == 5">
-					FLOOR(DATEDIFF(time_format, #{start_date}) / 7 )
+					DATE_FORMAT(DATE_SUB(time_format, INTERVAL (MOD(DATEDIFF(time_format, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 				</when>
 				
 				<when test="data_send_time == 6">
@@ -1653,7 +1791,7 @@
 				<when test="data_send_time == 5">
 					ROUND(( AVG( t.expected_power ) * 24 *
 						IF(
-							FLOOR(DATEDIFF(LAST_DAY(STR_TO_DATE(t.time_format, '%m-%d-%Y')), STR_TO_DATE(t.time_format, '%m-%d-%Y')) / 7) >= 1,
+							DATEDIFF(LAST_DAY(STR_TO_DATE(t.time_format, '%m-%d-%Y')), STR_TO_DATE(t.time_format, '%m-%d-%Y')) >= 7,
 							7,
 							1 + DATEDIFF(LAST_DAY(STR_TO_DATE(t.time_format, '%m-%d-%Y')), STR_TO_DATE(t.time_format, '%m-%d-%Y'))
 						)),
@@ -2753,7 +2891,7 @@
 
 				WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
-				WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'PowerAC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
