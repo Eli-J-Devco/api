@@ -21,11 +21,49 @@ import javax.validation.Valid;
 @ApiIgnore
 @RequestMapping("/widget-group")
 public class WidgetGroupController extends BaseController {
+	
+	
+	/**
+	 * @description Get list field by site
+	 * @author long.pham
+	 * @since 2024-03-25
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-field-by-id-site")
+	public Object getListFieldBySite(@RequestBody WidgetGroupEntity obj) {
+		try {
+			WidgetGroupService service = new WidgetGroupService();
+			List data = service.getListFieldBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list widget group
+	 * @author long.pham
+	 * @since 2024-03-25
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-device-group-by-site")
+	public Object getListDeviceGroupBySite(@RequestBody WidgetGroupEntity obj) {
+		try {
+			WidgetGroupService service = new WidgetGroupService();
+			List data = service.getListDeviceGroupBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 
 	/**
-	 * @description Get list error level
+	 * @description Get list widget group
 	 * @author long.pham
-	 * @since 2021-01-28
+	 * @since 2024-03-25
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/list")
@@ -41,9 +79,9 @@ public class WidgetGroupController extends BaseController {
 	}
 	
 	/**
-	 * @description Get list error level
+	 * @description Get list widget parent
 	 * @author long.pham
-	 * @since 2021-01-28
+	 * @since 2024-03-25
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/list-root")
@@ -59,50 +97,7 @@ public class WidgetGroupController extends BaseController {
 	}
 	
 	/**
-	 * @description Get list site by id_customer
-	 * @author long.pham
-	 * @since 2020-10-09
-	 * @param id_customer
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/list-manage")
-	public Object getListManage(@RequestBody WidgetGroupEntity obj) {
-		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
-			WidgetGroupService service = new WidgetGroupService();
-			List data = service.getListManage(obj);
-			int totalRecord = service.getTotalRecordManage(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
-		} catch (Exception e) {
-			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-		}
-	}
-	
-	
-	/**
-	 * @description update error level status
-	 * @author long.pham
-	 * @since 2021-02-26
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/update-status")
-	public Object updateStatus(@RequestBody WidgetGroupEntity obj) {
-		try {
-			WidgetGroupService service = new WidgetGroupService();
-			service.updateStatus(obj);
-			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
-		} catch (Exception e) {
-			// log error
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-		}
-	}
-	
-	/**
-	 * @description delete error level
+	 * @description delete widget group
 	 * @author long.pham
 	 * @since 2021-02-26
 	 * @param id
@@ -124,7 +119,7 @@ public class WidgetGroupController extends BaseController {
 	
 	
 	/**
-	 * @description save error level
+	 * @description save widget group
 	 * @author long.pham
 	 * @since 2021-02-26
 	 * @param  screen_mode = 0:add, 1:edit

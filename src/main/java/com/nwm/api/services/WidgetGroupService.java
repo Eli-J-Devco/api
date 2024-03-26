@@ -7,23 +7,31 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.WidgetGroupEntity;
+import com.nwm.api.entities.WidgetGroupParameterEntity;
+import com.nwm.api.utils.Lib;
 
 public class WidgetGroupService extends DB {
-
+	
+	
+	
 	/**
-	 * @description get error level
+	 * @description get widget group
 	 * @author long.pham
 	 * @since 2021-01-28
 	 * @returns array
 	 */
 	
-	public List getList(WidgetGroupEntity obj) {
+	public List getListFieldBySite(WidgetGroupEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("WidgetGroup.getList", obj);
+			dataList = queryForList("WidgetGroup.getListFieldBySite", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -34,7 +42,60 @@ public class WidgetGroupService extends DB {
 	
 	
 	/**
-	 * @description get error level
+	 * @description get widget group
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @returns array
+	 */
+	
+	public List getListDeviceGroupBySite(WidgetGroupEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("WidgetGroup.getListDeviceGroupBySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+
+	/**
+	 * @description get widget group
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @returns array
+	 */
+	
+	public List getList(WidgetGroupEntity obj) {
+		List dataList = new ArrayList();
+		List newDataList = new ArrayList<>();
+		try {
+			dataList = queryForList("WidgetGroup.getList", obj);
+			
+			if(dataList.size() > 0) {
+				for(int i = 0; i < dataList.size(); i++) {
+					Map<String, Object> dataItem = (Map<String, Object>) dataList.get(i);
+					List subGroupList = queryForList("WidgetGroup.getSubGroup", dataItem);
+					
+					dataItem.put("dataFields", subGroupList);
+					newDataList.add(dataItem);
+				}
+				
+			}
+			
+			
+			if (newDataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return newDataList;
+	}
+	
+	
+	/**
+	 * @description get widget group
 	 * @author long.pham
 	 * @since 2021-01-28
 	 * @returns array
@@ -51,39 +112,11 @@ public class WidgetGroupService extends DB {
 		}
 		return dataList;
 	}
+
 	
-	/**
-	 * @description get list site by id customer
+	/** @description delete widget group
 	 * @author long.pham
-	 * @since 2021-02-25
-	 * @param {}
-	 */
-	
-	
-	public List getListManage(WidgetGroupEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("WidgetGroup.getListManage", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	public int getTotalRecordManage(WidgetGroupEntity obj) {
-		try {
-			return (int)queryForObject("WidgetGroup.getListCount", obj);
-		} catch (Exception ex) {
-			return 0;
-		}
-	}
-	
-	
-	/** @description delete error level
-	 * @author long.pham
-	 * @since 2021-02-26
+	 * @since 2024-03-25
 	 * @param id
 	 */
 	public boolean delete(WidgetGroupEntity obj) {
@@ -96,61 +129,103 @@ public class WidgetGroupService extends DB {
 	}
 	
 	
-	
 	/**
-	 * @description insert error level
+	 * @description insert widget group
 	 * @author long.pham
-	 * @since 2021-02-26
+	 * @since 2024-03-25
 	 */
 	public WidgetGroupEntity insertWidgetGroup(WidgetGroupEntity obj) 
 	{
-		try
-	    {
-	       Object insertId = insert("WidgetGroup.insertWidgetGroup", obj);
-	       if(insertId != null && insertId instanceof Integer) {
-	    	   return obj;
-	       }else {
-	    	   return null;
-	       }
-	    }
-	    catch(Exception ex)
-	    {
-	        log.error("insert", ex);
-	        return null;
-	    }	
+		SqlSession session = this.beginTransaction();
+		try {
+
+			session.insert("WidgetGroup.insertWidgetGroup", obj);
+			int insertLastId = obj.getId();
+
+			if (insertLastId > 0) {
+				List dataFields = obj.getDataFields();
+				if(dataFields.size() > 0) {
+					for (int i = 0; i < dataFields.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) dataFields.get(i);
+						WidgetGroupParameterEntity itemWP = new WidgetGroupParameterEntity();
+						itemWP.setId_widget_group(insertLastId);
+						itemWP.setId_group_parameter(Integer.parseInt(item.get("id_group_parameter").toString()));
+						itemWP.setMenu_order(!Lib.isBlank(item.get("menu_order")) ? Integer.parseInt(item.get("menu_order").toString()) : 0);
+						itemWP.setUnit(item.get("unit").toString());
+						itemWP.setName(item.get("name").toString());
+						itemWP.setBg_color(!Lib.isBlank(item.get("bg_color")) ? item.get("bg_color").toString(): null);
+						itemWP.setFormula(!Lib.isBlank(item.get("formula")) ? Integer.parseInt(item.get("formula").toString()) : 1);
+						session.insert("WidgetGroup.insertWidgetGroupParameter", itemWP);
+					}
+				}
+			} else {
+				return null;
+			}
+
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("WidgetGroup.insertWidgetGroup", ex);
+			return null;
+		} finally {
+			session.close();
+		}
 	}
 	
 	
 	/**
-	 * @description update error level
+	 * @description update widget group
 	 * @author long.pham
-	 * @since 2021-02-26
+	 * @since 2024-03-25
 	 * @param id
 	 */
 	public boolean updateWidgetGroup(WidgetGroupEntity obj){
-		try{
-			return update("WidgetGroup.updateWidgetGroup", obj)>0;
-		}catch (Exception ex) {
+		SqlSession session = this.beginTransaction();
+		try {
+//			List dataEmployee = obj.getDataEmployee();
+//			if (dataEmployee.size() <= 0) {
+//				throw new Exception();
+//			}
+
+			session.delete("WidgetGroup.deleteWidgetGroupParameter", obj);
+			session.update("WidgetGroup.updateWidgetGroup", obj);
+			
+			List dataFields = obj.getDataFields();
+			if(dataFields.size() > 0) {
+				for (int i = 0; i < dataFields.size(); i++) {
+					Map<String, Object> item = (Map<String, Object>) dataFields.get(i);
+					WidgetGroupParameterEntity itemWP = new WidgetGroupParameterEntity();
+					itemWP.setId_widget_group(obj.getId());
+					itemWP.setId_group_parameter(Integer.parseInt(item.get("id_group_parameter").toString()));
+					itemWP.setMenu_order(!Lib.isBlank(item.get("menu_order")) ? Integer.parseInt(item.get("menu_order").toString()) : 0);
+					itemWP.setUnit(item.get("unit").toString());
+					itemWP.setName(item.get("name").toString());
+					itemWP.setBg_color(!Lib.isBlank(item.get("bg_color")) ? item.get("bg_color").toString(): null);
+					itemWP.setFormula(!Lib.isBlank(item.get("formula")) ? Integer.parseInt(item.get("formula").toString()) : 1);
+					session.insert("WidgetGroup.insertWidgetGroupParameter", itemWP);
+				}
+			}
+
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
 			log.error("Site.updateSite", ex);
 			return false;
+		} finally {
+			session.close();
 		}
+		
+		
+//		try{
+//			return update("WidgetGroup.updateWidgetGroup", obj)>0;
+//		}catch (Exception ex) {
+//			log.error("Site.updateSite", ex);
+//			return false;
+//		}
 	}
 	
-	
-	/**
-	 * @description update error level status
-	 * @author long.pham
-	 * @since 2021-02-26
-	 * @param id
-	 */
-	public boolean updateStatus(WidgetGroupEntity obj){
-		try{
-			return update("WidgetGroup.updateStatus", obj)>0;
-		}catch (Exception ex) {
-			log.error("WidgetGroup.updateStatus", ex);
-			return false;
-		}
-	}
 	
 
 }

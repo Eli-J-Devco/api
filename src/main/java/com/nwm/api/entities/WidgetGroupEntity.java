@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -18,6 +20,7 @@ public class WidgetGroupEntity{
 	private String name;
 	private String description;
 	private int status;
+	private String bg_color;
 	private String text;
 	private int limit;
 	private int offset;
@@ -26,6 +29,29 @@ public class WidgetGroupEntity{
 	private String sort_column;
 	private String keyword;
 	private int screen_mode;
+	private int id_device_group;
+	private List dataFields;
+	
+	
+	
+	public List getDataFields() {
+		return dataFields;
+	}
+	public void setDataFields(List dataFields) {
+		this.dataFields = dataFields;
+	}
+	public int getId_device_group() {
+		return id_device_group;
+	}
+	public void setId_device_group(int id_device_group) {
+		this.id_device_group = id_device_group;
+	}
+	public String getBg_color() {
+		return bg_color;
+	}
+	public void setBg_color(String bg_color) {
+		this.bg_color = bg_color;
+	}
 	public int getId() {
 		return id;
 	}
