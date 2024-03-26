@@ -78,10 +78,7 @@
 		SET
 			`cf_start_time` = #{cf_start_time},
 			`cf_end_time` = #{cf_end_time},
-			`cf_alert_threshold` = #{cf_alert_threshold},
-			`cf_email_subscribers` = #{cf_email_subscribers},
-			`alert_mail_bcc` = #{alert_mail_bcc},
-			`alert_mail_cc` = #{alert_mail_cc}
+			`cf_alert_threshold` = #{cf_alert_threshold}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -271,6 +268,36 @@
         #{element.id_error_level}
     </foreach>
 </insert>
-
+	
+	<select id="checkExitsEmployeeOnSiteEmailMap"  resultType="int" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+    	SELECT count(*) as totalRecord
+		FROM site_mail_map s  WHERE s.id_employee = #{id_employee} AND s.id_site = #{id}
+  	</select>
+  	
+  	<insert id="insertEmployeeOnSiteEmailMap">
+		INSERT INTO site_mail_map(
+			id_site,
+			id_employee,
+			cf_email_subscribers,
+			alert_mail_cc,
+			alert_mail_bcc
+		)VALUES(
+			#{id},
+			#{id_employee},
+			#{cf_email_subscribers},
+			#{alert_mail_cc},
+			#{alert_mail_bcc}
+		);
+	</insert>
+	
+	<update id="updateEmployeeOnSiteEmailMap">
+		UPDATE `site_mail_map`
+		SET
+			`cf_email_subscribers` = #{cf_email_subscribers},
+			`alert_mail_cc` = #{alert_mail_cc},
+			`alert_mail_bcc` = #{alert_mail_bcc}
+		WHERE
+			`id_site` = #{id} AND `id_employee` = #{id_employee}
+	</update>
   	
 </mapper>

@@ -668,5 +668,24 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get list employees hiding a site
+	 * @author duy.phan
+	 * @since 2023-06-21
+	 * @param id
+	 */
+
+	public List getListEmployeeOnSiteMailMap(SiteEntity obj) {
+		try {
+			List rs = queryForList("CronJobAlert.getListEmployeeOnSiteMailMap", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 	
 }
