@@ -11,6 +11,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -582,30 +583,72 @@ public class CronJobAlertController extends BaseController {
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 							Constants.mailFromContact);
 //								String mailTo = "vanlong200880@gmail.com";
-					String mailTo = siteObj.getCf_email_subscribers();
-					String mailToBCC = siteObj.getAlert_mail_bcc();
-					String mailToCC = siteObj.getAlert_mail_cc();
+					List employeeMap = service.getListEmployeeOnSiteMailMap(siteObj);
 
-					// Remove email employees who hide a site
-					List emails = service.getEmployeeHidingSite(siteObj);
-					if (emails != null && emails.size() > 0) {
-						for (int j = 0; j < emails.size(); j++) {
-							Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
-							String email = itemT.get("email").toString();
-
-							mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+					HashSet<String> mailToBCCArr = new HashSet<String> ();
+					HashSet<String> mailToCCArr = new HashSet<String> ();
+					
+					for (int k = 0; k < employeeMap.size(); k++) {
+						Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);
+					
+						String mailTo = item.get("cf_email_subscribers").toString();
+						String mailToBCC = item.get("alert_mail_bcc").toString();
+						String mailToCC = item.get("alert_mail_cc").toString();
+						
+						// Remove email employees who hide a site
+						List emails = service.getEmployeeHidingSite(siteObj);
+						if (emails != null && emails.size() > 0) {
+							for (int j = 0; j < emails.size(); j++) {
+								Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
+								String email = itemT.get("email").toString();
+	
+								mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+							}
 						}
-					}
-
-					String subject = " Next Wave Alert - ".concat(siteObj.getName());
-					String tags = "run_cron_job";
-					String fromName = "NEXT WAVE ENERGY MONITORING INC";
-					if (mailTo != null && !mailTo.isEmpty()) {
-						boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
-								subject, bodyHtml.toString(), tags);
-
-						if (!flagSent) {
-							throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
+						
+						// Remove email-bcc if duplicate
+						if (mailToBCCArr != null && mailToBCCArr.size() > 0) {
+							for (String email : mailToBCCArr) {
+								mailToBCC = mailToBCC.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+							}
+						}
+						
+						// Remove email-cc if duplicate
+						if (mailToCCArr != null && mailToCCArr.size() > 0) {
+							for (String email : mailToCCArr) {
+								mailToCC = mailToCC.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+							}
+						}
+						
+						
+	
+						String subject = " Next Wave Alert - ".concat(siteObj.getName());
+						String tags = "run_cron_job";
+						String fromName = "NEXT WAVE ENERGY MONITORING INC";					
+						
+						if (mailTo != null && !mailTo.isEmpty()) {
+							boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
+									subject, bodyHtml.toString(), tags);
+							
+							// add email-bcc to arr
+							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
+							if (bccmails != null && bccmails.size() > 0) {
+								for (int j = 0; j < bccmails.size(); j++) {
+									mailToBCCArr.add(bccmails.get(j).toString());
+									}
+							}
+							
+							// add email-cc to arr
+							List<String> ccmails = new ArrayList<String>(Arrays.asList(mailToCC.split(",")));
+							if (ccmails != null && ccmails.size() > 0) {
+								for (int j = 0; j < ccmails.size(); j++) {
+									mailToCCArr.add(ccmails.get(j).toString());
+									}
+							}
+	
+							if (!flagSent) {
+								throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
+							}
 						}
 					}
 

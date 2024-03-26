@@ -12,7 +12,9 @@ import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.utils.Constants;
 
 public class SiteConfigService extends DB {
 	/**
@@ -25,6 +27,19 @@ public class SiteConfigService extends DB {
 
 		SqlSession session = this.beginTransaction();
 		try {
+			if(obj.getId() > 0 && obj.getId_employee() > 0 ) {
+				int checkExits = (int) queryForObject("SiteConfig.checkExitsEmployeeOnSiteEmailMap", obj);
+				if(checkExits <= 0) {
+					// Insert
+					if (!obj.getCf_email_subscribers().isEmpty()) {
+						session.update("SiteConfig.insertEmployeeOnSiteEmailMap", obj);
+					}
+				} else {
+					// Update
+					session.update("SiteConfig.updateEmployeeOnSiteEmailMap", obj);
+				}
+			}
+			
 			session.update("SiteConfig.updateSiteConfig", obj);
 			session.update("SiteConfig.updateDeviceResetDisableAlert", obj);
 			List dataDevice = obj.getDeviceDisableAlerts();

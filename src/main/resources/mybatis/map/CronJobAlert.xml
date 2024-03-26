@@ -430,12 +430,14 @@
 		FROM
 			site AS s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN site_mail_map smm ON smm.id_site = s.id
 		WHERE
-			s.`status` = 1 AND s.is_delete = 0 AND s.cf_email_subscribers IS NOT NULL
+			s.`status` = 1 AND s.is_delete = 0 AND smm.cf_email_subscribers IS NOT NULL
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="id_site != null and id_site != 0">
 				AND s.id = #{id_site}
 			</if>
+			GROUP BY s.id
 	</select>
 	
 	<select id="getListAlertOpenBySite" resultType="Map" >
@@ -759,5 +761,13 @@
 			</if>
 	</update>
 	
+	<select id="getListEmployeeOnSiteMailMap" resultType="Map" >
+  		SELECT
+			smm.*
+		FROM 
+			site_mail_map smm
+		WHERE
+			smm.id_site = #{id}
+	</select>
   	
 </mapper>
