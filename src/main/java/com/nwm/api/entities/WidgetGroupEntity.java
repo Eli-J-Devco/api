@@ -31,9 +31,16 @@ public class WidgetGroupEntity{
 	private int screen_mode;
 	private int id_device_group;
 	private List dataFields;
+	private int menu_order;
 	
 	
 	
+	public int getMenu_order() {
+		return menu_order;
+	}
+	public void setMenu_order(int menu_order) {
+		this.menu_order = menu_order;
+	}
 	public List getDataFields() {
 		return dataFields;
 	}

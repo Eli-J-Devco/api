@@ -110,12 +110,16 @@
 			`name`,
 			`description`,
 			`id_site`,
-			`parent`
+			`parent`,
+			`bg_color`,
+			`menu_order`
 		)VALUES(
 			#{name},
 			#{description},
 			#{id_site},
-			#{parent}
+			#{parent},
+			#{bg_color},
+			#{menu_order}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -163,7 +167,9 @@
 		SET
 			`name` = #{name},
 			`description` = #{description},
-			`parent` = #{parent}
+			`parent` = #{parent},
+			`bg_color` = #{bg_color},
+			`menu_order` = #{menu_order}
 		WHERE
 			`id` = #{id}
 	</update>
