@@ -38,10 +38,8 @@
 		<result property="DCVoltageChanel2" column="DCVoltageChanel2" />
 		<result property="DCCurrentChanel2" column="DCCurrentChanel2" />
 		<result property="DCOperatingStateChanel2" column="DCOperatingStateChanel2" />
-		<result property="MPPT1" column="MPPT1" />
 		<result property="MPPT1Voltage" column="MPPT1Voltage" />
 		<result property="MPPT1Current" column="MPPT1Current" />
-		<result property="MPTT2" column="MPTT2" />
 		<result property="MPPT2Voltage" column="MPPT2Voltage" />
 		<result property="MPPT2Current" column="MPPT2Current" />
 		<result property="STRING1" column="STRING1" />
@@ -174,17 +172,11 @@
 			<if test="DCOperatingStateChanel2 != 0.001" >
 				`DCOperatingStateChanel2`,
 			</if>
-			<if test="MPPT1 != 0.001" >
-				`MPPT1`,
-			</if>
 			<if test="MPPT1Voltage != 0.001" >
 				`MPPT1Voltage`,
 			</if>
 			<if test="MPPT1Current != 0.001" >
 				`MPPT1Current`,
-			</if>
-			<if test="MPTT2 != 0.001" >
-				`MPTT2`,
 			</if>
 			<if test="MPPT2Voltage != 0.001" >
 				`MPPT2Voltage`,
@@ -361,17 +353,11 @@
 			<if test="DCOperatingStateChanel2 != 0.001" >
 				#{DCOperatingStateChanel2},
 			</if>
-			<if test="MPPT1 != 0.001" >
-				#{MPPT1},
-			</if>
 			<if test="MPPT1Voltage != 0.001" >
 				#{MPPT1Voltage},
 			</if>
 			<if test="MPPT1Current != 0.001" >
 				#{MPPT1Current},
-			</if>
-			<if test="MPTT2 != 0.001" >
-				#{MPTT2},
 			</if>
 			<if test="MPPT2Voltage != 0.001" >
 				#{MPPT2Voltage},
@@ -545,17 +531,11 @@
 			<if test="DCOperatingStateChanel2 != 0.001" >
 				`DCOperatingStateChanel2` = #{DCOperatingStateChanel2},
 			</if>
-			<if test="MPPT1 != 0.001" >
-				`MPPT1` = #{MPPT1},
-			</if>
 			<if test="MPPT1Voltage != 0.001" >
 				`MPPT1Voltage` = #{MPPT1Voltage},
 			</if>
 			<if test="MPPT1Current != 0.001" >
 				`MPPT1Current` = #{MPPT1Current},
-			</if>
-			<if test="MPTT2 != 0.001" >
-				`MPTT2` = #{MPTT2},
 			</if>
 			<if test="MPPT2Voltage != 0.001" >
 				`MPPT2Voltage` = #{MPPT2Voltage},
