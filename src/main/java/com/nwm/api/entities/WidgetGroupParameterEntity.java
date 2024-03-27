@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class WidgetGroupParameterEntity{
 	
 	private int id;
@@ -16,6 +18,10 @@ public class WidgetGroupParameterEntity{
 	private String value;
 	private String bg_color;
 	private int formula;
+	private double totalRecord;
+	private List dataDevices;
+	private String tablename;
+	private String fieldname;
 	public int getId() {
 		return id;
 	}
@@ -70,5 +76,30 @@ public class WidgetGroupParameterEntity{
 	public void setFormula(int formula) {
 		this.formula = formula;
 	}
+	public double getTotalRecord() {
+		return totalRecord;
+	}
+	public void setTotalRecord(double totalRecord) {
+		this.totalRecord = totalRecord;
+	}
+	public List getDataDevices() {
+		return dataDevices;
+	}
+	public void setDataDevices(List dataDevices) {
+		this.dataDevices = dataDevices;
+	}
+	public String getTablename() {
+		return tablename;
+	}
+	public void setTablename(String tablename) {
+		this.tablename = tablename;
+	}
+	public String getFieldname() {
+		return fieldname;
+	}
+	public void setFieldname(String fieldname) {
+		this.fieldname = fieldname;
+	}
+	
 	
 }

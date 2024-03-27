@@ -40,7 +40,7 @@ public class ModelLevitonAbviusA891123ChannelService extends DB {
 				dataModelLA891123.setField2(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelLA891123.setField3(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelLA891123.setField4(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModelLA891123.setField4(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModelLA891123.setField5(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModelLA891123.setField6(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModelLA891123.setField7(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelLA891123.setField8(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));

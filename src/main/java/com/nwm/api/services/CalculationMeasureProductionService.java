@@ -13,7 +13,9 @@ import org.apache.ibatis.session.SqlSession;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.WidgetGroupParameterEntity;
 
 public class CalculationMeasureProductionService extends DB {
 	
@@ -202,4 +204,50 @@ public class CalculationMeasureProductionService extends DB {
 		}	
 		
 	}
+	
+	
+	/**
+	 * @description get list widget group parameter 
+	 * @author long.pham
+	 * @since 2024-03-27
+	 */
+	
+	public List getListWidgetGroupParameter(CalculationMeasuredProductionEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CalculationMeasuredProduction.getListWidgetGroupParameter", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		
+		return dataList;
+	}
+	
+	
+	public long getValueField(WidgetGroupParameterEntity obj) {
+		try {
+			return (long) queryForObject("CalculationMeasuredProduction.getValueField", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
+	
+	
+	/**
+	 * @description update widget group parameter value
+	 * @author Long.Pham
+	 * @since 2023-09-12
+	 */
+	public boolean updateValueField(WidgetGroupParameterEntity obj){
+		try{
+			return update("CalculationMeasuredProduction.updateValueField", obj)>0;
+		}catch (Exception ex) {
+			log.error("CalculationMeasuredProduction.updateValueField", ex);
+			return false;
+		}
+	}
+	
 }
