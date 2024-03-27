@@ -257,11 +257,7 @@ public class CalculationMeasuredProductionController extends BaseController {
 			if(token == null || token == "" || !token.equals(privateKey)) {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-			int day = 1;
-			String totalDay = (String) params.get("day");
-			if(totalDay != null && Integer.parseInt(totalDay) > 0 ) {
-				day = Integer.parseInt(totalDay);
-			}
+
 		    
 			String idSite = (String) params.get("id_site");
 			int id_site = 0;
@@ -280,65 +276,28 @@ public class CalculationMeasuredProductionController extends BaseController {
 				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
 			
-
 			for (int i = 0; i < listFields.size(); i++) {
-//				WidgetGroupParameterEntity item = (WidgetGroupParameterEntity) listFields.get(i);
 				@SuppressWarnings("unchecked")
 				Map<String, Object> deviceItem = (Map<String, Object>) listFields.get(i);
-				
 				String idDevices = deviceItem.get("id_device").toString();
-				
-				if(Lib.isBlank(idDevices)) { continue; }
-				
+				if(idDevices.equals(null) || idDevices == "") { continue; }
 				String[] arrDevices = idDevices.split(",");
-				
 				ArrayList<String> strList = new ArrayList<String>( Arrays.asList(arrDevices)); 
-				
 				if(strList.size() < 0) { continue; }
-				
 				String tablename = "data"+strList.get(0)+"_"+deviceItem.get("table_group");
-				
 				WidgetGroupParameterEntity item = new WidgetGroupParameterEntity();
 				item.setTablename(tablename);
 				item.setDataDevices(strList);
 				item.setFieldname(deviceItem.get("fieldname").toString());
 				item.setFormula(Integer.parseInt(deviceItem.get("formula").toString()));
-				// get value field
+				item.setType(Integer.parseInt(deviceItem.get("type").toString()));
+				
 				
 				long totalRecord = service.getValueField(item);
-				
-				System.out.println(totalRecord);
-				
 				item.setId(Integer.parseInt(deviceItem.get("id").toString()));
 				item.setTotalRecord(totalRecord);
-				
-				
 				service.updateValueField(item);
 				
-//				public int getValueField(WidgetGroupParameterEntity obj) {
-//					
-//				}
-//				if(day <= 60) {
-//					deviceItem.setDatatablename(deviceItem.getView_tablename());
-//				}
-//				
-//				Date now = new Date();
-//				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTime_zone_value()));
-//				SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-//				Calendar calCurrent = Calendar.getInstance();
-//				calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-//				calCurrent.add(Calendar.DATE, -day);
-//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//				Calendar cal = Calendar.getInstance();
-//				Date currentDate = calCurrent.getTime();
-//				
-//				for(int t = 0; t <= day; t++) {
-//					cal.setTime(currentDate);
-//					cal.add(Calendar.DATE, t);
-//					deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
-//					deviceItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
-//					service.updateMeasuredProduction(deviceItem);
-//				}
 			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);

@@ -28,7 +28,6 @@ public class ModelLevitonAbviusA891123ChannelService extends DB {
 			if (words.size() > 0) {
 				ModelLevitonAbviusA891123ChannelEntity dataModelLA891123 = new ModelLevitonAbviusA891123ChannelEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
 				
 				
 				dataModelLA891123.setTime(words.get(0).replace("'", ""));

@@ -22,6 +22,15 @@ public class WidgetGroupParameterEntity{
 	private List dataDevices;
 	private String tablename;
 	private String fieldname;
+	private int type;
+	
+	
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 	public int getId() {
 		return id;
 	}
