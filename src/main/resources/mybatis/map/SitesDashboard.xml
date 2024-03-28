@@ -474,7 +474,8 @@
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
-			d.field_value_default
+			d.field_value_default,
+			IF(pp.totalError > 0, 1, 0) AS is_datalogger_error
 			
 		FROM
 			device d
@@ -505,6 +506,30 @@
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
 			) p ON p.id_device = d.id
+			LEFT JOIN(
+				SELECT 
+					a.id_device,
+					d.id_site,
+					e.id_error_level,
+					COUNT(a.id) AS totalError
+				FROM
+					alert a
+					LEFT JOIN device d ON d.id = a.id_device
+					LEFT JOIN error e ON e.id = a.id_error
+					LEFT JOIN site s ON s.id = d.id_site
+					
+				WHERE
+					a.`status` = 1
+					AND a.is_delete = 0
+					AND e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND s.enable_alert = 1
+					AND d.is_delete = 0
+					AND e.id_error_level = 12 AND d.id_device_type = 5
+					AND d.id_site = #{id_site}
+				GROUP BY d.id
+			) pp ON pp.id_site = d.id_site
 			
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
