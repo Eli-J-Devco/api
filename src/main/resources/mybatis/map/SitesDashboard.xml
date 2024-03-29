@@ -755,7 +755,7 @@
 
 		WHERE dv.id_device = #{id}
 		<if test="id_device_type == 1 or id_device_type == 3">
-				AND dv.error = 0 AND dv.nvmActivePower IS NOT NULL
+				AND dv.error = 0 AND dv.nvmActivePower IS NOT NULL AND dv.nvmActiveEnergy
 		</if>
 		
 		<if test="id_device_type == 4">
