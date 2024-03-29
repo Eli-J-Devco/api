@@ -28,7 +28,6 @@ public class ModelLevitonAbviusA891123ChannelService extends DB {
 			if (words.size() > 0) {
 				ModelLevitonAbviusA891123ChannelEntity dataModelLA891123 = new ModelLevitonAbviusA891123ChannelEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
 				
 				
 				dataModelLA891123.setTime(words.get(0).replace("'", ""));
@@ -40,7 +39,7 @@ public class ModelLevitonAbviusA891123ChannelService extends DB {
 				dataModelLA891123.setField2(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelLA891123.setField3(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelLA891123.setField4(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModelLA891123.setField4(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModelLA891123.setField5(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModelLA891123.setField6(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
 				dataModelLA891123.setField7(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelLA891123.setField8(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));

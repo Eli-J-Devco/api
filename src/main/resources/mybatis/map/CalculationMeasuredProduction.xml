@@ -302,5 +302,90 @@
 	
 	
 	
+	<select id="getListWidgetGroupParameter" resultType="Map">
+		SELECT
+			wgp.*,
+			wg.id_site,
+			dp.slug AS fieldname,
+			dp.id_device_group,
+			dg.table_name AS table_group
+		FROM
+			widget_group_parameter wgp
+			LEFT JOIN widget_group wg ON wg.id = wgp.id_widget_group
+			LEFT JOIN device_parameters dp ON dp.id = wgp.id_group_parameter
+			LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+			WHERE dp.`status` = 1 AND dp.is_delete = 0
+			<if test="id_site > 0">
+				AND wg.id_site = #{id_site}
+			</if>
+	</select>
+	
+	
+	<select id="getValueField"  resultType="Long">
+    	SELECT 
+    		SUM(t.valueField) AS valueField 
+    	FROM(
+			<if test="dataDevices != null and !dataDevices.isEmpty()">
+				<foreach collection="dataDevices" item="item" index="index" separator="union all">
+					(
+						SELECT 
+							<choose>
+							    <when test="formula == 1">
+							      AVG( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula != 2">
+							      SUM( ${fieldname} ) AS valueField
+							    </when>
+							    <otherwise>
+							      AVG( ${fieldname} ) AS valueField
+							    </otherwise>
+							</choose>
+						FROM(
+							SELECT
+								*
+							FROM
+								${tablename} 
+							WHERE
+								<choose>
+								    <when test="type == 2">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 HOUR)
+								    </when>
+								    <when test="type == 3">
+								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -1 DAY)
+								    </when>
+								    <when test="type == 4">
+								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -1 MONTH)
+								    </when>
+								    <when test="type == 5">
+								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -12 MONTH)
+								    </when>
+								    <otherwise>
+								      DATE_FORMAT( time, '%Y-%m-%d' ) = DATE_FORMAT( NOW(), '%Y-%m-%d' )
+								    </otherwise>
+								</choose>
+								 
+							ORDER BY
+								time DESC 
+								<if test="type == 1">
+									LIMIT 1 
+								</if>
+								
+						)t
+					) 
+		
+				</foreach>
+			</if>
+			
+		)t
+  	</select>
+  	
+  	
+  	<update id="updateValueField">
+		UPDATE `widget_group_parameter`
+		SET `value` = #{totalRecord}
+		WHERE `id` = #{id}
+	</update>
+  	
+	
   	
 </mapper>

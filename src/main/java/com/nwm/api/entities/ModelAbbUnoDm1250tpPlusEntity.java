@@ -39,10 +39,8 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	private double DCVoltageChanel2;
 	private double DCCurrentChanel2;
 	private double DCOperatingStateChanel2;
-	private double MPPT1;
 	private double MPPT1Voltage;
 	private double MPPT1Current;
-	private double MPTT2;
 	private double MPPT2Voltage;
 	private double MPPT2Current;
 	private double STRING1;
@@ -265,12 +263,6 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	public void setDCOperatingStateChanel2(double dCOperatingStateChanel2) {
 		DCOperatingStateChanel2 = dCOperatingStateChanel2;
 	}
-	public double getMPPT1() {
-		return MPPT1;
-	}
-	public void setMPPT1(double mPPT1) {
-		MPPT1 = mPPT1;
-	}
 	public double getMPPT1Voltage() {
 		return MPPT1Voltage;
 	}
@@ -282,12 +274,6 @@ public class ModelAbbUnoDm1250tpPlusEntity {
 	}
 	public void setMPPT1Current(double mPPT1Current) {
 		MPPT1Current = mPPT1Current;
-	}
-	public double getMPTT2() {
-		return MPTT2;
-	}
-	public void setMPTT2(double mPTT2) {
-		MPTT2 = mPTT2;
 	}
 	public double getMPPT2Voltage() {
 		return MPPT2Voltage;
