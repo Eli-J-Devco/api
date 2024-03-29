@@ -23,6 +23,25 @@ import javax.validation.Valid;
 public class WidgetGroupController extends BaseController {
 	
 	
+	
+	/**
+	 * @description Get all device by id_site
+	 * @author long.pham
+	 * @since 2024-03-25
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-device-by-id-site")
+	public Object getAllDeviceBySite(@RequestBody WidgetGroupEntity obj) {
+		try {
+			WidgetGroupService service = new WidgetGroupService();
+			List data = service.getAllDeviceBySite(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	/**
 	 * @description Get list field by site
 	 * @author long.pham
