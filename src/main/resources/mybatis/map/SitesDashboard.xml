@@ -510,6 +510,7 @@
 				SELECT 
 					a.id_device,
 					d.id_site,
+					d.serial_number,
 					e.id_error_level,
 					COUNT(a.id) AS totalError
 				FROM
@@ -529,7 +530,7 @@
 					AND e.id_error_level = 12 AND d.id_device_type = 5
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
-			) pp ON pp.id_site = d.id_site
+			) pp ON pp.id_site = d.id_site AND pp.serial_number = d.serial_number
 			
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
