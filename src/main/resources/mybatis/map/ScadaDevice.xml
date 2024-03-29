@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScadaDevice">
+	
+	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.ScadaDeviceEntity" >
+		SELECT
+			id,
+			devicename AS name,
+			id_site,
+			serial_number,
+			modbusdevicenumber
+		FROM
+			device d
+		WHERE
+			id_site = #{id_site}
+			AND id_device_type = 1
+	</select>
+	
+</mapper>
