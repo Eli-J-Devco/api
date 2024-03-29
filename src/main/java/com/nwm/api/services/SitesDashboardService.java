@@ -108,6 +108,7 @@ public class SitesDashboardService extends DB {
 							}
 						} else {
 							device.put("last_updated", "N/A");
+							device.put("key_indicator", "N/A");
 						}
 					}
 					newData.add(device);
