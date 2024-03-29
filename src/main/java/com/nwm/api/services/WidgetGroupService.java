@@ -20,6 +20,24 @@ import com.nwm.api.utils.Lib;
 public class WidgetGroupService extends DB {
 	
 	
+	/**
+	 * @description get widget group
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @returns array
+	 */
+	
+	public List getAllDeviceBySite(WidgetGroupEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("WidgetGroup.getAllDeviceBySite", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	/**
 	 * @description get widget group
@@ -153,8 +171,10 @@ public class WidgetGroupService extends DB {
 						itemWP.setMenu_order(!Lib.isBlank(item.get("menu_order")) ? Integer.parseInt(item.get("menu_order").toString()) : 0);
 						itemWP.setUnit(item.get("unit").toString());
 						itemWP.setName(item.get("name").toString());
+						itemWP.setId_device(item.get("id_device").toString());
 						itemWP.setBg_color(!Lib.isBlank(item.get("bg_color")) ? item.get("bg_color").toString(): null);
 						itemWP.setFormula(!Lib.isBlank(item.get("formula")) ? Integer.parseInt(item.get("formula").toString()) : 1);
+						itemWP.setType(!Lib.isBlank(item.get("type")) ? Integer.parseInt(item.get("type").toString()) : 1);
 						session.insert("WidgetGroup.insertWidgetGroupParameter", itemWP);
 					}
 				}
@@ -183,11 +203,6 @@ public class WidgetGroupService extends DB {
 	public boolean updateWidgetGroup(WidgetGroupEntity obj){
 		SqlSession session = this.beginTransaction();
 		try {
-//			List dataEmployee = obj.getDataEmployee();
-//			if (dataEmployee.size() <= 0) {
-//				throw new Exception();
-//			}
-
 			session.delete("WidgetGroup.deleteWidgetGroupParameter", obj);
 			session.update("WidgetGroup.updateWidgetGroup", obj);
 			
@@ -203,6 +218,9 @@ public class WidgetGroupService extends DB {
 					itemWP.setName(item.get("name").toString());
 					itemWP.setBg_color(!Lib.isBlank(item.get("bg_color")) ? item.get("bg_color").toString(): null);
 					itemWP.setFormula(!Lib.isBlank(item.get("formula")) ? Integer.parseInt(item.get("formula").toString()) : 1);
+					itemWP.setType(!Lib.isBlank(item.get("type")) ? Integer.parseInt(item.get("type").toString()) : 1);
+					itemWP.setId_device(item.get("id_device").toString());
+					
 					session.insert("WidgetGroup.insertWidgetGroupParameter", itemWP);
 				}
 			}
