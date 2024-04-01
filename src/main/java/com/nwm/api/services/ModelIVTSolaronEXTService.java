@@ -168,7 +168,50 @@ public class ModelIVTSolaronEXTService extends DB {
 	public ModelIVTSolaronEXTEntity checkAlertWriteCode(ModelIVTSolaronEXTEntity obj) {
 		ModelIVTSolaronEXTEntity rowItem = new ModelIVTSolaronEXTEntity();
 		try {
-			rowItem = (ModelIVTSolaronEXTEntity) queryForObject("ModelIVTSolaronEXT.checkAlertWriteCode", obj);
+//			rowItem = (ModelIVTSolaronEXTEntity) queryForObject("ModelIVTSolaronEXT.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelIVTSolaronEXT.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalLimits = 0, totalWarning = 0, totalStatus = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double active_faults1 = (double) item.get("active_faults1");
+					if(Double.compare(obj.getActive_faults1(), active_faults1) == 0 && obj.getActive_faults1() > 0 && active_faults1 > 0) { 
+						totalFault1++;
+					}
+					
+					double active_faults2 = (double) item.get("active_faults2");
+					if(Double.compare(obj.getActive_faults2(), active_faults2) == 0 && obj.getActive_faults2() > 0 && active_faults2 > 0) { 
+						totalFault2++;
+					}
+					
+					double active_faults3 = (double) item.get("active_faults3");
+					if(Double.compare(obj.getActive_faults3(), active_faults3) == 0 && obj.getActive_faults3() > 0 && active_faults3 > 0) { 
+						totalFault3++;
+					}
+					
+					double limits = (double) item.get("limits");
+					if(Double.compare(obj.getLimits(), limits) == 0 && obj.getLimits() > 0 && limits > 0) { 
+						totalLimits++;
+					}
+					
+					double status = (double) item.get("status");
+					if(Double.compare(obj.getStatus(), status) == 0 && obj.getStatus() > 0 && status > 0) { 
+						totalStatus++;
+					}
+					
+					double warnings1 = (double) item.get("warnings1");
+					if(Double.compare(obj.getWarnings1(), warnings1) == 0 && obj.getWarnings1() > 0 && warnings1 > 0) { 
+						totalWarning++;
+					}
+				}
+				rowItem.setTotalFault1(totalFault1);
+				rowItem.setTotalFault2(totalFault2);
+				rowItem.setTotalFault3(totalFault3);
+				rowItem.setTotalLimits(totalLimits);
+				rowItem.setTotalStatus(totalStatus);
+				rowItem.setTotalWarning(totalWarning);
+				
+			}
 			if (rowItem == null)
 				return new ModelIVTSolaronEXTEntity();
 		} catch (Exception ex) {

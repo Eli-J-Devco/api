@@ -466,25 +466,18 @@
 			LIMIT 1
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.StatusAlarm ) AS totalAlarm,
-			SUM( t.StatusWarning ) AS totalWarning,
-			SUM( t.Battery1StateofFuse ) AS totalFuse1
+			m.StatusAlarm AS StatusAlarm,
+			m.StatusWarning AS StatusWarning,
+			m.Battery1StateofFuse AS Battery1StateofFuse
 		FROM
-			(
-				SELECT
-					IF(m.StatusAlarm > 0, 1, 0) AS StatusAlarm,
-					IF(m.StatusWarning > 0, 1, 0) AS StatusWarning,
-					IF(m.Battery1StateofFuse > 0, 1, 0) AS Battery1StateofFuse
-				FROM
-					${datatablename} m
-				WHERE
-					id_device = #{id_device}
-				ORDER BY
-					time DESC 
-				LIMIT 20
-			) t
+			${datatablename} m
+		WHERE
+			id_device = #{id_device}
+		ORDER BY
+			time DESC 
+		LIMIT 20;
   	</select>
   	
   	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">

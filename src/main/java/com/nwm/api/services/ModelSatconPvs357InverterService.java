@@ -276,7 +276,58 @@ public class ModelSatconPvs357InverterService extends DB {
 	public ModelSatconPvs357InverterEntity checkAlertWriteCode(ModelSatconPvs357InverterEntity obj) {
 		ModelSatconPvs357InverterEntity rowItem = new ModelSatconPvs357InverterEntity();
 		try {
-			rowItem = (ModelSatconPvs357InverterEntity) queryForObject("ModelSatconPvs357Inverter.checkAlertWriteCode", obj);
+//			rowItem = (ModelSatconPvs357InverterEntity) queryForObject("ModelSatconPvs357Inverter.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelSatconPvs357Inverter.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalFault4 = 0, totalFault5 = 0, totalFault6 = 0, totalFault7 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault1 = (double) item.get("Fault_Word1");
+					if(Double.compare(obj.getFault_Word1(), fault1) == 0 && obj.getFault_Word1() > 0 && fault1 > 0) { 
+						totalFault1++;
+					}
+					
+					double fault2 = (double) item.get("Fault_Word2");
+					if(Double.compare(obj.getFault_Word2(), fault2) == 0 && obj.getFault_Word2() > 0 && fault2 > 0) { 
+						totalFault2++;
+					}
+					
+					double fault3 = (double) item.get("Fault_Word3");
+					if(Double.compare(obj.getFault_Word3(), fault3) == 0 && obj.getFault_Word3() > 0 && fault3 > 0) { 
+						totalFault3++;
+					}
+					
+					double fault4 = (double) item.get("Fault_Word4");
+					if(Double.compare(obj.getFault_Word4(), fault1) == 0 && obj.getFault_Word4() > 0 && fault4 > 0) { 
+						totalFault4++;
+					}
+					
+					double fault5 = (double) item.get("Fault_Word5");
+					if(Double.compare(obj.getFault_Word5(), fault5) == 0 && obj.getFault_Word5() > 0 && fault5 > 0) { 
+						totalFault5++;
+					}
+					
+					double fault6 = (double) item.get("Fault_Word6");
+					if(Double.compare(obj.getFault_Word6(), fault6) == 0 && obj.getFault_Word6() > 0 && fault6 > 0) { 
+						totalFault6++;
+					}
+					
+					double fault7 = (double) item.get("Fault_Word7");
+					if(Double.compare(obj.getFault_Word7(), fault7) == 0 && obj.getFault_Word7() > 0 && fault7 > 0) { 
+						totalFault7++;
+					}
+					
+				}
+				rowItem.setTotalFaultWord1(totalFault1);
+				rowItem.setTotalFaultWord2(totalFault2);
+				rowItem.setTotalFaultWord3(totalFault3);
+				rowItem.setTotalFaultWord4(totalFault4);
+				rowItem.setTotalFaultWord5(totalFault5);
+				rowItem.setTotalFaultWord6(totalFault6);
+				rowItem.setTotalFaultWord7(totalFault7);
+				
+			}
+			
 			if (rowItem == null)
 				return new ModelSatconPvs357InverterEntity();
 		} catch (Exception ex) {

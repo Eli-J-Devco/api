@@ -437,25 +437,15 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelSatconPowergate225InverterEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.Fault1 ) AS totalFault1,
-			SUM( t.Fault2 ) AS totalFault2,
-			SUM( t.Fault3 ) AS totalFault3,
-			SUM( t.Fault4 ) AS totalFault4,
-			SUM( t.GridStatus ) AS totalGridStatus,
-			SUM( t.Status6 ) AS totalStatus6,
-			SUM( t.Status7 ) AS totalStatus7
-		FROM
-			(
-			SELECT
-				IF(m.Fault1 > 0, 1, 0) AS Fault1,
-				IF(m.Fault2 > 0, 1, 0) AS Fault2,
-				IF(m.Fault3 > 0, 1, 0) AS Fault3,
-				IF(m.Fault4 > 0, 1, 0) AS Fault4,
-				IF(m.GridStatus > 0, 1, 0) AS GridStatus,
-				IF(m.Status6 > 0, 1, 0) AS Status6,
-				IF(m.Status7 > 0, 1, 0) AS Status7
+				m.Fault1 AS Fault1,
+				m.Fault2 AS Fault2,
+				m.Fault3 AS Fault3,
+				m.Fault4 AS Fault4,
+				m.GridStatus AS GridStatus,
+				m.Status6 AS Status6,
+				m.Status7 AS Status7
 				
 			FROM
 				${datatablename} m
@@ -463,8 +453,7 @@
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
-			)t
+			LIMIT 20;
   	</select>
   	
   	

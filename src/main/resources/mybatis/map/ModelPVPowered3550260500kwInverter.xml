@@ -659,38 +659,24 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.InverterOperatingStatus ) AS totalInverterOperatingStatus,
-			SUM( t.MainFault ) AS totalMainFault,
-			SUM( t.DriveFault ) AS totalDriveFault,
-			SUM( t.VoltageFault ) AS totalVoltageFault,
-			SUM( t.GridFault ) AS totalGridFault,
-			SUM( t.TemperatureFault ) AS totalTemperatureFault,
-			SUM( t.SystemFault ) AS totalSystemFault,
-			SUM( t.SystemWarnings ) AS totalSystemWarnings,
-			SUM( t.PVMStatusCodes ) AS totalPVMStatusCodes
-			
-		FROM
-			(
-			SELECT
-				IF(m.InverterOperatingStatus > 0, 1, 0) AS InverterOperatingStatus,
-				IF(m.MainFault > 0, 1, 0) AS MainFault,
-				IF(m.DriveFault > 0, 1, 0) AS DriveFault,
-				IF(m.VoltageFault > 0, 1, 0) AS VoltageFault,
-				IF(m.GridFault > 0, 1, 0) AS GridFault,
-				IF(m.TemperatureFault > 0, 1, 0) AS TemperatureFault,
-				IF(m.SystemFault > 0, 1, 0) AS SystemFault,
-				IF(m.SystemWarnings > 0, 1, 0) AS SystemWarnings,
-				IF(m.PVMStatusCodes > 0, 1, 0) AS PVMStatusCodes
+				m.InverterOperatingStatus AS InverterOperatingStatus,
+				m.MainFault AS MainFault,
+				m.DriveFault AS DriveFault,
+				m.VoltageFault AS VoltageFault,
+				m.GridFault AS GridFault,
+				m.TemperatureFault AS TemperatureFault,
+				m.SystemFault AS SystemFault,
+				m.SystemWarnings AS SystemWarnings,
+				m.PVMStatusCodes AS PVMStatusCodes
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
-			)t
+			LIMIT 20;
   	</select>
   	
   	

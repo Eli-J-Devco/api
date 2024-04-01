@@ -598,31 +598,21 @@
 	</insert>
 	
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelIVTSolaronEXTEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.active_faults1 ) AS totalFault1,
-			SUM( t.active_faults2 ) AS totalFault2,
-			SUM( t.active_faults3 ) AS totalFault3,
-			SUM( t.limits ) AS totalLimits,
-			SUM( t.warnings1 ) AS totalWarning,
-			SUM( t.`status` ) AS totalStatus
-		FROM
-			(
-			SELECT
-				IF(m.active_faults1 > 0, 1, 0) AS active_faults1,
-				IF(m.active_faults2 > 0, 1, 0) AS active_faults2,
-				IF(m.active_faults3 > 0, 1, 0) AS active_faults3,
-				IF(m.limits > 0, 1, 0) AS limits,
-				IF(m.warnings1 > 0, 1, 0) AS warnings1,
-				IF(m.`status` > 0, 1, 0) AS `status`
+				m.active_faults1 AS active_faults1,
+				m.active_faults2 AS active_faults2,
+				m.active_faults3 AS active_faults3,
+				m.limits AS limits,
+				m.warnings1 AS warnings1,
+				m.`status` AS `status`
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20
-			)t
+			LIMIT 20;
   	</select>
   	
   	

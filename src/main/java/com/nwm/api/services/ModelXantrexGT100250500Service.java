@@ -135,7 +135,20 @@ public class ModelXantrexGT100250500Service extends DB {
 	public ModelXantrexGT100250500Entity checkAlertWriteCode(ModelXantrexGT100250500Entity obj) {
 		ModelXantrexGT100250500Entity rowItem = new ModelXantrexGT100250500Entity();
 		try {
-			rowItem = (ModelXantrexGT100250500Entity) queryForObject("ModelXantrexGT100250500.checkAlertWriteCode", obj);
+//			rowItem = (ModelXantrexGT100250500Entity) queryForObject("ModelXantrexGT100250500.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelXantrexGT100250500.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFaultCode = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double faultCode = (double) item.get("faultCode");
+					if(Double.compare(obj.getFaultCode(), faultCode) == 0 && obj.getFaultCode() > 0 && faultCode > 0) { 
+						totalFaultCode++;
+					}
+				}
+				rowItem.setTotalFaultCode(totalFaultCode);				
+			}
+			
 			if (rowItem == null)
 				return new ModelXantrexGT100250500Entity();
 		} catch (Exception ex) {

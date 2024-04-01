@@ -174,7 +174,39 @@ public class ModelChintSolectriaInverterClass9725Service extends DB {
 	public ModelChintSolectriaInverterClass9725Entity checkAlertWriteCode(ModelChintSolectriaInverterClass9725Entity obj) {
 		ModelChintSolectriaInverterClass9725Entity rowItem = new ModelChintSolectriaInverterClass9725Entity();
 		try {
-			rowItem = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+//			rowItem = (ModelChintSolectriaInverterClass9725Entity) queryForObject("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelChintSolectriaInverterClass9725.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalWarnCode = 0, totalFaultCode0 = 0, totalFaultCode1 = 0, totalFaultCode2 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double WarnCode = (double) item.get("active_faults1");
+					if(Double.compare(obj.getWarnCode(), WarnCode) == 0 && obj.getWarnCode() > 0 && WarnCode > 0) { 
+						totalWarnCode++;
+					}
+					
+					double faultCode0 = (double) item.get("faultCode0");
+					if(Double.compare(obj.getFaultCode0(), faultCode0) == 0 && obj.getFaultCode0() > 0 && faultCode0 > 0) { 
+						totalFaultCode0++;
+					}
+					
+					double faultCode1 = (double) item.get("faultCode1");
+					if(Double.compare(obj.getFaultCode1(), faultCode1) == 0 && obj.getFaultCode1() > 0 && faultCode1 > 0) { 
+						totalFaultCode1++;
+					}
+					
+					double faultCode2 = (double) item.get("faultCode2");
+					if(Double.compare(obj.getFaultCode2(), faultCode2) == 0 && obj.getFaultCode2() > 0 && faultCode2 > 0) { 
+						totalFaultCode2++;
+					}
+					
+				}
+				rowItem.setTotalWarnCode(totalWarnCode);
+				rowItem.setTotalFaultCode0(totalFaultCode0);
+				rowItem.setTotalFaultCode1(totalFaultCode1);
+				rowItem.setTotalFaultCode2(totalFaultCode2);
+				
+			}
 			if (rowItem == null)
 				return new ModelChintSolectriaInverterClass9725Entity();
 		} catch (Exception ex) {

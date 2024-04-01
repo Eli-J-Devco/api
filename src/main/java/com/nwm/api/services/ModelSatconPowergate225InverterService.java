@@ -162,7 +162,58 @@ public class ModelSatconPowergate225InverterService extends DB {
 	public ModelSatconPowergate225InverterEntity checkAlertWriteCode(ModelSatconPowergate225InverterEntity obj) {
 		ModelSatconPowergate225InverterEntity rowItem = new ModelSatconPowergate225InverterEntity();
 		try {
-			rowItem = (ModelSatconPowergate225InverterEntity) queryForObject("ModelSatconPowergate225Inverter.checkAlertWriteCode", obj);
+//			rowItem = (ModelSatconPowergate225InverterEntity) queryForObject("ModelSatconPowergate225Inverter.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelSatconPowergate225Inverter.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalFault4 = 0, totalFault5 = 0, totalFault6 = 0, totalFault7 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault1 = (double) item.get("Fault1");
+					if(Double.compare(obj.getFault1(), fault1) == 0 && obj.getFault1() > 0 && fault1 > 0) { 
+						totalFault1++;
+					}
+					
+					double fault2 = (double) item.get("Fault2");
+					if(Double.compare(obj.getFault2(), fault2) == 0 && obj.getFault2() > 0 && fault2 > 0) { 
+						totalFault2++;
+					}
+					
+					double fault3 = (double) item.get("Fault3");
+					if(Double.compare(obj.getFault3(), fault3) == 0 && obj.getFault3() > 0 && fault3 > 0) { 
+						totalFault3++;
+					}
+					
+					double fault4 = (double) item.get("Fault4");
+					if(Double.compare(obj.getFault4(), fault1) == 0 && obj.getFault4() > 0 && fault4 > 0) { 
+						totalFault4++;
+					}
+					
+					double fault5 = (double) item.get("GridStatus");
+					if(Double.compare(obj.getGridStatus(), fault5) == 0 && obj.getGridStatus() > 0 && fault5 > 0) { 
+						totalFault5++;
+					}
+					
+					double fault6 = (double) item.get("Status6");
+					if(Double.compare(obj.getStatus6(), fault6) == 0 && obj.getStatus6() > 0 && fault6 > 0) { 
+						totalFault6++;
+					}
+					
+					double fault7 = (double) item.get("Status7");
+					if(Double.compare(obj.getStatus7(), fault7) == 0 && obj.getStatus7() > 0 && fault7 > 0) { 
+						totalFault7++;
+					}
+					
+				}
+				rowItem.setTotalFault1(totalFault1);
+				rowItem.setTotalFault2(totalFault2);
+				rowItem.setTotalFault3(totalFault3);
+				rowItem.setTotalFault4(totalFault4);
+				rowItem.setTotalGridStatus(totalFault5);
+				rowItem.setTotalStatus6(totalFault6);
+				rowItem.setTotalStatus7(totalFault7);
+				
+			}
+			
 			if (rowItem == null)
 				return new ModelSatconPowergate225InverterEntity();
 		} catch (Exception ex) {

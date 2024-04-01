@@ -313,21 +313,16 @@
 			LIMIT 1
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelXantrexGT500EEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.STATUS_FAULT ) AS totalFaultCode
-		FROM
-			(
-			SELECT
-				IF(m.STATUS_FAULT > 0, 1, 0) AS STATUS_FAULT
+				m.STATUS_FAULT AS STATUS_FAULT
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20
-			)t
+			LIMIT 20;
   	</select>
   	
   	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">

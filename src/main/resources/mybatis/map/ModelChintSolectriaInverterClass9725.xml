@@ -673,29 +673,20 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.PermanentFaultCode ) AS totalPermanentFaultCode,
-			SUM( t.WarnCode ) AS totalWarnCode,
-			SUM( t.FaultCode0 ) AS totalFaultCode0,
-			SUM( t.FaultCode1 ) AS totalFaultCode1,
-			SUM( t.FaultCode2 ) AS totalFaultCode2
-		FROM
-			(
-			SELECT
-				IF(m.PermanentFaultCode > 0, 1, 0) AS PermanentFaultCode,
-				IF(m.WarnCode > 0, 1, 0) AS WarnCode,
-				IF(m.FaultCode0 > 0, 1, 0) AS FaultCode0,
-				IF(m.FaultCode1 > 0, 1, 0) AS FaultCode1,
-				IF(m.FaultCode2 > 0, 1, 0) AS FaultCode2
+				m.PermanentFaultCode AS PermanentFaultCode,
+				m.WarnCode AS WarnCode,
+				m.FaultCode0 AS FaultCode0,
+				m.FaultCode1 AS FaultCode1,
+				m.FaultCode2 AS FaultCode2
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
-			)t;
+			LIMIT 20;
   	</select>
   	
   	

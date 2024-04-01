@@ -1511,25 +1511,15 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelSatconPvs357InverterEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.Fault_Word1 ) AS totalFaultWord1,
-			SUM( t.Fault_Word2 ) AS totalFaultWord2,
-			SUM( t.Fault_Word3 ) AS totalFaultWord3,
-			SUM( t.Fault_Word4 ) AS totalFaultWord4,
-			SUM( t.Fault_Word5 ) AS totalFaultWord5,
-			SUM( t.Fault_Word6 ) AS totalFaultWord6,
-			SUM( t.Fault_Word7 ) AS totalFaultWord7
-		FROM
-			(
-			SELECT
-				IF(m.Fault_Word1 > 0, 1, 0) AS Fault_Word1,
-				IF(m.Fault_Word2 > 0, 1, 0) AS Fault_Word2,
-				IF(m.Fault_Word3 > 0, 1, 0) AS Fault_Word3,
-				IF(m.Fault_Word4 > 0, 1, 0) AS Fault_Word4,
-				IF(m.Fault_Word5 > 0, 1, 0) AS Fault_Word5,
-				IF(m.Fault_Word6 > 0, 1, 0) AS Fault_Word6,
-				IF(m.Fault_Word7 > 0, 1, 0) AS Fault_Word7
+				m.Fault_Word1 AS Fault_Word1,
+				m.Fault_Word2 AS Fault_Word2,
+				m.Fault_Word3 AS Fault_Word3,
+				m.Fault_Word4 AS Fault_Word4,
+				m.Fault_Word5 AS Fault_Word5,
+				m.Fault_Word6 AS Fault_Word6,
+				m.Fault_Word7 AS Fault_Word7
 				
 			FROM
 				${datatablename} m
@@ -1537,8 +1527,7 @@
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
-			)t
+			LIMIT 20;
   	</select>
   	
   	
