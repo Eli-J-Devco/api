@@ -134,7 +134,32 @@ public class ModelPhoenixContactQuintUPSService extends DB {
 	public ModelPhoenixContactQuintUPSEntity checkAlertWriteCode(ModelPhoenixContactQuintUPSEntity obj) {
 		ModelPhoenixContactQuintUPSEntity rowItem = new ModelPhoenixContactQuintUPSEntity();
 		try {
-			rowItem = (ModelPhoenixContactQuintUPSEntity) queryForObject("ModelPhoenixContactQuintUPS.checkAlertWriteCode", obj);
+//			rowItem = (ModelPhoenixContactQuintUPSEntity) queryForObject("ModelPhoenixContactQuintUPS.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelPhoenixContactQuintUPS.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalStatusAlarm = 0, totalStatusWarning = 0, totalBattery1StateofFuse = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double StatusAlarm = (double) item.get("StatusAlarm");
+					if(Double.compare(obj.getStatusAlarm(), StatusAlarm) == 0 && obj.getStatusAlarm() > 0 && StatusAlarm > 0) { 
+						totalStatusAlarm++;
+					}
+					
+					double StatusWarning = (double) item.get("StatusWarning");
+					if(Double.compare(obj.getStatusWarning(), StatusWarning) == 0 && obj.getStatusWarning() > 0 && StatusWarning > 0) { 
+						totalStatusWarning++;
+					}
+					
+					double Battery1StateofFuse = (double) item.get("Battery1StateofFuse");
+					if(Double.compare(obj.getBattery1StateofFuse(), Battery1StateofFuse) == 0 && obj.getBattery1StateofFuse() > 0 && Battery1StateofFuse > 0) { 
+						totalBattery1StateofFuse++;
+					}
+				}
+				rowItem.setTotalAlarm(totalStatusAlarm);
+				rowItem.setTotalWarning(totalStatusWarning);
+				rowItem.setTotalFuse1(totalBattery1StateofFuse);
+				
+			}
 			if (rowItem == null)
 				return new ModelPhoenixContactQuintUPSEntity();
 		} catch (Exception ex) {

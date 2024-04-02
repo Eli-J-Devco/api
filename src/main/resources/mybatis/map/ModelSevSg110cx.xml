@@ -385,25 +385,18 @@
 			AND e.id_device_group = 60
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelSevSg110cxEntity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.FaultCode ) AS totalFaultCode,
-			SUM( t.WorkState1 ) AS totalWorkState1,
-			SUM( t.WorkState2 ) AS totalWorkState2
-		FROM
-			(
-			SELECT
-				IF(m.FaultCode > 0, 1, 0) AS FaultCode,
-				IF(m.WorkState1 > 0, 1, 0) AS WorkState1,
-				IF(m.WorkState2 > 0, 1, 0) AS WorkState2
+				m.FaultCode AS FaultCode,
+				m.WorkState1 AS WorkState1,
+				m.WorkState2 AS WorkState2
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20 
-			)t
+			LIMIT 20;
   	</select>
 	
   	

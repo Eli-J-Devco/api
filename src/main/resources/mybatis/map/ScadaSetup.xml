@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScadaSetup">
+	<select id="getSiteDetail" resultType="com.nwm.api.entities.SitesDevicesEntity" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+		SELECT
+			CONCAT_WS( ", ", s.city, s.postal_code ) AS address_short,
+			CONCAT_WS( ", ", s.number, s.street ) AS street_ws,
+			s.id,
+			SHA1(s.id) AS hash_id,
+			s.id_country,
+			s.id_time_zone,
+			s.`name`,
+			s.lat,
+			s.lng,
+			s.old_data,
+			s.number,
+			s.street,
+			s.postal_code,
+			s.city,
+			s.state,
+			DATE_FORMAT( s.commissioning, '%m/%d/%Y %H:%s:%i' ) AS commissioning,
+			s.emergency_contact,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.`status`,
+			s.is_delete,
+			s.created_date,
+			s.created_by,
+			s.updated_date,
+			s.updated_by,
+			s.data_send_time,
+			s.kiosk_view,
+			DATE_FORMAT( s.built_since, '%m/%d/%Y %H:%s:%i' ) AS built_since,
+			c.`name` AS country_name,
+			s.gallery,
+			c.localization_format,
+			c.format_sql_short,
+			c.format_sql_long,
+			c.format_sql_string_short,
+			c.format_sql_string_long,
+			c.format_sql_string_mdy,
+			s.data_send_time,
+			t.value AS timezone_value,
+			t.offset AS timezone_offset,
+			s.is_rec_report,
+			s.datalogger_ip,
+			s.cf_start_time,
+			s.cf_end_time,
+			s.cf_alert_threshold,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			g.total_error,
+			s.display_time_format,
+			s.display_date_format,
+			d.name AS date_format,
+			s.pv_model,
+			s.pv_module_temperature_coeff,
+			s.global_solar_irradiance_at_stc,
+			s.stc_temperature,
+			s.inverter_efficiency,
+			s.t_avg,
+			s.system_loss,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
+			s.ids_device_poa,
+			s.ids_device_rpoa,
+			s.ids_device_panel_temp,
+			s.ids_device_ambient_temp,
+			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device,
+			s.modules_per_string,
+			s.number_of_strings,
+			s.kwp_dc_for_each_solar_module,
+			s.data_interval_factor,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
+
+			IF(smm.alert_mail_cc IS NULL || smm.alert_mail_cc = '', '', smm.alert_mail_cc) AS alert_mail_cc,
+			IF(smm.alert_mail_bcc IS NULL || smm.alert_mail_bcc = '', '', smm.alert_mail_bcc) AS alert_mail_bcc,
+			IF(smm.cf_email_subscribers IS NULL || smm.cf_email_subscribers = '', '', smm.cf_email_subscribers) AS cf_email_subscribers,
+			
+			h.is_hiding,
+			s.table_data_report,
+			s.table_data_virtual,
+			s.is_show_each_meter,		
+			s.expiration
+		FROM
+			site s 
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			LEFT JOIN country c ON c.id = s.id_country
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN date_format d ON d.id = s.display_date_format
+			LEFT JOIN site_mail_map smm ON smm.id_site = s.id AND smm.id_employee = #{id_employee}
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT sem.id_site, GROUP_CONCAT(e.email) AS alert_mail_bcc FROM site_employee_map sem
+				LEFT JOIN employee e ON e.id = sem.id_employee
+				WHERE 
+				SHA1(sem.id_site) = #{hash_id}
+				AND e.id = #{id_employee}
+			)t ON t.id_site = s.id
+			
+			LEFT JOIN(
+				SELECT
+					COUNT( a.id ) AS total_error,
+					d.id_site 
+				FROM
+					device d
+					LEFT JOIN alert a ON a.id_device = d.id 
+					LEFT JOIN error e ON e.id = a.id_error
+					LEFT JOIN site s ON s.id = d.id_site
+				WHERE
+					SHA1(d.id_site) = #{hash_id}
+					AND d.`status` = 1 
+					AND a.`status` = 1
+					AND e.`status` = 1 
+					AND e.is_delete = 0
+					AND s.enable_alert = 1
+					
+			)g ON g.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
+				WHERE d.`status` = 1 
+				AND d.is_delete = 0 
+				AND d.hidden = 0
+				AND d.virtual_device_type IS NOT NULL
+				AND d.virtual_device_type != ''
+				AND SHA1(d.id_site) = #{hash_id}
+			)v ON v.id_site = s.id
+			
+		WHERE
+			SHA1(s.id) = #{hash_id}
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+			</if>
+			AND s.`status` = 1 
+			AND s.is_delete = 0 GROUP BY s.id
+	</select>
+
+</mapper>

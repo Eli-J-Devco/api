@@ -136,7 +136,31 @@ public class ModelSevSg110cxService extends DB {
 	public ModelSevSg110cxEntity checkAlertWriteCode(ModelSevSg110cxEntity obj) {
 		ModelSevSg110cxEntity rowItem = new ModelSevSg110cxEntity();
 		try {
-			rowItem = (ModelSevSg110cxEntity) queryForObject("ModelSevSg110cx.checkAlertWriteCode", obj);
+//			rowItem = (ModelSevSg110cxEntity) queryForObject("ModelSevSg110cx.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelSevSg110cx.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFaultCode = 0, totalWorkState1 = 0, totalWorkState2 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault_code = (double) item.get("FaultCode");
+					if(Double.compare(obj.getFaultCode(), fault_code) == 0 && obj.getFaultCode() > 0 && fault_code > 0) { 
+						totalFaultCode++;
+					}
+					
+					double workState1 = (double) item.get("WorkState1");
+					if(Double.compare(obj.getWorkState1(), workState1) == 0 && obj.getWorkState1() > 0 && workState1 > 0) { 
+						totalWorkState1++;
+					}
+					
+					double workState2 = (double) item.get("WorkState2");
+					if(Double.compare(obj.getWorkState2(), workState2) == 0 && obj.getWorkState2() > 0 && workState2 > 0) { 
+						totalWorkState2++;
+					}
+				}
+				rowItem.setTotalFaultCode(totalFaultCode);
+				rowItem.setTotalWorkState1(totalWorkState1);
+				rowItem.setTotalWorkState2(totalWorkState2);
+			}
 			if (rowItem == null)
 				return new ModelSevSg110cxEntity();
 		} catch (Exception ex) {

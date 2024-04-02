@@ -377,29 +377,20 @@
 			
 	</select>
 	
-	<select id="checkAlertWriteCode" resultType="com.nwm.api.entities.ModelAbbTrioClass6210Entity">
+	<select id="checkAlertWriteCode" resultType="Map">
     	SELECT
-			SUM( t.StatesByte0 ) AS totalStatesByte0,
-			SUM( t.StatesByte1 ) AS totalStatesByte1,
-			SUM( t.StatesByte2 ) AS totalStatesByte2,
-			SUM( t.StatesByte3 ) AS totalStatesByte3,
-			SUM( t.StatesByte4 ) AS totalStatesByte4
-		FROM
-			(
-			SELECT
-				IF(m.StatesByte0 > 0, 1, 0) AS StatesByte0,
-				IF(m.StatesByte1 > 0, 1, 0) AS StatesByte1,
-				IF(m.StatesByte2 > 0, 1, 0) AS StatesByte2,
-				IF(m.StatesByte3 > 0, 1, 0) AS StatesByte3,
-				IF(m.StatesByte4 > 0, 1, 0) AS StatesByte4
+				m.StatesByte0 AS StatesByte0,
+				m.StatesByte1 AS StatesByte1,
+				m.StatesByte2 AS StatesByte2,
+				m.StatesByte3 AS StatesByte3,
+				m.StatesByte4 AS StatesByte4
 			FROM
 				${datatablename} m
 			WHERE
 				id_device = #{id_device}
 			ORDER BY
 				time DESC 
-			LIMIT 20
-			)t
+			LIMIT 20;
   	</select>
   	
   	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAbbTrioClass6210Entity">

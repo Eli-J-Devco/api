@@ -150,7 +150,45 @@ public class ModelTTiTrackerService extends DB {
 	public ModelTTiTrackerEntity checkAlertWriteCode(ModelTTiTrackerEntity obj) {
 		ModelTTiTrackerEntity rowItem = new ModelTTiTrackerEntity();
 		try {
-			rowItem = (ModelTTiTrackerEntity) queryForObject("ModelTTiTracker.checkAlertWriteCode", obj);
+//			rowItem = (ModelTTiTrackerEntity) queryForObject("ModelTTiTracker.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelTTiTracker.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalMode = 0, totalSubMode = 0, totalMotorFault = 0, totalRemoteInterfaceFault = 0, totalInclinometerFault = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double Mode = (double) item.get("Mode");
+					if(Double.compare(obj.getMode(), Mode) == 0 && obj.getMode() > 0 && Mode > 0) { 
+						totalMode++;
+					}
+					
+					double SubMode = (double) item.get("SubMode");
+					if(Double.compare(obj.getSubMode(), SubMode) == 0 && obj.getSubMode() > 0 && SubMode > 0) { 
+						totalSubMode++;
+					}
+					
+					double MotorFault = (double) item.get("MotorFault");
+					if(Double.compare(obj.getMotorFault(), MotorFault) == 0 && obj.getMotorFault() > 0 && MotorFault > 0) { 
+						totalMotorFault++;
+					}
+					
+					double RemoteInterfaceFault = (double) item.get("RemoteInterfaceFault");
+					if(Double.compare(obj.getRemoteInterfaceFault(), RemoteInterfaceFault) == 0 && obj.getRemoteInterfaceFault() > 0 && RemoteInterfaceFault > 0) { 
+						totalRemoteInterfaceFault++;
+					}
+					
+					double InclinometerFault = (double) item.get("status");
+					if(Double.compare(obj.getInclinometerFault(), InclinometerFault) == 0 && obj.getInclinometerFault() > 0 && InclinometerFault > 0) { 
+						totalInclinometerFault++;
+					}
+					
+				}
+				rowItem.setTotalMode(totalMode);
+				rowItem.setTotalSubMode(totalSubMode);
+				rowItem.setTotalMotorFault(totalMotorFault);
+				rowItem.setTotalRemoteInterfaceFault(totalRemoteInterfaceFault);
+				rowItem.setTotalInclinometerFault(totalInclinometerFault);
+			}
+			
 			if (rowItem == null)
 				return new ModelTTiTrackerEntity();
 		} catch (Exception ex) {

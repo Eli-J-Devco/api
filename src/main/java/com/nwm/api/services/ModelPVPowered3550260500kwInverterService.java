@@ -163,7 +163,68 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	public ModelPVPowered3550260500kwInverterEntity checkAlertWriteCode(ModelPVPowered3550260500kwInverterEntity obj) {
 		ModelPVPowered3550260500kwInverterEntity rowItem = new ModelPVPowered3550260500kwInverterEntity();
 		try {
-			rowItem = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+//			rowItem = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelPVPowered3550260500kwInverter.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalInverterOperatingStatus = 0, totalMainFault = 0, totalDriveFault = 0, totalVoltageFault = 0, totalGridFault = 0, totalTemperatureFault = 0, totalSystemFault = 0, totalSystemWarnings = 0, totalPVMStatusCodes = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double InverterOperatingStatus = (double) item.get("InverterOperatingStatus");
+					if(Double.compare(obj.getInverterOperatingStatus(), InverterOperatingStatus) == 0 && obj.getInverterOperatingStatus() > 0 && InverterOperatingStatus > 0) { 
+						totalInverterOperatingStatus++;
+					}
+					
+					double MainFault = (double) item.get("MainFault");
+					if(Double.compare(obj.getMainFault(), MainFault) == 0 && obj.getMainFault() > 0 && MainFault > 0) { 
+						totalMainFault++;
+					}
+					
+					double DriveFault = (double) item.get("DriveFault");
+					if(Double.compare(obj.getDriveFault(), DriveFault) == 0 && obj.getDriveFault() > 0 && DriveFault > 0) { 
+						totalDriveFault++;
+					}
+					
+					double VoltageFault = (double) item.get("VoltageFault");
+					if(Double.compare(obj.getVoltageFault(), VoltageFault) == 0 && obj.getVoltageFault() > 0 && VoltageFault > 0) { 
+						totalVoltageFault++;
+					}
+					
+					double GridFault = (double) item.get("GridFault");
+					if(Double.compare(obj.getGridFault(), GridFault) == 0 && obj.getGridFault() > 0 && GridFault > 0) { 
+						totalGridFault++;
+					}
+					
+					double TemperatureFault = (double) item.get("TemperatureFault");
+					if(Double.compare(obj.getTemperatureFault(), TemperatureFault) == 0 && obj.getTemperatureFault() > 0 && TemperatureFault > 0) { 
+						totalTemperatureFault++;
+					}
+					
+					double SystemFault = (double) item.get("SystemFault");
+					if(Double.compare(obj.getSystemFault(), SystemFault) == 0 && obj.getSystemFault() > 0 && SystemFault > 0) { 
+						totalSystemFault++;
+					}
+					
+					double SystemWarnings = (double) item.get("SystemWarnings");
+					if(Double.compare(obj.getSystemWarnings(), SystemWarnings) == 0 && obj.getSystemWarnings() > 0 && SystemWarnings > 0) { 
+						totalSystemWarnings++;
+					}
+					
+					double PVMStatusCodes = (double) item.get("PVMStatusCodes");
+					if(Double.compare(obj.getPVMStatusCodes(), PVMStatusCodes) == 0 && obj.getPVMStatusCodes() > 0 && PVMStatusCodes > 0) { 
+						totalPVMStatusCodes++;
+					}
+				}
+				rowItem.setTotalInverterOperatingStatus(totalInverterOperatingStatus);
+				rowItem.setTotalMainFault(totalMainFault);
+				rowItem.setTotalDriveFault(totalDriveFault);
+				rowItem.setTotalVoltageFault(totalVoltageFault);
+				rowItem.setTotalGridFault(totalGridFault);
+				rowItem.setTotalTemperatureFault(totalTemperatureFault);
+				rowItem.setTotalSystemFault(totalSystemFault);
+				rowItem.setTotalSystemWarnings(totalSystemWarnings);
+				rowItem.setTotalPVMStatusCodes(totalPVMStatusCodes);
+				
+			}
 			if (rowItem == null)
 				return new ModelPVPowered3550260500kwInverterEntity();
 		} catch (Exception ex) {

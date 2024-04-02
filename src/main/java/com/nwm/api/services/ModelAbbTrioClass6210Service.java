@@ -137,7 +137,41 @@ public class ModelAbbTrioClass6210Service extends DB {
 	public ModelAbbTrioClass6210Entity checkAlertWriteCode(ModelAbbTrioClass6210Entity obj) {
 		ModelAbbTrioClass6210Entity rowItem = new ModelAbbTrioClass6210Entity();
 		try {
-			rowItem = (ModelAbbTrioClass6210Entity) queryForObject("ModelAbbTrioClass6210.checkAlertWriteCode", obj);
+//			rowItem = (ModelAbbTrioClass6210Entity) queryForObject("ModelAbbTrioClass6210.checkAlertWriteCode", obj);
+			List dataList = queryForList("ModelAbbTrioClass6210.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int StatesByte0 = 0, StatesByte1 = 0, StatesByte2 = 0, StatesByte4 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double state_byte0 = (double) item.get("StatesByte0");
+					if(Double.compare(obj.getStatesByte0(), state_byte0) == 0 && obj.getStatesByte0() > 0 && state_byte0 > 0) { 
+						StatesByte0++;
+					}
+					
+					double state_byte1 = (double) item.get("StatesByte1");
+					if(Double.compare(obj.getStatesByte1(), state_byte1) == 0 && obj.getStatesByte1() > 0 && state_byte1 > 0) { 
+						StatesByte1++;
+					}
+					
+					double state_byte2 = (double) item.get("StatesByte2");
+					if(Double.compare(obj.getStatesByte2(), state_byte2) == 0 && obj.getStatesByte2() > 0 && state_byte2 > 0) { 
+						StatesByte2++;
+					}
+					
+					double state_byte4 = (double) item.get("StatesByte4");
+					if(Double.compare(obj.getStatesByte4(), state_byte4) == 0 && obj.getStatesByte4() > 0 && state_byte4 > 0) { 
+						StatesByte4++;
+					}
+					
+				}
+				rowItem.setTotalStatesByte0(StatesByte0);
+				rowItem.setTotalStatesByte1(StatesByte1);
+				rowItem.setTotalStatesByte2(StatesByte2);
+				rowItem.setTotalStatesByte4(StatesByte4);
+				
+			}
+			
+			
 			if (rowItem == null)
 				return new ModelAbbTrioClass6210Entity();
 		} catch (Exception ex) {
