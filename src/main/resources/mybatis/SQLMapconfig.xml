@@ -193,6 +193,8 @@
 		 
 		 
 		<mapper resource="mybatis/map/ScadaDevice.xml"/>
+		<mapper resource="mybatis/map/ScadaSetup.xml"/>
+		
 		
 		
 	</mappers>
