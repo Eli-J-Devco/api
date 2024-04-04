@@ -40,6 +40,9 @@
 		<result property="is_supper_admin" column="is_supper_admin" />
 		<result property="datalogger_table" column="datalogger_table" />
 		<result property="enable_alert" column="enable_alert" />
+		<result property="table_share_data" column="table_share_data" />
+		<result property="id_device_share" column="id_device_share" />
+		<result property="id_site_share" column="id_site_share" />
 		
 		
 		
@@ -195,7 +198,10 @@
 			si.ftp_port,
 			si.ftp_folder,
 			si.datalogger_type,
-			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter
+			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter,
+			s.id_site_share,
+			s.id_device_share,
+			s.table_share_data
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -334,7 +340,10 @@
 			`hidden`,
 			`virtual_device_type`,
 			`ip_address`,
-			`consumption_meter`
+			`consumption_meter`,
+			`id_site_share`,
+			`id_device_share`,
+			`table_share_data`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -365,7 +374,10 @@
 			#{hidden},
 			#{virtual_device_type},
 			#{ip_address},
-			#{consumption_meter}
+			#{consumption_meter},
+			#{id_site_share},
+			#{id_device_share},
+			#{table_share_data}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -412,7 +424,10 @@
 				`hidden` = #{hidden},
 				virtual_device_type = #{virtual_device_type},
 				ip_address = #{ip_address},
-				consumption_meter = #{consumption_meter}
+				consumption_meter = #{consumption_meter},
+				id_site_share = #{id_site_share},
+				id_device_share = #{id_device_share},
+				table_share_data = #{table_share_data}
 			WHERE
 				`id` = #{id}
 		</if>

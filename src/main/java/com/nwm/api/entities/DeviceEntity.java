@@ -132,6 +132,30 @@ public class DeviceEntity {
 	private String ftp_folder;
 	private int datalogger_type;
 	private double power_now;
+	private String table_share_data;
+	private int id_device_share;
+	private int id_site_share;
+	
+
+	
+	public int getId_site_share() {
+		return id_site_share;
+	}
+	public void setId_site_share(int id_site_share) {
+		this.id_site_share = id_site_share;
+	}
+	public String getTable_share_data() {
+		return table_share_data;
+	}
+	public void setTable_share_data(String table_share_data) {
+		this.table_share_data = table_share_data;
+	}
+	public Integer getId_device_share() {
+		return id_device_share;
+	}
+	public void setId_device_share(int id_device_share) {
+		this.id_device_share = id_device_share;
+	}
 
 	public double getPower_now() {
 		return power_now;
