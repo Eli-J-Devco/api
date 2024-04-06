@@ -333,7 +333,7 @@
 							    <when test="formula == 1">
 							      AVG( ${fieldname} ) AS valueField
 							    </when>
-							    <when test="formula != 2">
+							    <when test="formula == 2">
 							      SUM( ${fieldname} ) AS valueField
 							    </when>
 							    <otherwise>
@@ -351,13 +351,13 @@
 								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 HOUR)
 								    </when>
 								    <when test="type == 3">
-								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -1 DAY)
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 DAY)
 								    </when>
 								    <when test="type == 4">
-								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -1 MONTH)
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 MONTH)
 								    </when>
 								    <when test="type == 5">
-								      time <![CDATA[>=]]> SELECT DATE_ADD(NOW(), INTERVAL -12 MONTH)
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -12 MONTH)
 								    </when>
 								    <otherwise>
 								      DATE_FORMAT( time, '%Y-%m-%d' ) = DATE_FORMAT( NOW(), '%Y-%m-%d' )

@@ -213,12 +213,12 @@ public class WidgetGroupService extends DB {
 					WidgetGroupParameterEntity itemWP = new WidgetGroupParameterEntity();
 					itemWP.setId_widget_group(obj.getId());
 					itemWP.setId_group_parameter(Integer.parseInt(item.get("id_group_parameter").toString()));
-					itemWP.setMenu_order(!Lib.isBlank(item.get("menu_order")) ? Integer.parseInt(item.get("menu_order").toString()) : 0);
+					itemWP.setMenu_order(item.get("menu_order") != null ? Integer.parseInt(item.get("menu_order").toString()) : 0);
 					itemWP.setUnit(item.get("unit").toString());
 					itemWP.setName(item.get("name").toString());
 					itemWP.setBg_color(!Lib.isBlank(item.get("bg_color")) ? item.get("bg_color").toString(): null);
-					itemWP.setFormula(!Lib.isBlank(item.get("formula")) ? Integer.parseInt(item.get("formula").toString()) : 1);
-					itemWP.setType(!Lib.isBlank(item.get("type")) ? Integer.parseInt(item.get("type").toString()) : 1);
+					itemWP.setFormula(item.get("formula") != null ? Integer.parseInt(item.get("formula").toString()) : 1);
+					itemWP.setType(item.get("type") != null ? Integer.parseInt(item.get("type").toString()) : 1);
 					itemWP.setId_device(item.get("id_device").toString());
 					
 					session.insert("WidgetGroup.insertWidgetGroupParameter", itemWP);
