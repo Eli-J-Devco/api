@@ -83,7 +83,7 @@
 			widget_group AS t
 		WHERE
 			t.`status` = 1 AND id_site = #{id_site}
-		ORDER BY id, parent DESC;
+		ORDER BY id, parent, menu_order DESC;
 	</select>
 	
 	
