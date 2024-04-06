@@ -9,6 +9,7 @@ import java.util.List;
 
 public class ScadaOverviewEntity {
 	private int id_site;
+	private String hash_id;
 	private int id_employee;
 	private String sort_column;
 	private String order_by;
@@ -17,6 +18,12 @@ public class ScadaOverviewEntity {
 	
 	
 	
+	public String getHash_id() {
+		return hash_id;
+	}
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
+	}
 	public String getRead_data_all() {
 		return read_data_all;
 	}
