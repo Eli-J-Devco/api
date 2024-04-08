@@ -35,8 +35,15 @@ public class GroupEntity{
 	private Integer order_id;
 	private boolean isSubGroup;
 	private List sub_group_list;
+	private int id_company;
 	
 	
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
 	public Integer getOrder_id() {
 		return order_id;
 	}

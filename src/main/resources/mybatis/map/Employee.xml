@@ -88,6 +88,9 @@
 		WHERE
 			`status` = 1 
 			AND is_delete = 0 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND e.id_company = #{id_company}
+			</if>
 			<if test="email != null">
 				AND e.email = #{email}
 			</if>
@@ -271,6 +274,9 @@
 			AND t.group_roles <![CDATA[!=]]> ""
 		</if>
 		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND e.id_company = #{id_company}
+		</if>
 		
 		<if test="keyword != null">
 			<choose>
@@ -353,6 +359,10 @@
 		WHERE e.is_delete = 0
 		<if test="roles != null and !roles.isEmpty() ">
 			AND t.group_roles <![CDATA[!=]]> ""
+		</if>
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND e.id_company = #{id_company}
 		</if>
 		
 		<if test="keyword != null">

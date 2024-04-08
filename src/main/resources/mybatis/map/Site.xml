@@ -274,6 +274,10 @@
 					</foreach>
 				)
 			</if>
+			
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if>
 	      	
 	      	
 			
@@ -409,6 +413,10 @@
 		<if test="is_supper_admin != 1">
 			AND scm.id_employee = #{id_employee}
 		</if> 
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
 		
 		
 		<if test="keyword != null">
@@ -808,6 +816,10 @@
 			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if>
 		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		
 		
 		GROUP BY s.id 
 		
@@ -867,9 +879,15 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRow
 		FROM site s
+		WHERE s.`is_delete` = 0
 		<if test="keyword != null">
-			WHERE (s.name LIKE CONCAT("%",#{keyword}, "%"))
+			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if> 
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		
   	</select>
   	
   	
@@ -1002,7 +1020,11 @@
 			s.enable_alert
 		FROM
 			site AS s
-		WHERE s.is_delete = 0;
+		WHERE s.is_delete = 0
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+		;
 	</select>
 	
 	<select id="getAllSiteGroup" resultType="Map">

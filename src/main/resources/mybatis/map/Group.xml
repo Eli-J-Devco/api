@@ -31,6 +31,9 @@
 			site_group AS t
 		WHERE
 			t.`status` = 1 AND t.is_delete = 0 
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND t.id_company = #{id_company}
+			</if>
 		ORDER BY `name` ASC;
 	</select>
 	
@@ -42,13 +45,19 @@
 			s.`status`,
 			s.is_delete,
 			s.order_id,
-			0 AS is_expand
+			0 AS is_expand,
+			s.id_company
 		FROM
 			site_group s 
 		WHERE s.is_delete = 0
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
+			
 		    order by
 	        <choose>  
 	            <when test="sort_column == 'id'">
@@ -82,7 +91,8 @@
 			ssg.`description`,
 			ssg.`status`,
 			ssg.is_delete,
-			ssg.order_id
+			ssg.order_id,
+			ssg.id_company
 		FROM
 			site_sub_group ssg
 			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
@@ -103,6 +113,9 @@
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND s.id_company = #{id_company}
+		</if>
   	</select>
   	
 	<select id="getTotalSiteById"  resultType="int" parameterType="com.nwm.api.entities.GroupEntity">
@@ -155,11 +168,13 @@
 		INSERT INTO `site_group`(
 			`name`,
 			`description`,
-			`order_id`
+			`order_id`,
+			`id_company`
 		)VALUES(
 			#{name},
 			#{description},
-			#{order_id}
+			#{order_id},
+			#{id_company}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -172,13 +187,15 @@
 			`name`,
 			`id_site_group`,
 			`description`,
-			`order_id`
+			`order_id`,
+			`id_company`
 			
 		)VALUES(
 			#{name},
 			#{id},
 			#{description},
-			#{order_id}
+			#{order_id},
+			#{id_company}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -191,7 +208,8 @@
 		SET
 			`name` = #{name},
 			`description` = #{description},
-			`order_id` = #{order_id}
+			`order_id` = #{order_id},
+			`id_company` = #{id_company}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -201,7 +219,8 @@
 		SET
 			`name` = #{name},
 			`description` = #{description},
-			`order_id` = #{order_id}
+			`order_id` = #{order_id},
+			`id_company` = #{id_company}
 		WHERE
 			`id` = #{id}
 	</update>

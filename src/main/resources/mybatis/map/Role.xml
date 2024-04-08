@@ -21,6 +21,8 @@
 			<result property="value" column="value" />
 			<result property="text" column="text" />
 			<result property="label" column="label" />
+			<result property="parent" column="parent" />
+			<result property="id_company" column="id_company" />
 			
 	</resultMap>
 	
@@ -47,7 +49,18 @@
 	</resultMap>	
 		
 	<select id="getList" resultMap="RoleMap" >
-		SELECT * FROM `role` 	
+		SELECT  
+		r.*,
+		r.id AS value,
+		r.`name` as label,
+		r.`name` as text
+		FROM `role` r
+		 
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			WHERE r.id_company = #{id_company}
+		</if>
+			
+		
 		    order by
 	        <choose>  
 	            <when test="order_by == 'id'">
@@ -66,7 +79,12 @@
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.RoleEntity">
     	SELECT count(*) as totalRecord
-		FROM role;
+		FROM role r
+		 
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			WHERE r.id_company = #{id_company}
+		</if>
+		;
   	</select>
   	
   	
@@ -82,10 +100,14 @@
 	<insert id="insertRole" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `role`(
 			`name`,
-			`description`
+			`parent`,
+			`description`,
+			`id_company`
 		)VALUES(
 			#{name},
-			#{description}
+			#{parent},
+			#{description},
+			#{id_company}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -97,7 +119,9 @@
 		UPDATE `role`
 		SET
 			`name` = #{name},
-			description = #{description}
+			`parent` = #{parent},
+			description = #{description},
+			`id_company` = #{id_company}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -158,7 +182,11 @@
 		SELECT t.*, 
 		t.id AS value,
 		t.name AS label,
-		0 as is_checked FROM `role` t;
+		0 as is_checked FROM `role` t
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			WHERE t.id_company = #{id_company}
+		</if>
+		;
 	</select>
 	
 	<select id="checkRoleScreenMapExist" resultType="int" parameterType="com.nwm.api.entities.RoleScreenMapEntity" >
