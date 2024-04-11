@@ -79,8 +79,14 @@
 		<result property="virtual_status" column="virtual_status" />
 		<result property="enable_alert" column="enable_alert" />
 		
+		<result property="serial_number" column="serial_number" />
+		<result property="mqtt_host" column="mqtt_host" />
+		<result property="mqtt_port" column="mqtt_port" />
+		<result property="mqtt_protocol" column="mqtt_protocol" />
+		<result property="mqtt_username" column="mqtt_username" />
+		<result property="mqtt_password" column="mqtt_password" />
 		
-		
+	
 		
 		
 		
@@ -138,6 +144,12 @@
 			s.city,
 			s.postal_code,
 			s.state,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
 			IF(
 				s.expiration IS NOT NULL
 				AND CONVERT_TZ(NOW(), '+00:00', tz.offset) > DATE_SUB(s.expiration, INTERVAL 1 MONTH),
@@ -400,7 +412,13 @@
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
-			s.enable_alert
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -614,7 +632,13 @@
 			`datalogger_type`,
 			`is_show_each_meter`,
 			`expiration`,
-			`enable_alert`
+			`enable_alert`,
+			`serial_number`,
+			`mqtt_host`,
+			`mqtt_port`,
+			`mqtt_protocol`,
+			`mqtt_username`,
+			`mqtt_password`
 		)VALUES(
 			#{id_company},
 			#{id_country},
@@ -658,7 +682,13 @@
 			#{datalogger_type},
 			#{is_show_each_meter},
 			#{expiration},
-			#{enable_alert}
+			#{enable_alert},
+			#{serial_number},
+			#{mqtt_host},
+			#{mqtt_port},
+			#{mqtt_protocol},
+			#{mqtt_username},
+			#{mqtt_password}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -711,12 +741,18 @@
 			`datalogger_type` = #{datalogger_type},
 			`expiration` = #{expiration},
 			`is_show_each_meter` = #{is_show_each_meter},
-			`enable_alert` = #{enable_alert}
+			`enable_alert` = #{enable_alert},
+			`serial_number` = #{serial_number},
+			`mqtt_host` = #{mqtt_host},
+			`mqtt_port` = #{mqtt_port},
+			`mqtt_protocol` = #{mqtt_protocol},
+			`mqtt_username` = #{mqtt_username},
+			`mqtt_password` = #{mqtt_password}
 		WHERE
 			`id` = #{id}
 	</update>
   	
-  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity" >
+  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
@@ -774,7 +810,13 @@
 			h.is_hiding,
 			s.is_show_each_meter,
 			COUNT(td.id_site) AS virtual_status,
-			s.enable_alert
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -956,7 +998,13 @@
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
-			s.enable_alert
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password
 		FROM
 			site AS s
 		WHERE
@@ -1017,7 +1065,13 @@
 			s.ftp_port,
 			s.ftp_folder,
 			s.datalogger_type,
-			s.enable_alert
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password
 		FROM
 			site AS s
 		WHERE s.is_delete = 0

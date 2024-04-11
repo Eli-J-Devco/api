@@ -88,7 +88,13 @@
 			s.table_data_report,
 			s.table_data_virtual,
 			s.is_show_each_meter,		
-			s.expiration
+			s.expiration,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id

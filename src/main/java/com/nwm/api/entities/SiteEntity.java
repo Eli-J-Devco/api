@@ -204,8 +204,50 @@ public class SiteEntity {
 	private String listGroup;
 	private int totalWeatherStation;
 	
+	private String serial_number;
+	private String mqtt_host;
+	private int mqtt_port;
+	private String mqtt_protocol;
+	private String mqtt_username;
+	private String mqtt_password;
 	
 	
+	public String getSerial_number() {
+		return serial_number;
+	}
+	public void setSerial_number(String serial_number) {
+		this.serial_number = serial_number;
+	}
+	public String getMqtt_host() {
+		return mqtt_host;
+	}
+	public void setMqtt_host(String mqtt_host) {
+		this.mqtt_host = mqtt_host;
+	}
+	public int getMqtt_port() {
+		return mqtt_port;
+	}
+	public void setMqtt_port(int mqtt_port) {
+		this.mqtt_port = mqtt_port;
+	}
+	public String getMqtt_protocol() {
+		return mqtt_protocol;
+	}
+	public void setMqtt_protocol(String mqtt_protocol) {
+		this.mqtt_protocol = mqtt_protocol;
+	}
+	public String getMqtt_username() {
+		return mqtt_username;
+	}
+	public void setMqtt_username(String mqtt_username) {
+		this.mqtt_username = mqtt_username;
+	}
+	public String getMqtt_password() {
+		return mqtt_password;
+	}
+	public void setMqtt_password(String mqtt_password) {
+		this.mqtt_password = mqtt_password;
+	}
 	public int getTotalWeatherStation() {
 		return totalWeatherStation;
 	}
