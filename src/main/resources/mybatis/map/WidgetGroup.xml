@@ -130,7 +130,8 @@
 			`parent`,
 			`bg_color`,
 			`menu_order`,
-			`type`
+			`type`,
+			`unit`
 		)VALUES(
 			#{name},
 			#{description},
@@ -138,7 +139,8 @@
 			#{parent},
 			#{bg_color},
 			#{menu_order},
-			#{type}
+			#{type},
+			#{unit}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -193,7 +195,8 @@
 			`parent` = #{parent},
 			`bg_color` = #{bg_color},
 			`menu_order` = #{menu_order},
-			`type` = #{type}
+			`type` = #{type},
+			`unit` = #{unit}
 		WHERE
 			`id` = #{id}
 	</update>

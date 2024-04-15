@@ -33,9 +33,16 @@ public class WidgetGroupEntity{
 	private List dataFields;
 	private int menu_order;
 	private int type;
+	private String unit;
 	
 	
 	
+	public String getUnit() {
+		return unit;
+	}
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
 	public int getType() {
 		return type;
 	}
