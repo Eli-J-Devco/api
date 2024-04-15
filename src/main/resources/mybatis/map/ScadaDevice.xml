@@ -18,18 +18,22 @@
 			AND id_device_type = 1
 	</select>
 	
-	<select id="getDeviceDetail" resultType="Map" >
+	<select id="getDeviceDetail" resultType="com.nwm.api.entities.ScadaDeviceEntity" >
 		SELECT
 			d.id,
 			d.datatablename,
-			tz.value AS time_zone_value
+			d.modbusdevicenumber,
+			d.serial_number,
+			d.rating_ac_power,
+			tz.value AS time_zone_value,
+			d.energy_today
 		FROM
 			device d
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
 			d.modbusdevicenumber = #{modbusdevicenumber}
-			AND d.id_site = #{id_site}
+			AND SHA1(d.id_site) = #{id_site}
 			AND d.id_device_type = 1
 			AND d.status = 1
 			AND d.is_delete = 0
@@ -40,8 +44,8 @@
 	<select id="getChartData" resultType="com.nwm.api.entities.ScadaDeviceChartDataEntity">
 		SELECT
 			dv.nvmActivePower AS active_power,
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS full_time,
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:%i %d. %b') AS category_time
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 60)*60), '%Y-%m-%d %H:%i') AS full_time,
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 60)*60), '%H:%i %d. %b') AS category_time
 		FROM
 			${datatablename} dv
 			LEFT JOIN device d ON d.id = dv.id_device
@@ -52,6 +56,33 @@
 			AND CONVERT_TZ(dv.time, '+00:00', t.`offset`) BETWEEN #{start_datetime} AND #{end_datetime}
 		GROUP BY
 			full_time
+	</select>
+	
+	<select id="getActiveAlarmsListByDevice" resultType="com.nwm.api.entities.ScadaDeviceAlarmEntity" >
+		SELECT
+			al.id,
+			DATE_FORMAT( CONVERT_TZ( al.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i') AS opened,
+			er.message AS issue,
+			el.name AS error_level,
+			t.offset AS timezone_offset
+		FROM
+			alert al
+			LEFT JOIN device d ON d.id = al.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error er ON er.id = al.id_error
+			LEFT JOIN error_level el ON el.id = id_error_level
+		WHERE
+			SHA1(s.id) = #{id_site}
+			AND d.modbusdevicenumber = #{modbusdevicenumber}
+			AND d.id_device_type = 1
+			AND al.status = 1
+			AND al.is_delete = 0
+			AND al.end_date IS NULL
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND er.status = 1
+			AND er.is_delete = 0
 	</select>
 	
 </mapper>
