@@ -32,9 +32,16 @@ public class WidgetGroupEntity{
 	private int id_device_group;
 	private List dataFields;
 	private int menu_order;
+	private int type;
 	
 	
 	
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 	public int getMenu_order() {
 		return menu_order;
 	}

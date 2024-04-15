@@ -16,6 +16,7 @@
 		<result property="id_site" column="id_site" />
 		<result property="label" column="label" />
 		<result property="menu_order" column="menu_order" />
+		<result property="type" column="type" />
 	</resultMap>
 	
 	
@@ -128,14 +129,16 @@
 			`id_site`,
 			`parent`,
 			`bg_color`,
-			`menu_order`
+			`menu_order`,
+			`type`
 		)VALUES(
 			#{name},
 			#{description},
 			#{id_site},
 			#{parent},
 			#{bg_color},
-			#{menu_order}
+			#{menu_order},
+			#{type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -189,7 +192,8 @@
 			`description` = #{description},
 			`parent` = #{parent},
 			`bg_color` = #{bg_color},
-			`menu_order` = #{menu_order}
+			`menu_order` = #{menu_order},
+			`type` = #{type}
 		WHERE
 			`id` = #{id}
 	</update>
