@@ -336,6 +336,12 @@
 							    <when test="formula == 2">
 							      SUM( ${fieldname} ) AS valueField
 							    </when>
+							    <when test="formula == 3">
+							      MAX( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 4">
+							      MIN( ${fieldname} ) AS valueField
+							    </when>
 							    <otherwise>
 							      AVG( ${fieldname} ) AS valueField
 							    </otherwise>
@@ -358,6 +364,9 @@
 								    </when>
 								    <when test="type == 5">
 								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -12 MONTH)
+								    </when>
+								    <when test="type == 6">
+								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 MONTH)
 								    </when>
 								    <otherwise>
 								      DATE_FORMAT( time, '%Y-%m-%d' ) = DATE_FORMAT( NOW(), '%Y-%m-%d' )

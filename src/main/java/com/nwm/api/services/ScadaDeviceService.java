@@ -9,18 +9,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.ScadaDeviceAlarmEntity;
 import com.nwm.api.entities.ScadaDeviceChartDataEntity;
 import com.nwm.api.entities.ScadaDeviceEntity;
 
 public class ScadaDeviceService extends DB {
 
 	/**
-	 * @description get Scada devices list by site
+	 * @description get devices list by site
 	 * @author Hung.Bui
 	 * @since 2024-03-26
 	 * @param id_site
@@ -77,21 +76,20 @@ public class ScadaDeviceService extends DB {
 	 * @description get chart data
 	 * @author Hung.Bui
 	 * @since 2024-04-05
-	 * @param id_site
-	 * @param modbusdevicenumber
+	 * @param obj { id_site, modbusdevicenumber }
 	 * @return List<ScadaDeviceChartDataEntity>
 	 */
 	public List<ScadaDeviceChartDataEntity> getChartData(ScadaDeviceEntity obj) {
 		try {
 			List<ScadaDeviceChartDataEntity> dataList = new ArrayList<ScadaDeviceChartDataEntity>();
 			
-			Map<String, String> device = (HashMap<String, String>) queryForObject("ScadaDevice.getDeviceDetail", obj);
+			ScadaDeviceEntity device = (ScadaDeviceEntity) queryForObject("ScadaDevice.getDeviceDetail", obj);
 			if (device == null) return new ArrayList<ScadaDeviceChartDataEntity>();
 			
-			LocalDateTime end = LocalDateTime.now().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(device.get("time_zone_value"))).toLocalDateTime().withHour(23).withMinute(59).withSecond(59);
-			device.put("end_datetime", end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			LocalDateTime end = LocalDateTime.now().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of(device.getTime_zone_value())).toLocalDateTime().withHour(23).withMinute(59).withSecond(59);
+			device.setEnd_datetime(end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			LocalDateTime start = end.minusDays(2).withHour(0).withMinute(0).withSecond(0);
-			device.put("start_datetime", start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+			device.setStart_datetime(start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 			
 			List<ScadaDeviceChartDataEntity> dateTimeList = new ArrayList<>();
 			while (!start.isAfter(end)) {
@@ -99,7 +97,7 @@ public class ScadaDeviceService extends DB {
 				dateTime.setFull_time(start.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
 				dateTime.setCategory_time(start.format(DateTimeFormatter.ofPattern("HH:mm dd. LLL")));
 				dateTimeList.add(dateTime);
-				start = start.plusMinutes(5);
+				start = start.plusMinutes(1);
 			}
 			
 			dataList = queryForList("ScadaDevice.getChartData", device);
@@ -107,6 +105,38 @@ public class ScadaDeviceService extends DB {
 			return fulfillData(dateTimeList, dataList);
 		} catch (Exception ex) {
 			return new ArrayList<ScadaDeviceChartDataEntity>();
+		}
+	}
+	
+	/**
+	 * @description get alarms list by device
+	 * @author Hung.Bui
+	 * @since 2024-04-12
+	 * @param obj { id_site, modbusdevicenumber }
+	 * @return List<ScadaDeviceAlarmEntity>
+	 */
+	public List<ScadaDeviceAlarmEntity> getActiveAlarmsListByDevice(ScadaDeviceEntity obj) {
+		try {
+			List<ScadaDeviceAlarmEntity> dataList = queryForList("ScadaDevice.getActiveAlarmsListByDevice", obj);
+			if (dataList == null) return new ArrayList<ScadaDeviceAlarmEntity>();
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<ScadaDeviceAlarmEntity>();
+		}
+	}
+	
+	/**
+	 * @description get device detail
+	 * @author Hung.Bui
+	 * @since 2024-04-12
+	 * @param obj { id_site, modbusdevicenumber }
+	 * @return ScadaDeviceEntity
+	 */
+	public ScadaDeviceEntity getDeviceDetail(ScadaDeviceEntity obj) {
+		try {
+			return (ScadaDeviceEntity) queryForObject("ScadaDevice.getDeviceDetail", obj);
+		} catch (Exception ex) {
+			return null;
 		}
 	}
 
