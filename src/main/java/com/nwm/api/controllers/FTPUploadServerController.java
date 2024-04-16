@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,14 +22,17 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
@@ -197,9 +201,11 @@ public class FTPUploadServerController extends BaseController {
 						if(listDevice.size() > 0) {
 							// Read file XML
 							String dirFolderXML = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/"+siteItem.getId()+"/data";
-							Set<String> fileSet = new HashSet<>();
+							Set<String> fileSet = new HashSet<>();						
 							try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirFolderXML))) {
-								for (Path path : stream) {
+								StreamSupport.stream(stream.spliterator(), false)
+							    .sorted(Comparator.comparing(Path::toString))
+							    .forEach(path -> { 
 									if (!Files.isDirectory(path)) {
 										fileSet.add(path.getFileName().toString());
 										String fileXML = dirFolderXML + "/" + path.getFileName().toString();
@@ -419,7 +425,7 @@ public class FTPUploadServerController extends BaseController {
 																		if (field.equals("DcMs.Vol[A]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
-//																		  
+																		  
 																		if (field.equals("DcMs.Vol[B]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
@@ -1019,7 +1025,7 @@ public class FTPUploadServerController extends BaseController {
 												}
 												
 												
-											} catch (ParserConfigurationException | SAXException | IOException e) {
+											} catch (ParserConfigurationException | SAXException | IOException | IntrospectionException | IllegalAccessException | InvocationTargetException e) {
 												e.printStackTrace();
 											}
 											
@@ -1029,7 +1035,7 @@ public class FTPUploadServerController extends BaseController {
 											logFile.delete();
 										}
 									}
-								}
+								});
 							}
 						}
 						
