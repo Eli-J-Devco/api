@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,14 +22,20 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import net.objecthunter.exp4j.ExpressionBuilder;
+
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -194,9 +201,11 @@ public class FTPUploadServerController extends BaseController {
 						if(listDevice.size() > 0) {
 							// Read file XML
 							String dirFolderXML = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey) + "/"+siteItem.getId()+"/data";
-							Set<String> fileSet = new HashSet<>();
+							Set<String> fileSet = new HashSet<>();						
 							try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dirFolderXML))) {
-								for (Path path : stream) {
+								StreamSupport.stream(stream.spliterator(), false)
+							    .sorted(Comparator.comparing(Path::toString))
+							    .forEach(path -> { 
 									if (!Files.isDirectory(path)) {
 										fileSet.add(path.getFileName().toString());
 										String fileXML = dirFolderXML + "/" + path.getFileName().toString();
@@ -221,6 +230,9 @@ public class FTPUploadServerController extends BaseController {
 												for (int v = 0; v < listDevice.size(); v++) {
 													DeviceEntity deviceItem = (DeviceEntity) listDevice.get(v);
 													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(deviceItem);
+
 													
 													String[] itemXML = {"MeanPublic", "CurrentPublic"};
 													ModelSmaInverterStp3000ktlus10Entity entitySMA3000 = new ModelSmaInverterStp3000ktlus10Entity();
@@ -413,7 +425,7 @@ public class FTPUploadServerController extends BaseController {
 																		if (field.equals("DcMs.Vol[A]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolA(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
-//																		  
+																		  
 																		if (field.equals("DcMs.Vol[B]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24k.setDcMs_VolB(mean != null  ? Double.parseDouble(mean) : 0.001);
 																		}
@@ -832,6 +844,23 @@ public class FTPUploadServerController extends BaseController {
 													
 													switch (deviceItem.getDevice_group_table()) {
 													case "model_sma_cluster_controller":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaClusterControllerEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entityCluster);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entityCluster, scaledValue);
+																if (slug.equals("GridMs.TotW")) entityCluster.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering.TotWhOut")) entityCluster.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														serviceUmg604.insertModelSmaClusterController(entityCluster);
 														// Update last value
 														if(entityCluster.getNvmActivePower() >= 0) {
@@ -850,6 +879,23 @@ public class FTPUploadServerController extends BaseController {
 														break;
 													
 													case "model_sma_inverter_stp1200tlus10":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp1200tlus10Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA12k);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA12k, scaledValue);
+																if (slug.equals("GridMs.TotW")) entitySMA12k.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering.TotWhOut")) entitySMA12k.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														serviceSMA12k.insertModelSmaInverterStp1200tlus10(entitySMA12k);
 														// Update last value
 														if(entitySMA12k.getNvmActivePower() >= 0) {
@@ -867,6 +913,23 @@ public class FTPUploadServerController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
 													case "model_sma_inverter_stp24ktlus10":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp24ktlus10Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA24k);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA24k, scaledValue);
+																if (slug.equals("GridMs.TotW")) entitySMA24k.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering.TotWhOut")) entitySMA24k.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
 														if (entitySMA24k.getGridMs_TotW() > 0) {
 															deviceUpdateE.setLast_updated(entitySMA24k.getTime());
@@ -887,6 +950,23 @@ public class FTPUploadServerController extends BaseController {
 														break;
 														
 													case "model_sma_inverter_stp30000tlus10":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp3000ktlus10Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA3000);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
+																if (slug.equals("Measurement.GridMs.TotW")) entitySMA3000.setNvmActivePower(scaledValue);
+																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA3000.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
 														if (entitySMA3000.getGridMs_TotW() > 0) {
 															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
@@ -905,6 +985,22 @@ public class FTPUploadServerController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
 													case "model_sma_inverter_stp62us41":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp62us41Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA62);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA62, scaledValue);
+																if (slug.equals("Measurement.GridMs.TotW")) entitySMA62.setNvmActivePower(scaledValue);
+																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA62.setNvmActiveEnergy(scaledValue);
+															}
+														}
 														
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
@@ -929,7 +1025,7 @@ public class FTPUploadServerController extends BaseController {
 												}
 												
 												
-											} catch (ParserConfigurationException | SAXException | IOException e) {
+											} catch (ParserConfigurationException | SAXException | IOException | IntrospectionException | IllegalAccessException | InvocationTargetException e) {
 												e.printStackTrace();
 											}
 											
@@ -939,7 +1035,7 @@ public class FTPUploadServerController extends BaseController {
 											logFile.delete();
 										}
 									}
-								}
+								});
 							}
 						}
 						
