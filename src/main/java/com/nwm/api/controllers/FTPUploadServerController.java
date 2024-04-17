@@ -15,7 +15,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -71,6 +70,7 @@ import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelSmaClusterControllerService;
 import com.nwm.api.services.ModelSmaInverterStp1200tlus10Service;
+import com.nwm.api.services.ModelSmaInverterStp24000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp24ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
@@ -178,6 +178,7 @@ public class FTPUploadServerController extends BaseController {
 		try {
 			BatchJobService service = new BatchJobService();
 			ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
+			ModelSmaInverterStp24000ktlus10Service serviceSMA24000 = new ModelSmaInverterStp24000ktlus10Service();
 			ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
 			ModelSmaInverterStp24ktlus10Service serviceSMA24k = new ModelSmaInverterStp24ktlus10Service();
 			ModelSmaInverterStp1200tlus10Service serviceSMA12k = new ModelSmaInverterStp1200tlus10Service();
@@ -639,7 +640,7 @@ public class FTPUploadServerController extends BaseController {
 																		break;
 																		
 																	case "model_sma_inverter_stp24000tlus10":
-																		entitySMA3000.setTime(formatterUtcDateTime);
+																		entitySMA24000.setTime(formatterUtcDateTime);
 																		// Put data to entity
 																		if (field.equals("Measurement.GridMs.TotVAr") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
 																			entitySMA24000.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
@@ -1139,6 +1140,43 @@ public class FTPUploadServerController extends BaseController {
 														deviceUpdateE.setId(entitySMA3000.getId_device());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
+														
+													case "model_sma_inverter_stp24000tlus10":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp24000ktlus10Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA24000);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
+																if (slug.equals("Measurement.GridMs.TotW")) entitySMA24000.setNvmActivePower(scaledValue);
+																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA24000.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
+														if (entitySMA24000.getGridMs_TotW() > 0) {
+															deviceUpdateE.setLast_updated(entitySMA24000.getTime());
+															deviceUpdateE.setLast_value(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(entitySMA24000.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														break;
+														
 													case "model_sma_inverter_stp62us41":
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {

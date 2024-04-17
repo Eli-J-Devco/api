@@ -12,13 +12,13 @@ import com.nwm.api.entities.ModelSmaInverterStp24000ktlus10Entity;
 public class ModelSmaInverterStp24000ktlus10Service extends DB {
 
 	/**
-	 * @description insert data from datalogger to model_sma_inverter_stp24ktlus10
+	 * @description insert data from datalogger to model_sma_inverter_stp24000tlus10
 	 * @author long.pham
-	 * @since 2023-01-31
+	 * @since 2024-04-17
 	 * @param data from datalogger
 	 */
 	
-	public boolean insertModelSmaInverterStp3000ktlus10(ModelSmaInverterStp24000ktlus10Entity obj) {
+	public boolean insertModelSmaInverterStp24000ktlus10(ModelSmaInverterStp24000ktlus10Entity obj) {
 		try {
 			ModelSmaInverterStp24000ktlus10Entity dataObj = (ModelSmaInverterStp24000ktlus10Entity) queryForObject("ModelSmaInverterStp24000ktlus10.getLastRow", obj);
 			 double measuredProduction = 0;
