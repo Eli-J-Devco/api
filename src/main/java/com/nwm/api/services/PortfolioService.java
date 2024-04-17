@@ -43,7 +43,7 @@ public class PortfolioService extends DB {
 			
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> site = (Map<String, Object>) dataList.get(i);
-				String inverters_meters = (String) site.get("inverters_meters");
+				String devicesList = (String) site.get("devices_list");
 				String alerts = (String) site.get("alerts");
 				JSONParser parse = new JSONParser();
 				
@@ -53,56 +53,35 @@ public class PortfolioService extends DB {
 				}
 				
 				
-				if (!Lib.isBlank(inverters_meters)) {
-					JSONArray jsonArray = (JSONArray) parse.parse(inverters_meters);
+				if (!Lib.isBlank(devicesList)) {
+					List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
 					
-					List<Object> green_inverter = new ArrayList<>();
-					List<Object> yellow_inverter = new ArrayList<>();
-					List<Object> red_inverter = new ArrayList<>();
+					List<Object> green = new ArrayList<>();
+					List<Object> yellow = new ArrayList<>();
+					List<Object> red = new ArrayList<>();
 					
-					List<Object> green_meter = new ArrayList<>();
-					List<Object> yellow_meter = new ArrayList<>();
-					List<Object> red_meter = new ArrayList<>();
+					boolean hasInverter = jsonArray.stream().filter(item -> Integer.parseInt(item.get("id_device_type").toString()) == 1).findFirst().isPresent();
 					
 					for (int j = 0; j < jsonArray.size(); j++) {
 						Map<String, Object> device = (Map<String, Object>) jsonArray.get(j);
+						Double comparison_ratio = device.get("comparison_ratio") == null ? null : Double.parseDouble(device.get("comparison_ratio").toString()) ;
+						int id_device_type = Integer.parseInt(device.get("id_device_type").toString());
+						if (id_device_type != (hasInverter ? 1 : 3)) continue;
 						
-						
-						Double diff = Double.parseDouble(device.get("diff").toString()) ;
-						Double active_power = device.get("active_power") == null ? null : Double.parseDouble(device.get("active_power").toString()) ;
-						
-						int id_device_type = Integer.parseInt(device.get("id_device_type").toString()) ;
-						if (id_device_type == 1) {
-							if (diff > 49 || active_power == null || active_power <= 0.09) {
-								red_inverter.add(device);
-							} else if (diff <= 49 && diff >= 10) {
-								yellow_inverter.add(device);
-							} else if (diff < 10) {
-								green_inverter.add(device);
-							}
+						if (comparison_ratio == null || comparison_ratio <= 10) {
+							red.add(device);
+						} else if (comparison_ratio <= 70) {
+							yellow.add(device);
 						} else {
-							if (diff > 49 || active_power == null || active_power <= 0.09) {
-								red_meter.add(device);
-							} else if (diff <= 49 && diff >= 10) {
-								yellow_meter.add(device);
-							} else if (diff < 10) {
-								green_meter.add(device);
-							}
+							green.add(device);
 						}
 					}
 					
-					if (green_inverter.size() == 0 && yellow_inverter.size() == 0 && red_inverter.size() == 0) {
-						site.put("green", green_meter);
-						site.put("yellow", yellow_meter);
-						site.put("red", red_meter);
-					} else {
-						site.put("green", green_inverter);
-						site.put("yellow", yellow_inverter);
-						site.put("red", red_inverter);
-					}
+					site.put("green", green);
+					site.put("yellow", yellow);
+					site.put("red", red);
+					site.remove("devices_list");
 				}
-				site.remove("inverters_meters");
-				
 			}
 			
 			return dataList;
