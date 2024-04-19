@@ -15,7 +15,6 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -62,6 +61,7 @@ import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelSmaClusterControllerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1200tlus10Entity;
+import com.nwm.api.entities.ModelSmaInverterStp24000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp24ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
@@ -70,6 +70,7 @@ import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelSmaClusterControllerService;
 import com.nwm.api.services.ModelSmaInverterStp1200tlus10Service;
+import com.nwm.api.services.ModelSmaInverterStp24000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp24ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
@@ -177,6 +178,7 @@ public class FTPUploadServerController extends BaseController {
 		try {
 			BatchJobService service = new BatchJobService();
 			ModelSmaInverterStp3000ktlus10Service serviceSMA3000 = new ModelSmaInverterStp3000ktlus10Service();
+			ModelSmaInverterStp24000ktlus10Service serviceSMA24000 = new ModelSmaInverterStp24000ktlus10Service();
 			ModelSmaInverterStp62us41Service serviceSMA62 = new ModelSmaInverterStp62us41Service();
 			ModelSmaInverterStp24ktlus10Service serviceSMA24k = new ModelSmaInverterStp24ktlus10Service();
 			ModelSmaInverterStp1200tlus10Service serviceSMA12k = new ModelSmaInverterStp1200tlus10Service();
@@ -240,6 +242,12 @@ public class FTPUploadServerController extends BaseController {
 													entitySMA3000.setView_tablename(deviceItem.getView_tablename());
 													entitySMA3000.setJob_tablename(deviceItem.getJob_tablename());
 													entitySMA3000.setDatatablename(deviceItem.getDatatablename());
+													
+													ModelSmaInverterStp24000ktlus10Entity entitySMA24000 = new ModelSmaInverterStp24000ktlus10Entity();
+													entitySMA24000.setId_device(deviceItem.getId());
+													entitySMA24000.setView_tablename(deviceItem.getView_tablename());
+													entitySMA24000.setJob_tablename(deviceItem.getJob_tablename());
+													entitySMA24000.setDatatablename(deviceItem.getDatatablename());
 													
 													ModelSmaInverterStp62us41Entity entitySMA62 = new ModelSmaInverterStp62us41Entity();
 													entitySMA62.setId_device(deviceItem.getId());
@@ -631,6 +639,154 @@ public class FTPUploadServerController extends BaseController {
 																		
 																		break;
 																		
+																	case "model_sma_inverter_stp24000tlus10":
+																		entitySMA24000.setTime(formatterUtcDateTime);
+																		// Put data to entity
+																		if (field.equals("Measurement.GridMs.TotVAr") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setGridMs_TotVAr(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.DcMs.Watt[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Watt0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																
+																		else if (field.equals("Measurement.DcMs.Watt[1]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Watt1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																
+																		else if (field.equals("Measurement.GridMs.W.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setW_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.W.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setW_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.A.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.W.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setW_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.TotW") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setGridMs_TotW(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
+																			entitySMA24000.setNvmActivePower(mean != null  ? Double.parseDouble(mean) / 1000 : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.TotVA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setGridMs_TotVA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.A.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.Hz") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setGridMs_Hz(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.A.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Isolation.LeakRis") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setIsolation_LeakRis(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.DcMs.Vol[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Vol0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																
+																		else if (field.equals("Measurement.DcMs.Vol[1]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Vol1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.PhV.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setPhV_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.PhV.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setPhV_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VAr.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVAr_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.DcMs.Amp[0]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Amp0(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																
+																		else if (field.equals("Measurement.DcMs.Amp[1]") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setDcMs_Amp1(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.TotVAr.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setTotVAr_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VAr.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVAr_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.PhV.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setPhV_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VAr.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVAr_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VA.phsA") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVA_phsA(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VA.phsB") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVA_phsB(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.VA.phsC") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setVA_phsC(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.GridMs.TotW.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setTotW_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Metering.TotFeedTms") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setMetering_TotFeedTms(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Operation.GriSwCnt") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setOperation_GriSwCnt(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Metering.TotOpTms") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setMetering_TotOpTms(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Operation.Health") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setOperation_Health(mean != null ? mean : null);
+																		}
+																		
+																		else if (field.equals("Measurement.Metering.TotWhOut") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setMetering_TotWhOut(mean != null  ? Double.parseDouble(mean)/1000 : 0.001);
+																			entitySMA24000.setNvmActiveEnergy(mean != null ? Double.parseDouble(mean)/1000 : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Metering.TotWhOut.Pv") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setTotWhOut_Pv(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+																		
+																		else if (field.equals("Measurement.Operation.Evt.EvtNoShrt") && modbusdevicenumber.equals(deviceItem.getModbusdevicenumber())) {
+																			entitySMA24000.setEvt_EvtNoShrt(mean != null  ? Double.parseDouble(mean) : 0.001);
+																		}
+
+																		
+																		break;
+																		
 																	case "model_sma_inverter_stp62us41":
 																		entitySMA62.setTime(formatterUtcDateTime);
 																		// Insert data
@@ -984,6 +1140,43 @@ public class FTPUploadServerController extends BaseController {
 														deviceUpdateE.setId(entitySMA3000.getId_device());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														break;
+														
+													case "model_sma_inverter_stp24000tlus10":
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp24000ktlus10Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(entitySMA24000);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
+																if (slug.equals("Measurement.GridMs.TotW")) entitySMA24000.setNvmActivePower(scaledValue);
+																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA24000.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
+														if (entitySMA24000.getGridMs_TotW() > 0) {
+															deviceUpdateE.setLast_updated(entitySMA24000.getTime());
+															deviceUpdateE.setLast_value(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(entitySMA24000.getId_device());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														break;
+														
 													case "model_sma_inverter_stp62us41":
 														// scaling device parameter
 														if (scaledDeviceParameters.size() > 0) {

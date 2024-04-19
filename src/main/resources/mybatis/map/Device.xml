@@ -2824,7 +2824,7 @@
 						  `Metering_TotFeedTms` double DEFAULT NULL,
 						  `Operation_GriSwCnt` double DEFAULT NULL,
 						  `Metering_TotOpTms` double DEFAULT NULL,
-						  `Operation_Health` varchar(4) DEFAULT NULL,
+						  `Operation_Health` varchar(20) DEFAULT NULL,
 						  `Metering_TotWhOut` double DEFAULT NULL,
 						  `TotWhOut_Pv` double DEFAULT NULL,
 						  `nvmActivePower` double DEFAULT NULL,
@@ -4554,6 +4554,59 @@
 					)
 					ENGINE=InnoDB DEFAULT CHARSET=utf8;
 				</when>
+				
+				<when test="id_device_group == 80">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `GridMs_TotVAr` double DEFAULT NULL,
+						  `DcMs_Watt0` double DEFAULT NULL,
+						  `DcMs_Watt1` double DEFAULT NULL,
+						  `W_phsA` double DEFAULT NULL,
+						  `W_phsB` double DEFAULT NULL,
+						  `W_phsC` double DEFAULT NULL,
+						  `GridMs_TotW` double DEFAULT NULL,
+						  `GridMs_TotVA` double DEFAULT NULL,
+						  `A_phsA` double DEFAULT NULL,
+						  `A_phsB` double DEFAULT NULL,
+						  `A_phsC` double DEFAULT NULL,
+						  `GridMs_Hz` double DEFAULT NULL,
+						  `Isolation_LeakRis` double DEFAULT NULL,
+						  `DcMs_Vol0` double DEFAULT NULL,
+						  `DcMs_Vol1` double DEFAULT NULL,
+						  `PhV_phsA` double DEFAULT NULL,
+						  `PhV_phsB` double DEFAULT NULL,
+						  `PhV_phsC` double DEFAULT NULL,
+						  `DcMs_Amp0` double DEFAULT NULL,
+						  `DcMs_Amp1` double DEFAULT NULL,
+						  `TotVAr_Pv` double DEFAULT NULL,
+						  `VAr_phsA` double DEFAULT NULL,
+						  `VAr_phsB` double DEFAULT NULL,
+						  `VAr_phsC` double DEFAULT NULL,
+						  `VA_phsA` double DEFAULT NULL,
+						  `VA_phsB` double DEFAULT NULL,
+						  `VA_phsC` double DEFAULT NULL,
+						  `TotW_Pv` double DEFAULT NULL,
+						  `Metering_TotFeedTms` double DEFAULT NULL,
+						  `Operation_GriSwCnt` double DEFAULT NULL,
+						  `Metering_TotOpTms` double DEFAULT NULL,
+						  `Operation_Health` varchar(20) DEFAULT NULL,
+						  `Metering_TotWhOut` double DEFAULT NULL,
+						  `TotWhOut_Pv` double DEFAULT NULL,
+						  `Evt_EvtNoShrt` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                          
 	        </choose> 
 	        
