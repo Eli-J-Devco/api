@@ -385,7 +385,7 @@ public class ImportOldDataService extends DB {
 			case "model_pyranometer_poa":
 				obj.setId_device_type(4);
 				for (int i = 0; i < dataList.size(); i++) {
-					session.insert("ModelPyranometer.insertModelPyranometer", dataList.get(i));         
+					session.insert("ModelPyranometer.insertModelPyranometer", dataList.get(i));
 				}       
 				break;
 				
