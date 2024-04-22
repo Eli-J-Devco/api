@@ -204,7 +204,7 @@
 							(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings3_reserved') or
 							(table_name == 'model_rt1_class30000' and param.slug == 'error_code')
 						">
-							IFNULL(ROUND(COUNT(${param.slug}), 2), 0.001) AS ${param.slug}
+							IFNULL(AVG(${param.slug}), 0.001) AS ${param.slug}
 						</when>
 						
 						<when test="
@@ -322,7 +322,7 @@
 								(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings3_reserved') or
 								(table_name == 'model_rt1_class30000' and param.slug == 'error_code')
 							">
-								COUNT(dv.${param.slug}) AS ${param.slug}
+								AVG(dv.${param.slug}) AS ${param.slug}
 							</when>
 							
 							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">

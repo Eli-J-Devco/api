@@ -382,6 +382,13 @@ public class ImportOldDataService extends DB {
 				}       
 				break;
 				
+			case "model_pyranometer_poa":
+				obj.setId_device_type(4);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelPyranometer.insertModelPyranometer", dataList.get(i));
+				}       
+				break;
+				
 			}
 
 			session.commit();
@@ -1748,6 +1755,20 @@ public class ImportOldDataService extends DB {
 		
 		return rowItem;
 	}
+	
+	
+	
+	public Object setModelPyranometerPOA(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("poa", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("point1", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("point2", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("point3", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("nvm_irradiance", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("nvm_temperature", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		
+		return rowItem;
+	}
+	
 	
 	public Object setModelAdvancedEnergySolaron(HashMap<String, String> rowItem, Row r) {
 		rowItem.put("today_kwh", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");

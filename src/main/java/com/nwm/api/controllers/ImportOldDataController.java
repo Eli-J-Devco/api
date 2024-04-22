@@ -341,6 +341,12 @@ public class ImportOldDataController extends BaseController {
 											service.setModelRT1Class30000(rowItem, r);
 											break;
 											
+										case "model_pyranometer_poa":
+											service.setModelPyranometerPOA(rowItem, r);
+											break;
+											
+											
+											
 										case "model_advanced_energy_solaron":
 											service.setModelAdvancedEnergySolaron(rowItem, r);
 											break;

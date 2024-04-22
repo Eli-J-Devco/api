@@ -217,18 +217,18 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 	public void checkTriggerAlertModelAdvancedEnergySolaron(ModelAdvancedEnergySolaronEntity obj) {
 		// Check device alert by fault code
-		int fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (int) obj.getActive_faults1() : 0;
-		int fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (int) obj.getActive_faults2() : 0;
-		int fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (int) obj.getActive_faults3() : 0;
-		int limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (int) obj.getLimits() : 0;
-		int statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (int) obj.getStatus() : 0;
-		int warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (int) obj.getWarnings1() : 0;
+		long fault1 = (obj.getActive_faults1() > 0 && obj.getActive_faults1() != 0.001) ? (long) obj.getActive_faults1() : 0;
+		long fault2 = (obj.getActive_faults2() > 0 && obj.getActive_faults2() != 0.001) ? (long) obj.getActive_faults2() : 0;
+		long fault3 = (obj.getActive_faults3() > 0 && obj.getActive_faults3() != 0.001) ? (long) obj.getActive_faults3() : 0;
+		long limitCode = (obj.getLimits() > 0 && obj.getLimits() != 0.001) ? (long) obj.getLimits() : 0;
+		long statusCode = (obj.getStatus() > 0 && obj.getStatus() != 0.001) ? (long) obj.getStatus() : 0;
+		long warningCode = (obj.getWarnings1() > 0 && obj.getWarnings1() != 0.001) ? (long) obj.getWarnings1() : 0;
 		
 		ModelAdvancedEnergySolaronEntity rowItem = (ModelAdvancedEnergySolaronEntity) checkAlertWriteCode(obj);
 		
 		if(warningCode > 0 && rowItem.getTotalWarning() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(warningCode);
+				String toBinary = Long.toBinaryString(warningCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -289,7 +289,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		if(statusCode > 0  && rowItem.getTotalStatus() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(statusCode);
+				String toBinary = Long.toBinaryString(statusCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -350,7 +350,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 		
 		if(limitCode > 0  && rowItem.getTotalLimits() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(limitCode);
+				String toBinary = Long.toBinaryString(limitCode);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -410,7 +410,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(fault1);
+				String toBinary = Long.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -470,7 +470,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
 			try {
-				String toBinary2 = Integer.toBinaryString(fault2);
+				String toBinary2 = Long.toBinaryString(fault2);
 				String toBinary32Bit2 = String.format("%32s", toBinary2).replaceAll(" ", "0");
 				int v2 = 0;
 				for (int b2 = toBinary32Bit2.length() - 1; b2 >= 0; b2--) {
@@ -529,7 +529,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 
 		if (fault3 > 0   && rowItem.getTotalFault3() >= 20) {
 			try {
-				String toBinary3 = Integer.toBinaryString(fault3);
+				String toBinary3 = Long.toBinaryString(fault3);
 				String toBinary32Bit3 = String.format("%32s", toBinary3).replaceAll(" ", "0");
 				int v3 = 0;
 				for (int b3 = toBinary32Bit3.length() - 1; b3 >= 0; b3--) {
