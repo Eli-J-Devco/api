@@ -27,7 +27,7 @@ public class ScadaDeviceController extends BaseController {
 	 * @description get devices list by site
 	 * @author Hung.Bui
 	 * @since 2024-03-26
-	 * @param id_site
+	 * @param obj { id_site }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/list-device-by-site")
@@ -46,7 +46,7 @@ public class ScadaDeviceController extends BaseController {
 	 * @description get chart data
 	 * @author Hung.Bui
 	 * @since 2024-04-05
-	 * @param obj { id_site, modbusdevicenumber }
+	 * @param obj { id, datatablename, timezone_value, id_filter, start_date, end_date, data_send_time }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/get-chart-data")
@@ -65,7 +65,7 @@ public class ScadaDeviceController extends BaseController {
 	 * @description get alarms list by device
 	 * @author Hung.Bui
 	 * @since 2024-04-12
-	 * @param obj { id_site, modbusdevicenumber }
+	 * @param obj { hash_id_site, modbusdevicenumber }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/list-active-alarm-by-device")
@@ -84,7 +84,7 @@ public class ScadaDeviceController extends BaseController {
 	 * @description get device detail
 	 * @author Hung.Bui
 	 * @since 2024-04-12
-	 * @param obj { id_site, modbusdevicenumber }
+	 * @param obj { hash_id_site, modbusdevicenumber }
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/device-detail")

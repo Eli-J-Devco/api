@@ -7,16 +7,20 @@ package com.nwm.api.entities;
 
 public class ScadaDeviceEntity {
 	private int id;
-	private String id_site;
+	private int id_site;
+	private String hash_id_site;
 	private String name;
 	private String serial_number;
 	private Integer modbusdevicenumber;
 	private String datatablename;
-	private String time_zone_value;
-	private String energy_today;
+	private String timezone_value;
+	private Double energy_today;
 	private Integer rating_ac_power;
-	private String start_datetime;
-	private String end_datetime;
+	private String start_date;
+	private String end_date;
+	private String id_filter;
+	private String commissioning;
+	private int data_send_time;
 	
 	public int getId() {
 		return id;
@@ -24,11 +28,17 @@ public class ScadaDeviceEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getId_site() {
+	public int getId_site() {
 		return id_site;
 	}
-	public void setId_site(String id_site) {
+	public void setId_site(int id_site) {
 		this.id_site = id_site;
+	}
+	public String getHash_id_site() {
+		return hash_id_site;
+	}
+	public void setHash_id_site(String hash_id_site) {
+		this.hash_id_site = hash_id_site;
 	}
 	public String getName() {
 		return name;
@@ -54,16 +64,16 @@ public class ScadaDeviceEntity {
 	public void setDatatablename(String datatablename) {
 		this.datatablename = datatablename;
 	}
-	public String getTime_zone_value() {
-		return time_zone_value;
+	public String getTimezone_value() {
+		return timezone_value;
 	}
-	public void setTime_zone_value(String time_zone_value) {
-		this.time_zone_value = time_zone_value;
+	public void setTimezone_value(String timezone_value) {
+		this.timezone_value = timezone_value;
 	}
-	public String getEnergy_today() {
+	public Double getEnergy_today() {
 		return energy_today;
 	}
-	public void setEnergy_today(String energy_today) {
+	public void setEnergy_today(Double energy_today) {
 		this.energy_today = energy_today;
 	}
 	public Integer getRating_ac_power() {
@@ -72,17 +82,35 @@ public class ScadaDeviceEntity {
 	public void setRating_ac_power(Integer rating_ac_power) {
 		this.rating_ac_power = rating_ac_power;
 	}
-	public String getStart_datetime() {
-		return start_datetime;
+	public String getStart_date() {
+		return start_date;
 	}
-	public void setStart_datetime(String start_datetime) {
-		this.start_datetime = start_datetime;
+	public void setStart_date(String start_date) {
+		this.start_date = start_date;
 	}
-	public String getEnd_datetime() {
-		return end_datetime;
+	public String getEnd_date() {
+		return end_date;
 	}
-	public void setEnd_datetime(String end_datetime) {
-		this.end_datetime = end_datetime;
+	public void setEnd_date(String end_date) {
+		this.end_date = end_date;
+	}
+	public String getId_filter() {
+		return id_filter;
+	}
+	public void setId_filter(String id_filter) {
+		this.id_filter = id_filter;
+	}
+	public String getCommissioning() {
+		return commissioning;
+	}
+	public void setCommissioning(String commissioning) {
+		this.commissioning = commissioning;
+	}
+	public int getData_send_time() {
+		return data_send_time;
+	}
+	public void setData_send_time(int data_send_time) {
+		this.data_send_time = data_send_time;
 	}
 	
 }
