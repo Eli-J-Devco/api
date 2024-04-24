@@ -419,7 +419,7 @@
 			    </when>
 			    
 			    <when test="sort_column == 'site_name'">
-			      ORDER BY d.`name` ${order_by}
+			      ORDER BY s.`name` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'priority_name'">
