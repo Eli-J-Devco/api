@@ -25,7 +25,10 @@
 			d.modbusdevicenumber,
 			d.serial_number,
 			d.rating_ac_power,
-			tz.value AS time_zone_value,
+			tz.value AS timezone_value,
+			s.data_send_time,
+			s.id AS id_site,
+			s.commissioning,
 			d.energy_today
 		FROM
 			device d
@@ -33,7 +36,7 @@
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
 			d.modbusdevicenumber = #{modbusdevicenumber}
-			AND SHA1(d.id_site) = #{id_site}
+			AND SHA1(d.id_site) = #{hash_id_site}
 			AND d.id_device_type = 1
 			AND d.status = 1
 			AND d.is_delete = 0
@@ -43,17 +46,183 @@
 	
 	<select id="getChartData" resultType="com.nwm.api.entities.ScadaDeviceChartDataEntity">
 		SELECT
-			dv.nvmActivePower AS active_power,
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 60)*60), '%Y-%m-%d %H:%i') AS full_time,
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 60)*60), '%H:%i %d. %b') AS category_time
-		FROM
-			${datatablename} dv
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			d.id = #{id}
-			AND CONVERT_TZ(dv.time, '+00:00', t.`offset`) BETWEEN #{start_datetime} AND #{end_datetime}
+			ROUND(AVG(active_power), 2) AS active_power,
+			<choose>
+				<when test="data_send_time == 5">
+					DATE_FORMAT(DATE_SUB(group_by_time, INTERVAL (MOD(DATEDIFF(group_by_time, #{start_date}), 7 )) DAY), '%Y-%m-%d')
+				</when>
+				
+				<when test="data_send_time == 6">
+					DATE_FORMAT(group_by_time, '%m/%Y')
+				</when>
+				
+				<when test="data_send_time == 7">
+					DATE_FORMAT(group_by_time, '%Y')
+				</when>
+				
+				<otherwise>
+					group_by_time
+				</otherwise>
+			</choose> AS full_time,
+			category_time
+		FROM (
+			SELECT
+				AVG(dv.nvmActivePower) AS active_power,
+				
+				<if test="(id_filter == 'today') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'today') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'today') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'today') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS category_time
+				</if>
+				<if test="(id_filter == 'today') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS category_time
+				</if>
+	
+				<if test="(id_filter == '3_day') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == '3_day') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == '3_day') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == '3_day') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:00' ) AS category_time
+				</if>
+				<if test="(id_filter == '3_day') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS category_time
+				</if>
+	
+				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS category_time
+				</if>
+	
+				<if test="(id_filter == 'this_month' or id_filter == 'last_month') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m/%d' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_month' or id_filter == 'last_month') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_month' or id_filter == 'last_month') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS category_time
+				</if>
+				<if test="(id_filter == 'this_month' or id_filter == 'last_month') and data_send_time == 5">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7 )) DAY), '%m/%d' ) AS category_time
+				</if>
+	
+				<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%b. %Y' ) AS category_time
+				</if>
+				<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS category_time
+				</if>
+				<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS category_time
+				</if>
+				<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 5">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS category_time
+				</if>
+				<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS category_time
+				</if>
+				<if test="(id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 7">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS category_time
+				</if>
+				
+				<if test="id_filter == 'custom' and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS category_time
+				</if>
+				<if test="id_filter == 'custom' and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS category_time
+				</if>
+				<if test="id_filter == 'custom' and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS category_time
+				</if>
+				<if test="id_filter == 'custom' and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS category_time
+				</if>
+				<if test="id_filter == 'custom' and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS group_by_time,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS category_time
+				</if>
+				
+			FROM
+				${datatablename} dv
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				d.id = #{id}
+				AND CONVERT_TZ(dv.time, '+00:00', t.`offset`) BETWEEN #{start_date} AND #{end_date}
+			GROUP BY
+				group_by_time
+			ORDER BY
+				group_by_time ASC
+		) t
 		GROUP BY
 			full_time
 	</select>
@@ -73,7 +242,7 @@
 			LEFT JOIN error er ON er.id = al.id_error
 			LEFT JOIN error_level el ON el.id = id_error_level
 		WHERE
-			SHA1(s.id) = #{id_site}
+			SHA1(s.id) = #{hash_id_site}
 			AND d.modbusdevicenumber = #{modbusdevicenumber}
 			AND d.id_device_type = 1
 			AND al.status = 1
