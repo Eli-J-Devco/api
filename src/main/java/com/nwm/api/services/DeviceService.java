@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -340,12 +341,12 @@ public class DeviceService extends DB {
 			Integer lowProduction = (Integer) queryForObject("Device.getLowProductionErrorId", obj);
 			if (lowProduction == null) return;
 			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>(); 
-			List poaDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == 4).toList();
+			List poaDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == 4).collect(Collectors.toList());
 			if (!poaDevicesList.isEmpty()) {
 				obj.setGroupWeather(poaDevicesList);
 				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioHavingPOA", obj);
 			} else {
-				List powerDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == obj.getId_device_type()).toList();
+				List powerDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == obj.getId_device_type()).collect(Collectors.toList());
 				if (powerDevicesList.size() <= 1) return;
 				obj.setGroupInverter(powerDevicesList);
 				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioNoPOA", obj);
