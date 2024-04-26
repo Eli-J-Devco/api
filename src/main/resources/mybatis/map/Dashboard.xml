@@ -68,6 +68,8 @@
 			
 			
 			CASE
+				WHEN d.last_updated IS NULL THEN "Never"
+				
 				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
 				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))

@@ -175,6 +175,7 @@
 			p.id_error_level,
 			d.hidden,
 			CASE
+				WHEN d.last_updated IS NULL THEN "Never"
 			
 				WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 				
