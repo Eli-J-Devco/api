@@ -94,8 +94,9 @@ public class SitesDashboardService extends DB {
 					
 					String key_indicator = (String) device.get("key_indicator");
 					String times_ago_unit = (String) device.get("times_ago_unit");
+					if (key_indicator.equals("Never")) {}
 					// Find the last value and time
-					if (last_updated.equals("N/A") || (totalError > 0 && id_error_level == 33) || ((id_device_type == 4) && key_indicator.equals("N/A"))) {
+					else if (last_updated.equals("N/A") || (totalError > 0 && id_error_level == 33) || ((id_device_type == 4) && key_indicator.equals("N/A"))) {
 						Map<String, Object> device_site = (Map<String, Object>) queryForObject("SitesDashboard.getLastUpdated", dataList.get(i));
 						if(device_site != null) {
 							device.put("last_updated", device_site.get("time"));	
