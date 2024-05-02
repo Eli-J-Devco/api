@@ -6,8 +6,13 @@
 
 package com.nwm.api.services;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -331,18 +336,39 @@ public class DeviceService extends DB {
 	 * @author Hung.Bui
 	 * @since 2023-08-17
 	 */
-	public void checkLowProduction(DeviceEntity obj) {
+	public void checkLowProduction(DeviceEntity obj, List<DeviceEntity> devicesList) {
 		try {
 			Integer lowProduction = (Integer) queryForObject("Device.getLowProductionErrorId", obj);
 			if (lowProduction == null) return;
-			double actualPowerToRatingPower = (double) queryForObject("Device.getCurrentProductionPercentage", obj);
+			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>(); 
+			List poaDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == 4).collect(Collectors.toList());
+			if (!poaDevicesList.isEmpty()) {
+				obj.setGroupWeather(poaDevicesList);
+				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioHavingPOA", obj);
+			} else {
+				List powerDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == obj.getId_device_type()).collect(Collectors.toList());
+				if (powerDevicesList.size() <= 1) return;
+				obj.setGroupInverter(powerDevicesList);
+				latest4HoursComparisonRatioDataList = queryForList("Device.getComparisonRatioNoPOA", obj);
+			}
+			if (latest4HoursComparisonRatioDataList == null || latest4HoursComparisonRatioDataList.isEmpty()) return;
+			
+			/** 
+			 * low production alarm condition:
+			 *  - all comparison ratio in latest 4 hours are less than or equal 70%.
+			 *  - time difference between latest and oldest in latest 4 hours is larger or equal 4 hours (for case there are not enough data in latest 4 hours).
+			 */
+			LocalDateTime startTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(0).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+			LocalDateTime endTime = LocalDateTime.parse(latest4HoursComparisonRatioDataList.get(latest4HoursComparisonRatioDataList.size() - 1).get("time_full").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+			long hours = ChronoUnit.HOURS.between(startTime, endTime);
+			boolean isComparisonRatioLessThanOrEqual70 = latest4HoursComparisonRatioDataList.stream().allMatch(item -> item.get("comparison_ratio") != null ? Double.parseDouble(item.get("comparison_ratio").toString()) <= 70 : false);
 			
 			AlertEntity alertDeviceItem = new AlertEntity();
 			alertDeviceItem.setId_device(obj.getId());
 			alertDeviceItem.setStart_date(obj.getLast_updated());
 			alertDeviceItem.setId_error(lowProduction);
 			
-			if (actualPowerToRatingPower < 50) {
+			if (hours >= 4 && isComparisonRatioLessThanOrEqual70) {
 				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
 				boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
 				if (!checkAlertExist && errorExits) {
@@ -351,7 +377,7 @@ public class DeviceService extends DB {
 			} else {
 				// Close alert
 				AlertEntity checkAlertExist = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertDeviceItem);
-				if (checkAlertExist.getId() > 0) {
+				if (checkAlertExist != null && checkAlertExist.getId() > 0) {
 					alertDeviceItem.setEnd_date(obj.getLast_updated());
 					alertDeviceItem.setId(checkAlertExist.getId());
 					update("BatchJob.updateCloseAlert", alertDeviceItem);

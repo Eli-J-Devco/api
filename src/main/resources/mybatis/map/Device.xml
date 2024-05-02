@@ -43,6 +43,7 @@
 		<result property="table_share_data" column="table_share_data" />
 		<result property="id_device_share" column="id_device_share" />
 		<result property="id_site_share" column="id_site_share" />
+		<result property="data_send_time" column="data_send_time" />
 		
 		
 		
@@ -86,7 +87,8 @@
 			d.job_tablename,
 			dg.table_name  AS device_group_table,
 			dl.datalogger_table,
-			s.enable_alert
+			s.enable_alert,
+			s.data_send_time
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -566,38 +568,139 @@
 			AND e.error_code = 1002
 			AND dg.status = 1
 			AND dg.is_delete = 0
-			AND dg.table_name = #{datatablename}
+			AND dg.table_name = #{device_group_table}
 	</select>
   	
-	<select id="getCurrentProductionPercentage" resultType="double">
+	<select id="getComparisonRatioHavingPOA" resultType="Map">
 		SELECT
 			IF(
-				d.last_value IS NULL OR d.last_value <![CDATA[<=]]> 0,
-				0,
-				ROUND(
-					d.last_value /
-					(
-						SELECT 
-							MAX(d.last_value)
-						FROM
-							device d
-						WHERE
-							d.id_site = #{id_site}
-							AND d.id_device_type = #{id_device_type}
-							AND d.`status`  = 1
-							AND d.is_delete = 0
-					) * 100,
-					2
-				)
-			) AS percent_power
+				ws.nvm_irradiance > 200,
+				ROUND(d.nvmActivePower / ( d.rating_ac_power * IF(ws.nvm_irradiance > 1000, 1, ws.nvm_irradiance / 1000) ) * 100, 1),
+				NULL
+			) AS comparison_ratio,
+			d.time_full
 		FROM
-			device d 
-		WHERE
-			d.id = #{id}
-			AND d.id_site = #{id_site}
-			AND d.id_device_type = #{id_device_type}
-			AND d.`status`  = 1 
-			AND d.is_delete = 0
+			(
+				SELECT
+					AVG(dv.nvmActivePower) AS nvmActivePower,
+					d.rating_ac_power,
+					<choose>
+						<when test="data_send_time == 3">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 60  )*  60, '%Y-%m-%d %H:%i' )
+						</when>
+						<when test="data_send_time == 1">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 300 )* 300, '%Y-%m-%d %H:%i' )
+						</when>
+						<when test="data_send_time == 2">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 900 )* 900, '%Y-%m-%d %H:%i' )
+						</when>
+					</choose> AS time_full
+				FROM
+					${datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+				WHERE
+					dv.time >= (SELECT DATE_FORMAT(MAX(time), '%Y-%m-%d %H:%i') - INTERVAL 4 HOUR FROM ${datatablename})
+				GROUP BY
+					time_full
+			) d
+			LEFT JOIN (
+				SELECT
+					AVG(gr.nvm_irradiance) AS nvm_irradiance,
+					gr.time_full
+				FROM
+					(
+						<foreach collection="groupWeather" item="item" separator="UNION ALL">
+							SELECT
+								dv.nvm_irradiance,
+								<choose>
+									<when test="data_send_time == 3">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 60  )*  60, '%Y-%m-%d %H:%i' )
+									</when>
+									<when test="data_send_time == 1">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 300 )* 300, '%Y-%m-%d %H:%i' )
+									</when>
+									<when test="data_send_time == 2">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 900 )* 900, '%Y-%m-%d %H:%i' )
+									</when>
+								</choose> AS time_full
+							FROM
+								${item.datatablename} dv
+							WHERE
+								dv.time >= (SELECT DATE_FORMAT(MAX(time), '%Y-%m-%d %H:%i') - INTERVAL 4 HOUR FROM ${datatablename})
+						</foreach>
+					) gr
+				GROUP BY
+					gr.time_full
+			) ws ON ws.time_full = d.time_full
+	</select>
+	
+	<select id="getComparisonRatioNoPOA" resultType="Map">
+		SELECT
+			IF(
+				dmax.nvmActivePower > 0,
+				ROUND(d.nvmActivePower / dmax.nvmActivePower * 100, 1), 
+				NULL
+			) AS comparison_ratio,
+			d.time_full
+		FROM
+			(
+				SELECT
+					AVG(dv.nvmActivePower) AS nvmActivePower,
+					d.rating_ac_power,
+					<choose>
+						<when test="data_send_time == 3">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 60  )*  60, '%Y-%m-%d %H:%i' )
+						</when>
+						<when test="data_send_time == 1">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 300 )* 300, '%Y-%m-%d %H:%i' )
+						</when>
+						<when test="data_send_time == 2">
+							FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 900 )* 900, '%Y-%m-%d %H:%i' )
+						</when>
+					</choose> AS time_full
+				FROM
+					${datatablename} dv
+					LEFT JOIN device d ON d.id = dv.id_device
+				WHERE
+					dv.time >= (SELECT DATE_FORMAT(MAX(time), '%Y-%m-%d %H:%i') - INTERVAL 4 HOUR FROM ${datatablename})
+				GROUP BY
+					time_full
+			) d
+			LEFT JOIN (
+				SELECT
+					MAX(gr.nvmActivePower) AS nvmActivePower,
+					gr.time_full,
+					gr.rating_ac_power
+				FROM
+					(
+						<foreach collection="groupInverter" item="item" separator="UNION ALL">
+							SELECT
+								AVG(dv.nvmActivePower) AS nvmActivePower,
+								d.rating_ac_power,
+								<choose>
+									<when test="data_send_time == 3">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 60  )*  60, '%Y-%m-%d %H:%i' )
+									</when>
+									<when test="data_send_time == 1">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 300 )* 300, '%Y-%m-%d %H:%i' )
+									</when>
+									<when test="data_send_time == 2">
+										FROM_UNIXTIME(( UNIX_TIMESTAMP(dv.time) DIV 900 )* 900, '%Y-%m-%d %H:%i' )
+									</when>
+								</choose> AS time_full
+							FROM
+								${item.datatablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+							WHERE
+								dv.time >= (SELECT DATE_FORMAT(MAX(time), '%Y-%m-%d %H:%i') - INTERVAL 4 HOUR FROM ${item.datatablename})
+							GROUP BY
+								time_full
+						</foreach>
+					) gr
+				GROUP BY
+					gr.time_full,
+					gr.rating_ac_power
+			) dmax ON dmax.time_full = d.time_full AND dmax.rating_ac_power = d.rating_ac_power
 	</select>
 	
 	<select id="getListDeviceParameter" resultType="Map">
