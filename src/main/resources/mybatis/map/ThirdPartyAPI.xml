@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ThirdPartyAPI">
+	
+	<select id="getListDevicesBy3rdParty" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename AS name,
+			d.datatablename,
+			d.id_device_type,
+			dt.name AS device_type_name,
+			s.id AS id_site,
+			s.name AS site_name,
+			t.offset AS timezone_offset
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.third_party_key = #{key}
+			AND s.third_party_domain = #{domain}
+			AND s.status = 1 
+			AND s.is_delete = 0
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND d.id_device_type IN (1,3)
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+	</select>
+	
+	<select id="getEnergyGeneration" resultType="com.nwm.api.entities.SiteEnergyThirdPartyAPIEntity">
+		SELECT
+			site_name,
+			device_type_name AS type,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'time', time,
+				'value', energy
+			)) AS energyJSON
+		FROM (
+			SELECT
+				id_site,
+				site_name,
+				id_device_type,
+				device_type_name,
+				time,
+				ROUND(SUM(energy), 1) AS energy
+			FROM (
+				<foreach collection="devicesList" item="item" separator="UNION ALL">
+					SELECT
+						#{item.id_site} AS id_site,
+						#{item.site_name} AS site_name,
+						#{item.id_device_type} AS id_device_type,
+						#{item.device_type_name} AS device_type_name,
+						MeasuredProduction AS energy,
+						FROM_UNIXTIME(( UNIX_TIMESTAMP(CONVERT_TZ(time, '+00:00', #{item.timezone_offset})) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time
+					FROM
+						${item.datatablename}
+					WHERE
+						id_device = ${item.id}
+						AND (
+							CASE
+								WHEN #{startDateTime} IS NULL OR #{endDateTime} IS NULL THEN
+									time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(DATE_SUB(UTC_TIMESTAMP(), INTERVAL 2 DAY), '+00:00', #{item.timezone_offset}), '%Y-%m-%d 00:00'), #{item.timezone_offset}, '+00:00') AND CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', #{item.timezone_offset}), '%Y-%m-%d 23:59'), #{item.timezone_offset}, '+00:00')
+								ELSE 
+									time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00'), #{item.timezone_offset}, '+00:00') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59'), #{item.timezone_offset}, '+00:00')
+							END
+						)
+				</foreach>
+			) d
+			GROUP BY
+				id_site,
+				id_device_type,
+				time
+		) d
+		GROUP BY
+			id_site,
+			id_device_type
+	</select>
+
+</mapper>

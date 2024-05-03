@@ -190,6 +190,7 @@
 		 <mapper resource="mybatis/map/CategorizeData.xml"/>
 		 <mapper resource="mybatis/map/WidgetGroup.xml"/>
 		 
+		 <mapper resource="mybatis/map/ThirdPartyAPI.xml"/>
 		 
 		 
 		 
