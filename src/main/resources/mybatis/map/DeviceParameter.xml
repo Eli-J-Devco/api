@@ -328,4 +328,34 @@
 			`id` = #{id}
 	</update>
 	
+	
+	<select id="LevitonGetParameterByDeviceGroup" resultType="Map">
+		SELECT
+			dp.id,
+			dp.id_device_group,
+			dp.`name` AS text,
+			dp.`name` AS parameter_name,
+			dp.slug AS parameter_slug,
+			dp.unit
+		FROM
+			device_parameters dp 
+		WHERE
+			dp.id_device_group = #{id_device_group} AND dp.`status` = 1 AND dp.is_delete = 0
+			GROUP BY dp.id
+			ORDER BY id ASC 
+	</select>
+	
+	
+	<select id="getListParameterByField"  resultType="Map">
+		SELECT
+			lvp.*,
+			d.id_device_group
+		FROM
+			leviton_virtual_meter_parameter lvp 
+			LEFT JOIN device d ON d.id = lvp.id_device
+		WHERE
+			lvp.id_device_parameter = #{id}
+	</select>
+	
+	
 </mapper>

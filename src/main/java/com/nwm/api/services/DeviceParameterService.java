@@ -121,6 +121,33 @@ public class DeviceParameterService extends DB {
 		}
 	}
 	
+	/**
+	 * @description Leviton get list parameter by device group
+	 * @author Long.Pham
+	 * @since 2024-05-02
+	 * @param id_device_group
+	 * @return data (status, message, array, total_row)
+	 */
+	
+	public List LevitonGetParameterByDeviceGroup(DeviceParameterEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			List data = queryForList("DeviceParameter.LevitonGetParameterByDeviceGroup", obj);
+			if (data == null)
+				return new ArrayList();
+			
+			for(int i =0; i< data.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) data.get(i);
+				// Get parameter by device id
+				List dataListParamerter = queryForList("DeviceParameter.getListParameterByField", item);
+				item.put("parameters", dataListParamerter);
+				dataList.add(item);
+			}
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	/**
 	 * @description Get list parameter by device group
@@ -141,6 +168,9 @@ public class DeviceParameterService extends DB {
 		}
 		return dataList;
 	}
+	
+	
+	
 	
 	public int getTotalRecordParameterByDeviceGroup(DeviceParameterEntity obj) {
 		try {
