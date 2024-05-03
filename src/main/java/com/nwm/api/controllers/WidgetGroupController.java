@@ -173,4 +173,34 @@ public class WidgetGroupController extends BaseController {
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	/**
+	 * @description create virtual meter
+	 * @author long.pham
+	 * @since 2021-02-26
+	 * @param  screen_mode = 0:add, 1:edit
+	 */
+
+	@PostMapping("create-virtual-meter")
+	public Object createVirtualMeter(@Valid @RequestBody WidgetGroupEntity obj) {
+		try {
+			WidgetGroupService service = new WidgetGroupService();
+			
+			if (obj.getScreen_mode() == 1) {
+				WidgetGroupEntity data = service.createVirtualMeter(obj);
+				if (data != null) {
+					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+				} else {
+					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+				}
+			} else {
+				return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

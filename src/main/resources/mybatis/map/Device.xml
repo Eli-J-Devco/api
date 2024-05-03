@@ -4710,6 +4710,64 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            
+	            <when test="id_device_group == 81">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `field0` double DEFAULT NULL COMMENT '',
+						  `field1` double DEFAULT NULL COMMENT '',
+						  `field2` double DEFAULT NULL COMMENT '',
+						  `field3` double DEFAULT NULL COMMENT '',
+						  `field4` double DEFAULT NULL COMMENT '',
+						  `field5` double DEFAULT NULL COMMENT '',
+						  `field6` double DEFAULT NULL COMMENT '',
+						  `field7` double DEFAULT NULL COMMENT '',
+						  `field8` double DEFAULT NULL COMMENT '',
+						  `field9` double DEFAULT NULL COMMENT '',
+						  `field10` double DEFAULT NULL COMMENT '',
+						  `field11` double DEFAULT NULL COMMENT '',
+						  `field12` double DEFAULT NULL COMMENT '',
+						  `field13` double DEFAULT NULL COMMENT '',
+						  `field14` double DEFAULT NULL COMMENT '',
+						  `field15` double DEFAULT NULL COMMENT '',
+						  `field16` double DEFAULT NULL COMMENT '',
+						  `field17` double DEFAULT NULL COMMENT '',
+						  `field18` double DEFAULT NULL COMMENT '',
+						  `field19` double DEFAULT NULL COMMENT '',
+						  `field20` double DEFAULT NULL COMMENT '',
+						  `field21` double DEFAULT NULL COMMENT '',
+						  `field22` double DEFAULT NULL COMMENT '',
+						  `field23` double DEFAULT NULL COMMENT '',
+						  `field24` double DEFAULT NULL COMMENT '',
+						  `field25` double DEFAULT NULL COMMENT '',
+						  `field26` double DEFAULT NULL COMMENT '',
+						  `field27` double DEFAULT NULL COMMENT '',
+						  `field28` double DEFAULT NULL COMMENT '',
+						  `field29` double DEFAULT NULL COMMENT '',
+						  `field30` double DEFAULT NULL COMMENT '',
+						  `field31` double DEFAULT NULL COMMENT '',
+						  `field32` double DEFAULT NULL COMMENT '',
+						  `field33` double DEFAULT NULL COMMENT '',
+						  `field34` double DEFAULT NULL COMMENT '',
+						  `field35` double DEFAULT NULL COMMENT '',
+						  `field36` double DEFAULT NULL COMMENT '',
+						  `field37` double DEFAULT NULL COMMENT '',
+						  `field38` double DEFAULT NULL COMMENT '',
+						  `field39` double DEFAULT NULL COMMENT '',
+						  `field40` double DEFAULT NULL COMMENT '',
+						  
+						  
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                          
 	        </choose> 
 	        

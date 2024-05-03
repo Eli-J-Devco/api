@@ -117,6 +117,31 @@ public class DeviceParameterController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description Get list device group
+	 * @author Long.Pham
+	 * @since 2024-05-02
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/leviton-list-parameter-by-device-group")
+	public Object LevitonGetParameterByDeviceGroup(@RequestBody DeviceParameterEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.LevitonGetParameterByDeviceGroup(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
 	/**
 	 * @description Get list device group
 	 * @author Hung.Bui

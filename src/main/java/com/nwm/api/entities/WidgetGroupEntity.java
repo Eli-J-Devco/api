@@ -34,9 +34,23 @@ public class WidgetGroupEntity{
 	private int menu_order;
 	private int type;
 	private String unit;
+	private int id_device;
+	private String datatablename;
 	
 	
 	
+	public int getId_device() {
+		return id_device;
+	}
+	public void setId_device(int id_device) {
+		this.id_device = id_device;
+	}
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
 	public String getUnit() {
 		return unit;
 	}

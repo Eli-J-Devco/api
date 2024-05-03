@@ -13,6 +13,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
+import com.nwm.api.entities.LevitonVirtualMeterParameterEntity;
 import com.nwm.api.entities.WidgetGroupEntity;
 import com.nwm.api.entities.WidgetGroupParameterEntity;
 import com.nwm.api.utils.Lib;
@@ -187,6 +188,44 @@ public class WidgetGroupService extends DB {
 		} catch (Exception ex) {
 			session.rollback();
 			log.error("WidgetGroup.insertWidgetGroup", ex);
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	
+	/**
+	 * @description create virtual meter
+	 * @author long.pham
+	 * @since 2024-05-03
+	 */
+	public WidgetGroupEntity createVirtualMeter(WidgetGroupEntity obj) 
+	{
+		SqlSession session = this.beginTransaction();
+		try {
+			session.delete("WidgetGroup.deleteLevitonVirtualMeterParameter", obj);
+			List dataFields = obj.getDataFields();
+			if(dataFields.size() > 0) {
+				for (int i = 0; i < dataFields.size(); i++) {
+					Map<String, Object> item = (Map<String, Object>) dataFields.get(i);
+					LevitonVirtualMeterParameterEntity itemWP = new LevitonVirtualMeterParameterEntity();
+					itemWP.setId_device(Integer.parseInt(item.get("id_device").toString()));
+					itemWP.setId_device_parameter(Integer.parseInt(item.get("id_device_parameter").toString()));
+					itemWP.setId_device_parameter_map(Integer.parseInt(item.get("id_device_parameter_map").toString()));
+					itemWP.setSlug(item.get("slug").toString());
+					itemWP.setName(item.get("name").toString());
+					itemWP.setUnit(item.get("unit").toString());
+					itemWP.setFormula(Integer.parseInt(item.get("formula").toString()));
+					itemWP.setId_site(Integer.parseInt(item.get("id_site").toString()));
+					session.insert("WidgetGroup.insertLevitonVirtualMeterParameter", itemWP);
+				}
+			}
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
 			return null;
 		} finally {
 			session.close();
