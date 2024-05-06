@@ -718,7 +718,7 @@
 			<if test="nvmActiveEnergy != 0.001">
 				`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
-			<if test="MeasuredProduction != 0.001">
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
 				`MeasuredProduction` = #{MeasuredProduction},
 			</if>
 			
