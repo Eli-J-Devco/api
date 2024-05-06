@@ -414,6 +414,10 @@ public class ImportOldDataController extends BaseController {
 										case "model_meter_ion_6200":
 											service.setModelMeterIon6200(rowItem, r);
 											break;
+										
+										case "model_acuvim_IIR":
+											service.setModelAcuvimIIR(rowItem, r);
+											break;	
 											
 										}
 										
