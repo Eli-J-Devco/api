@@ -230,24 +230,24 @@ public class UploadFilesController extends BaseController {
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
-			System.out.println("SENDDATATRACE: " + senddatatrace);
-			System.out.println("MODE: " + mode);
-			System.out.println("SERIALNUMBER: " + serialnumber);
-			System.out.println("PASSWORD: " + password);
-			System.out.println("LOOPNAME: " + loopname);
-			System.out.println("MODBUSIP: " + modbusip);
-			System.out.println("MODBUSPORT: " + modbusport);
-			System.out.println("MODBUSDEVICE: " + modbusdevice);
-			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			System.out.println("MD5CHECKSUM: " + md5checksum);
-			System.out.println("FILESIZE: " + filesize);
-			System.out.println("FILETIME: " + filetime);
-			
-			System.out.println("FILE: " + files.length);
-			
+//			System.out.println("SENDDATATRACE: " + senddatatrace);
+//			System.out.println("MODE: " + mode);
+//			System.out.println("SERIALNUMBER: " + serialnumber);
+//			System.out.println("PASSWORD: " + password);
+//			System.out.println("LOOPNAME: " + loopname);
+//			System.out.println("MODBUSIP: " + modbusip);
+//			System.out.println("MODBUSPORT: " + modbusport);
+//			System.out.println("MODBUSDEVICE: " + modbusdevice);
+//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//			System.out.println("MD5CHECKSUM: " + md5checksum);
+//			System.out.println("FILESIZE: " + filesize);
+//			System.out.println("FILETIME: " + filetime);
+//			
+//			System.out.println("FILE: " + files.length);
+//			
 
 			if (mode.equals(LOGFILEUPLOAD) && files.length > 0) {
 				Arrays.asList(files).stream().forEach(file -> {
@@ -6224,6 +6224,7 @@ public class UploadFilesController extends BaseController {
 						                        	  data.setDatatablename(item.getDatatablename());
 						                        	  data.setView_tablename(item.getView_tablename());
 						                        	  data.setJob_tablename(item.getJob_tablename());
+						                        	  data.setId_site(item.getId_site());
 						                            
 						                            // scaling device parameter
 						                            if (scaledDeviceParameters.size() > 0) {

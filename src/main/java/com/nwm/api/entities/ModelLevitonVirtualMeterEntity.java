@@ -5,12 +5,9 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelLevitonAbviusA891123ChannelEntity {
+public class ModelLevitonVirtualMeterEntity {
 	private String time;
 	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
 	private double field0;
 	private double field1;
 	private double field2;
@@ -52,25 +49,9 @@ public class ModelLevitonAbviusA891123ChannelEntity {
 	private double field38;
 	private double field39;
 	private double field40;
-	private double field41;
-	private double field42;
-	private double field43;
-	private double field44;
-	private double field45;
-	private double nvmActivePower = 0;
-	private double nvmActiveEnergy = 0;
-	private double MeasuredProduction = 0;
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
-	private int id_site;
-	
-	public int getId_site() {
-		return id_site;
-	}
-	public void setId_site(int id_site) {
-		this.id_site = id_site;
-	}
 	public String getTime() {
 		return time;
 	}
@@ -82,24 +63,6 @@ public class ModelLevitonAbviusA891123ChannelEntity {
 	}
 	public void setId_device(int id_device) {
 		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public double getField0() {
 		return field0;
@@ -347,54 +310,6 @@ public class ModelLevitonAbviusA891123ChannelEntity {
 	public void setField40(double field40) {
 		this.field40 = field40;
 	}
-	public double getField41() {
-		return field41;
-	}
-	public void setField41(double field41) {
-		this.field41 = field41;
-	}
-	public double getField42() {
-		return field42;
-	}
-	public void setField42(double field42) {
-		this.field42 = field42;
-	}
-	public double getField43() {
-		return field43;
-	}
-	public void setField43(double field43) {
-		this.field43 = field43;
-	}
-	public double getField44() {
-		return field44;
-	}
-	public void setField44(double field44) {
-		this.field44 = field44;
-	}
-	public double getField45() {
-		return field45;
-	}
-	public void setField45(double field45) {
-		this.field45 = field45;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
-	}
-	public double getMeasuredProduction() {
-		return MeasuredProduction;
-	}
-	public void setMeasuredProduction(double measuredProduction) {
-		MeasuredProduction = measuredProduction;
-	}
 	public String getDatatablename() {
 		return datatablename;
 	}
@@ -415,6 +330,4 @@ public class ModelLevitonAbviusA891123ChannelEntity {
 	}
 	
 	
-	
-
 }

@@ -7,11 +7,14 @@ package com.nwm.api.services;
 
 
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelLevitonS40000rPowerMeterEntity;
+import com.nwm.api.entities.ModelLevitonVirtualMeterEntity;
 import com.nwm.api.utils.Lib;
 
 public class ModelLevitonS40000rPowerMeterService extends DB {
@@ -121,10 +124,111 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelLevitonS40000rPowerMeter.insertModelLevitonS40000rPowerMeter", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+		     if(insertId == null ) {
+		    	 return false;
+		     }
+		     
+		  // Insert data to virtual meter
+				List dataList = queryForList("ModelLevitonVirtualMeter.getListVirtualMeterParameter", obj);
+				DeviceEntity objDevice = (DeviceEntity) queryForObject("ModelLevitonVirtualMeter.getDeviceVirtualMeter", obj);
+					
+					
+				double power = 0, energy = 0;
+				if (dataList != null && objDevice.getId() > 0) {
+					for (int i = 0; i < (dataList.size()); i++) {
+						Map<String, Object> itemField = (Map<String, Object>) dataList.get(i);
+						switch(Integer.parseInt(itemField.get("id_device_parameter").toString())) {
+						case 2852:
+							if(itemField.get("slug").toString().equals("RealEnergyConsumption")) { power = power + obj.getRealEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousRealPower")) { power = power + obj.getTotalInstantaneousRealPower(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousReactivePower")) { power = power + obj.getTotalInstantaneousReactivePower(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousApparentPower")) { power = power + obj.getTotalInstantaneousApparentPower(); }
+							if(itemField.get("slug").toString().equals("TotalPowerFactor")) { power = power + obj.getTotalPowerFactor(); }
+							if(itemField.get("slug").toString().equals("VoltageLL3pAve")) { power = power + obj.getVoltageLL3pAve(); }
+							if(itemField.get("slug").toString().equals("VoltageLN3pAve")) { power = power + obj.getVoltageLN3pAve(); }
+							if(itemField.get("slug").toString().equals("Current3pAve")) { power = power + obj.getCurrent3pAve(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseA")) { power = power + obj.getRealPowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseB")) { power = power + obj.getRealPowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseC")) { power = power + obj.getRealPowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseA")) { power = power + obj.getPowerFactorPhaseA(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseB")) { power = power + obj.getPowerFactorPhaseB(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseC")) { power = power + obj.getPowerFactorPhaseC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAB")) { power = power + obj.getVoltagePhaseAB(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseBC")) { power = power + obj.getVoltagePhaseBC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAC")) { power = power + obj.getVoltagePhaseAC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAN")) { power = power + obj.getVoltagePhaseAN(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseBN")) { power = power + obj.getVoltagePhaseBN(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseCN")) { power = power + obj.getVoltagePhaseCN(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseA")) { power = power + obj.getCurrentInstantaneousPhaseA(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseB")) { power = power + obj.getCurrentInstantaneousPhaseB(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseC")) { power = power + obj.getCurrentInstantaneousPhaseC(); }
+							if(itemField.get("slug").toString().equals("Frequency")) { power = power + obj.getFrequency(); }
+							if(itemField.get("slug").toString().equals("ApparentEnergyConsumption")) { power = power + obj.getApparentEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("ReactiveEnergyConsumption")) { power = power + obj.getReactiveEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseA")) { power = power + obj.getApparentPowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseB")) { power = power + obj.getApparentPowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseC")) { power = power + obj.getApparentPowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseA")) { power = power + obj.getReactivePowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseB")) { power = power + obj.getReactivePowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseC")) { power = power + obj.getReactivePowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("TotalRealPowerPresentDemand")) { power = power + obj.getTotalRealPowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalReactivePowerPresentDemand")) { power = power + obj.getTotalReactivePowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalApparentPowerPresentDemand")) { power = power + obj.getTotalApparentPowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalRealPowerMaxDemand")) { power = power + obj.getTotalRealPowerMaxDemand(); }
+							if(itemField.get("slug").toString().equals("TotalReactivePowerMaxDemand")) { power = power + obj.getTotalReactivePowerMaxDemand(); }
+							break;
+						case 2853:
+							if(itemField.get("slug").toString().equals("RealEnergyConsumption")) { energy = energy + obj.getRealEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousRealPower")) { energy = energy + obj.getTotalInstantaneousRealPower(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousReactivePower")) { energy = energy + obj.getTotalInstantaneousReactivePower(); }
+							if(itemField.get("slug").toString().equals("TotalInstantaneousApparentPower")) { energy = energy + obj.getTotalInstantaneousApparentPower(); }
+							if(itemField.get("slug").toString().equals("TotalPowerFactor")) { energy = energy + obj.getTotalPowerFactor(); }
+							if(itemField.get("slug").toString().equals("VoltageLL3pAve")) { energy = energy + obj.getVoltageLL3pAve(); }
+							if(itemField.get("slug").toString().equals("VoltageLN3pAve")) { energy = energy + obj.getVoltageLN3pAve(); }
+							if(itemField.get("slug").toString().equals("Current3pAve")) { energy = energy + obj.getCurrent3pAve(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseA")) { energy = energy + obj.getRealPowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseB")) { energy = energy + obj.getRealPowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("RealPowerPhaseC")) { energy = energy + obj.getRealPowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseA")) { energy = energy + obj.getPowerFactorPhaseA(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseB")) { energy = energy + obj.getPowerFactorPhaseB(); }
+							if(itemField.get("slug").toString().equals("PowerFactorPhaseC")) { energy = energy + obj.getPowerFactorPhaseC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAB")) { energy = energy + obj.getVoltagePhaseAB(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseBC")) { energy = energy + obj.getVoltagePhaseBC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAC")) { energy = energy + obj.getVoltagePhaseAC(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseAN")) { energy = energy + obj.getVoltagePhaseAN(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseBN")) { energy = energy + obj.getVoltagePhaseBN(); }
+							if(itemField.get("slug").toString().equals("VoltagePhaseCN")) { energy = energy + obj.getVoltagePhaseCN(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseA")) { energy = energy + obj.getCurrentInstantaneousPhaseA(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseB")) { energy = energy + obj.getCurrentInstantaneousPhaseB(); }
+							if(itemField.get("slug").toString().equals("CurrentInstantaneousPhaseC")) { energy = energy + obj.getCurrentInstantaneousPhaseC(); }
+							if(itemField.get("slug").toString().equals("Frequency")) { energy = energy + obj.getFrequency(); }
+							if(itemField.get("slug").toString().equals("ApparentEnergyConsumption")) { energy = energy + obj.getApparentEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("ReactiveEnergyConsumption")) { energy = energy + obj.getReactiveEnergyConsumption(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseA")) { energy = energy + obj.getApparentPowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseB")) { energy = energy + obj.getApparentPowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("ApparentPowerPhaseC")) { energy = energy + obj.getApparentPowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseA")) { energy = energy + obj.getReactivePowerPhaseA(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseB")) { energy = energy + obj.getReactivePowerPhaseB(); }
+							if(itemField.get("slug").toString().equals("ReactivePowerPhaseC")) { energy = energy + obj.getReactivePowerPhaseC(); }
+							if(itemField.get("slug").toString().equals("TotalRealPowerPresentDemand")) { energy = energy + obj.getTotalRealPowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalReactivePowerPresentDemand")) { energy = energy + obj.getTotalReactivePowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalApparentPowerPresentDemand")) { energy = energy + obj.getTotalApparentPowerPresentDemand(); }
+							if(itemField.get("slug").toString().equals("TotalRealPowerMaxDemand")) { energy = energy + obj.getTotalRealPowerMaxDemand(); }
+							if(itemField.get("slug").toString().equals("TotalReactivePowerMaxDemand")) { energy = energy + obj.getTotalReactivePowerMaxDemand(); }
+							break;
+						}
+					}
+					ModelLevitonVirtualMeterEntity virtualMeterEntity = new ModelLevitonVirtualMeterEntity();
+					virtualMeterEntity.setTime(obj.getTime());
+					virtualMeterEntity.setId_device(obj.getId_device());
+					virtualMeterEntity.setDatatablename(objDevice.getDatatablename());
+					virtualMeterEntity.setField0(power);
+					virtualMeterEntity.setField1(energy);
+					ModelLevitonAbviusA891123ChannelService abvService = new ModelLevitonAbviusA891123ChannelService();
+					Object insertVirtualMeterId = abvService.insertModelLevitonVirtualMeter(virtualMeterEntity);
+					
+				}
+		     return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
