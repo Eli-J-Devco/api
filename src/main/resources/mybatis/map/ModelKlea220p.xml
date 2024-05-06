@@ -456,7 +456,7 @@
 			`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
 			
-			<if test="MeasuredProduction != 0.001">
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
 				`MeasuredProduction` = #{MeasuredProduction},
 			</if>
 		</trim>
@@ -476,6 +476,9 @@
 			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
 		ORDER BY
 			dv.time DESC 
 			LIMIT 1
