@@ -44,6 +44,8 @@
 				
 				WHEN dg.table_name = 'model_meter_ion_8600v2' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
+				WHEN dg.table_name = 'model_meter_ion_8600v3' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				WHEN dg.table_name = 'model_meter_ion_8600v1' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN dg.table_name = 'model_aes_tx_inverter' AND d.field_value_default = 'pt33' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))

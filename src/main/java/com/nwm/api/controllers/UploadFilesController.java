@@ -66,6 +66,7 @@ import com.nwm.api.entities.ModelMeterIon6200Entity;
 import com.nwm.api.entities.ModelMeterIon8600Entity;
 import com.nwm.api.entities.ModelMeterIon8600V1Entity;
 import com.nwm.api.entities.ModelMeterIon8600V2Entity;
+import com.nwm.api.entities.ModelMeterIon8600V3Entity;
 import com.nwm.api.entities.ModelPVMet100Entity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
@@ -131,6 +132,7 @@ import com.nwm.api.services.ModelMeterIon6200Service;
 import com.nwm.api.services.ModelMeterIon8600Service;
 import com.nwm.api.services.ModelMeterIon8600V1Service;
 import com.nwm.api.services.ModelMeterIon8600V2Service;
+import com.nwm.api.services.ModelMeterIon8600V3Service;
 import com.nwm.api.services.ModelPVMet100Service;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
@@ -4038,6 +4040,105 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														serviceModelIonV2.insertModelMeterIon8600V2(dataModelIonV2);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item, dataDevice);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  
+															}
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  
+															}		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
+												
+											case "model_meter_ion_8600v3":
+												ModelMeterIon8600V3Service serviceModelIonV3 = new ModelMeterIon8600V3Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelMeterIon8600V3Entity dataModelIonV3 = serviceModelIonV3.setModelMeterIon8600V3(line);
+														dataModelIonV3.setId_device(item.getId());
+														dataModelIonV3.setDatatablename(item.getDatatablename());
+														dataModelIonV3.setView_tablename(item.getView_tablename());
+														dataModelIonV3.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600V3Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIonV3);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelIonV3, scaledValue);
+																if (slug.equals("kWTot")) dataModelIonV3.setNvmActivePower(scaledValue);
+																if (slug.equals("kWhDelRec")) dataModelIonV3.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// kWTot
+														
+														if(dataModelIonV3.getKWTot() != 0.001 && dataModelIonV3.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataModelIonV3.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelIonV3.getKWTot() != 0.001 ? dataModelIonV3.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataModelIonV3.getKWTot() != 0.001 ? dataModelIonV3.getKWTot() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelIonV3.insertModelMeterIon8600V3(dataModelIonV3);
 
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {

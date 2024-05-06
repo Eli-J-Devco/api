@@ -5,7 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelMeterIon8600V2Entity {
+public class ModelMeterIon8600V3Entity {
 	private String time;
 	private int id_device;
 	private int error;
