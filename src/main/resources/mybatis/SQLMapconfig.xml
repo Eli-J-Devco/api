@@ -133,7 +133,7 @@
 		<mapper resource="mybatis/map/ModelLevitonS40000rPowerMeter.xml"/>
 		<mapper resource="mybatis/map/ModelLevitonAbviusA891123Channel.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp24000ktlus.xml"/>
-		
+		<mapper resource="mybatis/map/ModelAcuvimIIR.xml"/>
 		
 		
 		

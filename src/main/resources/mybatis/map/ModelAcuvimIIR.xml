@@ -1,0 +1,988 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAcuvimIIR">
+	<resultMap id="ModelAcuvimIIRMap" type="com.nwm.api.entities.ModelAcuvimIIREntity">
+			<result property="time" column="time" />
+			<result property="id_device" column="id_device" />
+			<result property="error" column="error" />
+			<result property="low_alarm" column="low_alarm" />
+			<result property="high_alarm" column="high_alarm" />
+			
+			<result property="Frequency" column="Frequency" />
+			<result property="PhasevoltageV1" column="PhasevoltageV1" />
+			<result property="PhasevoltageV2" column="PhasevoltageV2" />
+			<result property="PhasevoltageV3" column="PhasevoltageV3" />
+			<result property="AveragevoltageVavg" column="AveragevoltageVavg" />
+			<result property="LinevoltageV12" column="LinevoltageV12" />
+			<result property="LinevoltageV23" column="LinevoltageV23" />
+			<result property="LinevoltageV31" column="LinevoltageV31" />
+			<result property="AveragelinevoltageVLavg" column="AveragelinevoltageVLavg" />
+			<result property="PhaselinecurrentI1" column="PhaselinecurrentI1" />
+			<result property="PhaselinecurrentI2" column="PhaselinecurrentI2" />
+			<result property="PhaselinecurrentI3" column="PhaselinecurrentI3" />
+			<result property="AveragecurrentIavg" column="AveragecurrentIavg" />
+			<result property="NeutrallinecurrentIn" column="NeutrallinecurrentIn" />
+			<result property="PhaseApowerPa" column="PhaseApowerPa" />
+			<result property="PhaseBpowerPb" column="PhaseBpowerPb" />
+			<result property="PhaseCpowerPc" column="PhaseCpowerPc" />
+			<result property="SystempowerPsum" column="SystempowerPsum" />
+			<result property="PhaseAreactivepowerQa" column="PhaseAreactivepowerQa" />
+			<result property="PhaseBreactivepowerQb" column="PhaseBreactivepowerQb" />
+			<result property="PhaseCreactivepowerQc" column="PhaseCreactivepowerQc" />
+			<result property="SystemreactivepowerQsum" column="SystemreactivepowerQsum" />
+			<result property="PhaseAapparentpowerSa" column="PhaseAapparentpowerSa" />
+			<result property="PhaseBapparentpowerSb" column="PhaseBapparentpowerSb" />
+			<result property="PhaseCapparentpowerSc" column="PhaseCapparentpowerSc" />
+			<result property="SystemapparentpowerSsum" column="SystemapparentpowerSsum" />
+			<result property="PhaseApowerfactorPFa" column="PhaseApowerfactorPFa" />
+			<result property="PhaseBpowerfactorPFb" column="PhaseBpowerfactorPFb" />
+			<result property="PhaseCpowerfactorPFc" column="PhaseCpowerfactorPFc" />
+			<result property="SystempowerfactorPFsum" column="SystempowerfactorPFsum" />
+			<result property="Voltageunbalancefactor" column="Voltageunbalancefactor" />
+			<result property="Currentunbalancefactor" column="Currentunbalancefactor" />
+			<result property="LoadcharacteristicLCR" column="LoadcharacteristicLCR" />
+			<result property="Powerdemand" column="Powerdemand" />
+			<result property="Reactivepowerdemand" column="Reactivepowerdemand" />
+			<result property="Apparentpowerdemand" column="Apparentpowerdemand" />
+			<result property="V1Maximum" column="V1Maximum" />
+			<result property="V2Maximum" column="V2Maximum" />
+			<result property="V3Maximum" column="V3Maximum" />
+			<result property="V12Maximum" column="V12Maximum" />
+			<result property="V23Maximum" column="V23Maximum" />
+			<result property="V31Maximum" column="V31Maximum" />
+			<result property="I1Maximum" column="I1Maximum" />
+			<result property="I2Maximum" column="I2Maximum" />
+			<result property="I3Maximum" column="I3Maximum" />
+			<result property="SystemPowerMaximum" column="SystemPowerMaximum" />
+			<result property="SystemReactivePowerMaximum" column="SystemReactivePowerMaximum" />
+			<result property="SystemApparentPowerMaximum" column="SystemApparentPowerMaximum" />
+			<result property="PowerFactorMaximum" column="PowerFactorMaximum" />
+			<result property="FrequencyMaximum" column="FrequencyMaximum" />
+			<result property="PowerDemandMaximum" column="PowerDemandMaximum" />
+			<result property="ReactivePowerDemandMaximum" column="ReactivePowerDemandMaximum" />
+			<result property="ApparentPowerDemandMaximum" column="ApparentPowerDemandMaximum" />
+			<result property="VoltageUnbalanceFactorMaximum" column="VoltageUnbalanceFactorMaximum" />
+			<result property="CurrentUnbalanceFactormaximum" column="CurrentUnbalanceFactormaximum" />
+			<result property="V1V12THDMaximum" column="V1V12THDMaximum" />
+			<result property="V2V31THDMaximum" column="V2V31THDMaximum" />
+			<result property="V3V23THDMaximum" column="V3V23THDMaximum" />
+			<result property="I1THDMaximum" column="I1THDMaximum" />
+			<result property="I2THDMaximum" column="I2THDMaximum" />
+			<result property="I3THDMaximum" column="I3THDMaximum" />
+			<result property="PhaseAngleV2toV1" column="PhaseAngleV2toV1" />
+			<result property="PhaseAngleV3toV1" column="PhaseAngleV3toV1" />
+			<result property="PhaseAngleI1toV1" column="PhaseAngleI1toV1" />
+			<result property="PhaseAngleI2toV1" column="PhaseAngleI2toV1" />
+			<result property="PhaseAngleI3toV1" column="PhaseAngleI3toV1" />
+			<result property="PhaseAngleV23toV12" column="PhaseAngleV23toV12" />
+			<result property="PhaseAngleofI1toV12" column="PhaseAngleofI1toV12" />
+			<result property="PhaseAngleofI2toV12" column="PhaseAngleofI2toV12" />
+			<result property="PhaseAngleofI3toV12" column="PhaseAngleofI3toV12" />
+			<result property="THDV1ofV1V12" column="THDV1ofV1V12" />
+			<result property="THDV1ofV2V31" column="THDV1ofV2V31" />
+			<result property="THDV1ofV3V23" column="THDV1ofV3V23" />
+			<result property="AverageTHDofV" column="AverageTHDofV" />
+			<result property="THDI1" column="THDI1" />
+			<result property="THDI2" column="THDI2" />			
+			<result property="THDI3" column="THDI3" />
+			<result property="AverageTHDofI" column="AverageTHDofI" />
+			<result property="EnergyIMP" column="EnergyIMP" />
+			<result property="EnergyEXP" column="EnergyEXP" />
+			<result property="ReactiveEnergyIMP" column="ReactiveEnergyIMP" />
+			<result property="ReactiveEnergyEXP" column="ReactiveEnergyEXP" />
+			<result property="EnergyTotal" column="EnergyTotal" />
+			<result property="EnergyNet" column="EnergyNet" />
+			<result property="ReactiveEnergyTotal" column="ReactiveEnergyTotal" />
+			<result property="ReactiveEnergyNet" column="ReactiveEnergyNet" />
+			<result property="ApparentEnergy" column="ApparentEnergy" />
+
+		    <result property="nvmActivePower" column="nvmActivePower" />
+		    <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		    <result property="MeasuredProduction" column="MeasuredProduction" />
+		    <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+	</resultMap>
+
+	<insert id="insertModelAcuvimIIR" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+	        	`time`,
+	        </if>
+			<if test="id_device != 0.001" >
+	            `id_device`,
+	        </if>
+			<if test="error != 0.001" >
+	            `error`,
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm`,
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm`,
+	        </if>
+			<if test="Frequency != 0.001" >
+				`Frequency`,
+			</if>
+			<if test="PhasevoltageV1 != 0.001" >
+				`PhasevoltageV1`,
+			</if>
+			<if test="PhasevoltageV2 != 0.001" >
+				`PhasevoltageV2`,
+			</if>
+			<if test="PhasevoltageV3 != 0.001" >
+				`PhasevoltageV3`,
+			</if>
+			<if test="AveragevoltageVavg != 0.001" >
+				`AveragevoltageVavg`,
+			</if>
+			<if test="LinevoltageV12 != 0.001" >
+				`LinevoltageV12`,
+			</if>
+			<if test="LinevoltageV23 != 0.001" >
+				`LinevoltageV23`,
+			</if>
+			<if test="LinevoltageV31 != 0.001" >
+				`LinevoltageV31`,
+			</if>
+			<if test="AveragelinevoltageVLavg != 0.001" >
+				`AveragelinevoltageVLavg`,
+			</if>
+			<if test="PhaselinecurrentI1 != 0.001" >
+				`PhaselinecurrentI1`,
+			</if>
+			<if test="PhaselinecurrentI2 != 0.001" >
+				`PhaselinecurrentI2`,
+			</if>
+			<if test="PhaselinecurrentI3 != 0.001" >
+				`PhaselinecurrentI3`,
+			</if>
+			<if test="AveragecurrentIavg != 0.001" >
+				`AveragecurrentIavg`,
+			</if>
+			<if test="NeutrallinecurrentIn != 0.001" >
+				`NeutrallinecurrentIn`,
+			</if>
+			<if test="PhaseApowerPa != 0.001" >
+				`PhaseApowerPa`,
+			</if>
+			<if test="PhaseBpowerPb != 0.001" >
+				`PhaseBpowerPb`,
+			</if>
+			<if test="PhaseCpowerPc != 0.001" >
+				`PhaseCpowerPc`,
+			</if>
+			<if test="SystempowerPsum != 0.001" >
+				`SystempowerPsum`,
+			</if>
+			<if test="PhaseAreactivepowerQa != 0.001" >
+				`PhaseAreactivepowerQa`,
+			</if>
+			<if test="PhaseBreactivepowerQb != 0.001" >
+				`PhaseBreactivepowerQb`,
+			</if>
+			<if test="PhaseCreactivepowerQc != 0.001" >
+				`PhaseCreactivepowerQc`,
+			</if>
+			<if test="SystemreactivepowerQsum != 0.001" >
+				`SystemreactivepowerQsum`,
+			</if>
+			<if test="PhaseAapparentpowerSa != 0.001" >
+				`PhaseAapparentpowerSa`,
+			</if>
+			<if test="PhaseBapparentpowerSb != 0.001" >
+				`PhaseBapparentpowerSb`,
+			</if>
+			<if test="PhaseCapparentpowerSc != 0.001" >
+				`PhaseCapparentpowerSc`,
+			</if>
+			<if test="SystemapparentpowerSsum != 0.001" >
+				`SystemapparentpowerSsum`,
+			</if>
+			<if test="PhaseApowerfactorPFa != 0.001" >
+				`PhaseApowerfactorPFa`,
+			</if>
+			<if test="PhaseBpowerfactorPFb != 0.001" >
+				`PhaseBpowerfactorPFb`,
+			</if>
+			<if test="PhaseCpowerfactorPFc != 0.001" >
+				`PhaseCpowerfactorPFc`,
+			</if>
+			<if test="SystempowerfactorPFsum != 0.001" >
+				`SystempowerfactorPFsum`,
+			</if>
+			<if test="Voltageunbalancefactor != 0.001" >
+				`Voltageunbalancefactor`,
+			</if>
+			<if test="Currentunbalancefactor != 0.001" >
+				`Currentunbalancefactor`,
+			</if>
+			<if test="LoadcharacteristicLCR != 0.001" >
+				`LoadcharacteristicLCR`,
+			</if>
+			<if test="Powerdemand != 0.001" >
+				`Powerdemand`,
+			</if>
+			<if test="Reactivepowerdemand != 0.001" >
+				`Reactivepowerdemand`,
+			</if>
+			<if test="Apparentpowerdemand != 0.001" >
+				`Apparentpowerdemand`,
+			</if>
+			<if test="V1Maximum != 0.001" >
+				`V1Maximum`,
+			</if>
+			<if test="V2Maximum != 0.001" >
+				`V2Maximum`,
+			</if>
+			<if test="V3Maximum != 0.001" >
+				`V3Maximum`,
+			</if>
+			<if test="V12Maximum != 0.001" >
+				`V12Maximum`,
+			</if>
+			<if test="V23Maximum != 0.001" >
+				`V23Maximum`,
+			</if>
+			<if test="V31Maximum != 0.001" >
+				`V31Maximum`,
+			</if>
+			<if test="I1Maximum != 0.001" >
+				`I1Maximum`,
+			</if>
+			<if test="I2Maximum != 0.001" >
+				`I2Maximum`,
+			</if>
+			<if test="I3Maximum != 0.001" >
+				`I3Maximum`,
+			</if>
+			<if test="SystemPowerMaximum != 0.001" >
+				`SystemPowerMaximum`,
+			</if>
+			<if test="SystemReactivePowerMaximum != 0.001" >
+				`SystemReactivePowerMaximum`,
+			</if>
+			<if test="SystemApparentPowerMaximum != 0.001" >
+				`SystemApparentPowerMaximum`,
+			</if>
+			<if test="PowerFactorMaximum != 0.001" >
+				`PowerFactorMaximum`,
+			</if>
+			<if test="FrequencyMaximum != 0.001" >
+				`FrequencyMaximum`,
+			</if>
+			<if test="PowerDemandMaximum != 0.001" >
+				`PowerDemandMaximum`,
+			</if>
+			<if test="ReactivePowerDemandMaximum != 0.001" >
+				`ReactivePowerDemandMaximum`,
+			</if>
+			<if test="ApparentPowerDemandMaximum != 0.001" >
+				`ApparentPowerDemandMaximum`,
+			</if>
+			<if test="VoltageUnbalanceFactorMaximum != 0.001" >
+			  	`VoltageUnbalanceFactorMaximum`,
+			</if>
+			<if test="CurrentUnbalanceFactormaximum != 0.001" >
+				`CurrentUnbalanceFactormaximum`,
+			</if>
+			<if test="V1V12THDMaximum != 0.001" >
+				`V1V12THDMaximum`,
+			</if>
+			<if test="V2V31THDMaximum != 0.001" >
+				`V2V31THDMaximum`,
+			</if>
+			<if test="V3V23THDMaximum != 0.001" >
+				`V3V23THDMaximum`,
+			</if>
+			<if test="I1THDMaximum != 0.001" >
+				`I1THDMaximum`,
+			</if>
+			<if test="I2THDMaximum != 0.001" >
+				`I2THDMaximum`,
+			</if>
+			<if test="I3THDMaximum != 0.001" >
+				`I3THDMaximum`,
+			</if>
+			<if test="PhaseAngleV2toV1 != 0.001" >
+				`PhaseAngleV2toV1`,
+			</if>
+			<if test="PhaseAngleV3toV1 != 0.001" >
+				`PhaseAngleV3toV1`,
+			</if>
+			<if test="PhaseAngleI1toV1 != 0.001" >
+			  	`PhaseAngleI1toV1`,
+			</if>
+			<if test="PhaseAngleI2toV1 != 0.001" >
+				`PhaseAngleI2toV1`,
+			</if>
+			<if test="PhaseAngleI3toV1 != 0.001" >
+				`PhaseAngleI3toV1`,
+			</if>
+			<if test="PhaseAngleV23toV12 != 0.001" >
+			  	`PhaseAngleV23toV12`,
+			</if>
+			<if test="PhaseAngleofI1toV12 != 0.001" >
+				`PhaseAngleofI1toV12`,
+			</if>
+			<if test="PhaseAngleofI2toV12 != 0.001" >
+				`PhaseAngleofI2toV12`,
+			</if>
+			<if test="PhaseAngleofI3toV12 != 0.001" >
+				`PhaseAngleofI3toV12`,
+			</if>
+			<if test="THDV1ofV1V12 != 0.001" >
+				`THDV1ofV1V12`,
+			</if>
+			<if test="THDV1ofV2V31 != 0.001" >
+				`THDV1ofV2V31`,
+			</if>
+			<if test="THDV1ofV3V23 != 0.001" >
+				`THDV1ofV3V23`,
+			</if>
+			<if test="AverageTHDofV != 0.001" >
+				`AverageTHDofV`,
+			</if>
+			<if test="THDI1 != 0.001" >
+				`THDI1`,
+			</if>
+			<if test="THDI2 != 0.001" >
+				`THDI2`,
+			</if>
+			<if test="THDI3 != 0.001" >
+			  	`THDI3`,
+			</if>	
+			<if test="AverageTHDofI != 0.001" >
+				`AverageTHDofI`,
+			</if>
+			<if test="EnergyIMP != 0.001" >
+				`EnergyIMP`,
+			</if>
+			<if test="EnergyEXP != 0.001" >
+				`EnergyEXP`,
+			</if>
+			<if test="ReactiveEnergyIMP != 0.001" >
+				`ReactiveEnergyIMP`,
+			</if>
+			<if test="ReactiveEnergyEXP != 0.001" >
+			  	`ReactiveEnergyEXP`,
+			</if>
+			<if test="EnergyTotal != 0.001" >
+				`EnergyTotal`,
+			</if>
+			<if test="EnergyNet != 0.001" >
+				`EnergyNet`,
+			</if>
+			<if test="ReactiveEnergyTotal != 0.001" >
+			  	`ReactiveEnergyTotal`,
+			</if>
+			<if test="ReactiveEnergyNet != 0.001" >
+				`ReactiveEnergyNet`,
+			</if>
+			<if test="ApparentEnergy != 0.001" >
+				`ApparentEnergy`,
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			  	`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+                #{time},
+	        </if>
+			<if test="id_device != 0.001" >
+                #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	#{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	        	#{high_alarm},
+	        </if>
+			<if test="Frequency != 0.001" >
+				#{Frequency},
+			</if>
+			<if test="PhasevoltageV1 != 0.001" >
+				#{PhasevoltageV1},
+			</if>
+			<if test="PhasevoltageV2 != 0.001" >
+				#{PhasevoltageV2},
+			</if>
+			<if test="PhasevoltageV3 != 0.001" >
+				#{PhasevoltageV3},
+			</if>
+			<if test="AveragevoltageVavg != 0.001" >
+				#{AveragevoltageVavg},
+			</if>
+			<if test="LinevoltageV12 != 0.001" >
+				#{LinevoltageV12},
+			</if>
+			<if test="LinevoltageV23 != 0.001" >
+				#{LinevoltageV23},
+			</if>
+			<if test="LinevoltageV31 != 0.001" >
+				#{LinevoltageV31},
+			</if>
+			<if test="AveragelinevoltageVLavg != 0.001" >
+				#{AveragelinevoltageVLavg},
+			</if>
+			<if test="PhaselinecurrentI1 != 0.001" >
+				#{PhaselinecurrentI1},
+			</if>
+			<if test="PhaselinecurrentI2 != 0.001" >
+				#{PhaselinecurrentI2},
+			</if>
+			<if test="PhaselinecurrentI3 != 0.001" >
+				#{PhaselinecurrentI3},
+			</if>
+			<if test="AveragecurrentIavg != 0.001" >
+				#{AveragecurrentIavg},
+			</if>
+			<if test="NeutrallinecurrentIn != 0.001" >
+				#{NeutrallinecurrentIn},
+			</if>
+			<if test="PhaseApowerPa != 0.001" >
+				#{PhaseApowerPa},
+			</if>
+			<if test="PhaseBpowerPb != 0.001" >
+				#{PhaseBpowerPb},
+			</if>
+			<if test="PhaseCpowerPc != 0.001" >
+				#{PhaseCpowerPc},
+			</if>
+			<if test="SystempowerPsum != 0.001" >
+				#{SystempowerPsum},
+			</if>
+			<if test="PhaseAreactivepowerQa != 0.001" >
+				#{PhaseAreactivepowerQa},
+			</if>
+			<if test="PhaseBreactivepowerQb != 0.001" >
+				#{PhaseBreactivepowerQb},
+			</if>
+			<if test="PhaseCreactivepowerQc != 0.001" >
+				#{PhaseCreactivepowerQc},
+			</if>
+			<if test="SystemreactivepowerQsum != 0.001" >
+				#{SystemreactivepowerQsum},
+			</if>
+			<if test="PhaseAapparentpowerSa != 0.001" >
+				#{PhaseAapparentpowerSa},
+			</if>
+			<if test="PhaseBapparentpowerSb != 0.001" >
+				#{PhaseBapparentpowerSb},
+			</if>
+			<if test="PhaseCapparentpowerSc != 0.001" >
+				#{PhaseCapparentpowerSc},
+			</if>
+			<if test="SystemapparentpowerSsum != 0.001" >
+				#{SystemapparentpowerSsum},
+			</if>
+			<if test="PhaseApowerfactorPFa != 0.001" >
+				#{PhaseApowerfactorPFa},
+			</if>
+			<if test="PhaseBpowerfactorPFb != 0.001" >
+				#{PhaseBpowerfactorPFb},
+			</if>
+			<if test="PhaseCpowerfactorPFc != 0.001" >
+				#{PhaseCpowerfactorPFc},
+			</if>
+			<if test="SystempowerfactorPFsum != 0.001" >
+				#{SystempowerfactorPFsum},
+			</if>
+			<if test="Voltageunbalancefactor != 0.001" >
+				#{Voltageunbalancefactor},
+			</if>
+			<if test="Currentunbalancefactor != 0.001" >
+				#{Currentunbalancefactor},
+			</if>
+			<if test="LoadcharacteristicLCR != 0.001" >
+				#{LoadcharacteristicLCR},
+			</if>
+			<if test="Powerdemand != 0.001" >
+				#{Powerdemand},
+			</if>
+			<if test="Reactivepowerdemand != 0.001" >
+				#{Reactivepowerdemand},
+			</if>
+			<if test="Apparentpowerdemand != 0.001" >
+				#{Apparentpowerdemand},
+			</if>
+			<if test="V1Maximum != 0.001" >
+				#{V1Maximum},
+			</if>
+			<if test="V2Maximum != 0.001" >
+				#{V2Maximum},
+			</if>
+			<if test="V3Maximum != 0.001" >
+				#{V3Maximum},
+			</if>
+			<if test="V12Maximum != 0.001" >
+				#{V12Maximum},
+			</if>
+			<if test="V23Maximum != 0.001" >
+				#{V23Maximum},
+			</if>
+			<if test="V31Maximum != 0.001" >
+				#{V31Maximum},
+			</if>
+			<if test="I1Maximum != 0.001" >
+				#{I1Maximum},
+			</if>
+			<if test="I2Maximum != 0.001" >
+				#{I2Maximum},
+			</if>
+			<if test="I3Maximum != 0.001" >
+				#{I3Maximum},
+			</if>
+			<if test="SystemPowerMaximum != 0.001" >
+				#{SystemPowerMaximum},
+			</if>
+			<if test="SystemReactivePowerMaximum != 0.001" >
+				#{SystemReactivePowerMaximum},
+			</if>
+			<if test="SystemApparentPowerMaximum != 0.001" >
+				#{SystemApparentPowerMaximum},
+			</if>
+			<if test="PowerFactorMaximum != 0.001" >
+				#{PowerFactorMaximum},
+			</if>
+			<if test="FrequencyMaximum != 0.001" >
+				#{FrequencyMaximum},
+			</if>
+			<if test="PowerDemandMaximum != 0.001" >
+				#{PowerDemandMaximum},
+			</if>
+			<if test="ReactivePowerDemandMaximum != 0.001" >
+				#{ReactivePowerDemandMaximum},
+			</if>
+			<if test="ApparentPowerDemandMaximum != 0.001" >
+				#{ApparentPowerDemandMaximum},
+			</if>		
+			<if test="VoltageUnbalanceFactorMaximum != 0.001" >
+				#{VoltageUnbalanceFactorMaximum},
+			</if>
+			<if test="CurrentUnbalanceFactormaximum != 0.001" >
+				#{CurrentUnbalanceFactormaximum},
+			</if>
+			<if test="V1V12THDMaximum != 0.001" >
+				#{V1V12THDMaximum},
+			</if>
+			<if test="V2V31THDMaximum != 0.001" >
+				#{V2V31THDMaximum},
+			</if>
+			<if test="V3V23THDMaximum != 0.001" >
+				#{V3V23THDMaximum},
+			</if>
+			<if test="I1THDMaximum != 0.001" >
+				#{I1THDMaximum},
+			</if>
+			<if test="I2THDMaximum != 0.001" >
+				#{I2THDMaximum},
+			</if>
+			<if test="I3THDMaximum != 0.001" >
+				#{I3THDMaximum},
+			</if>
+			<if test="PhaseAngleV2toV1 != 0.001" >
+				#{PhaseAngleV2toV1},
+			</if>
+			<if test="PhaseAngleV3toV1 != 0.001" >
+				#{PhaseAngleV3toV1},
+			</if>
+			<if test="PhaseAngleI1toV1 != 0.001" >
+				#{PhaseAngleI1toV1},
+			</if>
+			<if test="PhaseAngleI2toV1 != 0.001" >
+				#{PhaseAngleI2toV1},
+			</if>
+			<if test="PhaseAngleI3toV1 != 0.001" >
+				#{PhaseAngleI3toV1},
+			</if>
+			<if test="PhaseAngleV23toV12 != 0.001" >
+				#{PhaseAngleV23toV12},
+			</if>
+			<if test="PhaseAngleofI1toV12 != 0.001" >
+				#{PhaseAngleofI1toV12},
+			</if>
+			<if test="PhaseAngleofI2toV12 != 0.001" >
+				#{PhaseAngleofI2toV12},
+			</if>
+			<if test="PhaseAngleofI3toV12 != 0.001" >
+				#{PhaseAngleofI3toV12},
+			</if>
+			<if test="THDV1ofV1V12 != 0.001" >
+				#{THDV1ofV1V12},
+			</if>
+			<if test="THDV1ofV2V31 != 0.001" >
+				#{THDV1ofV2V31},
+			</if>
+			<if test="THDV1ofV3V23 != 0.001" >
+				#{THDV1ofV3V23},
+			</if>
+			<if test="AverageTHDofV != 0.001" >
+				#{AverageTHDofV},
+			</if>
+			<if test="THDI1 != 0.001" >
+				#{THDI1},
+			</if>
+			<if test="THDI2 != 0.001" >
+				#{THDI2},
+			</if>			
+			<if test="THDI3 != 0.001" >
+				#{THDI3},
+			</if>
+			<if test="AverageTHDofI != 0.001" >
+				#{AverageTHDofI},
+			</if>
+			<if test="EnergyIMP != 0.001" >
+				#{EnergyIMP},
+			</if>
+			<if test="EnergyEXP != 0.001" >
+				#{EnergyEXP},
+			</if>
+			<if test="ReactiveEnergyIMP != 0.001" >
+				#{ReactiveEnergyIMP},
+			</if>
+			<if test="ReactiveEnergyEXP != 0.001" >
+				#{ReactiveEnergyEXP},
+			</if>
+			<if test="EnergyTotal != 0.001" >
+				#{EnergyTotal},
+			</if>
+			<if test="EnergyNet != 0.001" >
+				#{EnergyNet},
+			</if>
+			<if test="ReactiveEnergyTotal != 0.001" >
+				#{ReactiveEnergyTotal},
+			</if>
+			<if test="ReactiveEnergyNet != 0.001" >
+				#{ReactiveEnergyNet},
+			</if>
+			<if test="ApparentEnergy != 0.001" >
+				#{ApparentEnergy},
+			</if>		
+			<if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	        	`id_device` = #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	`error` = #{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm` = #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm` = #{high_alarm},
+	        </if>
+			<if test="Frequency != 0.001" >
+				`Frequency` = #{Frequency},
+			</if>
+			<if test="PhasevoltageV1 != 0.001" >
+				`PhasevoltageV1` = #{PhasevoltageV1},
+			</if>
+			<if test="PhasevoltageV2 != 0.001" >
+				`PhasevoltageV2` = #{PhasevoltageV2},
+			</if>
+			<if test="PhasevoltageV3 != 0.001" >
+				`PhasevoltageV3` = #{PhasevoltageV3},
+			</if>
+			<if test="AveragevoltageVavg != 0.001" >
+				`AveragevoltageVavg` = #{AveragevoltageVavg},
+			</if>
+			<if test="LinevoltageV12 != 0.001" >
+				`LinevoltageV12` = #{LinevoltageV12},
+			</if>
+			<if test="LinevoltageV23 != 0.001" >
+				`LinevoltageV23` = #{LinevoltageV23},
+			</if>
+			<if test="LinevoltageV31 != 0.001" >
+				`LinevoltageV31` = #{LinevoltageV31},
+			</if>
+			<if test="AveragelinevoltageVLavg != 0.001" >
+				`AveragelinevoltageVLavg` = #{AveragelinevoltageVLavg},
+			</if>
+			<if test="PhaselinecurrentI1 != 0.001" >
+				`PhaselinecurrentI1` = #{PhaselinecurrentI1},
+			</if>
+			<if test="PhaselinecurrentI2 != 0.001" >
+				`PhaselinecurrentI2` = #{PhaselinecurrentI2},
+			</if>
+			<if test="PhaselinecurrentI3 != 0.001" >
+				`PhaselinecurrentI3` = #{PhaselinecurrentI3},
+			</if>
+			<if test="AveragecurrentIavg != 0.001" >
+				`AveragecurrentIavg` = #{AveragecurrentIavg},
+			</if>
+			<if test="NeutrallinecurrentIn != 0.001" >
+				`NeutrallinecurrentIn` = #{NeutrallinecurrentIn},
+			</if>
+			<if test="PhaseApowerPa != 0.001" >
+				`PhaseApowerPa` = #{PhaseApowerPa},
+			</if>
+			<if test="PhaseBpowerPb != 0.001" >
+				`PhaseBpowerPb` = #{PhaseBpowerPb},
+			</if>
+			<if test="PhaseCpowerPc != 0.001" >
+				`PhaseCpowerPc` = #{PhaseCpowerPc},
+			</if>
+			<if test="SystempowerPsum != 0.001" >
+				`SystempowerPsum` = #{SystempowerPsum},
+			</if>
+			<if test="PhaseAreactivepowerQa != 0.001" >
+				`PhaseAreactivepowerQa` = #{PhaseAreactivepowerQa},
+			</if>
+			<if test="PhaseBreactivepowerQb != 0.001" >
+				`PhaseBreactivepowerQb` = #{PhaseBreactivepowerQb},
+			</if>
+			<if test="PhaseCreactivepowerQc != 0.001" >
+				`PhaseCreactivepowerQc` = #{PhaseCreactivepowerQc},
+			</if>
+			<if test="SystemreactivepowerQsum != 0.001" >
+				`SystemreactivepowerQsum` = #{SystemreactivepowerQsum},
+			</if>
+			<if test="PhaseAapparentpowerSa != 0.001" >
+				`PhaseAapparentpowerSa` = #{PhaseAapparentpowerSa},
+			</if>
+			<if test="PhaseBapparentpowerSb != 0.001" >
+				`PhaseBapparentpowerSb` = #{PhaseBapparentpowerSb},
+			</if>
+			<if test="PhaseCapparentpowerSc != 0.001" >
+				`PhaseCapparentpowerSc` = #{PhaseCapparentpowerSc},
+			</if>
+			<if test="SystemapparentpowerSsum != 0.001" >
+				`SystemapparentpowerSsum` = #{SystemapparentpowerSsum},
+			</if>
+			<if test="PhaseApowerfactorPFa != 0.001" >
+				`PhaseApowerfactorPFa` = #{PhaseApowerfactorPFa},
+			</if>
+			<if test="PhaseBpowerfactorPFb != 0.001" >
+				`PhaseBpowerfactorPFb` = #{PhaseBpowerfactorPFb},
+			</if>
+			<if test="PhaseCpowerfactorPFc != 0.001" >
+				`PhaseCpowerfactorPFc` = #{PhaseCpowerfactorPFc},
+			</if>
+			<if test="SystempowerfactorPFsum != 0.001" >
+				`SystempowerfactorPFsum` = #{SystempowerfactorPFsum},
+			</if>
+			<if test="Voltageunbalancefactor != 0.001" >
+				`Voltageunbalancefactor` = #{Voltageunbalancefactor},
+			</if>
+			<if test="Currentunbalancefactor != 0.001" >
+				`Currentunbalancefactor` = #{Currentunbalancefactor},
+			</if>
+			<if test="LoadcharacteristicLCR != 0.001" >
+				`LoadcharacteristicLCR` = #{LoadcharacteristicLCR},
+			</if>
+			<if test="Powerdemand != 0.001" >
+				`Powerdemand` = #{Powerdemand},
+			</if>
+			<if test="Reactivepowerdemand != 0.001" >
+				`Reactivepowerdemand` = #{Reactivepowerdemand},
+			</if>
+			<if test="Apparentpowerdemand != 0.001" >
+				`Apparentpowerdemand` = #{Apparentpowerdemand},
+			</if>
+			<if test="V1Maximum != 0.001" >
+				`V1Maximum` = #{V1Maximum},
+			</if>
+			<if test="V2Maximum != 0.001" >
+				`V2Maximum` = #{V2Maximum},
+			</if>
+			<if test="V3Maximum != 0.001" >
+				`V3Maximum` = #{V3Maximum},
+			</if>
+			<if test="V12Maximum != 0.001" >
+				`V12Maximum` = #{V12Maximum},
+			</if>
+			<if test="V23Maximum != 0.001" >
+				`V23Maximum` = #{V23Maximum},
+			</if>
+			<if test="V31Maximum != 0.001" >
+				`V31Maximum` = #{V31Maximum},
+			</if>
+			<if test="I1Maximum != 0.001" >
+				`I1Maximum` = #{I1Maximum},
+			</if>
+			<if test="I2Maximum != 0.001" >
+				`I2Maximum` = #{I2Maximum},
+			</if>
+			<if test="I3Maximum != 0.001" >
+				`I3Maximum` = #{I3Maximum},
+			</if>
+			<if test="SystemPowerMaximum != 0.001" >
+				`SystemPowerMaximum` = #{SystemPowerMaximum},
+			</if>
+			<if test="SystemReactivePowerMaximum != 0.001" >
+				`SystemReactivePowerMaximum` = #{SystemReactivePowerMaximum},
+			</if>
+			<if test="SystemApparentPowerMaximum != 0.001" >
+				`SystemApparentPowerMaximum` = #{SystemApparentPowerMaximum},
+			</if>
+			<if test="PowerFactorMaximum != 0.001" >
+				`PowerFactorMaximum` = #{PowerFactorMaximum},
+			</if>
+			<if test="FrequencyMaximum != 0.001" >
+				`FrequencyMaximum` = #{FrequencyMaximum},
+			</if>
+			<if test="PowerDemandMaximum != 0.001" >
+				`PowerDemandMaximum` = #{PowerDemandMaximum},
+			</if>
+			<if test="ReactivePowerDemandMaximum != 0.001" >
+				`ReactivePowerDemandMaximum` = #{ReactivePowerDemandMaximum},
+			</if>
+			<if test="ApparentPowerDemandMaximum != 0.001" >
+				`ApparentPowerDemandMaximum` = #{ApparentPowerDemandMaximum},
+			</if>		
+			<if test="VoltageUnbalanceFactorMaximum != 0.001" >
+				`VoltageUnbalanceFactorMaximum` = #{VoltageUnbalanceFactorMaximum},
+			</if>
+			<if test="CurrentUnbalanceFactormaximum != 0.001" >
+				`CurrentUnbalanceFactormaximum` = #{CurrentUnbalanceFactormaximum},
+			</if>
+			<if test="V1V12THDMaximum != 0.001" >
+				`V1V12THDMaximum` = #{V1V12THDMaximum},
+			</if>
+			<if test="V2V31THDMaximum != 0.001" >
+				`V2V31THDMaximum` = #{V2V31THDMaximum},
+			</if>
+			<if test="V3V23THDMaximum != 0.001" >
+				`V3V23THDMaximum` = #{V3V23THDMaximum},
+			</if>
+			<if test="I1THDMaximum != 0.001" >
+				`I1THDMaximum` = #{I1THDMaximum},
+			</if>
+			<if test="I2THDMaximum != 0.001" >
+				`I2THDMaximum` = #{I2THDMaximum},
+			</if>
+			<if test="I3THDMaximum != 0.001" >
+				`I3THDMaximum` = #{I3THDMaximum},
+			</if>
+			<if test="PhaseAngleV2toV1 != 0.001" >
+				`PhaseAngleV2toV1` = #{PhaseAngleV2toV1},
+			</if>
+			<if test="PhaseAngleV3toV1 != 0.001" >
+				`PhaseAngleV3toV1` = #{PhaseAngleV3toV1},
+			</if>
+			<if test="PhaseAngleI1toV1 != 0.001" >
+				`PhaseAngleI1toV1` = #{PhaseAngleI1toV1},
+			</if>
+			<if test="PhaseAngleI2toV1 != 0.001" >
+				`PhaseAngleI2toV1` = #{PhaseAngleI2toV1},
+			</if>
+			<if test="PhaseAngleI3toV1 != 0.001" >
+				`PhaseAngleI3toV1` = #{PhaseAngleI3toV1},
+			</if>
+			<if test="PhaseAngleV23toV12 != 0.001" >
+				`PhaseAngleV23toV12` = #{PhaseAngleV23toV12},
+			</if>
+			<if test="PhaseAngleofI1toV12 != 0.001" >
+				`PhaseAngleofI1toV12` = #{PhaseAngleofI1toV12},
+			</if>
+			<if test="PhaseAngleofI2toV12 != 0.001" >
+				`PhaseAngleofI2toV12` = #{PhaseAngleofI2toV12},
+			</if>
+			<if test="PhaseAngleofI3toV12 != 0.001" >
+				`PhaseAngleofI3toV12` = #{PhaseAngleofI3toV12},
+			</if>
+			<if test="THDV1ofV1V12 != 0.001" >
+				`THDV1ofV1V12` = #{THDV1ofV1V12},
+			</if>
+			<if test="THDV1ofV2V31 != 0.001" >
+				`THDV1ofV2V31` = #{THDV1ofV2V31},
+			</if>
+			<if test="THDV1ofV3V23 != 0.001" >
+				`THDV1ofV3V23` = #{THDV1ofV3V23},
+			</if>
+			<if test="AverageTHDofV != 0.001" >
+				`AverageTHDofV` = #{AverageTHDofV},
+			</if>
+			<if test="THDI1 != 0.001" >
+				`THDI1` = #{THDI1},
+			</if>		
+			<if test="THDI2 != 0.001" >
+				`THDI2` = #{THDI2},
+			</if>
+			<if test="THDI3 != 0.001" >
+				`THDI3` = #{THDI3},
+			</if>
+			<if test="AverageTHDofI != 0.001" >
+				`AverageTHDofI` = #{AverageTHDofI},
+			</if>
+			<if test="EnergyIMP != 0.001" >
+				`EnergyIMP` = #{EnergyIMP},
+			</if>
+			<if test="EnergyEXP != 0.001" >
+				`EnergyEXP` = #{EnergyEXP},
+			</if>
+			<if test="ReactiveEnergyIMP != 0.001" >
+				`ReactiveEnergyIMP` = #{ReactiveEnergyIMP},
+			</if>
+			<if test="ReactiveEnergyEXP != 0.001" >
+				`ReactiveEnergyEXP` = #{ReactiveEnergyEXP},
+			</if>
+			<if test="EnergyTotal != 0.001" >
+				`EnergyTotal` = #{EnergyTotal},
+			</if>
+			<if test="EnergyNet != 0.001" >
+				`EnergyNet` = #{EnergyNet},
+			</if>
+			<if test="ReactiveEnergyTotal != 0.001" >
+				`ReactiveEnergyTotal` = #{ReactiveEnergyTotal},
+			</if>
+			<if test="ReactiveEnergyNet != 0.001" >
+				`ReactiveEnergyNet` = #{ReactiveEnergyNet},
+			</if>
+			<if test="ApparentEnergy != 0.001" >
+				`ApparentEnergy` = #{ApparentEnergy},
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			 	`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			 	`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAcuvimIIREntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+</mapper> 
