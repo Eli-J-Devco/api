@@ -176,38 +176,6 @@
 						</when>
 						
 						<when test="
-							(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault1') or
-							(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault2') or
-							(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault3') or
-							(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault4') or
-							(table_name == 'model_sunny_central_class9775_inverter' and param.slug == 'Fault') or
-							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'PermanentFaultCode') or
-							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'WarnCode') or
-							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode0') or
-							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode1') or
-							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode2') or
-							(table_name == 'model_kippzonen_rt1_class8009' and param.slug == 'error_code') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults1') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults2') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults3') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings1') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings2_reserved') or
-							(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings3_reserved') or
-							(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word0') or
-							(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word1') or
-							(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word2') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults1') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults2') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults3') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings1') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings2_reserved') or
-							(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings3_reserved') or
-							(table_name == 'model_rt1_class30000' and param.slug == 'error_code')
-						">
-							IFNULL(AVG(${param.slug}), 0.001) AS ${param.slug}
-						</when>
-						
-						<when test="
 							(table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy') or
 							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'nvmActiveEnergy') or
 							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_energy')
@@ -291,38 +259,6 @@
 								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 							">
 								IF(AVG(dv.${param.slug}) <![CDATA[<]]> 0, 0, AVG(dv.${param.slug})) AS ${param.slug}
-							</when>
-							
-							<when test="
-								(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault1') or
-								(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault2') or
-								(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault3') or
-								(table_name == 'model_satcon_powergate_225_inverter' and param.slug == 'Fault4') or
-								(table_name == 'model_sunny_central_class9775_inverter' and param.slug == 'Fault') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'PermanentFaultCode') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'WarnCode') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode0') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode1') or
-								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'FaultCode2') or
-								(table_name == 'model_kippzonen_rt1_class8009' and param.slug == 'error_code') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults1') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults2') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'active_faults3') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings1') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings2_reserved') or
-								(table_name == 'model_ivt_solaron_ext' and param.slug == 'warnings3_reserved') or
-								(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word0') or
-								(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word1') or
-								(table_name == 'model_pvp_inverter' and param.slug == 'inverter_fault_word2') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults1') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults2') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'active_faults3') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings1') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings2_reserved') or
-								(table_name == 'model_advanced_energy_solaron' and param.slug == 'warnings3_reserved') or
-								(table_name == 'model_rt1_class30000' and param.slug == 'error_code')
-							">
-								AVG(dv.${param.slug}) AS ${param.slug}
 							</when>
 							
 							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
