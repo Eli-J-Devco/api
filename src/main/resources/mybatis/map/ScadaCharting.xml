@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ScadaCharting">
+	
+	<select id="getSiteDetail" resultType="com.nwm.api.entities.ScadaChartingEntity" >
+		SELECT
+			s.id,
+			s.data_send_time,
+			s.commissioning,
+			tz.value AS timezone_value
+		FROM
+			site s
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+		WHERE
+			SHA1(s.id) = #{hash_id_site}
+			AND s.status = 1
+			AND s.is_delete = 0
+	</select>
+	
+	<select id="getListDeviceBySite" resultType="com.nwm.api.entities.ScadaChartingDeviceEntity">
+		SELECT
+			d.id,
+			d.devicename AS name,
+			d.id_device_group,
+			d.datatablename,
+			d.view_tablename,
+			d.id_device_type,
+			d.hidden,
+			dg.group_name,
+			dg.table_name,
+			dt.name AS device_type_name,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', dp.id,
+				'name', dp.name,
+				'standard_name', dp.standard_name,
+				'slug', dp.slug,
+				'unit', dp.unit,
+				'is_checked', dp.is_checked,
+				'is_common', dp.is_common
+			)) AS parametersJSON,
+			1 AS is_hidden,
+			0 AS checked
+		FROM
+			device d
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
+			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON d.id_site = s.id
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			SHA1(d.id_site) = #{hash_id_site}
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND d.id_device_type != 5
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dp.is_filter = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+		GROUP BY
+			d.id
+		ORDER BY
+			d.id_device_type ASC
+	</select>
+	
+	<select id="getChartData" resultType="Map">
+		SELECT
+			time_full,
+			categories_time,
+			<choose>
+				<when test="data_send_time == 5">
+					FLOOR(DATEDIFF(time_group_by, #{start_date}) / 7 )
+				</when>
+				
+				<when test="data_send_time == 6">
+					DATE_FORMAT(time_group_by, '%m/%Y')
+				</when>
+				
+				<when test="data_send_time == 7">
+					DATE_FORMAT(time_group_by, '%Y')
+				</when>
+				
+				<otherwise>
+					time_group_by
+				</otherwise>
+			</choose> AS time_group_by,
+			
+			<foreach collection="parameters" item="param" separator=",">
+				<if test="param.is_checked == 1">
+					<choose>
+						<when test="
+							(table_name == 'model_campell_scientific_meter1' and param.slug == 'Meter1_ACPower') or
+							(table_name == 'model_campell_scientific_meter2' and param.slug == 'Meter2_ACPower') or
+							(table_name == 'model_campell_scientific_meter3' and param.slug == 'Meter3_ACPower') or
+							(table_name == 'model_campell_scientific_meter4' and param.slug == 'Meter4_ACPower') or
+							(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'POACMP11') or
+							(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'IrradiancePOA') or
+							(table_name == 'model_sma_inverter_stp1200tlus10' and param.slug == 'GridMs_TotW') or
+							(table_name == 'model_sma_inverter_stp24ktlus10' and param.slug == 'GridMs_TotW') or
+							(table_name == 'model_sma_cluster_controller' and param.slug == 'GridMs_TotW') or
+							(table_name == 'model_solaredge_inverter' and param.slug == 'I_AC_Power') or
+							(table_name == 'model_sungrow_umg604' and param.slug == 'M_AC_P') or
+							(table_name == 'model_sungrow_sg110cx' and param.slug == 'P_DC') or
+							(table_name == 'model_sungrow_sg50cx' and param.slug == 'P_DC') or
+							(table_name == 'model_sungrow_logger1000' and param.slug == 'TotalActivePower') or
+							(table_name == 'model_hukseflux_sr30d1_deviceclass_v0' and param.slug == 'IrradianceTcs') or
+							(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'AC_ActivePower') or
+							(table_name == 'model_pv_powered_35_50_260_500kw_inverter' and param.slug == 'OutputGeneration') or
+							(table_name == 'model_shark100' and param.slug == 'watts_3ph_total') or
+							(table_name == 'model_kippzonen_rt1_class8009' and param.slug == 'sensor1_data') or
+							(table_name == 'model_ivt_solaron_ext' and param.slug == 'ac_power') or
+							(table_name == 'model_pvmet_100' and param.slug == 'TransientHorizontalIrradiance') or
+							(table_name == 'model_pvmet_100' and param.slug == 'DailyHorizontalIrradiance') or
+							(table_name == 'model_pvp_inverter' and param.slug == 'line_kw') or
+							(table_name == 'model_imtsolar_class8000' and param.slug == 'irradiance') or
+							(table_name == 'model_advanced_energy_solaron' and param.slug == 'ac_power') or
+							(table_name == 'model_rt1_class30000' and param.slug == 'sensor1_data') or
+							(table_name == 'model_veris_industries_e51c2_power_meter' and param.slug == 'TotalRealPowerPresentDemand') or
+							(table_name == 'model_veris_industries_e50c2a' and param.slug == 'TotalRealPowerPresentDemand') or
+							(table_name == 'model_satcon_pvs357_inverter' and param.slug == 'Output_kw') or
+							(table_name == 'model_w_kipp_zonen_rt1' and param.slug == 'SunPOATempComp') or
+							(table_name == 'model_elkor_wattson_pv_meter' and param.slug == 'TotalRealPower') or
+							(table_name == 'model_elkor_production_meter' and param.slug == 'ActivePowerTotal') or
+							(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
+							(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
+							(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
+							(table_name == 'model_solectria_sgi_226ivt' and param.slug == 'ACPowerOutput') or
+							(table_name == 'model_xantrex_gt100_250_500' and param.slug == 'ReadPower') or
+							(table_name == 'model_xantrex_inverter' and param.slug == 'ReadPower') or
+							(table_name == 'model_ae1000nx_class9644' and param.slug == 'ACPower') or
+							(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
+							(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
+						">
+							IFNULL(ROUND(IF(AVG(${param.slug}) <![CDATA[<]]> 0, 0, AVG(${param.slug})), 2), 0.001) AS ${param.slug}
+						</when>
+						
+						<when test="
+							(table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy') or
+							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'nvmActiveEnergy') or
+							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_energy')
+						">
+							IFNULL(ROUND(SUM(${param.slug}), 2), 0.001) AS ${param.slug}
+						</when>
+						
+						<when test="param.slug == 'MeasuredProduction'">
+							<choose>
+								<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
+									IFNULL(ROUND(AVG(MeasuredProduction), 2), 0.001) AS MeasuredProduction
+								</when>
+								
+								<otherwise>
+									IFNULL(ROUND(SUM(MeasuredProduction), 2), 0.001) AS MeasuredProduction
+								</otherwise>
+							</choose>
+						</when>
+						
+						<otherwise>
+							IFNULL(ROUND(AVG(${param.slug}), 2), 0.001) AS ${param.slug}
+						</otherwise>
+					</choose>
+				</if>
+			</foreach>
+			
+		FROM (
+			SELECT
+				dv.time,
+				dv.id_device,
+				d.id_device_group,
+				
+				<foreach collection="parameters" item="param" separator="," close=",">
+					<if test="param.is_checked == 1">
+						<choose>
+							<when test="
+								(table_name == 'model_campell_scientific_meter1' and param.slug == 'Meter1_ACPower') or
+								(table_name == 'model_campell_scientific_meter2' and param.slug == 'Meter2_ACPower') or
+								(table_name == 'model_campell_scientific_meter3' and param.slug == 'Meter3_ACPower') or
+								(table_name == 'model_campell_scientific_meter4' and param.slug == 'Meter4_ACPower') or
+								(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'POACMP11') or
+								(table_name == 'model_adam4017ws_class8110_nelis190' and param.slug == 'IrradiancePOA') or
+								(table_name == 'model_sma_inverter_stp1200tlus10' and param.slug == 'GridMs_TotW') or
+								(table_name == 'model_sma_inverter_stp24ktlus10' and param.slug == 'GridMs_TotW') or
+								(table_name == 'model_sma_cluster_controller' and param.slug == 'GridMs_TotW') or
+								(table_name == 'model_solaredge_inverter' and param.slug == 'I_AC_Power') or
+								(table_name == 'model_sungrow_umg604' and param.slug == 'M_AC_P') or
+								(table_name == 'model_sungrow_sg110cx' and param.slug == 'P_DC') or
+								(table_name == 'model_sungrow_sg50cx' and param.slug == 'P_DC') or
+								(table_name == 'model_sungrow_logger1000' and param.slug == 'TotalActivePower') or
+								(table_name == 'model_hukseflux_sr30d1_deviceclass_v0' and param.slug == 'IrradianceTcs') or
+								(table_name == 'model_chint_solectria_inverter_class9725' and param.slug == 'AC_ActivePower') or
+								(table_name == 'model_pv_powered_35_50_260_500kw_inverter' and param.slug == 'OutputGeneration') or
+								(table_name == 'model_shark100' and param.slug == 'watts_3ph_total') or
+								(table_name == 'model_kippzonen_rt1_class8009' and param.slug == 'sensor1_data') or
+								(table_name == 'model_ivt_solaron_ext' and param.slug == 'ac_power') or
+								(table_name == 'model_pvmet_100' and param.slug == 'TransientHorizontalIrradiance') or
+								(table_name == 'model_pvmet_100' and param.slug == 'DailyHorizontalIrradiance') or
+								(table_name == 'model_pvp_inverter' and param.slug == 'line_kw') or
+								(table_name == 'model_imtsolar_class8000' and param.slug == 'irradiance') or
+								(table_name == 'model_advanced_energy_solaron' and param.slug == 'ac_power') or
+								(table_name == 'model_rt1_class30000' and param.slug == 'sensor1_data') or
+								(table_name == 'model_veris_industries_e51c2_power_meter' and param.slug == 'TotalRealPowerPresentDemand') or
+								(table_name == 'model_veris_industries_e50c2a' and param.slug == 'TotalRealPowerPresentDemand') or
+								(table_name == 'model_satcon_pvs357_inverter' and param.slug == 'Output_kw') or
+								(table_name == 'model_w_kipp_zonen_rt1' and param.slug == 'SunPOATempComp') or
+								(table_name == 'model_elkor_wattson_pv_meter' and param.slug == 'TotalRealPower') or
+								(table_name == 'model_elkor_production_meter' and param.slug == 'ActivePowerTotal') or
+								(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
+								(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
+								(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
+								(table_name == 'model_solectria_sgi_226ivt' and param.slug == 'ACPowerOutput') or
+								(table_name == 'model_xantrex_gt100_250_500' and param.slug == 'ReadPower') or
+								(table_name == 'model_xantrex_inverter' and param.slug == 'ReadPower') or
+								(table_name == 'model_ae1000nx_class9644' and param.slug == 'ACPower') or
+								(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
+								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
+							">
+								IF(AVG(dv.${param.slug}) <![CDATA[<]]> 0, 0, AVG(dv.${param.slug})) AS ${param.slug}
+							</when>
+							
+							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
+								SUM(dv.MeasuredProduction) AS Energy
+							</when>
+							
+							<when test="table_name == 'model_virtual_meter_or_inverter' and (param.slug == 'nvmActiveEnergy' or param.slug == 'expected_energy')">
+								SUM(dv.${param.slug}) AS ${param.slug}
+							</when>
+							
+							<when test="param.slug == 'MeasuredProduction'">
+								<choose>
+									<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
+										AVG(dv.nvmActivePower) AS MeasuredProduction
+									</when>
+									
+									<otherwise>
+										<if test="table_name != 'model_virtual_meter_or_inverter'">
+											SUM(dv.MeasuredProduction) AS MeasuredProduction
+										</if>
+										
+										<if test="table_name == 'model_virtual_meter_or_inverter'">
+											SUM(dv.nvmActiveEnergy) AS MeasuredProduction
+										</if>
+									</otherwise>
+								</choose>
+							</when>
+							
+							<when test="table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_power'">
+								AVG(dv.expected_power_ac) AS expected_power
+							</when>
+							
+							<otherwise>
+								AVG(dv.${param.slug}) AS ${param.slug}
+							</otherwise>
+						</choose>
+					</if>
+				</foreach>
+				
+				<if test="(filterBy == 'today') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'today') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'today') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == 'today') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'today') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == '3_day') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == '3_day') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+	
+				<if test="(filterBy == '3_day') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:00' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == '3_day') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == '3_day') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+	
+				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == 'this_week' or filterBy == 'last_week') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m/%d' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 5">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%b. %Y' ) AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_group_by
+				</if>
+				
+				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+				
+				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 6">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+	
+				<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS time_group_by
+				</if>
+				
+				<if test="filterBy == 'custom' and data_send_time == 1">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="filterBy == 'custom' and data_send_time == 2">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+	
+				<if test="filterBy == 'custom' and data_send_time == 3">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
+				</if>
+				
+				<if test="filterBy == 'custom' and data_send_time == 8">
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS categories_time,
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_group_by
+				</if>
+				
+				<if test="filterBy == 'custom' and data_send_time == 4">
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
+					END AS categories_time,
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_group_by
+				</if>
+			
+			FROM
+				${datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				dv.id_device = #{id}
+				AND (CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+			    <foreach item="item" index="index" collection="hidden_data_list">
+					AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
+			    </foreach>
+			GROUP BY time_group_by
+			ORDER BY time_group_by ASC
+		) t
+		GROUP BY
+			<choose>
+				<when test="data_send_time == 5">
+	                FLOOR(DATEDIFF(time_group_by, #{start_date}) / 7 )
+				</when>
+				
+				<when test="data_send_time == 6">
+					DATE_FORMAT(time_group_by, '%m/%Y')
+				</when>
+				
+				<when test="data_send_time == 7">
+					DATE_FORMAT(time_group_by, '%Y')
+				</when>
+				
+				<otherwise>
+					time_group_by
+				</otherwise>
+			</choose>
+	</select>
+	
+	<select id="getHiddenDataListByDevice" resultType="Map">
+		SELECT
+			date_from,
+			date_to
+		FROM
+			hidden_data
+		WHERE
+			id_device = #{id}
+			AND status = 1
+			AND is_delete = 0
+	</select>
+	
+	<select id="getFilterParamsByDevice" resultType="Map">
+		SELECT
+			id_device,
+			id_device_parameter,
+			min_value,
+			max_value
+		FROM
+			device_parameter_filter
+		WHERE
+			id_device = #{id}
+	</select>
+	
+</mapper>

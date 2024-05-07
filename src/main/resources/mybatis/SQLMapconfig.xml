@@ -202,6 +202,7 @@
 		<mapper resource="mybatis/map/ScadaSetup.xml"/>
 		<mapper resource="mybatis/map/ScadaOverview.xml"/>
 		<mapper resource="mybatis/map/ScadaAlert.xml"/>
+		<mapper resource="mybatis/map/ScadaCharting.xml"/>
 		
 	</mappers>
 </configuration>
