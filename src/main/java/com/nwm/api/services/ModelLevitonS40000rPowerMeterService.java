@@ -220,7 +220,8 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 					}
 					ModelLevitonVirtualMeterEntity virtualMeterEntity = new ModelLevitonVirtualMeterEntity();
 					virtualMeterEntity.setTime(obj.getTime());
-					virtualMeterEntity.setId_device(obj.getId_device());
+					virtualMeterEntity.setId_device(objDevice.getId());
+					virtualMeterEntity.setId_device_map(obj.getId_device());
 					virtualMeterEntity.setDatatablename(objDevice.getDatatablename());
 					virtualMeterEntity.setField0(power);
 					virtualMeterEntity.setField1(energy);

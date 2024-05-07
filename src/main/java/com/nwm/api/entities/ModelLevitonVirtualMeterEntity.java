@@ -8,6 +8,7 @@ package com.nwm.api.entities;
 public class ModelLevitonVirtualMeterEntity {
 	private String time;
 	private int id_device;
+	private int id_device_map;
 	private double field0;
 	private double field1;
 	private double field2;
@@ -52,6 +53,13 @@ public class ModelLevitonVirtualMeterEntity {
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+	
+	public int getId_device_map() {
+		return id_device_map;
+	}
+	public void setId_device_map(int id_device_map) {
+		this.id_device_map = id_device_map;
+	}
 	public String getTime() {
 		return time;
 	}

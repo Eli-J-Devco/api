@@ -64,6 +64,10 @@
 		  <if test="id_device != 0.001" >
                 `id_device`,
           </if>
+          
+          <if test="id_device_map != 0.001" >
+                `id_device_map`,
+          </if>
 		  
 		  <if test="field0 != 0.001" >
                 `field0`,
@@ -200,6 +204,10 @@
 			  <if test="id_device != 0.001" >
 	                #{id_device},
 	          </if>
+	          
+	          <if test="id_device_map != 0.001" >
+	                #{id_device_map},
+	          </if>
 			  
 			  <if test="field0 != 0.001" >
                 #{field0},
@@ -331,6 +339,10 @@
 			suffixOverrides=",">
 			<if test="id_device != 0.001" >
 	                id_device = #{id_device},
+	          </if>
+	          
+	          <if test="id_device_map != 0.001" >
+	                id_device_map = #{id_device},
 	          </if>
 			  
 			  
