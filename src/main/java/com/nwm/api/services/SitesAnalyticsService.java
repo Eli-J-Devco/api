@@ -108,7 +108,7 @@ public class SitesAnalyticsService extends DB {
 								map.put("datatablename", map.get("view_tablename"));
 							}
 							
-							if ((int) map.get("id_device_type") == 12) map.put("datatablename", map.get("table_data_virtual"));
+							if ((int) map.get("id_device_type") == 12 && (int) map.get("id_device_group") != 81) map.put("datatablename", map.get("table_data_virtual"));
 							
 							List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
 							
