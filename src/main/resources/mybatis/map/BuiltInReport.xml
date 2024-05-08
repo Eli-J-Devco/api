@@ -94,7 +94,6 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-		GROUP BY d.id_device_type
 	</select>
 	
 	
@@ -317,7 +316,6 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-		GROUP BY d.id_device_type
 	</select>
 	
 	
