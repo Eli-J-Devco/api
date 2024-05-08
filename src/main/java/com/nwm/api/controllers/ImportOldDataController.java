@@ -422,6 +422,9 @@ public class ImportOldDataController extends BaseController {
 										case "model_acuvim_IIR":
 											service.setModelAcuvimIIR(rowItem, r);
 											break;	
+										case "model_veris_industries_e50c2a":
+											service.setModelVerisIndustriesE50c2a(rowItem, r);
+											break;	
 											
 										}
 										
