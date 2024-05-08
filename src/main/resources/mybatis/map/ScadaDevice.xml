@@ -92,19 +92,19 @@
 	
 				<if test="(id_filter == '3_day') and data_send_time == 8">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == '3_day') and data_send_time == 1">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == '3_day') and data_send_time == 2">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == '3_day') and data_send_time == 3">
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:00' ) AS category_time
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b %H:00' ) AS category_time
 				</if>
 				<if test="(id_filter == '3_day') and data_send_time == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
@@ -113,19 +113,19 @@
 	
 				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 8">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 1">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 2">
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS group_by_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%e. %b %H:%i' ) AS category_time
+					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 3">
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS group_by_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%e. %b %H:%i' ) AS category_time
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b %H:%i' ) AS category_time
 				</if>
 				<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 4">
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') AS group_by_time,
