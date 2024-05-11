@@ -91,6 +91,7 @@ public class ScadaDeviceService extends DB {
 			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
 		
 			switch (obj.getData_send_time()) {
 				case 8: // 1 minute
@@ -105,6 +106,9 @@ public class ScadaDeviceService extends DB {
 	                	case "this_week":
 	                	case "last_week":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                }
 					break;
@@ -121,6 +125,9 @@ public class ScadaDeviceService extends DB {
 	                	case "this_week":
 	                	case "last_week":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                }
 					break;
@@ -142,6 +149,9 @@ public class ScadaDeviceService extends DB {
 	                	case "last_month":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
 	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
 	                }
 					break;
 					
@@ -162,6 +172,9 @@ public class ScadaDeviceService extends DB {
 	                	case "last_month":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
 	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
 	                }
 					break;
 					
@@ -175,6 +188,7 @@ public class ScadaDeviceService extends DB {
 	                	case "this_week":
 	                	case "last_week":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+	                		break;
 	                	case "this_month":
 	                	case "last_month":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
@@ -184,7 +198,8 @@ public class ScadaDeviceService extends DB {
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                	case "custom":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
 					}
 					break;
 					
