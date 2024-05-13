@@ -301,6 +301,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelSolectriaSGI226IVT(rowItem, r);	
 											break;
 											
+										case "model_solectria_inv_00_slc_3146":
+											service.setModelSolectriaINV00SLC3146T(rowItem, r);	
+											break;
+											
 										case "model_pv_powered_35_50_260_500kw_inverter":
 											service.setModelPVPowered3550260KWInverter(rowItem, r);
 											break;

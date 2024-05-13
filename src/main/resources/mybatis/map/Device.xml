@@ -4952,6 +4952,64 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	             <when test="id_device_group == 84">
+	           CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					   	  `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `C_SunSpec_ID` double DEFAULT NULL,
+						  `E_BaseMet_Air_Temperature` double DEFAULT NULL,
+						  `E_Irradiance_Plane_Of_Array_1` double DEFAULT NULL,
+						  `E_BOM_Temp_1` double DEFAULT NULL,
+						  `E_BOM_Temp_2` double DEFAULT NULL,
+						  `E_BaseMet_Wind_Speed` double DEFAULT NULL,					  
+						  `E_BaseMet_Wind_Direction` double DEFAULT NULL,
+						  `E_Irradiance_Global_Horizontal_1` double DEFAULT NULL,					  
+						  `nvm_irradiance` double DEFAULT NULL,
+						  `nvm_temperature` double DEFAULT NULL,
+						  `nvm_panel_temperature` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            <when test="id_device_group == 85">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `DCVoltage` double DEFAULT NULL COMMENT 'DC Voltage',
+						  `RealACPower` double DEFAULT NULL COMMENT 'Real AC Power',
+						  `ACGridFrequency` double DEFAULT NULL COMMENT 'AC Grid Frequency',
+						  `ACPowerStageCurrent` double DEFAULT NULL COMMENT 'AC Power Stage Current',
+						  `L1toL2ACVoltage` double DEFAULT NULL COMMENT 'L1-to-L2 AC Voltage',
+						  `L2toL3ACVoltage` double DEFAULT NULL COMMENT 'L2-to-L3 AC Voltage',
+						  `L1toL3ACVoltage` double DEFAULT NULL COMMENT 'L1-to-L3 AC Voltage',
+						  `PhaseSequence` double DEFAULT NULL COMMENT 'Phase Sequence',
+						  `ACEnergy` double DEFAULT NULL COMMENT 'AC Energy',
+						  `OnGridHours` double DEFAULT NULL COMMENT 'On-grid Hours',
+						  `FanOntimeHours` double DEFAULT NULL COMMENT 'Fan On-time Hours',
+						  `ACContactorCycles` double DEFAULT NULL COMMENT 'AC Contactor Cycles',
+						  `SlaveID` double DEFAULT NULL COMMENT 'Slave ID',
+						  `InformativeAlarms` double DEFAULT NULL COMMENT 'Informative Alarms',
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                          
 	        </choose> 
 	        

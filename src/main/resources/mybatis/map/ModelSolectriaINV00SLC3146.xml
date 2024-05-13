@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolectriaINV00SLC3146">
+	<resultMap id="ModelSolectriaINV00SLC3146Map"
+		type="com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="DCVoltage" column="DCVoltage" />
+		<result property="RealACPower" column="RealACPower" />
+		<result property="ACGridFrequency" column="ACGridFrequency" />
+		<result property="ACPowerStageCurrent"
+			column="ACPowerStageCurrent" />
+		<result property="L1toL2ACVoltage" column="L1toL2ACVoltage" />
+		<result property="L2toL3ACVoltage" column="L2toL3ACVoltage" />
+		<result property="L1toL3ACVoltage" column="L1toL3ACVoltage" />
+		<result property="PhaseSequence" column="PhaseSequence" />
+		<result property="ACEnergy"
+			column="ACEnergy" />
+		<result property="OnGridHours"
+			column="OnGridHours" />
+		<result property="FanOntimeHours" column="FanOntimeHours" />
+		<result property="ACContactorCycles" column="ACContactorCycles" />
+		<result property="SlaveID" column="SlaveID" />
+		<result property="InformativeAlarms" column="InformativeAlarms" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelSolectriaINV00SLC3146"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="DCVoltage != 0.001">
+				`DCVoltage`,
+			</if>
+			<if test="RealACPower != 0.001">
+				`RealACPower`,
+			</if>
+			<if test="ACGridFrequency != 0.001">
+				`ACGridFrequency`,
+			</if>
+			<if test="ACPowerStageCurrent != 0.001">
+				`ACPowerStageCurrent`,
+			</if>
+			<if test="L1toL2ACVoltage != 0.001">
+				`L1toL2ACVoltage`,
+			</if>
+			<if test="L2toL3ACVoltage != 0.001">
+				`L2toL3ACVoltage`,
+			</if>
+			<if test="L1toL3ACVoltage != 0.001">
+				`L1toL3ACVoltage`,
+			</if>
+			<if test="PhaseSequence != 0.001">
+				`PhaseSequence`,
+			</if>
+			<if test="ACEnergy != 0.001">
+				`ACEnergy`,
+			</if>
+			<if test="OnGridHours != 0.001">
+				`OnGridHours`,
+			</if>
+			<if test="FanOntimeHours != 0.001">
+				`FanOntimeHours`,
+			</if>
+			<if test="ACContactorCycles != 0.001">
+				`ACContactorCycles`,
+			</if>
+			<if test="SlaveID != 0.001">
+				`SlaveID`,
+			</if>
+			<if test="InformativeAlarms != 0.001">
+				`InformativeAlarms`,
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="DCVoltage != 0.001">
+				#{DCVoltage},
+			</if>
+			<if test="RealACPower != 0.001">
+				#{RealACPower},
+			</if>
+			<if test="ACGridFrequency != 0.001">
+				#{ACGridFrequency},
+			</if>
+			<if test="ACPowerStageCurrent != 0.001">
+				#{ACPowerStageCurrent},
+			</if>
+			<if test="L1toL2ACVoltage != 0.001">
+				#{L1toL2ACVoltage},
+			</if>
+			<if test="L2toL3ACVoltage != 0.001">
+				#{L2toL3ACVoltage},
+			</if>
+			<if test="L1toL3ACVoltage != 0.001">
+				#{L1toL3ACVoltage},
+			</if>
+			<if test="PhaseSequence != 0.001">
+				#{PhaseSequence},
+			</if>
+			<if test="ACEnergy != 0.001">
+				#{ACEnergy},
+			</if>
+			<if test="OnGridHours != 0.001">
+				#{OnGridHours},
+			</if>
+			<if test="FanOntimeHours != 0.001">
+				#{FanOntimeHours},
+			</if>
+			<if test="ACContactorCycles != 0.001">
+				#{ACContactorCycles},
+			</if>
+			<if test="SlaveID != 0.001">
+				#{SlaveID},
+			</if>
+			<if test="InformativeAlarms != 0.001">
+				#{InformativeAlarms},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="DCVoltage != 0.001">
+				DCVoltage = #{DCVoltage},
+			</if>
+			<if test="RealACPower != 0.001">
+				RealACPower = #{RealACPower},
+			</if>
+			<if test="ACGridFrequency != 0.001">
+				ACGridFrequency = #{ACGridFrequency},
+			</if>
+			<if test="ACPowerStageCurrent != 0.001">
+				ACPowerStageCurrent = #{ACPowerStageCurrent},
+			</if>
+			<if test="L1toL2ACVoltage != 0.001">
+				L1toL2ACVoltage = #{L1toL2ACVoltage},
+			</if>
+			<if test="L2toL3ACVoltage != 0.001">
+				L2toL3ACVoltage = #{L2toL3ACVoltage},
+			</if>
+			<if test="L1toL3ACVoltage != 0.001">
+				L1toL3ACVoltage = #{L1toL3ACVoltage},
+			</if>
+			<if test="PhaseSequence != 0.001">
+				PhaseSequence = #{PhaseSequence},
+			</if>
+			<if test="ACEnergy != 0.001">
+				ACEnergy = #{ACEnergy},
+			</if>
+			<if test="OnGridHours != 0.001">
+				OnGridHours = #{OnGridHours},
+			</if>
+			<if test="FanOntimeHours != 0.001">
+				FanOntimeHours = #{FanOntimeHours},
+			</if>
+			<if test="ACContactorCycles != 0.001">
+				ACContactorCycles = #{ACContactorCycles},
+			</if>
+			<if test="SlaveID != 0.001">
+				SlaveID = #{SlaveID},
+			</if>
+			<if test="InformativeAlarms != 0.001">
+				InformativeAlarms = #{InformativeAlarms},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 

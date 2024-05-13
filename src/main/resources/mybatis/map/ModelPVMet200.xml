@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPVMet200">
+	<resultMap id="ModelPVMet200Map"
+		type="com.nwm.api.entities.ModelPVMet200Entity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="C_SunSpec_ID" column="C_SunSpec_ID" />
+		<result property="E_BaseMet_Air_Temperature" column="E_BaseMet_Air_Temperature" />
+		<result property="E_Irradiance_Plane_Of_Array_1" column="E_Irradiance_Plane_Of_Array_1" />
+		<result property="E_BOM_Temp_1" column="E_BOM_Temp_1" />
+		<result property="E_BOM_Temp_2" column="E_BOM_Temp_2" />
+		<result property="E_BaseMet_Wind_Speed" column="E_BaseMet_Wind_Speed" />
+		<result property="E_BaseMet_Wind_Direction" column="E_BaseMet_Wind_Direction" />
+		<result property="E_Irradiance_Global_Horizontal_1" column="E_Irradiance_Global_Horizontal_1" />
+
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+
+	</resultMap>
+
+	<insert id="insertModelPVMet200"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="C_SunSpec_ID != 0.001">
+				`C_SunSpec_ID`,
+			</if>
+			<if test="E_BaseMet_Air_Temperature != 0.001">
+				`E_BaseMet_Air_Temperature`,
+			</if>
+			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
+				`E_Irradiance_Plane_Of_Array_1`,
+			</if>
+			<if test="E_BOM_Temp_1 != 0.001">
+				`E_BOM_Temp_1`,
+			</if>
+			<if test="E_BOM_Temp_2 != 0.001">
+				`E_BOM_Temp_2`,
+			</if>
+			<if test="E_BaseMet_Wind_Speed != 0.001">
+				`E_BaseMet_Wind_Speed`,
+			</if>
+			<if test="E_BaseMet_Wind_Direction != 0.001">
+				`E_BaseMet_Wind_Direction`,
+			</if>
+			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
+				`E_Irradiance_Global_Horizontal_1`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="C_SunSpec_ID != 0.001">
+				#{C_SunSpec_ID},
+			</if>
+			<if test="E_BaseMet_Air_Temperature != 0.001">
+				#{E_BaseMet_Air_Temperature},
+			</if>
+			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
+				#{E_Irradiance_Plane_Of_Array_1},
+			</if>
+			<if test="E_BOM_Temp_1 != 0.001">
+				#{E_BOM_Temp_1},
+			</if>
+			<if test="E_BOM_Temp_2 != 0.001">
+				#{E_BOM_Temp_2},
+			</if>
+			<if test="E_BaseMet_Wind_Speed != 0.001">
+				#{E_BaseMet_Wind_Speed},
+			</if>
+			<if test="E_BaseMet_Wind_Direction != 0.001">
+				#{E_BaseMet_Wind_Direction},
+			</if>
+			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
+				#{E_Irradiance_Global_Horizontal_1},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="C_SunSpec_ID != 0.001">
+				`C_SunSpec_ID` = #{C_SunSpec_ID},
+			</if>
+			<if test="E_BaseMet_Air_Temperature != 0.001">
+				`E_BaseMet_Air_Temperature` = #{E_BaseMet_Air_Temperature},
+			</if>
+			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
+				`E_Irradiance_Plane_Of_Array_1` = #{E_Irradiance_Plane_Of_Array_1},
+			</if>
+			<if test="E_BOM_Temp_1 != 0.001">
+				`E_BOM_Temp_1` = #{E_BOM_Temp_1},
+			</if>
+			<if test="E_BOM_Temp_2 != 0.001">
+				`E_BOM_Temp_2` = #{E_BOM_Temp_2},
+			</if>
+			<if test="E_BaseMet_Wind_Speed != 0.001">
+				`E_BaseMet_Wind_Speed` = #{E_BaseMet_Wind_Speed},
+			</if>
+			<if test="E_BaseMet_Wind_Direction != 0.001">
+				`E_BaseMet_Wind_Direction` = #{E_BaseMet_Wind_Direction},
+			</if>
+			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
+				`E_Irradiance_Global_Horizontal_1` = #{E_Irradiance_Global_Horizontal_1},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance` = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+
+		</trim>
+	</insert>
+
+</mapper> 

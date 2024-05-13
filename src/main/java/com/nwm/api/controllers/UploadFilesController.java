@@ -68,6 +68,7 @@ import com.nwm.api.entities.ModelMeterIon8600V1Entity;
 import com.nwm.api.entities.ModelMeterIon8600V2Entity;
 import com.nwm.api.entities.ModelMeterIon8600V3Entity;
 import com.nwm.api.entities.ModelPVMet100Entity;
+import com.nwm.api.entities.ModelPVMet200Entity;
 import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
 import com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity;
@@ -82,6 +83,7 @@ import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
+import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
 import com.nwm.api.entities.ModelSungrowLogger1000Entity;
 import com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity;
@@ -134,6 +136,7 @@ import com.nwm.api.services.ModelMeterIon8600V1Service;
 import com.nwm.api.services.ModelMeterIon8600V2Service;
 import com.nwm.api.services.ModelMeterIon8600V3Service;
 import com.nwm.api.services.ModelPVMet100Service;
+import com.nwm.api.services.ModelPVMet200Service;
 import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
 import com.nwm.api.services.ModelPhoenixContactQuintUPSService;
@@ -148,6 +151,7 @@ import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
+import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
 import com.nwm.api.services.ModelSungrowLogger1000Service;
 import com.nwm.api.services.ModelSunnyCentralClass9775InverterService;
@@ -1329,6 +1333,106 @@ public class UploadFilesController extends BaseController {
 											
 											break;
 											
+										case "model_pvmet_200":
+											ModelPVMet200Service servicePVMet200 = new ModelPVMet200Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													
+													ModelPVMet200Entity dataPVMet200 = servicePVMet200.setModelPVMet200(line);
+													dataPVMet200.setId_device(item.getId());
+													dataPVMet200.setDatatablename(item.getDatatablename());
+													dataPVMet200.setView_tablename(item.getView_tablename());
+													dataPVMet200.setJob_tablename(item.getJob_tablename());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVMet200Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataPVMet200);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataPVMet200, scaledValue);
+															if (slug.equals("E_Irradiance_Plane_Of_Array_1")) dataPVMet200.setNvm_irradiance(scaledValue);
+															if (slug.equals("E_BaseMet_Air_Temperature")) dataPVMet200.setNvm_temperature(scaledValue);
+															if (slug.equals("E_BOM_Temp_1")) dataPVMet200.setNvm_panel_temperature(scaledValue);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// Irradiance
+													
+													if(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 && dataPVMet200.getE_Irradiance_Plane_Of_Array_1() >= 0){
+														deviceUpdateE.setLast_updated(dataPVMet200.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataPVMet200.getE_Irradiance_Plane_Of_Array_1() : null);
+													deviceUpdateE.setField_value1(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataPVMet200.getE_Irradiance_Plane_Of_Array_1() : null);
+													
+													// Ambient Temperature
+													deviceUpdateE.setField_value2(dataPVMet200.getE_BaseMet_Air_Temperature() != 0.001 ? dataPVMet200.getE_BaseMet_Air_Temperature() : null);
+													
+													// PV Temperature Module
+													deviceUpdateE.setField_value3(dataPVMet200.getE_BOM_Temp_1() != 0.001 ? dataPVMet200.getE_BOM_Temp_1() : null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
+													
+													servicePVMet200.insertModelPVMet200(dataPVMet200);
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){    
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {     
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+													
+												}
+											}
+											
+											
+											break;
+											
 										case "model_pvp_inverter":
 											ModelPVPInverterService serviceModelPVPInverter = new ModelPVPInverterService();
 											// Check insert database status
@@ -2452,7 +2556,111 @@ public class UploadFilesController extends BaseController {
 											
 											break;
 											
+										case "model_solectria_inv_00_slc_3146":
+											ModelSolectriaINV00SLC3146Service serviceModelSolectriaINV00SLC3146 = new ModelSolectriaINV00SLC3146Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													ModelSolectriaINV00SLC3146Entity dataModelSolectriaINV00SLC3146 = serviceModelSolectriaINV00SLC3146.setModelSolectriaINV00SLC3146(line);
+													dataModelSolectriaINV00SLC3146.setId_device(item.getId());
+													dataModelSolectriaINV00SLC3146.setDatatablename(item.getDatatablename());
+													dataModelSolectriaINV00SLC3146.setView_tablename(item.getView_tablename());
+													dataModelSolectriaINV00SLC3146.setJob_tablename(item.getJob_tablename());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaINV00SLC3146Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectriaINV00SLC3146);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSolectriaINV00SLC3146, scaledValue);
+															if (slug.equals("RealACPower")) dataModelSolectriaINV00SLC3146.setNvmActivePower(scaledValue);
+															if (slug.equals("ACEnergy")) dataModelSolectriaINV00SLC3146.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// ACPowerOutput
+													
+													if(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 && dataModelSolectriaINV00SLC3146.getRealACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSolectriaINV00SLC3146.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 ? dataModelSolectriaINV00SLC3146.getRealACPower() : null);
+													deviceUpdateE.setField_value1(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 ? dataModelSolectriaINV00SLC3146.getRealACPower() : null);
+													
+													// DCVoltage
+													deviceUpdateE.setField_value2(dataModelSolectriaINV00SLC3146.getDCVoltage() != 0.001 ? dataModelSolectriaINV00SLC3146.getDCVoltage() : null);
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
+													
+													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataModelSolectriaINV00SLC3146);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item, dataDevice);
+													}
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){   
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {     
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+													
+												}
+											}
 											
+											
+											break;
+													
 										case "model_tti_tracker":
 											ModelTTiTrackerService serviceModelTTiTracker = new ModelTTiTrackerService();
 											// Check insert database status

@@ -378,6 +378,10 @@
 				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
+
+				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
 				
 				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
@@ -385,6 +389,8 @@
 				
 				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
+
+				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))

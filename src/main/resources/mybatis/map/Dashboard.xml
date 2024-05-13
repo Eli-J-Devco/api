@@ -137,6 +137,8 @@
 				
 				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
+
+				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
 				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
 				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
