@@ -172,7 +172,7 @@
 							(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 							(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 						">
-							IFNULL(ROUND(IF(AVG(${param.slug}) <![CDATA[<]]> 0, 0, AVG(${param.slug})), 2), 0.001) AS ${param.slug}
+							IFNULL(ROUND(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), 2), 0.001) AS ${param.slug}
 						</when>
 						
 						<when test="
@@ -196,7 +196,7 @@
 						</when>
 						
 						<otherwise>
-							IFNULL(ROUND(AVG(${param.slug}), 2), 0.001) AS ${param.slug}
+							IFNULL(ROUND(${param.value_chart_tool}(${param.slug}), 2), 0.001) AS ${param.slug}
 						</otherwise>
 					</choose>
 				</if>
@@ -258,7 +258,7 @@
 								(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 							">
-								IF(AVG(dv.${param.slug}) <![CDATA[<]]> 0, 0, AVG(dv.${param.slug})) AS ${param.slug}
+								IF(${param.value_chart_tool}(dv.${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(dv.${param.slug})) AS ${param.slug}
 							</when>
 							
 							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
@@ -292,7 +292,7 @@
 							</when>
 							
 							<otherwise>
-								AVG(dv.${param.slug}) AS ${param.slug}
+								${param.value_chart_tool}(dv.${param.slug}) AS ${param.slug}
 							</otherwise>
 						</choose>
 					</if>
