@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -1242,16 +1243,50 @@ public class BatchJobService extends DB {
 	 * @since 2021-02-17
 	 */
 	
-	public List getListReports(ViewReportEntity obj) {
-		List dataList = new ArrayList();
+	public List getListReports(int id) {
 		try {
-			dataList = queryForList("BatchJob.getListReports", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = new ArrayList();
+			Map map = new HashMap<>();
+			map.put("id", id);
+			
+			dataList = queryForList("BatchJob.getListReports", map);
+			if (dataList == null) return new ArrayList();
+			return dataList;
 		} catch (Exception ex) {
+			log.error("BatchJob.getListReports", ex);
 			return new ArrayList();
 		}
-		return dataList;
+	}
+	
+	/**
+	 * @description get report detail
+	 * @author Hung.Bui
+	 * @since 2024-05-14
+	 */
+	
+	public ViewReportEntity getReportDetail(ViewReportEntity obj) {
+		try {
+			ViewReportEntity report = (ViewReportEntity) queryForObject("BatchJob.getReportDetail", obj);
+			return report;
+		} catch (Exception ex) {
+			log.error("BatchJob.getReportDetail", ex);
+			return null;
+		}
+	}
+	
+	/**
+	 * @description update next run time for report schedule
+	 * @author Hung.Bui
+	 * @since 2024-05-14
+	 */
+	
+	public boolean updateReportScheduleNextRunTime(Map<String, Object> obj) {
+		try {
+			return update("BatchJob.updateReportScheduleNextRunTime", obj) > 0;
+		} catch (Exception ex) {
+			log.error("BatchJob.updateReportScheduleNextRunTime", ex);
+			return false;
+		}
 	}
 	
 	

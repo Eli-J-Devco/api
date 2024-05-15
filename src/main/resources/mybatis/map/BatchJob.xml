@@ -1895,10 +1895,48 @@
 		WHERE
 			r.`status` = 1
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="id > 0">
+				AND r.id = #{id}
+			</if>
 	</select>
   	
-  	
-  	
+  	<select id="getReportDetail" resultType="com.nwm.api.entities.ViewReportEntity" >
+		SELECT
+			r.id,
+			r.data_intervals,
+			r.type_report,
+			r.cadence_range,
+			r.file_type,
+			r.date_from,
+			r.date_to,
+			t.`value` AS time_zone,
+			r.schedule_enable,
+			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
+			r.periodicity,
+			r.days_week,
+			r.offset_timezone
+		FROM
+			report r
+			LEFT JOIN site s ON s.id = r.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			r.id = #{id}
+			AND r.status = 1
+			AND r.schedule_enable = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+	</select>
+	
+	<update id="updateReportScheduleNextRunTime">
+		UPDATE report
+		SET
+			 next_run_time = #{time}
+		WHERE
+			`id` = #{id}
+			AND `status` = 1
+			AND schedule_enable = 1
+			AND (next_run_time IS NULL OR NOW() >= next_run_time)
+	</update>
+	
   	<select id="checkExitsDeviceUploadSungrow" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
 			t.`value` AS timezone_value,
