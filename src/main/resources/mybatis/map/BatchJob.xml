@@ -566,6 +566,21 @@
 			
   	</select>
   	
+	<select id="checkNoProductionAlertlExist" parameterType="com.nwm.api.entities.DeviceEntity" resultType="int">
+    	SELECT
+    		COUNT(u.id) as totalRecord
+		FROM 
+			`alert` as u
+			LEFT JOIN error e ON e.id = u.id_error
+		WHERE
+			u.id_device = #{id} 
+			AND u.`status` = 1
+			AND u.is_delete = 0
+			AND e.error_code = 1000
+			AND e.`status` = 1
+			AND e.is_delete = 0 
+  	</select>
+  	
   	
   	<select id="checkErrorExist" parameterType="com.nwm.api.entities.ErrorEntity" resultType="int">
     	SELECT

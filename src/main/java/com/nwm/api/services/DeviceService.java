@@ -338,6 +338,8 @@ public class DeviceService extends DB {
 	 */
 	public void checkLowProduction(DeviceEntity obj, List<DeviceEntity> devicesList) {
 		try {
+			int noProduction = (int) queryForObject("BatchJob.checkNoProductionAlertlExist", obj);
+			if (noProduction > 0) return;
 			Integer lowProduction = (Integer) queryForObject("Device.getLowProductionErrorId", obj);
 			if (lowProduction == null) return;
 			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>(); 
