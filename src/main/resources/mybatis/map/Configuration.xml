@@ -4,9 +4,37 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="Configuration">
 	<select id="getDetail" resultType="com.nwm.api.entities.ConfigurationEntity" parameterType="com.nwm.api.entities.ConfigurationEntity">
-		SELECT 
-			s.*
+		SELECT
+			s.*,
+			it.dataIrradianceExpec AS stringDataIrradianceExpec,
+			itt.dataExpec AS stringDataExpec
 		FROM site s
+		LEFT JOIN (
+			SELECT
+				t.id_site,
+				JSON_ARRAYAGG(t.obj_irradiance) AS dataIrradianceExpec
+			FROM (
+				SELECT
+					i.id_site as id_site,
+					JSON_OBJECT('id_site', i.id_site, 'jan', i.jan, 'feb', i.feb, 'mar', i.mar, 'apr', i.apr, 'may', i.may, 'jun', i.jun, 'jul', i.jul, 'aug', i.aug, 'sep', i.sep, 'oct', i.oct, 'oct', i.oct, 'nov', i.nov, 'dec', i.dec) AS obj_irradiance
+				FROM
+					irradiance_expectations i 	
+				WHERE SHA1(i.id_site) = #{hash_id}
+					) t
+			)it ON it.id_site = s.id
+		LEFT JOIN (
+			SELECT
+				t.id_site,
+				JSON_ARRAYAGG(t.obj_irradiance) AS dataExpec
+			FROM (
+				SELECT
+					i.id_site as id_site,
+					JSON_OBJECT('yearly_degrade', i.yearly_degrade, 'year', i.year, 'id_site', i.id_site, 'jan', i.jan, 'feb', i.feb, 'mar', i.mar, 'apr', i.apr, 'may', i.may, 'jun', i.jun, 'jul', i.jul, 'aug', i.aug, 'sep', i.sep, 'oct', i.oct, 'oct', i.oct, 'nov', i.nov, 'dec', i.dec) AS obj_irradiance
+				FROM
+					energy_expectations i 	
+				WHERE SHA1(i.id_site) = #{hash_id} ORDER BY i.year ASC LIMIT 1
+					) t
+			)itt ON itt.id_site = s.id
 		WHERE SHA1(s.id) = #{hash_id} AND s.is_delete = 0 AND s.`status` = 1 LIMIT 1
 	</select>
 	
@@ -19,7 +47,7 @@
   	
   	<select id="getListConfigExpectation" resultType="Map" >
     	SELECT *
-		FROM energy_expectations s  WHERE SHA1(s.id_site) = #{hash_id};
+		FROM energy_expectations s  WHERE SHA1(s.id_site) = #{hash_id} ORDER BY s.year ASC LIMIT 1;
   	</select>
   	
   	
@@ -39,12 +67,49 @@
 			`sep`,
 			`oct`,
 			`nov`,
-			`dec`
+			`dec`,
+			`yearly_degrade`
 		)VALUES
 			<foreach collection="dataExpec" item="item" index="index" separator=",">
 	            (
 	            #{item.id_site},
 				#{item.year},
+				#{item.jan},
+				#{item.feb},
+				#{item.mar},
+				#{item.apr},
+				#{item.may},
+				#{item.jun},
+				#{item.jul},
+				#{item.aug},
+				#{item.sep},
+				#{item.oct},
+				#{item.nov},
+				#{item.dec},
+				#{item.yearly_degrade}
+				)
+	       </foreach>
+	</insert>
+	
+	<insert id="insertIrradianceConfiguration" parameterType="com.nwm.api.entities.ConfigurationEntity">
+		INSERT INTO  `irradiance_expectations`(
+			`id_site`,
+			`jan`,
+			`feb`,
+			`mar`,
+			`apr`,
+			`may`,
+			`jun`,
+			`jul`,
+			`aug`,
+			`sep`,
+			`oct`,
+			`nov`,
+			`dec`
+		)VALUES
+			<foreach collection="dataIrradianceExpec" item="item" index="index" separator=",">
+	            (
+	            #{item.id_site},
 				#{item.jan},
 				#{item.feb},
 				#{item.mar},
@@ -78,6 +143,7 @@
 			`oct` = #{oct},
 			`nov` = #{nov},
 			`dec` = #{dec},
+			`yearly_degrade` = #{yearly_degrade},
 			`yearly_egrade_default` = #{yearly_egrade_default},
 			`yearly_egrade_two` = #{yearly_egrade_two}
 			
@@ -101,15 +167,43 @@
 			`sep` = #{sep},
 			`oct` = #{oct},
 			`nov` = #{nov},
-			`dec` = #{dec}
+			`dec` = #{dec},
+			`yearly_degrade` = #{yearly_degrade}
 		WHERE
 			`id_site` = #{id_site} AND `year` = #{year}
+	</update>
+	
+	<update id="updateRowIrradianceConfiguration">
+		UPDATE `irradiance_expectations`
+		SET
+			`jan` = #{jan},
+			`feb` = #{feb},
+			`mar` = #{mar},
+			`apr` = #{apr},
+			`may` = #{may},
+			`jun` = #{jun},
+			`jul` = #{jul},
+			`aug` = #{aug},
+			`sep` = #{sep},
+			`oct` = #{oct},
+			`nov` = #{nov},
+			`dec` = #{dec}
+		WHERE
+			`id_site` = #{id_site} 
 	</update>
 	
 	
 	
 	<delete id = "deleteConfigExpectation" parameterType = "int">
 		DELETE from `energy_expectations` WHERE `id_site` = #{id};
+	</delete>
+	
+	<delete id = "deleteIrradianceConfigExpectation" parameterType = "int">
+		DELETE from `irradiance_expectations` WHERE `id_site` = #{id};
+	</delete>
+	
+	<delete id = "deleteConfigIrradianceExpectation" parameterType = "int">
+		DELETE from `irradiance_expectations` WHERE `id_site` = #{id};
 	</delete>
 	
 	

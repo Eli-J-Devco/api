@@ -24,11 +24,15 @@ public class ConfigurationEntity {
 	private double dec;
 	private double yearly_egrade_default;
 	private double yearly_egrade_two;
+	private double yearly_degrade;
 	private String name;
 	private String hash_id;
 	private int id;
 	private int screen_mode;
 	private List dataExpec;
+	private List dataIrradianceExpec;
+	private String stringDataExpec;
+	private String stringDataIrradianceExpec;
 	private List dataGenerated;
 	private List dataExpected;
 	private int id_device;
@@ -39,6 +43,32 @@ public class ConfigurationEntity {
 	private String table_name;
 	private List dataDevices;
 	
+	
+	
+	public String getStringDataExpec() {
+		return stringDataExpec;
+	}
+	public void setStringDataExpec(String stringDataExpec) {
+		this.stringDataExpec = stringDataExpec;
+	}
+	public String getStringDataIrradianceExpec() {
+		return stringDataIrradianceExpec;
+	}
+	public void setStringDataIrradianceExpec(String stringDataIrradianceExpec) {
+		this.stringDataIrradianceExpec = stringDataIrradianceExpec;
+	}
+	public List getDataIrradianceExpec() {
+		return dataIrradianceExpec;
+	}
+	public void setDataIrradianceExpec(List dataIrradianceExpec) {
+		this.dataIrradianceExpec = dataIrradianceExpec;
+	}
+	public double getYearly_degrade() {
+		return yearly_degrade;
+	}
+	public void setYearly_degrade(double yearly_degrade) {
+		this.yearly_degrade = yearly_degrade;
+	}
 	public int getId_site() {
 		return id_site;
 	}
