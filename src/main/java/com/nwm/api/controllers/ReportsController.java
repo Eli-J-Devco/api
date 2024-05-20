@@ -4163,7 +4163,7 @@ public class ReportsController extends BaseController {
 				ReportsEntity data = service.insertReports(obj);
 				if (data != null) {
 					// update scheduled task
-					reportTaskScheduler.scheduleWithCronTrigger();
+					reportTaskScheduler.changeReportSchedule(obj.getId());
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 				} else {
 					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
@@ -4173,7 +4173,7 @@ public class ReportsController extends BaseController {
 					boolean insert = service.updateReports(obj);
 					if (insert == true) {
 						// update scheduled task
-						reportTaskScheduler.scheduleWithCronTrigger();
+						reportTaskScheduler.changeReportSchedule(obj.getId());
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 					} else {
 						return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
@@ -4225,7 +4225,7 @@ public class ReportsController extends BaseController {
 			boolean result = service.deleteReports(obj);
 			if (result) {
 				// update scheduled task
-				reportTaskScheduler.scheduleWithCronTrigger();
+				reportTaskScheduler.changeReportSchedule(obj.getId());
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);

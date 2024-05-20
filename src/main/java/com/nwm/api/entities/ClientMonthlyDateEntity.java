@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ClientMonthlyDateEntity{
 	
+	private Integer id;
 	private String download_time;
 	private String time_format;
 	private String time_full;
@@ -21,6 +22,12 @@ public class ClientMonthlyDateEntity{
 	private Double nvmActivePower;
 	private Double nvmActiveEnergy;
 	
+	public Integer getId() {
+		return id;
+	}
+	public void setId(Integer id) {
+		this.id = id;
+	}
 	public String getDownload_time() {
 		return download_time;
 	}
