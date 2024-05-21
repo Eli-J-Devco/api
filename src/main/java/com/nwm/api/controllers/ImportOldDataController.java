@@ -428,7 +428,26 @@ public class ImportOldDataController extends BaseController {
 											break;	
 										case "model_veris_industries_e50c2a":
 											service.setModelVerisIndustriesE50c2a(rowItem, r);
+											break;
+											
+										case "model_sma_cluster_controller":
+											service.setModelSmaClusterController(rowItem, r);
+											break;
+										case "model_sma_inverter_stp1200tlus10":
+											service.setModelSmaInverterStp1200tlus10(rowItem, r);
 											break;	
+										case "model_sma_inverter_stp24ktlus10":
+											service.setModelSmaInverterStp24ktlus10(rowItem, r);
+											break;
+										case "model_sma_inverter_stp30000tlus10":
+											service.setModelSmaInverterStp30000tlus10(rowItem, r);
+											break;
+										case "model_sma_inverter_stp24000tlus10":
+											service.setModelSmaInverterStp24000tlus10(rowItem, r);
+											break;
+										case "model_sma_inverter_stp62us41":
+											service.setModelSmaInverterStp62tlus41(rowItem, r);
+											break;
 											
 										}
 										
