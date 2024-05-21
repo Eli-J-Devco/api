@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="UploadJSON">
+
+  	<insert id="insertN3euronData">
+		INSERT INTO `test_n3uron`
+			(site_name, device_name, timestamp, parameter_name, parameter_unit, parameter_value)
+		VALUE 
+			<foreach collection="parameters" item="parameter" separator=",">
+				(#{site_name}, #{device_name}, #{parameter.timestamp}, #{parameter.name}, #{parameter.unit}, #{parameter.value})
+			</foreach>
+		ON DUPLICATE KEY UPDATE
+			site_name = VALUES(site_name),
+			device_name = VALUES(device_name),
+			timestamp = VALUES(timestamp),
+			parameter_name = VALUES(parameter_name),
+			parameter_unit = VALUES(parameter_unit),
+			parameter_value = VALUES(parameter_value)
+	</insert>
+	
+</mapper>
