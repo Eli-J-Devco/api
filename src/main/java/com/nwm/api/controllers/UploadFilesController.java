@@ -4900,7 +4900,7 @@ public class UploadFilesController extends BaseController {
 																String slug = scaledDeviceParameter.getParameter_slug();
 																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPoaTempEntity.class);
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT500EEntity.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
