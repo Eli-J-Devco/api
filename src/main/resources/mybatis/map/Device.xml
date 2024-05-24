@@ -740,7 +740,7 @@
 			AND d.is_delete = 0
 			AND dp.status = 1
 			AND dp.is_delete = 0
-			AND (dp.is_user_defined = 0 OR dp.is_active_power = 1 OR dp.is_energy = 1)
+			AND (dp.is_user_defined = 0 OR (dp.is_user_defined = 1 AND dp.is_energy = 1))
 		ORDER BY dp.id
 	</select>
 	

@@ -144,7 +144,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 						WHERE
 							d.id = #{item.id}
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
@@ -211,7 +211,7 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -280,7 +280,7 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 						WHERE
 							d.id = #{item.id}
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
@@ -347,7 +347,7 @@
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -420,8 +420,8 @@
 						LEFT JOIN device d ON d.id = dv.id_device
 						LEFT JOIN site s ON s.id = d.id_site 
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_energy = 1 AND ${filterEnabled} = true
-						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+						LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
+						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 					WHERE
 						s.id = #{item.id_site}
 						AND d.id = #{item.id}
@@ -519,8 +519,8 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_energy = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -690,9 +690,9 @@
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
-					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
-					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_energy = 1 AND ${filterEnabled} = true
-					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
+					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
+					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
 				WHERE
 					s.`status` = 1
 					AND d.`status` = 1
@@ -843,9 +843,9 @@
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
-							LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_energy = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
+							LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+							LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
 						WHERE
 							s.`status` = 1
 							AND d.`status` = 1
