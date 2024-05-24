@@ -94,7 +94,8 @@
 			s.mqtt_port,
 			s.mqtt_protocol,
 			s.mqtt_username,
-			s.mqtt_password
+			s.mqtt_password,
+			vv.number_devices
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -147,6 +148,16 @@
 				AND d.virtual_device_type != ''
 				AND SHA1(d.id_site) = #{hash_id}
 			)v ON v.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					COUNT(d.id) AS number_devices,
+					d.id_site
+				FROM device d
+				WHERE  d.`status` = 1 
+				AND d.is_delete = 0
+				AND SHA1(d.id_site) = #{hash_id} 
+			)vv ON vv.id_site = s.id
 			
 		WHERE
 			SHA1(s.id) = #{hash_id}
