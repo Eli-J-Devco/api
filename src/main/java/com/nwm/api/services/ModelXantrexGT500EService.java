@@ -101,13 +101,12 @@ public class ModelXantrexGT500EService extends DB {
 //				 }
 			 }
 			 obj.setMeasuredProduction(measuredProduction);
-			 
+			if(obj.getENERGY_DELIVERED() < 0 ) {obj.setNvmActiveEnergy(obj.getENERGY_DELIVERED() * -1);}
 			Object insertId = insert("ModelXantrexGT500E.insertModelXantrexGT500E", obj);
 			if (insertId == null) {
 				return false;
 			}
 			
-			if(obj.getENERGY_DELIVERED() < 0 ) {obj.setNvmActiveEnergy(obj.getENERGY_DELIVERED() * -1);}
 			
 			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
