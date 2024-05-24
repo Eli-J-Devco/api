@@ -59,7 +59,7 @@
 				device d
 				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
 				LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
-				LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter
+				LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device
 			WHERE
 				d.id = #{item.id} AND d.`status` = 1 AND dp.is_delete = 0 AND dp.`status` = 1 AND dp.is_filter = 1
 		</foreach>
