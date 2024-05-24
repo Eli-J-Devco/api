@@ -107,6 +107,8 @@ public class ModelXantrexGT500EService extends DB {
 				return false;
 			}
 			
+			if(obj.getNvmActiveEnergy() < 0 ) {obj.setNvmActiveEnergy(obj.getNvmActiveEnergy() * -1);}
+			
 			ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
 	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 	        int hours = zdtNowLosAngeles.getHour();
