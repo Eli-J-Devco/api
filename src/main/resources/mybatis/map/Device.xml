@@ -706,8 +706,8 @@
 	<select id="getListDeviceParameter" resultType="Map">
 		SELECT
 			dp.id,
-			dp.`name`,
-			CONCAT(dp.`name`, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			IFNULL(dp.standard_name, dp.name) AS name,
+			CONCAT(IFNULL(dp.standard_name, dp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dps.scale
 		FROM
 			device_parameters dp
@@ -719,15 +719,15 @@
 			AND d.is_delete = 0
 			AND dp.status = 1
 			AND dp.is_delete = 0
-			AND dp.is_calculation IS NULL
+			AND dp.is_user_defined = 0
 		ORDER BY dp.id
 	</select>
 	
 	<select id="getListDeviceFilterParameter" resultType="Map">
 		SELECT
 			dp.id,
-			dp.`name`,
-			CONCAT(dp.`name`, IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
+			IFNULL(dp.standard_name, dp.name),
+			CONCAT(IFNULL(dp.standard_name, dp.name), IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
 			dpf.min_value,
 			dpf.max_value
 		FROM
@@ -740,7 +740,7 @@
 			AND d.is_delete = 0
 			AND dp.status = 1
 			AND dp.is_delete = 0
-			AND dp.is_calculation IS NULL
+			AND (dp.is_user_defined = 0 OR dp.is_active_power = 1 OR dp.is_energy = 1)
 		ORDER BY dp.id
 	</select>
 	

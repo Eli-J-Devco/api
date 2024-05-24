@@ -203,6 +203,7 @@ public class SiteEntity {
 	private int totalMeter;
 	private String listGroup;
 	private int totalWeatherStation;
+	private boolean filterEnabled;
 	
 	private String serial_number;
 	private String mqtt_host;
@@ -1345,6 +1346,12 @@ public class SiteEntity {
 	}
 	public void setExpiration(String expiration) {
 		this.expiration = expiration;
+	}
+	public boolean isFilterEnabled() {
+		return filterEnabled;
+	}
+	public void setFilterEnabled(boolean filterEnabled) {
+		this.filterEnabled = filterEnabled;
 	}
 	
 	

@@ -133,12 +133,18 @@
 								</when>
 							</choose>
 							d.id,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower 
+							AVG(IF(
+								(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+								NULL,
+								dv.nvmActivePower
+							)) AS nvmActivePower
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 						WHERE
 							d.id = #{item.id}
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
@@ -152,7 +158,8 @@
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 						GROUP BY
-							d.id, time_format
+							d.id,
+							time_format
 				</foreach>
 			) t 
 		GROUP BY
@@ -191,7 +198,11 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 				</when>
 			</choose>
-			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
+			ROUND(AVG(IF(
+				(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+				NULL,
+				dv.nvmActivePower
+			)), 1) AS nvmActivePower,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
 			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power
 		FROM
@@ -199,6 +210,8 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -256,12 +269,18 @@
 								</when>
 							</choose>
 							d.id,
-							AVG( IFNULL(dv.nvmActivePower, 0) ) AS nvmActivePower
+							AVG(IF(
+								(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+								NULL,
+								dv.nvmActivePower
+							)) AS nvmActivePower
 						FROM
 							${item.datatablename} dv
 							LEFT JOIN device d ON d.id = dv.id_device
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 						WHERE
 							d.id = #{item.id}
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
@@ -275,7 +294,8 @@
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 						GROUP BY
-							d.id, time_format
+							d.id,
+							time_format
 				</foreach>
 			) t 
 		GROUP BY
@@ -314,7 +334,11 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%d. %b' ) AS categories_time,
 				</when>
 			</choose>
-			ROUND(AVG( dv.nvmActivePower ), 1 ) AS nvmActivePower,
+			ROUND(AVG(IF(
+				(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+				NULL,
+				dv.nvmActivePower
+			)), 1) AS nvmActivePower,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
       		ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power
 		FROM
@@ -322,6 +346,8 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -384,12 +410,18 @@
 							</when>
 						</choose>
 						d.id,
-						SUM(dv.MeasuredProduction) AS nvmActiveEnergy
+						SUM(IF(
+							(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
+							0,
+							dv.MeasuredProduction
+						)) AS nvmActiveEnergy
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
 						LEFT JOIN site s ON s.id = d.id_site 
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_energy = 1 AND ${filterEnabled} = true
+						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 					WHERE
 						s.id = #{item.id_site}
 						AND d.id = #{item.id}
@@ -404,6 +436,7 @@
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
+						d.id,
 						time_format
 				</foreach>
 			) t 
@@ -448,7 +481,11 @@
 					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7 )) DAY), '%d. %b' ) AS categories_time,
 				</when>
 			</choose>
-			ROUND(SUM( dv.nvmActiveEnergy ), 1 ) AS nvmActiveEnergy,
+			ROUND(SUM(IF(
+				(dpf.min_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ > ]]> dpf.max_value),
+				0,
+				dv.nvmActiveEnergy
+			)), 1) AS nvmActiveEnergy,
 			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
 			ROUND(AVG( dv.expected_power_ac )
 				<choose>
@@ -482,6 +519,8 @@
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_energy = 1 AND ${filterEnabled} = true
+			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 		WHERE
 			s.id = #{id_site}
 			AND d.id_device_type = 12
@@ -626,14 +665,34 @@
 						</otherwise>
 					</choose> AS expected_power,
 					AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)) AS nvm_irradiance,
-					AVG(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)) AS meterPower,
-					AVG(IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)) AS inverterPower,
-					SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)) AS meterEnergy,
-					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS inverterEnergy
+					AVG(IF(
+						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
+						NULL,
+						IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)
+					)) AS meterPower,
+					AVG(IF(
+						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
+						NULL,
+						IF(d.id_device_type = 1, sdr.PowerTodayAVG, NULL)
+					)) AS inverterPower,
+					SUM(IF(
+						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
+						0,
+						IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)
+					)) AS meterEnergy,
+					SUM(IF(
+						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
+						0,
+						IF(d.id_device_type = 1, sdr.ActualGeneration, 0)
+					)) AS inverterEnergy
 				FROM
 					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
+					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_energy = 1 AND ${filterEnabled} = true
+					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
 				WHERE
 					s.`status` = 1
 					AND d.`status` = 1
@@ -766,8 +825,16 @@
 									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
 								</when>
 							</choose>
-							AVG(dv.nvmActivePower) AS nvmActivePower,
-							SUM(dv.nvmActiveEnergy) AS nvmActiveEnergy,
+							AVG(IF(
+								(dpf1.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf1.max_value),
+								NULL,
+								dv.nvmActivePower
+							)) AS nvmActivePower,
+							SUM(IF(
+								(dpf2.min_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ > ]]> dpf2.max_value),
+								0,
+								dv.nvmActiveEnergy
+							)) AS nvmActiveEnergy,
 							AVG(dv.nvm_irradiance) AS nvm_irradiance,
 							AVG(dv.expected_power_ac) AS expected_power
 						FROM
@@ -775,6 +842,10 @@
 							LEFT JOIN device d ON d.id = dv.id_device
 							LEFT JOIN site s ON s.id = d.id_site 
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
+							LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_energy = 1 AND ${filterEnabled} = true
+							LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
 						WHERE
 							s.`status` = 1
 							AND d.`status` = 1

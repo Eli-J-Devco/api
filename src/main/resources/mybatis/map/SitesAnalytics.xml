@@ -14,6 +14,7 @@
 			d.job_tablename,
 			d.datatablename AS datatablename, 
 			dg.group_name,
+			dg.table_name,
 			d.id AS id_device,
 			d.id_device_type,
 			d.hidden,
@@ -35,7 +36,7 @@
 	</select>
 	
 	<select id="getListDeviceParameter" resultType="Map">
-		<foreach item="item" index="index" collection="list" separator="UNION">
+		<foreach item="item" index="index" collection="list" separator="UNION ALL">
 			SELECT
 				dp.id,
 				dp.`name`,
@@ -51,11 +52,14 @@
 				dp.is_checked,
 				dp.is_calculation,
 				IF(dp.is_common = 1, 1, 0) AS is_common,
-				dp.menu_order
+				dp.menu_order,
+				IFNULL(dpf.min_value, 0.001) AS min_value,
+				IFNULL(dpf.max_value, 0.001) AS max_value
 			FROM
 				device d
 				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
 				LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
+				LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter
 			WHERE
 				d.id = #{item.id} AND d.`status` = 1 AND dp.is_delete = 0 AND dp.`status` = 1 AND dp.is_filter = 1
 		</foreach>
@@ -72,18 +76,6 @@
 			id_device = #{id}
 			AND status = 1
 			AND is_delete = 0
-	</select>
-	
-	<select id="getFilterParamsByDevice" resultType="Map">
-		SELECT
-			id_device,
-			id_device_parameter,
-			min_value,
-			max_value
-		FROM
-			device_parameter_filter
-		WHERE
-			id_device = #{id}
 	</select>
 	
 	<select id="getDeviceGroupsList" resultType="Map">
@@ -178,14 +170,6 @@
 							IFNULL(ROUND(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), 2), 0.001) AS ${param.slug}
 						</when>
 						
-						<when test="
-							(table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy') or
-							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'nvmActiveEnergy') or
-							(table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_energy')
-						">
-							IFNULL(ROUND(SUM(${param.slug}), 2), 0.001) AS ${param.slug}
-						</when>
-						
 						<when test="param.slug == 'MeasuredProduction'">
 							<choose>
 								<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
@@ -264,15 +248,19 @@
 								(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 							">
-								IF(${param.value_chart_tool}(dv.${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(dv.${param.slug})) AS ${param.slug}
+								${param.value_chart_tool}(IF(
+									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.${param.slug} <![CDATA[ > ]]> ${param.max_value})),
+									NULL,
+									IF(dv.${param.slug} <![CDATA[<]]> 0, 0, dv.${param.slug})
+								)) AS ${param.slug}
 							</when>
 							
 							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
-								SUM(dv.MeasuredProduction) AS Energy
-							</when>
-							
-							<when test="table_name == 'model_virtual_meter_or_inverter' and (param.slug == 'nvmActiveEnergy' or param.slug == 'expected_energy')">
-								SUM(dv.${param.slug}) AS ${param.slug}
+								SUM(IF(
+									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.MeasuredProduction <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.MeasuredProduction <![CDATA[ > ]]> ${param.max_value})),
+									NULL,
+									dv.MeasuredProduction
+								)) AS Energy
 							</when>
 							
 							<when test="param.slug == 'MeasuredProduction'">
@@ -298,7 +286,11 @@
 							</when>
 							
 							<otherwise>
-								${param.value_chart_tool}(dv.${param.slug}) AS ${param.slug}
+								${param.value_chart_tool}(IF(
+									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.${param.slug} <![CDATA[ > ]]> ${param.max_value})),
+									NULL,
+									dv.${param.slug}
+								)) AS ${param.slug}
 							</otherwise>
 						</choose>
 					</if>

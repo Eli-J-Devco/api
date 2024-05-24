@@ -135,6 +135,7 @@ public class DeviceEntity {
 	private String table_share_data;
 	private int id_device_share;
 	private int id_site_share;
+	private boolean filterEnabled;
 	
 
 	
@@ -879,6 +880,12 @@ public class DeviceEntity {
 	}
 	public void setMin_value(Integer min_value) {
 		this.min_value = min_value;
+	}
+	public boolean isFilterEnabled() {
+		return filterEnabled;
+	}
+	public void setFilterEnabled(boolean filterEnabled) {
+		this.filterEnabled = filterEnabled;
 	}
 	
 	
