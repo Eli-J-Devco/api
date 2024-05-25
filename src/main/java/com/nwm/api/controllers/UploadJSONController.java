@@ -25,7 +25,7 @@ public class UploadJSONController extends BaseController {
 	 * @description upload data from N3uron
 	 * @author Hung.Bui
 	 * @since 2024-05-21
-	 * @params obj { site_name, device_name, parameters: List<DeviceParameterN3uronEntity> }
+	 * @params obj { serial_number, id_device, parameters: List<DeviceParameterN3uronEntity> }
 	 */
 	@PostMapping("/n3uron")
 	public Object n3euronUploads(@RequestBody UploadN3uronEntity obj) {

@@ -7,7 +7,6 @@ package com.nwm.api.entities;
 
 public class DeviceParameterN3uronEntity {
 	private String name;
-	private String unit;
 	private Double value;
 	private String timestamp;
 	
@@ -16,12 +15,6 @@ public class DeviceParameterN3uronEntity {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public String getUnit() {
-		return unit;
-	}
-	public void setUnit(String unit) {
-		this.unit = unit;
 	}
 	public Double getValue() {
 		return value;

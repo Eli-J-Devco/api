@@ -3,21 +3,79 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="UploadJSON">
+	
+	<select id="getDeviceDetail" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.datatablename,
+			d.id_device_type,
+			d.parameter_slug,
+			d.current_time,
+			JSON_ARRAYAGG(f.slug) AS field_value_default
+		FROM 
+			(
+				SELECT
+					d.id,
+					d.datatablename,
+					d.id_device_type,
+					d.id_device_group,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'slug', dp.slug,
+						'is_user_defined', dp.is_user_defined,
+						'is_active_power', dp.is_active_power,
+						'is_energy', dp.is_energy,
+						'scale', dps.scale,
+						'variable_name', dps.variable_name
+					)) AS parameter_slug,
+					DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-%d %H:%i:%s') AS `current_time`
+				FROM
+					device d
+					LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.status = 1 AND dp.is_delete = 0
+					LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id AND dps.id_device = d.id
+					LEFT JOIN site s ON d.id_site = s.id
+				WHERE
+					d.modbusdevicenumber = #{id_device}
+					AND d.serial_number = #{serial_number}
+					AND d.status = 1
+					AND d.is_delete = 0
+					AND s.status = 1
+					AND s.is_delete = 0
+			) d
+			LEFT JOIN field_value_default f ON f.id_device_group = d.id_device_group AND f.status = 1 AND f.is_delete = 0 AND f.is_active = 1
+	</select>
+	
+	<select id="getLastData" resultType="Map">
+		SELECT
+			*
+		FROM
+			${datatablename} dv
+		WHERE
+			dv.id_device = #{id}
+	    	AND dv.time <![CDATA[ < ]]> #{current_time}
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
 
   	<insert id="insertN3euronData">
-		INSERT INTO `test_n3uron`
-			(site_name, device_name, timestamp, parameter_name, parameter_unit, parameter_value)
-		VALUE 
-			<foreach collection="parameters" item="parameter" separator=",">
-				(#{site_name}, #{device_name}, #{parameter.timestamp}, #{parameter.name}, #{parameter.unit}, #{parameter.value})
+		INSERT INTO ${datatablename} (
+			time,
+			id_device,
+			<foreach collection="list_parameters" item="parameter" separator=",">
+				${parameter.name}
 			</foreach>
-		ON DUPLICATE KEY UPDATE
-			site_name = VALUES(site_name),
-			device_name = VALUES(device_name),
-			timestamp = VALUES(timestamp),
-			parameter_name = VALUES(parameter_name),
-			parameter_unit = VALUES(parameter_unit),
-			parameter_value = VALUES(parameter_value)
+		) VALUES (
+			#{current_time},
+			#{id},
+			<foreach collection="list_parameters" item="parameter" separator=",">
+				#{parameter.value}
+			</foreach>
+		) ON DUPLICATE KEY UPDATE
+			time = VALUES(time),
+			id_device = VALUES(id_device),
+			<foreach collection="list_parameters" item="parameter" separator=",">
+				${parameter.name} = VALUES(${parameter.name})
+			</foreach>
 	</insert>
 	
 </mapper>
