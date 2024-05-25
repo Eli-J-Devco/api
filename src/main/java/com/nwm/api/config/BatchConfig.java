@@ -15,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import com.nwm.api.batchjob.BatchJob;
+import com.nwm.api.utils.Constants;
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -27,11 +28,11 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */1 * * * *")
-	public void startBatchJobSolarOpenWeather() throws Exception {
-		BatchJob job =new BatchJob(); 
+//	@Scheduled(cron = "0 */1 * * * *")
+//	public void startBatchJobSolarOpenWeather() throws Exception {
+//		BatchJob job =new BatchJob(); 
 //		job.runCronJobSolarOpenWeather();
-	}
+//	}
 	
 	
 	/**
@@ -89,8 +90,13 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 * */60 * * *")
 	public void startBatchJobGetWeather() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobGetWeather();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGetWeather();
+		}
+		
 	}
 	
 	/**
@@ -194,8 +200,12 @@ public class BatchConfig {
 //	@Scheduled(cron = "0 */1 * * * *")
 	@Scheduled(cron = "0 */60 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.runCronJobGenerateDataReport();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGenerateDataReport();
+		}
 	}
 	
 	
@@ -211,8 +221,14 @@ public class BatchConfig {
 	// Start every day 2 PM.
 //	@Scheduled(cron = "0 0 0/20 ? * *")
 	public void startBatchJobGeneratePerformanceRatio() throws Exception {
-		BatchJob job =new BatchJob(); 
-		job.startBatchJobGeneratePerformanceRatio();
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.startBatchJobGeneratePerformanceRatio();
+		}
+		
+		
 	}
 	
 	

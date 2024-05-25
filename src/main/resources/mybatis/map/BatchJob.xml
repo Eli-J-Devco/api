@@ -622,7 +622,9 @@
 		UPDATE `site`
 		SET
 			weather_icon = #{weather_icon},
-			weather_description = #{weather_description}
+			weather_description = #{weather_description},
+			sunrise = FROM_UNIXTIME(#{sunrise}, '%H:%m:%s'),
+			sunset = FROM_UNIXTIME(#{sunset}, '%H:%m:%s')
 		WHERE
 			`id` = #{id_site}
 	</update>

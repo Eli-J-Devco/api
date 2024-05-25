@@ -207,6 +207,14 @@ public class BatchJob {
 					item.setWeather_icon(weatherIcon);
 					item.setWeather_description(weatherDescription);
 				}
+				
+				JSONObject jsonarrSunriseSunset = (JSONObject) jobj.get("sys");
+				if(jsonarrSunriseSunset.size() > 0) {
+					long sunrise = (long) jsonarrSunriseSunset.get("sunrise");
+					long sunset = (long) jsonarrSunriseSunset.get("sunset");
+					item.setSunrise(sunrise);
+					item.setSunset(sunset);
+				}
 			}
 			return item;
 		} catch (Exception e) {
@@ -235,6 +243,8 @@ public class BatchJob {
 				if (weather.getWeather_icon() == null || weather.getWeather_description() == null) {
 					weather.setWeather_description(null);
 					weather.setWeather_icon(null);
+					weather.setSunrise(0);
+					weather.setSunset(0);
 				}
 
 				// Update site weather
