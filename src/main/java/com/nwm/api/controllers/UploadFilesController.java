@@ -325,9 +325,9 @@ public class UploadFilesController extends BaseController {
 							        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
 							        int hours = zdtNowLosAngeles.getHour();
 							        
-									List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
-
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
+										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+										
 										switch (item.getDevice_group_table()) {
 
 										// Model model_pv_powered_35_50_260_500kw_inverter
