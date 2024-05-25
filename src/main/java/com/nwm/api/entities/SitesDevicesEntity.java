@@ -100,6 +100,7 @@ public class SitesDevicesEntity {
 	private double soiling;
 	private double other_losses;
 	private int min_irradiance_limit;
+	private int number_devices;
 	
 	private String ssh_host;
 	private String ssh_user;
@@ -139,6 +140,12 @@ public class SitesDevicesEntity {
 	
 	
 	
+	public int getNumber_devices() {
+		return number_devices;
+	}
+	public void setNumber_devices(int number_devices) {
+		this.number_devices = number_devices;
+	}
 	public String getSerial_number() {
 		return serial_number;
 	}
