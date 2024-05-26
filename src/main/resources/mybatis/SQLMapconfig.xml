@@ -39,6 +39,7 @@
 		<mapper resource="mybatis/map/Employee.xml" />
 		<mapper resource="mybatis/map/Device.xml" />
 		<mapper resource="mybatis/map/ModelShark100.xml" />
+		<mapper resource="mybatis/map/ModelShark100v1.xml" />
 		<mapper resource="mybatis/map/ModelRT1Class30000.xml" />
 		<mapper resource="mybatis/map/ModelIVTSolaronEXT.xml" />
 		<mapper resource="mybatis/map/Site.xml" />

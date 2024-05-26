@@ -379,6 +379,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelShark100(rowItem, r);
 											break;
 											
+										case "model_shark100v1":
+											service.setModelShark100v1(rowItem, r);
+											break;
+											
 										case "model_xantrex_inverter":
 											service.setModelXantrexInverter(rowItem, r);
 											break;

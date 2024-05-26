@@ -81,6 +81,7 @@ import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.entities.ModelSevSg110cxEntity;
 import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
+import com.nwm.api.entities.ModelShark100v1Entity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
@@ -149,6 +150,7 @@ import com.nwm.api.services.ModelSatconPvs357InverterService;
 import com.nwm.api.services.ModelSevSg110cxService;
 import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
+import com.nwm.api.services.ModelShark100v1Service;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
@@ -540,6 +542,114 @@ public class UploadFilesController extends BaseController {
 											
 											
 											break;
+											
+										case "model_shark100v1":
+											ModelShark100v1Service serviceModelShark100v1 = new ModelShark100v1Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													
+													ModelShark100v1Entity dataModelShark100v1 = serviceModelShark100v1.setModelShark100v1(line);
+													dataModelShark100v1.setId_device(item.getId());
+													dataModelShark100v1.setDatatablename(item.getDatatablename());
+													dataModelShark100v1.setView_tablename(item.getView_tablename());
+													dataModelShark100v1.setJob_tablename(item.getJob_tablename());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100v1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100v1);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelShark100v1, scaledValue);
+															if (slug.equals("watts_3ph_total")) dataModelShark100v1.setNvmActivePower(scaledValue);
+															if (slug.equals("w_hours_total")) dataModelShark100v1.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// watts_3ph_total
+													if(dataModelShark100v1.getWatts_3ph_total() != 0.001 && dataModelShark100v1.getWatts_3ph_total() >= 0){
+														deviceUpdateE.setLast_updated(dataModelShark100v1.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataModelShark100v1.getWatts_3ph_total() != 0.001 ? dataModelShark100v1.getWatts_3ph_total() : null);
+													deviceUpdateE.setField_value1(dataModelShark100v1.getWatts_3ph_total() != 0.001 ? dataModelShark100v1.getWatts_3ph_total() : null);
+													
+													// vars_3ph_total
+													deviceUpdateE.setField_value2(dataModelShark100v1.getVars_3ph_total() != 0.001 ? dataModelShark100v1.getVars_3ph_total() : null);
+													
+													// vas_3ph_total
+													deviceUpdateE.setField_value3(dataModelShark100v1.getVas_3ph_total() != 0.001 ? dataModelShark100v1.getVas_3ph_total() : null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													
+													
+													// Insert alert
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
+													
+													serviceModelShark100v1.insertModelShark100v1(dataModelShark100v1);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item, dataDevice);
+													}
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){    
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {     
+														}		
+													}  
+													catch(Exception e){    
+														e.printStackTrace();  
+													}
+													
+												}
+											}
+											
+											
+											break;
+											
 										case "model_rt1_class30000":
 											ModelRT1Class30000Service serviceModelRT1Class30000 = new ModelRT1Class30000Service();
 											// Check insert database status

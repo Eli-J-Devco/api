@@ -1,0 +1,1300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelShark100v1">
+	<resultMap id="ModelShark100v1Map" type="com.nwm.api.entities.ModelShark100v1Entity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="volts_a_n" column="volts_a_n" />
+		   <result property="volts_b_n" column="volts_b_n" />
+		   <result property="volts_c_n" column="volts_c_n" />
+		   <result property="volts_a_b" column="volts_a_b" />
+		   <result property="volts_b_c" column="volts_b_c" />
+		   <result property="volts_c_a" column="volts_c_a" />
+		   <result property="amps_a" column="amps_a" />
+		   <result property="amps_b" column="amps_b" />
+		   <result property="amps_c" column="amps_c" />
+		   <result property="watts_3ph_total" column="watts_3ph_total" />
+		   <result property="vars_3ph_total" column="vars_3ph_total" />
+		   <result property="vas_3ph_total" column="vas_3ph_total" />
+		   <result property="power_factor_3ph_total" column="power_factor_3ph_total" />
+		   <result property="frequency" column="frequency" />
+		   <result property="neutral_current" column="neutral_current" />
+		   <result property="w_hours_received" column="w_hours_received" />
+		   <result property="w_hours_delivered" column="w_hours_delivered" />
+		   <result property="w_hours_net" column="w_hours_net" />
+		   <result property="w_hours_total" column="w_hours_total" />
+		   <result property="var_hours_positive" column="var_hours_positive" />
+		   <result property="var_hours_negative" column="var_hours_negative" />
+		   <result property="var_hours_net" column="var_hours_net" />
+		   <result property="var_hours_total" column="var_hours_total" />
+		   <result property="va_hours_total" column="va_hours_total" />
+		   <result property="amps_a_average" column="amps_a_average" />
+		   <result property="amps_b_average" column="amps_b_average" />
+		   <result property="amps_c_average" column="amps_c_average" />
+		   <result property="positive_watts_3ph_average" column="positive_watts_3ph_average" />
+		   <result property="positive_vars_3ph_average" column="positive_vars_3ph_average" />
+		   <result property="negative_watts_3ph_average" column="negative_watts_3ph_average" />
+		   <result property="negative_vars_3ph_average" column="negative_vars_3ph_average" />
+		   <result property="vas_3ph_average" column="vas_3ph_average" />
+		   <result property="positive_pf_3ph_average" column="positive_pf_3ph_average" />
+		   <result property="negative_pf_3ph_average" column="negative_pf_3ph_average" />
+		   <result property="volts_a_n_min" column="volts_a_n_min" />
+		   <result property="volts_b_n_min" column="volts_b_n_min" />
+		   <result property="volts_c_n_min" column="volts_c_n_min" />
+		   <result property="volts_a_b_min" column="volts_a_b_min" />
+		   <result property="volts_b_c_min" column="volts_b_c_min" />
+		   <result property="volts_c_a_min" column="volts_c_a_min" />
+		   <result property="amps_a_min_avg_demand" column="amps_a_min_avg_demand" />
+		   <result property="amps_b_min_avg_demand" column="amps_b_min_avg_demand" />
+		   <result property="amps_c_min_avg_demand" column="amps_c_min_avg_demand" />
+		   <result property="positive_watts_3ph_min_avg_demand" column="positive_watts_3ph_min_avg_demand" />
+		   <result property="positive_vars_3ph_min_avg_demand" column="positive_vars_3ph_min_avg_demand" />
+		   <result property="negative_watts_3ph_min_avg_demand" column="negative_watts_3ph_min_avg_demand" />
+		   <result property="negative_vars_3ph_min_avg_demand" column="negative_vars_3ph_min_avg_demand" />
+		   <result property="vas_3ph_min_avg_demand" column="vas_3ph_min_avg_demand" />
+		   <result property="positive_pf_3ph_min_avg_demand" column="positive_pf_3ph_min_avg_demand" />
+		   <result property="negative_pf_3ph_min_avg_demand" column="negative_pf_3ph_min_avg_demand" />
+		   <result property="frequency_min" column="frequency_min" />
+		   <result property="volts_a_n_max" column="volts_a_n_max" />
+		   <result property="volts_b_n_max" column="volts_b_n_max" />
+		   <result property="volts_c_n_max" column="volts_c_n_max" />
+		   <result property="volts_a_b_max" column="volts_a_b_max" />
+		   <result property="volts_b_c_max" column="volts_b_c_max" />
+		   <result property="volts_c_a_max" column="volts_c_a_max" />
+		   <result property="amps_a_max_avg_demand" column="amps_a_max_avg_demand" />
+		   <result property="amps_b_max_avg_demand" column="amps_b_max_avg_demand" />
+		   <result property="amps_c_max_avg_demand" column="amps_c_max_avg_demand" />
+		   <result property="positive_watts_3ph_max_avg_demand" column="positive_watts_3ph_max_avg_demand" />
+		   <result property="positive_vars_3ph_max_avg_demand" column="positive_vars_3ph_max_avg_demand" />
+		   <result property="negative_watts_3ph_max_avg_demand" column="negative_watts_3ph_max_avg_demand" />
+		   <result property="negative_vars_3ph_max_avg_demand" column="negative_vars_3ph_max_avg_demand" />
+		   <result property="vas_3ph_max_avg_demand" column="vas_3ph_max_avg_demand" />
+		   <result property="positive_pf_3ph_max_avg_demand" column="positive_pf_3ph_max_avg_demand" />
+		   <result property="negative_pf_3ph_max_avg_demand" column="negative_pf_3ph_max_avg_demand" />
+		   <result property="frequency_max" column="frequency_max" />
+		   <result property="volts_a_n_thd" column="volts_a_n_thd" />
+		   <result property="volts_b_n_thd" column="volts_b_n_thd" />
+		   <result property="volts_c_n_thd" column="volts_c_n_thd" />
+		   <result property="amps_a_thd" column="amps_a_thd" />
+		   <result property="amps_b_thd" column="amps_b_thd" />
+		   <result property="amps_c_thd" column="amps_c_thd" />
+		   <result property="phase_a_current_0th" column="phase_a_current_0th" />
+		   <result property="phase_a_current_1st" column="phase_a_current_1st" />
+		   <result property="phase_a_current_2nd" column="phase_a_current_2nd" />
+		   <result property="phase_a_current_3rd" column="phase_a_current_3rd" />
+		   <result property="phase_a_current_4th" column="phase_a_current_4th" />
+		   <result property="phase_a_current_5th" column="phase_a_current_5th" />
+		   <result property="phase_a_current_6th" column="phase_a_current_6th" />
+		   <result property="phase_a_current_7th" column="phase_a_current_7th" />
+		   <result property="phase_a_voltage_0th" column="phase_a_voltage_0th" />
+		   <result property="phase_a_voltage_1st" column="phase_a_voltage_1st" />
+		   <result property="phase_a_voltage_2nd" column="phase_a_voltage_2nd" />
+		   <result property="phase_a_voltage_3rd" column="phase_a_voltage_3rd" />
+		   <result property="phase_b_current_0th" column="phase_b_current_0th" />
+		   <result property="phase_b_current_1st" column="phase_b_current_1st" />
+		   <result property="phase_b_current_2nd" column="phase_b_current_2nd" />
+		   <result property="phase_b_current_3rd" column="phase_b_current_3rd" />
+		   <result property="phase_b_current_4th" column="phase_b_current_4th" />
+		   <result property="phase_b_current_5th" column="phase_b_current_5th" />
+		   <result property="phase_b_current_6th" column="phase_b_current_6th" />
+		   <result property="phase_b_current_7th" column="phase_b_current_7th" />
+		   <result property="phase_b_voltage_0th" column="phase_b_voltage_0th" />
+		   <result property="phase_b_voltage_1st" column="phase_b_voltage_1st" />
+		   <result property="phase_b_voltage_2nd" column="phase_b_voltage_2nd" />
+		   <result property="phase_b_voltage_3rd" column="phase_b_voltage_3rd" />
+		   <result property="phase_c_current_0th" column="phase_c_current_0th" />
+		   <result property="phase_c_current_1st" column="phase_c_current_1st" />
+		   <result property="phase_c_current_2nd" column="phase_c_current_2nd" />
+		   <result property="phase_c_current_3rd" column="phase_c_current_3rd" />
+		   <result property="phase_c_current_4th" column="phase_c_current_4th" />
+		   <result property="phase_c_current_5th" column="phase_c_current_5th" />
+		   <result property="phase_c_current_6th" column="phase_c_current_6th" />
+		   <result property="phase_c_current_7th" column="phase_c_current_7th" />
+		   <result property="phase_c_voltage_0th" column="phase_c_voltage_0th" />
+		   <result property="phase_c_voltage_1st" column="phase_c_voltage_1st" />
+		   <result property="phase_c_voltage_2nd" column="phase_c_voltage_2nd" />
+		   <result property="phase_c_voltage_3rd" column="phase_c_voltage_3rd" />
+		   <result property="angle_phase_a_current" column="angle_phase_a_current" />
+		   <result property="angle_phase_b_current" column="angle_phase_b_current" />
+		   <result property="angle_phase_c_current" column="angle_phase_c_current" />
+		   <result property="angle_volts_a_b" column="angle_volts_a_b" />
+		   <result property="angle_volts_b_c" column="angle_volts_b_c" />
+		   <result property="angle_volts_c_a" column="angle_volts_c_a" />
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelShark100v1" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="volts_a_n != 0.001" >
+                `volts_a_n`,
+          </if>
+          <if test="volts_b_n != 0.001" >
+                `volts_b_n`,
+          </if>
+          <if test="volts_c_n != 0.001" >
+                `volts_c_n`,
+          </if>
+          <if test="volts_a_b != 0.001" >
+                `volts_a_b`,
+          </if>
+          <if test="volts_b_c != 0.001" >
+                `volts_b_c`,
+          </if>
+          <if test="volts_c_a != 0.001" >
+                `volts_c_a`,
+          </if>
+          <if test="amps_a != 0.001" >
+                `amps_a`,
+          </if>
+          <if test="amps_b != 0.001" >
+               `amps_b`, 
+          </if>
+          <if test="amps_c != 0.001" >
+                `amps_c`,
+          </if>
+          <if test="watts_3ph_total != 0.001" >
+                `watts_3ph_total`,
+          </if>
+          <if test="vars_3ph_total != 0.001" >
+                `vars_3ph_total`,
+          </if>
+          <if test="vas_3ph_total != 0.001" >
+                `vas_3ph_total`,
+          </if>
+          <if test="power_factor_3ph_total != 0.001" >
+                `power_factor_3ph_total`,
+          </if>
+          <if test="frequency != 0.001" >
+                `frequency`,
+          </if>
+          <if test="neutral_current != 0.001" >
+                `neutral_current`,
+          </if>
+          <if test="w_hours_received != 0.001" >
+                `w_hours_received`,
+          </if>
+          <if test="w_hours_delivered != 0.001" >
+                `w_hours_delivered`,
+          </if>
+          <if test="w_hours_net != 0.001" >
+                `w_hours_net`,
+          </if>
+          <if test="w_hours_total != 0.001" >
+                `w_hours_total`,
+          </if>
+          <if test="var_hours_positive != 0.001" >
+                `var_hours_positive`,
+          </if>
+          <if test="var_hours_negative != 0.001" >
+                `var_hours_negative`,
+          </if>
+          <if test="var_hours_net != 0.001" >
+                `var_hours_net`,
+          </if>
+          <if test="var_hours_total != 0.001" >
+                `var_hours_total`,
+          </if>
+          <if test="va_hours_total != 0.001" >
+                `va_hours_total`,
+          </if>
+          <if test="amps_a_average != 0.001" >
+                `amps_a_average`,
+          </if>
+          <if test="amps_b_average != 0.001" >
+                `amps_b_average`,
+          </if>
+          <if test="amps_c_average != 0.001" >
+                `amps_c_average`,
+          </if>
+          <if test="positive_watts_3ph_average != 0.001" >
+                `positive_watts_3ph_average`,
+          </if>
+          <if test="positive_vars_3ph_average != 0.001" >
+                `positive_vars_3ph_average`,
+          </if>
+          <if test="negative_watts_3ph_average != 0.001" >
+                `negative_watts_3ph_average`,
+          </if>
+          <if test="negative_vars_3ph_average != 0.001" >
+                `negative_vars_3ph_average`,
+          </if>
+          <if test="vas_3ph_average != 0.001" >
+                `vas_3ph_average`,
+          </if>
+          <if test="positive_pf_3ph_average != 0.001" >
+                `positive_pf_3ph_average`,
+          </if>
+          <if test="negative_pf_3ph_average != 0.001" >
+                `negative_pf_3ph_average`,
+          </if>
+          <if test="volts_a_n_min != 0.001" >
+                `volts_a_n_min`,
+          </if>
+          <if test="volts_b_n_min != 0.001" >
+                `volts_b_n_min`,
+          </if>
+          <if test="volts_c_n_min != 0.001" >
+               `volts_c_n_min` , 
+          </if>
+          <if test="volts_a_b_min != 0.001" >
+                `volts_a_b_min`,
+          </if>
+          <if test="volts_b_c_min != 0.001" >
+                `volts_b_c_min`,
+          </if>
+          <if test="volts_c_a_min != 0.001" >
+                `volts_c_a_min`,
+          </if>
+          <if test="amps_a_min_avg_demand != 0.001" >
+                `amps_a_min_avg_demand`,
+          </if>
+          <if test="amps_b_min_avg_demand != 0.001" >
+                `amps_b_min_avg_demand`,
+          </if>
+          <if test="amps_c_min_avg_demand != 0.001" >
+                `amps_c_min_avg_demand`,
+          </if>
+          <if test="positive_watts_3ph_min_avg_demand != 0.001" >
+                `positive_watts_3ph_min_avg_demand`,
+          </if>
+          <if test="positive_vars_3ph_min_avg_demand != 0.001" >
+                `positive_vars_3ph_min_avg_demand`,
+          </if>
+          <if test="negative_watts_3ph_min_avg_demand != 0.001" >
+                `negative_watts_3ph_min_avg_demand`,
+          </if>
+          <if test="negative_vars_3ph_min_avg_demand != 0.001" >
+                `negative_vars_3ph_min_avg_demand`,
+          </if>
+          <if test="vas_3ph_min_avg_demand != 0.001" >
+                `vas_3ph_min_avg_demand`,
+          </if>
+          <if test="positive_pf_3ph_min_avg_demand != 0.001" >
+                `positive_pf_3ph_min_avg_demand`,
+          </if>
+          <if test="negative_pf_3ph_min_avg_demand != 0.001" >
+                `negative_pf_3ph_min_avg_demand`,
+          </if>
+          <if test="frequency_min != 0.001" >
+                `frequency_min`,
+          </if>
+          <if test="volts_a_n_max != 0.001" >
+                `volts_a_n_max`,
+          </if>
+          <if test="volts_b_n_max != 0.001" >
+                `volts_b_n_max`,
+          </if>
+          <if test="volts_c_n_max != 0.001" >
+                `volts_c_n_max`,
+          </if>
+          <if test="volts_a_b_max != 0.001" >
+                `volts_a_b_max`,
+          </if>
+          <if test="volts_b_c_max != 0.001" >
+                `volts_b_c_max`,
+          </if>
+          <if test="volts_c_a_max != 0.001" >
+                `volts_c_a_max`,
+          </if>
+          <if test="amps_a_max_avg_demand != 0.001" >
+                `amps_a_max_avg_demand`,
+          </if>
+          <if test="amps_b_max_avg_demand != 0.001" >
+                `amps_b_max_avg_demand`,
+          </if>
+          <if test="amps_c_max_avg_demand != 0.001" >
+                `amps_c_max_avg_demand`,
+          </if>
+          <if test="positive_watts_3ph_max_avg_demand != 0.001" >
+                `positive_watts_3ph_max_avg_demand`,
+          </if>
+          <if test="positive_vars_3ph_max_avg_demand != 0.001" >
+                `positive_vars_3ph_max_avg_demand`,
+          </if>
+          <if test="negative_watts_3ph_max_avg_demand != 0.001" >
+                `negative_watts_3ph_max_avg_demand`,
+          </if>
+          <if test="negative_vars_3ph_max_avg_demand != 0.001" >
+                `negative_vars_3ph_max_avg_demand`,
+          </if>
+          <if test="vas_3ph_max_avg_demand != 0.001" >
+                `vas_3ph_max_avg_demand`,
+          </if>
+          <if test="positive_pf_3ph_max_avg_demand != 0.001" >
+                `positive_pf_3ph_max_avg_demand`,
+          </if>
+          <if test="negative_pf_3ph_max_avg_demand != 0.001" >
+                `negative_pf_3ph_max_avg_demand`,
+          </if>
+          <if test="frequency_max != 0.001" >
+                `frequency_max`,
+          </if>
+          <if test="volts_a_n_thd != 0.001" >
+                `volts_a_n_thd`,
+          </if>
+          <if test="volts_b_n_thd != 0.001" >
+                `volts_b_n_thd`,
+          </if>
+          <if test="volts_c_n_thd != 0.001" >
+                `volts_c_n_thd`,
+          </if>
+          <if test="amps_a_thd != 0.001" >
+                `amps_a_thd`,
+          </if>
+          <if test="amps_b_thd != 0.001" >
+                `amps_b_thd`,
+          </if>
+          <if test="amps_c_thd != 0.001" >
+                `amps_c_thd`,
+          </if>
+          <if test="phase_a_current_0th != 0.001" >
+                `phase_a_current_0th`,
+          </if>
+          <if test="phase_a_current_1st != 0.001" >
+                `phase_a_current_1st`,
+          </if>
+          <if test="phase_a_current_2nd != 0.001" >
+                `phase_a_current_2nd`,
+          </if>
+          <if test="phase_a_current_3rd != 0.001" >
+                `phase_a_current_3rd`,
+          </if>
+          <if test="phase_a_current_4th != 0.001" >
+                `phase_a_current_4th`,
+          </if>
+          <if test="phase_a_current_5th != 0.001" >
+                `phase_a_current_5th`,
+          </if>
+          <if test="phase_a_current_6th != 0.001" >
+                `phase_a_current_6th`,
+          </if>
+          <if test="phase_a_current_7th != 0.001" >
+                `phase_a_current_7th`,
+          </if>
+          <if test="phase_a_voltage_0th != 0.001" >
+                `phase_a_voltage_0th`,
+          </if>
+          <if test="phase_a_voltage_1st != 0.001" >
+                `phase_a_voltage_1st`,
+          </if>
+          <if test="phase_a_voltage_2nd != 0.001" >
+                `phase_a_voltage_2nd`,
+          </if>
+          <if test="phase_a_voltage_3rd != 0.001" >
+                `phase_a_voltage_3rd`,
+          </if>
+          <if test="phase_b_current_0th != 0.001" >
+                `phase_b_current_0th`,
+          </if>
+          <if test="phase_b_current_1st != 0.001" >
+                `phase_b_current_1st`,
+          </if>
+          <if test="phase_b_current_2nd != 0.001" >
+                `phase_b_current_2nd`,
+          </if>
+          <if test="phase_b_current_3rd != 0.001" >
+                `phase_b_current_3rd`,
+          </if>
+          <if test="phase_b_current_4th != 0.001" >
+                `phase_b_current_4th`,
+          </if>
+          <if test="phase_b_current_5th != 0.001" >
+                `phase_b_current_5th`,
+          </if>
+          <if test="phase_b_current_6th != 0.001" >
+                `phase_b_current_6th`,
+          </if>
+          <if test="phase_b_current_7th != 0.001" >
+                `phase_b_current_7th`,
+          </if>
+          <if test="phase_b_voltage_0th != 0.001" >
+                `phase_b_voltage_0th`,
+          </if>
+          <if test="phase_b_voltage_1st != 0.001" >
+                `phase_b_voltage_1st`,
+          </if>
+          <if test="phase_b_voltage_2nd != 0.001" >
+                `phase_b_voltage_2nd`,
+          </if>
+          <if test="phase_b_voltage_3rd != 0.001" >
+		  	`phase_b_voltage_3rd`,
+		  </if>
+		  <if test="phase_c_current_0th != 0.001" >
+		  	`phase_c_current_0th`,
+		  </if>
+		  <if test="phase_c_current_1st != 0.001" >
+		  	`phase_c_current_1st`,
+		  </if>
+		  <if test="phase_c_current_2nd != 0.001" >
+		  	`phase_c_current_2nd`,
+		  </if>
+		  <if test="phase_c_current_3rd != 0.001" >
+		  	`phase_c_current_3rd`,
+		  </if>
+		  <if test="phase_c_current_4th != 0.001" >
+		  	`phase_c_current_4th`,
+		  </if>
+		  <if test="phase_c_current_5th != 0.001" >
+		  	`phase_c_current_5th`,
+		  </if>
+		  <if test="phase_c_current_6th != 0.001" >
+		  	`phase_c_current_6th`,
+		  </if>
+		  <if test="phase_c_current_7th != 0.001" >
+		  	`phase_c_current_7th`,
+		  </if>
+		  <if test="phase_c_voltage_0th != 0.001" >
+		  	`phase_c_voltage_0th`,
+		  </if>
+		  <if test="phase_c_voltage_1st != 0.001" >
+		  	`phase_c_voltage_1st`,
+		  </if>
+		  <if test="phase_c_voltage_2nd != 0.001" >
+		  	`phase_c_voltage_2nd`,
+		  </if>
+		  <if test="phase_c_voltage_3rd != 0.001" >
+		  	`phase_c_voltage_3rd`,
+		  </if>
+		  <if test="angle_phase_a_current != 0.001" >
+		  	`angle_phase_a_current`,
+		  </if>
+		  <if test="angle_phase_b_current != 0.001" >
+		  	`angle_phase_b_current`,
+		  </if>
+		  <if test="angle_phase_c_current != 0.001" >
+		  	`angle_phase_c_current`,
+		  </if>
+		  <if test="angle_volts_a_b != 0.001" >
+		  	`angle_volts_a_b`,
+		  </if>
+		  <if test="angle_volts_b_c != 0.001" >
+		  	`angle_volts_b_c`,
+		  </if>
+		  <if test="angle_volts_c_a != 0.001" >
+		  	`angle_volts_c_a`,
+		  </if>
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="volts_a_n != 0.001" >
+	                #{volts_a_n},
+	          </if>
+	          <if test="volts_b_n != 0.001" >
+	                #{volts_b_n},
+	          </if>
+	          <if test="volts_c_n != 0.001" >
+	                #{volts_c_n},
+	          </if>
+	          <if test="volts_a_b != 0.001" >
+	                #{volts_a_b},
+	          </if>
+	          <if test="volts_b_c != 0.001" >
+	                #{volts_b_c},
+	          </if>
+	          <if test="volts_c_a != 0.001" >
+	                #{volts_c_a},
+	          </if>
+	          <if test="amps_a != 0.001" >
+	                #{amps_a},
+	          </if>
+	          <if test="amps_b != 0.001" >
+	               #{amps_b}, 
+	          </if>
+	          <if test="amps_c != 0.001" >
+	                #{amps_c},
+	          </if>
+	          <if test="watts_3ph_total != 0.001" >
+	                #{watts_3ph_total},
+	          </if>
+	          <if test="vars_3ph_total != 0.001" >
+	                #{vars_3ph_total},
+	          </if>
+	          <if test="vas_3ph_total != 0.001" >
+	                #{vas_3ph_total},
+	          </if>
+	          <if test="power_factor_3ph_total != 0.001" >
+	                #{power_factor_3ph_total},
+	          </if>
+	          <if test="frequency != 0.001" >
+	                #{frequency},
+	          </if>
+	          <if test="neutral_current != 0.001" >
+	                #{neutral_current},
+	          </if>
+	          <if test="w_hours_received != 0.001" >
+	                #{w_hours_received},
+	          </if>
+	          <if test="w_hours_delivered != 0.001" >
+	                #{w_hours_delivered},
+	          </if>
+	          <if test="w_hours_net != 0.001" >
+	                #{w_hours_net},
+	          </if>
+	          <if test="w_hours_total != 0.001" >
+	                #{w_hours_total},
+	          </if>
+	          <if test="var_hours_positive != 0.001" >
+	                #{var_hours_positive},
+	          </if>
+	          <if test="var_hours_negative != 0.001" >
+	                #{var_hours_negative},
+	          </if>
+	          <if test="var_hours_net != 0.001" >
+	                #{var_hours_net},
+	          </if>
+	          <if test="var_hours_total != 0.001" >
+	                #{var_hours_total},
+	          </if>
+	          <if test="va_hours_total != 0.001" >
+	                #{va_hours_total},
+	          </if>
+	          <if test="amps_a_average != 0.001" >
+	                #{amps_a_average},
+	          </if>
+	          <if test="amps_b_average != 0.001" >
+	                #{amps_b_average},
+	          </if>
+	          <if test="amps_c_average != 0.001" >
+	                #{amps_c_average},
+	          </if>
+	          <if test="positive_watts_3ph_average != 0.001" >
+	                #{positive_watts_3ph_average},
+	          </if>
+	          <if test="positive_vars_3ph_average != 0.001" >
+	                #{positive_vars_3ph_average},
+	          </if>
+	          <if test="negative_watts_3ph_average != 0.001" >
+	                #{negative_watts_3ph_average},
+	          </if>
+	          <if test="negative_vars_3ph_average != 0.001" >
+	                #{negative_vars_3ph_average},
+	          </if>
+	          <if test="vas_3ph_average != 0.001" >
+	                #{vas_3ph_average},
+	          </if>
+	          <if test="positive_pf_3ph_average != 0.001" >
+	                #{positive_pf_3ph_average},
+	          </if>
+	          <if test="negative_pf_3ph_average != 0.001" >
+	                #{negative_pf_3ph_average},
+	          </if>
+	          <if test="volts_a_n_min != 0.001" >
+	                #{volts_a_n_min},
+	          </if>
+	          <if test="volts_b_n_min != 0.001" >
+	                #{volts_b_n_min},
+	          </if>
+	          <if test="volts_c_n_min != 0.001" >
+	               #{volts_c_n_min}, 
+	          </if>
+	          <if test="volts_a_b_min != 0.001" >
+	                #{volts_a_b_min},
+	          </if>
+	          <if test="volts_b_c_min != 0.001" >
+	                #{volts_b_c_min},
+	          </if>
+	          <if test="volts_c_a_min != 0.001" >
+	                #{volts_c_a_min},
+	          </if>
+	          <if test="amps_a_min_avg_demand != 0.001" >
+	                #{amps_a_min_avg_demand},
+	          </if>
+	          <if test="amps_b_min_avg_demand != 0.001" >
+	                #{amps_b_min_avg_demand},
+	          </if>
+	          <if test="amps_c_min_avg_demand != 0.001" >
+	                #{amps_c_min_avg_demand},
+	          </if>
+	          <if test="positive_watts_3ph_min_avg_demand != 0.001" >
+	                #{positive_watts_3ph_min_avg_demand},
+	          </if>
+	          <if test="positive_vars_3ph_min_avg_demand != 0.001" >
+	                #{positive_vars_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_watts_3ph_min_avg_demand != 0.001" >
+	                #{negative_watts_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_vars_3ph_min_avg_demand != 0.001" >
+	                #{negative_vars_3ph_min_avg_demand},
+	          </if>
+	          <if test="vas_3ph_min_avg_demand != 0.001" >
+	                #{vas_3ph_min_avg_demand},
+	          </if>
+	          <if test="positive_pf_3ph_min_avg_demand != 0.001" >
+	                #{positive_pf_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_pf_3ph_min_avg_demand != 0.001" >
+	                #{negative_pf_3ph_min_avg_demand},
+	          </if>
+	          <if test="frequency_min != 0.001" >
+	                #{frequency_min},
+	          </if>
+	          <if test="volts_a_n_max != 0.001" >
+	                #{volts_a_n_max},
+	          </if>
+	          <if test="volts_b_n_max != 0.001" >
+	                #{volts_b_n_max},
+	          </if>
+	          <if test="volts_c_n_max != 0.001" >
+	                #{volts_c_n_max},
+	          </if>
+	          <if test="volts_a_b_max != 0.001" >
+	                #{volts_a_b_max},
+	          </if>
+	          <if test="volts_b_c_max != 0.001" >
+	                #{volts_b_c_max},
+	          </if>
+	          <if test="volts_c_a_max != 0.001" >
+	                #{volts_c_a_max},
+	          </if>
+	          <if test="amps_a_max_avg_demand != 0.001" >
+	                #{amps_a_max_avg_demand},
+	          </if>
+	          <if test="amps_b_max_avg_demand != 0.001" >
+	                #{amps_b_max_avg_demand},
+	          </if>
+	          <if test="amps_c_max_avg_demand != 0.001" >
+	                #{amps_c_max_avg_demand},
+	          </if>
+	          <if test="positive_watts_3ph_max_avg_demand != 0.001" >
+	                #{positive_watts_3ph_max_avg_demand},
+	          </if>
+	          <if test="positive_vars_3ph_max_avg_demand != 0.001" >
+	                #{positive_vars_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_watts_3ph_max_avg_demand != 0.001" >
+	                #{negative_watts_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_vars_3ph_max_avg_demand != 0.001" >
+	                #{negative_vars_3ph_max_avg_demand},
+	          </if>
+	          <if test="vas_3ph_max_avg_demand != 0.001" >
+	                #{vas_3ph_max_avg_demand},
+	          </if>
+	          <if test="positive_pf_3ph_max_avg_demand != 0.001" >
+	                #{positive_pf_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_pf_3ph_max_avg_demand != 0.001" >
+	                #{negative_pf_3ph_max_avg_demand},
+	          </if>
+	          <if test="frequency_max != 0.001" >
+	                #{frequency_max},
+	          </if>
+	          <if test="volts_a_n_thd != 0.001" >
+	                #{volts_a_n_thd},
+	          </if>
+	          <if test="volts_b_n_thd != 0.001" >
+	                #{volts_b_n_thd},
+	          </if>
+	          <if test="volts_c_n_thd != 0.001" >
+	                #{volts_c_n_thd},
+	          </if>
+	          <if test="amps_a_thd != 0.001" >
+	                #{amps_a_thd},
+	          </if>
+	          <if test="amps_b_thd != 0.001" >
+	                #{amps_b_thd},
+	          </if>
+	          <if test="amps_c_thd != 0.001" >
+	                #{amps_c_thd},
+	          </if>
+	          <if test="phase_a_current_0th != 0.001" >
+	                #{phase_a_current_0th},
+	          </if>
+	          <if test="phase_a_current_1st != 0.001" >
+	                #{phase_a_current_1st},
+	          </if>
+	          <if test="phase_a_current_2nd != 0.001" >
+	                #{phase_a_current_2nd},
+	          </if>
+	          <if test="phase_a_current_3rd != 0.001" >
+	                #{phase_a_current_3rd},
+	          </if>
+	          <if test="phase_a_current_4th != 0.001" >
+	                #{phase_a_current_4th},
+	          </if>
+	          <if test="phase_a_current_5th != 0.001" >
+	                #{phase_a_current_5th},
+	          </if>
+	          <if test="phase_a_current_6th != 0.001" >
+	                #{phase_a_current_6th},
+	          </if>
+	          <if test="phase_a_current_7th != 0.001" >
+	                #{phase_a_current_7th},
+	          </if>
+	          <if test="phase_a_voltage_0th != 0.001" >
+	                #{phase_a_voltage_0th},
+	          </if>
+	          <if test="phase_a_voltage_1st != 0.001" >
+	                #{phase_a_voltage_1st},
+	          </if>
+	          <if test="phase_a_voltage_2nd != 0.001" >
+	                #{phase_a_voltage_2nd},
+	          </if>
+	          <if test="phase_a_voltage_3rd != 0.001" >
+	                #{phase_a_voltage_3rd},
+	          </if>
+	          <if test="phase_b_current_0th != 0.001" >
+	                #{phase_b_current_0th},
+	          </if>
+	          <if test="phase_b_current_1st != 0.001" >
+	                #{phase_b_current_1st},
+	          </if>
+	          <if test="phase_b_current_2nd != 0.001" >
+	                #{phase_b_current_2nd},
+	          </if>
+	          <if test="phase_b_current_3rd != 0.001" >
+	                #{phase_b_current_3rd},
+	          </if>
+	          <if test="phase_b_current_4th != 0.001" >
+	                #{phase_b_current_4th},
+	          </if>
+	          <if test="phase_b_current_5th != 0.001" >
+	                #{phase_b_current_5th},
+	          </if>
+	          <if test="phase_b_current_6th != 0.001" >
+	                #{phase_b_current_6th},
+	          </if>
+	          <if test="phase_b_current_7th != 0.001" >
+	                #{phase_b_current_7th},
+	          </if>
+	          <if test="phase_b_voltage_0th != 0.001" >
+	                #{phase_b_voltage_0th},
+	          </if>
+	          <if test="phase_b_voltage_1st != 0.001" >
+	                #{phase_b_voltage_1st},
+	          </if>
+	          <if test="phase_b_voltage_2nd != 0.001" >
+	                #{phase_b_voltage_2nd},
+	          </if>
+	          <if test="phase_b_voltage_3rd != 0.001" >
+			  	#{phase_b_voltage_3rd},
+			  </if>
+			  <if test="phase_c_current_0th != 0.001" >
+			  	#{phase_c_current_0th},
+			  </if>
+			  <if test="phase_c_current_1st != 0.001" >
+			  	#{phase_c_current_1st},
+			  </if>
+			  <if test="phase_c_current_2nd != 0.001" >
+			  	#{phase_c_current_2nd},
+			  </if>
+			  <if test="phase_c_current_3rd != 0.001" >
+			  	#{phase_c_current_3rd},
+			  </if>
+			  <if test="phase_c_current_4th != 0.001" >
+			  	#{phase_c_current_4th},
+			  </if>
+			  <if test="phase_c_current_5th != 0.001" >
+			  	#{phase_c_current_5th},
+			  </if>
+			  <if test="phase_c_current_6th != 0.001" >
+			  	#{phase_c_current_6th},
+			  </if>
+			  <if test="phase_c_current_7th != 0.001" >
+			  	#{phase_c_current_7th},
+			  </if>
+			  <if test="phase_c_voltage_0th != 0.001" >
+			  	#{phase_c_voltage_0th},
+			  </if>
+			  <if test="phase_c_voltage_1st != 0.001" >
+			  	#{phase_c_voltage_1st},
+			  </if>
+			  <if test="phase_c_voltage_2nd != 0.001" >
+			  	#{phase_c_voltage_2nd},
+			  </if>
+			  <if test="phase_c_voltage_3rd != 0.001" >
+			  	#{phase_c_voltage_3rd},
+			  </if>
+			  <if test="angle_phase_a_current != 0.001" >
+			  	#{angle_phase_a_current},
+			  </if>
+			  <if test="angle_phase_b_current != 0.001" >
+			  	#{angle_phase_b_current},
+			  </if>
+			  <if test="angle_phase_c_current != 0.001" >
+			  	#{angle_phase_c_current},
+			  </if>
+			  <if test="angle_volts_a_b != 0.001" >
+			  	#{angle_volts_a_b},
+			  </if>
+			  <if test="angle_volts_b_c != 0.001" >
+			  	#{angle_volts_b_c},
+			  </if>
+			  <if test="angle_volts_c_a != 0.001" >
+			  	#{angle_volts_c_a},
+			  </if>
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="volts_a_n != 0.001" >
+	                volts_a_n = #{volts_a_n},
+	          </if>
+	          <if test="volts_b_n != 0.001" >
+	                volts_b_n = #{volts_b_n},
+	          </if>
+	          <if test="volts_c_n != 0.001" >
+	                volts_c_n = #{volts_c_n},
+	          </if>
+	          <if test="volts_a_b != 0.001" >
+	                volts_a_b = #{volts_a_b},
+	          </if>
+	          <if test="volts_b_c != 0.001" >
+	                volts_b_c = #{volts_b_c},
+	          </if>
+	          <if test="volts_c_a != 0.001" >
+	                volts_c_a = #{volts_c_a},
+	          </if>
+	          <if test="amps_a != 0.001" >
+	                amps_a = #{amps_a},
+	          </if>
+	          <if test="amps_b != 0.001" >
+	               amps_b = #{amps_b}, 
+	          </if>
+	          <if test="amps_c != 0.001" >
+	                amps_c = #{amps_c},
+	          </if>
+	          <if test="watts_3ph_total != 0.001" >
+	                watts_3ph_total = #{watts_3ph_total},
+	          </if>
+	          <if test="vars_3ph_total != 0.001" >
+	                vars_3ph_total = #{vars_3ph_total},
+	          </if>
+	          <if test="vas_3ph_total != 0.001" >
+	                vas_3ph_total = #{vas_3ph_total},
+	          </if>
+	          <if test="power_factor_3ph_total != 0.001" >
+	                power_factor_3ph_total = #{power_factor_3ph_total},
+	          </if>
+	          <if test="frequency != 0.001" >
+	                frequency = #{frequency},
+	          </if>
+	          <if test="neutral_current != 0.001" >
+	                neutral_current = #{neutral_current},
+	          </if>
+	          <if test="w_hours_received != 0.001" >
+	                w_hours_received = #{w_hours_received},
+	          </if>
+	          <if test="w_hours_delivered != 0.001" >
+	                w_hours_delivered = #{w_hours_delivered},
+	          </if>
+	          <if test="w_hours_net != 0.001" >
+	                w_hours_net = #{w_hours_net},
+	          </if>
+	          <if test="w_hours_total != 0.001" >
+	                w_hours_total = #{w_hours_total},
+	          </if>
+	          <if test="var_hours_positive != 0.001" >
+	                var_hours_positive = #{var_hours_positive},
+	          </if>
+	          <if test="var_hours_negative != 0.001" >
+	                var_hours_negative = #{var_hours_negative},
+	          </if>
+	          <if test="var_hours_net != 0.001" >
+	                var_hours_net = #{var_hours_net},
+	          </if>
+	          <if test="var_hours_total != 0.001" >
+	                var_hours_total = #{var_hours_total},
+	          </if>
+	          <if test="va_hours_total != 0.001" >
+	                va_hours_total = #{va_hours_total},
+	          </if>
+	          <if test="amps_a_average != 0.001" >
+	                amps_a_average = #{amps_a_average},
+	          </if>
+	          <if test="amps_b_average != 0.001" >
+	                amps_b_average = #{amps_b_average},
+	          </if>
+	          <if test="amps_c_average != 0.001" >
+	                amps_c_average = #{amps_c_average},
+	          </if>
+	          <if test="positive_watts_3ph_average != 0.001" >
+	                positive_watts_3ph_average = #{positive_watts_3ph_average},
+	          </if>
+	          <if test="positive_vars_3ph_average != 0.001" >
+	                positive_vars_3ph_average = #{positive_vars_3ph_average},
+	          </if>
+	          <if test="negative_watts_3ph_average != 0.001" >
+	                negative_watts_3ph_average = #{negative_watts_3ph_average},
+	          </if>
+	          <if test="negative_vars_3ph_average != 0.001" >
+	                negative_vars_3ph_average = #{negative_vars_3ph_average},
+	          </if>
+	          <if test="vas_3ph_average != 0.001" >
+	                vas_3ph_average = #{vas_3ph_average},
+	          </if>
+	          <if test="positive_pf_3ph_average != 0.001" >
+	                positive_pf_3ph_average = #{positive_pf_3ph_average},
+	          </if>
+	          <if test="negative_pf_3ph_average != 0.001" >
+	                negative_pf_3ph_average = #{negative_pf_3ph_average},
+	          </if>
+	          <if test="volts_a_n_min != 0.001" >
+	                volts_a_n_min = #{volts_a_n_min},
+	          </if>
+	          <if test="volts_b_n_min != 0.001" >
+	                volts_b_n_min = #{volts_b_n_min},
+	          </if>
+	          <if test="volts_c_n_min != 0.001" >
+	               volts_c_n_min = #{volts_c_n_min}, 
+	          </if>
+	          <if test="volts_a_b_min != 0.001" >
+	                volts_a_b_min = #{volts_a_b_min},
+	          </if>
+	          <if test="volts_b_c_min != 0.001" >
+	                volts_b_c_min = #{volts_b_c_min},
+	          </if>
+	          <if test="volts_c_a_min != 0.001" >
+	                volts_c_a_min = #{volts_c_a_min},
+	          </if>
+	          <if test="amps_a_min_avg_demand != 0.001" >
+	                amps_a_min_avg_demand = #{amps_a_min_avg_demand},
+	          </if>
+	          <if test="amps_b_min_avg_demand != 0.001" >
+	                amps_b_min_avg_demand = #{amps_b_min_avg_demand},
+	          </if>
+	          <if test="amps_c_min_avg_demand != 0.001" >
+	                amps_c_min_avg_demand = #{amps_c_min_avg_demand},
+	          </if>
+	          <if test="positive_watts_3ph_min_avg_demand != 0.001" >
+	                positive_watts_3ph_min_avg_demand = #{positive_watts_3ph_min_avg_demand},
+	          </if>
+	          <if test="positive_vars_3ph_min_avg_demand != 0.001" >
+	                positive_vars_3ph_min_avg_demand = #{positive_vars_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_watts_3ph_min_avg_demand != 0.001" >
+	                negative_watts_3ph_min_avg_demand = #{negative_watts_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_vars_3ph_min_avg_demand != 0.001" >
+	                negative_vars_3ph_min_avg_demand = #{negative_vars_3ph_min_avg_demand},
+	          </if>
+	          <if test="vas_3ph_min_avg_demand != 0.001" >
+	                vas_3ph_min_avg_demand = #{vas_3ph_min_avg_demand},
+	          </if>
+	          <if test="positive_pf_3ph_min_avg_demand != 0.001" >
+	                positive_pf_3ph_min_avg_demand = #{positive_pf_3ph_min_avg_demand},
+	          </if>
+	          <if test="negative_pf_3ph_min_avg_demand != 0.001" >
+	                negative_pf_3ph_min_avg_demand = #{negative_pf_3ph_min_avg_demand},
+	          </if>
+	          <if test="frequency_min != 0.001" >
+	                frequency_min = #{frequency_min},
+	          </if>
+	          <if test="volts_a_n_max != 0.001" >
+	                volts_a_n_max = #{volts_a_n_max},
+	          </if>
+	          <if test="volts_b_n_max != 0.001" >
+	                volts_b_n_max = #{volts_b_n_max},
+	          </if>
+	          <if test="volts_c_n_max != 0.001" >
+	                volts_c_n_max = #{volts_c_n_max},
+	          </if>
+	          <if test="volts_a_b_max != 0.001" >
+	                volts_a_b_max = #{volts_a_b_max},
+	          </if>
+	          <if test="volts_b_c_max != 0.001" >
+	                volts_b_c_max = #{volts_b_c_max},
+	          </if>
+	          <if test="volts_c_a_max != 0.001" >
+	                volts_c_a_max = #{volts_c_a_max},
+	          </if>
+	          <if test="amps_a_max_avg_demand != 0.001" >
+	                amps_a_max_avg_demand = #{amps_a_max_avg_demand},
+	          </if>
+	          <if test="amps_b_max_avg_demand != 0.001" >
+	                amps_b_max_avg_demand = #{amps_b_max_avg_demand},
+	          </if>
+	          <if test="amps_c_max_avg_demand != 0.001" >
+	                amps_c_max_avg_demand = #{amps_c_max_avg_demand},
+	          </if>
+	          <if test="positive_watts_3ph_max_avg_demand != 0.001" >
+	                positive_watts_3ph_max_avg_demand = #{positive_watts_3ph_max_avg_demand},
+	          </if>
+	          <if test="positive_vars_3ph_max_avg_demand != 0.001" >
+	                positive_vars_3ph_max_avg_demand = #{positive_vars_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_watts_3ph_max_avg_demand != 0.001" >
+	                negative_watts_3ph_max_avg_demand = #{negative_watts_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_vars_3ph_max_avg_demand != 0.001" >
+	                negative_vars_3ph_max_avg_demand = #{negative_vars_3ph_max_avg_demand},
+	          </if>
+	          <if test="vas_3ph_max_avg_demand != 0.001" >
+	               vas_3ph_max_avg_demand = #{vas_3ph_max_avg_demand},
+	          </if>
+	          <if test="positive_pf_3ph_max_avg_demand != 0.001" >
+	                positive_pf_3ph_max_avg_demand = #{positive_pf_3ph_max_avg_demand},
+	          </if>
+	          <if test="negative_pf_3ph_max_avg_demand != 0.001" >
+	               negative_pf_3ph_max_avg_demand = #{negative_pf_3ph_max_avg_demand},
+	          </if>
+	          <if test="frequency_max != 0.001" >
+	               frequency_max = #{frequency_max},
+	          </if>
+	          <if test="volts_a_n_thd != 0.001" >
+	                volts_a_n_thd = #{volts_a_n_thd},
+	          </if>
+	          <if test="volts_b_n_thd != 0.001" >
+	                volts_b_n_thd = #{volts_b_n_thd},
+	          </if>
+	          <if test="volts_c_n_thd != 0.001" >
+	                volts_c_n_thd = #{volts_c_n_thd},
+	          </if>
+	          <if test="amps_a_thd != 0.001" >
+	                amps_a_thd = #{amps_a_thd},
+	          </if>
+	          <if test="amps_b_thd != 0.001" >
+	                amps_b_thd = #{amps_b_thd},
+	          </if>
+	          <if test="amps_c_thd != 0.001" >
+	                amps_c_thd = #{amps_c_thd},
+	          </if>
+	          <if test="phase_a_current_0th != 0.001" >
+	                phase_a_current_0th = #{phase_a_current_0th},
+	          </if>
+	          <if test="phase_a_current_1st != 0.001" >
+	                phase_a_current_1st = #{phase_a_current_1st},
+	          </if>
+	          <if test="phase_a_current_2nd != 0.001" >
+	               phase_a_current_2nd = #{phase_a_current_2nd},
+	          </if>
+	          <if test="phase_a_current_3rd != 0.001" >
+	                phase_a_current_3rd = #{phase_a_current_3rd},
+	          </if>
+	          <if test="phase_a_current_4th != 0.001" >
+	                phase_a_current_4th = #{phase_a_current_4th},
+	          </if>
+	          <if test="phase_a_current_5th != 0.001" >
+	                phase_a_current_5th = #{phase_a_current_5th},
+	          </if>
+	          <if test="phase_a_current_6th != 0.001" >
+	                phase_a_current_6th = #{phase_a_current_6th},
+	          </if>
+	          <if test="phase_a_current_7th != 0.001" >
+	                phase_a_current_7th = #{phase_a_current_7th},
+	          </if>
+	          <if test="phase_a_voltage_0th != 0.001" >
+	                phase_a_voltage_0th = #{phase_a_voltage_0th},
+	          </if>
+	          <if test="phase_a_voltage_1st != 0.001" >
+	                phase_a_voltage_1st = #{phase_a_voltage_1st},
+	          </if>
+	          <if test="phase_a_voltage_2nd != 0.001" >
+	                phase_a_voltage_2nd = #{phase_a_voltage_2nd},
+	          </if>
+	          <if test="phase_a_voltage_3rd != 0.001" >
+	                phase_a_voltage_3rd = #{phase_a_voltage_3rd},
+	          </if>
+	          <if test="phase_b_current_0th != 0.001" >
+	                phase_b_current_0th = #{phase_b_current_0th},
+	          </if>
+	          <if test="phase_b_current_1st != 0.001" >
+	                phase_b_current_1st = #{phase_b_current_1st},
+	          </if>
+	          <if test="phase_b_current_2nd != 0.001" >
+	                phase_b_current_2nd = #{phase_b_current_2nd},
+	          </if>
+	          <if test="phase_b_current_3rd != 0.001" >
+	                phase_b_current_3rd = #{phase_b_current_3rd},
+	          </if>
+	          <if test="phase_b_current_4th != 0.001" >
+	                phase_b_current_4th = #{phase_b_current_4th},
+	          </if>
+	          <if test="phase_b_current_5th != 0.001" >
+	               phase_b_current_5th = #{phase_b_current_5th},
+	          </if>
+	          <if test="phase_b_current_6th != 0.001" >
+	                phase_b_current_6th = #{phase_b_current_6th},
+	          </if>
+	          <if test="phase_b_current_7th != 0.001" >
+	                phase_b_current_7th = #{phase_b_current_7th},
+	          </if>
+	          <if test="phase_b_voltage_0th != 0.001" >
+	                phase_b_voltage_0th = #{phase_b_voltage_0th},
+	          </if>
+	          <if test="phase_b_voltage_1st != 0.001" >
+	                phase_b_voltage_1st = #{phase_b_voltage_1st},
+	          </if>
+	          <if test="phase_b_voltage_2nd != 0.001" >
+	                phase_b_voltage_2nd = #{phase_b_voltage_2nd},
+	          </if>
+	          <if test="phase_b_voltage_3rd != 0.001" >
+			  	phase_b_voltage_3rd = #{phase_b_voltage_3rd},
+			  </if>
+			  <if test="phase_c_current_0th != 0.001" >
+			  	phase_c_current_0th = #{phase_c_current_0th},
+			  </if>
+			  <if test="phase_c_current_1st != 0.001" >
+			  	phase_c_current_1st = #{phase_c_current_1st},
+			  </if>
+			  <if test="phase_c_current_2nd != 0.001" >
+			  	phase_c_current_2nd = #{phase_c_current_2nd},
+			  </if>
+			  <if test="phase_c_current_3rd != 0.001" >
+			  	phase_c_current_3rd = #{phase_c_current_3rd},
+			  </if>
+			  <if test="phase_c_current_4th != 0.001" >
+			  	phase_c_current_4th = #{phase_c_current_4th},
+			  </if>
+			  <if test="phase_c_current_5th != 0.001" >
+			  	phase_c_current_5th = #{phase_c_current_5th},
+			  </if>
+			  <if test="phase_c_current_6th != 0.001" >
+			  	phase_c_current_6th = #{phase_c_current_6th},
+			  </if>
+			  <if test="phase_c_current_7th != 0.001" >
+			  	phase_c_current_7th = #{phase_c_current_7th},
+			  </if>
+			  <if test="phase_c_voltage_0th != 0.001" >
+			  	phase_c_voltage_0th = #{phase_c_voltage_0th},
+			  </if>
+			  <if test="phase_c_voltage_1st != 0.001" >
+			  	phase_c_voltage_1st = #{phase_c_voltage_1st},
+			  </if>
+			  <if test="phase_c_voltage_2nd != 0.001" >
+			  	phase_c_voltage_2nd = #{phase_c_voltage_2nd},
+			  </if>
+			  <if test="phase_c_voltage_3rd != 0.001" >
+			  	phase_c_voltage_3rd = #{phase_c_voltage_3rd},
+			  </if>
+			  <if test="angle_phase_a_current != 0.001" >
+			  	angle_phase_a_current = #{angle_phase_a_current},
+			  </if>
+			  <if test="angle_phase_b_current != 0.001" >
+			  	angle_phase_b_current = #{angle_phase_b_current},
+			  </if>
+			  <if test="angle_phase_c_current != 0.001" >
+			  	angle_phase_c_current = #{angle_phase_c_current},
+			  </if>
+			  <if test="angle_volts_a_b != 0.001" >
+			  	angle_volts_a_b = #{angle_volts_a_b},
+			  </if>
+			  <if test="angle_volts_b_c != 0.001" >
+			  	angle_volts_b_c = #{angle_volts_b_c},
+			  </if>
+			  <if test="angle_volts_c_a != 0.001" >
+			  	angle_volts_c_a = #{angle_volts_c_a},
+			  </if>
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelShark100v1Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
