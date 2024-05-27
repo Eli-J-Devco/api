@@ -159,7 +159,7 @@
 		LEFT JOIN (
 			SELECT 
 				time,
-				IF(nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST( (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) - nvmActiveEnergy, 0), 2) ) AS MeasuredProduction
+				IF(nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST(nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)), 0), 2) ) AS MeasuredProduction
 			FROM 
 				${datatablename}
 			WHERE
