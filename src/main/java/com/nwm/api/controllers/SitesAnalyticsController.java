@@ -4,18 +4,31 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.List;
 import javax.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription;
+import com.itextpdf.styledxmlparser.css.media.MediaType;
+import com.nwm.api.entities.SitesAnalyticsReportEntity;
+import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SendMail;
+import com.nwm.api.utils.Translator;
+import org.springframework.web.bind.annotation.*;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.EmployeeFilterRecentlyEntity;
 import com.nwm.api.services.SitesAnalyticsService;
 import com.nwm.api.utils.Constants;
-
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -173,7 +186,55 @@ public class SitesAnalyticsController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
-	
-	
+
+	/**
+	 * @description Send PDF Report
+	 * @author nhan.tran
+	 * @since 2024-05-28
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/send-pdf-report")
+	public @ResponseBody Object sendPDFReport(@RequestBody SitesAnalyticsReportEntity obj) {
+		try {
+			String fileName = obj.getFileName() + "." + obj.getFileType();
+			String htmlData = obj.getHtml();
+			String email = obj.getEmail();
+			String title = obj.getTitle() != null ? obj.getTitle() : "Custom Reports";
+
+			if (!email.matches("^(|([a-zA-Z0-9_\\-.]+)@([a-zA-Z0-9_\\-.]+)\\.([a-zA-Z]{2,5}){1,25})+(,(\\s*)(([a-zA-Z0-9_\\-.]+)@([a-zA-Z0-9_\\-.]+)\\.([a-zA-Z]{2,5}){1,25})+)*$"))
+				throw new IllegalArgumentException(Constants.VALIDATE_EMAIL);
+
+			if (Lib.isBlank(fileName) || Lib.isBlank(htmlData) || Lib.isBlank(email)) {
+                throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+            }
+
+			File file = new File(fileName);
+			PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
+			pdfDocument.setDefaultPageSize(PageSize.A3);
+			HtmlConverter.convertToPdf(htmlData, pdfDocument, new ConverterProperties());
+
+			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+			String msgTemplate = Constants.getMailTempleteByState(16);
+			String body = String.format(msgTemplate,
+					obj.getSiteName(),
+					obj.getId(),
+					obj.getCustomerName(), "Custom ", "", "");
+
+            String tags = "customReport";
+			String fromName = "NEXT WAVE ENERGY MONITORING INC";
+			boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, email, title, body, tags, fileName);
+			if (!flagSent) {
+				throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+			}
+
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
+		} catch (IllegalArgumentException e) {
+			log.error(e);
+            return this.jsonResult(false, e.getMessage(), e, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 }
