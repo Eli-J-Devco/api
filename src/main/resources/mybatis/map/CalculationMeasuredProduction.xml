@@ -138,9 +138,11 @@
 			null AS MeasuredProduction,
 			t.`offset` AS timezone_value,
 			d.view_tablename,
-			d.job_tablename
+			d.job_tablename,
+			dg.table_name AS device_group_table
 		FROM
 			device d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
@@ -155,18 +157,82 @@
 	</select>
 	
 	<update id="updateDeviceMeasuredProduction">
-		UPDATE ${datatablename} dv
-		LEFT JOIN (
-			SELECT 
-				time,
-				IF(nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST(nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)), 0), 2) ) AS MeasuredProduction
-			FROM 
-				${datatablename}
-			WHERE
-				id_device = #{id}
-		) t ON t.time = dv.time
-		SET dv.MeasuredProduction = t.MeasuredProduction
-		WHERE dv.id_device = #{id}
+		<choose>
+			<when test="device_group_table == 'model_meter_ion_8600v3'">
+				UPDATE ${datatablename} dv
+				LEFT JOIN (
+					SELECT
+						time,
+						IF(
+							LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+							0,
+							ROUND(GREATEST(LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) - LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)), 0), 2)
+						) AS MeasuredProduction
+					FROM
+						(
+							SELECT
+								time,
+								kWhDel,
+								LAG(kWhDel, 1) OVER (ORDER BY time) AS kWhDelPrev,
+								kWhDel_Rec,
+								LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+								kWhDelRec,
+								LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+							FROM 
+								${datatablename}
+							WHERE
+								id_device = #{id}
+						) t
+				) t ON t.time = dv.time
+				SET dv.MeasuredProduction = t.MeasuredProduction
+				WHERE dv.id_device = #{id}
+			</when>
+			
+			<when test="device_group_table == 'model_meter_ion_8600v4'">
+				UPDATE ${datatablename} dv
+				LEFT JOIN (
+					SELECT
+						time,
+						IF(
+							LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
+							0,
+							ROUND(GREATEST(LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) - LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)), 0), 2)
+						) AS MeasuredProduction
+					FROM
+						(
+							SELECT
+								time,
+								kWhRec,
+								LAG(kWhRec, 1) OVER (ORDER BY time) AS kWhRecPrev,
+								kWhDel_Rec,
+								LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+								kWhDelRec,
+								LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+							FROM 
+								${datatablename}
+							WHERE
+								id_device = #{id}
+						) t
+				) t ON t.time = dv.time
+				SET dv.MeasuredProduction = t.MeasuredProduction
+				WHERE dv.id_device = #{id}
+			</when>
+			
+			<otherwise>
+				UPDATE ${datatablename} dv
+				LEFT JOIN (
+					SELECT 
+						time,
+						IF(nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0, 0, ROUND( GREATEST(nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)), 0), 2) ) AS MeasuredProduction
+					FROM 
+						${datatablename}
+					WHERE
+						id_device = #{id}
+				) t ON t.time = dv.time
+				SET dv.MeasuredProduction = t.MeasuredProduction
+				WHERE dv.id_device = #{id}
+			</otherwise>
+		</choose>
 	</update>
 	
 	<select id="getDetailSite" resultType="com.nwm.api.entities.SiteEntity" parameterType="com.nwm.api.entities.SiteEntity">
