@@ -136,6 +136,7 @@ public class DeviceEntity {
 	private int id_device_share;
 	private int id_site_share;
 	private boolean filterEnabled;
+	private Double maxPower;
 	
 
 	
@@ -887,8 +888,11 @@ public class DeviceEntity {
 	public void setFilterEnabled(boolean filterEnabled) {
 		this.filterEnabled = filterEnabled;
 	}
-	
-	
-	
+	public Double getMaxPower() {
+		return maxPower;
+	}
+	public void setMaxPower(Double maxPower) {
+		this.maxPower = maxPower;
+	}
 	
 }

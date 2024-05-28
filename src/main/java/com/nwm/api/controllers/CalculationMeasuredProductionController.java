@@ -79,23 +79,16 @@ public class CalculationMeasuredProductionController extends BaseController {
 					deviceItem.setDatatablename(deviceItem.getView_tablename());
 				}
 				
-				Date now = new Date();
 				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTime_zone_value()));
-				SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-				Calendar calCurrent = Calendar.getInstance();
-				calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-				calCurrent.add(Calendar.DATE, -day);
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				Calendar cal = Calendar.getInstance();
-				Date currentDate = calCurrent.getTime();
+				SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+				SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 				
-				for(int t = 0; t <= day; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
-					deviceItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
-					service.updateMeasuredProduction(deviceItem);
-				}
+				Calendar cal = Calendar.getInstance();
+				deviceItem.setEnd_date(endDateFormat.format(cal.getTime()));
+				cal.add(Calendar.DATE, -day);
+				deviceItem.setStart_date(startDateFormat.format(cal.getTime()));
+				
+				service.updateMeasuredProduction(deviceItem);
 			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
@@ -149,25 +142,18 @@ public class CalculationMeasuredProductionController extends BaseController {
 
 			
 			for (int i = 0; i < listDevices.size(); i++) {
-				DeviceEntity deviceItem = (DeviceEntity) listDevices.get(i);
+				CalculationMeasuredProductionEntity deviceItem = (CalculationMeasuredProductionEntity) listDevices.get(i);
 				
-				Date now = new Date();
-				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTimezone_value()));
-				SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				Calendar calCurrent = Calendar.getInstance();
-				calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-				
-				deviceItem.setEnd_date(dateFormat.format(calCurrent.getTime()) + " 23:59:59");
-
-				calCurrent.add(Calendar.DATE, -day);
+				TimeZone.setDefault(TimeZone.getTimeZone(deviceItem.getTime_zone_value()));
+				SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+				SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 				
 				Calendar cal = Calendar.getInstance();
-				Date currentDate = calCurrent.getTime();
-				cal.setTime(currentDate);
-				deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
+				deviceItem.setEnd_date(endDateFormat.format(cal.getTime()));
+				cal.add(Calendar.DATE, -day);
+				deviceItem.setStart_date(startDateFormat.format(cal.getTime()));
 
-				service.updateDeviceMeasuredProduction(deviceItem);
+				service.updateMeasuredProduction(deviceItem);
 			}
 			
 			
