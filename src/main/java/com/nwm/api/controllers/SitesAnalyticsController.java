@@ -227,7 +227,14 @@ public class SitesAnalyticsController extends BaseController {
 				throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 			}
 
-			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
+			pdfDocument.close();
+			if (file.delete()){
+				log.info("Deleted file " + fileName);
+			} else {
+				log.error("Failed to delete file " + fileName);
+			}
+
+            return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (IllegalArgumentException e) {
 			log.error(e);
             return this.jsonResult(false, e.getMessage(), e, 0);
