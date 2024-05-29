@@ -1171,7 +1171,7 @@ public class ReportsController extends BaseController {
 			
 			cell = row1.createCell(2);
 			cell.setCellStyle(cellStyleCustom);
-			cell.setCellValue("ANNUALLY PRODUCTION REPORT");
+			cell.setCellValue("ANNUAL PRODUCTION REPORT");
 
 			// Create CellStyle image
 

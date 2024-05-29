@@ -886,7 +886,7 @@
 	                ac_capacity ${order_by}
 	            </when>
 	            <when test="sort_column == 'built_since'">
-	                built_since ${order_by}
+	                DATE_FORMAT(built_since,'%Y-%m-%d') ${order_by}
 	            </when>
 	            <when test="sort_column == 'company'">
 	                company ${order_by}
@@ -895,7 +895,7 @@
 	                site_group ${order_by}
 	            </when>
 	            <when test="sort_column == 'commissioning'">
-	                commissioning ${order_by}
+	                DATE_FORMAT(commissioning,'%Y-%m-%d') ${order_by}
 	            </when>
 	            <when test="sort_column == 'time_zone'">
 	                time_zone ${order_by}
@@ -903,6 +903,12 @@
 	            <when test="sort_column == 'data_send_time'">
 	                s.data_send_time ${order_by}
 	            </when>
+	            
+	            <when test="sort_column == 'last_modified'">
+	                DATE_FORMAT(al.modified_date,'%Y-%m-%d') ${order_by}
+	            </when>
+	            
+	            
 	            
 	            <when test="sort_column == 'status'">
 	                status ${order_by}
