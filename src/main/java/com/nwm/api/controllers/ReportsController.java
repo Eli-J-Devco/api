@@ -1707,7 +1707,7 @@ public class ReportsController extends BaseController {
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String dir = uploadRootPath() + "/"
 							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/Annually-report-" + timeStamp + ".xlsx";
+					String fileName = dir + "/Annual-report-" + timeStamp + ".xlsx";
 
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
@@ -1715,7 +1715,7 @@ public class ReportsController extends BaseController {
 								Constants.mailFromContact);
 
 						String msgTemplate = Constants.getMailTempleteByState(16);
-						String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Annually ", "", "");
+						String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Annual ", "", "");
 						String mailTo = dataObj.getSubscribers();
 						String subject = Constants.getMailSubjectByState(16);
 
@@ -1748,7 +1748,7 @@ public class ReportsController extends BaseController {
 		try {
 			String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 			String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-			String fileName = dir + "/Annually-report-" + timeStamp + ".pdf";
+			String fileName = dir + "/Annual-report-" + timeStamp + ".pdf";
 			File file = new File(fileName);
 			
 			try (
@@ -2015,7 +2015,7 @@ public class ReportsController extends BaseController {
 
 				    String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 				    String msgTemplate = Constants.getMailTempleteByState(16);
-				    String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Annually ", "", "");
+				    String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Annual ", "", "");
 				    String mailTo = dataObj.getSubscribers();
 				    String subject = Constants.getMailSubjectByState(16);
 				    
