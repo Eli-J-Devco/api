@@ -1544,7 +1544,7 @@ public class ReportsController extends BaseController {
 						baselineGenerationIndexTrailing.add((double) (totalGeneration/totalExpectations) * 100 );
 					}
 					
-					XSSFSheet chartSheet = document.createSheet("Annually Performance");
+					XSSFSheet chartSheet = document.createSheet("Annual Performance");
 					XSSFSheet dataSheet = document.createSheet("data");
 
 					// FileInputStream obtains input bytes from the image file
@@ -1592,7 +1592,7 @@ public class ReportsController extends BaseController {
 					XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
 					XSSFClientAnchor anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 18, 14, 40);
 					XDDFChart chart = drawing1.createChart(anchor1);
-					chart.setTitleText("Annually Performance");
+					chart.setTitleText("Annual Performance");
 					chart.setTitleOverlay(false);
 					chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1200);
 
@@ -1857,7 +1857,7 @@ public class ReportsController extends BaseController {
 					//====== table ============================================================
 					// header and logo
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
-					table.addCell(new com.itextpdf.layout.element.Cell(6, 6).add(new Paragraph("ANNUALLY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+					table.addCell(new com.itextpdf.layout.element.Cell(6, 6).add(new Paragraph("ANNUAL PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
 					table.addCell(new com.itextpdf.layout.element.Cell(6, 4).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
 					table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
@@ -2005,7 +2005,7 @@ public class ReportsController extends BaseController {
 					// plot and return image
 					JFreeChart chart = new JFreeChart(plot);
 					chart.setBackgroundPaint(Color.white);
-					chart.setTitle("Annually Performance");
+					chart.setTitle("Annual Performance");
 					chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1650, 600), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 400));
 
 					// Write the output to a file
