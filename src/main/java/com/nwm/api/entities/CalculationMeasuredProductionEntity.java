@@ -25,6 +25,7 @@ public class CalculationMeasuredProductionEntity {
 	private int id_device_group;
 	private String newtablename;
 	private String device_group_table;
+	private Double maxPower;
 	
 	
 	
@@ -136,6 +137,12 @@ public class CalculationMeasuredProductionEntity {
 	}
 	public void setDevice_group_table(String device_group_table) {
 		this.device_group_table = device_group_table;
+	}
+	public Double getMaxPower() {
+		return maxPower;
+	}
+	public void setMaxPower(Double maxPower) {
+		this.maxPower = maxPower;
 	}
 	
 }
