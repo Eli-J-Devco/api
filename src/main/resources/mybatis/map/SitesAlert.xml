@@ -380,7 +380,7 @@
 			    </when>
 			    
 			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
+			      ORDER BY el.`name` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'message'">
