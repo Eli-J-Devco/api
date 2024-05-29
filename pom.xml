@@ -331,6 +331,12 @@
 		  <version>7.2.4</version>
 		  <type>pom</type>
 		</dependency>
+		<dependency>
+		  <groupId>com.itextpdf</groupId>
+		  <artifactId>html2pdf</artifactId>
+		  <version>4.0.4</version>
+<!--		  <type>pom</type>-->
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
 		<dependency>
 		    <groupId>commons-net</groupId>

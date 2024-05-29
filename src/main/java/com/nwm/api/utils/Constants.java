@@ -228,6 +228,7 @@ public class Constants {
     
     public static String VALIDATE_ERROR_MSG = "VALIDATE.ERROR";
     public static String SEND_MAIL_ERROR_MSG = "SENDMAIL.ERROR";
+	public static String VALIDATE_EMAIL = Translator.toLocale("VALIDATE.EMAIL");
     
     public static String EMAIL_NOT_EXIST = "SENDMAIL.EMAIL_NOT_EXIST";
     public static String LINK_EXPIRED_ERROR_MSG = Translator.toLocale("LINK.EXPIRED");

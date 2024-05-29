@@ -19,6 +19,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.EmployeeFilterRecentlyEntity;
+import com.nwm.api.entities.SitesAnalyticsReportEntity;
 
 
 public class SitesAnalyticsService extends DB {
@@ -254,5 +255,8 @@ public class SitesAnalyticsService extends DB {
 			return new ArrayList();
 		}
 	}
-	
+
+	public void sendCustomReport(SitesAnalyticsReportEntity obj) {
+
+	}
 }
