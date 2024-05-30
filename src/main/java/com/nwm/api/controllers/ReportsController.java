@@ -1675,28 +1675,32 @@ public class ReportsController extends BaseController {
 					
 
 					data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
+					data.setVaryColors(false);
 					bar.setBarDirection(BarDirection.COL);
 
 
 				    
-					series = data.addSeries(categoriesData, valuesData3);
-					
+					XDDFLineChartData.Series seriesLine = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
 
-					series.setTitle("Baseline Generation Index (%)",
+					seriesLine.setTitle("Estimated Generation Index (%)",
 							new CellReference(chartSheet.getSheetName(), 10, 0, true, true));
-					chart.plot(data);
+					seriesLine.setSmooth(false);
+					seriesLine.setMarkerStyle(MarkerStyle.NONE);
+					chart.plot(data);			
+					// set line colors				
+					solidLineSeries(data, 0, PresetColor.GRAY);
+
 
 
 					// this must occur after the call to chart.plot above
-					CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
-				    for (CTLineChart ch : plotAreaLine.getLineChartList()) {
-				        for (CTLineSer ser : ch.getSerList()) {
-				            CTBoolean ctBool = CTBoolean.Factory.newInstance();
-				            ctBool.setVal(false);
-				            ser.setSmooth(ctBool);
-				            ser.addNewMarker().addNewSymbol().setVal(STMarkerStyle.CIRCLE);
-				        }
-				    }
+//					CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
+//				    for (CTLineChart ch : plotAreaLine.getLineChartList()) {
+//				        for (CTLineSer ser : ch.getSerList()) {
+//				            CTBoolean ctBool = CTBoolean.Factory.newInstance();
+//				            ser.setSmooth(ctBool);				            
+//				            ser.addNewMarker().addNewSymbol().setVal(STMarkerStyle.NONE);
+//				        }
+//				    }
 				    
 					
 					// set legend
@@ -4449,15 +4453,19 @@ public class ReportsController extends BaseController {
 					// set correct cross axis
 					bottomAxis.crossAxis(rightAxis);
 					rightAxis.crossAxis(bottomAxis);
-					
+													
 					data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
+					data.setVaryColors(false);
 					bar.setBarDirection(BarDirection.COL);
-					series = data.addSeries(categoriesData, valuesData3);
-					series.setTitle("Baseline Generation Index (%)",
+					XDDFLineChartData.Series seriesLine = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
+					seriesLine.setTitle("Estimated Generation Index (%)",
 							new CellReference(chartSheet.getSheetName(), 8, 3, true, true));
-					chart.plot(data);
-					
-					
+					seriesLine.setSmooth(false);
+					seriesLine.setMarkerStyle(MarkerStyle.NONE);
+					chart.plot(data);		
+					// set line colors				
+					solidLineSeries(data, 0, PresetColor.GRAY);
+									
 					// set legend
 					legend = chart.getOrAddLegend();
 					legend.setPosition(LegendPosition.BOTTOM);
