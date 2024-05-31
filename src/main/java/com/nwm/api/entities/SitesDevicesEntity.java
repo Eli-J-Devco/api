@@ -136,6 +136,8 @@ public class SitesDevicesEntity {
 	private String mqtt_protocol;
 	private String mqtt_username;
 	private String mqtt_password;
+	
+	private String verifyCode;
 
 	
 	
@@ -884,6 +886,12 @@ public class SitesDevicesEntity {
 	}
 	public void setExpiration(String expiration) {
 		this.expiration = expiration;
+	}
+	public String getVerifyCode() {
+		return verifyCode;
+	}
+	public void setVerifyCode(String verifyCode) {
+		this.verifyCode = verifyCode;
 	}
 	
 	

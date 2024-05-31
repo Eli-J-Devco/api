@@ -439,6 +439,7 @@
 			dp.register,
 			dp.hide,
 			dp.standard_name,
+			dp.writable,
 			ct.id AS id_categorize_data,
 			dps.scale
 		FROM

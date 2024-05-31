@@ -121,6 +121,8 @@ public class Constants {
 	public static final String mailMonthlyPortfolioTitle = "mailMonthlyPortfolioTitle";
 	public static final String mailMonthlyPortfolioBody = "mailMonthlyPortfolioBody";
 	
+	public static final String mailOTPTitle = "mailOTPTitle";
+	public static final String mailOTPBody = "mailOTPBody";
 	
 	
 	
@@ -233,6 +235,9 @@ public class Constants {
     public static String EMAIL_NOT_EXIST = "SENDMAIL.EMAIL_NOT_EXIST";
     public static String LINK_EXPIRED_ERROR_MSG = Translator.toLocale("LINK.EXPIRED");
     public static String CHANGE_PASSWORD_SUCCESS_MSG = Translator.toLocale("LINK.CHANGE_PASSWORD_SUCCESS_MSG");
+    
+    public static String OTP_VALIDATE_SUCCESS_MSG = Translator.toLocale("OTP.SUCCESS");
+    public static String OTP_VALIDATE_ERROR_MSG = Translator.toLocale("OTP.ERROR");
     
     // widget
     public static String DOMAIN_GET_JS_WIDGET = "domain_get_js_widget";
@@ -533,6 +538,10 @@ public class Constants {
 		case 19:
 			// annual production trend report (monthly interval)
 				return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioBody);
+		
+		case 20:
+			// Send OTP
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPBody);
 		default:
 			return null;
 		}
@@ -588,6 +597,10 @@ public class Constants {
 		case 19:
 			// monthly portfolio production trend report (monthly interval)
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMonthlyPortfolioTitle);
+		
+		case 20:
+			// Send OTP
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPTitle);
 		default:
 			return null;
 		}

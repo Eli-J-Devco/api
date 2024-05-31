@@ -18,7 +18,11 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
+import com.nwm.api.utils.SendMail;
+import com.nwm.api.utils.TOTP;
 
 public class SitesDevicesService extends DB {
 
@@ -225,36 +229,43 @@ public class SitesDevicesService extends DB {
 	}
 	
 	/**
-	 * @description get list summary device by id_site
+	 * @description Send OTP
 	 * @author Hung.Bui
-	 * @since 2023-06-20
+	 * @since 2024-05-28
 	 * @param id_site
 	 */
 	
-	public String createVerificationCode(SitesDevicesEntity obj) {
-		List dataList = new ArrayList();
+	public boolean sendOTP(String user_name) {
 		try {
-			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
-			return "";
+			String OTP = TOTP.generateTOTP(user_name);
+			if (OTP == null) return false;
+			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+		    String msgTemplate = Constants.getMailTempleteByState(20);
+		    String body = String.format(msgTemplate, "Customer", OTP);
+		    String mailTo = user_name;
+		    String subject = Constants.getMailSubjectByState(20);
+		    
+		    String tags = "OTP_code";
+		    String fromName = "NEXT WAVE ENERGY MONITORING INC";
+		    boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, null, null, subject, body, tags);
+			return flagSent;
 		} catch (Exception ex) {
-			return "";
+			return false;
 		}
 	}
 	
 	/**
-	 * @description get list summary device by id_site
+	 * @description Validate OTP
 	 * @author Hung.Bui
-	 * @since 2023-06-20
+	 * @since 2024-05-28
 	 * @param id_site
 	 */
 	
-	public String sendVerificationCode(String obj) {
-		List dataList = new ArrayList();
+	public boolean validateOTP(String verifyCode, String user_name) {
 		try {
-			dataList = queryForList("SitesDevices.getListSummaryDevice", obj);
-			return "";
+			return TOTP.validateTOTP(user_name, verifyCode);
 		} catch (Exception ex) {
-			return "";
+			return false;
 		}
 	}
 	

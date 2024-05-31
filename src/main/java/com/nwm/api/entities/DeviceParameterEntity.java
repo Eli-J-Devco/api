@@ -47,6 +47,7 @@ public class DeviceParameterEntity{
 	private String scale;
 	private List deviceType;
 	private String filterBy;
+	private int writable;
 	
 	
 	
@@ -279,6 +280,12 @@ public class DeviceParameterEntity{
 	}
 	public void setScale(String scale) {
 		this.scale = scale;
+	}
+	public int getWritable() {
+		return writable;
+	}
+	public void setWritable(int writable) {
+		this.writable = writable;
 	}
 	
 

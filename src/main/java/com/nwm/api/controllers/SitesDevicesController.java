@@ -15,8 +15,11 @@ import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,9 +27,12 @@ import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
@@ -1120,5 +1126,54 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Send OTP
+	 * @author Hung.Bui
+	 * @since 2024-05-28
+	 * @return data (status, message, data)
+	 */
+	
+	@PostMapping("/send-otp")
+	public Object sendOTP(@RequestHeader(name = "Authorization") String token) {
+		try {
+			Map<String, Object> payload = this.extractAndDecodeHeader(token);
+			SitesDevicesService service = new SitesDevicesService();
+			return service.sendOTP(payload.get("user_name").toString()) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, null) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+		}
+	}
+	
+	/**
+	 * @description Validate OTP
+	 * @author Hung.Bui
+	 * @since 2024-05-28
+	 * @return data (status, message, data)
+	 */
+	
+	@PostMapping("/validate-otp")
+	public Object validateOTP(@RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String token) {
+		try {
+			Map<String, Object> payload = this.extractAndDecodeHeader(token);
+			SitesDevicesService service = new SitesDevicesService();
+			return service.validateOTP(obj.getVerifyCode(), payload.get("user_name").toString()) ? this.jsonResult(true, Constants.OTP_VALIDATE_SUCCESS_MSG, null) : this.jsonResult(false, Constants.OTP_VALIDATE_ERROR_MSG, null);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.OTP_VALIDATE_ERROR_MSG, null);
+		}
+	}
+	
+	private Map<String, Object> extractAndDecodeHeader(String token) {
+		try {
+			String base64Token = token.substring(6);
+			String[] chunks = base64Token.split("\\.");
+			String payload = new String(Base64.getUrlDecoder().decode(chunks[1]));
+			ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(payload, new TypeReference<Map<String, Object>>(){});
+		} catch (Exception e) {
+			return new HashMap<String, Object>();
+		}
+    }
 	
 }
