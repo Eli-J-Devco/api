@@ -156,8 +156,10 @@ public class BuiltInReportService extends DB {
 					}
 					
 					if(flag == false) {
+						ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 						mapItem.setTime_format(item.getTime_format());
 						mapItem.setCategories_time(item.getCategories_time());
+						mapItem.setSiteName(site.getSite_name());
 						mapItem.setActualGeneration(item.getActualGeneration());
 						mapItem.setExpectedGeneration(item.getExpectedGeneration());
 						mapItem.setModeledGeneration(item.getModeledGeneration());
@@ -296,9 +298,11 @@ public class BuiltInReportService extends DB {
 						}
 						
 						if(flag == false) {
+							ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 							mapItem.setTime_format(item.getTime_format());
 							mapItem.setTime_full(item.getTime_full());
 							mapItem.setMonthlyProduction(item.getMonthlyProduction());
+							dataObj.setSite_name(site.getSite_name());
 						}
 						
 						dataNew.add(mapItem);
@@ -412,8 +416,10 @@ public class BuiltInReportService extends DB {
 					}
 					
 					if(flag == false) {
+						ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 						mapItem.setTime_format(item.getTime_format());
 						mapItem.setCategories_time(item.getCategories_time());
+						mapItem.setSiteName(site.getSite_name());
 						mapItem.setActualGeneration(item.getActualGeneration());
 						mapItem.setExpectedGeneration(item.getExpectedGeneration());
 						mapItem.setModeledGeneration(item.getModeledGeneration());

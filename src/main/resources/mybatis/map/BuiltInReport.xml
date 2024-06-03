@@ -52,6 +52,15 @@
 			</if>
 	</select>
 	
+	<select id="getSiteDetail" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
+		SELECT
+			s.`name` AS site_name
+		FROM
+			site s 
+		WHERE
+			s.id = #{id_site}
+	</select>
+	
 	<select id="getDetailReport" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
 			r.id,
