@@ -99,6 +99,25 @@ public class BatchConfig {
 		
 	}
 	
+	
+	/**
+	 * @description batch job get sunset, sunrise
+	 * @author long.pham
+	 * @since 2021-02-17
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 * */60 * * *")
+	public void startBatchJobGetSunriseSunset() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			BatchJob job =new BatchJob(); 
+			job.runCronJobGeSunriseSunsetJava();
+		}
+		
+	}
+	
 	/**
 	 * @description batch job get alert for all device No Communication
 	 * @author long.pham

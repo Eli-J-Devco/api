@@ -75,6 +75,7 @@ import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
+import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
@@ -207,14 +208,6 @@ public class BatchJob {
 					item.setWeather_icon(weatherIcon);
 					item.setWeather_description(weatherDescription);
 				}
-				
-				JSONObject jsonarrSunriseSunset = (JSONObject) jobj.get("sys");
-				if(jsonarrSunriseSunset.size() > 0) {
-					long sunrise = (long) jsonarrSunriseSunset.get("sunrise");
-					long sunset = (long) jsonarrSunriseSunset.get("sunset");
-					item.setSunrise(sunrise);
-					item.setSunset(sunset);
-				}
 			}
 			return item;
 		} catch (Exception e) {
@@ -243,8 +236,6 @@ public class BatchJob {
 				if (weather.getWeather_icon() == null || weather.getWeather_description() == null) {
 					weather.setWeather_description(null);
 					weather.setWeather_icon(null);
-					weather.setSunrise(0);
-					weather.setSunset(0);
 				}
 
 				// Update site weather
@@ -254,6 +245,59 @@ public class BatchJob {
 			log.error(e);
 		}
 
+	}
+	
+	
+	
+	public void runCronJobGeSunriseSunsetJava() {
+		
+		try {
+			BatchJobService service = new BatchJobService();
+			// Get list site
+			List listSite = service.getListSite(new SiteEntity());
+			if (listSite == null || listSite.size() == 0) {
+				return;
+			}
+
+			for (int i = 0; i < listSite.size(); i++) {
+				SiteEntity siteItem = (SiteEntity) listSite.get(i);
+				// Get sunrise sunset API
+				double lat = (double) siteItem.getLat();
+				double lng = (double) siteItem.getLng();
+				
+				String inline = "";
+				SiteEntity item = new SiteEntity();
+				item.setId_site(siteItem.getId_site());
+				String APIURL = Constants.sunriseSunsetAPI + "?lat=" + lat + "&lng=" + lng + "&formatted=0";
+				URL url = new URL(APIURL);
+				HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+				conn.setRequestMethod("GET");
+				conn.connect();
+				int responsecode = conn.getResponseCode();
+				if (responsecode == 200) {
+					Scanner sc = new Scanner(url.openStream());
+					while (sc.hasNext()) {
+						inline += sc.nextLine();
+					}
+					sc.close();
+					JSONParser parse = new JSONParser();
+					JSONObject jobj = (JSONObject) parse.parse(inline);
+					JSONObject jsonobj = (JSONObject) jobj.get("results");
+
+					String sunrise = (String) jsonobj.get("sunrise");
+					String sunset = (String) jsonobj.get("sunset");
+					
+					WeatherEntity weather = new WeatherEntity();
+					weather.setId_site(siteItem.getId());
+					weather.setSunrise(sunrise);
+					weather.setSunset(sunset);
+					service.updateSunriseSunsetJava(weather);
+				}
+			}
+
+		} catch (Exception e) {
+			log.error(e);
+		}
 	}
 
 //	public void runCronJobUpdateEnergyLifetime() {

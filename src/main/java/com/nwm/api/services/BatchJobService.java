@@ -724,6 +724,22 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	
+	/**
+	 * @description update sunset sunrise from java
+	 * @author long.pham
+	 * @since 2021-05-18
+	 */
+	public boolean updateSunriseSunsetJava(WeatherEntity obj){
+		try{
+			return update("BatchJob.updateSunriseSunsetJava", obj)>0;
+		}catch (Exception ex) {
+			log.error("BatchJob.updateSunriseSunsetJava", ex);
+			return false;
+		}
+	}
+	
+	
 	/**
 	 * @description update sunrise and sunset time 
 	 * @author duy.phan

@@ -154,7 +154,7 @@
 			AND a.`status` = 1
 	</select>
 	
-	<select id="getListSite" resultType="com.nwm.api.entities.SiteEntity" >
+	<select id="getListSite" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			t.`value` AS time_zone_value,
 			s.*
@@ -622,12 +622,21 @@
 		UPDATE `site`
 		SET
 			weather_icon = #{weather_icon},
-			weather_description = #{weather_description},
-			sunrise = FROM_UNIXTIME(#{sunrise}, '%H:%m:%s'),
-			sunset = FROM_UNIXTIME(#{sunset}, '%H:%m:%s')
+			weather_description = #{weather_description}
 		WHERE
 			`id` = #{id_site}
 	</update>
+	
+	
+	<update id="updateSunriseSunsetJava">
+		UPDATE `site`
+		SET
+			sunrise = #{sunrise},
+			sunset = #{sunset}
+		WHERE
+			`id` = #{id_site}
+	</update>
+	
 	
 	
 	<update id="updateLastValueDevice">
@@ -643,7 +652,9 @@
 		UPDATE `site`
 		SET
 			start_date_time = #{start_date_time},
-			end_date_time = #{end_date_time}
+			end_date_time = #{end_date_time},
+			sunrise = #{sunrise},
+			sunset = #{sunset}
 		WHERE
 			`id` = #{id}
 	</update>

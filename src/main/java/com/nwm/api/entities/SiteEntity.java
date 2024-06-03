@@ -211,8 +211,22 @@ public class SiteEntity {
 	private String mqtt_protocol;
 	private String mqtt_username;
 	private String mqtt_password;
+	private String sunrise;
+	private String sunset;
 	
 	
+	public String getSunrise() {
+		return sunrise;
+	}
+	public void setSunrise(String sunrise) {
+		this.sunrise = sunrise;
+	}
+	public String getSunset() {
+		return sunset;
+	}
+	public void setSunset(String sunset) {
+		this.sunset = sunset;
+	}
 	public String getSerial_number() {
 		return serial_number;
 	}

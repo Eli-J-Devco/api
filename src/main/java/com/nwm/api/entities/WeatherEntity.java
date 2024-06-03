@@ -5,28 +5,27 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+
+
 public class WeatherEntity {
 	private int id_site;
 	private String weather_icon;
 	private String weather_description;
-	private long sunrise;
-	private long sunset;
+	private String sunrise;
+	private String sunset;
 	
 	
 
-	public long getSunrise() {
+	public String getSunrise() {
 		return sunrise;
 	}
-	public void setSunrise(long sunrise) {
+	public void setSunrise(String sunrise) {
 		this.sunrise = sunrise;
 	}
-	public long getSunset() {
+	public String getSunset() {
 		return sunset;
 	}
-	public void setSunset(long sunset) {
-		this.sunset = sunset;
-	}
-	public void setSunset(int sunset) {
+	public void setSunset(String sunset) {
 		this.sunset = sunset;
 	}
 	public int getId_site() {
