@@ -79,6 +79,8 @@
 			s.transformer_losses,
 			s.soiling,
 			s.other_losses,
+			TIME_FORMAT(CONVERT_TZ(s.sunrise, '+00:00', t.offset), '%H:%i:%s') AS sunrise,
+			TIME_FORMAT(CONVERT_TZ(s.sunset, '+00:00', t.offset), '%H:%i:%s') AS sunset,
 
 			IF(smm.alert_mail_cc IS NULL || smm.alert_mail_cc = '', '', smm.alert_mail_cc) AS alert_mail_cc,
 			IF(smm.alert_mail_bcc IS NULL || smm.alert_mail_bcc = '', '', smm.alert_mail_bcc) AS alert_mail_bcc,

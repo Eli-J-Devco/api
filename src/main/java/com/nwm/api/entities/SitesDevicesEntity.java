@@ -138,6 +138,8 @@ public class SitesDevicesEntity {
 	private String mqtt_password;
 	
 	private String verifyCode;
+	private String sunrise;
+	private String sunset;
 
 	
 	
@@ -892,6 +894,18 @@ public class SitesDevicesEntity {
 	}
 	public void setVerifyCode(String verifyCode) {
 		this.verifyCode = verifyCode;
+	}
+	public String getSunrise() {
+		return sunrise;
+	}
+	public void setSunrise(String sunrise) {
+		this.sunrise = sunrise;
+	}
+	public String getSunset() {
+		return sunset;
+	}
+	public void setSunset(String sunset) {
+		this.sunset = sunset;
 	}
 	
 	
