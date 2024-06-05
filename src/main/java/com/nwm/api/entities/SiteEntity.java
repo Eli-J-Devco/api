@@ -213,6 +213,7 @@ public class SiteEntity {
 	private String mqtt_password;
 	private String sunrise;
 	private String sunset;
+	private Integer reporting_region;
 	
 	
 	public String getSunrise() {
@@ -1366,6 +1367,12 @@ public class SiteEntity {
 	}
 	public void setFilterEnabled(boolean filterEnabled) {
 		this.filterEnabled = filterEnabled;
+	}
+	public Integer getReporting_region() {
+		return reporting_region;
+	}
+	public void setReporting_region(Integer reporting_region) {
+		this.reporting_region = reporting_region;
 	}
 	
 	

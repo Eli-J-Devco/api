@@ -307,7 +307,8 @@
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
-			s.table_data_report
+			s.table_data_report,
+			CAST(s.reporting_region AS UNSIGNED) AS reporting_region
 			
 		FROM
 			site AS s
@@ -614,6 +615,7 @@
 			`config_sunset_sunrise`,
 			`note`,
 			`is_rec_report`,
+			`reporting_region`,
 			`datalogger_ip`,
 			`about`,
 			`kiosk_view`,
@@ -664,6 +666,7 @@
 			#{config_sunset_sunrise},
 			#{note},
 			#{is_rec_report},
+			#{reporting_region},
 			#{datalogger_ip},
 			#{about},
 			#{kiosk_view},
@@ -723,6 +726,7 @@
 			`config_sunset_sunrise` = #{config_sunset_sunrise},
 			`note` = #{note},
 			`is_rec_report` = #{is_rec_report},
+			`reporting_region` = #{reporting_region},
 			`datalogger_ip` = #{datalogger_ip},
 			`about` = #{about},
 			`kiosk_view` = #{kiosk_view},
@@ -787,6 +791,7 @@
 			t.customer_name,
 			t.ids_employee,
 			s.is_rec_report,
+			s.reporting_region,
 			s.datalogger_ip,
 			s.about,
 			s.kiosk_view,

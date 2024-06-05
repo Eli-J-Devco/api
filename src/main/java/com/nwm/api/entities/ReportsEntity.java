@@ -47,6 +47,7 @@ public class ReportsEntity {
 	private String offset_timezone;
 	private int is_supper_admin;
 	private String table_data_report;
+	private Integer reporting_region;
 	
 	
 	
@@ -283,6 +284,12 @@ public class ReportsEntity {
 	}
 	public void setTable_data_report(String table_data_report) {
 		this.table_data_report = table_data_report;
+	}
+	public Integer getReporting_region() {
+		return reporting_region;
+	}
+	public void setReporting_region(Integer reporting_region) {
+		this.reporting_region = reporting_region;
 	}
 	
 	
