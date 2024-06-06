@@ -32,6 +32,7 @@
 			d.ip_address,
 			d.hidden,
 			d.modbusdevicenumber,
+			tag.tags,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			CASE
 				WHEN d.last_updated IS NULL THEN "Never"
@@ -295,6 +296,23 @@
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
 			) p ON p.id_device = d.id
+			
+			LEFT JOIN (
+				SELECT
+					t.id_device,
+					JSON_ARRAYAGG(obj_tag) AS tags
+				FROM (
+					SELECT
+						d.id AS id_device,
+						JSON_OBJECT('id', t.id, 'name', t.`name`) AS obj_tag
+					FROM
+						tag_device_map tdm 
+						LEFT JOIN device d ON d.id = tdm.id_device
+						LEFT JOIN tag t On t.id = tdm.id_tag
+					WHERE d.`status` = 1 AND d.`is_delete` = 0 AND d.id_site = #{id_site}
+						) t
+				GROUP BY t.id_device
+			) tag ON tag.id_device = d.id
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)

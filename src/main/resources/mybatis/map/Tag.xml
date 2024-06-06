@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Tag">
+	
+	<select id="checkExitsTagName"  resultType="int" parameterType="com.nwm.api.entities.TagEntity">
+    	SELECT count(*) as totalRecord
+		FROM tag t  WHERE t.name = #{name} 
+  	</select>
+	
+	<insert id="insertTag" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO `tag`(
+			`id_employee`,
+			`name`
+		)VALUES(
+			#{id_employee},
+			#{name}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<insert id="insertTagSiteMap" >
+		INSERT INTO `tag_site_map`(
+			id_tag,
+			id_site
+		)VALUES(
+			#{id},
+			#{id_site}
+		)ON DUPLICATE KEY UPDATE
+		`id_tag` = VALUES(id_tag),
+		`id_site` = VALUES(id_site)
+	</insert>
+	
+	<insert id="insertTagDeviceMap">
+		INSERT INTO `tag_device_map`(
+			id_tag,
+			id_device
+		)VALUES(
+			#{id},
+			#{id_device}
+		) ON DUPLICATE KEY UPDATE
+		`id_tag` = VALUES(id_tag),
+		`id_device` = VALUES(id_device)
+	</insert>
+	
+	<select id="getList"  resultType="map">
+    	SELECT *
+		FROM tag t
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListBySite"  resultType="map">
+    	SELECT t.*
+		FROM tag_site_map ts
+		LEFT JOIN tag t ON t.id = ts.id_tag
+		WHERE ts.id_site = #{id_site}
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListByDevice"  resultType="map">
+    	SELECT t.*
+		FROM tag_device_map ts
+		LEFT JOIN tag t ON t.id = ts.id_tag
+		WHERE ts.id_device = #{id_device}
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<delete id="deleteTag">
+		DELETE FROM `tag`
+		WHERE id = #{id}
+	</delete>
+	
+	<delete id="deleteTagMapToSite">
+		DELETE FROM `tag_site_map`
+		WHERE id_tag = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteTagMapToDevice">
+		DELETE FROM `tag_device_map`
+		WHERE id_tag = #{id} AND id_device = #{id_device}
+	</delete>
+
+</mapper>

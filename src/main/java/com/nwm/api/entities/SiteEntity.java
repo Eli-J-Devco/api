@@ -119,6 +119,7 @@ public class SiteEntity {
 	private int value;
 	private double totalGeneration;
 	private int is_hiding;
+	private String tag;
 	
 	private double view_lat;
 	private double view_lng;
@@ -216,6 +217,12 @@ public class SiteEntity {
 	private Integer reporting_region;
 	
 	
+	public String getTag() {
+		return tag;
+	}
+	public void setTag(String tag) {
+		this.tag = tag;
+	}
 	public String getSunrise() {
 		return sunrise;
 	}

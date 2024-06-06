@@ -45,6 +45,7 @@ public class PortfolioService extends DB {
 				Map<String, Object> site = (Map<String, Object>) dataList.get(i);
 				String devicesList = (String) site.get("devices_list");
 				String alerts = (String) site.get("alerts");
+				String tags = (String) site.get("tags");
 				JSONParser parse = new JSONParser();
 				
 				if (!Lib.isBlank(alerts)) {
@@ -52,7 +53,11 @@ public class PortfolioService extends DB {
 					site.put("alerts", jsonAlerts);
 				}
 				
-				
+				if (!Lib.isBlank(tags)) {
+					JSONArray jsonTags = (JSONArray) parse.parse(tags);
+					site.put("tags", jsonTags);
+				}
+							
 				if (!Lib.isBlank(devicesList)) {
 					List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
 					
