@@ -187,6 +187,7 @@
 		 <mapper resource="mybatis/map/VirtualDevice.xml" />
 		 <mapper resource="mybatis/map/CalculationMeasuredProduction.xml" />
 		 <mapper resource="mybatis/map/System.xml" />
+		  <mapper resource="mybatis/map/Tag.xml" />
 		 
 		 <mapper resource="mybatis/map/BuiltInReport.xml"/>
 		 <mapper resource="mybatis/map/FileImportDataOld.xml"/>

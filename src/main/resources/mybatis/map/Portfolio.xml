@@ -84,6 +84,7 @@
 			IFNULL(p.unix_time, 0) AS unix_time,
 			s.note,
 			h.is_hiding,
+			tag.tags,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
 			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
@@ -373,6 +374,23 @@
 					GROUP BY s.id
 					ORDER BY unix_time ASC
 			)p ON p.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					t.id_site,
+					JSON_ARRAYAGG(obj_tag) AS tags
+				FROM (
+					SELECT
+						s.id AS id_site,
+						JSON_OBJECT('id', t.id, 'name', t.`name`) AS obj_tag
+					FROM
+						tag_site_map tsm 
+						LEFT JOIN site s ON s.id = tsm.id_site
+						LEFT JOIN tag t On t.id = tsm.id_tag
+					WHERE s.`status` = 1 AND s.`is_delete` = 0
+						) t
+				GROUP BY t.id_site
+			) tag ON tag.id_site = s.id
 			
 		WHERE s.status = 1 and s.is_delete = 0
 
