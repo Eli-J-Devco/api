@@ -164,6 +164,7 @@ public class SiteEntity {
 	private int timezone_datalogger;
 	private String read_data_all;
 	private List devices;
+	private String ru_id;
 	private String gu_id;
 	private int unit_type_temp;
 	private int unit_wind_speed;
@@ -455,6 +456,12 @@ public class SiteEntity {
 	}
 	public void setUnit_type_temp(int unit_type_temp) {
 		this.unit_type_temp = unit_type_temp;
+	}
+	public String getRu_id() {
+		return ru_id;
+	}
+	public void setRu_id(String ru_id) {
+		this.ru_id = ru_id;
 	}
 	public String getGu_id() {
 		return gu_id;

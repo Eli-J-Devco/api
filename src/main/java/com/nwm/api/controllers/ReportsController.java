@@ -3914,12 +3914,13 @@ public class ReportsController extends BaseController {
 				for (int i = 0; i < data.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) data.get(i);
 					String[] record = { 
-							item.get("rec_id").toString(), 
-							item.get("gu_id").toString(), 
+							item.get("name").toString() + " - " + item.get("devicename").toString(),
+							" "+item.get("ru_id").toString(),
+							" "+item.get("gu_id").toString(),
 							" "+item.get("vintage_date").toString(),
 							" "+item.get("start_date").toString(),
 							" "+item.get("end_date").toString(),
-							item.get("energy_this_month").toString()
+							" "+item.get("energy_this_month").toString()
 							};
 					list.add(record);
 				}

@@ -11,6 +11,9 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EmployeeRoleMapEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
@@ -68,15 +71,25 @@ public class SiteService extends DB {
 	
 
 	public List getSiteByEmployeeREC(SiteEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Site.getSiteByEmployeeREC", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = (List<Map<String, Object>>) queryForList("Site.getSiteByEmployeeREC", obj);
+			if (dataList == null) return new ArrayList();
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("options", mapper.readValue(item.get("devicesJSON").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("options", new ArrayList<Map<String, Object>>());
+				}
+				
+				item.put("devicesJSON", null);
+			}
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	
 	/**
