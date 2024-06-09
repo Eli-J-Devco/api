@@ -189,6 +189,8 @@
 			s.`name` AS site_name,
 			CASE
 		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
+		    	WHEN r.type_report = 3 THEN CONCAT_WS( " " , s.`name`, "Leviton BMO Consumption Report") 
+		    	WHEN r.type_report = 4 THEN CONCAT_WS( " " , s.`name`, "Asset Management and Operation Performance Report") 
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
 		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Production Trend Report")
@@ -364,6 +366,8 @@
 			t.ids_site,
 			CASE
 		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
+		    	WHEN r.type_report = 3 THEN CONCAT_WS( " " , s.`name`, "Leviton BMO Consumption Report") 
+		    	WHEN r.type_report = 4 THEN CONCAT_WS( " " , s.`name`, "Asset Management and Operation Performance Report") 
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
 		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
