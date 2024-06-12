@@ -129,6 +129,8 @@ public class BuiltInReportService extends DB {
 			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
 			
 			if (categories.size() > 0) {
+				ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
+				
 				for (WeeklyDateEntity item : categories) {
 					boolean flag = false;
 					WeeklyDateEntity mapItem = new WeeklyDateEntity();
@@ -156,7 +158,6 @@ public class BuiltInReportService extends DB {
 					}
 					
 					if(flag == false) {
-						ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 						mapItem.setTime_format(item.getTime_format());
 						mapItem.setCategories_time(item.getCategories_time());
 						mapItem.setSiteName(site.getSite_name());
@@ -276,6 +277,8 @@ public class BuiltInReportService extends DB {
 				List<MonthlyProductionTrendReportEntity> dataNew = new ArrayList<MonthlyProductionTrendReportEntity>();
 				
 				if (categories.size() > 0) {
+					ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
+					
 					for (MonthlyProductionTrendReportEntity item : categories) {
 						boolean flag = false;
 						MonthlyProductionTrendReportEntity mapItem = new MonthlyProductionTrendReportEntity();
@@ -298,7 +301,6 @@ public class BuiltInReportService extends DB {
 						}
 						
 						if(flag == false) {
-							ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 							mapItem.setTime_format(item.getTime_format());
 							mapItem.setTime_full(item.getTime_full());
 							mapItem.setMonthlyProduction(item.getMonthlyProduction());
@@ -389,6 +391,8 @@ public class BuiltInReportService extends DB {
 			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
 			
 			if (categories.size() > 0) {
+				ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
+				
 				for (WeeklyDateEntity item : categories) {
 					boolean flag = false;
 					WeeklyDateEntity mapItem = new WeeklyDateEntity();
@@ -416,7 +420,6 @@ public class BuiltInReportService extends DB {
 					}
 					
 					if(flag == false) {
-						ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
 						mapItem.setTime_format(item.getTime_format());
 						mapItem.setCategories_time(item.getCategories_time());
 						mapItem.setSiteName(site.getSite_name());
