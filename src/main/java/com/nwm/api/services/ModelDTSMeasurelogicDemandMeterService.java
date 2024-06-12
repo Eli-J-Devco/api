@@ -22,13 +22,15 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelDTSMeasurelogicDemandMeterEntity setModelDTSMeasurelogicDemandMeter(String line) {
+	public ModelDTSMeasurelogicDemandMeterEntity setModelDTSMeasurelogicDemandMeter(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelDTSMeasurelogicDemandMeterEntity dataModelDTSMeter = new ModelDTSMeasurelogicDemandMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelDTSMeter.setTime(words.get(0).replace("'", ""));
 				dataModelDTSMeter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -49,7 +51,7 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 				dataModelDTSMeter.setPowerS_Total(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelDTSMeter.setPowerQ_Total(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelDTSMeter.setPowerFactor_DTS_Overall(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
-				dataModelDTSMeter.setEnergyP_Total(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
+				dataModelDTSMeter.setEnergyP_Total(energy);
 				dataModelDTSMeter.setEnergyS_Total(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModelDTSMeter.setEnergyQ_Total(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				dataModelDTSMeter.setEnergyP_Total_Imp(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
@@ -59,7 +61,7 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelDTSMeter.setNvmActivePower(power);
-				dataModelDTSMeter.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
+				dataModelDTSMeter.setNvmActiveEnergy(energy);
 				
 				return dataModelDTSMeter;
 				

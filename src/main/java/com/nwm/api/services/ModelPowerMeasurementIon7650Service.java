@@ -22,13 +22,15 @@ public class ModelPowerMeasurementIon7650Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelPowerMeasurementIon7650Entity setModelPowerMeasurementIon7650(String line) {
+	public ModelPowerMeasurementIon7650Entity setModelPowerMeasurementIon7650(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelPowerMeasurementIon7650Entity dataModelPP7650 = new ModelPowerMeasurementIon7650Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModelPP7650.setTime(words.get(0).replace("'", ""));
@@ -90,7 +92,7 @@ public class ModelPowerMeasurementIon7650Service extends DB {
 				dataModelPP7650.setkVATotMax(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
 				
 				dataModelPP7650.setUnused6(Double.parseDouble(!Lib.isBlank(words.get(51)) ? words.get(51) : "0.001"));
-				dataModelPP7650.setkWhDel(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
+				dataModelPP7650.setkWhDel(energy);
 				dataModelPP7650.setkWhRec(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
 				dataModelPP7650.setkVARhDel(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelPP7650.setkVARhRec(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
@@ -130,7 +132,7 @@ public class ModelPowerMeasurementIon7650Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelPP7650.setNvmActivePower(power);
-				dataModelPP7650.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
+				dataModelPP7650.setNvmActiveEnergy(energy);
 				
 				
 				return dataModelPP7650;

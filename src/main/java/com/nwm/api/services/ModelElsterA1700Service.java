@@ -22,13 +22,15 @@ public class ModelElsterA1700Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelElsterA1700Entity setModelElsterA1700(String line) {
+	public ModelElsterA1700Entity setModelElsterA1700(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelElsterA1700Entity dataModelElsterA1700 = new ModelElsterA1700Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModelElsterA1700.setTime(words.get(0).replace("'", ""));
@@ -53,7 +55,7 @@ public class ModelElsterA1700Service extends DB {
 				dataModelElsterA1700.setTotalApparentPower(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
 				dataModelElsterA1700.setTotalPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				dataModelElsterA1700.setGridFrequency(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
-				dataModelElsterA1700.setTotalForwardActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModelElsterA1700.setTotalForwardActiveEnergy(energy);
 				dataModelElsterA1700.setTotalReverseActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
 				dataModelElsterA1700.setTotalForwardReactiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModelElsterA1700.setTotalReverseReactiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
@@ -78,7 +80,7 @@ public class ModelElsterA1700Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelElsterA1700.setNvmActivePower(power);
-				dataModelElsterA1700.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModelElsterA1700.setNvmActiveEnergy(energy);
 				
 				
 				return dataModelElsterA1700;

@@ -22,23 +22,25 @@ public class ModelCampellScientificMeter2Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelCampellScientificMeter2Entity setModelCampellScientificMeter2(String line) {
+	public ModelCampellScientificMeter2Entity setModelCampellScientificMeter2(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelCampellScientificMeter2Entity dataModelCSM2 = new ModelCampellScientificMeter2Entity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelCSM2.setTime(words.get(0).replace("'", ""));
 				dataModelCSM2.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelCSM2.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelCSM2.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				dataModelCSM2.setMeter2_ACPower(power);
-				dataModelCSM2.setTotal_Energy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelCSM2.setTotal_Energy(energy);
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelCSM2.setNvmActivePower(power);
-				dataModelCSM2.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelCSM2.setNvmActiveEnergy(energy);
 				return dataModelCSM2;
 				
 			} else {

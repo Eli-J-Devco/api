@@ -22,13 +22,15 @@ public class ModelMeterIon8600Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelMeterIon8600Entity setModelMeterIon8600(String line) {
+	public ModelMeterIon8600Entity setModelMeterIon8600(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelMeterIon8600Entity dataModelIon = new ModelMeterIon8600Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
@@ -92,7 +94,7 @@ public class ModelMeterIon8600Service extends DB {
 				dataModelIon.setKVARSdMxDR(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
 				dataModelIon.setPhaseRev(Double.parseDouble(!Lib.isBlank(words.get(51)) ? words.get(51) : "0.001"));
 				dataModelIon.setKWhDel(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
-				dataModelIon.setKWhRec(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
+				dataModelIon.setKWhRec(energy);
 				dataModelIon.setKWhDelRec(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
 				dataModelIon.setKWhDel_Rec(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
 				dataModelIon.setKVARhDel(Double.parseDouble(!Lib.isBlank(words.get(56)) ? words.get(56) : "0.001"));
@@ -109,7 +111,7 @@ public class ModelMeterIon8600Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelIon.setNvmActivePower(power);
-				dataModelIon.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
+				dataModelIon.setNvmActiveEnergy(energy);
 				
 				return dataModelIon;
 				

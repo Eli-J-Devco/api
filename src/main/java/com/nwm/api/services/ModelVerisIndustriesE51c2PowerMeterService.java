@@ -23,20 +23,22 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelVerisIndustriesE51c2PowerMeterEntity setModelChintSolectriaInverterClass9725(String line) {
+	public ModelVerisIndustriesE51c2PowerMeterEntity setModelChintSolectriaInverterClass9725(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = new ModelVerisIndustriesE51c2PowerMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelVeris.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelVeris.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelVeris.setAccumulatedRealEnergyNet(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setAccumulatedRealEnergyNet(energy);
 				dataModelVeris.setRealEnergyQuadrants14Import(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelVeris.setRealEnergyQuadrants23Export(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelVeris.setReactiveEnergyQuadrant1(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -111,7 +113,7 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelVeris.setNvmActivePower(power);
-				dataModelVeris.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setNvmActiveEnergy(energy);
 				return dataModelVeris;
 				
 			} else {

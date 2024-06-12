@@ -22,13 +22,15 @@ public class ModelJanitzaUmg604proService extends DB {
 	 * @param data
 	 */
 	
-	public ModelJanitzaUmg604proEntity setModelJanitzaUmg604pro(String line) {
+	public ModelJanitzaUmg604proEntity setModelJanitzaUmg604pro(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelJanitzaUmg604proEntity dataModelJanit = new ModelJanitzaUmg604proEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModelJanit.setTime(words.get(0).replace("'", ""));
@@ -66,7 +68,7 @@ public class ModelJanitzaUmg604proService extends DB {
 				dataModelJanit.setPhaseCPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModelJanit.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				dataModelJanit.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
-				dataModelJanit.setTotalForwardActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelJanit.setTotalForwardActiveEnergy(energy);
 				dataModelJanit.setTotalReverseActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
 				
 				dataModelJanit.setTotalForwardReactiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
@@ -89,7 +91,7 @@ public class ModelJanitzaUmg604proService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelJanit.setNvmActivePower(power);
-				dataModelJanit.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelJanit.setNvmActiveEnergy(energy);
 				
 				return dataModelJanit;
 				

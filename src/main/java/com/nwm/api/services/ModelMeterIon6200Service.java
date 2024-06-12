@@ -22,13 +22,15 @@ public class ModelMeterIon6200Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelMeterIon6200Entity setModelMeterIon6200(String line) {
+	public ModelMeterIon6200Entity setModelMeterIon6200(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelMeterIon6200Entity data = new ModelMeterIon6200Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				data.setTime(words.get(0).replace("'", ""));
 				data.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -73,7 +75,7 @@ public class ModelMeterIon6200Service extends DB {
 				data.setkVAdemand(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				data.setkVARpeakdemand(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
 				data.setkVApeakdemand(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
-				data.setkWhdel(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				data.setkWhdel(energy);
 				data.setkWhrec(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
 				data.setkVARhdel(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
 				data.setkVARhrec(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
@@ -99,7 +101,7 @@ public class ModelMeterIon6200Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				data.setNvmActivePower(power);
-				data.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				data.setNvmActiveEnergy(energy);
 				
 				return data;
 				

@@ -23,20 +23,22 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 	 * @param data
 	 */
 	
-	public ModelVerisIndustriesE50c2aEntity setModelVerisIndustriesE50c2a(String line) {
+	public ModelVerisIndustriesE50c2aEntity setModelVerisIndustriesE50c2a(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelVerisIndustriesE50c2aEntity dataModelVeris = new ModelVerisIndustriesE50c2aEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelVeris.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModelVeris.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModelVeris.setRealEnergyConsumption(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setRealEnergyConsumption(energy);
 				dataModelVeris.setTotalInstantaneousRealPower(power);
 				dataModelVeris.setTotalInstantaneousReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelVeris.setTotalInstantaneousApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -77,7 +79,7 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelVeris.setNvmActivePower(power);
-				dataModelVeris.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModelVeris.setNvmActiveEnergy(energy);
 				return dataModelVeris;
 				
 			} else {

@@ -25,13 +25,15 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelLevitonS40000rPowerMeterEntity setModelLevitonS40000rPowerMeter(String line) {
+	public ModelLevitonS40000rPowerMeterEntity setModelLevitonS40000rPowerMeter(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelLevitonS40000rPowerMeterEntity dataModel = new ModelLevitonS40000rPowerMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
@@ -39,7 +41,7 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModel.setRealEnergyConsumption(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setRealEnergyConsumption(energy);
 				dataModel.setTotalInstantaneousRealPower(power);
 				dataModel.setTotalInstantaneousReactivePower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setTotalInstantaneousApparentPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
@@ -85,7 +87,7 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
-				dataModel.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setNvmActiveEnergy(energy);
 				
 				return dataModel;
 				

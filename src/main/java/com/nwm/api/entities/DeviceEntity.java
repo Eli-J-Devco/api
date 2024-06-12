@@ -137,9 +137,16 @@ public class DeviceEntity {
 	private int id_site_share;
 	private boolean filterEnabled;
 	private Double maxPower;
+	private Double offset_data_old;
 	
 
 	
+	public Double getOffset_data_old() {
+		return offset_data_old;
+	}
+	public void setOffset_data_old(Double offset_data_old) {
+		this.offset_data_old = offset_data_old;
+	}
 	public int getId_site_share() {
 		return id_site_share;
 	}

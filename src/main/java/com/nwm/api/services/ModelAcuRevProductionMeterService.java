@@ -22,13 +22,15 @@ public class ModelAcuRevProductionMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelAcuRevProductionMeterEntity setModelAcuRevProductionMeter(String line) {
+	public ModelAcuRevProductionMeterEntity setModelAcuRevProductionMeter(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAcuRevProductionMeterEntity dataModelAcuRevMeter = new ModelAcuRevProductionMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelAcuRevMeter.setTime(words.get(0).replace("'", ""));
 				dataModelAcuRevMeter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -70,7 +72,7 @@ public class ModelAcuRevProductionMeterService extends DB {
 				dataModelAcuRevMeter.setPhaseAExportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
 				dataModelAcuRevMeter.setPhaseBExportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				dataModelAcuRevMeter.setPhaseCExportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
-				dataModelAcuRevMeter.setTotalImportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModelAcuRevMeter.setTotalImportedEnergy(energy);
 				dataModelAcuRevMeter.setPhaseAImportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
 				dataModelAcuRevMeter.setPhaseBImportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModelAcuRevMeter.setPhaseCImportedEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
@@ -91,7 +93,7 @@ public class ModelAcuRevProductionMeterService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelAcuRevMeter.setNvmActivePower(power);
-				dataModelAcuRevMeter.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModelAcuRevMeter.setNvmActiveEnergy(energy);
 				
 				return dataModelAcuRevMeter;
 				

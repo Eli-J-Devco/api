@@ -24,13 +24,15 @@ public class ModelElkorProductionMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelElkorProductionMeterEntity setModelElkorProductionMeter(String line) {
+	public ModelElkorProductionMeterEntity setModelElkorProductionMeter(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelElkorProductionMeterEntity dataModelElkorP = new ModelElkorProductionMeterEntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModelElkorP.setTime(words.get(0).replace("'", ""));
@@ -79,7 +81,7 @@ public class ModelElkorProductionMeterService extends DB {
 				dataModelElkorP.setSlidingWindowPower(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				dataModelElkorP.setNetTotalEnergy(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
 				dataModelElkorP.setTotalNetApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModelElkorP.setTotalImportEnergy(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModelElkorP.setTotalImportEnergy(energy);
 				dataModelElkorP.setTotalExportEnergy(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
 				dataModelElkorP.setTotalImportApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
 				dataModelElkorP.setTotalExportApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
@@ -123,7 +125,7 @@ public class ModelElkorProductionMeterService extends DB {
 			
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelElkorP.setNvmActivePower(power);
-				dataModelElkorP.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModelElkorP.setNvmActiveEnergy(energy);
 				
 				return dataModelElkorP;
 				

@@ -22,13 +22,15 @@ public class ModelLeviton70D48000Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelLeviton70D48000Entity setModelLeviton70D48000(String line) {
+	public ModelLeviton70D48000Entity setModelLeviton70D48000(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelLeviton70D48000Entity dataModel70D48 = new ModelLeviton70D48000Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(38) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				
 				dataModel70D48.setTime(words.get(0).replace("'", ""));
@@ -74,7 +76,7 @@ public class ModelLeviton70D48000Service extends DB {
 				
 				
 				dataModel70D48.setExportedEnergyCH3C(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModel70D48.setImportedEnergySum(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModel70D48.setImportedEnergySum(energy);
 				dataModel70D48.setImportedEnergyCH1A(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModel70D48.setImportedEnergyCH2B(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModel70D48.setImportedEnergyCH3C(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
@@ -111,7 +113,7 @@ public class ModelLeviton70D48000Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel70D48.setNvmActivePower(power);
-				dataModel70D48.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModel70D48.setNvmActiveEnergy(energy);
 				
 				return dataModel70D48;
 				

@@ -448,7 +448,7 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line);
+													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line, item.getOffset_data_old());
 													dataModelShark100.setId_device(item.getId());
 													dataModelShark100.setDatatablename(item.getDatatablename());
 													dataModelShark100.setView_tablename(item.getView_tablename());
@@ -555,7 +555,7 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100v1Entity dataModelShark100v1 = serviceModelShark100v1.setModelShark100v1(line);
+													ModelShark100v1Entity dataModelShark100v1 = serviceModelShark100v1.setModelShark100v1(line, item.getOffset_data_old());
 													dataModelShark100v1.setId_device(item.getId());
 													dataModelShark100v1.setDatatablename(item.getDatatablename());
 													dataModelShark100v1.setView_tablename(item.getView_tablename());
@@ -1762,7 +1762,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
+													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line, item.getOffset_data_old());
 													dataModelVeris.setId_device(item.getId());
 													dataModelVeris.setDatatablename(item.getDatatablename());
 													dataModelVeris.setView_tablename(item.getView_tablename());
@@ -1969,7 +1969,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line);
+													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line, item.getOffset_data_old());
 													dataModelElkor.setId_device(item.getId());
 													dataModelElkor.setDatatablename(item.getDatatablename());
 													dataModelElkor.setView_tablename(item.getView_tablename());
@@ -2171,7 +2171,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line);
+													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line, item.getOffset_data_old());
 													dataModelElkorP.setId_device(item.getId());
 													dataModelElkorP.setDatatablename(item.getDatatablename());
 													dataModelElkorP.setView_tablename(item.getView_tablename());
@@ -3182,7 +3182,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line);
+													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line, item.getOffset_data_old());
 													dataModelCSM1.setId_device(item.getId());
 													dataModelCSM1.setDatatablename(item.getDatatablename());
 													dataModelCSM1.setView_tablename(item.getView_tablename());
@@ -3284,7 +3284,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line);
+													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line, item.getOffset_data_old());
 													dataModelCSM2.setId_device(item.getId());
 													dataModelCSM2.setDatatablename(item.getDatatablename());
 													dataModelCSM2.setView_tablename(item.getView_tablename());
@@ -3385,7 +3385,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line);
+													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line, item.getOffset_data_old());
 													dataModelCSM3.setId_device(item.getId());
 													dataModelCSM3.setDatatablename(item.getDatatablename());
 													dataModelCSM3.setView_tablename(item.getView_tablename());
@@ -3487,7 +3487,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line);
+													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line, item.getOffset_data_old());
 													dataModelCSM4.setId_device(item.getId());
 													dataModelCSM4.setDatatablename(item.getDatatablename());
 													dataModelCSM4.setView_tablename(item.getView_tablename());
@@ -3797,7 +3797,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
+														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line, item.getOffset_data_old());
 														dataModelVeris.setId_device(item.getId());
 														dataModelVeris.setDatatablename(item.getDatatablename());
 														dataModelVeris.setView_tablename(item.getView_tablename());
@@ -4101,7 +4101,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line);
+														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line, item.getOffset_data_old());
 														dataModelIon.setId_device(item.getId());
 														dataModelIon.setDatatablename(item.getDatatablename());
 														dataModelIon.setView_tablename(item.getView_tablename());
@@ -4200,7 +4200,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V1Entity dataModelIonV1 = serviceModelIonV1.setModelMeterIon8600V1(line);
+														ModelMeterIon8600V1Entity dataModelIonV1 = serviceModelIonV1.setModelMeterIon8600V1(line, item.getOffset_data_old());
 														dataModelIonV1.setId_device(item.getId());
 														dataModelIonV1.setDatatablename(item.getDatatablename());
 														dataModelIonV1.setView_tablename(item.getView_tablename());
@@ -4299,7 +4299,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V2Entity dataModelIonV2 = serviceModelIonV2.setModelMeterIon8600V2(line);
+														ModelMeterIon8600V2Entity dataModelIonV2 = serviceModelIonV2.setModelMeterIon8600V2(line, item.getOffset_data_old());
 														dataModelIonV2.setId_device(item.getId());
 														dataModelIonV2.setDatatablename(item.getDatatablename());
 														dataModelIonV2.setView_tablename(item.getView_tablename());
@@ -4398,7 +4398,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V3Entity dataModelIonV3 = serviceModelIonV3.setModelMeterIon8600V3(line);
+														ModelMeterIon8600V3Entity dataModelIonV3 = serviceModelIonV3.setModelMeterIon8600V3(line, item.getOffset_data_old());
 														dataModelIonV3.setId_device(item.getId());
 														dataModelIonV3.setDatatablename(item.getDatatablename());
 														dataModelIonV3.setView_tablename(item.getView_tablename());
@@ -4497,7 +4497,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V4Entity dataModelIonV4 = serviceModelIonV4.setModelMeterIon8600V4(line);
+														ModelMeterIon8600V4Entity dataModelIonV4 = serviceModelIonV4.setModelMeterIon8600V4(line, item.getOffset_data_old());
 														dataModelIonV4.setId_device(item.getId());
 														dataModelIonV4.setDatatablename(item.getDatatablename());
 														dataModelIonV4.setView_tablename(item.getView_tablename());
@@ -4596,7 +4596,7 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
+														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line, item.getOffset_data_old());
 														dataModelPM7650.setId_device(item.getId());
 														dataModelPM7650.setDatatablename(item.getDatatablename());
 														dataModelPM7650.setView_tablename(item.getView_tablename());
@@ -5435,7 +5435,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelElsterA1700Entity dataModelElsterA1700 = serviceModelElsterA1700.setModelElsterA1700(line);
+														ModelElsterA1700Entity dataModelElsterA1700 = serviceModelElsterA1700.setModelElsterA1700(line, item.getOffset_data_old());
 														dataModelElsterA1700.setId_device(item.getId());
 														dataModelElsterA1700.setDatatablename(item.getDatatablename());
 														dataModelElsterA1700.setView_tablename(item.getView_tablename());
@@ -5740,7 +5740,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelDTSMeasurelogicDemandMeterEntity dataModelDTSMeter = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line);
+														ModelDTSMeasurelogicDemandMeterEntity dataModelDTSMeter = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line, item.getOffset_data_old());
 														dataModelDTSMeter.setId_device(item.getId());
 														dataModelDTSMeter.setDatatablename(item.getDatatablename());
 														dataModelDTSMeter.setView_tablename(item.getView_tablename());
@@ -5843,7 +5843,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelJanitzaUmg604proEntity dataModelJan = serviceModelJan.setModelJanitzaUmg604pro(line);
+														ModelJanitzaUmg604proEntity dataModelJan = serviceModelJan.setModelJanitzaUmg604pro(line, item.getOffset_data_old());
 														dataModelJan.setId_device(item.getId());
 														dataModelJan.setDatatablename(item.getDatatablename());
 														dataModelJan.setView_tablename(item.getView_tablename());
@@ -5945,7 +5945,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelLeviton70D48000Entity dataModel70D = serviceModel70D.setModelLeviton70D48000(line);
+														ModelLeviton70D48000Entity dataModel70D = serviceModel70D.setModelLeviton70D48000(line, item.getOffset_data_old());
 														dataModel70D.setId_device(item.getId());
 														dataModel70D.setDatatablename(item.getDatatablename());
 														dataModel70D.setView_tablename(item.getView_tablename());
@@ -6047,7 +6047,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuRevProductionMeterEntity dataModelAcuRevMeter = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line);
+														ModelAcuRevProductionMeterEntity dataModelAcuRevMeter = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line, item.getOffset_data_old());
 														dataModelAcuRevMeter.setId_device(item.getId());
 														dataModelAcuRevMeter.setDatatablename(item.getDatatablename());
 														dataModelAcuRevMeter.setView_tablename(item.getView_tablename());
@@ -6442,7 +6442,7 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelKlea220pEntity dataModelKlea = serviceModelKlea.setModelKlea220p(line);
+						                        	  ModelKlea220pEntity dataModelKlea = serviceModelKlea.setModelKlea220p(line, item.getOffset_data_old());
 						                        	  dataModelKlea.setId_device(item.getId());
 						                        	  dataModelKlea.setDatatablename(item.getDatatablename());
 						                        	  dataModelKlea.setView_tablename(item.getView_tablename());
@@ -6541,7 +6541,7 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelMeterIon6200Entity data = serviceModelMeterIon6200.setModelMeterIon6200(line);
+						                        	  ModelMeterIon6200Entity data = serviceModelMeterIon6200.setModelMeterIon6200(line, item.getOffset_data_old());
 						                        	  data.setId_device(item.getId());
 						                        	  data.setDatatablename(item.getDatatablename());
 						                        	  data.setView_tablename(item.getView_tablename());
@@ -6641,7 +6641,7 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelLevitonS40000rPowerMeterEntity data = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line);
+						                        	  ModelLevitonS40000rPowerMeterEntity data = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line, item.getOffset_data_old());
 						                        	  data.setId_device(item.getId());
 						                        	  data.setDatatablename(item.getDatatablename());
 						                        	  data.setView_tablename(item.getView_tablename());
@@ -6841,7 +6841,7 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuvimIIREntity dataModelAcuvimIIR = serviceModelAcuvimIIR.setModelAcuvimIIR(line);
+														ModelAcuvimIIREntity dataModelAcuvimIIR = serviceModelAcuvimIIR.setModelAcuvimIIR(line, item.getOffset_data_old());
 														dataModelAcuvimIIR.setId_device(item.getId());
 														dataModelAcuvimIIR.setDatatablename(item.getDatatablename());
 														dataModelAcuvimIIR.setView_tablename(item.getView_tablename());

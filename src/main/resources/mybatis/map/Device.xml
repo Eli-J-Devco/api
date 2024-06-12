@@ -44,6 +44,8 @@
 		<result property="id_device_share" column="id_device_share" />
 		<result property="id_site_share" column="id_site_share" />
 		<result property="data_send_time" column="data_send_time" />
+		<result property="offset_data_old" column="offset_data_old" />
+		
 		
 		
 		
@@ -88,7 +90,8 @@
 			dg.table_name  AS device_group_table,
 			dl.datalogger_table,
 			s.enable_alert,
-			s.data_send_time
+			s.data_send_time,
+			IFNULL(d.offset_data_old, 0) AS offset_data_old
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -203,7 +206,8 @@
 			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter,
 			s.id_site_share,
 			s.id_device_share,
-			s.table_share_data
+			s.table_share_data,
+			IFNULL(s.offset_data_old, 0) AS offset_data_old
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -345,7 +349,8 @@
 			`consumption_meter`,
 			`id_site_share`,
 			`id_device_share`,
-			`table_share_data`
+			`table_share_data`,
+			`offset_data_old`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -379,7 +384,8 @@
 			#{consumption_meter},
 			#{id_site_share},
 			#{id_device_share},
-			#{table_share_data}
+			#{table_share_data},
+			#{offset_data_old}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -429,7 +435,8 @@
 				consumption_meter = #{consumption_meter},
 				id_site_share = #{id_site_share},
 				id_device_share = #{id_device_share},
-				table_share_data = #{table_share_data}
+				table_share_data = #{table_share_data},
+				offset_data_old = #{offset_data_old}
 			WHERE
 				`id` = #{id}
 		</if>

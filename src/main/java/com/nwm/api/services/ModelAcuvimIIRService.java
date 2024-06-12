@@ -22,13 +22,15 @@ public class ModelAcuvimIIRService extends DB {
 	 * @param data
 	 */
 	
-	public ModelAcuvimIIREntity setModelAcuvimIIR(String line) {
+	public ModelAcuvimIIREntity setModelAcuvimIIR(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAcuvimIIREntity dataModelAcuvimIIR = new ModelAcuvimIIREntity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001");
+				if(energy > 0) { energy = energy + offset_data_old; }
 				
 				dataModelAcuvimIIR.setTime(words.get(0).replace("'", ""));
 				dataModelAcuvimIIR.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -117,7 +119,7 @@ public class ModelAcuvimIIRService extends DB {
 				dataModelAcuvimIIR.setEnergyEXP(Double.parseDouble(!Lib.isBlank(words.get(83)) ? words.get(83) : "0.001"));
 				dataModelAcuvimIIR.setReactiveEnergyIMP(Double.parseDouble(!Lib.isBlank(words.get(84)) ? words.get(84) : "0.001"));
 				dataModelAcuvimIIR.setReactiveEnergyEXP(Double.parseDouble(!Lib.isBlank(words.get(85)) ? words.get(85) : "0.001"));
-				dataModelAcuvimIIR.setEnergyTotal(Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001"));		
+				dataModelAcuvimIIR.setEnergyTotal(energy);		
 				dataModelAcuvimIIR.setEnergyNet(Double.parseDouble(!Lib.isBlank(words.get(87)) ? words.get(87) : "0.001"));
 				dataModelAcuvimIIR.setReactiveEnergyTotal(Double.parseDouble(!Lib.isBlank(words.get(88)) ? words.get(88) : "0.001"));
 				dataModelAcuvimIIR.setReactiveEnergyNet(Double.parseDouble(!Lib.isBlank(words.get(89)) ? words.get(89) : "0.001"));
@@ -125,7 +127,7 @@ public class ModelAcuvimIIRService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelAcuvimIIR.setNvmActivePower(power);
-				dataModelAcuvimIIR.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001"));
+				dataModelAcuvimIIR.setNvmActiveEnergy(energy);
 				
 				return dataModelAcuvimIIR;
 				
