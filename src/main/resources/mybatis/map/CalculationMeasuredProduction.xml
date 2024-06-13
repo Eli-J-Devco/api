@@ -209,7 +209,7 @@
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND d.id_device_group IN (48,46,31,32, 87)
+			AND d.id_device_group IN (48,46,31,32)
 			<if test="id_site > 0">
 				AND d.id_site = #{id_site}
 			</if>
