@@ -352,6 +352,7 @@
 			s.id AS id_site,
 			s.`name` AS site_name,
 			s.table_data_report,
+			s.table_data_virtual,
 			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -376,7 +377,8 @@
 		    		END
 		    	ELSE s.`name`
 			END	AS report_name,
-			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address
+			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
 		FROM
 			site s 
 			LEFT JOIN report r ON r.id_site = s.id
@@ -392,6 +394,20 @@
 					LEFT JOIN site s ON s.id = rsm.id_site
 				GROUP BY rsm.id_report
 			) t ON t.id_report = r.id
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+					AND d.id_site = #{id_site}
+			) v ON v.id_site = s.id
 		WHERE
 			r.id = #{id}
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
@@ -1147,6 +1163,356 @@
 				</choose>
 	</select>
 	
+	<select id="getOperationPerformanceReport" resultType="Map">
+		SELECT
+			time_full,
+			ROUND(actualEnergy, 0) AS actualEnergy,
+			ROUND(modeledEnergy, 0) AS modeledEnergy,
+			ROUND(expectedEnergy, 0) AS expectedEnergy,
+			ROUND(actualPOA, 1) AS actualPOA,
+			ROUND(modeledPOA, 1) AS modeledPOA,
+			ROUND(IF(actualEnergy IS NOT NULL AND actualPOA IS NOT NULL AND dc_capacity IS NOT NULL, actualEnergy / (actualPOA * dc_capacity) * 100, NULL), 1) AS actualPerformanceRatio,
+			ROUND(IF(modeledEnergy IS NOT NULL AND modeledPOA IS NOT NULL AND dc_capacity IS NOT NULL, modeledEnergy / (modeledPOA * dc_capacity) * 100, NULL), 1) AS modeledPerformanceRatio,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy * 100, NULL), 1) AS energyIndex,
+			ROUND(IF(actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, actualPOA / modeledPOA * 100, NULL), 1) AS weatherIndex,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL AND actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, (actualEnergy / modeledEnergy) / (actualPOA / modeledPOA) * 100, NULL), 1) AS weatherAdjustedIndex,
+			ROUND(InverterAvailability * 100, 1) AS inverterAvailability
+		FROM (
+			SELECT
+				sdr.time_full,
+				sdr.dc_capacity,
+				sdr.InverterAvailability AS InverterAvailability,
+				CASE
+					WHEN sdr.`month` = "Jan" THEN ee.jan
+					WHEN sdr.`month` = "Feb" THEN ee.feb
+					WHEN sdr.`month` = "Mar" THEN ee.mar
+					WHEN sdr.`month` = "Apr" THEN ee.apr
+					WHEN sdr.`month` = "May" THEN ee.may
+					WHEN sdr.`month` = "Jun" THEN ee.jun
+					WHEN sdr.`month` = "Jul" THEN ee.jul
+					WHEN sdr.`month` = "Aug" THEN ee.aug
+					WHEN sdr.`month` = "Sep" THEN ee.sep
+					WHEN sdr.`month` = "Oct" THEN ee.oct
+					WHEN sdr.`month` = "Nov" THEN ee.nov
+					WHEN sdr.`month` = "Dec" THEN ee.`dec`
+				END AS modeledEnergy,
+				CASE
+					WHEN sdr.`month` = "Jan" THEN ie.jan
+					WHEN sdr.`month` = "Feb" THEN ie.feb
+					WHEN sdr.`month` = "Mar" THEN ie.mar
+					WHEN sdr.`month` = "Apr" THEN ie.apr
+					WHEN sdr.`month` = "May" THEN ie.may
+					WHEN sdr.`month` = "Jun" THEN ie.jun
+					WHEN sdr.`month` = "Jul" THEN ie.jul
+					WHEN sdr.`month` = "Aug" THEN ie.aug
+					WHEN sdr.`month` = "Sep" THEN ie.sep
+					WHEN sdr.`month` = "Oct" THEN ie.oct
+					WHEN sdr.`month` = "Nov" THEN ie.nov
+					WHEN sdr.`month` = "Dec" THEN ie.`dec`
+				END AS modeledPOA,
+				<choose>
+					<when test="enable_virtual_device.booleanValue()">
+						vir.actualEnergy AS actualEnergy,
+						vir.expectedPower * 24 * DAY(LAST_DAY(STR_TO_DATE(vir.time_full, "%b-%y"))) AS expectedEnergy,
+						vir.actualPOA AS actualPOA
+					</when>
+					<otherwise>
+						sdr.actualEnergy AS actualEnergy,
+						sdr.expectedPower * 24 * DAY(LAST_DAY(STR_TO_DATE(sdr.time_full, "%b-%y"))) AS expectedEnergy,
+						sdr.actualPOA AS actualPOA
+					</otherwise>
+				</choose>
+			FROM
+				(
+					SELECT
+						DATE_FORMAT(sdr.time, "%b-%y") AS time_full,
+						DATE_FORMAT(sdr.time, "%b") AS `month`,
+						DATE_FORMAT(sdr.time, "%Y") AS `year`,
+						IF(
+							SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)) > 0,
+							ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1),
+							ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
+						) AS actualEnergy,
+						CASE
+							WHEN s.pv_model = 1 THEN
+								AVG(IF(d.id_device_type = 4,
+									IF(
+										IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[ < ]]> s.ac_capacity,
+										s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+										s.ac_capacity
+									),
+									NULL
+								))
+							WHEN s.pv_model = 2 THEN
+								AVG(IF(d.id_device_type = 4,
+									IF(
+										IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[ < ]]> s.ac_capacity,
+										IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
+										s.ac_capacity
+									),
+									NULL
+								))
+							ELSE
+								AVG(IF(d.id_device_type = 4,
+									IF(
+										s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+										NULL,
+										s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+									),
+									NULL
+								))
+						END AS expectedPower,
+						AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)) AS actualPOA,
+						SUM(ia.InverterAvailability) / DATE_FORMAT(LAST_DAY(sdr.time),'%d') AS InverterAvailability,
+						s.dc_capacity
+					FROM
+						${table_data_report} sdr
+						LEFT JOIN device d ON d.id = sdr.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN (
+							SELECT
+								sdr.time,
+								AVG(sdr.InverterAvailability) AS InverterAvailability,
+								d.id
+							FROM
+								${table_data_report} sdr
+								LEFT JOIN device d ON d.id = sdr.id_device
+							WHERE
+								d.id_site = #{id_site}
+								AND d.status = 1
+								AND d.is_delete = 0
+								AND d.id_device_type = 1
+								AND sdr.time BETWEEN #{start_date} AND #{end_date}
+							GROUP BY
+								sdr.time
+						) ia ON ia.time = sdr.time AND ia.id = d.id
+					WHERE
+						d.id_site = #{id_site}
+						AND d.status = 1
+						AND d.is_delete = 0
+						AND s.status = 1
+						AND s.is_delete = 0
+						AND sdr.time BETWEEN #{start_date} AND #{end_date}
+					GROUP BY
+						time_full
+				) sdr
+				LEFT JOIN (
+					SELECT
+						id_site, `year`, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec`
+					FROM
+						energy_expectations
+					WHERE
+						id_site = #{id_site}
+						AND `year` BETWEEN DATE_FORMAT(#{start_date}, "%Y") AND DATE_FORMAT(#{end_date}, "%Y")
+				) ee ON ee.`year` = sdr.`year`
+				LEFT JOIN (
+					SELECT
+						id_site, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec`
+					FROM
+						irradiance_expectations
+					WHERE
+						id_site = #{id_site}
+				) ie ON ie.id_site = ee.id_site
+				<if test="enable_virtual_device.booleanValue()">
+					LEFT JOIN (
+						SELECT
+							DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%b-%y") AS time_full,
+							SUM(vir.nvmActiveEnergy) AS actualEnergy,
+							AVG(vir.expected_power_ac) AS expectedPower,
+							AVG(vir.nvm_irradiance) AS actualPOA
+						FROM
+							${table_data_virtual} vir
+							LEFT JOIN device d ON d.id = vir.id_device
+							LEFT JOIN site s ON s.id = d.id_site
+							LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+						WHERE
+							d.id_site = #{id_site}
+							AND d.status = 1
+							AND d.is_delete = 0
+							AND s.status = 1
+							AND s.is_delete = 0
+							AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+						GROUP BY
+							time_full
+					) vir ON vir.time_full = sdr.time_full
+				</if>
+		) m
+	</select>
+	
+	<select id="getMonthlyPerformanceReport" resultType="Map">
+		SELECT
+			time_full,
+			ROUND(actualEnergy, 0) AS actualEnergy,
+			ROUND(expectedEnergy, 0) AS expectedEnergy,
+			ROUND(modeledEnergy, 0) AS modeledEnergy,
+			ROUND(IF(actualEnergy IS NOT NULL AND expectedEnergy IS NOT NULL, actualEnergy / expectedEnergy * 100, NULL), 1) AS expectedGenerationIndex,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy * 100, NULL), 1) AS modeledGenerationIndex
+		FROM (
+			SELECT
+				sdr.time_full,
+				sdr.actualEnergy,
+				sdr.expectedPower * 24 AS expectedEnergy,
+				CASE
+					WHEN sdr.`month` = "Jan" THEN ee.jan
+					WHEN sdr.`month` = "Feb" THEN ee.feb
+					WHEN sdr.`month` = "Mar" THEN ee.mar
+					WHEN sdr.`month` = "Apr" THEN ee.apr
+					WHEN sdr.`month` = "May" THEN ee.may
+					WHEN sdr.`month` = "Jun" THEN ee.jun
+					WHEN sdr.`month` = "Jul" THEN ee.jul
+					WHEN sdr.`month` = "Aug" THEN ee.aug
+					WHEN sdr.`month` = "Sep" THEN ee.sep
+					WHEN sdr.`month` = "Oct" THEN ee.oct
+					WHEN sdr.`month` = "Nov" THEN ee.nov
+					WHEN sdr.`month` = "Dec" THEN ee.`dec`
+				END / DAY(LAST_DAY(STR_TO_DATE(sdr.time_full, "%m/%d/%Y"))) AS modeledEnergy
+			FROM
+				(
+					<choose>
+						<when test="enable_virtual_device.booleanValue()">
+							SELECT
+								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%m/%d/%Y") AS time_full,
+								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%b") AS `month`,
+								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%Y") AS `year`,
+								SUM(vir.nvmActiveEnergy) AS actualEnergy,
+								AVG(vir.expected_power_ac) AS expectedPower
+							FROM
+								${table_data_virtual} vir
+								LEFT JOIN device d ON d.id = vir.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+								LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+							WHERE
+								d.id_site = #{id_site}
+								AND d.status = 1
+								AND d.is_delete = 0
+								AND s.status = 1
+								AND s.is_delete = 0
+								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+							GROUP BY
+								time_full
+						</when>
+						<otherwise>
+							SELECT
+								DATE_FORMAT(sdr.time, "%m/%d/%Y") AS time_full,
+								DATE_FORMAT(sdr.time, "%b") AS `month`,
+								DATE_FORMAT(sdr.time, "%Y") AS `year`,
+								IF(
+									SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)) > 0,
+									ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1),
+									ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
+								) AS actualEnergy,
+								CASE
+									WHEN s.pv_model = 1 THEN
+										AVG(IF(d.id_device_type = 4,
+											IF(
+												IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[ < ]]> s.ac_capacity,
+												s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+												s.ac_capacity
+											),
+											NULL
+										))
+									WHEN s.pv_model = 2 THEN
+										AVG(IF(d.id_device_type = 4,
+											IF(
+												IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[ < ]]> s.ac_capacity,
+												IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
+												s.ac_capacity
+											),
+											NULL
+										))
+									ELSE
+										AVG(IF(d.id_device_type = 4,
+											IF(
+												s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+												NULL,
+												s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+											),
+											NULL
+										))
+								END AS expectedPower
+							FROM
+								${table_data_report} sdr
+								LEFT JOIN device d ON d.id = sdr.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+							WHERE
+								d.id_site = #{id_site}
+								AND d.status = 1
+								AND d.is_delete = 0
+								AND s.status = 1
+								AND s.is_delete = 0
+								AND sdr.time BETWEEN #{start_date} AND #{end_date}
+							GROUP BY
+								time_full
+						</otherwise>
+					</choose>
+				) sdr
+				LEFT JOIN (
+					SELECT
+						id_site, `year`, jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, `dec`
+					FROM
+						energy_expectations
+					WHERE
+						id_site = #{id_site}
+						AND `year` BETWEEN DATE_FORMAT(#{start_date}, "%Y") AND DATE_FORMAT(#{end_date}, "%Y")
+				) ee ON ee.`year` = sdr.`year`
+		) m
+	</select>
+	
+	<select id="getEstimatedLossByEventReport" resultType="Map">
+		SELECT
+			event,
+			devicename,
+			startTime,
+			endTime,
+			duration,
+			ROUND(duration * modeledEnergy * ratio / DAY(LAST_DAY(#{start_date})), 0) AS estimatedLoss
+		FROM (
+			SELECT
+				er.message AS event,
+				d.devicename,
+				IFNULL(d.rating_ac_power, 0) / s.ac_capacity AS ratio,
+				DATE_FORMAT(CONVERT_TZ(al.start_date, "+00:00", tz.`offset`), "%m/%d/%Y %h:%i %p") AS startTime,
+				DATE_FORMAT(CONVERT_TZ(al.end_date, "+00:00", tz.`offset`), "%m/%d/%Y %h:%i %p") AS endTime,
+				DATEDIFF(IFNULL(CONVERT_TZ(al.end_date, "+00:00", tz.`offset`), CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", tz.`offset`)), CONVERT_TZ(al.start_date, "+00:00", tz.`offset`)) AS duration,
+				ROUND(
+					CASE
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Jan" THEN ee.jan
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Feb" THEN ee.feb
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Mar" THEN ee.mar
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Apr" THEN ee.apr
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "May" THEN ee.may
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Jun" THEN ee.jun
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Jul" THEN ee.jul
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Aug" THEN ee.aug
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Sep" THEN ee.sep
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Oct" THEN ee.oct
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Nov" THEN ee.nov
+						WHEN DATE_FORMAT(#{start_date}, "%b") = "Dec" THEN ee.`dec`
+					END,
+					0
+				) AS modeledEnergy
+			FROM
+				device d
+				LEFT JOIN alert al ON al.id_device = d.id
+				LEFT JOIN error er ON er.id = al.id_error
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date}, "%Y")
+			WHERE
+				d.id_site = #{id_site}
+				AND d.id_device_type = 1
+				AND d.`status` = 1
+				AND d.is_delete = 0
+				AND s.`status` = 1
+				AND s.is_delete = 0
+				AND er.`status` = 1
+				AND er.is_delete = 0
+				AND er.error_code = "1000"
+				AND al.is_delete = 0
+				AND al.start_date IS NOT NULL
+				AND al.start_date BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+		) m
+	</select>
 	
 	<select id="getDataIrradiance" resultType="Map" >
 		<if test="data_intervals == 1">

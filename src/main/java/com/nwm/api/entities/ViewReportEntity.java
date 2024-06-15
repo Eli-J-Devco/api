@@ -61,6 +61,7 @@ public class ViewReportEntity {
 	private List<Map<String, Object>> dataSite;
 	private String table_data_report;
 	private String table_data_virtual;
+	private boolean enable_virtual_device;
 	
 	
 
@@ -363,6 +364,12 @@ public class ViewReportEntity {
 	}
 	public void setHave_poa(boolean have_poa) {
 		this.have_poa = have_poa;
+	}
+	public boolean isEnable_virtual_device() {
+		return enable_virtual_device;
+	}
+	public void setEnable_virtual_device(boolean enable_virtual_device) {
+		this.enable_virtual_device = enable_virtual_device;
 	}
 	
 	
