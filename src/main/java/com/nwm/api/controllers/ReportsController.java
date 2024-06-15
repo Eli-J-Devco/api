@@ -137,6 +137,7 @@ import com.itextpdf.layout.properties.BorderRadius;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.config.ReportTaskScheduler;
+import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.Book;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
@@ -3826,6 +3827,31 @@ public class ReportsController extends BaseController {
 			ReportsService service = new ReportsService();
 
 			ViewReportEntity dataObj = (ViewReportEntity) service.getQuarterlyReport(obj);
+
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get asset management and performance report
+	 * @author Hung.Bui
+	 * @since 2024-06-10
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/asset-management-and-operation-performance-report")
+	public Object getAssetManagementAndOperationPerformanceReport(@RequestBody ViewReportEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+
+			AssetManagementAndOperationPerformanceReportEntity dataObj = (AssetManagementAndOperationPerformanceReportEntity) service.getAssetManagementAndOperationPerformanceReport(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
