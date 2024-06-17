@@ -42,7 +42,7 @@ public class TagService extends DB {
 			insert("Tag.insertTag", obj);
 			
 			if (obj.getId() >= 0) {
-				if (obj.getType_tag().equals("site")) {				
+				if (obj.getType() == 1) {				
 					insert("Tag.insertTagSiteMap", obj);				
 				} else {
 					insert("Tag.insertTagDeviceMap", obj);
@@ -66,7 +66,33 @@ public class TagService extends DB {
 	public List getList(TagEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Tag.getList", obj);
+			if (obj.getType() == 1) {			
+				dataList = queryForList("Tag.getListTagsForSiteNotMap", obj);	
+			} else {
+				dataList = queryForList("Tag.getListTagsForDeviceNotMap", obj);
+			}
+			
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description get list tag
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 */	
+	public List getListBySearch(TagEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			if (obj.getType() == 1) {			
+				dataList = queryForList("Tag.getListSiteBySearchNotMap", obj);	
+			} else {
+				dataList = queryForList("Tag.getListDeviceBySearchNotMap", obj);
+			}
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -84,7 +110,7 @@ public class TagService extends DB {
 	public List getListBySiteOrDevice(TagEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			if (obj.getType_tag().equals("site")) {			
+			if (obj.getType() == 1) {			
 				dataList = queryForList("Tag.getListBySite", obj);	
 			} else {
 				dataList = queryForList("Tag.getListByDevice", obj);
@@ -120,7 +146,7 @@ public class TagService extends DB {
 	public TagEntity insertTagtoSiteOrDevice(TagEntity obj) 
 	{
 		try {
-			if (obj.getType_tag().equals("site")) {			
+			if (obj.getType() == 1) {			
 				insert("Tag.insertTagSiteMap", obj);		
 			} else {
 				insert("Tag.insertTagDeviceMap", obj);
@@ -141,7 +167,7 @@ public class TagService extends DB {
 	 */
 	public boolean deleteTagMapToSiteOrDevice(TagEntity obj) {
 		try {
-			if (obj.getType_tag().equals("site")) {
+			if (obj.getType() == 1) {
 				return delete("Tag.deleteTagMapToSite", obj) > 0;
 			} else {
 				return delete("Tag.deleteTagMapToDevice", obj) > 0;

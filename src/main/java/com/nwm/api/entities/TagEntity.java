@@ -12,10 +12,18 @@ public class TagEntity {
 	private int id_site;
 	private int id_device;
 	private String type_tag;
+	private int type; // 1 is site's tag - 0 is device's tag
 	
 	
 	
 
+
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
 	public String getType_tag() {
 		return type_tag;
 	}

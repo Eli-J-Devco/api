@@ -74,6 +74,25 @@ public class TagController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list tag
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-by-search")
+	public Object getListBySearch(@RequestBody TagEntity obj) {
+		try {
+			TagService service = new TagService();
+			List data = service.getListBySearch(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+		}
+	}
+	
+	/**
 	 * @description Get list tag By site
 	 * @author Duy.Phan
 	 * @since 2024-06-03

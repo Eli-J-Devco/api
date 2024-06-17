@@ -6,15 +6,17 @@
 	
 	<select id="checkExitsTagName"  resultType="int" parameterType="com.nwm.api.entities.TagEntity">
     	SELECT count(*) as totalRecord
-		FROM tag t  WHERE t.name = #{name} 
+		FROM tag t  WHERE t.name = #{name} AND t.type = #{type}
   	</select>
 	
 	<insert id="insertTag" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO `tag`(
 			`id_employee`,
+			`type`,
 			`name`
 		)VALUES(
 			#{id_employee},
+			#{type},
 			#{name}
 		);
 		<selectKey keyProperty="id" resultType="int">
@@ -50,6 +52,81 @@
 	<select id="getList"  resultType="map">
     	SELECT *
 		FROM tag t
+		WHERE t.type = #{type}
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListTagsForSiteNotMap"  resultType="map">
+    	SELECT *
+		FROM tag t
+		WHERE t.type = 1
+		AND t.id NOT IN (
+			SELECT 
+			t.id
+			FROM tag t
+			LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
+			WHERE t.type = 1
+			AND ts.id_site = #{id_site}
+			ORDER BY t.name ASC  
+		)
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListTagsForDeviceNotMap"  resultType="map">
+    	SELECT *
+		FROM tag t
+		WHERE t.type = 0
+		AND t.id NOT IN (
+			SELECT 
+			t.id
+			FROM tag t
+			LEFT JOIN tag_device_map td ON td.id_tag = t.id
+			WHERE t.type = 0
+			AND td.id_device = #{id_device}
+			ORDER BY t.name ASC  
+		)
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListBySearch"  resultType="map">
+    	SELECT *
+		FROM tag t
+		WHERE t.type = #{type}
+		AND t.name LIKE CONCAT("%",#{name}, "%")
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListSiteBySearchNotMap"  resultType="map">
+    	SELECT *
+		FROM tag t
+		WHERE t.type = #{type}
+		AND t.name LIKE CONCAT("%",#{name}, "%")
+		AND t.id NOT IN (
+			SELECT 
+			t.id
+			FROM tag t
+			LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
+			WHERE t.type = 1
+			AND ts.id_site = #{id_site}
+			ORDER BY t.name ASC  
+		)
+		ORDER BY t.name ASC  
+  	</select>
+  	
+  	<select id="getListDeviceBySearchNotMap"  resultType="map">
+    	SELECT *
+		FROM tag t
+		WHERE t.type = #{type}
+		AND t.name LIKE CONCAT("%",#{name}, "%")
+		AND t.id NOT IN (
+			SELECT 
+			t.id
+			FROM tag t
+			LEFT JOIN tag_device_map td ON td.id_tag = t.id
+			WHERE t.type = 0
+			AND td.id_device = #{id_device}
+			ORDER BY t.name ASC  
+		)
 		ORDER BY t.name ASC  
   	</select>
   	
