@@ -288,6 +288,8 @@
 				WHERE
 					d.id_device_type = 3
 					AND d.`status` = 1 
+					AND d.`is_delete` = 0
+					AND d.consumption_meter = 0
 					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 					GROUP BY d.id_site
 			)meter ON meter.id_site = s.id
@@ -303,6 +305,8 @@
 				WHERE
 					d.id_device_type = 1
 					AND d.`status` = 1 
+					AND d.`is_delete` = 0
+					AND d.consumption_meter = 0
 					AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 					GROUP BY d.id_site
 			)inv ON inv.id_site = s.id
@@ -476,7 +480,7 @@
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE d.`status` = 1 AND s.`status` = 1 AND d.id_device_type = 1
+			WHERE d.`status` = 1 AND s.`status` = 1 AND d.id_device_type = 1 AND d.consumption_meter = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND s.id IN  (
