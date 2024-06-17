@@ -841,7 +841,7 @@ public class LevitonReportsController extends BaseController {
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format((Double)item.get("end_read")))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format((Double)item.get("consumption")))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("consumption_unit"))));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ df.format((Double)item.get("cost")))));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ item.get("cost"))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ df.format((Double)item.get("total")))));
 					}
 					
