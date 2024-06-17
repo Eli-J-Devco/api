@@ -22,8 +22,16 @@ public class LevitonVirtualMeterParameterEntity{
 	private String unit;
 	private int formula;
 	private int id_site;
+	private int enable_for_report;
 	
 	
+	
+	public int getEnable_for_report() {
+		return enable_for_report;
+	}
+	public void setEnable_for_report(int enable_for_report) {
+		this.enable_for_report = enable_for_report;
+	}
 	public int getId() {
 		return id;
 	}

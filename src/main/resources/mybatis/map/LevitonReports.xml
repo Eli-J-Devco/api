@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LevitonReports">
+	<resultMap id="LevtionReportsMap" type="com.nwm.api.entities.ReportsEntity">
+		<result property="id" column="id" />
+		<result property="id_site" column="id_site" />
+		<result property="id_employee" column="id_employee" />
+		<result property="report_type" column="report_type" />
+		<result property="cadence_range" column="cadence_range" />
+		<result property="date_from" column="date_from" />
+		<result property="date_to" column="date_to" />
+		<result property="subscribers" column="subscribers" />
+		<result property="data_intervals" column="data_intervals" />
+		<result property="file_type" column="file_type" />
+		<result property="status" column="status" />
+		<result property="created_date" column="created_date" />
+		<result property="created_by" column="created_by" />
+		<result property="updated_date" column="updated_date" />
+		<result property="updated_by" column="updated_by" />
+	</resultMap>
+	
+	
+	
+	
+	
+	
+	<select id="getDataLevitonReport" resultType="Map">
+		<foreach collection="groupDevices" item="item" index="index" separator="union all">
+			<![CDATA[
+				SELECT
+						#{item.name} AS site_name,
+						#{item.devicename} AS device_name,
+						#{item.device_type} AS device_type,
+						IFNULL(MIN(dv.nvmActiveEnergy), 0) AS start_read,
+						IFNULL(MAX(dv.nvmActiveEnergy), 0) AS end_read,
+						IFNULL(ROUND( MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy), 2), 0) AS consumption,
+						DATE_FORMAT( #{start_date}, '%d/%m/%Y %H:%i %p') AS date_from,
+						DATE_FORMAT( #{end_date}, '%d/%m/%Y %H:%i %p') AS date_to,
+						IFNULL(${item.cost}, 0) AS cost,
+						#{item.cost_unit} AS cost_unit,
+						IFNULL(ROUND( (MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy)) * ${item.cost}, 2), 0) AS total,
+						'kWh' AS consumption_unit
+				FROM
+						${item.datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN device_type dt ON dt.id = d.id_device_type
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+						s.id =  #{item.id_site}
+						AND d.id_device_type = 3
+						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+						AND s.`status` = 1 
+						AND d.`status` = 1 
+				
+				]]>
+	      </foreach>
+	</select>
+	
+	
+	<select id="getDetailReport" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
+		SELECT
+			r.id,
+			s.id AS id_site,
+			s.`name` AS site_name,
+			s.table_data_report,
+			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
+			s.ac_capacity,
+			s.dc_capacity,
+			"Normal" AS system_status,
+			r.cadence_range,
+			r.subscribers,
+			r.data_intervals,
+			r.type_report,
+			r.type_option,
+			r.id_sub_group,
+			r.id_employee,
+			t.ids_site,
+			CASE
+		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
+		    	WHEN r.type_report = 3 THEN CONCAT_WS( " " , s.`name`, "Leviton BMO Consumption Report") 
+		    	WHEN r.type_report = 4 THEN CONCAT_WS( " " , s.`name`, "Asset Management and Operation Performance Report") 
+		    	WHEN r.type_report = 2 THEN
+		    		CASE
+		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
+		    		END
+		    	ELSE s.`name`
+			END	AS report_name,
+			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address
+		FROM
+			site s 
+			LEFT JOIN report r ON r.id_site = s.id
+			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					rsm.id_report,
+					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ', ') AS ids_site
+				FROM
+					report_site_map rsm
+					LEFT JOIN site s ON s.id = rsm.id_site
+				GROUP BY rsm.id_report
+			) t ON t.id_report = r.id
+		WHERE
+			r.id = #{id}
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+	</select>
+	
+	
+	<select id="getListFieldVirtualLeviton" resultType="Map">
+		SELECT 
+			lvmp.*, 
+			d.datatablename,
+			s.cost,
+			s.cost_unit,
+			s.`name` AS site_name,
+			dt.`name` AS device_type
+		FROM leviton_virtual_meter_parameter  lvmp
+		LEFT JOIN device d ON d.id = lvmp.id_device
+		LEFT JOIN device_type dt ON dt.id = d.id_device_type
+		LEFT JOIN site s ON s.id = d.id_site
+		WHERE lvmp.unit = 'kWh' AND lvmp.id_site = #{id_site} AND lvmp.enable_for_report = 1
+		GROUP BY lvmp.id;
+	</select>
+	
+
+	<select id="getVirtualDevice" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity" >
+		SELECT * FROM device d WHERE d.id_device_type = 12 
+		AND d.id_device_group = 81 AND d.`status` = 1 
+		AND d.is_delete = 0 
+		AND d.id_site = #{id_site}
+		LIMIT 1
+	</select>
+	
+	
+	
+	
+	<select id="getDataVirtualMeter" resultType="Map">
+		SELECT 
+			t.site_name,
+			t.device_name,
+			t.device_type,
+			SUM(t.start_read) AS start_read,
+			SUM(t.end_read) AS end_read,
+			SUM(t.consumption) AS consumption,
+			t.date_from,
+			t.date_to,
+			t.cost,
+			t.cost_unit,
+			ROUND(SUM(t.total), 2) AS total,
+			t.id_device_parameter,
+			'kWh' AS consumption_unit
+			FROM (
+			<foreach collection="dataFields" item="item" index="index" separator="union all">
+			<![CDATA[
+				SELECT
+						#{item.site_name} AS site_name,
+						#{item.name} AS device_name,
+						#{item.device_type} AS device_type,
+						IFNULL(MIN(${item.slug}), 0) AS start_read,
+						
+						IFNULL(MAX(${item.slug}), 0) AS end_read,
+						IFNULL(ROUND( MAX(${item.slug}) - MIN(${item.slug}), 2), 0) AS consumption,
+						DATE_FORMAT( #{start_date}, '%d/%m/%Y %H:%i %p') AS date_from,
+						DATE_FORMAT( #{end_date}, '%d/%m/%Y %H:%i %p') AS date_to,
+						IFNULL(${item.cost}, 0) AS cost,
+						#{item.cost_unit} AS cost_unit,
+						IFNULL(ROUND( (MAX(${item.slug}) - MIN(${item.slug})) * ${item.cost}, 2), 0) AS total,
+						#{item.id_device_parameter} AS id_device_parameter
+					FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN device_type dt ON dt.id = d.id_device_type
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+							s.id = #{id_site}
+							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+							AND s.`status` = 1 
+							AND d.`status` = 1 
+				]]>
+			</foreach>
+						
+			)t GROUP BY t.id_device_parameter
+
+	</select>
+</mapper>

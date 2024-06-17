@@ -197,7 +197,7 @@
 		 
 		 <mapper resource="mybatis/map/ThirdPartyAPI.xml"/>
 		 <mapper resource="mybatis/map/UploadJSON.xml"/>
-		 
+		 <mapper resource="mybatis/map/LevitonReports.xml" />
 		 
 		 
 		 

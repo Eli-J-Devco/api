@@ -219,6 +219,7 @@ public class WidgetGroupService extends DB {
 					itemWP.setUnit(item.get("unit").toString());
 					itemWP.setFormula(Integer.parseInt(item.get("formula").toString()));
 					itemWP.setId_site(Integer.parseInt(item.get("id_site").toString()));
+					itemWP.setEnable_for_report(Integer.parseInt(item.get("enable_for_report").toString()));
 					session.insert("WidgetGroup.insertLevitonVirtualMeterParameter", itemWP);
 				}
 			}

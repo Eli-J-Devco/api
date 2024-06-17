@@ -206,7 +206,8 @@
 			`name`,
 			`unit`,
 			`formula`,
-			`id_site`
+			`id_site`,
+			`enable_for_report`
 		)VALUES(
 			#{id_device},
 			#{id_device_parameter},
@@ -215,7 +216,8 @@
 			#{name},
 			#{unit},
 			#{formula},
-			#{id_site}
+			#{id_site},
+			#{enable_for_report}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 

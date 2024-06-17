@@ -466,10 +466,15 @@
 			d.devicename,
 			d.devicename AS export_devicename,
 			d.datatablename,
-			d.id_site
+			d.id_site,
+			s.cost,
+			s.cost_unit,
+			s.`name`,
+			dt.`name` AS device_type
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+			LEFT JOIN site s ON d.id_site = s.id
 		WHERE
 			dt.id = 3 
 			AND d.id_site = #{id_site}
