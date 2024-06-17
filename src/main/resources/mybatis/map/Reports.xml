@@ -1168,7 +1168,7 @@
 				</choose>
 	</select>
 	
-	<select id="getOperationPerformanceReport" resultType="Map">
+	<select id="getOperationPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			time_full,
 			ROUND(actualEnergy, 0) AS actualEnergy,
@@ -1176,12 +1176,12 @@
 			ROUND(expectedEnergy, 0) AS expectedEnergy,
 			ROUND(actualPOA, 1) AS actualPOA,
 			ROUND(modeledPOA, 1) AS modeledPOA,
-			ROUND(IF(actualEnergy IS NOT NULL AND actualPOA IS NOT NULL AND dc_capacity IS NOT NULL, actualEnergy / (actualPOA * dc_capacity) * 100, NULL), 1) AS actualPerformanceRatio,
-			ROUND(IF(modeledEnergy IS NOT NULL AND modeledPOA IS NOT NULL AND dc_capacity IS NOT NULL, modeledEnergy / (modeledPOA * dc_capacity) * 100, NULL), 1) AS modeledPerformanceRatio,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy * 100, NULL), 1) AS energyIndex,
-			ROUND(IF(actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, actualPOA / modeledPOA * 100, NULL), 1) AS weatherIndex,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL AND actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, (actualEnergy / modeledEnergy) / (actualPOA / modeledPOA) * 100, NULL), 1) AS weatherAdjustedIndex,
-			ROUND(InverterAvailability * 100, 1) AS inverterAvailability
+			ROUND(IF(actualEnergy IS NOT NULL AND actualPOA IS NOT NULL AND dc_capacity IS NOT NULL, actualEnergy / (actualPOA * dc_capacity), NULL), 3) AS actualPerformanceRatio,
+			ROUND(IF(modeledEnergy IS NOT NULL AND modeledPOA IS NOT NULL AND dc_capacity IS NOT NULL, modeledEnergy / (modeledPOA * dc_capacity), NULL), 3) AS modeledPerformanceRatio,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL), 3) AS energyIndex,
+			ROUND(IF(actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, actualPOA / modeledPOA, NULL), 3) AS weatherIndex,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL AND actualPOA IS NOT NULL AND modeledPOA IS NOT NULL, (actualEnergy / modeledEnergy) / (actualPOA / modeledPOA), NULL), 3) AS weatherAdjustedIndex,
+			ROUND(InverterAvailability, 3) AS inverterAvailability
 		FROM (
 			SELECT
 				sdr.time_full,
@@ -1344,14 +1344,14 @@
 		) m
 	</select>
 	
-	<select id="getMonthlyPerformanceReport" resultType="Map">
+	<select id="getMonthlyPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			time_full,
 			ROUND(actualEnergy, 0) AS actualEnergy,
 			ROUND(expectedEnergy, 0) AS expectedEnergy,
 			ROUND(modeledEnergy, 0) AS modeledEnergy,
-			ROUND(IF(actualEnergy IS NOT NULL AND expectedEnergy IS NOT NULL, actualEnergy / expectedEnergy * 100, NULL), 1) AS expectedGenerationIndex,
-			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy * 100, NULL), 1) AS modeledGenerationIndex
+			ROUND(IF(actualEnergy IS NOT NULL AND expectedEnergy IS NOT NULL, actualEnergy / expectedEnergy, NULL), 3) AS expectedGenerationIndex,
+			ROUND(IF(actualEnergy IS NOT NULL AND modeledEnergy IS NOT NULL, actualEnergy / modeledEnergy, NULL), 3) AS modeledGenerationIndex
 		FROM (
 			SELECT
 				sdr.time_full,
@@ -1463,7 +1463,7 @@
 		) m
 	</select>
 	
-	<select id="getEstimatedLossByEventReport" resultType="Map">
+	<select id="getEstimatedLossByEventReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
 		SELECT
 			event,
 			devicename,

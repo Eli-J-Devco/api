@@ -9,21 +9,22 @@ import java.util.List;
 import java.util.Map;
 
 public class AssetManagementAndOperationPerformanceReportEntity {
-	private Double dc_capacity;
-	private List operationPerformanceData;
+	private ViewReportEntity reportDetail;
+	private List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData;
 	private Map<String, Object> monthlyPerformanceData;
-	private List monthlyAssetManagementData;
+	private List<AssetManagementAndOperationPerformanceDataEntity> monthlyAssetManagementData;
+	private List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData;
 	
-	public Double getDc_capacity() {
-		return dc_capacity;
+	public ViewReportEntity getReportDetail() {
+		return reportDetail;
 	}
-	public void setDc_capacity(Double dc_capacity) {
-		this.dc_capacity = dc_capacity;
+	public void setReportDetail(ViewReportEntity reportDetail) {
+		this.reportDetail = reportDetail;
 	}
-	public List getOperationPerformanceData() {
+	public List<AssetManagementAndOperationPerformanceDataEntity> getOperationPerformanceData() {
 		return operationPerformanceData;
 	}
-	public void setOperationPerformanceData(List operationPerformanceData) {
+	public void setOperationPerformanceData(List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData) {
 		this.operationPerformanceData = operationPerformanceData;
 	}
 	public Map<String, Object> getMonthlyPerformanceData() {
@@ -32,18 +33,17 @@ public class AssetManagementAndOperationPerformanceReportEntity {
 	public void setMonthlyPerformanceData(Map<String, Object> monthlyPerformanceData) {
 		this.monthlyPerformanceData = monthlyPerformanceData;
 	}
-	public List getMonthlyAssetManagementData() {
+	public List<AssetManagementAndOperationPerformanceDataEntity> getMonthlyAssetManagementData() {
 		return monthlyAssetManagementData;
 	}
-	public void setMonthlyAssetManagementData(List monthlyAssetManagementData) {
+	public void setMonthlyAssetManagementData(List<AssetManagementAndOperationPerformanceDataEntity> monthlyAssetManagementData) {
 		this.monthlyAssetManagementData = monthlyAssetManagementData;
 	}
-	public List getEstimatedLossByEventData() {
+	public List<AssetManagementAndOperationPerformanceDataEntity> getEstimatedLossByEventData() {
 		return estimatedLossByEventData;
 	}
-	public void setEstimatedLossByEventData(List estimatedLossByEventData) {
+	public void setEstimatedLossByEventData(List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData) {
 		this.estimatedLossByEventData = estimatedLossByEventData;
 	}
-	private List estimatedLossByEventData;
 	
 }

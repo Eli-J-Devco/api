@@ -27,6 +27,7 @@ import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.EnergyExpectationsEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
+import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -497,7 +498,7 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
+	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity reportObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (reportObj == null) return null;
@@ -508,33 +509,33 @@ public class ReportsService extends DB {
 			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
 			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 			AssetManagementAndOperationPerformanceReportEntity dataObj = new AssetManagementAndOperationPerformanceReportEntity();
-			dataObj.setDc_capacity(reportObj.getDc_capacity());
+			dataObj.setReportDetail(reportObj);
 			
 			/* operation performance report */
 			reportObj.setStart_date(startDate.format(inputDateFormat));
 			reportObj.setEnd_date(endDate.format(inputDateFormat));
-			List<Map<String, Object>> operationPerformanceData = (List<Map<String, Object>>) queryForList("Reports.getOperationPerformanceReport", reportObj);
+			List<AssetManagementAndOperationPerformanceDataEntity> operationPerformanceData = queryForList("Reports.getOperationPerformanceReport", reportObj);
 			
 			if (operationPerformanceData != null && operationPerformanceData.size() > 0) {
 				// fulfill data
 				LocalDateTime start = startDate;
 				LocalDateTime end = endDate;
-				List<Map<String, Object>> dateTimeList = new ArrayList<>();
-				List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
+				List<AssetManagementAndOperationPerformanceDataEntity> dateTimeList = new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
+				List<AssetManagementAndOperationPerformanceDataEntity> fulfilledDataList = new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
 				
 				while (!start.isAfter(end)) {
-					Map<String, Object> dateTime = new HashMap<String, Object>();
-					dateTime.put("time_full", start.format(mmm_yyFormat));
+					AssetManagementAndOperationPerformanceDataEntity dateTime = new AssetManagementAndOperationPerformanceDataEntity();
+					dateTime.setTime_full(start.format(mmm_yyFormat));
 					dateTimeList.add(dateTime);
 					start = start.plus(1, ChronoUnit.MONTHS);
 				}
 				
-				for (Map<String, Object> dateTime: dateTimeList) {
+				for (AssetManagementAndOperationPerformanceDataEntity dateTime: dateTimeList) {
 					boolean isFound = false;
 					
-					for(Map<String, Object> data: operationPerformanceData) {
-						String fullTime = dateTime.get("time_full").toString();
-						String powerTime = data.get("time_full").toString();
+					for(AssetManagementAndOperationPerformanceDataEntity data: operationPerformanceData) {
+						String fullTime = dateTime.getTime_full();
+						String powerTime = data.getTime_full();
 						
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
@@ -546,37 +547,37 @@ public class ReportsService extends DB {
 					if (!isFound) fulfilledDataList.add(dateTime);
 				}
 				
-				dataObj.setOperationPerformanceData(operationPerformanceData);
+				dataObj.setOperationPerformanceData(fulfilledDataList);
 			}
 			
-			Map<String, Object> currentMonthOperationPerformanceData = operationPerformanceData.stream().filter(item -> YearMonth.parse(item.get("time_full").toString(), mmm_yyFormat).equals(YearMonth.from(endDate))).findFirst().orElse(null);
-			List<Map<String, Object>> currentYearOperationPerformanceData = operationPerformanceData.stream().filter(item -> YearMonth.parse(item.get("time_full").toString(), mmm_yyFormat).getYear() == YearMonth.from(endDate).getYear()).collect(Collectors.toList());
+			AssetManagementAndOperationPerformanceDataEntity currentMonthOperationPerformanceData = operationPerformanceData.stream().filter(item -> YearMonth.parse(item.getTime_full(), mmm_yyFormat).equals(YearMonth.from(endDate))).findFirst().orElse(null);
+			List<AssetManagementAndOperationPerformanceDataEntity> currentYearOperationPerformanceData = operationPerformanceData.stream().filter(item -> YearMonth.parse(item.getTime_full(), mmm_yyFormat).getYear() == YearMonth.from(endDate).getYear()).collect(Collectors.toList());
 			
 			/* monthly performance report */
 			LocalDateTime startDateOfCurrentMonth = endDate.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 			reportObj.setStart_date(startDateOfCurrentMonth.format(inputDateFormat));
-			List<Map<String, Object>> monthlyPerformanceData = (List<Map<String, Object>>) queryForList("Reports.getMonthlyPerformanceReport", reportObj);
+			List<AssetManagementAndOperationPerformanceDataEntity> monthlyPerformanceData = queryForList("Reports.getMonthlyPerformanceReport", reportObj);
 			
 			if (monthlyPerformanceData != null && monthlyPerformanceData.size() > 0) {
 				// fulfill data
 				LocalDateTime start = startDateOfCurrentMonth;
 				LocalDateTime end = endDate;
-				List<Map<String, Object>> dateTimeList = new ArrayList<>();
-				List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
+				List<AssetManagementAndOperationPerformanceDataEntity> dateTimeList = new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
+				List<AssetManagementAndOperationPerformanceDataEntity> fulfilledDataList = new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
 				
 				while (!start.isAfter(end)) {
-					Map<String, Object> dateTime = new HashMap<String, Object>();
-					dateTime.put("time_full", start.format(mm_dd_yyyyFormat));
+					AssetManagementAndOperationPerformanceDataEntity dateTime = new AssetManagementAndOperationPerformanceDataEntity();
+					dateTime.setTime_full(start.format(mm_dd_yyyyFormat));
 					dateTimeList.add(dateTime);
 					start = start.plus(1, ChronoUnit.DAYS);
 				}
 				
-				for (Map<String, Object> dateTime: dateTimeList) {
+				for (AssetManagementAndOperationPerformanceDataEntity dateTime: dateTimeList) {
 					boolean isFound = false;
 					
-					for(Map<String, Object> data: monthlyPerformanceData) {
-						String fullTime = dateTime.get("time_full").toString();
-						String powerTime = data.get("time_full").toString();
+					for(AssetManagementAndOperationPerformanceDataEntity data: monthlyPerformanceData) {
+						String fullTime = dateTime.getTime_full();
+						String powerTime = data.getTime_full();
 						
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
@@ -588,33 +589,30 @@ public class ReportsService extends DB {
 					if (!isFound) fulfilledDataList.add(dateTime);
 				}
 				
-				Map<String, Object> initial = new HashMap<String, Object>();
-				initial.put("time_full", endDate.format(mmm_yyFormat));
-				initial.put("actualEnergy", 0);
-				initial.put("expectedEnergy", 0);
-				initial.put("modeledEnergy", 0);
-				Map<String, Object> totalMonthlyPerformanceData = monthlyPerformanceData.stream().reduce(initial, (acc, item) -> {
-					acc.put("actualEnergy", Double.parseDouble(acc.get("actualEnergy").toString()) + Double.parseDouble(item.get("actualEnergy").toString()));
-					acc.put("expectedEnergy", Double.parseDouble(acc.get("expectedEnergy").toString()) + Double.parseDouble(item.get("expectedEnergy").toString()));
-					acc.put("modeledEnergy", Double.parseDouble(acc.get("modeledEnergy").toString()) + Double.parseDouble(item.get("modeledEnergy").toString()));
+				AssetManagementAndOperationPerformanceDataEntity initial = new AssetManagementAndOperationPerformanceDataEntity();
+				AssetManagementAndOperationPerformanceDataEntity totalMonthlyPerformanceData = monthlyPerformanceData.stream().reduce(initial, (acc, item) -> {
+					if (item.getActualEnergy() != null) acc.setActualEnergy((acc.getActualEnergy() != null ? acc.getActualEnergy() : 0) + item.getActualEnergy());
+					if (item.getExpectedEnergy() != null) acc.setExpectedEnergy((acc.getExpectedEnergy() != null ? acc.getExpectedEnergy() : 0) + item.getExpectedEnergy());
+					if (item.getModeledEnergy() != null) acc.setModeledEnergy((acc.getModeledEnergy() != null ? acc.getModeledEnergy() : 0) + item.getModeledEnergy());
 					
 					return acc;
 				});
 				
-				Double totalActualEnergy = totalMonthlyPerformanceData.get("actualEnergy") != null ? Double.parseDouble(totalMonthlyPerformanceData.get("actualEnergy").toString()) : null;
-				Double totalExpectedEnergy = totalMonthlyPerformanceData.get("expectedEnergy") != null ? Double.parseDouble(totalMonthlyPerformanceData.get("expectedEnergy").toString()) : null;
-				Double totalModeledEnergy = totalMonthlyPerformanceData.get("modeledEnergy") != null ? Double.parseDouble(totalMonthlyPerformanceData.get("modeledEnergy").toString()) : null;
-				Double totalExpectedGenerationIndex = totalActualEnergy != null && totalExpectedEnergy != null ? totalActualEnergy / totalExpectedEnergy * 100 : null;
-				Double totalModeledGenerationIndex = totalActualEnergy != null && totalModeledEnergy != null ? totalActualEnergy / totalModeledEnergy * 100 : null;
-				Double totalWeatherIndex =  currentMonthOperationPerformanceData.get("weatherIndex") != null ? Double.parseDouble(currentMonthOperationPerformanceData.get("weatherIndex").toString()) : null;
-				Double totalInverterAvaiability =  currentMonthOperationPerformanceData.get("inverterAvailability") != null ? Double.parseDouble(currentMonthOperationPerformanceData.get("inverterAvailability").toString()) : null;
-				totalMonthlyPerformanceData.put("expectedGenerationIndex", totalExpectedGenerationIndex);
-				totalMonthlyPerformanceData.put("modeledGenerationIndex", totalModeledGenerationIndex);
-				totalMonthlyPerformanceData.put("weatherIndex", totalWeatherIndex);
-				totalMonthlyPerformanceData.put("inverterAvaiability", totalInverterAvaiability);
+				Double totalActualEnergy = totalMonthlyPerformanceData.getActualEnergy();
+				Double totalExpectedEnergy = totalMonthlyPerformanceData.getExpectedEnergy();
+				Double totalModeledEnergy = totalMonthlyPerformanceData.getModeledEnergy();
+				Double totalExpectedGenerationIndex = totalActualEnergy != null && totalExpectedEnergy != null ? totalActualEnergy / totalExpectedEnergy : null;
+				Double totalModeledGenerationIndex = totalActualEnergy != null && totalModeledEnergy != null ? totalActualEnergy / totalModeledEnergy : null;
+				Double totalWeatherIndex =  currentMonthOperationPerformanceData.getWeatherIndex();
+				Double totalInverterAvaiability = currentMonthOperationPerformanceData.getInverterAvailability();
+				totalMonthlyPerformanceData.setExpectedGenerationIndex(totalExpectedGenerationIndex);
+				totalMonthlyPerformanceData.setModeledGenerationIndex(totalModeledGenerationIndex);
+				totalMonthlyPerformanceData.setWeatherIndex(totalWeatherIndex);
+				totalMonthlyPerformanceData.setInverterAvailability(totalInverterAvaiability);
+				totalMonthlyPerformanceData.setTime_full(endDate.format(mmm_yyFormat));
 				
 				Map<String, Object> monthlyPerformanceDataObj = new HashMap<String, Object>();
-				monthlyPerformanceDataObj.put("data", monthlyPerformanceData);
+				monthlyPerformanceDataObj.put("data", fulfilledDataList);
 				monthlyPerformanceDataObj.put("total", totalMonthlyPerformanceData);
 				
 				dataObj.setMonthlyPerformanceData(monthlyPerformanceDataObj);
@@ -622,40 +620,38 @@ public class ReportsService extends DB {
 			
 			/* monthly asset management report */
 			if (currentMonthOperationPerformanceData != null && currentYearOperationPerformanceData.size() > 0) {
-				Map<String, Object> initial = new HashMap<String, Object>();
-				initial.put("time_full", endDate.getYear());
-				initial.put("actualEnergy", 0);
-				initial.put("modeledEnergy", 0);
-				Map<String, Object> currentYearTotalAssetManagementData = currentYearOperationPerformanceData.stream().reduce(initial, (acc, item) -> {
-					acc.put("actualEnergy", Double.parseDouble(acc.get("actualEnergy").toString()) + Double.parseDouble(item.get("actualEnergy").toString()));
-					acc.put("modeledEnergy", Double.parseDouble(acc.get("modeledEnergy").toString()) + Double.parseDouble(item.get("modeledEnergy").toString()));
+				AssetManagementAndOperationPerformanceDataEntity initial = new AssetManagementAndOperationPerformanceDataEntity();
+				AssetManagementAndOperationPerformanceDataEntity currentYearTotalAssetManagementData = currentYearOperationPerformanceData.stream().reduce(initial, (acc, item) -> {
+					if (item.getActualEnergy() != null) acc.setActualEnergy((acc.getActualEnergy() != null ? acc.getActualEnergy() : 0) + item.getActualEnergy());
+					if (item.getModeledEnergy() != null) acc.setModeledEnergy((acc.getModeledEnergy() != null ? acc.getModeledEnergy() : 0) + item.getModeledEnergy());
 					
 					return acc;
 				});
 				
-				Double monthActualEnergy =  currentMonthOperationPerformanceData.get("actualEnergy") != null ? Double.parseDouble(currentMonthOperationPerformanceData.get("actualEnergy").toString()) : null;
-				Double monthModeledEnergy =  currentMonthOperationPerformanceData.get("modeledEnergy") != null ? Double.parseDouble(currentMonthOperationPerformanceData.get("modeledEnergy").toString()) : null;
+				Double monthActualEnergy =  currentMonthOperationPerformanceData.getActualEnergy();
+				Double monthModeledEnergy =  currentMonthOperationPerformanceData.getModeledEnergy();
 				Double monthEnergyDifference = monthActualEnergy != null && monthModeledEnergy != null ? monthActualEnergy - monthModeledEnergy : null;
 				Double monthActualEnergyRevenue = 0.224 * monthActualEnergy;
 				Double monthEstimatedEnergyRevenue = 0.224 * monthModeledEnergy;
 				Double monthEnergyRevenueDifference = monthActualEnergyRevenue != null && monthEstimatedEnergyRevenue != null ? monthActualEnergyRevenue - monthEstimatedEnergyRevenue : null;
-				currentMonthOperationPerformanceData.put("energyDifference", monthEnergyDifference);
-				currentMonthOperationPerformanceData.put("actualEnergyRevenue", monthActualEnergyRevenue);
-				currentMonthOperationPerformanceData.put("estimatedEnergyRevenue", monthEstimatedEnergyRevenue);
-				currentMonthOperationPerformanceData.put("energyRevenueDifference", monthEnergyRevenueDifference);
+				currentMonthOperationPerformanceData.setEnergyDifference(monthEnergyDifference);
+				currentMonthOperationPerformanceData.setActualEnergyRevenue(monthActualEnergyRevenue);
+				currentMonthOperationPerformanceData.setEstimatedEnergyRevenue(monthEstimatedEnergyRevenue);
+				currentMonthOperationPerformanceData.setEnergyRevenueDifference(monthEnergyRevenueDifference);
 				
-				Double yearActualEnergy =  currentYearTotalAssetManagementData.get("actualEnergy") != null ? Double.parseDouble(currentYearTotalAssetManagementData.get("actualEnergy").toString()) : null;
-				Double yearModeledEnergy =  currentYearTotalAssetManagementData.get("modeledEnergy") != null ? Double.parseDouble(currentYearTotalAssetManagementData.get("modeledEnergy").toString()) : null;
+				Double yearActualEnergy = currentYearTotalAssetManagementData.getActualEnergy();
+				Double yearModeledEnergy = currentYearTotalAssetManagementData.getModeledEnergy();
 				Double yearEnergyDifference = yearActualEnergy != null && yearModeledEnergy != null ? yearActualEnergy - yearModeledEnergy : null;
 				Double yearActualEnergyRevenue = 0.224 * yearActualEnergy;
 				Double yearEstimatedEnergyRevenue = 0.224 * yearModeledEnergy;
 				Double yearEnergyRevenueDifference = yearActualEnergyRevenue != null && yearEstimatedEnergyRevenue != null ? yearActualEnergyRevenue - yearEstimatedEnergyRevenue : null;
-				currentYearTotalAssetManagementData.put("energyDifference", yearEnergyDifference);
-				currentYearTotalAssetManagementData.put("actualEnergyRevenue", yearActualEnergyRevenue);
-				currentYearTotalAssetManagementData.put("estimatedEnergyRevenue", yearEstimatedEnergyRevenue);
-				currentYearTotalAssetManagementData.put("energyRevenueDifference", yearEnergyRevenueDifference);
+				currentYearTotalAssetManagementData.setEnergyDifference(yearEnergyDifference);
+				currentYearTotalAssetManagementData.setActualEnergyRevenue(yearActualEnergyRevenue);
+				currentYearTotalAssetManagementData.setEstimatedEnergyRevenue(yearEstimatedEnergyRevenue);
+				currentYearTotalAssetManagementData.setEnergyRevenueDifference(yearEnergyRevenueDifference);
+				currentYearTotalAssetManagementData.setTime_full(String.valueOf(endDate.getYear()));
 				
-				List<Map<String, Object>> monthlyAssetManagementData = new ArrayList<Map<String, Object>>();
+				List<AssetManagementAndOperationPerformanceDataEntity> monthlyAssetManagementData = new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
 				monthlyAssetManagementData.add(currentMonthOperationPerformanceData);
 				monthlyAssetManagementData.add(currentYearTotalAssetManagementData);
 				
@@ -663,7 +659,7 @@ public class ReportsService extends DB {
 			}
 			
 			/* estimated loss by event report */
-			List<Map<String, Object>> estimatedLossByEventData = (List<Map<String, Object>>) queryForList("Reports.getEstimatedLossByEventReport", reportObj);
+			List<AssetManagementAndOperationPerformanceDataEntity> estimatedLossByEventData = queryForList("Reports.getEstimatedLossByEventReport", reportObj);
 			if (estimatedLossByEventData != null && estimatedLossByEventData.size() > 0) {
 				dataObj.setEstimatedLossByEventData(estimatedLossByEventData);
 			}
