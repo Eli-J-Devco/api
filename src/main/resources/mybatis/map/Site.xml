@@ -176,30 +176,32 @@
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
 			
-			<if test="tag != null">
-			      LEFT JOIN (     
-			        SELECT
-			          t.`name`,
-			          ts.id_site
-			        FROM tag t
-			          LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
-			        WHERE
-			          t.`name` = #{tag}
-			          GROUP BY ts.id_site
-			        ) tid ON tid.id_site = s.id
-			        
-			      LEFT JOIN (
-			        SELECT
-			          d.id_site,
-			          d.id,
-			          t.`name`
-			        FROM tag t
-			          LEFT JOIN tag_device_map td ON td.id_tag = t.id
-			          LEFT JOIN device d ON d.id = td.id_device
-			        WHERE
-			          t.`name` = #{tag}
-			          GROUP BY id_site
-			      ) td ON td.id_site = s.id
+			<if test="tag_site != null and tag_site != ''">
+		      LEFT JOIN (     
+		        SELECT
+		          t.`name`,
+		          ts.id_site
+		        FROM tag t
+		          LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
+		        WHERE
+		          t.`name` = #{tag_site}
+		          GROUP BY ts.id_site
+		        ) tid ON tid.id_site = s.id
+			</if>
+			
+			<if test="tag_device != null and tag_device != ''">			        
+		      LEFT JOIN (
+		        SELECT
+		          d.id_site,
+		          d.id,
+		          t.`name`
+		        FROM tag t
+		          LEFT JOIN tag_device_map td ON td.id_tag = t.id
+		          LEFT JOIN device d ON d.id = td.id_device
+		        WHERE
+		          t.`name` = #{tag_device}
+		          GROUP BY id_site
+		      ) td ON td.id_site = s.id
 			</if>
 		WHERE
 			s.is_delete = 0
@@ -313,8 +315,12 @@
 				)
 			</if>
 			
-			<if test="tag != null">
-		        AND (tid.name = #{tag} OR td.name = #{tag})
+			<if test="tag_site != null and tag_site != ''">
+		        AND tid.name = #{tag_site}
+		    </if>
+		    
+		    <if test="tag_device != null and tag_device != ''">
+		        AND td.name = #{tag_device}
 		    </if>
 			
 			<if test="id_company != null and id_company != 0 and id_company > 1">
