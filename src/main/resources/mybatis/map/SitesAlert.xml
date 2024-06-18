@@ -125,6 +125,8 @@
 				WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))
 				
 				WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+				WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))

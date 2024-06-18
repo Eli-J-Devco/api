@@ -91,6 +91,7 @@
 		<mapper resource="mybatis/map/ModelSungrowWeatherPvmet75200.xml"/>
 		<mapper resource="mybatis/map/ModelSungrowLogger1000.xml"/>
 		<mapper resource="mybatis/map/ModelSolarEdgeInverter.xml"/>
+		<mapper resource="mybatis/map/ModelSolarEdgeInverterV1.xml"/>
 		<mapper resource="mybatis/map/ModelSmaClusterController.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp1200tlus10.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp24ktlus10.xml"/>

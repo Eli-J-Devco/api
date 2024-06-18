@@ -85,6 +85,7 @@ import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelShark100v1Entity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
+import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
 import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
 import com.nwm.api.entities.ModelSungrowLogger1000Entity;
@@ -155,6 +156,7 @@ import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelShark100v1Service;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
+import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
 import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
 import com.nwm.api.services.ModelSungrowLogger1000Service;
@@ -2968,7 +2970,109 @@ public class UploadFilesController extends BaseController {
 											
 											break;
 											
+										case "model_solaredge_inverter_v1":
+											ModelSolarEdgeInverterV1Service serviceModelSETV1 = new ModelSolarEdgeInverterV1Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													ModelSolarEdgeInverterV1Entity dataModelSETV1 = serviceModelSETV1.setModelSolarEdgeInverterV1(line);
+													dataModelSETV1.setId_device(item.getId());
+													dataModelSETV1.setDatatablename(item.getDatatablename());
+													dataModelSETV1.setView_tablename(item.getView_tablename());
+													dataModelSETV1.setJob_tablename(item.getJob_tablename());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterV1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSETV1);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelSETV1, scaledValue);
+															if (slug.equals("I_AC_Power")) dataModelSETV1.setNvmActivePower(scaledValue);
+															if (slug.equals("I_AC_Energy_WH")) dataModelSETV1.setNvmActiveEnergy(scaledValue / 1000);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													
+													// I_AC_Power
+													
+													if(dataModelSETV1.getI_AC_Power() != 0.001 && dataModelSETV1.getI_AC_Power() >= 0){
+														deviceUpdateE.setLast_updated(dataModelSETV1.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataModelSETV1.getI_AC_Power() != 0.001 ? dataModelSETV1.getI_AC_Power() : null);
+													deviceUpdateE.setField_value1(dataModelSETV1.getI_AC_Power() != 0.001 ? dataModelSETV1.getI_AC_Power() : null);
+													
+													// value 2
+													deviceUpdateE.setField_value2(null);
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
+													
+													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataModelSETV1);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item, dataDevice);
+													}
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {  
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+													
+												}
+											}
 											
+											break;	
 											
 											
 										case "model_xantrex_gt100_250_500":

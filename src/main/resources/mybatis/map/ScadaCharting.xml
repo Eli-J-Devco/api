@@ -101,6 +101,7 @@
 							(table_name == 'model_sma_inverter_stp24ktlus10' and param.slug == 'GridMs_TotW') or
 							(table_name == 'model_sma_cluster_controller' and param.slug == 'GridMs_TotW') or
 							(table_name == 'model_solaredge_inverter' and param.slug == 'I_AC_Power') or
+							(table_name == 'model_solaredge_inverter_v1' and param.slug == 'I_AC_Power') or
 							(table_name == 'model_sungrow_umg604' and param.slug == 'M_AC_P') or
 							(table_name == 'model_sungrow_sg110cx' and param.slug == 'P_DC') or
 							(table_name == 'model_sungrow_sg50cx' and param.slug == 'P_DC') or
@@ -186,6 +187,7 @@
 								(table_name == 'model_sma_inverter_stp24ktlus10' and param.slug == 'GridMs_TotW') or
 								(table_name == 'model_sma_cluster_controller' and param.slug == 'GridMs_TotW') or
 								(table_name == 'model_solaredge_inverter' and param.slug == 'I_AC_Power') or
+								(table_name == 'model_solaredge_inverter_v1' and param.slug == 'I_AC_Power') or
 								(table_name == 'model_sungrow_umg604' and param.slug == 'M_AC_P') or
 								(table_name == 'model_sungrow_sg110cx' and param.slug == 'P_DC') or
 								(table_name == 'model_sungrow_sg50cx' and param.slug == 'P_DC') or
