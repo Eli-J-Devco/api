@@ -50,7 +50,9 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.PresetColor;
 import org.apache.poi.xddf.usermodel.XDDFColor;
+import org.apache.poi.xddf.usermodel.XDDFColorPreset;
 import org.apache.poi.xddf.usermodel.XDDFLineProperties;
+import org.apache.poi.xddf.usermodel.XDDFNoFillProperties;
 import org.apache.poi.xddf.usermodel.XDDFShapeProperties;
 import org.apache.poi.xddf.usermodel.XDDFSolidFillProperties;
 import org.apache.poi.xddf.usermodel.chart.AxisCrossBetween;
@@ -65,6 +67,7 @@ import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChart;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartData;
+import org.apache.poi.xddf.usermodel.chart.XDDFChartData.Series;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartLegend;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
@@ -163,10 +166,10 @@ public class ReportsController extends BaseController {
 	public static final int COLUMN_INDEX_QUANTITY = 3;
 	public static final int COLUMN_INDEX_TOTAL = 4;
 	private static CellStyle cellStyleFormatNumber = null;
-	private static final String noDecimalDataFormat = "###,###";
-	private static final String oneDecimalPlaceDataFormat = "###,###";
-	private static final String oneDecimalPlaceWithPercentageDataFormat = "###,###.0%";
-	private static final String noDecimalCurrencyDataFormat = "$###,###";
+	private static final String noDecimalDataFormat = "###,##0";
+	private static final String oneDecimalPlaceDataFormat = "###,##0.0";
+	private static final String oneDecimalPlaceWithPercentageDataFormat = "###,##0.0%";
+	private static final String noDecimalCurrencyDataFormat = "$###,##0";
 	
 	// Write header with format
 		private static void writeHeaderDailyReport(Sheet sheet, int rowIndex, ViewReportEntity dataObj) {
@@ -694,8 +697,6 @@ public class ReportsController extends BaseController {
 						XDDFLineChartData data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
 						XDDFLineChartData.Series series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData1);
 						series.setTitle("Actual Power (kW)", new CellReference(chartSheet.getSheetName(), 24, 3, true, true));
-						series.setSmooth(true);
-						series.setMarkerStyle(MarkerStyle.NONE);
 
 
 						chart.plot(data);
@@ -718,8 +719,6 @@ public class ReportsController extends BaseController {
 						data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 						series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData2);
 						series.setTitle("Estimate Energy (kWh)", new CellReference(chartSheet.getSheetName(), 24, 6, true, true));
-						series.setSmooth(false);
-						series.setMarkerStyle(MarkerStyle.NONE);
 						chart.plot(data);
 			
 						solidLineSeries(data, 0, PresetColor.LIGHT_STEEL_BLUE);
@@ -741,8 +740,6 @@ public class ReportsController extends BaseController {
 							data = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis3);
 							series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
 							series.setTitle("Irradiance (W/m2)", new CellReference(chartSheet.getSheetName(), 24, 9, true, true));
-							series.setSmooth(false);
-							series.setMarkerStyle(MarkerStyle.NONE);
 	
 							chart.plot(data);
 							solidLineSeries(data, 0, PresetColor.DARK_ORANGE);
@@ -1683,10 +1680,7 @@ public class ReportsController extends BaseController {
 				    
 					XDDFLineChartData.Series seriesLine = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
 
-					seriesLine.setTitle("Estimated Generation Index (%)",
-							new CellReference(chartSheet.getSheetName(), 10, 0, true, true));
-					seriesLine.setSmooth(false);
-					seriesLine.setMarkerStyle(MarkerStyle.NONE);
+					seriesLine.setTitle("Estimated Generation Index (%)", new CellReference(chartSheet.getSheetName(), 10, 0, true, true));
 					chart.plot(data);			
 					// set line colors				
 					solidLineSeries(data, 0, PresetColor.GRAY);
@@ -3910,7 +3904,7 @@ public class ReportsController extends BaseController {
 					if (numOfPoints > 0) {
 						// --- energy generation chart ---
 						XSSFDrawing chartDrawing = sheet.createDrawingPatriarch();
-						XSSFClientAnchor chartAnchor = chartDrawing.createAnchor(0, 0, 0, 0, 0, numOfPoints + 11, 12, numOfPoints + 11 + 16);
+						XSSFClientAnchor chartAnchor = chartDrawing.createAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, numOfPoints + 11, 12, numOfPoints + 11 + 16);
 						XDDFChart chart = chartDrawing.createChart(chartAnchor);
 						chart.setTitleText("Energy Generation");
 						chart.setTitleOverlay(false);
@@ -3932,56 +3926,36 @@ public class ReportsController extends BaseController {
 						legend.setPosition(LegendPosition.BOTTOM);
 						
 						// category axis
-						XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						XDDFCategoryAxis bottomAxis = createCategoryAxis(chart, true);
 						
 						// left value axis
-						XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
+						XDDFValueAxis leftAxis = createLeftValueAxis(chart);
 						
 						XDDFBarChartData barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, actualEnergy).setTitle("Actual Energy", null);
-						barChartData.addSeries(categories, modeledEnergy).setTitle("Modeled Energy", null);
-						barChartData.addSeries(categories, expectedEnergy).setTitle("Expected Energy", null);
+						barChartData.addSeries(categories, actualEnergy).setTitle("Actual Energy", new CellReference(sheet.getSheetName(), 8, 1, true, true));
+						barChartData.addSeries(categories, modeledEnergy).setTitle("Modeled Energy", new CellReference(sheet.getSheetName(), 8, 2, true, true));
+						barChartData.addSeries(categories, expectedEnergy).setTitle("Expected Energy", new CellReference(sheet.getSheetName(), 8, 3, true, true));
 						
 						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE);
-						solidFillSeries(barChartData, 1, PresetColor.LIGHT_GRAY);
-						solidFillSeries(barChartData, 2, PresetColor.LIGHT_STEEL_BLUE);
-						
-						CTPlotArea plotArea = chart.getCTChart().getPlotArea();
-						plotArea.getValAxArray(0).addNewMajorGridlines();
+						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						solidFillSeries(barChartData, 2, PresetColor.LIGHT_STEEL_BLUE, PresetColor.BLACK);
 						
 						chart.plot(barChartData);
 						
 						// 2nd category axis must be there but must not be visible
-						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						bottomAxis.setVisible(false);
-						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						bottomAxis = createCategoryAxis(chart, false);
 						
 						// right value axis
-						XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
-						rightAxis.setCrosses(AxisCrosses.MAX);
-						rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-						if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
-						
-						// set correct cross axis
-						bottomAxis.crossAxis(rightAxis);
-						rightAxis.crossAxis(bottomAxis);
+						XDDFValueAxis rightAxis = createRightValueAxis(chart, bottomAxis);
 						
 						XDDFLineChartData lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 						lineChartData.setVaryColors(false);
 						
-						lineChartData.addSeries(categories, actualIrradiance).setTitle("Actual Irradiance", null);
-						((XDDFLineChartData.Series) lineChartData.getSeries(0)).setSmooth(false);
-						((XDDFLineChartData.Series) lineChartData.getSeries(0)).setMarkerStyle(MarkerStyle.NONE);
-						lineChartData.addSeries(categories, modeledIrradiance).setTitle("Modeled Irradiance", null);
-						((XDDFLineChartData.Series) lineChartData.getSeries(1)).setSmooth(false);
-						((XDDFLineChartData.Series) lineChartData.getSeries(1)).setMarkerStyle(MarkerStyle.NONE);
+						lineChartData.addSeries(categories, actualIrradiance).setTitle("Actual Irradiance", new CellReference(sheet.getSheetName(), 8, 4, true, true));
+						lineChartData.addSeries(categories, modeledIrradiance).setTitle("Modeled Irradiance", new CellReference(sheet.getSheetName(), 8, 5, true, true));
 						
 						// set line colors				
 						solidLineSeries(lineChartData, 0, PresetColor.GRAY);
@@ -3991,7 +3965,7 @@ public class ReportsController extends BaseController {
 						
 						// --- performance ratio chart ---
 						chartDrawing = sheet.createDrawingPatriarch();
-						chartAnchor = chartDrawing.createAnchor(0, 0, -10 * Units.EMU_PER_PIXEL, 0, 0, numOfPoints + 29, 6, numOfPoints + 29 + 15);
+						chartAnchor = chartDrawing.createAnchor(5 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 0, 0, numOfPoints + 29, 6, numOfPoints + 29 + 15);
 						chart = chartDrawing.createChart(chartAnchor);
 						chart.setTitleText("Performance Ratio");
 						chart.setTitleOverlay(false);
@@ -4005,28 +3979,20 @@ public class ReportsController extends BaseController {
 						legend.setPosition(LegendPosition.BOTTOM);
 						
 						// category axis
-						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						bottomAxis = createCategoryAxis(chart, true);
 						
 						// left value axis
-						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-						leftAxis.setMinimum(0);
-						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
+						leftAxis = createLeftValueAxis(chart);
 						
 						barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, actualPerformanceRatio).setTitle("Actual Generation", null);
-						barChartData.addSeries(categories, modeledPerformanceRatio).setTitle("Modeled Generation", null);
+						barChartData.addSeries(categories, actualPerformanceRatio).setTitle("Actual Generation", new CellReference(sheet.getSheetName(), 8, 6, true, true));
+						barChartData.addSeries(categories, modeledPerformanceRatio).setTitle("Modeled Generation", new CellReference(sheet.getSheetName(), 8, 7, true, true));
 						
 						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE);
-						solidFillSeries(barChartData, 1, PresetColor.LIGHT_GRAY);
-						
-						plotArea = chart.getCTChart().getPlotArea();
-						plotArea.getValAxArray(0).addNewMajorGridlines();
+						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
 						
 						chart.plot(barChartData);
 						
@@ -4048,55 +4014,34 @@ public class ReportsController extends BaseController {
 						legend.setPosition(LegendPosition.BOTTOM);
 						
 						// category axis
-						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						bottomAxis = createCategoryAxis(chart, true);
 						
 						// left value axis
-						leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-						leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-						leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-						leftAxis.setMinimum(0);
-						if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
+						leftAxis = createLeftValueAxis(chart);
 						
 						barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, energyIndex).setTitle("Energy Index", null);
-						barChartData.addSeries(categories, weatherAdjustedIndex).setTitle("Weather Adjusted Index", null);
+						barChartData.addSeries(categories, energyIndex).setTitle("Energy Index", new CellReference(sheet.getSheetName(), 8, 8, true, true));
+						barChartData.addSeries(categories, weatherAdjustedIndex).setTitle("Weather Adjusted Index", new CellReference(sheet.getSheetName(), 8, 10, true, true));
 						
 						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE);
-						solidFillSeries(barChartData, 1, PresetColor.LIGHT_GRAY);
-						
-						plotArea = chart.getCTChart().getPlotArea();
-						plotArea.getValAxArray(0).addNewMajorGridlines();
+						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
 						
 						chart.plot(barChartData);
 						
 						// 2nd category axis must be there but must not be visible
-						bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-						bottomAxis.setVisible(false);
-						if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+						bottomAxis = createCategoryAxis(chart, false);
 						
 						// right value axis
-						rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
-						rightAxis.setCrosses(AxisCrosses.MAX);
-						rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-						if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
-						
-						// set correct cross axis
-						bottomAxis.crossAxis(rightAxis);
-						rightAxis.crossAxis(bottomAxis);
+						rightAxis = createRightValueAxis(chart, bottomAxis);
 						
 						lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 						lineChartData.setVaryColors(false);
 						
-						lineChartData.addSeries(categories, weatherIndex).setTitle("Weather Index", null);
-						((XDDFLineChartData.Series) lineChartData.getSeries(0)).setSmooth(false);
-						((XDDFLineChartData.Series) lineChartData.getSeries(0)).setMarkerStyle(MarkerStyle.NONE);
-						lineChartData.addSeries(categories, inverterAvailability).setTitle("Inverter Availability", null);
-						((XDDFLineChartData.Series) lineChartData.getSeries(1)).setSmooth(false);
-						((XDDFLineChartData.Series) lineChartData.getSeries(1)).setMarkerStyle(MarkerStyle.NONE);
+						lineChartData.addSeries(categories, weatherIndex).setTitle("Weather Index", new CellReference(sheet.getSheetName(), 8, 9, true, true));
+						lineChartData.addSeries(categories, inverterAvailability).setTitle("Inverter Availability", new CellReference(sheet.getSheetName(), 8, 11, true, true));
 						
 						// set line colors				
 						solidLineSeries(lineChartData, 0, PresetColor.GRAY);
@@ -4156,37 +4101,27 @@ public class ReportsController extends BaseController {
 							legend.setPosition(LegendPosition.BOTTOM);
 							
 							// category axis
-							XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-							if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+							XDDFCategoryAxis bottomAxis = createCategoryAxis(chart, true);
 							
 							// left value axis
-							XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-							leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-							leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-							leftAxis.setMinimum(0);
-							if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
+							XDDFValueAxis leftAxis = createLeftValueAxis(chart);
 							
 							XDDFBarChartData barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
 							
 							barChartData.setBarDirection(BarDirection.COL);
-							barChartData.addSeries(categories, actualEnergy).setTitle("Actual", null);
-							barChartData.addSeries(categories, expectedEnergy).setTitle("Expected*", null);
+							barChartData.addSeries(categories, actualEnergy).setTitle("Actual", new CellReference(sheet.getSheetName(), 8, 1, true, true));
+							barChartData.addSeries(categories, expectedEnergy).setTitle("Expected*", new CellReference(sheet.getSheetName(), 8, 2, true, true));
 							
 							// set bar colors
-							solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE);
-							solidFillSeries(barChartData, 1, PresetColor.LIGHT_GRAY);
-							
-							CTPlotArea plotArea = chart.getCTChart().getPlotArea();
-							plotArea.getValAxArray(0).addNewMajorGridlines();
+							solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+							solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
 							
 							chart.plot(barChartData);
 							
 							XDDFLineChartData lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
 							lineChartData.setVaryColors(false);
 							
-							lineChartData.addSeries(categories, modeledEnergy).setTitle("Modeled**", null);
-							((XDDFLineChartData.Series) lineChartData.getSeries(0)).setSmooth(false);
-							((XDDFLineChartData.Series) lineChartData.getSeries(0)).setMarkerStyle(MarkerStyle.NONE);
+							lineChartData.addSeries(categories, modeledEnergy).setTitle("Modeled**", new CellReference(sheet.getSheetName(), 8, 3, true, true));
 							
 							// set line colors				
 							solidLineSeries(lineChartData, 0, PresetColor.DARK_ORANGE);
@@ -4242,15 +4177,13 @@ public class ReportsController extends BaseController {
 				
 				try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 					document.write(fileOut);
-					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
-							Constants.mailFromContact);
-
-					String msgTemplate = Constants.getMailTempleteByState(16);
-					String body = String.format(msgTemplate, dataObj.getReportDetail().getSite_name(), dataObj.getReportDetail().getId_site(), "Customer", "Monthly ", "", "");
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+					String msgTemplate = Constants.getMailTempleteByState(21);
+					String body = String.format(msgTemplate, dataObj.getReportDetail().getSite_name(), dataObj.getReportDetail().getId_site(), "Customer");
 					String mailTo = dataObj.getReportDetail().getSubscribers();
-					String subject = Constants.getMailSubjectByState(16);
+					String subject = Constants.getMailSubjectByState(21);
 
-					String tags = "report_monthly";
+					String tags = "asset-management-and-operation-performance-report";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
 					boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 					if (!flagSent) {
@@ -4886,10 +4819,7 @@ public class ReportsController extends BaseController {
 					data.setVaryColors(false);
 					bar.setBarDirection(BarDirection.COL);
 					XDDFLineChartData.Series seriesLine = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
-					seriesLine.setTitle("Estimated Generation Index (%)",
-							new CellReference(chartSheet.getSheetName(), 8, 3, true, true));
-					seriesLine.setSmooth(false);
-					seriesLine.setMarkerStyle(MarkerStyle.NONE);
+					seriesLine.setTitle("Estimated Generation Index (%)", new CellReference(chartSheet.getSheetName(), 8, 3, true, true));
 					chart.plot(data);		
 					// set line colors				
 					solidLineSeries(data, 0, PresetColor.GRAY);
@@ -5748,8 +5678,6 @@ public class ReportsController extends BaseController {
 							
 							XDDFLineChartData.Series series = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData);
 							series.setTitle("Actual Generation (kWh)", new CellReference(chartSheet.getSheetName(), 24, 6, true, true));
-							series.setSmooth(false);
-							series.setMarkerStyle(MarkerStyle.NONE);
 
 
 							chart.plot(data);
@@ -6493,29 +6421,87 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
+	
+	private static XDDFCategoryAxis createCategoryAxis(XDDFChart chart, boolean isVisible) {
+		XDDFCategoryAxis axis = chart.createCategoryAxis(AxisPosition.BOTTOM);
+		axis.setMajorTickMark(AxisTickMark.OUT);
+		axis.setVisible(isVisible);
+		if (axis.hasNumberFormat()) axis.setNumberFormat("@");
+		
+		return axis;
+	}
+	
+	private static XDDFValueAxis createLeftValueAxis(XDDFChart chart) {
+		XDDFValueAxis axis = chart.createValueAxis(AxisPosition.LEFT);
+		axis.setCrosses(AxisCrosses.AUTO_ZERO);
+		axis.setCrossBetween(AxisCrossBetween.BETWEEN);
+		axis.setMajorTickMark(AxisTickMark.NONE);
+		axis.setMinimum(0);
+		
+		XDDFLineProperties properties = new XDDFLineProperties();
+		properties.setFillProperties(new XDDFSolidFillProperties(XDDFColor.from(PresetColor.LIGHT_GRAY)));
+		axis.getOrAddMajorGridProperties().setLineProperties(properties);
+		
+		properties.setFillProperties(new XDDFNoFillProperties());
+		axis.getOrAddShapeProperties().setLineProperties(properties);
+		
+		if (axis.hasNumberFormat()) axis.setNumberFormat("#,##0.00");
+		
+		return axis;
+	}
+	
+	private static XDDFValueAxis createRightValueAxis(XDDFChart chart, XDDFCategoryAxis bottomAxis) {
+		XDDFValueAxis axis = chart.createValueAxis(AxisPosition.RIGHT);
+		axis.setCrosses(AxisCrosses.MAX);
+		axis.setCrossBetween(AxisCrossBetween.BETWEEN);
+		axis.setMajorTickMark(AxisTickMark.NONE);
+		
+		XDDFLineProperties properties = new XDDFLineProperties(new XDDFNoFillProperties());
+		axis.getOrAddShapeProperties().setLineProperties(properties);
+		
+		// set correct cross axis
+		bottomAxis.crossAxis(axis);
+		axis.crossAxis(bottomAxis);
+		
+		if (axis.hasNumberFormat()) axis.setNumberFormat("#,##0.00");
+		
+		return axis;
+	}
 
 	private static void solidFillSeries(XDDFChartData data, int index, PresetColor color) {
 		XDDFSolidFillProperties fill = new XDDFSolidFillProperties(XDDFColor.from(color));
-		XDDFChartData.Series series = data.getSeries().get(index);
+		XDDFChartData.Series series = data.getSeries(index);
 		XDDFShapeProperties properties = series.getShapeProperties();
-		if (properties == null) {
-			properties = new XDDFShapeProperties();
-		}
+		if (properties == null) properties = new XDDFShapeProperties();
 		properties.setFillProperties(fill);
+		series.setShapeProperties(properties);
+	}
+	
+	private static void solidFillSeries(XDDFChartData data, int index, PresetColor color, PresetColor borderColor) {
+		XDDFSolidFillProperties fill = new XDDFSolidFillProperties(XDDFColor.from(color));
+		XDDFChartData.Series series = data.getSeries(index);
+		XDDFShapeProperties properties = series.getShapeProperties();
+		if (properties == null) properties = new XDDFShapeProperties();
+		properties.setFillProperties(fill);
+		
+		fill.setColor(XDDFColor.from(borderColor));
+		XDDFLineProperties borderProperties = new XDDFLineProperties(fill);
+		properties.setLineProperties(borderProperties);
 		series.setShapeProperties(properties);
 	}
 
 	private static void solidLineSeries(XDDFChartData data, int index, PresetColor color) {
 		XDDFSolidFillProperties fill = new XDDFSolidFillProperties(XDDFColor.from(color));
-		XDDFLineProperties line = new XDDFLineProperties();
-		line.setFillProperties(fill);
-		XDDFChartData.Series series = data.getSeries().get(index);
+		XDDFLineProperties line = new XDDFLineProperties(fill);
+		XDDFLineChartData.Series series = (XDDFLineChartData.Series) data.getSeries(index);
 		XDDFShapeProperties properties = series.getShapeProperties();
 		if (properties == null) {
 			properties = new XDDFShapeProperties();
 		}
 		properties.setLineProperties(line);
 		series.setShapeProperties(properties);
+		series.setSmooth(false);
+		series.setMarkerStyle(MarkerStyle.NONE);
 	}
 
 	static CellReference setTitleInDataSheet(XDDFChart chart, String title, int column) throws Exception {
@@ -7815,11 +7801,9 @@ public class ReportsController extends BaseController {
 		try {
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
 			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowOneDecimalPlaceCellStyle.cloneStyleFrom(tableRowNoDecimalCellStyle);
+			CellStyle tableRowOneDecimalPlaceCellStyle = createStyleForTableRow(sheet);
 			tableRowOneDecimalPlaceCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceDataFormat));
-			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowOneDecimalPlaceWithPercentageCellStyle.cloneStyleFrom(tableRowNoDecimalCellStyle);
+			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRow(sheet);
 			tableRowOneDecimalPlaceWithPercentageCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -7972,12 +7956,10 @@ public class ReportsController extends BaseController {
 		try {
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
 			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowOneDecimalPlaceWithPercentageCellStyle.cloneStyleFrom(tableRowNoDecimalCellStyle);
+			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRow(sheet);
 			tableRowOneDecimalPlaceWithPercentageCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
 			CellStyle tableRowNoDecimalNoBorderCellStyle = createStyleForNoBorderTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle.cloneStyleFrom(tableRowNoDecimalNoBorderCellStyle);
+			CellStyle tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle = createStyleForNoBorderTableRow(sheet);
 			tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8169,8 +8151,9 @@ public class ReportsController extends BaseController {
 		try {
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
 			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowNoDecimalCurrencyCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowNoDecimalCurrencyCellStyle.cloneStyleFrom(tableRowNoDecimalCellStyle);
+			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRow(sheet);
+			tableRowNoDecimaLeftAlignlCellStyle.setAlignment(HorizontalAlignment.LEFT);
+			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRow(sheet);
 			tableRowNoDecimalCurrencyCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalCurrencyDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8230,7 +8213,7 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
 					tableCell.setCellValue(item.getTime_full());
 					
 					tableCell = tableRow.createCell(1);
@@ -8269,8 +8252,9 @@ public class ReportsController extends BaseController {
 			sheet.setColumnWidth(7, 256 * 25);
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
 			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowNoDecimalCurrencyCellStyle = sheet.getWorkbook().createCellStyle();
-			tableRowNoDecimalCurrencyCellStyle.cloneStyleFrom(tableRowNoDecimalCellStyle);
+			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRow(sheet);
+			tableRowNoDecimaLeftAlignlCellStyle.setAlignment(HorizontalAlignment.LEFT);
+			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRow(sheet);
 			tableRowNoDecimalCurrencyCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalCurrencyDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8311,17 +8295,17 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
 					if(item.getEvent() != null) tableCell.setCellValue(item.getEvent());
-					tableCell = tableHeaderRow.createCell(1);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell = tableRow.createCell(1);
+					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 0, 1));
 					
 					tableCell = tableRow.createCell(2);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
 					if(item.getDevicename() != null) tableCell.setCellValue(item.getDevicename());
-					tableCell = tableHeaderRow.createCell(3);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell = tableRow.createCell(3);
+					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 2, 3));
 					
 					tableCell = tableRow.createCell(4);
@@ -8337,7 +8321,7 @@ public class ReportsController extends BaseController {
 					if(item.getDuration() != null) tableCell.setCellValue(item.getDuration());
 					
 					tableCell = tableRow.createCell(7);
-					tableCell.setCellStyle(tableRowNoDecimalCurrencyCellStyle);
+					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
 					if(item.getEstimatedLoss() != null) tableCell.setCellValue(item.getEstimatedLoss());
 				}
 			}
