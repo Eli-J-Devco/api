@@ -1927,7 +1927,58 @@
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
 			r.days_week,
-			r.offset_timezone
+			r.offset_timezone,
+			r.subscribers,
+			s.id AS id_site,
+			CASE
+				WHEN r.type_report = 2 AND r.type_option = 1 THEN (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						site_employee_map sem 
+						LEFT JOIN site s ON s.id = sem.id_site
+					WHERE
+						sem.id_employee = r.id_employee
+						AND s.`status` = 1
+						AND s.is_delete = 0
+					GROUP BY r.id_employee
+				)
+				WHEN r.type_report = 2 AND r.type_option = 2 THEN (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						report_site_map rsm
+						LEFT JOIN site s ON s.id = rsm.id_site
+					WHERE
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND rsm.id_report = r.id
+					GROUP BY rsm.id_report
+				)
+				WHEN r.type_report = 2 AND r.type_option = 3 THEN (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						site s
+					WHERE 
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND s.id_site_sub_group = r.id_sub_group
+					GROUP BY r.id_sub_group
+				)
+				ELSE (
+					SELECT
+						GROUP_CONCAT(s.id SEPARATOR ',')
+					FROM
+						report_site_map rsm
+						LEFT JOIN site s ON s.id = rsm.id_site
+					WHERE
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND rsm.id_report = r.id
+					GROUP BY rsm.id_report
+				)
+			END AS id_sites
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
