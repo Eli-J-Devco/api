@@ -299,5 +299,10 @@
 		WHERE
 			`id_site` = #{id} AND `id_employee` = #{id_employee}
 	</update>
+	
+	<delete id="deleteEmployeeOnSiteEmailMap">
+		DELETE FROM `site_mail_map`
+		WHERE `id_site` = #{id} AND `id_employee` = #{id_employee}
+	</delete>
   	
 </mapper>

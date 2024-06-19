@@ -27,17 +27,22 @@ public class SiteConfigService extends DB {
 
 		SqlSession session = this.beginTransaction();
 		try {
-			if(obj.getId() > 0 && obj.getId_employee() > 0 ) {
-				int checkExits = (int) queryForObject("SiteConfig.checkExitsEmployeeOnSiteEmailMap", obj);
-				if(checkExits <= 0) {
-					// Insert
-					if (!obj.getCf_email_subscribers().isEmpty()) {
-						session.update("SiteConfig.insertEmployeeOnSiteEmailMap", obj);
+			if(obj.getId() > 0 && obj.getId_employee() > 0) {
+				if (!obj.getAlert_mail_bcc().isEmpty()) {
+					int checkExits = (int) queryForObject("SiteConfig.checkExitsEmployeeOnSiteEmailMap", obj);
+					if(checkExits <= 0) {
+						// Insert
+						if (!obj.getCf_email_subscribers().isEmpty()) {
+							session.update("SiteConfig.insertEmployeeOnSiteEmailMap", obj);
+						}
+					} else {
+						// Update
+						session.update("SiteConfig.updateEmployeeOnSiteEmailMap", obj);
 					}
 				} else {
-					// Update
-					session.update("SiteConfig.updateEmployeeOnSiteEmailMap", obj);
+					session.delete("SiteConfig.deleteEmployeeOnSiteEmailMap", obj);
 				}
+				
 			}
 			
 			session.update("SiteConfig.updateSiteConfig", obj);
