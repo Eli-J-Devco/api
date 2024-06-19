@@ -328,6 +328,9 @@ public class ImportOldDataController extends BaseController {
 										case "model_elkor_production_meter":
 											service.setModelElkorProductionMeter(rowItem, r);
 											break;
+										case "model_elkor_production_meterv1":
+											service.setModelElkorProductionMeterv1(rowItem, r);
+											break;
 											
 										case "model_w_kipp_zonen_rt1":
 											service.setModelWKippZonenRT1(rowItem, r);

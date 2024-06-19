@@ -157,6 +157,7 @@
 							(table_name == 'model_w_kipp_zonen_rt1' and param.slug == 'SunPOATempComp') or
 							(table_name == 'model_elkor_wattson_pv_meter' and param.slug == 'TotalRealPower') or
 							(table_name == 'model_elkor_production_meter' and param.slug == 'ActivePowerTotal') or
+							(table_name == 'model_elkor_production_meterv1' and param.slug == 'ActivePowerTotal') or
 							(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
 							(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
 							(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
@@ -239,6 +240,7 @@
 								(table_name == 'model_w_kipp_zonen_rt1' and param.slug == 'SunPOATempComp') or
 								(table_name == 'model_elkor_wattson_pv_meter' and param.slug == 'TotalRealPower') or
 								(table_name == 'model_elkor_production_meter' and param.slug == 'ActivePowerTotal') or
+								(table_name == 'model_elkor_production_meterv1' and param.slug == 'ActivePowerTotal') or
 								(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
 								(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
 								(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or

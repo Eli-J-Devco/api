@@ -48,6 +48,7 @@ import com.nwm.api.entities.ModelDTSMeasurelogicDemandMeterEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelERIWeatherICPClass8050Entity;
 import com.nwm.api.entities.ModelElkorProductionMeterEntity;
+import com.nwm.api.entities.ModelElkorProductionMeterv1Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelElsterA1700Entity;
 import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
@@ -119,6 +120,7 @@ import com.nwm.api.services.ModelDTSMeasurelogicDemandMeterService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelERIWeatherICPClass8050Service;
 import com.nwm.api.services.ModelElkorProductionMeterService;
+import com.nwm.api.services.ModelElkorProductionMeterv1Service;
 import com.nwm.api.services.ModelElkorWattsonPVMeterService;
 import com.nwm.api.services.ModelElsterA1700Service;
 import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
@@ -2238,6 +2240,109 @@ public class UploadFilesController extends BaseController {
 //													}
 													
 													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
+
+													// low production alert
+													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+														item.setLast_updated(deviceUpdateE.getLast_updated());
+														serviceD.checkLowProduction(item, dataDevice);
+													}
+													
+													try  
+													{ 
+														File logFile = new File(root.resolve(fileName).toString());
+														if(logFile.delete()){  
+														}
+														
+														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																+ timeStamp + ".log.gz");
+														File logGzFile = new File(path.toString());
+														
+														if(logGzFile.delete()) {     
+														}		
+													}  
+													catch(Exception e){  
+														e.printStackTrace();  
+													}
+												}
+											}
+											
+											break;
+											
+										case "model_elkor_production_meterv1":
+											ModelElkorProductionMeterv1Service serviceModelElkorPv1 = new ModelElkorProductionMeterv1Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													ModelElkorProductionMeterv1Entity dataModelElkorPv1 = serviceModelElkorPv1.setModelElkorProductionMeterv1(line, item.getOffset_data_old());
+													dataModelElkorPv1.setId_device(item.getId());
+													dataModelElkorPv1.setDatatablename(item.getDatatablename());
+													dataModelElkorPv1.setView_tablename(item.getView_tablename());
+													dataModelElkorPv1.setJob_tablename(item.getJob_tablename());
+													
+													// scaling device parameter
+													if (scaledDeviceParameters.size() > 0) {
+														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+															String slug = scaledDeviceParameter.getParameter_slug();
+															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+															String variableName = scaledDeviceParameter.getVariable_name();
+															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterv1Entity.class);
+															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorPv1);
+															if (initialValue == 0.001) continue;
+															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+															pd.getWriteMethod().invoke(dataModelElkorPv1, scaledValue);
+															if (slug.equals("ActivePowerTotal")) dataModelElkorPv1.setNvmActivePower(scaledValue);
+															if (slug.equals("NetTotalEnergy")) dataModelElkorPv1.setNvmActiveEnergy(scaledValue);
+														}
+													}
+													
+													DeviceEntity deviceUpdateE = new DeviceEntity();
+													// ActivePowerTotal
+													
+													if(dataModelElkorPv1.getActivePowerTotal() != 0.001 && dataModelElkorPv1.getActivePowerTotal() >= 0){
+														deviceUpdateE.setLast_updated(dataModelElkorPv1.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataModelElkorPv1.getActivePowerTotal() != 0.001 ? dataModelElkorPv1.getActivePowerTotal() : null);
+													deviceUpdateE.setField_value1(dataModelElkorPv1.getActivePowerTotal() != 0.001 ? dataModelElkorPv1.getActivePowerTotal() : null);
+													
+													// VoltageA
+													deviceUpdateE.setField_value2(dataModelElkorPv1.getVoltageA() != 0.001 ? dataModelElkorPv1.getVoltageA() : null);
+													
+													// VoltageB
+													deviceUpdateE.setField_value3(dataModelElkorPv1.getVoltageB() != 0.001 ? dataModelElkorPv1.getVoltageB() : null);
+													
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													// Insert alert
+//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//														// Check error code
+//														BatchJobService service = new BatchJobService();
+//														ErrorEntity errorItem = new ErrorEntity();
+//														errorItem.setId_device_group(item.getId_device_group());
+//														errorItem.setError_code(words.get(1));
+//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//														if(rowItemError.getId() > 0) {
+//															AlertEntity alertItem = new AlertEntity();
+//															alertItem.setId_device(item.getId());
+//															alertItem.setStart_date(words.get(0).replace("'", ""));
+//															alertItem.setId_error(rowItemError.getId());
+//															boolean checkAlertExist = service.checkAlertExist(alertItem);
+//															if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																// Insert alert
+//																service.insertAlert(alertItem);
+//															}
+//														}
+//													}
+													
+													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataModelElkorPv1);
 
 													// low production alert
 													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
