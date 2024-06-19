@@ -50,7 +50,6 @@ import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.PresetColor;
 import org.apache.poi.xddf.usermodel.XDDFColor;
-import org.apache.poi.xddf.usermodel.XDDFColorPreset;
 import org.apache.poi.xddf.usermodel.XDDFLineProperties;
 import org.apache.poi.xddf.usermodel.XDDFNoFillProperties;
 import org.apache.poi.xddf.usermodel.XDDFShapeProperties;
@@ -1022,101 +1021,8 @@ public class ReportsController extends BaseController {
 	// end daily report ===================================================================================
 	
 	// Write header with format
-	private static void writeHeaderAnnuallyReport(Sheet sheet, int rowIndex, ArrayList categories, ArrayList actualGeneration, ViewReportEntity dataObj, ArrayList baselineGeneration, ArrayList baselineGenerationIndex, ArrayList actualGenerationTrailing, ArrayList baselineGenerationTrailing, ArrayList baselineGenerationIndexTrailing, ArrayList INVAvailability) {
+	private static void writeHeaderAnnuallyReport(Sheet sheet, ArrayList<String> categories, ArrayList<Double> actualGeneration, ViewReportEntity dataObj, ArrayList<Double> baselineGeneration, ArrayList<Double> baselineGenerationIndex, ArrayList<Double> actualGenerationTrailing, ArrayList<Double> baselineGenerationTrailing, ArrayList<Double> baselineGenerationIndexTrailing, ArrayList<Double> INVAvailability) {
 		try {
-			DecimalFormat df = new DecimalFormat("###,###");
-			DecimalFormat dfp = new DecimalFormat("###,###.0");
-			// create CellStyle
-			Font fonDef = sheet.getWorkbook().createFont();
-			fonDef.setFontName("Times New Roman");
-			fonDef.setFontHeightInPoints((short) 12); // font size
-			
-			CellStyle cellStyle = createStyleForHeader(sheet);
-			cellStyle.setFont(fonDef);
-			cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyle.setBorderBottom(BorderStyle.THIN);
-			cellStyle.setBorderTop(BorderStyle.THIN);
-			cellStyle.setBorderRight(BorderStyle.THIN);
-			cellStyle.setBorderLeft(BorderStyle.THIN);
-			cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-			
-			Font fonDefB = sheet.getWorkbook().createFont();
-			fonDefB.setFontName("Times New Roman");
-			fonDefB.setBold(true);
-			fonDefB.setFontHeightInPoints((short) 12); // font size
-			
-			CellStyle cellStyleB = createStyleForHeader(sheet);
-			cellStyleB.setFont(fonDefB);
-			cellStyleB.setWrapText(true);
-			cellStyleB.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleB.setBorderBottom(BorderStyle.THIN);
-			cellStyleB.setBorderTop(BorderStyle.THIN);
-			cellStyleB.setBorderRight(BorderStyle.THIN);
-			cellStyleB.setBorderLeft(BorderStyle.THIN);
-			cellStyleB.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleB.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleB.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleB.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-			// create CellStyle title
-			CellStyle cellStyleTitle = createStyleForHeader(sheet);
-			cellStyleTitle.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleTitle.setAlignment(HorizontalAlignment.LEFT);
-			
-			cellStyleTitle.setBorderBottom(BorderStyle.THIN);
-			cellStyleTitle.setBorderTop(BorderStyle.THIN);
-			cellStyleTitle.setBorderRight(BorderStyle.THIN);
-			cellStyleTitle.setBorderLeft(BorderStyle.THIN);
-			cellStyleTitle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleTitle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleTitle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleTitle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-
-			// Create style row
-			Font fontRow = sheet.getWorkbook().createFont();
-			fontRow.setFontName("Times New Roman");
-			fontRow.setFontHeightInPoints((short) 12); // font size
-			fontRow.setColor(IndexedColors.BLACK.getIndex()); // text color
-			// Create CellStyle
-			CellStyle cellStyleItem = sheet.getWorkbook().createCellStyle();
-			cellStyleItem.setFont(fontRow);
-			cellStyleItem.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-			cellStyleItem.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleItem.setAlignment(HorizontalAlignment.CENTER);
-			
-			cellStyleItem.setBorderBottom(BorderStyle.THIN);
-			cellStyleItem.setBorderTop(BorderStyle.THIN);
-			cellStyleItem.setBorderRight(BorderStyle.THIN);
-			cellStyleItem.setBorderLeft(BorderStyle.THIN);
-			cellStyleItem.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleItem.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleItem.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleItem.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-
-			// Create font
-			Font fontBold = sheet.getWorkbook().createFont();
-			fontBold.setFontName("Times New Roman");
-			fontBold.setBold(true);
-			fontBold.setFontHeightInPoints((short) 12); // font size
-			CellStyle cellStyleFontBold = sheet.getWorkbook().createCellStyle();
-			cellStyleFontBold.setFont(fontBold);
-			cellStyleFontBold.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleFontBold.setAlignment(HorizontalAlignment.CENTER);
-			cellStyleFontBold.setBorderBottom(BorderStyle.THIN);
-			cellStyleFontBold.setBorderTop(BorderStyle.THIN);
-			cellStyleFontBold.setBorderRight(BorderStyle.THIN);
-			cellStyleFontBold.setBorderLeft(BorderStyle.THIN);
-			cellStyleFontBold.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleFontBold.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleFontBold.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleFontBold.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 35 * 256);
 			sheet.setColumnWidth(1, 35 * 256);
@@ -1133,313 +1039,217 @@ public class ReportsController extends BaseController {
 			sheet.setColumnWidth(12, 15 * 256);
 			sheet.setDefaultRowHeight((short) 500);
 			sheet.setDisplayGridlines(false);
+			
+			CellStyle reportTitleCellStyle = createStyleForReportTitle(sheet);
+			CellStyle reportInfoCellStyle = createStyleForReportInfo(sheet);
+			CellStyle reportInfoBoldCellStyle = createStyleForReportInfoBold(sheet);
+			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
+			CellStyle tableHeaderLeftAlignCellStyle = createStyleForTableHeader(sheet);
+			tableHeaderLeftAlignCellStyle.setAlignment(HorizontalAlignment.LEFT);
+			CellStyle tableRowLeftAlignCellStyle = createStyleForTableRow(sheet);
+			tableRowLeftAlignCellStyle.setAlignment(HorizontalAlignment.LEFT);
+			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRowNumber(sheet);
+			CellStyle tableRowOneDecimalPlaceCellStyle = createStyleForTableRowNumber(sheet);
+			tableRowOneDecimalPlaceCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceDataFormat));
+			CellStyle tableTitleCellStyle = createStyleForTableTitle(sheet);
 
-			Row row1 = sheet.createRow(0);
-			row1.setHeight((short) 600);
-			Cell cell = row1.createCell(0);
-			cell.setCellStyle(cellStyleB);
+			Row row = sheet.createRow(0);
+			row.setHeight((short) 600);
+			Cell cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Site Name");
 
-			cell = row1.createCell(1);
-			cell.setCellStyle(cellStyleB);
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue(dataObj.getSite_name());
 
-			// Create font
-			Font font = sheet.getWorkbook().createFont();
-			font.setFontName("Times New Roman");
-			font.setBold(true);
-			font.setFontHeightInPoints((short) 22); // font size
-			font.setColor(IndexedColors.BLACK.getIndex()); // text color
-			// Create CellStyle
-			CellStyle cellStyleCustom = sheet.getWorkbook().createCellStyle();
-			cellStyleCustom.setFont(font);
-			sheet.addMergedRegion(new CellRangeAddress(0, 5, 2, 10));
-			cellStyleCustom.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-			cellStyleCustom.setVerticalAlignment(VerticalAlignment.CENTER);
-			cellStyleCustom.setAlignment(HorizontalAlignment.CENTER);
-			
-			cellStyleCustom.setBorderBottom(BorderStyle.THIN);
-			cellStyleCustom.setBorderTop(BorderStyle.THIN);
-			cellStyleCustom.setBorderRight(BorderStyle.THIN);
-			cellStyleCustom.setBorderLeft(BorderStyle.THIN);
-			cellStyleCustom.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-			cell = row1.createCell(2);
-			cell.setCellStyle(cellStyleCustom);
-			cell.setCellValue("ANNUAL PRODUCTION REPORT");
+			row = sheet.createRow(1);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Report Date");
 
-			// Create CellStyle image
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getReport_date());
 
-			// Create font
-			Font font11 = sheet.getWorkbook().createFont();
-			font11.setFontName("Times New Roman");
-			font11.setBold(true);
-			font11.setFontHeightInPoints((short) 12); // font size
-			font11.setColor(IndexedColors.BLACK.getIndex()); // text color
-			// Create CellStyle
-			CellStyle cellStyleCustom11 = sheet.getWorkbook().createCellStyle();
-			cellStyleCustom11.setFont(font11);
-			sheet.addMergedRegion(new CellRangeAddress(11, 11, 2, 13));
-			cellStyleCustom11.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-			cellStyleCustom11.setVerticalAlignment(VerticalAlignment.CENTER);
-			
-			cellStyleCustom11.setBorderBottom(BorderStyle.THIN);
-			cellStyleCustom11.setBorderTop(BorderStyle.THIN);
-			cellStyleCustom11.setBorderRight(BorderStyle.THIN);
-			cellStyleCustom11.setBorderLeft(BorderStyle.THIN);
-			cellStyleCustom11.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom11.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom11.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyleCustom11.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			
-			
+			row = sheet.createRow(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Covered Period");
 
-			Row row2 = sheet.createRow(1);
-			row2.setHeight((short) 600);
-			Cell cell2 = row2.createCell(0);
-			cell2.setCellStyle(cellStyleB);
-			cell2.setCellValue("Report Date");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
 
-			cell2 = row2.createCell(1);
-			cell2.setCellStyle(cellStyleTitle);
-			cell2.setCellValue(dataObj.getReport_date());
+			row = sheet.createRow(3);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("System Size (kW DC)");
 
-			Row row3 = sheet.createRow(2);
-			row3.setHeight((short) 600);
-			Cell cell3 = row3.createCell(0);
-			cell3.setCellStyle(cellStyleB);
-			cell3.setCellValue("Covered Period");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getDc_capacity());
 
-			cell3 = row3.createCell(1);
-			cell3.setCellStyle(cellStyle);
-			cell3.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
-
-			Row row4 = sheet.createRow(3);
-			row4.setHeight((short) 600);
-			Cell cell4 = row4.createCell(0);
-			cell4.setCellStyle(cellStyleB);
-			cell4.setCellValue("System Size (kW DC)");
-
-			cell4 = row4.createCell(1);
-			cell4.setCellStyle(cellStyleTitle);
-			cell4.setCellValue(dataObj.getDc_capacity());
-
-
-			// Performance Reporting
-			// Create font
-			Font font6 = sheet.getWorkbook().createFont();
-			font6.setFontName("Times New Roman");
-			font6.setBold(true);
-			font6.setFontHeightInPoints((short) 12); // font size
-			font6.setColor(IndexedColors.WHITE.getIndex()); // text color
-			// Create CellStyle
-			CellStyle cellStyle6 = sheet.getWorkbook().createCellStyle();
-			cellStyle6.setFont(font6);
+			row = sheet.createRow(5);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableTitleCellStyle);
+			cell.setCellValue("Performance Reporting");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableTitleCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(5, 5, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(8, 8, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(9, 9, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(10, 10, 0, 1));
-
-			sheet.addMergedRegion(new CellRangeAddress(11, 11, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(12, 12, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(13, 13, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(14, 14, 0, 1));
-			sheet.addMergedRegion(new CellRangeAddress(15, 15, 0, 1));
-			cellStyle6.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
-			cellStyle6.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-			cellStyle6.setVerticalAlignment(VerticalAlignment.CENTER);
 			
-			cellStyle6.setBorderBottom(BorderStyle.THIN);
-			cellStyle6.setBorderTop(BorderStyle.THIN);
-			cellStyle6.setBorderRight(BorderStyle.THIN);
-			cellStyle6.setBorderLeft(BorderStyle.THIN);
-			cellStyle6.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle6.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle6.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-			cellStyle6.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-
-			Row row6 = sheet.createRow(5);
-			Cell cell6 = row6.createCell(0);
-			cell6.setCellStyle(cellStyle6);
-			cell6.setCellValue("Performance Reporting");
-			
-			Cell cell61 = row6.createCell(1);
-			cell61.setCellStyle(cellStyle6);
-			cell61.setCellValue("");
+			for (int i = 0; i <= 5; i++) {
+				row = sheet.getRow(i) != null ? sheet.getRow(i) : sheet.createRow(i);
+				for (int j = 2; j <= 10; j++) {
+					cell = row.createCell(j);
+					cell.setCellStyle(reportTitleCellStyle);
+					if(i == 0 && j == 2) cell.setCellValue("ANNUAL PRODUCTION REPORT");
+				}
+			}
+			sheet.addMergedRegion(new CellRangeAddress(0, 5, 2, 10));
 
 			// Monthly Data
 			Row row7 = sheet.createRow(7);
 			Cell cell7 = row7.createCell(0);
-			cell7.setCellStyle(cellStyleCustom11);
+			cell7.setCellStyle(tableHeaderLeftAlignCellStyle);
 			cell7.setCellValue("Monthly Data");
-			
 			Cell cell71 = row7.createCell(1);
-			cell71.setCellStyle(cellStyleCustom11);
-			cell71.setCellValue("");
+			cell71.setCellStyle(tableHeaderLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 1));
 
 			int r = 2;
 			for (int i = 0; i < categories.size(); i++) {
 				cell7 = row7.createCell(r + i);
-				cell7.setCellStyle(cellStyleFontBold);
-				cell7.setCellValue((String) categories.get(i));
+				cell7.setCellStyle(tableHeaderCellStyle);
+				cell7.setCellValue(categories.get(i));
 			}
 			
 
 			// Actual Generation (kWh)
 			Row row8 = sheet.createRow(8);
 			Cell cell8 = row8.createCell(0);
-			cell8.setCellStyle(cellStyle);
+			cell8.setCellStyle(tableRowLeftAlignCellStyle);
 			cell8.setCellValue("Actual Generation (kWh)");
-			
 			Cell cell81 = row8.createCell(1);
-			cell81.setCellStyle(cellStyle);
-			cell81.setCellValue("");
+			cell81.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(8, 8, 0, 1));
 			
 			int v = 2;
 			for (int i = 0; i < actualGeneration.size(); i++) {
 				cell8 = row8.createCell(v + i);
-				cell8.setCellStyle(cellStyleItem);
-				cell8.setCellValue(df.format(actualGeneration.get(i)));
+				cell8.setCellStyle(tableRowNoDecimalCellStyle);
+				if(actualGeneration.get(i) != null) cell8.setCellValue(actualGeneration.get(i));
 			}
 			
 
 			// Baseline Generation (kWh)
 			Row row9 = sheet.createRow(9);
 			Cell cell9 = row9.createCell(0);
-			cell9.setCellStyle(cellStyle);
+			cell9.setCellStyle(tableRowLeftAlignCellStyle);
 			cell9.setCellValue("Estimated Generation (kWh)");
-			
 			Cell cell91 = row9.createCell(1);
-			cell91.setCellStyle(cellStyle);
-			cell91.setCellValue("");
+			cell91.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(9, 9, 0, 1));
 			
 			int u = 2;
 			for (int i = 0; i < baselineGeneration.size(); i++) {
 				cell9 = row9.createCell(u + i);
-				cell9.setCellStyle(cellStyleItem);
-				cell9.setCellValue(df.format(baselineGeneration.get(i)));
+				cell9.setCellStyle(tableRowNoDecimalCellStyle);
+				if(baselineGeneration.get(i) != null) cell9.setCellValue(baselineGeneration.get(i));
 			}
 
 
 			// Baseline Generation Index (%)
 			Row row10 = sheet.createRow(10);
 			Cell cell10 = row10.createCell(0);
-			cell10.setCellStyle(cellStyle);
+			cell10.setCellStyle(tableRowLeftAlignCellStyle);
 			cell10.setCellValue("Estimated Generation Index (%)");
-			
 			Cell cell101 = row10.createCell(1);
-			cell101.setCellStyle(cellStyle);
-			cell101.setCellValue("");
-			
+			cell101.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(10, 10, 0, 1));
 			
 			int n = 2;
 			for (int i = 0; i < baselineGenerationIndex.size(); i++) {
 				cell10 = row10.createCell(n + i);
-				cell10.setCellStyle(cellStyleItem);
-			
-				if((double)baselineGenerationIndex.get(i) == 0) {
-					cell10.setCellValue(baselineGenerationIndex.get(i).toString());
-				} else {
-					cell10.setCellValue(dfp.format(baselineGenerationIndex.get(i)));
-				}
-				
-				
+				cell10.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+				if(baselineGenerationIndex.get(i) != null) cell10.setCellValue(baselineGenerationIndex.get(i));
 			}
 
 
 			// Trailing Twelve Month Generation
-
 			Row row11 = sheet.createRow(11);
 			Cell cell11 = row11.createCell(0);
-			cell11.setCellStyle(cellStyleCustom11);
+			cell11.setCellStyle(tableHeaderLeftAlignCellStyle);
 			cell11.setCellValue("Trailing Twelve Month Generation");
-			
 			Cell cell111 = row11.createCell(1);
-			cell111.setCellStyle(cellStyleCustom11);
-			cell111.setCellValue("");
-
+			cell111.setCellStyle(tableHeaderLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(11, 11, 0, 1));
+			sheet.addMergedRegion(new CellRangeAddress(11, 11, 2, 13));
+			
 			// Actual Generation (kWh)
 			Row row12 = sheet.createRow(12);
 			Cell cell12 = row12.createCell(0);
-			cell12.setCellStyle(cellStyle);
+			cell12.setCellStyle(tableRowLeftAlignCellStyle);
 			cell12.setCellValue("Actual Generation (kWh)");
-
+			sheet.addMergedRegion(new CellRangeAddress(12, 12, 0, 1));
 			
 			int z = 2;
 			for (int i = 0; i < actualGenerationTrailing.size(); i++) {
 				cell12 = row12.createCell(z + i);
-				cell12.setCellStyle(cellStyleItem);
-				cell12.setCellValue(df.format(actualGenerationTrailing.get(i)));
-				
-				
+				cell12.setCellStyle(tableRowNoDecimalCellStyle);
+				if(actualGenerationTrailing.get(i) != null) cell12.setCellValue(actualGenerationTrailing.get(i));
 			}
 
 			// Baseline Generation (kWh)
 			Row row13 = sheet.createRow(13);
 			Cell cell13 = row13.createCell(0);
-			cell13.setCellStyle(cellStyle);
+			cell13.setCellStyle(tableRowLeftAlignCellStyle);
 			cell13.setCellValue("Estimated Generation (kWh)");
-			
 			Cell cell131 = row13.createCell(1);
-			cell131.setCellStyle(cellStyle);
-			cell131.setCellValue("");
+			cell131.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(13, 13, 0, 1));
 			
 			int m = 2;
 			for (int i = 0; i < baselineGenerationTrailing.size(); i++) {
 				cell13 = row13.createCell(m + i);
-				cell13.setCellStyle(cellStyleItem);
-				cell13.setCellValue(df.format(baselineGenerationTrailing.get(i)));
-				
+				cell13.setCellStyle(tableRowNoDecimalCellStyle);
+				if (baselineGenerationTrailing.get(i) != null) cell13.setCellValue(baselineGenerationTrailing.get(i));
 			}
 
 			// Baseline Generation Index (%)
 			Row row14 = sheet.createRow(14);
 			Cell cell14 = row14.createCell(0);
-			cell14.setCellStyle(cellStyle);
+			cell14.setCellStyle(tableRowLeftAlignCellStyle);
 			cell14.setCellValue("Estimated Generation Index (%)");
-
 			Cell cell141 = row14.createCell(1);
-			cell141.setCellStyle(cellStyle);
-			cell141.setCellValue("");
+			cell141.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(14, 14, 0, 1));
 			
 			int g = 2;
 			for (int i = 0; i < baselineGenerationIndexTrailing.size(); i++) {
 				cell14 = row14.createCell(g + i);
-				cell14.setCellStyle(cellStyleItem);
-				if((double)baselineGenerationIndexTrailing.get(i) == 0) {
-					cell14.setCellValue(baselineGenerationIndexTrailing.get(i).toString());
-				} else {
-					cell14.setCellValue( dfp.format(baselineGenerationIndexTrailing.get(i)));
-				}
-				
-				
+				cell14.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+				if (baselineGenerationIndexTrailing.get(i) != null) cell14.setCellValue(baselineGenerationIndexTrailing.get(i));
 			}
 
 
 			// Inverter Availability (%)
 			Row row15 = sheet.createRow(15);
 			Cell cell15 = row15.createCell(0);
-			cell15.setCellStyle(cellStyle);
-			if(dataObj.getDeviceType() == "meter") {
-				cell15.setCellValue("Site Availability (%)");
-			} else {
-				cell15.setCellValue("Inverter Availability (%)");
-			}
-			
-			
+			cell15.setCellStyle(tableRowLeftAlignCellStyle);
+			cell15.setCellValue(dataObj.getDeviceType() == "meter" ? "Site Availability (%)" : "Inverter Availability (%)");
 			Cell cell151 = row15.createCell(1);
-			cell151.setCellStyle(cellStyle);
-			cell151.setCellValue("");
+			cell151.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(15, 15, 0, 1));
 
 			int h = 2;
 			for (int i = 0; i < INVAvailability.size(); i++) {
 				cell15 = row15.createCell(h + i);
-				cell15.setCellStyle(cellStyleItem);
-				cell15.setCellValue(INVAvailability.get(i).toString());
+				cell15.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+				if (INVAvailability.get(i) != null) cell15.setCellValue(INVAvailability.get(i));
 			}
 			
 		} catch (Exception e) {
@@ -1461,10 +1271,8 @@ public class ReportsController extends BaseController {
 				ReportsService service = new ReportsService();
 				ViewReportEntity dataObj = (ViewReportEntity) service.getAnnuallyReport(obj);
 				if (dataObj != null) {
-					double totalMWH = 0;
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					Date convertedDate = dateFormat.parse(obj.getEnd_date());
-					String lastOfMonth = new SimpleDateFormat("dd").format(convertedDate);
 					Date startDate = dateFormat.parse(obj.getStart_date());
 					dataObj.setStart_date( new SimpleDateFormat("MM/dd/yyyy").format(startDate) );
 					dataObj.setEnd_date( new SimpleDateFormat("MM/dd/yyyy").format(convertedDate) );
@@ -1485,30 +1293,29 @@ public class ReportsController extends BaseController {
 					List dataExports = dataObj.getDataReports();
 					List dataAvailability = dataObj.getDataAvailability();
 					List dataExpectations = dataObj.getDataExpectations();
-					double totalMWHTmp = 0;
-					double totalGeneration = 0;
-					double totalExpectations = 0;
+					Double totalGeneration = null;
+					Double totalExpectations = null;
+					
 					for (int i = 0; i < 12; i++) {
 						Calendar c = Calendar.getInstance();
 						c.setTime(startDate);
 						c.add(Calendar.MONTH, i);
 						categories.add(monthFormat.format(c.getTime()));
-						Double v = 0d;
+						Double v = null;
 						for( int j = 0; j < dataExports.size(); j++){
 							Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
 							String date = (String) item.get("categories_time");
 							if(date.equals(dateFormatCategories.format(c.getTime()) )) {
 								v = (Double)item.get("chart_energy_kwh");
-								totalMWHTmp = v;
-								totalGeneration = totalGeneration + v;
+								if(v != null) totalGeneration = totalGeneration != null ? totalGeneration + v : v;
+								break;
 							}
 						}
 						
 						actualGeneration.add(v);
-						totalMWH = totalMWH + totalMWHTmp;
 						actualGenerationTrailing.add(totalGeneration);
 						
-						Double availability = 0.0;
+						Double availability = null;
 						
 						if(dataAvailability.size() > 0) {
 							for( int j = 0; j < dataAvailability.size(); j++){
@@ -1516,6 +1323,7 @@ public class ReportsController extends BaseController {
 								String date = (String) item.get("time_full");
 								if(date.equals(dateFormatCategories.format(c.getTime()) )) {
 									availability = (Double)item.get("InverterAvailability");
+									break;
 								}
 							}
 						}
@@ -1523,7 +1331,7 @@ public class ReportsController extends BaseController {
 						INVAvailability.add(availability);
 						
 						// baseline Generation
-						Double baseline = 0.0;
+						Double baseline = null;
 						if(dataExpectations.size() > 0) {
 							for( int k = 0; k < dataExpectations.size(); k++){
 								Map<String, Object> itemEx = (Map<String, Object>) dataExpectations.get(k);
@@ -1531,176 +1339,81 @@ public class ReportsController extends BaseController {
 								if(year.equals(yearFormat.format(c.getTime()))) {
 									Double monthValue = Double.parseDouble(itemEx.get((monthFormat.format(c.getTime())).toLowerCase()).toString());
 									baseline = monthValue;
-									totalExpectations = totalExpectations + baseline;
+									if(baseline != null) totalExpectations = totalExpectations != null ? totalExpectations + baseline : baseline;
+									break;
 								}
 							}
 						}
 						
 						baselineGeneration.add(baseline);
-						baselineGenerationIndex.add( (v/baseline) * 100);
+						baselineGenerationIndex.add(v != null && baseline != null && baseline != 0 ? (v/baseline) * 100 : null);
 						baselineGenerationTrailing.add(totalExpectations);
-						baselineGenerationIndexTrailing.add((double) (totalGeneration/totalExpectations) * 100 );
+						baselineGenerationIndexTrailing.add(totalGeneration != null && totalExpectations != null && totalExpectations != 0 ? (totalGeneration/totalExpectations) * 100 : null);
 					}
 					
-					XSSFSheet chartSheet = document.createSheet("Annual Performance");
-					XSSFSheet dataSheet = document.createSheet("data");
+					XSSFSheet sheet = document.createSheet("Annual Performance");
 
-					// FileInputStream obtains input bytes from the image file
-					InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
-					// Get the contents of an InputStream as a byte[].
-					byte[] bytes = IOUtils.toByteArray(inputStreamImage);
-					// Adds a picture to the workbook
-					int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
-					// close the input stream
-					inputStreamImage.close();
+					// insert logo image
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
+					insertLogo(sheet, logoAnchor);
 
-					// Returns an object that handles instantiating concrete classes
-					CreationHelper helper = document.getCreationHelper();
+					// report information and table
+					writeHeaderAnnuallyReport(sheet, categories, actualGeneration, dataObj, baselineGeneration, baselineGenerationIndex, actualGenerationTrailing, baselineGenerationTrailing, baselineGenerationIndexTrailing, INVAvailability );
 
-					// Creates the top-level drawing patriarch.
-					Drawing drawing = chartSheet.createDrawingPatriarch();
-
-					// Create an anchor that is attached to the worksheet
-					ClientAnchor anchor = helper.createClientAnchor();
-					anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-					// set top-left corner for the image
-					anchor.setCol1(12);
-					anchor.setRow1(1);
-					//anchor.setCol2(3);
-					//anchor.setRow2(4);
-
-					// Creates a picture
-					Picture pict = drawing.createPicture(anchor, pictureIdx);
-					// Reset the image to the original size
-//					pict.resize(1.0, 1.0);
-					pict.resize(1.45, 3.5);
-
-					writeHeaderAnnuallyReport(chartSheet, 0, categories, actualGeneration, dataObj, baselineGeneration, baselineGenerationIndex, actualGenerationTrailing, baselineGenerationTrailing, baselineGenerationIndexTrailing, INVAvailability );
-					// create the data
-					int r = 0;
-					for (String cat : categories) {
-						dataSheet.createRow(r).createCell(0).setCellValue(cat);
-						dataSheet.getRow(r).createCell(1).setCellValue(actualGeneration.get(r));
-						dataSheet.getRow(r).createCell(2).setCellValue(baselineGeneration.get(r));
-						dataSheet.getRow(r).createCell(3).setCellValue(baselineGenerationIndex.get(r));
-						r++;
-					}
-
-					// create the chart
-					XSSFDrawing drawing1 = chartSheet.createDrawingPatriarch();
-					XSSFClientAnchor anchor1 = drawing1.createAnchor(0, 0, 0, 0, 0, 18, 14, 40);
-					XDDFChart chart = drawing1.createChart(anchor1);
+					// chart
+					ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 18, 14, 40);
+					XDDFChart chart = insertChart(sheet, chartAnchor);
 					chart.setTitleText("Annual Performance");
-					chart.setTitleOverlay(false);
 					chart.getCTChart().getTitle().getTx().getRich().getPArray(0).getRArray(0).getRPr().setSz(1200);
-
-					// create data sources
+					
+					// data sources
 					int numOfPoints = categories.size();
-					// dummy 0-values for the pad data source
-					Double[] dummyValuesForPad = new Double[numOfPoints];
-					for (int i = 0; i < numOfPoints; i++) {
-						dummyValuesForPad[i] = 0d;
-					}
-					XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 0, 0));
-					XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 1, 1));
-					XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 2, 2));
+					XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(7, 7, 2, 2 + numOfPoints - 1));
+					XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(8, 8, 2, 2 + numOfPoints - 1));
+					XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9, 2, 2 + numOfPoints - 1));
+					XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(10, 10, 2, 2 + numOfPoints - 1));
 
-					XDDFNumericalDataSource<Double> valuesData3 = XDDFDataSourcesFactory.fromNumericCellRange(dataSheet,
-							new CellRangeAddress(0, numOfPoints - 1, 3, 3));
-
-					for (int i = 0; i < numOfPoints; i++) {
-						XSSFRow row = dataSheet.getRow(i);
-						if (row == null)
-							row = dataSheet.createRow(i);
-						XSSFCell cell = row.createCell(255);
-						cell.setCellValue(0);
-					}
-
-
-					// first bar chart
-					XDDFCategoryAxis bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-					if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
+					// category axis
+					XDDFCategoryAxis bottomAxis = createCategoryAxis(chart, true);
 					
-					XDDFValueAxis leftAxis = chart.createValueAxis(AxisPosition.LEFT);
-					leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-					leftAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
+					// left value axis
+					XDDFValueAxis leftAxis = createLeftValueAxis(chart);
 					leftAxis.setTitle("GENERATION (KWH)");
-					if (leftAxis.hasNumberFormat()) leftAxis.setNumberFormat("#,##0.00");
 
-					XDDFChartData data = chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-					XDDFBarChartData bar = (XDDFBarChartData) data;
-					bar.setBarDirection(BarDirection.COL);
+					XDDFBarChartData barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
+					barChartData.setBarDirection(BarDirection.COL);
+					barChartData.setVaryColors(false);
 
-					CTPlotArea plotArea = chart.getCTChart().getPlotArea();
-					plotArea.getValAxArray()[0].addNewMajorGridlines();
+					if (actualGeneration.size() > 0 && actualGeneration.stream().anyMatch(item -> item != null)) {
+						Series series = barChartData.addSeries(categoriesData, valuesData1);
+						series.setTitle("Actual Generation (kWh)", new CellReference(sheet.getSheetName(), 8, 0, true, true));
+						solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.STEEL_BLUE);
+					}
+					if (baselineGeneration.size() > 0 && baselineGeneration.stream().anyMatch(item -> item != null)) {
+						Series series = barChartData.addSeries(categoriesData, valuesData2);
+						series.setTitle("Baseline Generation (kWh)", new CellReference(sheet.getSheetName(), 9, 0, true, true));
+						solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.LIGHT_STEEL_BLUE);
+					}
 					
+					chart.plot(barChartData);
 
-					XDDFChartData.Series series = data.addSeries(categoriesData, valuesData1);
-					series.setTitle("Actual Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 8, 0, true, true));
-					series = data.addSeries(categoriesData, valuesData2);
-					
-					
-					
-					series.setTitle("Baseline Generation (kWh)",
-							new CellReference(chartSheet.getSheetName(), 9, 0, true, true));
-					// additional pad series - takes space at right side for primary axis
-					chart.plot(data);
+					// 2nd category axis must be there but must not be visible
+					bottomAxis = createCategoryAxis(chart, false);
 
-					// set bar colors
-					solidFillSeries(data, 0, PresetColor.STEEL_BLUE);
-					solidFillSeries(data, 1, PresetColor.LIGHT_STEEL_BLUE);
-					
+					// right value axis
+					XDDFValueAxis rightAxis = createRightValueAxis(chart, bottomAxis);
+					rightAxis.setTitle("PERFORMANCE INDEX (%)");
 
-					// second bar chart
-					// bottom axis must be there but must not be visible
-					bottomAxis = chart.createCategoryAxis(AxisPosition.BOTTOM);
-					bottomAxis.setVisible(false);
-					if (bottomAxis.hasNumberFormat()) bottomAxis.setNumberFormat("@");
-
-					XDDFValueAxis rightAxis = chart.createValueAxis(AxisPosition.RIGHT);
-					rightAxis.setCrosses(AxisCrosses.MAX);
-					rightAxis.setCrossBetween(AxisCrossBetween.BETWEEN);
-					rightAxis.setTitle("PERFORMANCE INDEX (%)"); // comment
-					if (rightAxis.hasNumberFormat()) rightAxis.setNumberFormat("#,##0.00");
-
-					// set correct cross axis
-					bottomAxis.crossAxis(rightAxis);
-					rightAxis.crossAxis(bottomAxis);
-					
-
-					data = chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
-					data.setVaryColors(false);
-					bar.setBarDirection(BarDirection.COL);
-
-
+					XDDFLineChartData lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
+					lineChartData.setVaryColors(false);
 				    
-					XDDFLineChartData.Series seriesLine = (XDDFLineChartData.Series) data.addSeries(categoriesData, valuesData3);
-
-					seriesLine.setTitle("Estimated Generation Index (%)", new CellReference(chartSheet.getSheetName(), 10, 0, true, true));
-					chart.plot(data);			
-					// set line colors				
-					solidLineSeries(data, 0, PresetColor.GRAY);
-
-
-
-					// this must occur after the call to chart.plot above
-//					CTPlotArea plotAreaLine = chart.getCTChart().getPlotArea();
-//				    for (CTLineChart ch : plotAreaLine.getLineChartList()) {
-//				        for (CTLineSer ser : ch.getSerList()) {
-//				            CTBoolean ctBool = CTBoolean.Factory.newInstance();
-//				            ser.setSmooth(ctBool);				            
-//				            ser.addNewMarker().addNewSymbol().setVal(STMarkerStyle.NONE);
-//				        }
-//				    }
-				    
+					if (baselineGenerationIndex.size() > 0 && baselineGenerationIndex.stream().anyMatch(item -> item != null)) {
+						Series series = lineChartData.addSeries(categoriesData, valuesData3);
+						series.setTitle("Estimated Generation Index (%)", new CellReference(sheet.getSheetName(), 10, 0, true, true));
+						solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.GRAY);
+					}
 					
-					// set legend
-					XDDFChartLegend legend = chart.getOrAddLegend();
-					legend.setPosition(LegendPosition.BOTTOM);
+					chart.plot(lineChartData);
 
 					// Write the output to a file
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
@@ -1710,8 +1423,7 @@ public class ReportsController extends BaseController {
 
 					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 						document.write(fileOut);
-						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
-								Constants.mailFromContact);
+						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 
 						String msgTemplate = Constants.getMailTempleteByState(16);
 						String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", "Annual ", "", "");
@@ -3873,14 +3585,7 @@ public class ReportsController extends BaseController {
 				AssetManagementAndOperationPerformanceReportEntity dataObj = (AssetManagementAndOperationPerformanceReportEntity) service.getAssetManagementAndOperationPerformanceReport(obj);
 				if (dataObj == null) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				
-				// FileInputStream obtains input bytes from the image file
-				InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
-				// Get the contents of an InputStream as a byte[].
-				byte[] bytes = IOUtils.toByteArray(inputStreamImage);
-				// Adds a picture to the workbook
-				int pictureIdx = document.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
-				// close the input stream
-				inputStreamImage.close();
+				int pictureIdx = readLogoImageFile(document);
 				
 				/* === operation performance === */
 				if (dataObj != null) {
@@ -3889,11 +3594,8 @@ public class ReportsController extends BaseController {
 					XSSFSheet sheet = document.createSheet("Operation Performance");
 					
 					// insert logo image
-					Drawing<?> logoDrawing = sheet.createDrawingPatriarch();
-					ClientAnchor logoAnchor = logoDrawing.createAnchor(0, 0, 0, 0, 11, 0, 12, 5);
-					logoAnchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-					Picture pict = logoDrawing.createPicture(logoAnchor, pictureIdx);
-					pict.resize(1, 1);
+					ClientAnchor logoAnchor = new XSSFClientAnchor(25 * Units.EMU_PER_PIXEL, 0, 0, 0, 11, 0, 12, 5);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information
 					writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 12, "OPERATION PERFORMANCE SUMMARY");
@@ -3903,14 +3605,9 @@ public class ReportsController extends BaseController {
 					
 					if (numOfPoints > 0) {
 						// --- energy generation chart ---
-						XSSFDrawing chartDrawing = sheet.createDrawingPatriarch();
-						XSSFClientAnchor chartAnchor = chartDrawing.createAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, numOfPoints + 11, 12, numOfPoints + 11 + 16);
-						XDDFChart chart = chartDrawing.createChart(chartAnchor);
+						ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, numOfPoints + 11, 12, numOfPoints + 11 + 16);
+						XDDFChart chart = insertChart(sheet, chartAnchor);
 						chart.setTitleText("Energy Generation");
-						chart.setTitleOverlay(false);
-						CTDispBlanksAs disp = CTDispBlanksAs.Factory.newInstance();
-					    disp.setVal(STDispBlanksAs.GAP);
-					    chart.getCTChart().setDispBlanksAs(disp);
 						
 						// chart data sources
 						int firstRow = 9;
@@ -3921,10 +3618,6 @@ public class ReportsController extends BaseController {
 						XDDFNumericalDataSource<Double> actualIrradiance = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 4, 4));
 						XDDFNumericalDataSource<Double> modeledIrradiance = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 5, 5));
 						
-						// chart legend
-						XDDFChartLegend legend = chart.getOrAddLegend();
-						legend.setPosition(LegendPosition.BOTTOM);
-						
 						// category axis
 						XDDFCategoryAxis bottomAxis = createCategoryAxis(chart, true);
 						
@@ -3932,16 +3625,24 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis leftAxis = createLeftValueAxis(chart);
 						
 						XDDFBarChartData barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, actualEnergy).setTitle("Actual Energy", new CellReference(sheet.getSheetName(), 8, 1, true, true));
-						barChartData.addSeries(categories, modeledEnergy).setTitle("Modeled Energy", new CellReference(sheet.getSheetName(), 8, 2, true, true));
-						barChartData.addSeries(categories, expectedEnergy).setTitle("Expected Energy", new CellReference(sheet.getSheetName(), 8, 3, true, true));
+						barChartData.setVaryColors(false);
 						
-						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
-						solidFillSeries(barChartData, 2, PresetColor.LIGHT_STEEL_BLUE, PresetColor.BLACK);
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getActualEnergy() != null)) {
+							Series series = barChartData.addSeries(categories, actualEnergy);
+							series.setTitle("Actual Energy", null);
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getModeledEnergy() != null)) {
+							Series series = barChartData.addSeries(categories, modeledEnergy);
+							series.setTitle("Modeled Energy", null);
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getExpectedEnergy() != null)) {
+							Series series = barChartData.addSeries(categories, expectedEnergy);
+							series.setTitle("Expected Energy", null);
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.LIGHT_STEEL_BLUE, PresetColor.BLACK);
+						}
 						
 						chart.plot(barChartData);
 						
@@ -3954,29 +3655,27 @@ public class ReportsController extends BaseController {
 						XDDFLineChartData lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 						lineChartData.setVaryColors(false);
 						
-						lineChartData.addSeries(categories, actualIrradiance).setTitle("Actual Irradiance", new CellReference(sheet.getSheetName(), 8, 4, true, true));
-						lineChartData.addSeries(categories, modeledIrradiance).setTitle("Modeled Irradiance", new CellReference(sheet.getSheetName(), 8, 5, true, true));
-						
-						// set line colors				
-						solidLineSeries(lineChartData, 0, PresetColor.GRAY);
-						solidLineSeries(lineChartData, 1, PresetColor.DARK_ORANGE);
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getActualPOA() != null)) {
+							Series series = lineChartData.addSeries(categories, actualIrradiance);
+							series.setTitle("Actual Irradiance", null);
+							solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.DARK_ORANGE);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getModeledPOA() != null)) {
+							Series series = lineChartData.addSeries(categories, modeledIrradiance);
+							series.setTitle("Modeled Irradiance", null);
+							solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.GRAY);
+						}
 						
 						chart.plot(lineChartData);
 						
 						// --- performance ratio chart ---
-						chartDrawing = sheet.createDrawingPatriarch();
-						chartAnchor = chartDrawing.createAnchor(5 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 0, 0, numOfPoints + 29, 6, numOfPoints + 29 + 15);
-						chart = chartDrawing.createChart(chartAnchor);
+						chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 0, 0, numOfPoints + 29, 6, numOfPoints + 29 + 15);
+						chart = insertChart(sheet, chartAnchor);
 						chart.setTitleText("Performance Ratio");
-						chart.setTitleOverlay(false);
 						
 						// chart data sources
 						XDDFNumericalDataSource<Double> actualPerformanceRatio = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 6, 6));
 						XDDFNumericalDataSource<Double> modeledPerformanceRatio = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 7, 7));
-						
-						// chart legend
-						legend = chart.getOrAddLegend();
-						legend.setPosition(LegendPosition.BOTTOM);
 						
 						// category axis
 						bottomAxis = createCategoryAxis(chart, true);
@@ -3985,23 +3684,26 @@ public class ReportsController extends BaseController {
 						leftAxis = createLeftValueAxis(chart);
 						
 						barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, actualPerformanceRatio).setTitle("Actual Generation", new CellReference(sheet.getSheetName(), 8, 6, true, true));
-						barChartData.addSeries(categories, modeledPerformanceRatio).setTitle("Modeled Generation", new CellReference(sheet.getSheetName(), 8, 7, true, true));
+						barChartData.setVaryColors(false);
 						
-						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getActualPerformanceRatio() != null)) {
+							Series series = barChartData.addSeries(categories, actualPerformanceRatio);
+							series.setTitle("Actual Generation", null);
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getModeledPerformanceRatio() != null)) {
+							Series series = barChartData.addSeries(categories, modeledPerformanceRatio);
+							series.setTitle("Modeled Generation", null);
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						}
 						
 						chart.plot(barChartData);
 						
 						// --- key performance indicators chart ---
-						chartDrawing = sheet.createDrawingPatriarch();
-						chartAnchor = chartDrawing.createAnchor(10 * Units.EMU_PER_PIXEL, 0, 0, 0, 6, numOfPoints + 29, 12, numOfPoints + 29 + 15);
-						chart = chartDrawing.createChart(chartAnchor);
+						chartAnchor = new XSSFClientAnchor(10 * Units.EMU_PER_PIXEL, 0, 0, 0, 6, numOfPoints + 29, 12, numOfPoints + 29 + 15);
+						chart = insertChart(sheet, chartAnchor);
 						chart.setTitleText("Key Performance Indicators");
-						chart.setTitleOverlay(false);
 						
 						// chart data sources
 						XDDFNumericalDataSource<Double> energyIndex = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 8, 8));
@@ -4009,10 +3711,6 @@ public class ReportsController extends BaseController {
 						XDDFNumericalDataSource<Double> weatherAdjustedIndex = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 10, 10));
 						XDDFNumericalDataSource<Double> inverterAvailability = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 11, 11));
 						
-						// chart legend
-						legend = chart.getOrAddLegend();
-						legend.setPosition(LegendPosition.BOTTOM);
-						
 						// category axis
 						bottomAxis = createCategoryAxis(chart, true);
 						
@@ -4020,14 +3718,19 @@ public class ReportsController extends BaseController {
 						leftAxis = createLeftValueAxis(chart);
 						
 						barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-						
 						barChartData.setBarDirection(BarDirection.COL);
-						barChartData.addSeries(categories, energyIndex).setTitle("Energy Index", new CellReference(sheet.getSheetName(), 8, 8, true, true));
-						barChartData.addSeries(categories, weatherAdjustedIndex).setTitle("Weather Adjusted Index", new CellReference(sheet.getSheetName(), 8, 10, true, true));
+						barChartData.setVaryColors(false);
 						
-						// set bar colors
-						solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getEnergyIndex() != null)) {
+							Series series = barChartData.addSeries(categories, energyIndex);
+							series.setTitle("Energy Index", new CellReference(sheet.getSheetName(), 8, 8, true, true));
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getWeatherAdjustedIndex() != null)) {
+							Series series = barChartData.addSeries(categories, weatherAdjustedIndex);
+							series.setTitle("Weather Adjusted Index", new CellReference(sheet.getSheetName(), 8, 10, true, true));
+							solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+						}
 						
 						chart.plot(barChartData);
 						
@@ -4040,12 +3743,16 @@ public class ReportsController extends BaseController {
 						lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, rightAxis);
 						lineChartData.setVaryColors(false);
 						
-						lineChartData.addSeries(categories, weatherIndex).setTitle("Weather Index", new CellReference(sheet.getSheetName(), 8, 9, true, true));
-						lineChartData.addSeries(categories, inverterAvailability).setTitle("Inverter Availability", new CellReference(sheet.getSheetName(), 8, 11, true, true));
-						
-						// set line colors				
-						solidLineSeries(lineChartData, 0, PresetColor.GRAY);
-						solidLineSeries(lineChartData, 1, PresetColor.DARK_ORANGE);
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getWeatherIndex() != null)) {
+							Series series = lineChartData.addSeries(categories, weatherIndex);
+							series.setTitle("Weather Index", new CellReference(sheet.getSheetName(), 8, 9, true, true));
+							solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.GRAY);
+						}
+						if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getInverterAvailability() != null)) {
+							Series series = lineChartData.addSeries(categories, inverterAvailability);
+							series.setTitle("Inverter Availability", new CellReference(sheet.getSheetName(), 8, 11, true, true));
+							solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.DARK_ORANGE);
+						}
 						
 						chart.plot(lineChartData);
 					}
@@ -4062,11 +3769,8 @@ public class ReportsController extends BaseController {
 						sheet.setColumnWidth(6, 256 * 5);
 						
 						// insert logo image
-						Drawing<?> logoDrawing = sheet.createDrawingPatriarch();
-						ClientAnchor logoAnchor = logoDrawing.createAnchor(0, 0, 0, 0, 13, 0, 14, 5);
-						logoAnchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-						Picture pict = logoDrawing.createPicture(logoAnchor, pictureIdx);
-						pict.resize(1, 1);
+						ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 13, 0, 14, 5);
+						insertLogo(sheet, logoAnchor, pictureIdx);
 						
 						// report information
 						writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 14, "MONTHLY PERFORMANCE");
@@ -4082,12 +3786,8 @@ public class ReportsController extends BaseController {
 						
 						if (numOfPoints > 0) {
 							// --- monthly performance chart ---
-							XSSFDrawing chartDrawing = sheet.createDrawingPatriarch();
-							XSSFClientAnchor chartAnchor = chartDrawing.createAnchor(0, 0, 0, 0, 7, numOfPoints + 9 - 16, 14, numOfPoints + 9);
-							XDDFChart chart = chartDrawing.createChart(chartAnchor);
-							CTDispBlanksAs disp = CTDispBlanksAs.Factory.newInstance();
-						    disp.setVal(STDispBlanksAs.GAP);
-						    chart.getCTChart().setDispBlanksAs(disp);
+							ClientAnchor chartAnchor = new XSSFClientAnchor(0, 0, 0, 0, 7, numOfPoints + 9 - 16, 14, numOfPoints + 9);
+							XDDFChart chart = insertChart(sheet, chartAnchor);
 							
 							// chart data sources
 							int firstRow = 9;
@@ -4096,10 +3796,6 @@ public class ReportsController extends BaseController {
 							XDDFNumericalDataSource<Double> expectedEnergy = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 2, 2));
 							XDDFNumericalDataSource<Double> modeledEnergy = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(firstRow, firstRow + numOfPoints - 1, 3, 3));
 							
-							// chart legend
-							XDDFChartLegend legend = chart.getOrAddLegend();
-							legend.setPosition(LegendPosition.BOTTOM);
-							
 							// category axis
 							XDDFCategoryAxis bottomAxis = createCategoryAxis(chart, true);
 							
@@ -4107,24 +3803,30 @@ public class ReportsController extends BaseController {
 							XDDFValueAxis leftAxis = createLeftValueAxis(chart);
 							
 							XDDFBarChartData barChartData = (XDDFBarChartData) chart.createData(ChartTypes.BAR, bottomAxis, leftAxis);
-							
 							barChartData.setBarDirection(BarDirection.COL);
-							barChartData.addSeries(categories, actualEnergy).setTitle("Actual", new CellReference(sheet.getSheetName(), 8, 1, true, true));
-							barChartData.addSeries(categories, expectedEnergy).setTitle("Expected*", new CellReference(sheet.getSheetName(), 8, 2, true, true));
+							barChartData.setVaryColors(false);
 							
-							// set bar colors
-							solidFillSeries(barChartData, 0, PresetColor.STEEL_BLUE, PresetColor.BLACK);
-							solidFillSeries(barChartData, 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+							if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getActualEnergy() != null)) {
+								Series series = barChartData.addSeries(categories, actualEnergy);
+								series.setTitle("Actual", new CellReference(sheet.getSheetName(), 8, 1, true, true));
+								solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.STEEL_BLUE, PresetColor.BLACK);
+							}
+							if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getExpectedEnergy() != null)) {
+								Series series = barChartData.addSeries(categories, expectedEnergy);
+								series.setTitle("Expected*", new CellReference(sheet.getSheetName(), 8, 2, true, true));
+								solidFillSeries(barChartData, barChartData.getSeriesCount() - 1, PresetColor.DARK_GRAY, PresetColor.BLACK);
+							}
 							
 							chart.plot(barChartData);
 							
 							XDDFLineChartData lineChartData = (XDDFLineChartData) chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
 							lineChartData.setVaryColors(false);
 							
-							lineChartData.addSeries(categories, modeledEnergy).setTitle("Modeled**", new CellReference(sheet.getSheetName(), 8, 3, true, true));
-							
-							// set line colors				
-							solidLineSeries(lineChartData, 0, PresetColor.DARK_ORANGE);
+							if (numOfPoints > 0 && data.stream().anyMatch(item -> item.getModeledEnergy() != null)) {
+								Series series = lineChartData.addSeries(categories, modeledEnergy);
+								series.setTitle("Modeled**", new CellReference(sheet.getSheetName(), 8, 3, true, true));
+								solidLineSeries(lineChartData, lineChartData.getSeriesCount() - 1, PresetColor.DARK_ORANGE);
+							}
 							
 							chart.plot(lineChartData);
 						}
@@ -4137,11 +3839,8 @@ public class ReportsController extends BaseController {
 					XSSFSheet sheet = document.createSheet("Monthly Asset Management");
 					
 					// insert logo image
-					Drawing<?> logoDrawing = sheet.createDrawingPatriarch();
-					ClientAnchor logoAnchor = logoDrawing.createAnchor(0, 0, 0, 0, 6, 0, 7, 5);
-					logoAnchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-					Picture pict = logoDrawing.createPicture(logoAnchor, pictureIdx);
-					pict.resize(1, 1);
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 0, 0, 6, 0, 7, 5);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information
 					writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 7, "ASSET MANAGEMENT");
@@ -4156,11 +3855,8 @@ public class ReportsController extends BaseController {
 					XSSFSheet sheet = document.createSheet("Estimated Loss By Event");
 					
 					// insert logo image
-					Drawing<?> logoDrawing = sheet.createDrawingPatriarch();
-					ClientAnchor logoAnchor = logoDrawing.createAnchor(50 * Units.EMU_PER_PIXEL, 0, 0, 10 * Units.EMU_PER_PIXEL, 7, 0, 8, 5);
-					logoAnchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-					Picture pict = logoDrawing.createPicture(logoAnchor, pictureIdx);
-					pict.resize(1, 1);
+					ClientAnchor logoAnchor = new XSSFClientAnchor(50 * Units.EMU_PER_PIXEL, 0, 0, 10 * Units.EMU_PER_PIXEL, 7, 0, 8, 5);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information
 					writeHeaderAssetManagementAndOperationPerformanceReport(sheet, dataObj.getReportDetail(), 8, "ESTIMATED LOSS BY EVENT");
@@ -4171,8 +3867,7 @@ public class ReportsController extends BaseController {
 								
 				// Write the output to a file
 				String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-				String dir = uploadRootPath() + "/"
-						+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+				String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 				String fileName = dir + "/asset-management-and-operation-performance-report-" + timeStamp + ".xlsx";
 				
 				try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
@@ -6422,6 +6117,44 @@ public class ReportsController extends BaseController {
 		}
 	}
 	
+	private int readLogoImageFile(XSSFWorkbook workbook) throws IOException {
+		// FileInputStream obtains input bytes from the image file
+		InputStream inputStreamImage = new FileInputStream(uploadRootPath() + "/reports/logo-report.jpg");
+		// Get the contents of an InputStream as a byte[].
+		byte[] bytes = IOUtils.toByteArray(inputStreamImage);
+		// Adds a picture to the workbook
+		int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_JPEG);
+		// close the input stream
+		inputStreamImage.close();
+		
+		return pictureIdx;
+	}
+	
+	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor) throws IOException {
+		XSSFDrawing drawing = sheet.createDrawingPatriarch();
+		anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
+		drawing.createPicture(anchor, readLogoImageFile(sheet.getWorkbook()));
+	}
+	
+	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor, int pictureIndex) {
+		XSSFDrawing drawing = sheet.createDrawingPatriarch();
+		anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
+		drawing.createPicture(anchor, pictureIndex);
+	}
+	
+	private XDDFChart insertChart(XSSFSheet sheet, ClientAnchor anchor) {
+		XSSFDrawing drawing = sheet.createDrawingPatriarch();
+		XDDFChart chart = drawing.createChart(anchor);
+		chart.setTitleOverlay(false);
+		chart.getOrAddLegend().setPosition(LegendPosition.BOTTOM);
+		
+		CTDispBlanksAs disp = CTDispBlanksAs.Factory.newInstance();
+		disp.setVal(STDispBlanksAs.GAP);
+		chart.getCTChart().setDispBlanksAs(disp);
+		
+		return chart;
+	}
+	
 	private static XDDFCategoryAxis createCategoryAxis(XDDFChart chart, boolean isVisible) {
 		XDDFCategoryAxis axis = chart.createCategoryAxis(AxisPosition.BOTTOM);
 		axis.setMajorTickMark(AxisTickMark.OUT);
@@ -7295,6 +7028,90 @@ public class ReportsController extends BaseController {
 		return cellStyle;
 	}
 	
+	// Create CellStyle for report title
+	private static CellStyle createStyleForReportTitle(Sheet sheet) {
+		Font font = sheet.getWorkbook().createFont();
+		font.setFontName("Times New Roman");
+		font.setBold(true);
+		font.setFontHeightInPoints((short) 22);
+		font.setColor(IndexedColors.BLACK.getIndex());
+		
+		CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		cellStyle.setAlignment(HorizontalAlignment.CENTER);
+		cellStyle.setDataFormat((short) 0x31);
+		
+		return cellStyle;
+	}
+	
+	// Create CellStyle for report info
+	private static CellStyle createStyleForReportInfo(Sheet sheet) {
+		Font font = sheet.getWorkbook().createFont();
+		font.setFontName("Times New Roman");
+		font.setFontHeightInPoints((short) 12);
+		font.setColor(IndexedColors.BLACK.getIndex());
+		
+		CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setWrapText(true);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		cellStyle.setAlignment(HorizontalAlignment.LEFT);
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setDataFormat((short) 0x31);
+		
+		return cellStyle;
+	}
+	
+	// Create CellStyle for report info (bold)
+	private static CellStyle createStyleForReportInfoBold(Sheet sheet) {
+		Font font = sheet.getWorkbook().createFont();
+		font.setFontName("Times New Roman");
+		font.setFontHeightInPoints((short) 12);
+		font.setColor(IndexedColors.BLACK.getIndex());
+		font.setBold(true);
+		
+		CellStyle cellStyle = createStyleForReportInfo(sheet);
+		cellStyle.setFont(font);
+		
+		return cellStyle;
+	}
+	
+	// Create CellStyle for table title
+	private static CellStyle createStyleForTableTitle(Sheet sheet) {
+		Font font = sheet.getWorkbook().createFont();
+		font.setFontName("Times New Roman");
+		font.setBold(true);
+		font.setFontHeightInPoints((short) 12);
+		font.setColor(IndexedColors.WHITE.getIndex());
+		
+		CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
+		cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setDataFormat((short) 0x31);
+		
+		return cellStyle;
+	}
+	
 	// Create CellStyle for table header
 	private static CellStyle createStyleForTableHeader(Sheet sheet) {
 		Font font = sheet.getWorkbook().createFont();
@@ -7316,10 +7133,12 @@ public class ReportsController extends BaseController {
 		cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 		cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 		cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setDataFormat((short) 0x31);
+		
 		return cellStyle;
 	}
 	
-	// Create CellStyle for table row
+	// Create CellStyle for table row (text)
 	private static CellStyle createStyleForTableRow(Sheet sheet) {
 		Font font = sheet.getWorkbook().createFont();
 		font.setFontName("Times New Roman");
@@ -7338,12 +7157,37 @@ public class ReportsController extends BaseController {
 		cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 		cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
 		cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
-		cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalDataFormat));
+		cellStyle.setDataFormat((short) 0x31);
+		
 		return cellStyle;
 	}
 	
-	// Create CellStyle for no border table row
-	private static CellStyle createStyleForNoBorderTableRow(Sheet sheet) {
+	// Create CellStyle for table row (number)
+	private static CellStyle createStyleForTableRowNumber(Sheet sheet) {
+		Font font = sheet.getWorkbook().createFont();
+		font.setFontName("Times New Roman");
+		font.setFontHeightInPoints((short) 12);
+		font.setColor(IndexedColors.BLACK.getIndex());
+		
+		CellStyle cellStyle = sheet.getWorkbook().createCellStyle();
+		cellStyle.setFont(font);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		cellStyle.setAlignment(HorizontalAlignment.CENTER);
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setTopBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setRightBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setBottomBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setLeftBorderColor(IndexedColors.GREY_25_PERCENT.getIndex());
+		cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalDataFormat));
+		
+		return cellStyle;
+	}
+	
+	// Create CellStyle for no border table row (number)
+	private static CellStyle createStyleForNoBorderTableRowNumber(Sheet sheet) {
 		Font font = sheet.getWorkbook().createFont();
 		font.setFontName("Times New Roman");
 		font.setBold(true);
@@ -7355,6 +7199,7 @@ public class ReportsController extends BaseController {
 		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		cellStyle.setAlignment(HorizontalAlignment.CENTER);
 		cellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalDataFormat));
+		
 		return cellStyle;
 	}
 
@@ -7702,56 +7547,22 @@ public class ReportsController extends BaseController {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setDisplayGridlines(false);
 			
-			Font reportTitleFont = sheet.getWorkbook().createFont();
-			reportTitleFont.setFontName("Times New Roman");
-			reportTitleFont.setBold(true);
-			reportTitleFont.setFontHeightInPoints((short) 22);
-			reportTitleFont.setColor(IndexedColors.BLACK.getIndex());
-			
-			CellStyle reportTitleCellStyle = sheet.getWorkbook().createCellStyle();
-			reportTitleCellStyle.setFont(reportTitleFont);
-			reportTitleCellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-			reportTitleCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-			reportTitleCellStyle.setAlignment(HorizontalAlignment.CENTER);
-			
-			Font reportInfoFont = sheet.getWorkbook().createFont();
-			reportInfoFont.setFontName("Times New Roman");
-			reportInfoFont.setFontHeightInPoints((short) 12);
-			reportInfoFont.setColor(IndexedColors.BLACK.getIndex());
-			
-			CellStyle reportInfoCellStyle = sheet.getWorkbook().createCellStyle();
-			reportInfoCellStyle.setFont(reportInfoFont);
-			reportInfoCellStyle.setWrapText(true);
-			reportInfoCellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-			reportInfoCellStyle.setAlignment(HorizontalAlignment.LEFT);
-			reportInfoCellStyle.setBorderBottom(BorderStyle.THIN);
-			reportInfoCellStyle.setBorderTop(BorderStyle.THIN);
-			reportInfoCellStyle.setBorderRight(BorderStyle.THIN);
-			reportInfoCellStyle.setBorderLeft(BorderStyle.THIN);
-			reportInfoCellStyle.setTopBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-			reportInfoCellStyle.setRightBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-			reportInfoCellStyle.setBottomBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-			reportInfoCellStyle.setLeftBorderColor(IndexedColors.GREY_50_PERCENT.getIndex());
-			
-			Font reportInfoBoldFont = sheet.getWorkbook().createFont();
-			reportInfoBoldFont.setFontName("Times New Roman");
-			reportInfoBoldFont.setFontHeightInPoints((short) 12);
-			reportInfoBoldFont.setColor(IndexedColors.BLACK.getIndex());
-			reportInfoBoldFont.setBold(true);
-			
-			CellStyle reportInfoBoldCellStyle = sheet.getWorkbook().createCellStyle();
-			reportInfoBoldCellStyle.cloneStyleFrom(reportInfoCellStyle);
-			reportInfoBoldCellStyle.setFont(reportInfoBoldFont);
+			CellStyle reportTitleCellStyle = createStyleForReportTitle(sheet);
+			CellStyle reportInfoCellStyle = createStyleForReportInfo(sheet);
+			CellStyle reportInfoBoldCellStyle = createStyleForReportInfoBold(sheet);
 			
 			Row row = sheet.createRow(0);
 			Cell cell = row.createCell(0);
 			cell.setCellStyle(reportTitleCellStyle);
 			cell.setCellValue(title);
+			for (int i = 1; i <= totalColumns - 1; i++) {
+				row.createCell(i).setCellStyle(reportTitleCellStyle);
+			}
 			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, totalColumns - 1));
 
 			row = sheet.createRow(2);
 			cell = row.createCell(0);
-			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Site Name");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
@@ -7766,7 +7577,7 @@ public class ReportsController extends BaseController {
 			
 			row = sheet.createRow(3);
 			cell = row.createCell(0);
-			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("System Size (kW DC)");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
@@ -7781,7 +7592,7 @@ public class ReportsController extends BaseController {
 			
 			row = sheet.createRow(4);
 			cell = row.createCell(0);
-			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Performance Period");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
@@ -7799,11 +7610,14 @@ public class ReportsController extends BaseController {
 	
 	private static void writeTableOperationPerformanceReport(Sheet sheet, List<AssetManagementAndOperationPerformanceDataEntity> data) {
 		try {
+			sheet.setColumnWidth(10, 23 * 256);
+			sheet.setColumnWidth(11, 20 * 256);
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
-			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRowNumber(sheet);
+			CellStyle tableRowOneDecimalPlaceCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowOneDecimalPlaceCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceDataFormat));
-			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowOneDecimalPlaceWithPercentageCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -7900,7 +7714,7 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					tableCell.setCellValue(item.getTime_full());
 					
 					tableCell = tableRow.createCell(1);
@@ -7955,11 +7769,12 @@ public class ReportsController extends BaseController {
 	private static void writeTableMonthlyPerformanceReport(Sheet sheet, List<AssetManagementAndOperationPerformanceDataEntity> data, AssetManagementAndOperationPerformanceDataEntity total) {
 		try {
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
-			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRowNumber(sheet);
+			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowOneDecimalPlaceWithPercentageCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
-			CellStyle tableRowNoDecimalNoBorderCellStyle = createStyleForNoBorderTableRow(sheet);
-			CellStyle tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle = createStyleForNoBorderTableRow(sheet);
+			CellStyle tableRowNoDecimalNoBorderCellStyle = createStyleForNoBorderTableRowNumber(sheet);
+			CellStyle tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle = createStyleForNoBorderTableRowNumber(sheet);
 			tableRowOneDecimalPlaceWithPercentageNoBorderCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(oneDecimalPlaceWithPercentageDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8014,7 +7829,7 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					tableCell.setCellValue(item.getTime_full());
 					
 					tableCell = tableRow.createCell(1);
@@ -8121,6 +7936,7 @@ public class ReportsController extends BaseController {
 			nameCellStyle.setFont(nameFont);
 			nameCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 			nameCellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+			nameCellStyle.setDataFormat((short) 0x31);
 			
 			Row row;
 			Cell cell;
@@ -8150,10 +7966,11 @@ public class ReportsController extends BaseController {
 	private static void writeTableMonthlyAssetManagementReport(Sheet sheet, List<AssetManagementAndOperationPerformanceDataEntity> data) {
 		try {
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
-			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRowNumber(sheet);
+			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowNoDecimaLeftAlignlCellStyle.setAlignment(HorizontalAlignment.LEFT);
-			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowNoDecimalCurrencyCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalCurrencyDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8213,7 +8030,7 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					tableCell.setCellValue(item.getTime_full());
 					
 					tableCell = tableRow.createCell(1);
@@ -8251,10 +8068,11 @@ public class ReportsController extends BaseController {
 			sheet.setColumnWidth(5, 256 * 25);
 			sheet.setColumnWidth(7, 256 * 25);
 			CellStyle tableHeaderCellStyle = createStyleForTableHeader(sheet);
-			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRow(sheet);
-			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCellStyle = createStyleForTableRowNumber(sheet);
+			CellStyle tableRowNoDecimaLeftAlignlCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowNoDecimaLeftAlignlCellStyle.setAlignment(HorizontalAlignment.LEFT);
-			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRow(sheet);
+			CellStyle tableRowNoDecimalCurrencyCellStyle = createStyleForTableRowNumber(sheet);
 			tableRowNoDecimalCurrencyCellStyle.setDataFormat(sheet.getWorkbook().createDataFormat().getFormat(noDecimalCurrencyDataFormat));
 			
 			Row tableHeaderRow = sheet.createRow(7);
@@ -8295,25 +8113,25 @@ public class ReportsController extends BaseController {
 					
 					Row tableRow = sheet.createRow(r+j);
 					Cell tableCell = tableRow.createCell(0);
-					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					if(item.getEvent() != null) tableCell.setCellValue(item.getEvent());
 					tableCell = tableRow.createCell(1);
-					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 0, 1));
 					
 					tableCell = tableRow.createCell(2);
-					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					if(item.getDevicename() != null) tableCell.setCellValue(item.getDevicename());
 					tableCell = tableRow.createCell(3);
-					tableCell.setCellStyle(tableRowNoDecimaLeftAlignlCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(r+j, r+j, 2, 3));
 					
 					tableCell = tableRow.createCell(4);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					if(item.getStartTime() != null) tableCell.setCellValue(item.getStartTime());
 					
 					tableCell = tableRow.createCell(5);
-					tableCell.setCellStyle(tableRowNoDecimalCellStyle);
+					tableCell.setCellStyle(tableRowCellStyle);
 					if(item.getEndTime() != null) tableCell.setCellValue(item.getEndTime());
 					
 					tableCell = tableRow.createCell(6);

@@ -1209,8 +1209,8 @@ public class BatchJob {
 							break;
 							
 						case 4: // annually
-							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfYear());
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailAnnuallyReport(objReport);
 							break;
@@ -1230,8 +1230,8 @@ public class BatchJob {
 							break;
 							
 						case 4: // annually
-							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfYear());
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailAnnualTrendReport(objReport);
 							break;
