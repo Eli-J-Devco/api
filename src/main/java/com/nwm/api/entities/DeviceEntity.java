@@ -138,9 +138,17 @@ public class DeviceEntity {
 	private boolean filterEnabled;
 	private Double maxPower;
 	private Double offset_data_old;
+	private String date_time_offset;
+	
 	
 
 	
+	public String getDate_time_offset() {
+		return date_time_offset;
+	}
+	public void setDate_time_offset(String date_time_offset) {
+		this.date_time_offset = date_time_offset;
+	}
 	public Double getOffset_data_old() {
 		return offset_data_old;
 	}

@@ -45,6 +45,8 @@
 		<result property="id_site_share" column="id_site_share" />
 		<result property="data_send_time" column="data_send_time" />
 		<result property="offset_data_old" column="offset_data_old" />
+		<result property="date_time_offset" column="date_time_offset" />
+		
 		
 		
 		
@@ -91,7 +93,8 @@
 			dl.datalogger_table,
 			s.enable_alert,
 			s.data_send_time,
-			IFNULL(d.offset_data_old, 0) AS offset_data_old
+			IFNULL(d.offset_data_old, 0) AS offset_data_old,
+			s.date_time_offset
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -207,7 +210,8 @@
 			s.id_site_share,
 			s.id_device_share,
 			s.table_share_data,
-			IFNULL(s.offset_data_old, 0) AS offset_data_old
+			IFNULL(s.offset_data_old, 0) AS offset_data_old,
+			s.date_time_offset
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -350,7 +354,8 @@
 			`id_site_share`,
 			`id_device_share`,
 			`table_share_data`,
-			`offset_data_old`
+			`offset_data_old`,
+			`date_time_offset`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -385,7 +390,8 @@
 			#{id_site_share},
 			#{id_device_share},
 			#{table_share_data},
-			#{offset_data_old}
+			#{offset_data_old},
+			#{date_time_offset}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -436,7 +442,8 @@
 				id_site_share = #{id_site_share},
 				id_device_share = #{id_device_share},
 				table_share_data = #{table_share_data},
-				offset_data_old = #{offset_data_old}
+				offset_data_old = #{offset_data_old},
+				date_time_offset = #{date_time_offset}
 			WHERE
 				`id` = #{id}
 		</if>
