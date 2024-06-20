@@ -94,7 +94,7 @@
 			s.enable_alert,
 			s.data_send_time,
 			IFNULL(d.offset_data_old, 0) AS offset_data_old,
-			s.date_time_offset
+			d.date_time_offset
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
