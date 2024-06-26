@@ -37,12 +37,66 @@
 			l.name  AS priority_name,
 			l.`name` AS error_level_name,
 			s.id_error_type,
-			s.description
+			s.description,
+			s.nw,
+			s.client,
+			(SELECT
+				COUNT(m.id_role) as nw_interal
+			FROM (SELECT 
+				em.id_role,
+				e.id,
+				e.email
+			FROM employee e
+			LEFT JOIN employee_role_map em ON em.id_employee = e.id
+			WHERE e.id = #{id_employee}
+			) m
+			WHERE
+				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) AS nw_internal
+				
 		FROM
 			error s
 		LEFT JOIN error_level l ON l.id = s.id_error_level
 		LEFT JOIN device_group t ON t.id = s.id_device_group
 		WHERE s.is_delete = 0
+		
+		<!-- NW Admin, NW Technical, System Admin  -->
+		AND IF ((SELECT
+				COUNT(m.id_role) as nw_interal
+			FROM (SELECT 
+				em.id_role,
+				e.id,
+				e.email
+			FROM employee e
+			LEFT JOIN employee_role_map em ON em.id_employee = e.id
+			WHERE e.id = #{id_employee}
+			) m
+			WHERE
+				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) > 0, s.nw = 1, s.client = 1)
+		
+		<if test="ids_level != null and !ids_level.isEmpty()">
+			AND l.id IN  (
+				<foreach item="item" index="index" collection="ids_level" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="ids_device_group != null and !ids_device_group.isEmpty()">
+			AND s.id_device_group IN  (
+				<foreach item="item" index="index" collection="ids_device_group" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="listMessage != null and !listMessage.isEmpty()">
+			AND s.message IN  (
+				<foreach item="item" index="index" collection="listMessage" separator=" , ">
+					#{item.message}
+				</foreach>
+			)
+		</if>
+		
 		<if test="keyword != null">
 			AND s.message LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
@@ -70,7 +124,47 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.ErrorEntity">
     	SELECT count(*) as totalRow
 		FROM error s
+		LEFT JOIN error_level l ON l.id = s.id_error_level
+		LEFT JOIN device_group t ON t.id = s.id_device_group
 		WHERE s.is_delete = 0
+		
+		AND IF ((SELECT
+				COUNT(m.id_role) as nw_interal
+			FROM (SELECT 
+				em.id_role,
+				e.id,
+				e.email
+			FROM employee e
+			LEFT JOIN employee_role_map em ON em.id_employee = e.id
+			WHERE e.id = #{id_employee}
+			) m
+			WHERE
+				(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))) > 0, s.nw = 1, s.client = 1)
+		
+		<if test="ids_level != null and !ids_level.isEmpty()">
+			AND l.id IN  (
+				<foreach item="item" index="index" collection="ids_level" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="ids_device_group != null and !ids_device_group.isEmpty()">
+			AND s.id_device_group IN  (
+				<foreach item="item" index="index" collection="ids_device_group" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+		
+		<if test="listMessage != null and !listMessage.isEmpty()">
+			AND s.message IN  (
+				<foreach item="item" index="index" collection="listMessage" separator=" , ">
+					#{item.message}
+				</foreach>
+			)
+		</if>
+		
 		<if test="keyword != null">
 			AND s.message LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
@@ -124,6 +218,46 @@
 			`id_device_group` = #{id_device_group},
 			`id_error_type` = #{id_error_type},
 			`description` = #{description}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<select id="getListDeviceGroup" resultType="Map">
+		SELECT
+			t.group_name AS text,
+			t.group_name AS label,
+			t.id AS value,
+			t.id_device_type,
+			t.id,
+			0 as active
+		FROM
+			device_group AS t
+		WHERE
+			t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `group_name` ASC;
+	</select>
+	
+	
+	<select id="getListErrorMessage" resultType="Map">
+		SELECT 
+			e.id,
+			e.id AS value,
+			e.id_device_group,
+			e.error_code,
+			e.message,
+			e.message AS label,
+			e.message AS text
+		FROM error e
+		WHERE e.`status` = 1 AND e.is_delete = 0
+		GROUP BY e.message
+		ORDER BY e.message ASC
+	</select>
+	
+	<update id="updatePermissionNwClient">
+		UPDATE `error`
+		SET
+			`nw` = #{nw},
+			`client` = #{client}
 		WHERE
 			`id` = #{id}
 	</update>

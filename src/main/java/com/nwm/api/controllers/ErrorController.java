@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AccountEntity;
 import com.nwm.api.entities.ErrorEntity;
+import com.nwm.api.entities.ErrorLevelEntity;
+import com.nwm.api.services.ErrorLevelService;
 import com.nwm.api.services.ErrorService;
 import com.nwm.api.utils.Constants;
 
@@ -125,6 +127,61 @@ public class ErrorController extends BaseController {
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list device group
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-device-group")
+	public Object getListDeviceGroup(@RequestBody ErrorEntity obj) {
+		try {
+			ErrorService service = new ErrorService();
+			List data = service.getListDeviceGroup(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list error message
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-error-message")
+	public Object getListErrorMessage(@RequestBody ErrorEntity obj) {
+		try {
+			ErrorService service = new ErrorService();
+			List data = service.getListErrorMessage(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update permission nw client
+	 * @author long.pham
+	 * @since 2021-02-26
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-permission-nw-client")
+	public Object updatePermissionNwClient(@RequestBody ErrorEntity obj) {
+		try {
+			ErrorService service = new ErrorService();
+			service.updatePermissionNwClient(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 }

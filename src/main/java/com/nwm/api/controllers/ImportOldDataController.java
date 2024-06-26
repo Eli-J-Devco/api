@@ -316,6 +316,10 @@ public class ImportOldDataController extends BaseController {
 										case "model_lufft_class8020":
 											service.setModelLufftClass8020(rowItem, r);	
 											break;
+
+										case "model_sth01_temp_sensor":
+											service.setModelSth01TempSensor(rowItem, r);	
+											break;
 											
 										case "model_lufft_ws501_umb_weather":
 											service.setModelLufftWS501UMBWeather(rowItem, r);										

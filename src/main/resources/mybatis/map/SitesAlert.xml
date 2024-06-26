@@ -167,6 +167,8 @@
 				
 				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
 				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "W/m²" )))
+
+				WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
 				
 				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))

@@ -76,6 +76,7 @@
 		<mapper resource="mybatis/map/ModelElkorProductionMeterv1.xml" />
 		<mapper resource="mybatis/map/ModelAbbTrioClass6210.xml" />
 		<mapper resource="mybatis/map/ModelLufftClass8020.xml" />
+		<mapper resource="mybatis/map/ModelSth01TempSensor.xml" />
 		<mapper resource="mybatis/map/ModelLufftWS501UMBWeather.xml" />
 		<mapper resource="mybatis/map/ModelShark100Test.xml" />
 		<mapper resource="mybatis/map/ModelPVPowered3550260500kwInverter.xml" />

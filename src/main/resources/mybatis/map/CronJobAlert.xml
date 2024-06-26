@@ -460,9 +460,42 @@
 			AND d.id_site  = #{id}
 			AND a.open_send_mail = 0
 			AND a.`status` = 1
+			AND e.nw = 1
 			<if test="errorLevel != null and !errorLevel.isEmpty()">
 				AND e.id_error_level IN (
-					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = 136 GROUP BY m.id_error_level
+					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = #{id} GROUP BY m.id_error_level
+				)
+			</if>
+			ORDER BY a.`status` DESC
+	</select>
+	
+	<select id="getListAlertOpenBySiteToClients" resultType="Map" >
+		SELECT
+			a.id,
+			a.id_device,
+			a.open_send_mail_client,
+			a.close_send_mail_client,
+			d.devicename,
+			e.message,
+			e.error_code,
+			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
+			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+		FROM
+			alert a
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN device d ON d.id = a.id_device 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 
+			AND d.id_site  = #{id}
+			AND a.open_send_mail_client = 0
+			AND a.`status` = 1
+			AND e.client = 1
+			<if test="errorLevel != null and !errorLevel.isEmpty()">
+				AND e.id_error_level IN (
+					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = #{id} GROUP BY m.id_error_level
 				)
 			</if>
 			ORDER BY a.`status` DESC
@@ -479,6 +512,14 @@
 		UPDATE `alert`
 		SET
 			open_send_mail = 1
+		WHERE
+			`id` = #{id} AND `id_device` = #{id_device}
+	</update>
+	
+	<update id="updateOpenSentAlertToClients">
+		UPDATE `alert`
+		SET
+			open_send_mail_client = 1
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
@@ -505,6 +546,33 @@
 			d.`status` = 1 
 			AND d.id_site  = #{id}
 			AND a.close_send_mail = 0 AND a.`status` = 0
+			AND e.nw = 1
+			ORDER BY a.`status` DESC
+	</select>
+	
+	<select id="getListAlertCloseBySiteToClients" resultType="Map" >
+		SELECT
+			a.id,
+			a.id_device,
+			a.open_send_mail_client,
+			a.close_send_mail_client,
+			d.devicename,
+			e.message,
+			e.error_code,
+			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
+			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+		FROM
+			alert a
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN device d ON d.id = a.id_device 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 
+			AND d.id_site  = #{id}
+			AND a.close_send_mail_client = 0 AND a.`status` = 0
+			AND e.client = 1
 			ORDER BY a.`status` DESC
 	</select>
 	
@@ -512,6 +580,14 @@
 		UPDATE `alert`
 		SET
 			close_send_mail = 1, open_send_mail = 1
+		WHERE
+			`id` = #{id} AND `id_device` = #{id_device}
+	</update>
+	
+	<update id="updateCloseSentAlertToClients">
+		UPDATE `alert`
+		SET
+			close_send_mail_client = 1, open_send_mail_client = 1
 		WHERE
 			`id` = #{id} AND `id_device` = #{id_device}
 	</update>
@@ -766,5 +842,19 @@
 		WHERE
 			smm.id_site = #{id}
 	</select>
-  	
+	
+	<select id="checkNwInternal"  resultType="int" >
+  		SELECT
+			COUNT(m.id_role) as nw_interal
+		FROM (SELECT 
+			em.id_role,
+			e.id,
+			e.email
+		FROM employee e
+		LEFT JOIN employee_role_map em ON em.id_employee = e.id
+		WHERE e.email = #{email}
+		) m
+		WHERE
+			(IF ( 1 IN (m.id_role) OR 12 IN (m.id_role) OR 15 IN (m.id_role), 1 , 0))
+  	</select>
 </mapper>

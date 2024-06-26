@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.CronJobAlertService;
@@ -490,110 +492,125 @@ public class CronJobAlertController extends BaseController {
 //				String id = String.valueOf(siteObj.getId());
 				String hash_id = siteObj.getHash_id();
 				String domain = Lib.getDomain();
-
+				
+				// email alert to NW internal: NW Admin - roleid: 12, NW Technical - roleid: 15, System Admin - roleid: 1 
 				List listAlertOpenBySite = service.getListAlertOpenBySite(siteObj);
-				StringBuilder bodyHtml = new StringBuilder();
-				bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
-						+ "<p>Your Next Wave Energy Monitoring system detected an alert.</p>"
-						+ "<table style=\"border-collapse: collapse; border: 1px solid #DDD; width: 100%; \">\n"
-						+ "                <thead>\n" + "                    <tr>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Fault Code</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Site Name</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Device Name</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Message</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Open Date</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Close Date</th>\n"
-						+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: center;\">Status</th>\n"
-						+ "                    </tr>\n" + "                </thead>\n"
+				List listAlertCloseBySite = service.getListAlertCloseBySite(siteObj);			
+				if (listAlertOpenBySite.size() > 0 || listAlertCloseBySite.size() > 0) {
+					StringBuilder bodyHtml = new StringBuilder();
+					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
+							+ "<p>Your Next Wave Energy Monitoring system detected an alert.</p>"
+							+ "<table style=\"border-collapse: collapse; border: 1px solid #DDD; width: 100%; \">\n"
+							+ "                <thead>\n" + "                    <tr>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Fault Code</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Site Name</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Device Name</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Message</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Open Date</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Close Date</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: center;\">Status</th>\n"
+							+ "                    </tr>\n" + "                </thead>\n"
 
-						+ "                <tbody>\n");
+							+ "                <tbody>\n");
 
-				StringBuilder tBody = new StringBuilder();
-				if (listAlertOpenBySite.size() > 0) {
-					// Get list alert open
-					for (int j = 0; j < listAlertOpenBySite.size(); j++) {
-						Map<String, Object> rowItem = (Map<String, Object>) listAlertOpenBySite.get(j);
-						tBody.append("<tr>\n");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("error_code")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(siteObj.getName()).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("devicename")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("message")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("start_date")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("end_date")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
-								.append(rowItem.get("status")).append("</td>");
-						tBody.append("</tr>");
+					StringBuilder tBody = new StringBuilder();
+					if (listAlertOpenBySite.size() > 0) {
+						// Get list alert open
+						for (int j = 0; j < listAlertOpenBySite.size(); j++) {
+							Map<String, Object> rowItem = (Map<String, Object>) listAlertOpenBySite.get(j);
+							tBody.append("<tr>\n");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("error_code")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(siteObj.getName()).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("devicename")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("message")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("start_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("end_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
+									.append(rowItem.get("status")).append("</td>");
+							tBody.append("</tr>");
 
-						// Close alert sent mail
-						AlertEntity alertItem = new AlertEntity();
-						alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
-						alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
-						service.updateOpenSentAlert(alertItem);
+							// Close alert sent mail
+							AlertEntity alertItem = new AlertEntity();
+							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+							service.updateOpenSentAlert(alertItem);
+						}
 					}
-				}
 
-				// get list alert close
-				List listAlertCloseBySite = service.getListAlertCloseBySite(siteObj);
-				if (listAlertCloseBySite.size() > 0) {
-					// Get list alert open
-					for (int k = 0; k < listAlertCloseBySite.size(); k++) {
-						Map<String, Object> rowItem = (Map<String, Object>) listAlertCloseBySite.get(k);
-						tBody.append("<tr>\n");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("error_code")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(siteObj.getName()).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("devicename")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("message")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("start_date")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
-								.append(rowItem.get("end_date")).append("</td>");
-						tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
-								.append(rowItem.get("status")).append("</td>");
-						tBody.append("</tr>");
+					// get list alert close	
+					if (listAlertCloseBySite.size() > 0) {
+						// Get list alert open
+						for (int k = 0; k < listAlertCloseBySite.size(); k++) {
+							Map<String, Object> rowItem = (Map<String, Object>) listAlertCloseBySite.get(k);
+							tBody.append("<tr>\n");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("error_code")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(siteObj.getName()).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("devicename")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("message")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("start_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("end_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
+									.append(rowItem.get("status")).append("</td>");
+							tBody.append("</tr>");
 
-						// Close alert sent mail
-						AlertEntity alertItem = new AlertEntity();
-						alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
-						alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
-						service.updateCloseSentAlert(alertItem);
+							// Close alert sent mail
+							AlertEntity alertItem = new AlertEntity();
+							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+							service.updateCloseSentAlert(alertItem);
+						}
 					}
-				}
 
-				bodyHtml.append(tBody);
-				bodyHtml.append("</tbody>\n" + "            </table>"
-						+ "<br/><p>For more details on the alert, visit the Next Wave Energy Monitoring login portal below. If you wish to change any of your notification settings, do not hesitate to contact us at <a href=\"mailto:support@nwemon.com\">support@nwemon.com</a> or (800) 644-0839. </p>"
-						+ "<div style=\"text-align: center; \" class=\"login-portal\"><a style=\"display: inline-block; background: #ffda00; padding: 5px 30px; color: #000; margin-top: 30px; border-radius: 4px; text-decoration: none; \" href=\""
-						+ domain + "/management/sites/" + hash_id
-						+ "/dashboard\" target=\"_blank\">Site Overview</a></div>"
-						+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
-						+ "</div>");
+					bodyHtml.append(tBody);
+					bodyHtml.append("</tbody>\n" + "            </table>"
+							+ "<br/><p>For more details on the alert, visit the Next Wave Energy Monitoring login portal below. If you wish to change any of your notification settings, do not hesitate to contact us at <a href=\"mailto:support@nwemon.com\">support@nwemon.com</a> or (800) 644-0839. </p>"
+							+ "<div style=\"text-align: center; \" class=\"login-portal\"><a style=\"display: inline-block; background: #ffda00; padding: 5px 30px; color: #000; margin-top: 30px; border-radius: 4px; text-decoration: none; \" href=\""
+							+ domain + "/management/sites/" + hash_id
+							+ "/dashboard\" target=\"_blank\">Site Overview</a></div>"
+							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
+							+ "</div>");
 
-				if (tBody.length() > 0) {
-					// Sent mail
-					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
-							Constants.mailFromContact);
-//								String mailTo = "vanlong200880@gmail.com";
-					List employeeMap = service.getListEmployeeOnSiteMailMap(siteObj);
+					if (tBody.length() > 0) {
+						// Sent mail
+						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+								Constants.mailFromContact);
+//									String mailTo = "vanlong200880@gmail.com";
+						List employeeMap = service.getListEmployeeOnSiteMailMap(siteObj);
 
-					HashSet<String> mailToBCCArr = new HashSet<String> ();
-					HashSet<String> mailToCCArr = new HashSet<String> ();
-					
-					for (int k = 0; k < employeeMap.size(); k++) {
-						Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);
-					
-						String mailTo = item.get("cf_email_subscribers").toString();
-						String mailToBCC = item.get("alert_mail_bcc").toString();
-						String mailToCC = item.get("alert_mail_cc").toString();
+						Set<String> mailToBCCArr = new HashSet<String> ();
+						
+						// Add unique email to Set
+						for (int k = 0; k < employeeMap.size(); k++) {
+							Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);				
+							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
+											
+							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
+							if (bccmails != null && bccmails.size() > 0) {
+								for (int j = 0; j < bccmails.size(); j++) {
+									String email = bccmails.get(j).toString().trim();
+									
+									EmployeeEntity employee = new EmployeeEntity();
+									employee.setEmail(email);
+									int isNwInternal = service.checkNwInternal(employee);
+									
+									if (!mailToBCCArr.contains(email) && isNwInternal > 0) {
+										mailToBCCArr.add(email);
+									}
+								}
+							}
+						}
 						
 						// Remove email employees who hide a site
 						List emails = service.getEmployeeHidingSite(siteObj);
@@ -601,59 +618,188 @@ public class CronJobAlertController extends BaseController {
 							for (int j = 0; j < emails.size(); j++) {
 								Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
 								String email = itemT.get("email").toString();
-	
-								mailTo = mailTo.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
+								if (mailToBCCArr.contains(email)) {
+									mailToBCCArr.remove(email);
+								}
 							}
 						}
-						
-						// Remove email-bcc if duplicate
-						if (mailToBCCArr != null && mailToBCCArr.size() > 0) {
-							for (String email : mailToBCCArr) {
-								mailToBCC = mailToBCC.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
-							}
+									
+						// mailTo always "support@nwemon.com"
+						String mailTo = "";
+						String mailToCC = "";
+						String mailToBCC = String.join(",", mailToBCCArr);
+						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+							mailTo = "support@nwemon.com";
 						}
 						
-						// Remove email-cc if duplicate
-						if (mailToCCArr != null && mailToCCArr.size() > 0) {
-							for (String email : mailToCCArr) {
-								mailToCC = mailToCC.replaceAll("\\b(" + email + "(,)|(,)" + email + ")?", "");
-							}
-						}
-						
-						
-	
 						String subject = " Next Wave Alert - ".concat(siteObj.getName());
 						String tags = "run_cron_job";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";					
 						
-						if (mailTo != null && !mailTo.isEmpty()) {
+						if (mailToBCC != null && !mailToBCC.isEmpty()) {
 							boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
 									subject, bodyHtml.toString(), tags);
-							
-							// add email-bcc to arr
+
+							if (!flagSent) {
+								throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
+							}
+						}
+					}		
+				}
+				
+				// email alert to Clients (External) -  Using for other roles from Clients
+				List listAlertOpenBySiteToClients = service.getListAlertOpenBySiteToClients(siteObj);
+				List listAlertCloseBySiteToClients = service.getListAlertCloseBySiteToClients(siteObj);
+				if (listAlertOpenBySiteToClients.size() > 0 || listAlertCloseBySiteToClients.size() > 0) {
+					StringBuilder bodyHtml = new StringBuilder();
+					bodyHtml.append("<div style=\"max-width: 1000px;\" class=\"main-body\">"
+							+ "<p>Your Next Wave Energy Monitoring system detected an alert.</p>"
+							+ "<table style=\"border-collapse: collapse; border: 1px solid #DDD; width: 100%; \">\n"
+							+ "                <thead>\n" + "                    <tr>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Fault Code</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Site Name</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Device Name</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Message</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Open Date</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: left;\">Close Date</th>\n"
+							+ "                        <th style=\"padding: 5px 10px; border: 1px solid #DDD; background: #f0f2f5; text-align: center;\">Status</th>\n"
+							+ "                    </tr>\n" + "                </thead>\n"
+
+							+ "                <tbody>\n");
+
+					StringBuilder tBody = new StringBuilder();
+					if (listAlertOpenBySiteToClients.size() > 0) {
+						// Get list alert open
+						for (int j = 0; j < listAlertOpenBySiteToClients.size(); j++) {
+							Map<String, Object> rowItem = (Map<String, Object>) listAlertOpenBySiteToClients.get(j);
+							tBody.append("<tr>\n");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("error_code")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(siteObj.getName()).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("devicename")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("message")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("start_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("end_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
+									.append(rowItem.get("status")).append("</td>");
+							tBody.append("</tr>");
+
+							// Close alert sent mail
+							AlertEntity alertItem = new AlertEntity();
+							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+							service.updateOpenSentAlertToClients(alertItem);
+						}
+					}
+
+					// get list alert close	
+					if (listAlertCloseBySiteToClients.size() > 0) {
+						// Get list alert open
+						for (int k = 0; k < listAlertCloseBySiteToClients.size(); k++) {
+							Map<String, Object> rowItem = (Map<String, Object>) listAlertCloseBySiteToClients.get(k);
+							tBody.append("<tr>\n");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("error_code")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(siteObj.getName()).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("devicename")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("message")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("start_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD;\">")
+									.append(rowItem.get("end_date")).append("</td>");
+							tBody.append("<td style=\"padding: 5px 10px; border: 1px solid #DDD; text-align: center;\">")
+									.append(rowItem.get("status")).append("</td>");
+							tBody.append("</tr>");
+
+							// Close alert sent mail
+							AlertEntity alertItem = new AlertEntity();
+							alertItem.setId(Integer.parseInt(rowItem.get("id").toString()));
+							alertItem.setId_device(Integer.parseInt(rowItem.get("id_device").toString()));
+							service.updateCloseSentAlertToClients(alertItem);
+						}
+					}
+
+					bodyHtml.append(tBody);
+					bodyHtml.append("</tbody>\n" + "            </table>"
+							+ "<br/><p>For more details on the alert, visit the Next Wave Energy Monitoring login portal below. If you wish to change any of your notification settings, do not hesitate to contact us at <a href=\"mailto:support@nwemon.com\">support@nwemon.com</a> or (800) 644-0839. </p>"
+							+ "<div style=\"text-align: center; \" class=\"login-portal\"><a style=\"display: inline-block; background: #ffda00; padding: 5px 30px; color: #000; margin-top: 30px; border-radius: 4px; text-decoration: none; \" href=\""
+							+ domain + "/management/sites/" + hash_id
+							+ "/dashboard\" target=\"_blank\">Site Overview</a></div>"
+							+ "<div class=\"regards\"><br><p>Regards,</p><p>Next Wave Team</p><p><a href=\"https://nwemon.com\" target=\"_blank\"><img width=\"100px\" src=\"https://nwemon.com/public/uploads/system_setting_images/logo-colored-1642026858.png\"></a></p></div>"
+							+ "</div>");
+					
+					if (tBody.length() > 0) {
+						// Sent mail
+						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+								Constants.mailFromContact);
+//									String mailTo = "vanlong200880@gmail.com";
+						List employeeMap = service.getListEmployeeOnSiteMailMap(siteObj);
+
+						Set<String> mailToBCCArr = new HashSet<String> ();
+						
+						// Add unique email to Set
+						for (int k = 0; k < employeeMap.size(); k++) {
+							Map<String, Object> item = (Map<String, Object>) employeeMap.get(k);				
+							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
+											
 							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
 							if (bccmails != null && bccmails.size() > 0) {
 								for (int j = 0; j < bccmails.size(); j++) {
-									mailToBCCArr.add(bccmails.get(j).toString());
+									String email = bccmails.get(j).toString().trim();
+									
+									EmployeeEntity employee = new EmployeeEntity();
+									employee.setEmail(email);
+									int isNwInternal = service.checkNwInternal(employee);
+									
+									if (!mailToBCCArr.contains(email) && isNwInternal == 0) {
+										mailToBCCArr.add(email);
 									}
+								}
 							}
-							
-							// add email-cc to arr
-							List<String> ccmails = new ArrayList<String>(Arrays.asList(mailToCC.split(",")));
-							if (ccmails != null && ccmails.size() > 0) {
-								for (int j = 0; j < ccmails.size(); j++) {
-									mailToCCArr.add(ccmails.get(j).toString());
-									}
+						}
+						
+						// Remove email employees who hide a site
+						List emails = service.getEmployeeHidingSite(siteObj);
+						if (emails != null && emails.size() > 0) {
+							for (int j = 0; j < emails.size(); j++) {
+								Map<String, Object> itemT = (Map<String, Object>) emails.get(j);
+								String email = itemT.get("email").toString();
+								if (mailToBCCArr.contains(email)) {
+									mailToBCCArr.remove(email);
+								}
 							}
-	
+						}
+									
+						// mailTo always "support@nwemon.com"
+						String mailTo = "";
+						String mailToCC = "";
+						String mailToBCC = String.join(",", mailToBCCArr);
+						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+							mailTo = "support@nwemon.com";
+						}
+						
+						String subject = " Next Wave Alert - ".concat(siteObj.getName());
+						String tags = "run_cron_job";
+						String fromName = "NEXT WAVE ENERGY MONITORING INC";					
+						
+						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+							boolean flagSent = SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC,
+									subject, bodyHtml.toString(), tags);
+
 							if (!flagSent) {
 								throw new Exception(Translator.toLocale(Constants.SEND_MAIL_ERROR_MSG));
 							}
 						}
 					}
-
 				}
-
 			}
 
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);

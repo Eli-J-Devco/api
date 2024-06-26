@@ -308,6 +308,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelLufftClass8020.insertModelLufftClass8020", dataList.get(i));
 				}
 				break;
+			case "model_sth01_temp_sensor":
+				obj.setId_device_type(6);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelSth01TempSensor.insertModelSth01TempSensor", dataList.get(i));
+				}
+				break;
 			case "model_lufft_ws501_umb_weather":
 				obj.setId_device_type(4);
 				for (int i = 0; i < dataList.size(); i++) {
@@ -1457,6 +1463,26 @@ public class ImportOldDataService extends DB {
 		rowItem.put("WindValueQualityFast", !r.getCellText(70).toString().equals("") ? r.getCellText(70).toString(): "0.001");
 		rowItem.put("nvm_irradiance", !r.getCellText(71).toString().equals("") ? r.getCellText(71).toString(): "0.001");
 		rowItem.put("nvm_temperature", !r.getCellText(72).toString().equals("") ? r.getCellText(72).toString(): "0.001");
+		
+		return rowItem;
+	}
+	
+	public Object setModelSth01TempSensor(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("TEMPRATURE", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString(): "0.001");
+		rowItem.put("HUMIDITY", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString(): "0.001");
+		rowItem.put("DEWPOINT", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString(): "0.001");
+		rowItem.put("Retain", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString(): "0.001");
+		rowItem.put("Modbus_ADDRESS", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString(): "0.001");
+		rowItem.put("BAUDRATE", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString(): "0.001");
+		rowItem.put("PROTOCOL", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString(): "0.001");
+		rowItem.put("PARITY", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString(): "0.001");
+		rowItem.put("DATABITS", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString(): "0.001");
+		rowItem.put("STOPBITS", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString(): "0.001");
+		rowItem.put("RESPONSEDELY", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString(): "0.001");
+		rowItem.put("ACTIVE_OUTPUT_INTERVAL", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString(): "0.001");
+		rowItem.put("nvm_irradiance", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString(): "0.001");
+		rowItem.put("nvm_temperature", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString(): "0.001");
+		rowItem.put("nvm_panel_temperature", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString(): "0.001");
 		
 		return rowItem;
 	}

@@ -160,6 +160,7 @@
 							(table_name == 'model_elkor_production_meterv1' and param.slug == 'ActivePowerTotal') or
 							(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
 							(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
+							(table_name == 'model_sth01_temp_sensor' and param.slug == 'TEMPRATURE') or
 							(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
 							(table_name == 'model_solectria_sgi_226ivt' and param.slug == 'ACPowerOutput') or
 							(table_name == 'model_solectria_inv_00_slc_3146' and param.slug == 'RealACPower') or
@@ -243,6 +244,7 @@
 								(table_name == 'model_elkor_production_meterv1' and param.slug == 'ActivePowerTotal') or
 								(table_name == 'model_abb_trio_class6210' and param.slug == 'GridPower') or
 								(table_name == 'model_lufft_class8020' and param.slug == 'IrradianceActual') or
+								(table_name == 'model_sth01_temp_sensor' and param.slug == 'TEMPRATURE') or
 								(table_name == 'model_lufft_ws501_umb_weather' and param.slug == 'GlobalRadiation') or
 								(table_name == 'model_solectria_sgi_226ivt' and param.slug == 'ACPowerOutput') or
 								(table_name == 'model_solectria_inv_00_slc_3146' and param.slug == 'RealACPower') or

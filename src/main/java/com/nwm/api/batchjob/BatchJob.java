@@ -1185,18 +1185,18 @@ public class BatchJob {
 			objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
 
 			switch (objReport.getType_report()) {
-				case 1:
+				case 1: // Solar Production Report
 					switch (objReport.getCadence_range()) {
 						case 1: // daily
-							startDate = nowTimeZonedDateTime.minusDays(3);
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(2)));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfDailyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailDailyReport(objReport);
 							break;
 							
 						case 2: // monthly
-							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfMonth());
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfMonthlyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailMonthlyReport(objReport);
 							break;
@@ -1210,7 +1210,7 @@ public class BatchJob {
 							
 						case 4: // annually
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailAnnuallyReport(objReport);
 							break;
@@ -1220,18 +1220,18 @@ public class BatchJob {
 					}
 					break;
 					
-				case 2:
+				case 2: // Production Trend Report
 					switch (objReport.getCadence_range()) {
 						case 2: // monthly
-							startDate = nowTimeZonedDateTime.minusDays(1).with(TemporalAdjusters.firstDayOfMonth());
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailMonthlyTrendReport(objReport);
 							break;
 							
 						case 4: // annually
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailAnnualTrendReport(objReport);
 							break;
@@ -1248,9 +1248,9 @@ public class BatchJob {
 					}
 					break;
 					
-				case 4: // no cadence range
-					startDate = nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth());
-					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+				case 4: // Asset Management and Operation Performance Report, no cadence range
+					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth())));
+					objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 					if (objReport.getFile_type() == 1) {}
 					else if (objReport.getFile_type() == 2) controller.sentMailAssetManagementAndOperationPerformanceReport(objReport);
 					break;

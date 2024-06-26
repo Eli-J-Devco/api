@@ -55,9 +55,8 @@ public class ReportsService extends DB {
 	 */
 	
 	public Object getDailyReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
-		DecimalFormat df = new DecimalFormat("###.#");
 		try {
+			ViewReportEntity dataObj = new ViewReportEntity();
 			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null) {
 				return null;
@@ -85,7 +84,6 @@ public class ReportsService extends DB {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm"); 
 			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 			
-			SimpleDateFormat dateFormatHour = new SimpleDateFormat("HH:00");
 			Date startDate = dateFormat.parse(obj.getStart_date());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
@@ -108,12 +106,7 @@ public class ReportsService extends DB {
 				cal.add(Calendar.MINUTE, t * minute);
 				
 				headerDate.setTime_format(dateFormat.format(cal.getTime()));
-				String hours = dateFormatHour.format(cal.getTime());
 				headerDate.setCategories_time(catFormat.format(cal.getTime()));
-				headerDate.setEnergy(0.001);
-				headerDate.setPower(0.001);
-				headerDate.setIrradiance(0.001);
-				headerDate.setHour_time(hours);
 				categories.add(headerDate);
 			}
 			
@@ -131,19 +124,16 @@ public class ReportsService extends DB {
 					        if (categoriesTime.equals(powerTime)) {
 					        	flag = true;
 					        	mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-					        	Double power = Double.parseDouble(itemT.get("power").toString());
-					        	power = (power == -0.0) ? 0 : power;
+					        	Double power = itemT.get("power") != null ? Double.parseDouble(itemT.get("power").toString()) : null;
 					        	
 					        	mapItemObj.setPower( power );
-					        	mapItemObj.setIrradiance(item.getIrradiance());
 					        	mapItemObj.setTime_format(itemT.get("categories_time").toString());
-					        	mapItemObj.setHour_time(itemT.get("hour_time").toString());
 					        	
 					        	
-					        	if(itemT.get("power") == null || Double.parseDouble(itemT.get("power").toString()) == 0.001) {
-						        	mapItemObj.setEnergy( 0.001 );
+					        	if(itemT.get("power") == null) {
+						        	mapItemObj.setEnergy(null);
 					        	} else {
-					        		Double energy = (double)Math.round(Double.parseDouble(itemT.get("power").toString()) * 15/60);
+					        		Double energy = (double)Math.round(Double.parseDouble(itemT.get("power").toString()) * minute/60);
 						        	mapItemObj.setEnergy( energy > 0 ? energy : 0 );
 					        	}
 					        	
@@ -159,10 +149,6 @@ public class ReportsService extends DB {
 						DailyDateEntity mapItem = new DailyDateEntity();
 						mapItem.setCategories_time(item.getCategories_time());
 						mapItem.setTime_format(item.getTime_format());
-						mapItem.setHour_time(item.getHour_time());
-						mapItem.setIrradiance(item.getIrradiance());
-						mapItem.setEnergy(item.getEnergy());
-						mapItem.setPower(item.getPower());
 						
 						dataNewPower.add(mapItem);
 					} else {
@@ -187,7 +173,7 @@ public class ReportsService extends DB {
 							String categoriesTime = item.getTime_format();
 							String powerTime = itemT.get("categories_time").toString();
 					        if (categoriesTime.equals(powerTime)) {
-					        	item.setIrradiance(Double.parseDouble(itemT.get("irradiance").toString()));
+					        	item.setIrradiance(itemT.get("irradiance") != null ? Double.parseDouble(itemT.get("irradiance").toString()) : null);
 					        	break;
 					        }
 					    }
@@ -870,22 +856,17 @@ public class ReportsService extends DB {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
 			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
 			
-			SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-			
-			Date startDate = dateFormat.parse(obj.getStart_date() + " AM");
+			Date startDate = dateFormat.parse(obj.getStart_date());
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
 			
 			cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 			
 			List<MonthlyDateEntity> categories = new ArrayList<MonthlyDateEntity> ();
-			int day = 1;
-			int forCount = Integer.parseInt(dayFormat.format(cal.getTime()).toString());
-			
-			int month = Integer.parseInt(monthFormat.format(cal.getTime()).toString());
-			
+			int forCount = cal.get(Calendar.DAY_OF_MONTH);
+			int month = cal.get(Calendar.MONTH) + 1;
 			int expecValue = 0;
+			
 			if(expec != null) {
 				switch ( month ) {
 				case  1: expecValue = expec.getJan(); break;
@@ -909,12 +890,10 @@ public class ReportsService extends DB {
 			for(int t = 0; t < forCount; t++) {
 				cal.setTime(startDate);
 				MonthlyDateEntity headerDate = new MonthlyDateEntity();
-				cal.add(Calendar.DATE, t * day);
+				cal.add(Calendar.DATE, t);
 				headerDate.setTime_format(dateFormat.format(cal.getTime()));
 				headerDate.setCategories_time(catFormat.format(cal.getTime()));
-				headerDate.setActual(0.0);
-				headerDate.setEstimated((double) expecValue / forCount);
-				headerDate.setPercent( expecValue > 0 ? (0.0 / expecValue) : 0);
+				headerDate.setEstimated(expec != null ? (double) expecValue/forCount : null);
 				categories.add(headerDate);
 			}
 			
@@ -935,13 +914,10 @@ public class ReportsService extends DB {
 							if (categoriesTime.equals(powerTime)) {
 								flag = true;
 								mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-								
 								mapItemObj.setTime_format(itemT.get("time_format").toString());
-								mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()) );
-								mapItemObj.setEstimated( (double) expecValue/forCount );
-								double energy = Double.parseDouble(itemT.get("chart_energy_kwh")!= null ? itemT.get("chart_energy_kwh").toString() : "0.0");
-								Double percent = (expecValue / forCount > 0) ?  ((energy /  (expecValue / forCount)) * 100) : 0;
-								mapItemObj.setPercent(percent);
+								mapItemObj.setActual(itemT.get("chart_energy_kwh") != null ? Double.parseDouble(itemT.get("chart_energy_kwh").toString()) : null);
+								mapItemObj.setEstimated(item.getEstimated());
+								mapItemObj.setPercent(itemT.get("chart_energy_kwh") != null && expec != null && expecValue > 0 ? Double.parseDouble(itemT.get("chart_energy_kwh").toString()) / (expecValue / forCount) * 100 : null);
 								break;
 							}
 						}
@@ -950,10 +926,8 @@ public class ReportsService extends DB {
 					if(flag == false) {
 						MonthlyDateEntity mapItem = new MonthlyDateEntity();
 						mapItem.setCategories_time(item.getCategories_time());
-						mapItem.setActual(item.getActual());
-						mapItem.setEstimated(item.getEstimated());
-						mapItem.setPercent(item.getPercent());
 						mapItem.setTime_format(item.getTime_format());
+						mapItem.setEstimated(item.getEstimated());
 						dataNew.add(mapItem);
 					} else {
 						dataNew.add(mapItemObj);

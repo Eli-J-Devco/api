@@ -70,6 +70,8 @@ public class AlertEntity {
 	private String message;
 	private int open_send_mail;
 	private int close_send_mail;
+	private int open_send_mail_client;
+	private int close_send_mail_client;
 	private String status_name;
 	private int faultCodeLevel;
 	private String note;
@@ -87,6 +89,18 @@ public class AlertEntity {
 	
 	
 	
+	public int getOpen_send_mail_client() {
+		return open_send_mail_client;
+	}
+	public void setOpen_send_mail_client(int open_send_mail_client) {
+		this.open_send_mail_client = open_send_mail_client;
+	}
+	public int getClose_send_mail_client() {
+		return close_send_mail_client;
+	}
+	public void setClose_send_mail_client(int close_send_mail_client) {
+		this.close_send_mail_client = close_send_mail_client;
+	}
 	public List getListDevices() {
 		return listDevices;
 	}

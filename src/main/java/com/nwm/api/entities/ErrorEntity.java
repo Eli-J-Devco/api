@@ -6,6 +6,8 @@
 package com.nwm.api.entities;
 
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
@@ -40,6 +42,51 @@ public class ErrorEntity{
 	private String start_date;
 	private String end_date;
 	private String description;
+	private int nw;
+	private int client;
+	private List ids_level;
+	private List ids_device_group;
+	private List listMessage;
+	private int id_employee;
+	
+	
+	
+	public int getId_employee() {
+		return id_employee;
+	}
+	public void setId_employee(int id_employee) {
+		this.id_employee = id_employee;
+	}
+	public int getNw() {
+		return nw;
+	}
+	public void setNw(int nw) {
+		this.nw = nw;
+	}
+	public int getClient() {
+		return client;
+	}
+	public void setClient(int client) {
+		this.client = client;
+	}
+	public List getListMessage() {
+		return listMessage;
+	}
+	public void setListMessage(List listMessage) {
+		this.listMessage = listMessage;
+	}
+	public List getIds_level() {
+		return ids_level;
+	}
+	public void setIds_level(List ids_level) {
+		this.ids_level = ids_level;
+	}
+	public List getIds_device_group() {
+		return ids_device_group;
+	}
+	public void setIds_device_group(List ids_device_group) {
+		this.ids_device_group = ids_device_group;
+	}
 	public int getId() {
 		return id;
 	}

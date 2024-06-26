@@ -12,6 +12,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.SiteEntity;
 
@@ -123,6 +124,47 @@ public class CronJobAlertService extends DB {
 		return dataList;
 	}
 	
+	/**
+	 * @description get list alert by site to clients
+	 * @author long.pham
+	 * @since 2021-07-28
+	 */
+	
+	public List getListAlertOpenBySiteToClients(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			List errorLevel = queryForList("CronJobAlert.getListErrorLevel", obj);
+			
+			obj.setErrorLevel(errorLevel);
+			dataList = queryForList("CronJobAlert.getListAlertOpenBySiteToClients", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
+	/**
+	 * @description get list alert by site to clients
+	 * @author long.pham
+	 * @since 2021-07-28
+	 */
+	
+	public List getListAlertCloseBySiteToClients(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CronJobAlert.getListAlertCloseBySiteToClients", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 	
 //	
 	/**
@@ -139,6 +181,20 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update open sent alert  to clients
+	 * @author long.pham
+	 * @since 2022-07-29
+	 */
+	public boolean updateOpenSentAlertToClients(AlertEntity obj){
+		try{
+			return update("CronJobAlert.updateOpenSentAlertToClients", obj)>0;
+		}catch (Exception ex) {
+			log.error("CronJobAlert.updateOpenSentAlertToClients", ex);
+			return false;
+		}
+	}
+	
 	
 	/**
 	 * @description update close sent alert 
@@ -150,6 +206,20 @@ public class CronJobAlertService extends DB {
 			return update("CronJobAlert.updateCloseSentAlert", obj)>0;
 		}catch (Exception ex) {
 			log.error("CronJobAlert.updateCloseSentAlert", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update close sent alert  to clients
+	 * @author long.pham
+	 * @since 2022-07-29
+	 */
+	public boolean updateCloseSentAlertToClients(AlertEntity obj){
+		try{
+			return update("CronJobAlert.updateCloseSentAlertToClients", obj)>0;
+		}catch (Exception ex) {
+			log.error("CronJobAlert.updateCloseSentAlertToClients", ex);
 			return false;
 		}
 	}
@@ -687,5 +757,18 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description check nw internal
+	 * @author duy.phan
+	 * @since 2024-06-25
+	 * @param id
+	 */
+	public int checkNwInternal(EmployeeEntity obj) {
+		try {
+			return (int)queryForObject("CronJobAlert.checkNwInternal", obj);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
 	
 }

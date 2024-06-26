@@ -42,8 +42,10 @@ public class ReportTaskScheduler {
 			// application start-up won't run this, only affected when user change schedule
 			if (reportId > 0) {
 				List<ScheduledFuture<?>> list = scheduledTasks.get(reportId);
-				list.forEach(item -> item.cancel(false));
-				scheduledTasks.remove(reportId);
+				if (list != null) {
+					list.forEach(item -> item.cancel(false));
+					scheduledTasks.remove(reportId);
+				}
 			}
 			
 			for (ViewReportEntity report : listReports) {
