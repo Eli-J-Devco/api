@@ -27,4 +27,52 @@
 			type = "time_account_locked"
 	</update>
 	
+	<select id="getListMeterAndInverterFindLogAlert" resultType="Map" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.last_updated,
+			e.id AS id_error_no_prod,
+			e1.id AS id_error_no_comm
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = dg.id AND e.error_code = 1000
+			LEFT JOIN error e1 ON e1.id_device_group = dg.id AND e1.error_code = 1001
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (1) AND s.id = #{id_site}
+			GROUP BY d.id
+	</select>
+	
+	<select id="getDataDevice" resultType="Map">
+		SELECT
+			dv.id_device,
+			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) AS time_utc,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:00' ) AS time_local,
+			dv.nvmActivePower,
+			dv.nvmActiveEnergy
+		FROM
+			${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ >= ]]> '2024-05-16 00:00:00' 
+			AND DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ <= ]]> '2024-05-18 00:00:00' 
+			GROUP BY DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' );
+	</select>
+	
+	
 </mapper>
