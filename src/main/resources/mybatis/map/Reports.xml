@@ -353,7 +353,7 @@
 			s.`name` AS site_name,
 			s.table_data_report,
 			s.table_data_virtual,
-			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.offset), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
 			"Normal" AS system_status,
@@ -506,15 +506,9 @@
 			s.id,
 			s.id AS id_site,
 			s.`name`,
-			DATE_FORMAT( sdr.time, '%m' ) AS month,
-			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-			
-			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -529,7 +523,9 @@
 			AND d.is_delete = 0
 			AND s.id = #{id_site}
 			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY s.id, DATE_FORMAT( sdr.time , "%Y-%m/%d")
+		GROUP BY
+			s.id,
+			DATE_FORMAT( sdr.time , "%Y-%m/%d")
 	</select>
 	
 	<select id="getListSiteREC" resultType="Map" >
@@ -713,9 +709,7 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m' ) AS month_number,
 			DATE_FORMAT( sdr.time, '%b' ) AS month,
-			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -784,35 +778,27 @@
 	
 	
 	<select id="getDataEnergyMeterDailyReport" resultType="Map" >
-		<if test="data_intervals == 1">
-			  SELECT
+		 	SELECT
 				t.time_format,
 				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
+				ROUND(SUM( t.nvmActivePower), 0)  AS `power`
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
 							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:00') AS hour_time,
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
+								<if test="data_intervals == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+								</if>
+								AVG(dv.nvmActivePower) AS nvmActivePower 
 							FROM
 								${item.datatablename} dv
 								LEFT JOIN device d ON d.id = dv.id_device
@@ -827,156 +813,35 @@
 								AND d.`status` = 1 
 							GROUP BY
 								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
 			      </foreach>
 				) t 
 			GROUP BY
 				t.time_format
-		</if>
-		
-		<if test="data_intervals == 2">
-			  SELECT
-				t.time_format,
-				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
-							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:00') AS hour_time,
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 3
-								AND d.consumption_meter = 0
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
-		
-		<if test="data_intervals == 3">
-			  SELECT
-				t.time_format,
-				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
-							SELECT
-								dv.time,
-								
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 3
-								AND d.consumption_meter = 0
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
 	</select>
 	
 	
 	<select id="getDataEnergyInverterDailyReport" resultType="Map" >
-		<if test="data_intervals == 1">
 			SELECT
 				t.time_format,
 				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
+				ROUND(SUM( t.nvmActivePower), 0)  AS `power`
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
 							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:00') AS hour_time,
-								
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
+								<if test="data_intervals == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+								</if>
+								AVG(dv.nvmActivePower) AS nvmActivePower 
 							FROM
 								${item.datatablename} dv
 								LEFT JOIN device d ON d.id = dv.id_device
@@ -990,121 +855,10 @@
 								AND d.`status` = 1 
 							GROUP BY
 								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
 			      </foreach>
 				) t 
 			GROUP BY
 				t.time_format
-		</if>
-		
-		<if test="data_intervals == 2">
-			SELECT
-				t.time_format,
-				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
-							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:00') AS hour_time,
-								
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 1
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
-		
-		<if test="data_intervals == 3">
-			  SELECT
-				t.time_format,
-				t.categories_time,
-				t.hour_time,
-				IFNULL(ROUND(SUM( t.nvmActivePower)), 0.001)  AS `power`,
-				0 AS irradiance,
-				0 AS energy
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							m.categories_time,
-							m.hour_time,
-							IFNULL(SUM(m.nvmActivePower), NULL) AS nvmActivePower
-						FROM
-							(
-							SELECT
-								dv.time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
-								IFNULL(AVG(dv.nvmActivePower), 0) AS nvmActivePower 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type = 1
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
-		
 	</select>
 	
 	<select id="getDataEnergyCustomReport" resultType="Map" >
@@ -1131,10 +885,7 @@
 				AS categories_time,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 				DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-				
-				IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS actual,
-				IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-				IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
+				IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS actual
 				
 			FROM
 				${table_data_report} sdr 
@@ -1520,37 +1271,27 @@
 	</select>
 	
 	<select id="getDataIrradiance" resultType="Map" >
-		<if test="data_intervals == 1">
 			SELECT
-				t.time,
 				t.time_format,
-				IFNULL(ROUND(SUM( t.irradiance)), 0.001)  AS `irradiance`,
-				
-				t.time_full,
-				t.categories_time,
-				t.hour_time
-				
+				ROUND(AVG(t.irradiance), 0)  AS `irradiance`,
+				t.categories_time
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							IFNULL(SUM(m.nvm_irradiance), NULL) AS irradiance,
-							m.categories_time,
-							m.hour_time
-							
-						FROM
-							(
 							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%H:00') AS hour_time,
-								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
+								<if test="data_intervals == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+								</if>
+								AVG(dv.nvm_irradiance) AS irradiance 
 							FROM
 								${item.datatablename} dv
 								LEFT JOIN device d ON d.id = dv.id_device
@@ -1564,119 +1305,10 @@
 								AND d.`status` = 1 
 							GROUP BY
 								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
 			      </foreach>
 				) t 
 			GROUP BY
 				t.time_format
-		</if>
-		<if test="data_intervals == 2">
-			SELECT
-				t.time,
-				t.time_format,
-				IFNULL(ROUND(SUM( t.irradiance)), 0.001)  AS `irradiance`,
-				t.time_full,
-				t.categories_time,
-				t.hour_time
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							IFNULL(SUM(m.nvm_irradiance), NULL) AS irradiance,
-							m.categories_time,
-							m.hour_time
-							
-						FROM
-							(
-							SELECT
-								dv.time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%H:00') AS hour_time,
-								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type IN(4,6)
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
-		<if test="data_intervals == 3">
-			SELECT
-				t.time,
-				t.time_format,
-				IFNULL(ROUND(SUM( t.irradiance)), 0.001)  AS `irradiance`,
-				t.time_full,
-				t.categories_time,
-				t.hour_time
-				
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-					<![CDATA[
-						SELECT
-							m.time,
-							m.time_format,
-							m.time_full,
-							IFNULL(SUM(m.nvm_irradiance), NULL) AS irradiance,
-							m.categories_time,
-							m.hour_time
-							
-						FROM
-							(
-							SELECT
-								dv.time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
-								IFNULL(AVG(dv.nvm_irradiance), 0) AS nvm_irradiance 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type IN(4,6)
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, time_format
-							) m 
-						GROUP BY
-							m.time_format
-						]]>
-			      </foreach>
-				) t 
-			GROUP BY
-				t.time_format
-		</if>
 	</select>
 	
 	<select id="getListDeviceTypeIrradiance" resultType="Map">
