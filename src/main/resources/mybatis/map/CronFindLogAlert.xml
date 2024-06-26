@@ -1,0 +1,793 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CronFindLogAlert">
+	<resultMap id="CronFindLogAlertMap"
+		type="com.nwm.api.entities.DeviceEntity">
+		<result property="id" column="id" />
+		<result property="id_site" column="id_site" />
+		<result property="id_vendor" column="id_vendor" />
+		<result property="serial_number" column="serial_number" />
+		<result property="modbusdevicenumber" column="modbusdevicenumber" />
+		<result property="devicename" column="devicename" />
+		<result property="devicetype" column="devicetype" />
+		<result property="deviceclass" column="deviceclass" />
+		<result property="configuration" column="configuration" />
+		<result property="configurationchangetime" column="configurationchangetime" />
+		<result property="configurationchecksum" column="configurationchecksum" />
+		<result property="datatablename" column="datatablename" />
+		<result property="id_customer" column="id_customer" />
+		<result property="id_device_type" column="id_device_type" />
+		<result property="active" column="active" />
+		<result property="id_device_group" column="id_device_group" />
+		<result property="keyword" column="keyword" />
+		
+		
+	</resultMap>
+	
+	<select id="getListSiteFindAlert" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			s.ac_capacity,
+			s.dc_capacity
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+		WHERE
+			s.`status` = 1
+			AND s.`is_delete` = 0
+
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+			GROUP BY s.id
+	</select>
+	
+	<select id="getListMeterAndInverterFindLogAlert" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.last_updated,
+			e.id AS id_error,
+			e.error_code
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = dg.id AND e.error_code = 1000
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (1) AND s.id = #{id_site}
+			GROUP BY d.id
+	</select>
+	
+	<select id="getDataDevice" resultType="Map">
+		SELECT
+			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) AS time_utc,
+			DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:00' ) AS time_local,
+			dv.nvmActivePower,
+			dv.nvmActiveEnergy
+		FROM
+			${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) >= '2024-05-02 00:00:00'
+			GROUP BY DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' );
+	</select>
+	
+	
+	<!-- 
+	
+	<select id="getDeviceDatalogger" resultMap="CronJobAlertMap" parameterType="Integer">
+		SELECT
+			* 
+		FROM
+			device d 
+		WHERE
+			d.`status` = 1 
+			AND d.id_site = #{id_site}
+			AND d.id_device_group = 19 
+			LIMIT 1
+	</select>
+	
+	
+	
+	
+	
+	<select id="getListWeatherStation" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.last_updated,
+			e.id AS id_error,
+			e.error_code
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = dg.id AND e.error_code = 1001
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (4) AND d.disable_alert = 1 AND s.id = #{id_site}
+			GROUP BY d.id
+	</select>
+	
+	
+	
+	<select id="getListDeviceCheckNoCom" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.last_updated,
+			e.id AS id_error,
+			e.error_code
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN error e ON e.id_device_group = dg.id AND e.error_code = 1001
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (1, 3) AND d.disable_alert = 1 AND s.id = #{id_site}
+			GROUP BY d.id
+	</select>
+	
+	
+	
+	
+	
+	<select id="getRowItemAlert" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT
+    	u.id,
+    	u.id_device,
+    	u.id_error
+		FROM `alert` as u
+		WHERE u.id_device = #{id} AND u.id_error = #{id_error} AND u.`status` = 1 AND u.is_delete = 0
+			LIMIT 1;
+  	</select>
+	
+	
+	<update id="updateCloseAlert">
+		UPDATE `alert`
+		SET
+			status = 0,
+			end_date = #{end_date}
+		WHERE
+			`id` = #{id} AND `id_device` = #{id_device}
+	</update>
+	
+	
+	<select id="checkAlertlExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
+    	SELECT
+    	COUNT(u.id) as totalRecord
+		FROM `alert` as u
+		LEFT JOIN error e ON e.id = u.id_error
+		WHERE u.id_device = #{id_device} 
+		AND u.id_error = #{id_error} 
+		AND u.`status` = 1
+		AND u.is_delete = 0
+		AND e.is_delete = 0 
+		AND e.`status` = 1;
+  	</select>
+  	
+  	
+  	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `alert`(
+			`id_device`,
+			`id_error`,
+			`start_date`,
+			`end_date`,
+			`asset`,
+			`capacity`
+		)VALUES(
+			#{id_device},
+			#{id_error},
+			#{start_date},
+			#{end_date},
+			#{asset},
+			#{capacity}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<select id="getLastRowItemCheckNoProduction" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT 
+			t.time,
+			t.id_device,
+			t.error,
+			t.start_date_time,
+			t.end_date_time,
+			t.id,
+			IF( SUM(t.nvmActivePower) = 0.01, 0.001,  SUM(t.nvmActivePower) ) AS nvmActivePower,
+			COUNT( IF( (t.nvmActivePower = 0.001 || t.nvmActivePower IS NULL || t.nvmActivePower <![CDATA[<=]]> 0) <![CDATA[&&]]> t.nvmActiveEnergy > 0 , 1, NULL)) AS count_item
+		FROM (
+			SELECT
+					`time`,
+					id_device,
+					error,
+					s.start_date_time,
+					s.end_date_time,
+					d.id,
+					u.nvmActivePower,
+					u.nvmActiveEnergy
+				FROM
+					${datatablename} u
+					LEFT JOIN device d ON d.id = u.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					
+				WHERE u.id_device = #{id} AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00")
+				ORDER BY
+					u.`time` DESC 
+					LIMIT 10
+		)t
+  	</select>
+  	
+  	
+  	<select id="getLastRowItemNoCommWeather" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT 
+			t.time,
+			t.id_device,
+			t.error,
+			t.start_date_time,
+			t.end_date_time,
+			t.id,
+			COUNT( IF( (t.nvm_irradiance = 0.001 || t.nvm_irradiance = 0 || t.nvm_irradiance = NULL) <![CDATA[&&]]> (t.nvm_temperature = 0.001 || t.nvm_temperature = 0 || t.nvm_temperature = NULL), 1, NULL)) AS count_item
+		FROM (
+			SELECT
+					`time`,
+					id_device,
+					error,
+					s.start_date_time,
+					s.end_date_time,
+					d.id,
+					u.nvm_irradiance,
+					u.nvm_temperature
+				FROM
+					${datatablename} u
+					LEFT JOIN device d ON d.id = u.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					
+				WHERE u.id_device = #{id} AND DATE_FORMAT(CONVERT_TZ( u.time, '+00:00', t.`offset` ), "%Y-%m-%d %H:%i:%s") <![CDATA[<=]]> DATE_FORMAT( #{current_time}, "%Y-%m-%d 18:00:00")
+				ORDER BY
+					u.`time` DESC 
+					LIMIT 10
+		)t
+  	</select>
+  	
+  	
+  	<select id="getDataloggerItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+		SELECT
+			* 
+		FROM
+			${datatablename} m
+			LEFT JOIN device d ON d.id = m.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			m.id_device = #{id_device}
+			AND DATE_FORMAT(CONVERT_TZ( m.time, '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT(CONVERT_TZ( DATE_ADD( NOW() ,INTERVAL -120 MINUTE) , '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i:%s')
+			LIMIT 1;
+			
+  	</select>
+  	
+  	
+  	<select id="getAlertDetail" resultType="com.nwm.api.entities.AlertEntity">
+    	SELECT
+    	u.*
+		FROM `alert` as u
+		WHERE u.id_device = #{id_device} AND u.id_error = #{id_error} AND u.`status` = 1 AND u.is_delete = 0
+			LIMIT 1;
+  	</select>
+  	
+  	<select id="getLastRowItemCheckNoCommunication" resultType="com.nwm.api.entities.BatchJobTableEntity">
+			
+    	SELECT 
+			t.time,
+			t.id,
+			t.devicename,
+			t.id_device,
+			t.nvmActivePower,
+			t.nvmActiveEnergy,
+			COUNT( IF(t.nvmActivePower = 0.001 , 1, NULL)) AS count_item,
+			COUNT( IF(t.count_is_comm = 1 , 1, NULL)) AS count_is_comm
+		FROM (
+			SELECT 
+			    	u.`time`, 
+		    		u.`id_device`, 
+		    		u.`error`,
+		    		IFNULL(u.nvmActivePower, 0.001) AS nvmActivePower,
+		    		u.nvmActiveEnergy,
+		    		d.devicename,
+		    		d.id,
+		    		IF((u.nvmActivePower = 0 <![CDATA[&&]]> u.nvmActiveEnergy = 0) || (u.nvmActivePower IS NULL <![CDATA[&&]]> u.nvmActiveEnergy IS NULL) , 1, NULL) AS count_is_comm
+		 FROM ${datatablename} u
+		
+				LEFT JOIN device d ON u.id_device = d.id
+				LEFT JOIN site s ON d.id_site = s.id
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE u.id_device = #{id_device}
+				AND DATE_FORMAT( u.time , '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( NOW() ,INTERVAL -5 HOUR) , '%Y-%m-%d %H:%i:%s')
+				
+				ORDER BY u.time DESC LIMIT 10
+		)t
+  	</select>
+  	
+	
+	<select id="getListAllDevice" resultType="com.nwm.api.entities.DeviceEntity">
+		SELECT
+			d.id,
+			d.id_site,
+			d.id_vendor,
+			d.serial_number,
+			d.modbusdevicenumber,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			dg.code_prefix,
+			s.start_date_time,
+			s.end_date_time,
+			t.`offset` AS timezone_offset,
+			t.`value` AS timezone_value,
+			d.id_device_group,
+			d.id_device_type,
+			d.job_tablename
+		FROM
+			device AS d
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
+			LEFT JOIN site s ON s.id = d.id_site 
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 AND d.is_delete = 0
+			AND s.`status` = 1 AND d.id_device_type IN (1, 3, 4, 6) AND s.`status` = 1 AND d.disable_alert = 1
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+	</select>
+	
+	<select id="getLastRowItem" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT
+    		`time`, 
+    		u.error,
+    		id_device, 
+    		d.devicename,
+    		CONVERT_TZ( u.time, '+00:00', t.`offset` ) AS time_format
+		FROM ${datatablename} u
+		LEFT JOIN device d ON d.id = u.id_device
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE u.id_device = #{id_device}
+		ORDER BY u.`time` DESC LIMIT 1;
+  	</select>
+  	
+  	<select id="getListErrorByType" resultType="com.nwm.api.entities.ErrorEntity" >
+		SELECT
+			e.*
+		FROM
+			error e 
+			LEFT JOIN alert a ON a.id_error = e.id
+		WHERE
+			e.id_error_type = 4
+			AND e.id_device_group = #{id_device_group}
+			AND e.`status` = 1
+			AND a.id_device = #{id_device} 
+			AND a.`status` = 1
+	</select>
+	
+	<update id="UpdateErrorMultiRow">
+	    UPDATE `alert` SET `status` = 0, `end_date` = #{end_date} 
+	    WHERE `id_error` = #{id_error} AND `id_device` = #{id_device}
+	</update>
+	
+	<update id="updateLastValueDevice">
+		UPDATE `device`
+		SET
+			`last_value` = #{last_value}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<select id="getListSiteSentMailAlert" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT
+			s.*,
+			SHA1(s.id) AS hash_id
+		FROM
+			site AS s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN site_mail_map smm ON smm.id_site = s.id
+		WHERE
+			s.`status` = 1 AND s.is_delete = 0 AND smm.cf_email_subscribers IS NOT NULL
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="id_site != null and id_site != 0">
+				AND s.id = #{id_site}
+			</if>
+			GROUP BY s.id
+	</select>
+	
+	<select id="getListAlertOpenBySite" resultType="Map" >
+		SELECT
+			a.id,
+			a.id_device,
+			a.open_send_mail,
+			a.close_send_mail,
+			d.devicename,
+			e.message,
+			e.error_code,
+			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
+			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+		FROM
+			alert a
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN device d ON d.id = a.id_device 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 
+			AND d.id_site  = #{id}
+			AND a.open_send_mail = 0
+			AND a.`status` = 1
+			<if test="errorLevel != null and !errorLevel.isEmpty()">
+				AND e.id_error_level IN (
+					SELECT id_error_level FROM error_level_site_map m WHERE m.id_site = 136 GROUP BY m.id_error_level
+				)
+			</if>
+			ORDER BY a.`status` DESC
+	</select>
+	
+	
+	<select id="getListErrorLevel" resultType="Map" >
+		SELECT id_error_level
+		FROM error_level_site_map m 
+		WHERE m.id_site = #{id} GROUP BY m.id_error_level
+	</select>
+	
+	<update id="updateOpenSentAlert">
+		UPDATE `alert`
+		SET
+			open_send_mail = 1
+		WHERE
+			`id` = #{id} AND `id_device` = #{id_device}
+	</update>
+	
+	<select id="getListAlertCloseBySite" resultType="Map" >
+		SELECT
+			a.id,
+			a.id_device,
+			a.open_send_mail,
+			a.close_send_mail,
+			d.devicename,
+			e.message,
+			e.error_code,
+			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
+			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+		FROM
+			alert a
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN device d ON d.id = a.id_device 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			d.`status` = 1 
+			AND d.id_site  = #{id}
+			AND a.close_send_mail = 0 AND a.`status` = 0
+			ORDER BY a.`status` DESC
+	</select>
+	
+	<update id="updateCloseSentAlert">
+		UPDATE `alert`
+		SET
+			close_send_mail = 1, open_send_mail = 1
+		WHERE
+			`id` = #{id} AND `id_device` = #{id_device}
+	</update>
+	
+	<select id="getLastRowItemResetLastValue" resultType="com.nwm.api.entities.BatchJobTableEntity">
+    	SELECT
+    		d.id,
+    		`time`, 
+    		id_device, 
+    		d.devicename,
+    		<if test="id_device_type == 1 or id_device_type == 3">
+				u.nvmActivePower AS nvmActivePower,
+			</if>
+			
+			<if test="id_device_type == 4 or id_device_type == 6 ">
+				u.nvm_irradiance AS nvmActivePower,
+			</if>
+			
+    		CONVERT_TZ( u.time, '+00:00', t.`offset` ) AS time_format
+    		
+    		
+		FROM ${datatablename} u
+		LEFT JOIN device d ON d.id = u.id_device
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE u.id_device = #{id_device}
+		AND DATE_FORMAT( u.time, '%Y-%m-%d %H:%i:%s') <![CDATA[>=]]> DATE_FORMAT( DATE_ADD( #{current_time} ,INTERVAL -60 MINUTE), '%Y-%m-%d %H:%i:%s')
+		ORDER BY u.`time` DESC LIMIT 1;
+  	</select>
+	
+	<select id="getEmployeeHidingSite" resultType="Map" >
+  		SELECT
+			e.email
+		FROM 
+			site_employee_map sem
+			LEFT JOIN employee e ON e.id = sem.id_employee
+		WHERE
+			sem.id_site = #{id}
+			AND sem.is_hiding = 1
+	</select>
+	
+	<select id="getListSiteEERLastMonth" resultType="com.nwm.api.entities.SiteEntity" >
+  		SELECT 
+			id,
+			table_data_report
+		FROM site s
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+	</select>
+	
+	<update id="updateSiteEERLastMonth">
+		UPDATE `site` s
+		LEFT JOIN (
+			SELECT
+				s.id,
+				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
+				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
+				IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+				CASE
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
+				END as EstimatedGeneration
+			FROM
+				${table_data_report} sdr 
+				LEFT JOIN device d ON d.id = sdr.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				s.`status` = 1
+				AND d.`status` = 1
+				AND s.is_delete = 0
+				AND d.is_delete = 0
+				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )
+			GROUP BY s.id
+		) eermonth ON eermonth.id = s.id
+		SET
+			s.`eer_last_month` = IFNULL(ROUND((eermonth.ActualGeneration / eermonth.EstimatedGeneration)*100 , 1 ), 0)
+		WHERE
+			s.`id` = #{id}
+	</update>
+	
+	<select id="getListSiteEERThisMonth" resultType="com.nwm.api.entities.SiteEntity" >
+  		SELECT 
+  			id,
+			table_data_report
+		FROM site s
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+	</select>
+	
+	<update id="updateSiteEERThisMonth">
+		UPDATE `site` s
+		LEFT JOIN (
+			SELECT
+				s.id,
+				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
+				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
+				IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+				
+				CASE
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
+				END as EstimatedGeneration
+			FROM
+				${table_data_report} sdr 
+				LEFT JOIN device d ON d.id = sdr.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				s.`status` = 1
+				AND d.`status` = 1
+				AND s.is_delete = 0
+				AND d.is_delete = 0
+				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )
+			GROUP BY s.id
+		) eerthismonth ON eerthismonth.id = s.id
+		SET
+			s.`eer_this_month` = ROUND((eerthismonth.ActualGeneration / eerthismonth.EstimatedGeneration)*100 , 1 )
+		WHERE
+			s.`id` = #{id}
+	</update>
+	
+	<select id="getListSiteLowProduction" resultType="com.nwm.api.entities.SiteEntity" >
+		SELECT
+			s.id,
+			s.`name`,
+			s.id_time_zone,
+			t.`value` AS time_zone_value,
+			s.start_date_time,
+			s.end_date_time,
+			COUNT(IF(d.id_device_type = 1, 1, NULL)) AS totalInverter,
+			COUNT(IF(d.id_device_type = 3, 1, NULL)) AS totalMeter,
+			COUNT(IF(d.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
+			GROUP_CONCAT(DISTINCT CASE WHEN d.id_device_type IN(1,3) THEN d.id_device_group ELSE NULL END SEPARATOR ',') AS listGroup
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
+			LEFT JOIN device d ON d.id_site = s.id
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+			<if test="id != null and id != 0">
+				AND s.id = #{id}
+			</if>
+			GROUP BY s.id
+			
+	</select>
+	
+	
+	<select id="getListDeviceByGroup" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.job_tablename,
+			IFNULL( d.energy_three_days, 0 ) AS power_now,
+			e.error_code,
+			e.id AS id_error,
+			DATE_FORMAT(d.last_updated, '%Y-%m-%d %H:%i:%s') AS last_updated
+			
+		FROM
+			device d
+			LEFT JOIN (
+				SELECT
+					* 
+				FROM
+					error e
+				WHERE
+					e.error_code = 1002 
+					AND e.`status` = 1 
+					AND e.is_delete = 0 
+					AND e.id_device_group = #{id_device_group}
+					LIMIT 1
+			) e ON e.id_device_group = d.id_device_group 
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0 
+			AND d.id_device_group = #{id_device_group}
+			AND d.id_site = #{id_site}
+			AND d.last_value IS NOT NULL
+			AND d.last_value > 0
+		GROUP BY
+			d.id 
+		ORDER BY
+			d.last_value DESC
+	</select>
+	
+	
+	<select id="getListAlertByGroupDevice" resultType="com.nwm.api.entities.AlertEntity" >
+		SELECT
+			a.id
+		FROM
+			device d
+			LEFT JOIN alert a ON a.id_device = d.id
+			LEFT JOIN error e ON e.id = a.id_error 
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0 
+			AND e.`status` = 1 
+			AND e.is_delete = 0 
+			AND d.id_site = #{id_site}
+			AND e.error_code = 1002 
+			AND d.id_device_group = #{id_device_group}
+	</select>
+	
+	<update id="closeMultiAlert">
+		UPDATE `alert`
+		SET
+			status = 0,
+			end_date = #{end_date}
+		WHERE
+			<if test="alerts != null and !alerts.isEmpty()">
+				`id` IN  (
+					<foreach item="item" index="index" collection="alerts" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+	</update>
+	
+	<select id="getListEmployeeOnSiteMailMap" resultType="Map" >
+  		SELECT
+			smm.*
+		FROM 
+			site_mail_map smm
+		WHERE
+			smm.id_site = #{id}
+	</select> --> 
+  	
+</mapper>
