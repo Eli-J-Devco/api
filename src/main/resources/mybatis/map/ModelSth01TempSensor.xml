@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSth01TempSensor">
+	<resultMap id="ModelSth01TempSensorMap"
+		type="com.nwm.api.entities.ModelSth01TempSensorEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="TEMPRATURE"
+			column="TEMPRATURE" />
+		<result property="HUMIDITY"
+			column="HUMIDITY" />
+		<result property="DEWPOINT"
+			column="DEWPOINT" />
+		<result property="Retain"
+			column="Retain" />
+		<result property="Modbus_ADDRESS"
+			column="Modbus_ADDRESS" />
+		<result property="BAUDRATE"
+			column="BAUDRATE" />
+		<result property="PROTOCOL"
+			column="PROTOCOL" />
+		<result property="PARITY"
+			column="PARITY" />
+		<result property="DATABITS"
+			column="DATABITS" />
+		<result property="STOPBITS" column="STOPBITS" />
+		<result property="RESPONSEDELY" column="RESPONSEDELY" />
+		<result property="ACTIVE_OUTPUT_INTERVAL" column="ACTIVE_OUTPUT_INTERVAL" />
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelSth01TempSensor" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="TEMPRATURE != 0.001">
+				`TEMPRATURE`,
+			</if>
+			<if test="HUMIDITY != 0.001">
+				`HUMIDITY`,
+			</if>
+			<if test="DEWPOINT != 0.001">
+				`DEWPOINT`,
+			</if>
+			<if test="Retain != 0.001">
+				`Retain`,
+			</if>
+			<if test="Modbus_ADDRESS != 0.001">
+				`Modbus_ADDRESS`,
+			</if>
+			<if test="BAUDRATE != 0.001">
+				`BAUDRATE`,
+			</if>
+			<if test="PROTOCOL != 0.001">
+				`PROTOCOL`,
+			</if>
+			<if test="PARITY != 0.001">
+				`PARITY`,
+			</if>
+			
+			<if test="DATABITS != 0.001">
+				`DATABITS`,
+			</if>
+			<if test="STOPBITS != 0.001">
+				`STOPBITS`,
+			</if>
+			<if test="RESPONSEDELY != 0.001">
+				`RESPONSEDELY`,
+			</if>
+			<if test="ACTIVE_OUTPUT_INTERVAL != 0.001">
+				`ACTIVE_OUTPUT_INTERVAL`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="TEMPRATURE != 0.001">
+				#{TEMPRATURE},
+			</if>
+			<if test="HUMIDITY != 0.001">
+				#{HUMIDITY},
+			</if>
+			<if test="DEWPOINT != 0.001">
+				#{DEWPOINT},
+			</if>
+			<if test="Retain != 0.001">
+				#{Retain},
+			</if>
+			<if test="Modbus_ADDRESS != 0.001">
+				#{Modbus_ADDRESS},
+			</if>
+			<if test="BAUDRATE != 0.001">
+				#{BAUDRATE},
+			</if>
+			<if test="PROTOCOL != 0.001">
+				#{PROTOCOL},
+			</if>
+			<if test="PARITY != 0.001">
+				#{PARITY},
+			</if>
+			<if test="DATABITS != 0.001">
+				#{DATABITS},
+			</if>
+			<if test="STOPBITS != 0.001">
+				#{STOPBITS},
+			</if>
+			<if test="RESPONSEDELY != 0.001">
+				#{RESPONSEDELY},
+			</if>
+			<if test="ACTIVE_OUTPUT_INTERVAL != 0.001">
+				#{ACTIVE_OUTPUT_INTERVAL},
+			</if>		
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="TEMPRATURE != 0.001">
+				TEMPRATURE = #{TEMPRATURE},
+			</if>
+			<if test="HUMIDITY != 0.001">
+				HUMIDITY = #{HUMIDITY},
+			</if>
+			<if test="DEWPOINT != 0.001">
+				DEWPOINT = #{DEWPOINT},
+			</if>
+			<if test="Retain != 0.001">
+				Retain = #{Retain},
+			</if>
+			<if test="Modbus_ADDRESS != 0.001">
+				Modbus_ADDRESS = #{Modbus_ADDRESS},
+			</if>
+			<if test="BAUDRATE != 0.001">
+				BAUDRATE= #{BAUDRATE},
+			</if>
+			<if test="PROTOCOL != 0.001">
+				PROTOCOL = #{PROTOCOL},
+			</if>
+			<if test="PARITY != 0.001">
+				PARITY = #{PARITY},
+			</if>
+			<if test="DATABITS != 0.001">
+				DATABITS = #{DATABITS},
+			</if>
+			<if test="STOPBITS != 0.001">
+				STOPBITS = #{STOPBITS},
+			</if>
+			<if test="RESPONSEDELY != 0.001">
+				RESPONSEDELY = #{RESPONSEDELY},
+			</if>
+			<if test="ACTIVE_OUTPUT_INTERVAL != 0.001">
+				ACTIVE_OUTPUT_INTERVAL = #{ACTIVE_OUTPUT_INTERVAL},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+		</trim>
+
+	</insert>
+
+</mapper> 

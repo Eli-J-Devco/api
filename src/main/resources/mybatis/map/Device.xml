@@ -5390,6 +5390,36 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            <when test="id_device_group == 91">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `TEMPRATURE` double DEFAULT NULL COMMENT 'TEMPRATURE',
+						  `HUMIDITY` double DEFAULT NULL COMMENT 'HUMIDITY',
+						  `DEWPOINT` double DEFAULT NULL COMMENT 'DEWPOINT',
+						  `Retain` double DEFAULT NULL COMMENT 'Retain',
+						  `Modbus_ADDRESS` double DEFAULT NULL COMMENT 'Modbus_ADDRESS',
+						  `BAUDRATE` double DEFAULT NULL COMMENT 'BAUDRATE',
+						  `PROTOCOL` double DEFAULT NULL COMMENT 'PROTOCOL',
+						  `PARITY` double DEFAULT NULL COMMENT 'PARITY',
+						  `DATABITS` double DEFAULT NULL COMMENT 'DATABITS',
+						  `STOPBITS` double DEFAULT NULL COMMENT 'STOPBITS',
+						  `RESPONSEDELY` double DEFAULT NULL COMMENT 'RESPONSEDELY',
+						  `ACTIVE_OUTPUT_INTERVAL` double DEFAULT NULL COMMENT 'ACTIVE_OUTPUT_INTERVAL',
+						  `nvm_irradiance` double DEFAULT NULL,
+						  `nvm_temperature` double DEFAULT '0',
+						  `nvm_panel_temperature` double DEFAULT '0',
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                          
 	        </choose> 
 	        

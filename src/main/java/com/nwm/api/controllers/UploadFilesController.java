@@ -89,6 +89,7 @@ import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
 import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
+import com.nwm.api.entities.ModelSth01TempSensorEntity;
 import com.nwm.api.entities.ModelSungrowLogger1000Entity;
 import com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity;
 import com.nwm.api.entities.ModelTTiTrackerEntity;
@@ -161,6 +162,7 @@ import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
 import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
+import com.nwm.api.services.ModelSth01TempSensorService;
 import com.nwm.api.services.ModelSungrowLogger1000Service;
 import com.nwm.api.services.ModelSunnyCentralClass9775InverterService;
 import com.nwm.api.services.ModelTTiTrackerService;
@@ -2573,6 +2575,102 @@ public class UploadFilesController extends BaseController {
 											}
 											
 											break;
+											
+											// Model sensor
+											case "model_sth01_temp_sensor":
+												ModelSth01TempSensorService serviceSth01TempSensor = new ModelSth01TempSensorService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelSth01TempSensorEntity dataModelSth01TempSensor = serviceSth01TempSensor.setModelSth01TempSensor(line);
+														dataModelSth01TempSensor.setId_device(item.getId());
+														dataModelSth01TempSensor.setDatatablename(item.getDatatablename());
+														dataModelSth01TempSensor.setView_tablename(item.getView_tablename());
+														dataModelSth01TempSensor.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSth01TempSensorEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSth01TempSensor);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelSth01TempSensor, scaledValue);
+																if (slug.equals("TEMPRATURE")) dataModelSth01TempSensor.setNvm_temperature(scaledValue);
+																if (slug.equals("TEMPRATURE")) dataModelSth01TempSensor.setNvm_panel_temperature(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														// TEMPRATURE
+														
+														if(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 && dataModelSth01TempSensor.getTEMPRATURE() >= 0){
+															deviceUpdateE.setLast_updated(dataModelSth01TempSensor.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 ? dataModelSth01TempSensor.getTEMPRATURE() : null);
+														deviceUpdateE.setField_value1(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 ? dataModelSth01TempSensor.getTEMPRATURE() : null);
+														
+														// value 2
+														deviceUpdateE.setField_value2(null);
+														
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+
+														serviceSth01TempSensor.insertModelSth01TempSensor(dataModelSth01TempSensor);
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  
+															}
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  
+															}		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
 											
 										// Model weather station
 										case "model_lufft_ws501_umb_weather":
