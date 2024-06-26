@@ -7,8 +7,10 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SystemEntity;
 
 public class SystemService extends DB {
@@ -44,5 +46,32 @@ public class SystemService extends DB {
 			return false;
 		}
 	}
+	
+	
+	/**
+	 * @description get list device meter and inverter
+	 * @author Long.Pham
+	 * @since 2024-06-25
+	 */
+	
+	public List getListDeviceINVMeter(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			List dataDevice = queryForList("System.getListMeterAndInverterFindLogAlert", obj);
+			if (dataDevice == null)
+				return new ArrayList();
+			
+			for(int i = 0; i < dataDevice.size(); i++) {
+				Map<String, Object> dataItem = (Map<String, Object>) dataDevice.get(i);
+				List data = queryForList("System.getDataDevice", dataItem);
+				dataItem.put("dataDevice", data);
+				dataList.add(dataItem);
+			}
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 	
 }
