@@ -11,6 +11,7 @@ import java.util.List;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AccountEntity;
 import com.nwm.api.entities.ErrorEntity;
+import com.nwm.api.entities.ErrorLevelEntity;
 
 public class ErrorService extends DB {
 
@@ -114,7 +115,57 @@ public class ErrorService extends DB {
 		}
 	}
 	
+	/**
+	 * @description get list device group
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @returns array
+	 */
 	
+	public List getListDeviceGroup(ErrorEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Error.getListDeviceGroup", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
+	/**
+	 * @description get list error message
+	 * @author long.pham
+	 * @since 2021-01-28
+	 * @returns array
+	 */
+	
+	public List getListErrorMessage(ErrorEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Error.getListErrorMessage", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
+	 * @description update permission nw client
+	 * @author long.pham
+	 * @since 2021-02-26
+	 * @param id
+	 */
+	public boolean updatePermissionNwClient(ErrorEntity obj){
+		try{
+			return update("Error.updatePermissionNwClient", obj)>0;
+		}catch (Exception ex) {
+			log.error("Error.updatePermissionNwClient", ex);
+			return false;
+		}
+	}
 
 }
