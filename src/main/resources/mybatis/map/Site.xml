@@ -803,7 +803,7 @@
 			`id` = #{id}
 	</update>
   	
-  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity">
+  	<select id="getList" resultType="map">
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
@@ -874,7 +874,7 @@
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			
 			LEFT JOIN (
-				SELECT * FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
+				SELECT d.id_site FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
 			)td ON td.id_site = s.id
 			
 			LEFT JOIN (
@@ -897,8 +897,6 @@
 			LEFT JOIN (
 						SELECT id_site, 
 							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,
-							c.first_name,
-							c.last_name,
 							GROUP_CONCAT(c.id SEPARATOR ', ') AS ids_employee
 						FROM site_employee_map scm
 						LEFT JOIN employee c ON c.id = scm.id_employee
@@ -979,7 +977,8 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRow
 		FROM site s
-		WHERE s.`is_delete` = 0
+		LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		WHERE s.`is_delete` = 0 AND s.`status` = 1 AND sem.id_employee = #{id_employee}
 		<if test="keyword != null">
 			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if> 
@@ -2254,5 +2253,16 @@
 			)t GROUP BY t.id_device, YEAR(t.time)
 	</select>
 	
+	<select id="getSitePerPage" resultType="Map">
+		SELECT
+			e.site_per_page
+			
+		FROM
+			employee e
+			
+		WHERE 
+			e.id = #{id_employee}
+			LIMIT 1;
+  	</select>
 	
 </mapper>

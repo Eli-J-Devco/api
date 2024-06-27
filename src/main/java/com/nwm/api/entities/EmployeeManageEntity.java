@@ -51,6 +51,7 @@ public class EmployeeManageEntity{
 	private String offset_timezone;
 	private String page_login;
 	private int alert_per_page;
+	private int site_per_page;
 	private String alert_filter;
 	private int failed_attempt;
 	private int account_locked;
@@ -64,6 +65,12 @@ public class EmployeeManageEntity{
 	
 	
 	
+	public int getSite_per_page() {
+		return site_per_page;
+	}
+	public void setSite_per_page(int site_per_page) {
+		this.site_per_page = site_per_page;
+	}
 	public String getNote() {
 		return note;
 	}

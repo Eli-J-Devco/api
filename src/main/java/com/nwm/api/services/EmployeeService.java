@@ -417,6 +417,21 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
+	 * @description update display alert per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 */
+	public boolean updateSitePerPage(EmployeeManageEntity obj) {
+		try {
+			return update("Employee.updateSitePerPage", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Employee.updateSitePerPage", ex);
+			return false;
+		}
+	}
+	
+	/**
 	 * @description get alert filter
 	 * @author duy.phan
 	 * @since 2023-04-18
