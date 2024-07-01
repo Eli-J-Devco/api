@@ -63,6 +63,8 @@ public class SystemService extends DB {
 			
 			for(int i = 0; i < dataDevice.size(); i++) {
 				Map<String, Object> dataItem = (Map<String, Object>) dataDevice.get(i);
+				dataItem.put("start_date", obj.getStart_date());
+				dataItem.put("end_date", obj.getEnd_date());
 				List data = queryForList("System.getDataDevice", dataItem);
 				dataItem.put("dataDevice", data);
 				dataList.add(dataItem);

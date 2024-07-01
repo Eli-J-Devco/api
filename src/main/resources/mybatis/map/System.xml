@@ -42,7 +42,12 @@
 			d.id_device_group,
 			d.last_updated,
 			e.id AS id_error_no_prod,
-			e1.id AS id_error_no_comm
+			e1.id AS id_error_no_comm,
+			CASE
+					WHEN s.data_send_time = 1 THEN 5
+					WHEN s.data_send_time = 2 THEN 15
+					ELSE 1
+			END AS data_send_time
 		FROM
 			device AS d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
@@ -52,7 +57,7 @@
 			LEFT JOIN error e1 ON e1.id_device_group = dg.id AND e1.error_code = 1001
 		WHERE
 			d.`status` = 1 AND d.is_delete = 0
-			AND s.`status` = 1 AND d.id_device_type IN (1) AND s.id = #{id_site}
+			AND s.`status` = 1 AND d.id_device_type IN (1, 3) AND s.id = #{id_site}
 			GROUP BY d.id
 	</select>
 	
@@ -69,8 +74,8 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ >= ]]> '2024-05-16 00:00:00' 
-			AND DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ <= ]]> '2024-05-18 00:00:00' 
+			DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ >= ]]> #{start_date}
+			AND DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' ) <![CDATA[ <= ]]> #{end_date}
 			GROUP BY DATE_FORMAT( dv.time, '%Y-%m-%d %H:%i:00' );
 	</select>
 	
