@@ -240,9 +240,10 @@ public class SiteController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			SiteService service = new SiteService();
+			TablePreferenceEntity preference = service.getPreference(obj);
+
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
 		} catch (Exception e) {
 			log.error(e);
@@ -652,7 +653,27 @@ public class SiteController extends BaseController {
 		}
 	}
 	
-	
+	/**
+	 * @description Get list filter alert by id_employeee
+	 * @author duy.phan
+	 * @since 2023-07-18
+	 * @return data (status, message, object, total_row
+	 */
+	@PostMapping("/get-site-per-page")
+	public Object getSitePerPage(@RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			Object detailObj = service.getSitePerPage(obj);
+			if (detailObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detailObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 	
 }

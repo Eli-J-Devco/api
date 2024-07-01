@@ -591,6 +591,14 @@
 			`id` = #{id}
 	</update>
 	
+	<update id="updateSitePerPage">
+		UPDATE `employee`
+		SET
+			`site_per_page` = #{site_per_page}
+		WHERE
+			`id` = #{id}
+	</update>
+	
 	<update id="updateAlertFilter" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
 		UPDATE `employee`
 		SET

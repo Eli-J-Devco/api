@@ -372,6 +372,25 @@ public class EmployeeController extends BaseController {
 	}
 	
 	/**
+	 * @description update display site per page
+	 * @author duy.phan
+	 * @since 2023-07-24
+	 * @param id, alert_per_page
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-site-per-page")
+	public Object updateSitePerPage(@RequestBody EmployeeManageEntity obj) {
+		try {
+			EmployeeService service = new EmployeeService();
+			service.updateSitePerPage(obj);
+			return this.jsonResult(true, "Update site per page complete.", obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description get alert filter
 	 * @author duy.phan
 	 * @since 2022-12-22
