@@ -1012,8 +1012,8 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entityCluster, scaledValue);
-																if (slug.equals("GridMs.TotW")) entityCluster.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering.TotWhOut")) entityCluster.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entityCluster.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entityCluster.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -1047,8 +1047,8 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entitySMA12k, scaledValue);
-																if (slug.equals("GridMs.TotW")) entitySMA12k.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering.TotWhOut")) entitySMA12k.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entitySMA12k.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entitySMA12k.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
@@ -1081,16 +1081,16 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entitySMA24k, scaledValue);
-																if (slug.equals("GridMs.TotW")) entitySMA24k.setNvmActivePower(scaledValue);
-																if (slug.equals("Metering.TotWhOut")) entitySMA24k.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entitySMA24k.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entitySMA24k.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
 														serviceSMA24k.insertModelSmaInverterStp24ktlus10(entitySMA24k);
-														if (entitySMA24k.getGridMs_TotW() > 0) {
+														if (entitySMA24k.getGridMs_TotW() >= 0) {
 															deviceUpdateE.setLast_updated(entitySMA24k.getTime());
-															deviceUpdateE.setLast_value(entitySMA24k.getGridMs_TotW()  > 0 ? entitySMA24k.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA24k.getGridMs_TotW()  > 0 ? entitySMA24k.getGridMs_TotW() : null);
+															deviceUpdateE.setLast_value(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA24k.getGridMs_TotW()  >= 0 ? entitySMA24k.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
@@ -1118,16 +1118,16 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
-																if (slug.equals("Measurement.GridMs.TotW")) entitySMA3000.setNvmActivePower(scaledValue);
-																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA3000.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entitySMA3000.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entitySMA3000.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
 														serviceSMA3000.insertModelSmaInverterStp3000ktlus10(entitySMA3000);
-														if (entitySMA3000.getGridMs_TotW() > 0) {
+														if (entitySMA3000.getGridMs_TotW() >= 0) {
 															deviceUpdateE.setLast_updated(entitySMA3000.getTime());
-															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  > 0 ? entitySMA3000.getGridMs_TotW() : null);
+															deviceUpdateE.setLast_value(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA3000.getGridMs_TotW()  >= 0 ? entitySMA3000.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
@@ -1154,16 +1154,16 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entitySMA3000, scaledValue);
-																if (slug.equals("Measurement.GridMs.TotW")) entitySMA24000.setNvmActivePower(scaledValue);
-																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA24000.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entitySMA24000.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entitySMA24000.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
 														serviceSMA24000.insertModelSmaInverterStp24000ktlus10(entitySMA24000);
-														if (entitySMA24000.getGridMs_TotW() > 0) {
+														if (entitySMA24000.getGridMs_TotW() >= 0) {
 															deviceUpdateE.setLast_updated(entitySMA24000.getTime());
-															deviceUpdateE.setLast_value(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA24000.getGridMs_TotW()  > 0 ? entitySMA24000.getGridMs_TotW() : null);
+															deviceUpdateE.setLast_value(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA24000.getGridMs_TotW()  >= 0 ? entitySMA24000.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
@@ -1190,17 +1190,17 @@ public class FTPUploadServerController extends BaseController {
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 																pd.getWriteMethod().invoke(entitySMA62, scaledValue);
-																if (slug.equals("Measurement.GridMs.TotW")) entitySMA62.setNvmActivePower(scaledValue);
-																if (slug.equals("Measurement.Metering.TotWhOut")) entitySMA62.setNvmActiveEnergy(scaledValue);
+																if (slug.equals("GridMs_TotW")) entitySMA62.setNvmActivePower(scaledValue);
+																if (slug.equals("Metering_TotWhOut")) entitySMA62.setNvmActiveEnergy(scaledValue);
 															}
 														}
 														
 														serviceSMA62.insertModelSmaInverterStp62us41(entitySMA62);
 														
-														if (entitySMA62.getGridMs_TotW() > 0) {
+														if (entitySMA62.getGridMs_TotW() >= 0) {
 															deviceUpdateE.setLast_updated(entitySMA62.getTime());
-															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
-															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  > 0 ? entitySMA62.getGridMs_TotW() : null);
+															deviceUpdateE.setLast_value(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
+															deviceUpdateE.setField_value1(entitySMA62.getGridMs_TotW()  >= 0 ? entitySMA62.getGridMs_TotW() : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
