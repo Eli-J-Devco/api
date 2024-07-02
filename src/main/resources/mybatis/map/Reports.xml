@@ -186,44 +186,23 @@
 	
 	<select id="getList" resultType="Map" >
 		SELECT
-			s.`name` AS site_name,
 			CASE
-		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
-		    	WHEN r.type_report = 3 THEN CONCAT_WS( " " , s.`name`, "Leviton BMO Consumption Report") 
-		    	WHEN r.type_report = 4 THEN CONCAT_WS( " " , s.`name`, "Asset Management and Operation Performance Report") 
+		    	WHEN r.type_report = 1 THEN
+		    		CASE
+		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Solar Production Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Solar Production Report")
+		    			ELSE CONCAT_WS(" " , s.`name`, "Solar Production Report")
+		    		END
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Production Trend Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Production Trend Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Production Trend Report")
+		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Production Trend Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Production Trend Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Production Trend Report")
 		    		END
+		    	WHEN r.type_report = 3 THEN CONCAT_WS(" " , s.`name`, "Leviton BMO Consumption Report") 
+		    	WHEN r.type_report = 4 THEN CONCAT_WS(" " , s.`name`, "Asset Management and Operation Performance Report") 
 		    	ELSE s.`name`
 			END	AS report_name,
-			
-			CASE
-		    	WHEN r.cadence_range = 1 THEN "Daily"
-				WHEN r.cadence_range = 2 THEN "Monthly"
-				WHEN r.cadence_range = 3 THEN "Quarterly"
-				WHEN r.cadence_range = 4 THEN "Annual"
-				WHEN r.cadence_range = 6 THEN "Weekly"
-		    	ELSE "Custom"
-			END	AS cadence_range_name,
-			
-			
-			CASE
-		    WHEN r.data_intervals = 1 THEN "5 Minutes"
-				WHEN r.data_intervals = 2 THEN "15 Minutes"
-				WHEN r.data_intervals = 3 THEN "1 Hour"
-		    ELSE ""
-			END	AS data_intervals_name,
-			
-			CASE
-		    WHEN r.file_type = 1 THEN "PDF"
-				WHEN r.file_type = 2 THEN "Excel"
-				WHEN r.file_type = 3 THEN "CSV"
-		    ELSE ""
-			END	AS file_type_name,
-		
 			r.id,
 			s.id AS id_site,
 			s.table_data_report,
@@ -245,46 +224,78 @@
 			DATE_FORMAT(r.created_date, '%m/%d/%Y %H:%i %p') AS created_on,
 			DATE_FORMAT(r.updated_date, '%m/%d/%Y %H:%i %p') AS last_modified,
 			CASE
-					WHEN r.type_report = 2 AND r.type_option = 1 THEN (
-						SELECT GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
-								FROM site_employee_map sem 
-								LEFT JOIN site s ON s.id = sem.id_site
-							WHERE sem.id_employee = r.id_employee AND s.`status` = 1 AND s.is_delete = 0
-					)
-					
-					WHEN r.type_report = 2 AND r.type_option = 2 THEN (
-						SELECT
-							GROUP_CONCAT(s.id SEPARATOR ',')
-						FROM
-							report_site_map rsm
-							LEFT JOIN site s ON s.id = rsm.id_site
-							WHERE s.`status` = 1 AND s.is_delete = 0 AND rsm.id_report = r.id
-						GROUP BY rsm.id_report
-					)
-					WHEN r.type_report = 2 AND r.type_option = 3 THEN (
-						SELECT GROUP_CONCAT(s.id SEPARATOR ',')
-						FROM site s WHERE 
-						s.`status` = 1 AND s.is_delete = 0 AND s.id_site_sub_group = r.id_sub_group
-					)
-					ELSE t.ids_site
-			END AS ids_site
+				WHEN r.type_option = 1 THEN t1.ids_site
+				WHEN r.type_option = 2 THEN t2.ids_site
+				WHEN r.type_option = 3 THEN t3.ids_site
+				ELSE t2.ids_site
+			END AS ids_site,
+			CASE
+				WHEN r.type_option = 1 THEN t1.sitesListJSON
+				WHEN r.type_option = 2 THEN t2.sitesListJSON
+				WHEN r.type_option = 3 THEN t3.sitesListJSON
+				ELSE t2.sitesListJSON
+			END AS sitesListJSON
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
-			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					sem.id_employee,
+					"Entire Portfolio" AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'id', s.id,
+						'text', s.name
+					)) AS sitesListJSON
+				FROM
+					site_employee_map sem 
+					LEFT JOIN site s ON s.id = sem.id_site
+				WHERE
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					sem.id_employee
+			) t1 ON t1.id_employee = r.id_employee
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
 					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
-					GROUP_CONCAT(s.id SEPARATOR ', ') AS ids_site
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'id', s.id,
+						'text', s.name
+					)) AS sitesListJSON
 				FROM
 					report_site_map rsm
 					LEFT JOIN site s ON s.id = rsm.id_site
-				GROUP BY rsm.id_report
-			) t ON t.id_report = r.id
-		WHERE r.status = 1 
-		AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				WHERE
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					rsm.id_report
+			) t2 ON t2.id_report = r.id
+			LEFT JOIN (
+				SELECT
+					s.id_site_sub_group,
+					ssg.name AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'id', s.id,
+						'text', s.name
+					)) AS sitesListJSON
+				FROM
+					site s
+					LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+				WHERE 
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					s.id_site_sub_group
+			) t3 ON t3.id_site_sub_group = r.id_sub_group
+		WHERE
+			r.status = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		
 		<if test="is_supper_admin != 1">
 			AND r.id_employee = #{id_employee} 
@@ -352,65 +363,22 @@
 			s.id AS id_site,
 			s.`name` AS site_name,
 			s.table_data_report,
-			s.table_data_virtual,
-			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', t.offset), '%m/%d/%Y') AS report_date,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.offset), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
-			"Normal" AS system_status,
-			r.cadence_range,
 			r.subscribers,
 			r.data_intervals,
 			r.type_report,
-			r.type_option,
-			r.id_sub_group,
-			r.id_employee,
-			t.ids_site,
-			CASE
-		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
-		    	WHEN r.type_report = 3 THEN CONCAT_WS( " " , s.`name`, "Leviton BMO Consumption Report") 
-		    	WHEN r.type_report = 4 THEN CONCAT_WS( " " , s.`name`, "Asset Management and Operation Performance Report") 
-		    	WHEN r.type_report = 2 THEN
-		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS( " " , "Entire Portfolio", "Built-in Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS( " " , t.sites_name, "Built-in Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS( " " , ssg.name, "Sub-Group", "Built-in Report")
-		    		END
-		    	ELSE s.`name`
-			END	AS report_name,
-			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address,
-			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
+			r.type_option
 		FROM
-			site s 
-			LEFT JOIN report r ON r.id_site = s.id
-			LEFT JOIN site_sub_group ssg ON ssg.id = r.id_sub_group
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN (
-				SELECT
-					rsm.id_report,
-					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
-					GROUP_CONCAT(s.id SEPARATOR ', ') AS ids_site
-				FROM
-					report_site_map rsm
-					LEFT JOIN site s ON s.id = rsm.id_site
-				GROUP BY rsm.id_report
-			) t ON t.id_report = r.id
-			LEFT JOIN (
-				SELECT
-					COUNT(*) AS enable_virtual_device,
-					d.id_site
-				FROM
-					device d 
-				WHERE
-					d.`status` = 1 
-					AND d.is_delete = 0 
-					AND d.hidden = 0
-					AND d.virtual_device_type IS NOT NULL
-					AND d.virtual_device_type != ''
-					AND d.id_site = #{id_site}
-			) v ON v.id_site = s.id
+			report r
+			LEFT JOIN site_employee_map sem ON sem.id_employee = r.id_employee
+			LEFT JOIN site s ON s.id = sem.id_site
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
 			r.id = #{id}
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND s.id = #{id_site}
+			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
   	
   	
@@ -621,82 +589,104 @@
 	
 	
 	
-	<select id="getDataEnergyQurterlyReport" resultType="Map" >
+	<select id="getDataEnergyQuarterlyReportByMonth" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
 		SELECT
-			s.id,
-			s.id AS id_site,
-			s.`name`,
-			DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time_by_day,
-			DATE_FORMAT( sdr.time, '%m-%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%Y-%m' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format_by_day,
-			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-			
-		FROM
-			${table_data_report} sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND s.id = #{id_site}
-			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY s.id,
-			<choose>
-				<when test="data_intervals == 4">
-					time_format_by_day
-				</when>
-				<when test="data_intervals == 6">
-					time_format
-				</when>
-				<otherwise>
-					time_format
-				</otherwise>
-			</choose>
-		
+			*,
+			ROUND(actualCumulative - estimatedCumulative, 0) AS cumulativeDifference,
+			IF(actualCumulative IS NOT NULL AND estimatedCumulative IS NOT NULL AND estimatedCumulative > 0, ROUND((actualCumulative - estimatedCumulative) / estimatedCumulative * 100, 1), NULL) AS cumulativeDifferencePercentage
+		FROM (
+			SELECT
+				id,
+				id_site,
+				`name`,
+				categories_time,
+				ROUND(actual, 0) AS actual,
+				ROUND(estimated, 0) AS estimated,
+				ROUND(actual - estimated, 0) AS difference,
+				IF(actual IS NOT NULL AND estimated IS NOT NULL AND estimated > 0, ROUND((actual - estimated) / estimated * 100, 1), NULL) AS differencePercentage,
+				ROUND(SUM(actual) OVER (ORDER BY time), 0) AS actualCumulative,
+				ROUND(SUM(estimated) OVER (ORDER BY time), 0) AS estimatedCumulative
+			FROM (
+				SELECT
+					sdr.time,
+					s.id,
+					s.id AS id_site,
+					s.`name`,
+					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
+					IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+					CASE
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Mar" THEN ee.mar
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Apr" THEN ee.apr
+						WHEN DATE_FORMAT(sdr.time, '%b') = "May" THEN ee.may
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Jun" THEN ee.jun
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Jul" THEN ee.jul
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Aug" THEN ee.aug
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Sep" THEN ee.sep
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Oct" THEN ee.oct
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Nov" THEN ee.nov
+						WHEN DATE_FORMAT(sdr.time, '%b') = "Dec" THEN ee.`dec`
+					END AS estimated
+				FROM
+					${table_data_report} sdr 
+					LEFT JOIN device d ON d.id = sdr.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.`year` = DATE_FORMAT(#{start_date},"%Y")
+				WHERE
+					s.`status` = 1
+					AND d.`status` = 1
+					AND s.is_delete = 0
+					AND d.is_delete = 0
+					AND s.id = #{id_site}
+					AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+				GROUP BY 
+					s.id,
+					categories_time
+			) t
+		) t
 	</select>
 	
-	<select id="getDataInverterAvailabilityByDay" resultType="Map" >
+	<select id="getDataEnergyQuarterlyReportByDay" resultType="com.nwm.api.entities.QuarterlyDateEntity" >
 		SELECT
-			ROUND(AVG(sdr.InverterAvailability) * 100, 2) AS InverterAvailability,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
-		FROM
-			${table_data_report} sdr
-			LEFT JOIN device d ON d.id = sdr.id_device
-		WHERE
-			d.`status` = 1
-			AND d.is_delete = 0
-			AND d.id_device_type = 1
-			AND d.id_site = #{id_site}
-			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-		GROUP BY time_format
+			id,
+			id_site,
+			`name`,
+			categories_time,
+			ROUND(actual, 0) AS actual,
+			ROUND(POAInsolation, 4) AS POAInsolation,
+			ROUND(TCellAVG, 1) AS TCellAVG,
+			ROUND(IF(actual IS NOT NULL AND POAInsolation IS NOT NULL AND TCellAVG IS NOT NULL AND POAInsolation > 0, (actual / ((dc_capacity * POAInsolation) * (1 - (-0.47 / 100) * (25 - TCellAVG))) * 100), NULL), 1) AS temperatureCorrected,
+			ROUND(inverterAvailability, 1) AS inverterAvailability
+		FROM (
+			SELECT
+				s.id,
+				s.id AS id_site,
+				s.`name`,
+				s.dc_capacity,
+				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
+				IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
+				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
+				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
+			FROM
+				${table_data_report} sdr 
+				LEFT JOIN device d ON d.id = sdr.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				s.`status` = 1
+				AND d.`status` = 1
+				AND s.is_delete = 0
+				AND d.is_delete = 0
+				AND s.id = #{id_site}
+				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+			GROUP BY 
+				s.id,
+				categories_time
+		) t
 	</select>
-	
-	<select id="getDataWeatherStationByDay" resultType="Map" >
-		SELECT
-			sdr.POAAVG,
-			sdr.TCellAVG,
-			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format
-		FROM
-			${table_data_report} sdr
-			LEFT JOIN device d ON d.id = sdr.id_device
-		WHERE
-			d.`status` = 1
-			AND d.is_delete = 0
-			AND d.id_device_type = 4
-			AND d.id_site = #{id_site}
-			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-	</select>
-	
 	
 	<select id="getDataEnergyAnnuallyReport" resultType="Map" >
 		SELECT
@@ -899,7 +889,7 @@
 				AND s.is_delete = 0
 				AND d.is_delete = 0
 				AND s.id = #{id_site}
-				AND (sdr.time BETWEEN #{date_from} AND #{date_to})
+				AND (sdr.time BETWEEN #{start_date} AND #{end_date})
 				
 			GROUP BY 
 				s.id,

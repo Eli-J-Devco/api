@@ -1202,8 +1202,8 @@ public class BatchJob {
 							break;
 							
 						case 3: // quarterly
-							startDate = nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusDays(1).getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth());
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfQuarterlyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailQuarterlyReport(objReport);
 							break;

@@ -12,15 +12,21 @@ public class QuarterlyDateEntity{
 	private String name;
 	private String time_full;
 	private String time_format;
-	private String time_format_by_day;
 	private String categories_time;
-	private String categories_time_by_day;
 	private int month_number;
 	private Double actual;
 	private Double estimated;
+	private Double difference;
+	private Double differencePercentage;
 	private Double inverterAvailability;
-	private Double POAAVG;
+	private Double POAInsolation;
 	private Double TCellAVG;
+	private Double temperatureCorrected;
+	private Double actualCumulative;
+	private Double estimatedCumulative;
+	private Double cumulativeDifference;
+	private Double cumulativeDifferencePercentage;
+	
 	public String getMonth() {
 		return month;
 	}
@@ -51,23 +57,11 @@ public class QuarterlyDateEntity{
 	public void setTime_format(String time_format) {
 		this.time_format = time_format;
 	}
-	public String getTime_format_by_day() {
-		return time_format_by_day;
-	}
-	public void setTime_format_by_day(String time_format_by_day) {
-		this.time_format_by_day = time_format_by_day;
-	}
 	public String getCategories_time() {
 		return categories_time;
 	}
 	public void setCategories_time(String categories_time) {
 		this.categories_time = categories_time;
-	}
-	public String getCategories_time_by_day() {
-		return categories_time_by_day;
-	}
-	public void setCategories_time_by_day(String categories_time_by_day) {
-		this.categories_time_by_day = categories_time_by_day;
 	}
 	public int getMonth_number() {
 		return month_number;
@@ -87,23 +81,65 @@ public class QuarterlyDateEntity{
 	public void setEstimated(Double estimated) {
 		this.estimated = estimated;
 	}
+	public Double getDifference() {
+		return difference;
+	}
+	public void setDifference(Double difference) {
+		this.difference = difference;
+	}
+	public Double getDifferencePercentage() {
+		return differencePercentage;
+	}
+	public void setDifferencePercentage(Double differencePercentage) {
+		this.differencePercentage = differencePercentage;
+	}
 	public Double getInverterAvailability() {
 		return inverterAvailability;
 	}
 	public void setInverterAvailability(Double inverterAvailability) {
 		this.inverterAvailability = inverterAvailability;
 	}
-	public Double getPOAAVG() {
-		return POAAVG;
+	public Double getPOAInsolation() {
+		return POAInsolation;
 	}
-	public void setPOAAVG(Double pOAAVG) {
-		POAAVG = pOAAVG;
+	public void setPOAInsolation(Double pOAInsolation) {
+		POAInsolation = pOAInsolation;
 	}
 	public Double getTCellAVG() {
 		return TCellAVG;
 	}
 	public void setTCellAVG(Double tCellAVG) {
 		TCellAVG = tCellAVG;
+	}
+	public Double getTemperatureCorrected() {
+		return temperatureCorrected;
+	}
+	public void setTemperatureCorrected(Double temperatureCorrected) {
+		this.temperatureCorrected = temperatureCorrected;
+	}
+	public Double getActualCumulative() {
+		return actualCumulative;
+	}
+	public void setActualCumulative(Double actualCumulative) {
+		this.actualCumulative = actualCumulative;
+	}
+	public Double getEstimatedCumulative() {
+		return estimatedCumulative;
+	}
+	public void setEstimatedCumulative(Double estimatedCumulative) {
+		this.estimatedCumulative = estimatedCumulative;
+	}
+	public Double getCumulativeDifference() {
+		return cumulativeDifference;
+	}
+	public void setCumulativeDifference(Double cumulativeDifference) {
+		this.cumulativeDifference = cumulativeDifference;
+	}
+	public Double getCumulativeDifferencePercentage() {
+		return cumulativeDifferencePercentage;
+	}
+	public void setCumulativeDifferencePercentage(Double cumulativeDifferencePercentage) {
+		this.cumulativeDifferencePercentage = cumulativeDifferencePercentage;
 	}
 	
 	
