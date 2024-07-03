@@ -95,7 +95,14 @@ public class CronJobAlertController extends BaseController {
 					if (hourOfDay >= (objSite.getStart_date_time() + 2) && hourOfDay <= (objSite.getEnd_date_time() - 2)) {
 						// Check alert datalogger no communication
 						DeviceEntity objDatalogger = service.getDeviceDatalogger(objSite.getId());
-						if (objDatalogger.getId() > 0) {
+						
+						// Check site send data by FTP and no datalogger
+						int datalogger_type = 0;
+						if (objDatalogger.getId() == 0) {
+							datalogger_type = service.checkSiteFTPNoDatalogger(objSite.getId());
+						}
+						
+						if (objDatalogger.getId() > 0 || datalogger_type == 1) {
 							// Get list device meter and inverter
 							DeviceEntity dEntity = new DeviceEntity();
 							dEntity.setId_site(objSite.getId());
