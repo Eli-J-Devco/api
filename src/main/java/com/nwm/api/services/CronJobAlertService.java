@@ -771,4 +771,18 @@ public class CronJobAlertService extends DB {
 		}
 	}
 	
+	/**
+	 * @description check nw internal
+	 * @author duy.phan
+	 * @since 2024-06-25
+	 * @param id
+	 */
+	public int checkSiteFTPNoDatalogger(int id_site) {
+		try {
+			return (int)queryForObject("CronJobAlert.checkSiteFTPNoDatalogger", id_site);
+		} catch (Exception ex) {
+			return 0;
+		}
+	}
+	
 }

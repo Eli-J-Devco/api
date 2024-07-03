@@ -38,6 +38,17 @@
 			LIMIT 1
 	</select>
 	
+	<select id="checkSiteFTPNoDatalogger" parameterType="Integer" resultType="int">
+		SELECT
+			s.datalogger_type 
+		FROM
+			site s
+		WHERE
+			s.`status` = 1 AND s.is_delete = 0
+			AND s.id = #{id_site}
+			LIMIT 1
+	</select>
+	
 	<select id="getListMeterAndInverterBySite" resultType="com.nwm.api.entities.DeviceEntity" >
 		SELECT
 			d.id,
