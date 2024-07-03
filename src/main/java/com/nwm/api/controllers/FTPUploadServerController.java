@@ -111,7 +111,7 @@ public class FTPUploadServerController extends BaseController {
 					/// converting date format for US
 					Date date = new Date();
 					SimpleDateFormat sdfAmerica = new SimpleDateFormat("yyyyMMdd");
-					TimeZone tzInAmerica = TimeZone.getTimeZone(siteItem.getDisplay_timezone());
+					TimeZone tzInAmerica = TimeZone.getTimeZone(siteItem.getTime_zone_value());
 					sdfAmerica.setTimeZone(tzInAmerica);
 					Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone(siteItem.getTime_zone_value()));
 					
