@@ -5,7 +5,6 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -17,11 +16,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.DailyDateEntity;
@@ -36,17 +37,6 @@ import com.nwm.api.utils.Constants;
 
 public class ReportsService extends DB {
 	
-	private static String readProperty(ResourceBundle resourceBundle, String key, String defaultValue) {
-		String value = defaultValue;
-		try {
-			value = resourceBundle.getString(key);
-		} catch (Exception e) {
-			// TODO: handle exception
-			dbLog.error(e);
-		}
-		return value;
-	}
-	
 	/**
 	 * @description get monthly  report 
 	 * @author long.pham
@@ -54,7 +44,7 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getDailyReport(ViewReportEntity obj) {
+	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = new ViewReportEntity();
 			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
@@ -266,210 +256,45 @@ public class ReportsService extends DB {
 			if (dataObj == null) {
 				return null;
 			}
+			boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
-			List dataEnergy = queryForList("Reports.getDataEnergyQurterlyReport", obj);
-			if (dataEnergy.size() > 0) {
-				dataObj.setDataReports(dataEnergy);
-			}
+			List<QuarterlyDateEntity> dataEnergy = quarterlyReportByMonth ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			
-			EnergyExpectationsEntity expec = (EnergyExpectationsEntity) queryForObject("Reports.getExpectationsRow", obj);
-			
-			List<QuarterlyDateEntity> categories = new ArrayList<QuarterlyDateEntity> ();
-			
-			SimpleDateFormat dateFormat;
-			SimpleDateFormat catFormat;
-			SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
-			
-			boolean quarterlyReportByDay = dataObj.getData_intervals() == Constants.DAILY_INTERVAL;
-			
-			if (quarterlyReportByDay) {
-				dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-				catFormat = new SimpleDateFormat("MM/dd/yyyy");
-
-				List dataInverterAvailability = queryForList("Reports.getDataInverterAvailabilityByDay", obj);
-				if (dataInverterAvailability.size() > 0) { 
-					dataObj.setDataAvailability(dataInverterAvailability);
+			if (dataEnergy != null && dataEnergy.size() > 0) {
+				// fulfill data
+				DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
+				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
+				List<QuarterlyDateEntity> dateTimeList = new ArrayList<QuarterlyDateEntity>();
+				List<QuarterlyDateEntity> fulfilledDataList = new ArrayList<QuarterlyDateEntity>();
+				
+				while (!start.isAfter(end)) {
+					QuarterlyDateEntity dateTime = new QuarterlyDateEntity();
+					dateTime.setCategories_time(start.format(quarterlyReportByMonth ? DateTimeFormatter.ofPattern("MMM-yyyy") : DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+					dateTimeList.add(dateTime);
+					start = start.plus(1, quarterlyReportByMonth ? ChronoUnit.MONTHS : ChronoUnit.DAYS);
 				}
 				
-				List dataWeatherStation = queryForList("Reports.getDataWeatherStationByDay", obj);
-				if (dataWeatherStation != null && dataWeatherStation.size() > 0) {
-					dataObj.setDataWeatherStation(dataWeatherStation);
-				}
-			} else {
-				dateFormat = new SimpleDateFormat("yyyy-MM");
-				catFormat = new SimpleDateFormat("MMM-yyyy");
-			}
-			
-			Date startDate = dateFormat.parse(obj.getStart_date());
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(startDate);
-			
-			for (int i = 0; i < 3; i++) {
-				int month = Integer.parseInt(monthFormat.format(cal.getTime()).toString());
-				int expecValue = 0;
-				if(expec != null) {
-					switch ( month ) {
-					case  1: expecValue = expec.getJan(); break;
-					case  2: expecValue = expec.getFeb(); break;
-					case  3: expecValue = expec.getMar(); break;
-					case  4: expecValue = expec.getApr(); break;
-					case  5: expecValue = expec.getMay(); break;
-					case  6: expecValue = expec.getJun(); break;
-					case  7: expecValue = expec.getJul(); break;
-					case  8: expecValue = expec.getAug(); break;
-					case  9: expecValue = expec.getSep(); break;
-					case  10: expecValue = expec.getOct(); break;
-					case  11: expecValue = expec.getNov(); break;
-					case  12: expecValue = expec.getDec(); break;
-					default:
-						expecValue = 0;
-					}
-				}
-				
-				if (quarterlyReportByDay) {
-					int numOfDaysInMonth = cal.getActualMaximum(Calendar.DATE);
+				for (QuarterlyDateEntity dateTime: dateTimeList) {
+					boolean isFound = false;
 					
-					for (int j = 0; j < numOfDaysInMonth; j++) {
-						QuarterlyDateEntity category = new QuarterlyDateEntity();
-						category.setTime_format(dateFormat.format(cal.getTime()));
-						category.setCategories_time(catFormat.format(cal.getTime()));
-						category.setEstimated((double) expecValue/numOfDaysInMonth);
-						categories.add(category);
-						cal.add(Calendar.DATE, 1);
-					}
-				} else {
-					QuarterlyDateEntity category = new QuarterlyDateEntity();
-					category.setTime_format(dateFormat.format(cal.getTime()));
-					category.setCategories_time(catFormat.format(cal.getTime()));
-					category.setEstimated((double) expecValue);
-					categories.add(category);
-					cal.add(Calendar.MONTH, 1);
-				}
-			}
-			
-			List data = dataObj.getDataReports();
-			List<QuarterlyDateEntity> dataNew = new ArrayList<QuarterlyDateEntity> ();
-			
-			if (categories.size() > 0) {
-				for (QuarterlyDateEntity item : categories) {
-					boolean flag = false;
-					QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
-					
-					if(data != null && data.size() > 0) {
-						for( int v = 0; v < data.size(); v++) {
-							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItemObj.setCategories_time(itemT.get(quarterlyReportByDay ? "categories_time_by_day" : "categories_time").toString());
-								mapItemObj.setTime_format(itemT.get(quarterlyReportByDay ? "time_format_by_day" : "time_format").toString());
-								mapItemObj.setActual(Double.parseDouble(itemT.get("chart_energy_kwh").toString()));
-								mapItemObj.setEstimated(item.getEstimated());
-								break;
-							}
-						}
-					}
-					
-					if(flag == false) {
-						QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
-						mapItem.setCategories_time(item.getCategories_time());
-						mapItem.setTime_format(item.getTime_format());
-						mapItem.setActual(null);
-						mapItem.setEstimated(null);
-						dataNew.add(mapItem);
-					} else {
-						dataNew.add(mapItemObj);
-					}
-				}
-			}
-			
-			dataObj.setDataReports(dataNew);
-			
-			if (quarterlyReportByDay) {
-				List dataInverterAvailability = dataObj.getDataAvailability();
-				List<QuarterlyDateEntity> dataInverterNew = new ArrayList<QuarterlyDateEntity> ();
-				
-				if (categories.size() > 0) {
-					for (QuarterlyDateEntity item : categories) {
-						boolean flag = false;
-						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
+					for(QuarterlyDateEntity data: dataEnergy) {
+						String fullTime = dateTime.getCategories_time();
+						String powerTime = data.getCategories_time();
 						
-						if (dataInverterAvailability != null && dataInverterAvailability.size() > 0) {
-							for( int v = 0; v < dataInverterAvailability.size(); v++) {
-								Map<String, Object> itemT = (Map<String, Object>) dataInverterAvailability.get(v);
-								String categoriesTime = item.getTime_format();
-								String powerTime = itemT.get("time_format").toString();
-								
-								if (categoriesTime.equals(powerTime)) {
-									flag = true;
-									mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-									mapItemObj.setTime_format(itemT.get("time_format").toString());
-									mapItemObj.setInverterAvailability(Double.parseDouble(itemT.get("InverterAvailability").toString()));
-									break;
-								}
-							}
-						}
-						
-						if(flag == false) {
-							QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
-							mapItem.setCategories_time(item.getCategories_time());
-							mapItem.setTime_format(item.getTime_format());
-							mapItem.setInverterAvailability(null);
-							dataInverterNew.add(mapItem);
-						} else {
-							dataInverterNew.add(mapItemObj);
+						if (fullTime.equals(powerTime)) {
+							fulfilledDataList.add(data);
+							isFound = true;
+							break;
 						}
 					}
 					
-					dataObj.setDataAvailability(dataInverterNew);
+					if (!isFound) fulfilledDataList.add(dateTime);
 				}
 				
-				
-				List dataWeatherStation = dataObj.getDataWeatherStation();
-				List<QuarterlyDateEntity> dataWeatherStationNew = new ArrayList<QuarterlyDateEntity> ();
-				
-				if (categories.size() > 0) {
-					for (QuarterlyDateEntity item : categories) {
-						boolean flag = false;
-						QuarterlyDateEntity mapItemObj = new QuarterlyDateEntity();
-						
-						if (dataWeatherStation != null && dataWeatherStation.size() > 0) {
-							for( int v = 0; v < dataWeatherStation.size(); v++) {
-								Map<String, Object> itemT = (Map<String, Object>) dataWeatherStation.get(v);
-								String categoriesTime = item.getTime_format();
-								String powerTime = itemT.get("time_format").toString();
-								
-								if (categoriesTime.equals(powerTime)) {
-									flag = true;
-									mapItemObj.setCategories_time(itemT.get("categories_time").toString());
-									mapItemObj.setTime_format(itemT.get("time_format").toString());
-									mapItemObj.setPOAAVG(itemT.get("POAAVG") != null ? Double.parseDouble(itemT.get("POAAVG").toString()) : null);
-									mapItemObj.setTCellAVG(itemT.get("TCellAVG") != null ? Double.parseDouble(itemT.get("TCellAVG").toString()) : null);
-									break;
-								}
-							}
-						}
-						
-						if(flag == false) {
-							QuarterlyDateEntity mapItem = new QuarterlyDateEntity();
-							mapItem.setCategories_time(item.getCategories_time());
-							mapItem.setTime_format(item.getTime_format());
-							mapItem.setPOAAVG(null);
-							mapItem.setTCellAVG(null);
-							dataWeatherStationNew.add(mapItem);
-						} else {
-							dataWeatherStationNew.add(mapItemObj);
-						}
-					}
-					
-					dataObj.setDataWeatherStation(dataWeatherStationNew);
-				}
-				
+				dataObj.setDataReports(fulfilledDataList);
 			}
-			
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -786,15 +611,24 @@ public class ReportsService extends DB {
 	 */
 
 	public List getList(ReportsEntity obj) {
-		List dataList = new ArrayList();
 		try {
+			List<Map<String, Object>> dataList = new ArrayList();
 			dataList = queryForList("Reports.getList", obj);
-			if (dataList == null)
-				return new ArrayList();
+			if (dataList == null) return new ArrayList();
+			
+			ObjectMapper mapper = new ObjectMapper();
+			dataList.forEach(item -> {
+				try {
+					if (item.get("sitesListJSON") != null) item.put("sitesList", mapper.readValue(item.get("sitesListJSON").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("sitesList", new ArrayList<Map<String, Object>>());
+				}
+				item.remove("sitesListJSON");
+			});
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 
 	public int getTotalRecord(ReportsEntity obj) {
