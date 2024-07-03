@@ -173,6 +173,9 @@ public class ReportsController extends BaseController {
 	private static final String fourDecimalPlaceDataFormat = "###,##0.0000";
 	private static final String oneDecimalPlaceWithPercentageDataFormat = "###,##0.0%";
 	private static final String noDecimalCurrencyDataFormat = "$###,##0";
+	private static final Color BLUE_COLOR = new Color(49, 119, 168);
+	private static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
+	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
 	
 	// Write header with format
 		private static void writeHeaderDailyReport(Sheet sheet, ViewReportEntity dataObj) {
@@ -435,7 +438,7 @@ public class ReportsController extends BaseController {
 							XDDFValueAxis rightAxis = createRightValueAxis(chart, bottomAxis, "kWh");
 							
 							data = createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-							addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Estimate Energy (kWh)",  PresetColor.LIGHT_STEEL_BLUE, null);
+							addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Estimate Energy (kWh)",  PresetColor.LIGHT_SKY_BLUE, null);
 							
 							chart.plot(data);
 							
@@ -453,7 +456,7 @@ public class ReportsController extends BaseController {
 				}
 				
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range());
+					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -473,7 +476,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-pdf-daily-report")
 	public Object sentMailPdfDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = createPdfFile(obj.getCadence_range());
+			File file = createPdfFile(obj.getCadence_range_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -550,17 +553,17 @@ public class ReportsController extends BaseController {
 						TimeSeriesCollection powerDataset = createJFreeChartLineDataset(0, plot);
 						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
 						powerDataset.addSeries(powerSeries);
-						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, new Color(85, 128, 176));
+						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
 						
 						TimeSeriesCollection energyDataset = createJFreeChartLineDataset(1, plot);
 						TimeSeries energySeries = new TimeSeries("Estimate Energy (kWh)");
 						energyDataset.addSeries(energySeries);
-						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, new Color(163, 188, 215));
+						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
 						
 						TimeSeriesCollection irradianceDataset = createJFreeChartLineDataset(2, plot);
 						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
 						irradianceDataset.addSeries(irradianceSeries);
-						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, new Color(255, 129, 39));
+						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
 						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
 						
 						for (int i = 0; i < dataExports.size(); i++) {
@@ -591,7 +594,7 @@ public class ReportsController extends BaseController {
 				document.close();
 				
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range(), file);
+					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -993,7 +996,7 @@ public class ReportsController extends BaseController {
 
 					XDDFChartData chartData = createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
 					addSeries(actualGeneration.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-					addSeries(baselineGeneration.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_STEEL_BLUE, null);
+					addSeries(baselineGeneration.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
 					
 					chart.plot(chartData);
 
@@ -1008,7 +1011,7 @@ public class ReportsController extends BaseController {
 			}
 				
 			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range());
+				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
 				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			} else {
 				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -1028,7 +1031,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-pdf-annually-report")
 	public Object sentMailPdfAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = createPdfFile(obj.getCadence_range());
+			File file = createPdfFile(obj.getCadence_range_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -1227,10 +1230,10 @@ public class ReportsController extends BaseController {
 						TimeSeriesCollection barDataset = createJFreeChartBarDataset(0, plot);
 						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
 						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, new Color(85, 128, 176));
+						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
 						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, new Color(180, 195, 220));
+						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 						
 						TimeSeriesCollection lineDataset = createJFreeChartLineDataset(1, plot);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
@@ -1262,7 +1265,7 @@ public class ReportsController extends BaseController {
 				document.close();
 				
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range(), file);
+					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -1805,7 +1808,7 @@ public class ReportsController extends BaseController {
 			}
 					
 			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range());
+				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
 				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			} else {
 				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -1825,7 +1828,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-pdf-quarterly-report")
 	public Object sentMailPdfQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = createPdfFile(obj.getCadence_range());
+			File file = createPdfFile(obj.getCadence_range_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -1961,10 +1964,10 @@ public class ReportsController extends BaseController {
 							TimeSeriesCollection barDataset = createJFreeChartBarDataset(0, plot);
 							TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
 							barDataset.addSeries(estimateSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(0, new Color(49, 119, 168));
+							plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
 							barDataset.addSeries(actualSeries);
-							plot.getRendererForDataset(barDataset).setSeriesPaint(1, new Color(163, 188, 215));
+							plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
@@ -1989,10 +1992,10 @@ public class ReportsController extends BaseController {
 							TimeSeriesCollection barDataset2 = createJFreeChartBarDataset(0, plot2);
 							TimeSeries estimatedCumulativeSeries = new TimeSeries("Estimate Generation (kWh)");
 							barDataset2.addSeries(estimatedCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, new Color(49, 119, 168));
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
 							TimeSeries actualCumulativeSeries = new TimeSeries("Actual Generation (kWh)");
 							barDataset2.addSeries(actualCumulativeSeries);
-							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, new Color(163, 188, 215));
+							plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 							
 							for (int i = 0; i < dataExports.size(); i++) {
 								QuarterlyDateEntity item = dataExports.get(i);
@@ -2038,7 +2041,7 @@ public class ReportsController extends BaseController {
 				document.close();
 
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range(), file);
+					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -2160,14 +2163,7 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param document, subscribers, cadenceRange
 	 */
-	private void sentExcelReportByMail(XSSFWorkbook document, String subscribers, int cadenceRange) throws Exception {
-		String cadenceRangeName = "";
-		if (cadenceRange == 1) cadenceRangeName = "Daily";
-		else if (cadenceRange == 2) cadenceRangeName = "Monthly";
-		else if (cadenceRange == 3) cadenceRangeName = "Quarterly";
-		else if (cadenceRange == 4) cadenceRangeName = "Annually";
-		else if (cadenceRange == 5) cadenceRangeName = "Custom";
-		
+	private void sentExcelReportByMail(XSSFWorkbook document, String subscribers, String cadenceRangeName) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 		String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
@@ -2196,14 +2192,7 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param cadenceRange
 	 */
-	private File createPdfFile(int cadenceRange) throws Exception {
-		String cadenceRangeName = "";
-		if (cadenceRange == 1) cadenceRangeName = "Daily";
-		else if (cadenceRange == 2) cadenceRangeName = "Monthly";
-		else if (cadenceRange == 3) cadenceRangeName = "Quarterly";
-		else if (cadenceRange == 4) cadenceRangeName = "Annually";
-		else if (cadenceRange == 5) cadenceRangeName = "Custom";
-		
+	private File createPdfFile(String cadenceRangeName) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 		String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
@@ -2216,14 +2205,7 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param  subscribers, cadenceRange, file
 	 */
-	private void sentPdfReportByMail(String subscribers, int cadenceRange, File file) throws Exception {
-		String cadenceRangeName = "";
-		if (cadenceRange == 1) cadenceRangeName = "Daily";
-		else if (cadenceRange == 2) cadenceRangeName = "Monthly";
-		else if (cadenceRange == 3) cadenceRangeName = "Quarterly";
-		else if (cadenceRange == 4) cadenceRangeName = "Annually";
-		else if (cadenceRange == 5) cadenceRangeName = "Custom";
-		
+	private void sentPdfReportByMail(String subscribers, String cadenceRangeName, File file) throws Exception {
 		String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 		String msgTemplate = Constants.getMailTempleteByState(16);
 		String body = String.format(msgTemplate, "", "", "Customer", cadenceRangeName + " ", "", "");
@@ -2960,7 +2942,7 @@ public class ReportsController extends BaseController {
 						
 						XDDFChartData data = createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
 						addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_STEEL_BLUE, null);
+						addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
 						
 						chart.plot(data);
 						
@@ -2992,7 +2974,7 @@ public class ReportsController extends BaseController {
 						((XDDFBarChartData) data).setGapWidth(400);
 						
 						addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData2, valuesData12, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", PresetColor.LIGHT_STEEL_BLUE, null);
+						addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
 						
 						chart.plot(data);
 					}
@@ -3000,7 +2982,7 @@ public class ReportsController extends BaseController {
 			}
 				
 			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range());
+				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
 				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			} else {
 				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -3020,7 +3002,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-pdf-monthly-report")
 	public Object sentMailPdfMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = createPdfFile(obj.getCadence_range());
+			File file = createPdfFile(obj.getCadence_range_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3116,10 +3098,10 @@ public class ReportsController extends BaseController {
 						TimeSeriesCollection barDataset = createJFreeChartBarDataset(0, plot);
 						TimeSeries actualSeries = new TimeSeries("Actual Generation (kWh)");
 						barDataset.addSeries(actualSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(0, new Color(85, 128, 176));
+						plot.getRendererForDataset(barDataset).setSeriesPaint(0, BLUE_COLOR);
 						TimeSeries estimateSeries = new TimeSeries("Estimate Generation (kWh)");
 						barDataset.addSeries(estimateSeries);
-						plot.getRendererForDataset(barDataset).setSeriesPaint(1, new Color(180, 195, 220));
+						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 						
 						TimeSeriesCollection lineDataset = createJFreeChartLineDataset(1, plot);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
@@ -3155,10 +3137,10 @@ public class ReportsController extends BaseController {
 						((ClusteredXYBarRenderer) plot2.getRendererForDataset(barDataset2)).setMargin(0.7);
 						TimeSeries totalActualSeries = new TimeSeries("Actual Generation (kWh)");
 						barDataset2.addSeries(totalActualSeries);
-						plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, new Color(85, 128, 176));
+						plot2.getRendererForDataset(barDataset2).setSeriesPaint(0, BLUE_COLOR);
 						TimeSeries totalEstimateSeries = new TimeSeries("Estimate Generation (kWh)");
 						barDataset2.addSeries(totalEstimateSeries);
-						plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, new Color(180, 195, 220));
+						plot2.getRendererForDataset(barDataset2).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 						
 						totalActualSeries.add(new Month(startDate), totalActual);
 						totalEstimateSeries.add(new Month(startDate), totalEstimated);
@@ -3178,7 +3160,7 @@ public class ReportsController extends BaseController {
 				document.close();
 
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range(), file);
+					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -3429,7 +3411,7 @@ public class ReportsController extends BaseController {
 					}
 					
 					if (dataObjList.stream().anyMatch(item -> item != null)) {
-						sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range());
+						sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
 						return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 					} else {
 						return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -3449,7 +3431,7 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-pdf-custom-report")
 	public Object sentMailPdfCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = createPdfFile(obj.getCadence_range());
+			File file = createPdfFile(obj.getCadence_range_name());
 			
 			try (
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -3548,7 +3530,7 @@ public class ReportsController extends BaseController {
 						TimeSeriesCollection lineDataset = createJFreeChartLineDataset(0, plot);
 						TimeSeries series = new TimeSeries("Actual Generation (kWh)");
 						lineDataset.addSeries(series);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, new Color(85, 128, 176));
+						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, BLUE_COLOR);
 						
 						for (int i = 0; i < dataExports.size(); i++) {
 							Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
@@ -3578,7 +3560,7 @@ public class ReportsController extends BaseController {
 				document.close();
 					
 				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range(), file);
+					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);

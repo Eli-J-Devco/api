@@ -34,6 +34,7 @@ public class ViewReportEntity {
 	private double totalMWH;
 	private String report_name;
 	private int cadence_range;
+	private String cadence_range_name;
 	private String subscribers;
 	private String address;
 	private String Quarterly_month;
@@ -385,6 +386,12 @@ public class ViewReportEntity {
 	}
 	public void setEnable_virtual_device(boolean enable_virtual_device) {
 		this.enable_virtual_device = enable_virtual_device;
+	}
+	public String getCadence_range_name() {
+		return cadence_range_name;
+	}
+	public void setCadence_range_name(String cadence_range_name) {
+		this.cadence_range_name = cadence_range_name;
 	}
 	
 	

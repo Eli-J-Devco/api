@@ -1849,58 +1849,11 @@
 	<select id="getListReports" resultType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
 			r.id,
-			r.id_site,
-			r.data_intervals,
-			r.type_report,
-			r.cadence_range,
-			r.subscribers,
-			r.file_type,
-			r.date_from,
-			r.date_to,
-			t.`value` AS time_zone,
 			r.schedule_enable,
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
 			r.days_week,
-			r.offset_timezone,
-			CASE
-				WHEN r.type_report = 2 AND r.type_option = 1 THEN (
-					SELECT 
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						site_employee_map sem
-						LEFT JOIN site s ON s.id = sem.id_site
-					WHERE
-						sem.id_employee = r.id_employee
-						AND s.`status` = 1
-						AND s.is_delete = 0
-					GROUP BY sem.id_employee
-				)
-				WHEN r.type_report = 2 AND r.type_option = 2 THEN (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						report_site_map rsm
-						LEFT JOIN site s ON s.id = rsm.id_site
-					WHERE
-						s.`status` = 1
-						AND s.is_delete = 0
-						AND rsm.id_report = r.id
-					GROUP BY rsm.id_report
-				)
-				WHEN r.type_report = 2 AND r.type_option = 3 THEN (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM 
-						site s
-					WHERE 
-						s.`status` = 1
-						AND s.is_delete = 0
-						AND s.id_site_sub_group = r.id_sub_group
-					GROUP BY s.id_site_sub_group
-				)
-				ELSE NULL
-			END AS id_sites
+			r.offset_timezone
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
@@ -1922,72 +1875,77 @@
 			r.file_type,
 			r.date_from,
 			r.date_to,
-			t.`value` AS time_zone,
+			tz.`value` AS time_zone,
 			r.schedule_enable,
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
 			r.days_week,
 			r.offset_timezone,
 			r.subscribers,
+			CASE
+		    	WHEN r.cadence_range = 1 THEN "Daily"
+				WHEN r.cadence_range = 2 THEN "Monthly"
+				WHEN r.cadence_range = 3 THEN "Quarterly"
+				WHEN r.cadence_range = 4 THEN "Annual"
+				WHEN r.cadence_range = 5 THEN "Custom"
+				WHEN r.cadence_range = 6 THEN "Weekly"
+		    	ELSE ""
+			END	AS cadence_range_name,
 			s.id AS id_site,
 			CASE
-				WHEN r.type_report = 2 AND r.type_option = 1 THEN (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						site_employee_map sem 
-						LEFT JOIN site s ON s.id = sem.id_site
-					WHERE
-						sem.id_employee = r.id_employee
-						AND s.`status` = 1
-						AND s.is_delete = 0
-					GROUP BY r.id_employee
-				)
-				WHEN r.type_report = 2 AND r.type_option = 2 THEN (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						report_site_map rsm
-						LEFT JOIN site s ON s.id = rsm.id_site
-					WHERE
-						s.`status` = 1
-						AND s.is_delete = 0
-						AND rsm.id_report = r.id
-					GROUP BY rsm.id_report
-				)
-				WHEN r.type_report = 2 AND r.type_option = 3 THEN (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						site s
-					WHERE 
-						s.`status` = 1
-						AND s.is_delete = 0
-						AND s.id_site_sub_group = r.id_sub_group
-					GROUP BY r.id_sub_group
-				)
-				ELSE (
-					SELECT
-						GROUP_CONCAT(s.id SEPARATOR ',')
-					FROM
-						report_site_map rsm
-						LEFT JOIN site s ON s.id = rsm.id_site
-					WHERE
-						s.`status` = 1
-						AND s.is_delete = 0
-						AND rsm.id_report = r.id
-					GROUP BY rsm.id_report
-				)
+				WHEN r.type_option = 1 THEN t1.ids_site
+				WHEN r.type_option = 2 THEN t2.ids_site
+				WHEN r.type_option = 3 THEN t3.ids_site
+				ELSE NULL
 			END AS id_sites
 		FROM
 			report r
 			LEFT JOIN site s ON s.id = r.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					sem.id_employee,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
+				FROM
+					site_employee_map sem 
+					LEFT JOIN site s ON s.id = sem.id_site
+				WHERE
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					sem.id_employee
+			) t1 ON t1.id_employee = r.id_employee
+			LEFT JOIN (
+				SELECT
+					rsm.id_report,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
+				FROM
+					report_site_map rsm
+					LEFT JOIN site s ON s.id = rsm.id_site
+				WHERE
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					rsm.id_report
+			) t2 ON t2.id_report = r.id
+			LEFT JOIN (
+				SELECT
+					s.id_site_sub_group,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
+				FROM
+					site s
+					LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+				WHERE 
+					s.`status` = 1
+					AND s.is_delete = 0
+				GROUP BY
+					s.id_site_sub_group
+			) t3 ON t3.id_site_sub_group = r.id_sub_group
 		WHERE
 			r.id = #{id}
 			AND r.status = 1
 			AND r.schedule_enable = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
 	<update id="updateReportScheduleNextRunTime">

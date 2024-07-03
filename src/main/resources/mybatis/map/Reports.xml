@@ -203,6 +203,15 @@
 		    	WHEN r.type_report = 4 THEN CONCAT_WS(" " , s.`name`, "Asset Management and Operation Performance Report") 
 		    	ELSE s.`name`
 			END	AS report_name,
+			CASE
+		    	WHEN r.cadence_range = 1 THEN "Daily"
+				WHEN r.cadence_range = 2 THEN "Monthly"
+				WHEN r.cadence_range = 3 THEN "Quarterly"
+				WHEN r.cadence_range = 4 THEN "Annual"
+				WHEN r.cadence_range = 5 THEN "Custom"
+				WHEN r.cadence_range = 6 THEN "Weekly"
+		    	ELSE ""
+			END	AS cadence_range_name,
 			r.id,
 			s.id AS id_site,
 			s.table_data_report,

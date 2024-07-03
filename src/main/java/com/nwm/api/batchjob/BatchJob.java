@@ -32,6 +32,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -43,6 +44,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -1186,6 +1188,8 @@ public class BatchJob {
 
 			switch (objReport.getType_report()) {
 				case 1: // Solar Production Report
+					objReport.setIds(objReport.getId_sites() != null ? Arrays.asList(objReport.getId_sites().split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
+					
 					switch (objReport.getCadence_range()) {
 						case 1: // daily
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(2)));
