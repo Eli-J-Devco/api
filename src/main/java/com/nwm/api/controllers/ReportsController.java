@@ -1856,7 +1856,7 @@ public class ReportsController extends BaseController {
 						List<QuarterlyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 						
 						// total column: 13
-						final float[] columnWidths = {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1};
+						final float[] columnWidths = {15, 15, 15, 15, 15, 3, 3, 3, 3, 3, 3, 3, 4};
 						Table table = quarterlyReportByMonth ? new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth() : new Table(13).useAllAvailableWidth();
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
@@ -1897,10 +1897,10 @@ public class ReportsController extends BaseController {
 							table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 							
 							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							
 							// data table
 							QuarterlyDateEntity total = null;
@@ -1915,6 +1915,7 @@ public class ReportsController extends BaseController {
 								
 								if(item.getActualCumulative() != null) total = item;
 							}
+							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
 							
 							// total
 							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
@@ -1938,10 +1939,10 @@ public class ReportsController extends BaseController {
 							table.addCell(chartCell2.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 							
 							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							
 							for(int i = 0; i < dataExports.size(); i++ ) {
 								QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
@@ -1952,6 +1953,7 @@ public class ReportsController extends BaseController {
 								table.addCell(new Paragraph(item.getCumulativeDifference() != null ? df.format(item.getCumulativeDifference()) : "").setFontColor(item.getCumulativeDifference() != null && item.getCumulativeDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
 								table.addCell(new Paragraph(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "").setFontColor(item.getCumulativeDifferencePercentage() != null && item.getCumulativeDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
 							}
+							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
 		
 							// empty rows
 							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER));
