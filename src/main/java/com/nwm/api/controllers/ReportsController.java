@@ -384,6 +384,7 @@ public class ReportsController extends BaseController {
 		public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				int pictureIdx = readLogoImageFile(document);
 				
 				for (int i = 0; i < dataObjList.size(); i++) {
 					ViewReportEntity dataObj = dataObjList.get(i);
@@ -400,7 +401,7 @@ public class ReportsController extends BaseController {
 						
 						// insert logo image
 						ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-						insertLogo(sheet, logoAnchor);
+						insertLogo(sheet, logoAnchor, pictureIdx);
 						
 						// report information and table
 						writeHeaderDailyReport(sheet, dataObj);
@@ -483,6 +484,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -502,9 +504,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -540,7 +539,7 @@ public class ReportsController extends BaseController {
 							DailyDateEntity item = (DailyDateEntity) dataExports.get(i);
 							
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getCategories_time())));
-							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPower() != null ? dfs.format(item.getPower()) : "")));
+							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPower() != null ? dfs.format(item.getPower()).replaceAll( "^-(?=0(\\.0*)?$)", "") : "")));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getEnergy() != null ? dfs.format(item.getEnergy()) : "")));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getIrradiance() != null ? dfs.format(item.getIrradiance()) : "")));						
 						}
@@ -878,6 +877,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -972,7 +972,7 @@ public class ReportsController extends BaseController {
 
 					// insert logo image
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 
 					// report information and table
 					writeHeaderAnnuallyReport(sheet, categories, actualGeneration, dataObj, baselineGeneration, baselineGenerationIndex, actualGenerationTrailing, baselineGenerationTrailing, baselineGenerationIndexTrailing, INVAvailability );
@@ -1038,6 +1038,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -1135,9 +1136,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -1739,6 +1737,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -1757,7 +1756,7 @@ public class ReportsController extends BaseController {
 					
 					// insert logo image
 					ClientAnchor logoAnchor = quarterlyReportByMonth ? new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 11, 1, 12, 4) : new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 0, 15 * Units.EMU_PER_PIXEL, 9, 1, 10, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 
 					// report information and table
 					writeHeaderQuarterlyReport(sheet, dataObj);
@@ -1835,6 +1834,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -1856,15 +1856,12 @@ public class ReportsController extends BaseController {
 						List<QuarterlyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 						
 						// total column: 13
-						final float[] columnWidths = {2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1};
+						final float[] columnWidths = {15, 15, 15, 15, 15, 3, 3, 3, 3, 3, 3, 3, 4};
 						Table table = quarterlyReportByMonth ? new Table(UnitValue.createPercentArray(columnWidths)).useAllAvailableWidth() : new Table(13).useAllAvailableWidth();
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
 						table.setMarginTop(quarterlyReportByMonth ? 75 : 0); // align table in middle of page
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 						
 						//====== table ============================================================
 						// header and logo
@@ -1897,10 +1894,10 @@ public class ReportsController extends BaseController {
 							table.addCell(chartCell1.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 							
 							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							
 							// data table
 							QuarterlyDateEntity total = null;
@@ -1915,6 +1912,7 @@ public class ReportsController extends BaseController {
 								
 								if(item.getActualCumulative() != null) total = item;
 							}
+							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
 							
 							// total
 							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER).setBorderBottom(new SolidBorder(1)));
@@ -1938,10 +1936,10 @@ public class ReportsController extends BaseController {
 							table.addCell(chartCell2.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 							
 							table.addCell("");
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Estimated Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Actual Generation\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
-							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference (%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(kWh)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
+							table.addCell(new com.itextpdf.layout.element.Cell().add(new Paragraph("Difference\n(%)")).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBold());
 							
 							for(int i = 0; i < dataExports.size(); i++ ) {
 								QuarterlyDateEntity item = (QuarterlyDateEntity) dataExports.get(i);
@@ -1952,6 +1950,7 @@ public class ReportsController extends BaseController {
 								table.addCell(new Paragraph(item.getCumulativeDifference() != null ? df.format(item.getCumulativeDifference()) : "").setFontColor(item.getCumulativeDifference() != null && item.getCumulativeDifference() < 0 ? new DeviceRgb(255, 0, 0) : null));
 								table.addCell(new Paragraph(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "").setFontColor(item.getCumulativeDifferencePercentage() != null && item.getCumulativeDifferencePercentage() < 0 ? new DeviceRgb(255, 0, 0) : null));
 							}
+							if(dataExports.size() == 0) for(int i = 0; i < 3; i++) for(int j = 0; j < 5; j++) table.addCell("");
 		
 							// empty rows
 							table.addCell(new com.itextpdf.layout.element.Cell(8, 5).add(new Paragraph("\n\n\n\n\n\n\n\n\n\n\n")).setBorder(Border.NO_BORDER));
@@ -2898,6 +2897,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -2918,7 +2918,7 @@ public class ReportsController extends BaseController {
 					
 					// insert logo image
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information and table
 					writeHeaderMonthlyReport(sheet, dataObj);
@@ -3009,6 +3009,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -3029,9 +3030,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -3363,6 +3361,7 @@ public class ReportsController extends BaseController {
 			public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 				try (XSSFWorkbook document = new XSSFWorkbook()) {
 					List<ViewReportEntity> dataObjList = getReportDataList(obj);
+					int pictureIdx = readLogoImageFile(document);
 					
 					for (int i = 0; i < dataObjList.size(); i++) {
 						ViewReportEntity dataObj = dataObjList.get(i);
@@ -3382,7 +3381,7 @@ public class ReportsController extends BaseController {
 							
 							// insert logo image
 							ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-							insertLogo(sheet, logoAnchor);
+							insertLogo(sheet, logoAnchor, pictureIdx);
 							
 							// report information and table
 							writeHeaderCustomReport(sheet, dataObj);
@@ -3438,6 +3437,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -3477,9 +3477,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -4068,10 +4065,11 @@ public class ReportsController extends BaseController {
 		return pictureIdx;
 	}
 	
-	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor) throws IOException {
-		XSSFDrawing drawing = sheet.createDrawingPatriarch();
-		anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-		drawing.createPicture(anchor, readLogoImageFile(sheet.getWorkbook()));
+	private Image readLogoImageFile() throws Exception {
+		Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
+		logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
+		
+		return logoImage;
 	}
 	
 	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor, int pictureIndex) {
