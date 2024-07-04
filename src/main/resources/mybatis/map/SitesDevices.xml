@@ -467,7 +467,8 @@
 			dp.standard_name,
 			dp.writable,
 			ct.id AS id_categorize_data,
-			dps.scale
+			dps.scale,
+			dp.rounding_decimals
 		FROM
 			device d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group 

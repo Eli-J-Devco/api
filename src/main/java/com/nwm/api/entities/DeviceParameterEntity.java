@@ -48,11 +48,18 @@ public class DeviceParameterEntity{
 	private List deviceType;
 	private String filterBy;
 	private int writable;
+	private int rounding_decimals;
 	
 	
 	
 	
 	
+	public int getRounding_decimals() {
+		return rounding_decimals;
+	}
+	public void setRounding_decimals(int rounding_decimals) {
+		this.rounding_decimals = rounding_decimals;
+	}
 	public String getFilterBy() {
 		return filterBy;
 	}

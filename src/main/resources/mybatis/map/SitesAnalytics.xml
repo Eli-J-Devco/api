@@ -54,7 +54,8 @@
 				IF(dp.is_common = 1, 1, 0) AS is_common,
 				dp.menu_order,
 				IFNULL(dpf.min_value, 0.001) AS min_value,
-				IFNULL(dpf.max_value, 0.001) AS max_value
+				IFNULL(dpf.max_value, 0.001) AS max_value,
+				dp.rounding_decimals
 			FROM
 				device d
 				LEFT JOIN device_group dg ON dg.id = d.id_device_group 
@@ -170,23 +171,23 @@
 							(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 							(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 						">
-							IFNULL(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), 0.001) AS ${param.slug}
+							IFNULL(ROUND(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), ${param.rounding_decimals}), 0.001) AS ${param.slug}
 						</when>
 						
 						<when test="param.slug == 'MeasuredProduction'">
 							<choose>
 								<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
-									IFNULL(AVG(MeasuredProduction), 0.001) AS MeasuredProduction
+									IFNULL(ROUND(AVG(MeasuredProduction), ${param.rounding_decimals}), 0.001) AS MeasuredProduction
 								</when>
 								
 								<otherwise>
-									IFNULL(SUM(MeasuredProduction), 0.001) AS MeasuredProduction
+									IFNULL(ROUND(SUM(MeasuredProduction), ${param.rounding_decimals}), 0.001) AS MeasuredProduction
 								</otherwise>
 							</choose>
 						</when>
 						
 						<otherwise>
-							IFNULL(${param.value_chart_tool}(${param.slug}), 0.001) AS ${param.slug}
+							IFNULL(ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}), 0.001) AS ${param.slug}
 						</otherwise>
 					</choose>
 				</if>

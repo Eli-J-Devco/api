@@ -243,6 +243,7 @@
 			dp.is_delete,
 			IF(dp.is_common = 1, 1, 0) AS is_common,
 			ct.id AS id_categorize_data,
+			dp.rounding_decimals,
 			ct.name AS categorize_data_name
 		FROM
 			device_parameters AS dp
@@ -272,6 +273,10 @@
 	            
 	            <when test="sort_column == 'is_common'">
 	                dp.is_common ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'rounding_decimals'">
+	                dp.rounding_decimals ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -310,7 +315,8 @@
 		UPDATE `device_parameters`
 		SET
 			`is_common` = #{is_common},
-			`standard_name` = #{standard_name}
+			`standard_name` = #{standard_name},
+			`rounding_decimals` = #{rounding_decimals}
 		WHERE
 			`id` = #{id}
 	</update>
