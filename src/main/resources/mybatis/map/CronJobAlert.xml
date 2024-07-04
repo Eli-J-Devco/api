@@ -411,7 +411,7 @@
 			error e 
 			LEFT JOIN alert a ON a.id_error = e.id
 		WHERE
-			e.id_error_type = 4
+			e.id_error_type = 6
 			AND e.id_device_group = #{id_device_group}
 			AND e.`status` = 1
 			AND a.id_device = #{id_device} 
