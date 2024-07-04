@@ -384,6 +384,7 @@ public class ReportsController extends BaseController {
 		public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				int pictureIdx = readLogoImageFile(document);
 				
 				for (int i = 0; i < dataObjList.size(); i++) {
 					ViewReportEntity dataObj = dataObjList.get(i);
@@ -400,7 +401,7 @@ public class ReportsController extends BaseController {
 						
 						// insert logo image
 						ClientAnchor logoAnchor = new XSSFClientAnchor(-20 * Units.EMU_PER_PIXEL, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-						insertLogo(sheet, logoAnchor);
+						insertLogo(sheet, logoAnchor, pictureIdx);
 						
 						// report information and table
 						writeHeaderDailyReport(sheet, dataObj);
@@ -483,6 +484,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -502,9 +504,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -878,6 +877,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -972,7 +972,7 @@ public class ReportsController extends BaseController {
 
 					// insert logo image
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 
 					// report information and table
 					writeHeaderAnnuallyReport(sheet, categories, actualGeneration, dataObj, baselineGeneration, baselineGenerationIndex, actualGenerationTrailing, baselineGenerationTrailing, baselineGenerationIndexTrailing, INVAvailability );
@@ -1038,6 +1038,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -1135,9 +1136,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -1739,6 +1737,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -1757,7 +1756,7 @@ public class ReportsController extends BaseController {
 					
 					// insert logo image
 					ClientAnchor logoAnchor = quarterlyReportByMonth ? new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 15 * Units.EMU_PER_PIXEL, 11, 1, 12, 4) : new XSSFClientAnchor(0, -15 * Units.EMU_PER_PIXEL, 0, 15 * Units.EMU_PER_PIXEL, 9, 1, 10, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 
 					// report information and table
 					writeHeaderQuarterlyReport(sheet, dataObj);
@@ -1835,6 +1834,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -1862,9 +1862,6 @@ public class ReportsController extends BaseController {
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
 						table.setMarginTop(quarterlyReportByMonth ? 75 : 0); // align table in middle of page
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 						
 						//====== table ============================================================
 						// header and logo
@@ -2900,6 +2897,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			int pictureIdx = readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
@@ -2920,7 +2918,7 @@ public class ReportsController extends BaseController {
 					
 					// insert logo image
 					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 0, 20 * Units.EMU_PER_PIXEL, 20 * Units.EMU_PER_PIXEL, 12, 1, 13, 4);
-					insertLogo(sheet, logoAnchor);
+					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information and table
 					writeHeaderMonthlyReport(sheet, dataObj);
@@ -3011,6 +3009,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -3031,9 +3030,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -3365,6 +3361,7 @@ public class ReportsController extends BaseController {
 			public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 				try (XSSFWorkbook document = new XSSFWorkbook()) {
 					List<ViewReportEntity> dataObjList = getReportDataList(obj);
+					int pictureIdx = readLogoImageFile(document);
 					
 					for (int i = 0; i < dataObjList.size(); i++) {
 						ViewReportEntity dataObj = dataObjList.get(i);
@@ -3384,7 +3381,7 @@ public class ReportsController extends BaseController {
 							
 							// insert logo image
 							ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-							insertLogo(sheet, logoAnchor);
+							insertLogo(sheet, logoAnchor, pictureIdx);
 							
 							// report information and table
 							writeHeaderCustomReport(sheet, dataObj);
@@ -3440,6 +3437,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
@@ -3479,9 +3477,6 @@ public class ReportsController extends BaseController {
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
 						table.setFontSize(8);
 						table.setTextAlignment(TextAlignment.CENTER);
-						
-						Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
-						logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
 					
 						//====== table ============================================================
 						// header and logo
@@ -4070,10 +4065,11 @@ public class ReportsController extends BaseController {
 		return pictureIdx;
 	}
 	
-	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor) throws IOException {
-		XSSFDrawing drawing = sheet.createDrawingPatriarch();
-		anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
-		drawing.createPicture(anchor, readLogoImageFile(sheet.getWorkbook()));
+	private Image readLogoImageFile() throws Exception {
+		Image logoImage = new Image(ImageDataFactory.create(uploadRootPath() + "/reports/logo-report.jpg"));
+		logoImage.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.RIGHT).scaleToFit(100, 100);
+		
+		return logoImage;
 	}
 	
 	private void insertLogo(XSSFSheet sheet, ClientAnchor anchor, int pictureIndex) {
