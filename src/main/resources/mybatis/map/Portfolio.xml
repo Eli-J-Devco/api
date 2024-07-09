@@ -203,7 +203,7 @@
 					LEFT JOIN device d ON d.id_site = s.id 
 				WHERE
 					d.id_device_type = 3
-					AND d.consumption_meter = 0
+					AND d.id_meter_type = 1
 					AND d.is_delete = 0
 					AND s.`status` = 1 
 					AND s.is_delete = 0

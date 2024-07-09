@@ -225,6 +225,7 @@
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		WHERE
 			dt.id = 3 
+			AND d.id_meter_type = 1
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0

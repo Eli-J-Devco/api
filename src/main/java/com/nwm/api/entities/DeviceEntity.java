@@ -118,7 +118,6 @@ public class DeviceEntity {
 	private String error_code;
 	private String device_group_table;
 	private String table_data_report;
-	private int consumption_meter;
 	private String datalogger_table;
 	private int enable_alert;
 	private Integer max_value;
@@ -139,6 +138,7 @@ public class DeviceEntity {
 	private Double maxPower;
 	private Double offset_data_old;
 	private String date_time_offset;
+	private Integer id_meter_type;
 	
 	
 
@@ -191,14 +191,6 @@ public class DeviceEntity {
 	}
 	public void setDevice_group_table(String device_group_table) {
 		this.device_group_table = device_group_table;
-	}
-	
-	
-	public int getConsumption_meter() {
-		return consumption_meter;
-	}
-	public void setConsumption_meter(int consumption_meter) {
-		this.consumption_meter = consumption_meter;
 	}
 	public int getId_error() {
 		return id_error;
@@ -908,6 +900,12 @@ public class DeviceEntity {
 	}
 	public void setMaxPower(Double maxPower) {
 		this.maxPower = maxPower;
+	}
+	public Integer getId_meter_type() {
+		return id_meter_type;
+	}
+	public void setId_meter_type(Integer id_meter_type) {
+		this.id_meter_type = id_meter_type;
 	}
 	
 }
