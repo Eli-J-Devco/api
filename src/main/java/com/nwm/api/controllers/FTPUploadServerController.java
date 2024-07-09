@@ -141,6 +141,18 @@ public class FTPUploadServerController extends BaseController {
 							return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 						}
 						downloadDirectory(ftpClient, remoteDirPath, "", saveDirPath, siteItem.getId());
+						
+						// download file from yesterday because data maybe upload late 
+						if (calendar.get(Calendar.HOUR_OF_DAY) < 1) {
+							String remoteDirPathYesterDay = siteItem.getFtp_folder();
+							calendar.add(Calendar.DATE, -1);
+							String yesterdayString = sdfAmerica.format(calendar.getTime());
+							remoteDirPathYesterDay = remoteDirPathYesterDay + "/"+ calendar.get(Calendar.YEAR)+ "/" + 
+									((calendar.get(Calendar.MONTH) + 1) < 10 ? ("0"+(calendar.get(Calendar.MONTH) + 1)): (calendar.get(Calendar.MONTH) + 1)); 
+							remoteDirPathYesterDay = remoteDirPathYesterDay + "/"+ yesterdayString;
+							
+							downloadDirectory(ftpClient, remoteDirPathYesterDay, "", saveDirPath, siteItem.getId());
+						}
 					} catch (IOException ex) {
 						ex.printStackTrace();
 					} finally {
@@ -1331,6 +1343,18 @@ public class FTPUploadServerController extends BaseController {
 									File parent = newFile.getParentFile();
 									if (!parent.isDirectory() && !parent.mkdirs()) {
 										throw new IOException("Failed to create directory " + parent);
+									}
+									
+									// check newFile is existed and rename that file existed
+									if (newFile.exists()) {
+										String fileName = newFile.getName();
+										
+										Date date = new Date();
+										SimpleDateFormat sdfAmerica = new SimpleDateFormat("yyyyMMddHHmmss");
+										String dateDownload = sdfAmerica.format(date);										
+										fileName = dateDownload + "_"+ fileName;
+										
+										newFile.renameTo(new File(destDir, fileName));						
 									}
 
 									// write file content
