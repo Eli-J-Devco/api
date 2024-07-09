@@ -355,7 +355,7 @@
 		FROM
 			site AS s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
-			LEFT JOIN device d ON d.id_site = s.id AND d.id_device_type = 3 AND d.consumption_meter = 0
+			LEFT JOIN device d ON d.id_site = s.id AND d.id_device_type = 3 AND d.id_meter_type = 1
 		WHERE
 			s.is_delete = 0 
 			AND s.`status` = 1 

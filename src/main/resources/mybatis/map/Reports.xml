@@ -454,6 +454,7 @@
 			LEFT JOIN site s ON d.id_site = s.id
 		WHERE
 			dt.id = 3 
+			AND d.id_meter_type = 1
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
@@ -485,7 +486,7 @@
 			s.`name`,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
+			IF( (SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0))) > 0, ROUND(SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), 0), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -565,7 +566,7 @@
 			AND d.is_delete = 0
 			AND d.id = #{item.value}
 			AND d.id_device_type = 3
-			AND d.consumption_meter = 0
+			AND d.id_meter_type = 1
 			AND DATE_FORMAT(sdr.time, '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
 			AND s.is_rec_report = 1
 			AND s.reporting_region = #{reporting_region}
@@ -622,7 +623,7 @@
 					s.id AS id_site,
 					s.`name`,
 					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-					IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+					IF( (SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
 					CASE
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
@@ -675,7 +676,7 @@
 				s.`name`,
 				s.dc_capacity,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+				IF( (SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
 				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
 				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
 				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
@@ -708,7 +709,7 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m' ) AS month_number,
 			DATE_FORMAT( sdr.time, '%b' ) AS month,
-			IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
+			IF( (SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -765,7 +766,7 @@
 			WHERE
 				d.id_site = #{id_site}
 				AND d.id_device_type = 3
-				AND d.consumption_meter = 0
+				AND d.id_meter_type = 1
 				AND (sd.time BETWEEN #{start_date} AND #{end_date})
 				GROUP BY sd.time
 		)t
@@ -806,7 +807,7 @@
 							WHERE
 								s.id = #{item.id_site}
 								AND d.id_device_type = 3
-								AND d.consumption_meter = 0
+								AND d.id_meter_type = 1
 								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
@@ -884,7 +885,7 @@
 				AS categories_time,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 				DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-				IF( (SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS actual
+				IF( (SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS actual
 				
 			FROM
 				${table_data_report} sdr 
@@ -984,8 +985,8 @@
 						DATE_FORMAT(sdr.time, "%b") AS `month`,
 						DATE_FORMAT(sdr.time, "%Y") AS `year`,
 						IF(
-							SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)) > 0,
-							ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1),
+							SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)) > 0,
+							ROUND(SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), 1),
 							ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
 						) AS actualEnergy,
 						CASE
@@ -1152,8 +1153,8 @@
 								DATE_FORMAT(sdr.time, "%b") AS `month`,
 								DATE_FORMAT(sdr.time, "%Y") AS `year`,
 								IF(
-									SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)) > 0,
-									ROUND(SUM(IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)), 1),
+									SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)) > 0,
+									ROUND(SUM(IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)), 1),
 									ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
 								) AS actualEnergy,
 								CASE

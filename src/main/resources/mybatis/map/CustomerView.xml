@@ -29,7 +29,7 @@
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND d.consumption_meter = 0
+			AND d.id_meter_type = 1
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
@@ -668,7 +668,7 @@
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
-						IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.PowerTodayAVG, NULL)
+						IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.PowerTodayAVG, NULL)
 					)) AS meterPower,
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
@@ -678,7 +678,7 @@
 					SUM(IF(
 						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
 						0,
-						IF(d.id_device_type = 3 AND d.consumption_meter = 0, sdr.ActualGeneration, 0)
+						IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)
 					)) AS meterEnergy,
 					SUM(IF(
 						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
