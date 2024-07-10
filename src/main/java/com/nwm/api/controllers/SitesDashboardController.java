@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
@@ -113,5 +114,43 @@ public class SitesDashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description Get list data device for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-device-leviton")
+	public Object getListDataDeviceForLeviton(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataDeviceForLeviton(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list data charting for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-charting-leviton")
+	public Object getListDataChartingForLeviton(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataChartingForLeviton(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 }

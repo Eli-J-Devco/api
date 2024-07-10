@@ -795,4 +795,96 @@
 		ORDER BY dv.time DESC
 		LIMIT 1
 	</select>
+	
+	
+	<select id="getListWidgetOverviewLeviton" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.`name`,
+			d.`status`,
+			d.today,
+			d.thirtydays
+		FROM
+			leviton_overview_widget d
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			GROUP BY d.id;
+	</select>
+	
+	
+	
+	<select id="getListDeviceInWidget" resultType="Map">
+		SELECT
+			dm.id_device,
+			dm.id_leviton_overview_widget,
+			dt.datatablename
+		FROM
+			leviton_overview_widget_map dm
+			LEFT JOIN device dt ON dt.id = dm.id_device
+		WHERE
+			dm.id_leviton_overview_widget = #{id}
+			GROUP BY dt.id;
+	</select>
+	
+	
+	
+	<select id="getDataToday" resultType="Map">
+		SELECT 
+			t.id_device,
+			ROUND(SUM(t.energy),2) AS energy,
+			ROUND(SUM(t.today), 2) AS today
+		FROM (
+		<foreach collection="devices" item="item" index="index" separator="union all" >
+		<![CDATA[
+			SELECT
+				dv.id_device,
+				SUM( dv.MeasuredProduction ) AS energy,
+				(
+					SELECT SUM(dv.MeasuredProduction) AS today FROM ${item.datatablename} dv WHERE DATE_FORMAT( time, '%Y-%m-%d') = DATE_FORMAT( NOW(), '%Y-%m-%d')
+				) AS today
+			FROM
+				${item.datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				time >= ADDDATE( NOW(), INTERVAL -30 DAY)
+		]]>
+		</foreach>
+		)t
+	</select>
+	
+	
+	
+	<select id="getDataChartingForLeviton" resultType="Map">
+		SELECT 
+			t.id_device,
+			ROUND(SUM(t.energy),2) AS energy,
+			t.categories_time,
+			t.time_format
+		FROM (
+		<foreach collection="devices" item="item" index="index" separator="union all" >
+		<![CDATA[
+			SELECT
+				dv.id_device,
+				SUM( dv.MeasuredProduction ) AS energy,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format
+			FROM
+				${item.datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+				time >= #{start_date} AND time <= #{end_date}
+			GROUP BY
+				time_format
+		]]>
+		</foreach>
+		)t GROUP BY t.time_format
+	</select>
+	
+	
 </mapper>
