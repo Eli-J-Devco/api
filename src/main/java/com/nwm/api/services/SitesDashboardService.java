@@ -207,4 +207,77 @@ public class SitesDashboardService extends DB {
 			return null;
 		}
 	}
+	
+	
+	/**
+	 * @description get list widget site overview for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @param id_site
+	 * @return Object
+	 */
+	
+	public List getListDataDeviceForLeviton(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			List listWidgetOverview = queryForList("SitesDashboard.getListWidgetOverviewLeviton", obj);
+			
+			if (listWidgetOverview.size() > 0) {
+				for (int i = 0; i < listWidgetOverview.size(); i++) {
+					// get data device in widget 
+					Map<String, Object> itemWidget = (Map<String, Object>) listWidgetOverview.get(i);
+					List listWidget = queryForList("SitesDashboard.getListDeviceInWidget", itemWidget);
+					itemWidget.put("devices", listWidget);
+					
+					// get data today
+					Map<String, Object> dataToday = (Map<String, Object>) queryForObject("SitesDashboard.getDataToday", itemWidget);
+					itemWidget.put("today", dataToday.get("today"));
+					itemWidget.put("thirtydays", dataToday.get("energy"));
+					dataList.add(itemWidget);
+					
+				}
+			}
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	
+	/**
+	 * @description get list data charting site overview for leviton
+	 * @author long.pham
+	 * @since 2024-07-09
+	 * @param id_site
+	 * @return Object
+	 */
+	
+	public List getListDataChartingForLeviton(SitesDevicesEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			List listWidgetOverview = queryForList("SitesDashboard.getListWidgetOverviewLeviton", obj);
+			if (listWidgetOverview.size() > 0) {
+				for (int i = 0; i < listWidgetOverview.size(); i++) {
+					// get data device in widget 
+					Map<String, Object> itemWidget = (Map<String, Object>) listWidgetOverview.get(i);
+					List listWidget = queryForList("SitesDashboard.getListDeviceInWidget", itemWidget);
+					itemWidget.put("devices", listWidget);
+					itemWidget.put("start_date", obj.getStart_date());
+					itemWidget.put("end_date", obj.getEnd_date());
+					
+					List data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);
+					itemWidget.put("data", data);
+					dataList.add(itemWidget);
+				}
+			}
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
 }
