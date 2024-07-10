@@ -206,12 +206,12 @@
 			si.ftp_port,
 			si.ftp_folder,
 			si.datalogger_type,
-			IF(s.consumption_meter = 1, 1, 0) AS consumption_meter,
 			s.id_site_share,
 			s.id_device_share,
 			s.table_share_data,
 			IFNULL(s.offset_data_old, 0) AS offset_data_old,
-			s.date_time_offset
+			s.date_time_offset,
+			s.id_meter_type
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -350,12 +350,12 @@
 			`hidden`,
 			`virtual_device_type`,
 			`ip_address`,
-			`consumption_meter`,
 			`id_site_share`,
 			`id_device_share`,
 			`table_share_data`,
 			`offset_data_old`,
-			`date_time_offset`
+			`date_time_offset`,
+			`id_meter_type`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -386,12 +386,12 @@
 			#{hidden},
 			#{virtual_device_type},
 			#{ip_address},
-			#{consumption_meter},
 			#{id_site_share},
 			#{id_device_share},
 			#{table_share_data},
 			#{offset_data_old},
-			#{date_time_offset}
+			#{date_time_offset},
+			#{id_meter_type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -438,12 +438,12 @@
 				`hidden` = #{hidden},
 				virtual_device_type = #{virtual_device_type},
 				ip_address = #{ip_address},
-				consumption_meter = #{consumption_meter},
 				id_site_share = #{id_site_share},
 				id_device_share = #{id_device_share},
 				table_share_data = #{table_share_data},
 				offset_data_old = #{offset_data_old},
-				date_time_offset = #{date_time_offset}
+				date_time_offset = #{date_time_offset},
+				id_meter_type = #{id_meter_type}
 			WHERE
 				`id` = #{id}
 		</if>

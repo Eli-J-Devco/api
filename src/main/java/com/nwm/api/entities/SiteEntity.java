@@ -217,6 +217,7 @@ public class SiteEntity {
 	private String sunrise;
 	private String sunset;
 	private Integer reporting_region;
+	private int is_solar_site;
 	
 	
 	
@@ -1395,6 +1396,12 @@ public class SiteEntity {
 	}
 	public void setReporting_region(Integer reporting_region) {
 		this.reporting_region = reporting_region;
+	}
+	public int getIs_solar_site() {
+		return is_solar_site;
+	}
+	public void setIs_solar_site(int is_solar_site) {
+		this.is_solar_site = is_solar_site;
 	}
 	
 	

@@ -139,6 +139,7 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			dt.id = 3 
+			AND d.id_meter_type = 1
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
