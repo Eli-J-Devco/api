@@ -11,6 +11,7 @@ public class SitesDevicesEntity {
 	private int id;
 	private int id_customer;
 	private int id_country;
+	private int id_company;
 	private int id_time_zone;
 	private int id_site_type;
 	private String name;
@@ -142,10 +143,23 @@ public class SitesDevicesEntity {
 	private String sunset;
 	private String start_date;
 	private String end_date;
+	private String id_filter;
 
 	
 	
 	
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
+	}
+	public String getId_filter() {
+		return id_filter;
+	}
+	public void setId_filter(String id_filter) {
+		this.id_filter = id_filter;
+	}
 	public String getStart_date() {
 		return start_date;
 	}
