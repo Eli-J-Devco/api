@@ -274,6 +274,7 @@ public class SitesDashboardService extends DB {
 					itemWidget.put("devices", listWidget);
 					itemWidget.put("start_date", obj.getStart_date());
 					itemWidget.put("end_date", obj.getEnd_date());
+					itemWidget.put("id_filter", obj.getId_filter());
 					
 					if(listWidget.size() > 0) {
 						List data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);	

@@ -845,7 +845,12 @@
 				dv.id_device,
 				SUM( dv.MeasuredProduction ) AS energy,
 				(
-					SELECT SUM(dv.MeasuredProduction) AS today FROM ${item.datatablename} dv WHERE DATE_FORMAT( time, '%Y-%m-%d') = DATE_FORMAT( NOW(), '%Y-%m-%d')
+					SELECT SUM(dv.MeasuredProduction) AS today FROM ${item.datatablename} dv 
+					LEFT JOIN device d ON d.id = dv.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE 
+					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) = DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ), '%Y-%m-%d' )
 				) AS today
 			FROM
 				${item.datatablename} dv 
@@ -874,7 +879,7 @@
 				dv.id_device,
 				SUM( dv.MeasuredProduction ) AS energy,
 				<choose>
-					<when test="id_filter == '12_month' or id_filter == 'lifetime' ">
+					<when test="(id_filter == '12_month') or (id_filter == 'lifetime')">
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS categories_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b, %Y' ) AS tooltip_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS time_format
