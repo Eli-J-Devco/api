@@ -164,6 +164,7 @@
 		<mapper resource="mybatis/map/SiteQuery.xml" />
 		<mapper resource="mybatis/map/ErrorType.xml" />
 		<mapper resource="mybatis/map/Icons.xml" />
+		<mapper resource="mybatis/map/LevitonOverviewWidget.xml"/>
 		<mapper resource="mybatis/map/ChartTool.xml" />
 		<mapper resource="mybatis/map/Avatar.xml" />
 		<mapper resource="mybatis/map/Configuration.xml" />
@@ -212,6 +213,8 @@
 		<mapper resource="mybatis/map/ScadaOverview.xml"/>
 		<mapper resource="mybatis/map/ScadaAlert.xml"/>
 		<mapper resource="mybatis/map/ScadaCharting.xml"/>
+		
+		
 		
 	</mappers>
 </configuration>
