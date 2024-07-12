@@ -144,10 +144,24 @@ public class SitesDevicesEntity {
 	private String start_date;
 	private String end_date;
 	private String id_filter;
+	private double cost;
+	private String cost_unit;
 
 	
 	
 	
+	public double getCost() {
+		return cost;
+	}
+	public void setCost(double cost) {
+		this.cost = cost;
+	}
+	public String getCost_unit() {
+		return cost_unit;
+	}
+	public void setCost_unit(String cost_unit) {
+		this.cost_unit = cost_unit;
+	}
 	public int getId_company() {
 		return id_company;
 	}

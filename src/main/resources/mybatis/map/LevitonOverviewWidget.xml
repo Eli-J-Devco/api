@@ -79,6 +79,16 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	
+	<update id="updateIsConsumption">
+		UPDATE `leviton_overview_widget`
+		SET
+			`is_consumption` = 0
+		WHERE
+			`id_site` = #{id_site}
+	</update>
+	
 	<update id="delete">
 		DELETE from `leviton_overview_widget` WHERE id = #{id};
 	</update>
