@@ -121,7 +121,9 @@
 				SELECT SUM(d.last_value) AS meter_power, s.id
 				FROM site s 
 				LEFT JOIN device d ON d.id_site = s.id
-				WHERE d.id_device_type = 3
+				WHERE 
+					d.id_device_type IN (3,7,9)
+					AND d.is_excluded_meter = 0
 					AND s.`status` = 1
 					AND d.`status` = 1
 				<if test="id_sites != null">

@@ -202,8 +202,8 @@
 					site s
 					LEFT JOIN device d ON d.id_site = s.id 
 				WHERE
-					d.id_device_type = 3
-					AND d.id_meter_type = 1
+					d.id_device_type IN (3,7,9)
+					AND d.is_excluded_meter = 0
 					AND d.is_delete = 0
 					AND s.`status` = 1 
 					AND s.is_delete = 0
@@ -621,70 +621,6 @@
 		) AS totalPower
 			
   	</select>
-	
-	<select id="getInverterDeviceStatus" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			IFNULL(d.last_value, 0) as active_power,
-			(
-				SELECT 
-					IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
-				FROM
-					device d
-				WHERE
-					d.id_site = #{id}
-					AND d.id_device_type = 1
-			) AS optimal_ratio,
-			(
-				SELECT 
-					d.last_value / d.rating_ac_power * 100
-				FROM
-					device d
-				WHERE
-					d.id_site = #{id}
-					AND d.is_default = 1
-				GROUP BY d.is_default
-			) AS default_optimal_ratio,
-			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
-		FROM
-			device d
-		WHERE
-			d.id_site = #{id}
-			AND d.id_device_type = 1
-	</select>
-	
-	<select id="getMeterDeviceStatus" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			IFNULL(d.last_value, 0) as active_power,
-			(
-				SELECT 
-					IFNULL(MAX(d.last_value / d.rating_ac_power * 100), 0)
-				FROM
-					device d
-				WHERE
-					d.id_site = #{id}
-					AND d.id_device_type = 3
-			) AS optimal_ratio,
-			(
-				SELECT 
-					d.last_value / d.rating_ac_power * 100
-				FROM
-					device d
-				WHERE
-					d.id_site = #{id}
-					AND d.is_default = 1
-				GROUP BY d.is_default
-			) AS default_optimal_ratio,
-			IF ((d.last_value IS NULL) OR (d.rating_ac_power IS NULL) OR (d.rating_ac_power = 0), 0, d.last_value / d.rating_ac_power * 100) AS percent_power_status
-		FROM
-			device d
-		WHERE
-			d.id_site = #{id}
-			AND d.id_device_type = 3
-	</select>
 	
 	<select id="getExpectedPowerByVirtualDevice" resultType="double">
 		SELECT v.expected_power_ac

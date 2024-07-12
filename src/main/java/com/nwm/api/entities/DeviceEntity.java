@@ -138,7 +138,7 @@ public class DeviceEntity {
 	private Double maxPower;
 	private Double offset_data_old;
 	private String date_time_offset;
-	private Integer id_meter_type;
+	private boolean is_excluded_meter;
 	
 	
 
@@ -901,11 +901,11 @@ public class DeviceEntity {
 	public void setMaxPower(Double maxPower) {
 		this.maxPower = maxPower;
 	}
-	public Integer getId_meter_type() {
-		return id_meter_type;
+	public boolean isIs_excluded_meter() {
+		return is_excluded_meter;
 	}
-	public void setId_meter_type(Integer id_meter_type) {
-		this.id_meter_type = id_meter_type;
+	public void setIs_excluded_meter(boolean is_excluded_meter) {
+		this.is_excluded_meter = is_excluded_meter;
 	}
 	
 }

@@ -105,84 +105,6 @@
 			AND d.is_delete = 0
 	</select>
 	
-	
-	<select id="getDataEnergyAnnuallyReport" resultType="Map" >
-		SELECT
-			s.id,
-			s.id AS id_site,
-			s.`name`,
-			DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-			DATE_FORMAT( sdr.time, '%m-%Y' ) AS time_full,
-			DATE_FORMAT( sdr.time, '%Y-%m' ) AS time_format,
-			DATE_FORMAT( sdr.time, '%Y' ) AS year,
-			DATE_FORMAT( sdr.time, '%m' ) AS month_number,
-			DATE_FORMAT( sdr.time, '%b' ) AS month,
-			IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 1)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1) ) AS chart_energy_kwh,
-			IFNULL(SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)), 0.001) AS meterEnergy,
-			IFNULL(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0.001) AS inverterEnergy
-			
-		FROM
-			site_data_report sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
-		WHERE
-			s.`status` = 1
-			AND d.`status` = 1
-			AND s.is_delete = 0
-			AND d.is_delete = 0
-			AND s.id = #{id_site}
-			AND (sdr.time BETWEEN #{start_date} AND #{end_date})
-			GROUP BY s.id, DATE_FORMAT( sdr.time , "%Y-%m")
-			
-		
-	</select>
-	
-	
-	<select id="getInverterAvailability" resultType="Map" >
-		SELECT 
-			ROUND((SUM(t.InverterAvailability)/ DATE_FORMAT(LAST_DAY(t.time),'%d') ), 1) AS InverterAvailability,
-			t.time_full
-			FROM (
-			SELECT
-				sd.time,
-				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
-				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
-			FROM
-				site_data_report sd
-				LEFT JOIN device d ON d.id = sd.id_device 
-			WHERE
-				d.id_site = #{id_site}
-				AND d.id_device_type = 1
-				AND (sd.time BETWEEN #{start_date} AND #{end_date})
-				GROUP BY sd.time
-		)t
-		GROUP BY t.time_full
-	</select>
-	
-	<select id="getMeterAvailability" resultType="Map" >
-		SELECT 
-			ROUND((SUM(t.InverterAvailability)/ DATE_FORMAT(LAST_DAY(t.time),'%d') ), 1) AS InverterAvailability,
-			t.time_full
-			FROM (
-			SELECT
-				sd.time,
-				ROUND(AVG(sd.InverterAvailability) * 100, 2) AS InverterAvailability,
-				DATE_FORMAT( sd.time, '%b-%Y') AS time_full
-			FROM
-				site_data_report sd
-				LEFT JOIN device d ON d.id = sd.id_device 
-			WHERE
-				d.id_site = #{id_site}
-				AND d.id_device_type = 3
-				AND (sd.time BETWEEN #{start_date} AND #{end_date})
-				GROUP BY sd.time
-		)t
-		GROUP BY t.time_full
-	</select>
-	
-	
 	<select id="getReportEnergyExpectations" resultType="Map" >
 		SELECT
 			* 
@@ -321,8 +243,8 @@
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 		WHERE
-			dt.id = 3 
-			AND d.id_meter_type = 1
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
