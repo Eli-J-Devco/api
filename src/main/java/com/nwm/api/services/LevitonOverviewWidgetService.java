@@ -77,6 +77,9 @@ public class LevitonOverviewWidgetService extends DB {
 				throw new Exception();
 			}
 
+			if(obj.getIs_consumption() == 1) {
+				session.update("LevitonOverviewWidget.updateIsConsumption", obj);
+			}
 			session.insert("LevitonOverviewWidget.insertIcon", obj);
 			int insertLastId = obj.getId();
 
@@ -135,7 +138,10 @@ public class LevitonOverviewWidgetService extends DB {
 			if (deviceMap.size() <= 0) {
 				throw new Exception();
 			}
-
+			
+			if(obj.getIs_consumption() == 1) {
+				session.update("LevitonOverviewWidget.updateIsConsumption", obj);
+			}
 			session.update("LevitonOverviewWidget.updateIcon", obj);
 			session.delete("LevitonOverviewWidget.deleteLevitonOverviewWidgetMap", obj);
 
