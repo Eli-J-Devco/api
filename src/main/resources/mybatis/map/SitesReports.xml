@@ -33,8 +33,8 @@
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 		WHERE
-			dt.id = 3 
-			AND d.id_meter_type = 1
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
@@ -320,7 +320,8 @@
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
 							s.id = #{item.id_site}
-							AND d.id_device_type = 3
+							AND d.id_device_type IN (3,7,9)
+							AND d.is_excluded_meter = 0
 							AND dv.nvmActiveEnergy > 0
 							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
 							AND s.`status` = 1 

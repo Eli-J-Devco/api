@@ -1597,8 +1597,8 @@
 			s.dc_capacity,
 			s.ac_capacity,
 			SUM(if(d.id_device_type = 1, 1, 0)) AS totalInverter,
-			SUM(if(d.id_device_type = 3, 1, 0)) AS totalMeter,
-			IFNULL(SUM(if(d.id_device_type = 3, d.last_value, 0)), SUM(if(d.id_device_type = 1, d.last_value, 0))) AS power,
+			SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS totalMeter,
+			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0)), SUM(IF(d.id_device_type = 1, d.last_value, 0)) ) AS power,
 			l.last_updated,
 			h.is_hiding,
 			IFNULL(g.alertMeter, 0) AS alertMeter,
@@ -1656,7 +1656,7 @@
 			LEFT JOIN (
 				SELECT
 					s.id,
-					SUM(if(d.id_device_type = 3, 1, 0)) AS alertMeter,
+					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
 					SUM(if(d.id_device_type = 1, 1, 0)) AS alertInverter,
 					COUNT(a.id) AS totalAlert
 				FROM
@@ -1786,7 +1786,7 @@
 			LEFT JOIN (
 				SELECT
 					s.id,
-					SUM(if(d.id_device_type = 3, 1, 0)) AS alertMeter,
+					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
 					SUM(if(d.id_device_type = 1, 1, 0)) AS alertInverter,
 					COUNT(a.id) AS totalAlert
 				FROM

@@ -90,7 +90,8 @@
 				WHERE SHA1(d.id_site) = #{hash_id}
 				AND d.`status` = 1
 				AND d.is_delete = 0
-				AND d.id_device_type = 3
+				AND d.id_device_type IN (3,7,9)
+				AND d.is_excluded_meter = 0
 			)m ON m.id_site = s.id
 			
 			LEFT JOIN (
@@ -138,8 +139,8 @@
 			LEFT JOIN site s ON d.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id = 3 
-			AND d.id_meter_type = 1
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
@@ -222,7 +223,8 @@
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
 								SHA1(s.id) = #{hash_id}
-								AND d.id_device_type = 3
+								AND d.id_device_type IN (3,7,9)
+								AND d.is_excluded_meter = 0
 								AND dv.nvmActiveEnergy > 0
 								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
@@ -254,7 +256,8 @@
 			WHERE
 				d.`status` = 1 
 				AND d.is_delete = 0 
-				AND d.id_device_type = 3 
+				AND d.id_device_type IN (3,7,9)
+				AND d.is_excluded_meter = 0
 				AND SHA1( d.id_site ) = #{hash_id} 
 				AND (sd.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY
@@ -277,7 +280,8 @@
 			WHERE
 				d.`status` = 1 
 				AND d.is_delete = 0 
-				AND d.id_device_type = 3 
+				AND d.id_device_type IN (3,7,9)
+				AND d.is_excluded_meter = 0
 				AND SHA1( d.id_site ) = #{hash_id} 
 				AND (sd.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY
@@ -299,7 +303,8 @@
 			WHERE
 				d.`status` = 1 
 				AND d.is_delete = 0 
-				AND d.id_device_type = 3 
+				AND d.id_device_type IN (3,7,9)
+				AND d.is_excluded_meter = 0
 				AND SHA1( d.id_site ) = #{hash_id} 
 				AND (sd.time BETWEEN #{start_date} AND #{end_date})
 			GROUP BY

@@ -211,7 +211,7 @@
 			s.table_share_data,
 			IFNULL(s.offset_data_old, 0) AS offset_data_old,
 			s.date_time_offset,
-			s.id_meter_type
+			s.is_excluded_meter
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -355,7 +355,7 @@
 			`table_share_data`,
 			`offset_data_old`,
 			`date_time_offset`,
-			`id_meter_type`
+			`is_excluded_meter,
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -391,7 +391,7 @@
 			#{table_share_data},
 			#{offset_data_old},
 			#{date_time_offset},
-			#{id_meter_type}
+			#{is_excluded_meter}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -443,7 +443,7 @@
 				table_share_data = #{table_share_data},
 				offset_data_old = #{offset_data_old},
 				date_time_offset = #{date_time_offset},
-				id_meter_type = #{id_meter_type}
+				is_excluded_meter = #{is_excluded_meter}
 			WHERE
 				`id` = #{id}
 		</if>

@@ -50,7 +50,8 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				WHERE
 						s.id =  #{item.id_site}
-						AND d.id_device_type = 3
+						AND d.id_device_type IN (3,7,9)
+						AND d.is_excluded_meter = 0
 						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1 

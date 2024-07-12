@@ -224,8 +224,8 @@
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		WHERE
-			dt.id = 3 
-			AND d.id_meter_type = 1
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
@@ -291,7 +291,8 @@
 							LEFT JOIN time_zone t ON t.id = s.id_time_zone
 						WHERE
 							d.id = #{item.id}
-							AND d.id_device_type = 3
+							AND d.id_device_type IN (3,7,9)
+							AND d.is_excluded_meter = 0
 							AND dv.nvmActiveEnergy > 0
 							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{date_from} AND #{date_to})
 							AND s.`status` = 1 

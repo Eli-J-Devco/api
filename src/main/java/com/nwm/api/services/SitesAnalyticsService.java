@@ -5,10 +5,10 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +51,234 @@ public class SitesAnalyticsService extends DB {
 		}
 	}
 	
+	/**
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param dateTimeList
+	 * @param dataList
+	 * @return
+	 */
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
+		List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
+		
+		try {
+			if(dataList.size() > 0 && dateTimeList.size() > 0) {
+				for (Map<String, Object> dateTime: dateTimeList) {
+					boolean isFound = false;
+					
+					for(Map<String, Object> data: dataList) {
+						String fullTime = dateTime.get("time_full").toString();
+						String powerTime = data.get("time_full").toString();
+						
+						if (fullTime.equals(powerTime)) {
+							fulfilledDataList.add(data);
+							isFound = true;
+							break;
+						}
+					}
+					
+					if (!isFound) fulfilledDataList.add(dateTime);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return fulfilledDataList;
+	}
+	
+	/**
+	 * @description create date time list
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param obj device object
+	 * @param start start date time
+	 * @param end end date time
+	 * @return
+	 */
+	private List<Map<String, Object>> getDateTimeList(DeviceEntity obj, LocalDateTime start, LocalDateTime end) {
+		List<Map<String, Object>> dateTimeList = new ArrayList<>();
+		
+		try {
+			int interval = 0;
+			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+			ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
+		
+			switch (obj.getData_send_time()) {
+				case 4: // 1 minute
+					interval = 1;
+					timeUnit = ChronoUnit.MINUTES;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	                switch (obj.getFilterBy()) {
+	                	case "today":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+	                		break;
+	                	case "3_day":
+	                	case "this_week":
+	                	case "last_week":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                }
+					break;
+					
+				case 1: // 5 minutes
+					interval = 5;
+					timeUnit = ChronoUnit.MINUTES;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	                switch (obj.getFilterBy()) {
+	                	case "today":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+	                		break;
+	                	case "3_day":
+	                	case "this_week":
+	                	case "last_week":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                }
+					break;
+					
+				case 2: // 15 minutes
+					interval = 15;
+					timeUnit = ChronoUnit.MINUTES;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	                switch (obj.getFilterBy()) {
+	                	case "today":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+	                		break;
+	                	case "3_day":
+	                	case "this_week":
+	                	case "last_week":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "this_month":
+	                	case "last_month":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                }
+					break;
+					
+				case 3: // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+	                switch (obj.getFilterBy()) {
+	                	case "today":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+	                		break;
+	                	case "3_day":
+	                	case "this_week":
+	                	case "last_week":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+	                		break;
+	                	case "this_month":
+	                	case "last_month":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                }
+					break;
+					
+				case 5: // 1 day
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+					switch (obj.getFilterBy()) {
+	                	case "today":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	                		break;
+	                	case "3_day":
+	                	case "this_week":
+	                	case "last_week":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+	                		break;
+	                	case "this_month":
+	                	case "last_month":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+					}
+					break;
+					
+				case 6: // 7 days
+					interval = 7;
+					timeUnit = ChronoUnit.DAYS;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	                switch (obj.getFilterBy()) {
+	                	case "this_month":
+	                	case "last_month":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                	case "custom":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
+	                }
+					break;
+					
+				case 7: // 1 month
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					fullTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
+					break;
+					
+				case 8: // 1 year
+					interval = 1;
+					timeUnit = ChronoUnit.YEARS;
+					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+					start = start.withDayOfYear(1);
+					break;
+			}
+			
+			while (!start.isAfter(end)) {
+				Map<String, Object> dateTime = new HashMap<String, Object>();
+				dateTime.put("time_full", start.format(fullTimeFormat));
+				dateTime.put("categories_time", start.format(categoryTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return dateTimeList;
+	}
+	
 	
 	/**
 	 * @description get list device parameter
@@ -64,20 +292,14 @@ public class SitesAnalyticsService extends DB {
 		try {
 			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 						
 			if(dataDevice.size() > 0) {
 				List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
 				
-				int diff5Days = (int) ((dateFormat.parse(obj.getEnd_date()).getTime() - dateFormat.parse(obj.getStart_date()).getTime()) / (1000 * 60 * 60 * 24) + 1);
-				
-				Date dt = new Date();
-				Calendar c = Calendar.getInstance(); 
-				c.setTime(dt); 
-				c.add(Calendar.MONTH, -3);
-				SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-				Date d1 = dateFor.parse(obj.getStart_date());
-				Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateFormat).withHour(0).withMinute(0).withSecond(0);
+				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateFormat).withHour(23).withMinute(59).withSecond(59);
+				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
 					int k = i;
@@ -98,22 +320,18 @@ public class SitesAnalyticsService extends DB {
 							// get list of time to exclude data from
 							List hiddenDataList = queryForList("SitesAnalytics.getHiddenDataListByDevice", map);
 							map.put("hidden_data_list", hiddenDataList);
-							
-							if(d1.compareTo(d2) < 0) {
-								map.put("datatablename", map.get("datatablename"));
-							} else {
-								map.put("datatablename", map.get("view_tablename"));
-							}
-							
+							// if device is virtual device, use table_data_virtual
 							if ((int) map.get("id_device_type") == 12 && (int) map.get("id_device_group") != 81) map.put("datatablename", map.get("table_data_virtual"));
+							// if data is more than 3 months, use view_tablename, else use datatablename
+							else map.put("datatablename", map.get(startDate.isBefore(LocalDateTime.now().minusMonths(3)) ? "datatablename" : "view_tablename"));
 							
-							List getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
+							List<Map<String, Object>> getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
 							
 							maps.put("id", map.get("id"));
 							maps.put("device_name", map.get("devicename"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
-							maps.put("data", getDataChartParameter);
+							maps.put("data", fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter));
 						} catch (Exception ex) {
 							log.error("getChartParameterDevice", ex);
 						}
