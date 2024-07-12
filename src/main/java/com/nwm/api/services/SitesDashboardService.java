@@ -227,12 +227,20 @@ public class SitesDashboardService extends DB {
 					// get data device in widget 
 					Map<String, Object> itemWidget = (Map<String, Object>) listWidgetOverview.get(i);
 					List listWidget = queryForList("SitesDashboard.getListDeviceInWidget", itemWidget);
+					
 					itemWidget.put("devices", listWidget);
 					
 					// get data today
-					Map<String, Object> dataToday = (Map<String, Object>) queryForObject("SitesDashboard.getDataToday", itemWidget);
-					itemWidget.put("today", dataToday.get("today"));
-					itemWidget.put("thirtydays", dataToday.get("energy"));
+					if(listWidget.size() > 0) {
+						Map<String, Object> dataToday = (Map<String, Object>) queryForObject("SitesDashboard.getDataToday", itemWidget);
+						itemWidget.put("today", dataToday.get("today"));
+						itemWidget.put("thirtydays", dataToday.get("energy"));
+					} else {
+						itemWidget.put("today", 0);
+						itemWidget.put("thirtydays", 0);
+					}
+					
+					
 					dataList.add(itemWidget);
 					
 				}
@@ -267,8 +275,14 @@ public class SitesDashboardService extends DB {
 					itemWidget.put("start_date", obj.getStart_date());
 					itemWidget.put("end_date", obj.getEnd_date());
 					
-					List data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);
-					itemWidget.put("data", data);
+					if(listWidget.size() > 0) {
+						List data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);	
+						itemWidget.put("data", data);
+					} else {
+						itemWidget.put("data", new ArrayList());
+					}
+					
+					
 					dataList.add(itemWidget);
 				}
 			}

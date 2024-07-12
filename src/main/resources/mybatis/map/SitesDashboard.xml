@@ -804,8 +804,8 @@
 			d.id_site,
 			d.`name`,
 			d.`status`,
-			d.today,
-			d.thirtydays
+			d.icon,
+			d.is_consumption
 		FROM
 			leviton_overview_widget d
 		WHERE
