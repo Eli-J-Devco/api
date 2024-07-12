@@ -244,6 +244,7 @@
 			IF(dp.is_common = 1, 1, 0) AS is_common,
 			ct.id AS id_categorize_data,
 			dp.rounding_decimals,
+			dp.value_chart_tool,
 			ct.name AS categorize_data_name
 		FROM
 			device_parameters AS dp
@@ -316,7 +317,8 @@
 		SET
 			`is_common` = #{is_common},
 			`standard_name` = #{standard_name},
-			`rounding_decimals` = #{rounding_decimals}
+			`rounding_decimals` = #{rounding_decimals},
+			`value_chart_tool` = #{value_chart_tool}
 		WHERE
 			`id` = #{id}
 	</update>
