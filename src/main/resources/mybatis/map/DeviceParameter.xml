@@ -280,6 +280,10 @@
 	                dp.rounding_decimals ${order_by}
 	            </when>
 	            
+	            <when test="sort_column == 'value_chart_tool'">
+	                dp.value_chart_tool ${order_by}
+	            </when>
+	            
 	            <otherwise>
 			      dp.id DESC
 			    </otherwise>                                                  
