@@ -655,9 +655,9 @@
 		LEFT JOIN (
 			SELECT
 				s.id,
-				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
+				SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
 				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-				IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
 				CASE
 					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
 					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
@@ -706,9 +706,9 @@
 		LEFT JOIN (
 			SELECT
 				s.id,
-				SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
+				SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
 				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-				IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
 				
 				CASE
 					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
@@ -752,7 +752,7 @@
 			s.start_date_time,
 			s.end_date_time,
 			COUNT(IF(d.id_device_type = 1, 1, NULL)) AS totalInverter,
-			COUNT(IF(d.id_device_type = 3, 1, NULL)) AS totalMeter,
+			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) AS totalMeter,
 			COUNT(IF(d.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
 			GROUP_CONCAT(DISTINCT CASE WHEN d.id_device_type IN(1,3) THEN d.id_device_group ELSE NULL END SEPARATOR ',') AS listGroup
 		FROM

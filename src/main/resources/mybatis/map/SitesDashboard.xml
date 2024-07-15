@@ -603,8 +603,8 @@
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 		WHERE
-			dt.id = 3 
-			AND d.id_meter_type = 1
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
@@ -649,20 +649,19 @@
 			LEFT JOIN(
 				SELECT 
 					d.id_site,
-					IF( (SUM(IF(d.id_device_type = 3, d.energy_today, 0))) > 0, (SUM(IF(d.id_device_type = 3, d.energy_today, 0))), (SUM(IF(d.id_device_type = 1, d.energy_today, 0))) ) AS nvmActiveEnergy,
-					IF( (SUM(IF(d.id_device_type = 3, d.last_value, 0))) > 0, (SUM(IF(d.id_device_type = 3, d.last_value, 0))), (SUM(IF(d.id_device_type = 1, d.last_value, 0))) ) AS power_today
+					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.energy_today, 0))), (SUM(IF(d.id_device_type = 1, d.energy_today, 0))) ) AS nvmActiveEnergy,
+					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))), (SUM(IF(d.id_device_type = 1, d.last_value, 0))) ) AS power_today
 					FROM device d 
 					WHERE 
 					d.`status` = 1 
 					AND d.is_delete = 0
-					AND d.id_meter_type = 1
 					AND d.id_site  = #{id_site}
 			)today ON today.id_site = s.id
 			
 			LEFT JOIN(
 				SELECT
 					s.id,
-					IF( (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type = 3, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS nvmActiveEnergy
+					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS nvmActiveEnergy
 				FROM
 					${table_data_report} sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
@@ -899,7 +898,8 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
-				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) <![CDATA[ >= ]]> #{start_date} AND DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) <![CDATA[ <= ]]> #{end_date}
+				(CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+			
 			GROUP BY
 				time_format
 		</foreach>

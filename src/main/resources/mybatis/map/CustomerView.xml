@@ -25,11 +25,11 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id = 3 
+			dt.id IN (3,7,9)
+			AND d.is_excluded_meter = 0
 			AND d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND d.id_meter_type = 1
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
@@ -668,7 +668,7 @@
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
 						NULL,
-						IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.PowerTodayAVG, NULL)
+						IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.PowerTodayAVG, NULL)
 					)) AS meterPower,
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
@@ -678,7 +678,7 @@
 					SUM(IF(
 						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
 						0,
-						IF(d.id_device_type = 3 AND d.id_meter_type = 1, sdr.ActualGeneration, 0)
+						IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)
 					)) AS meterEnergy,
 					SUM(IF(
 						(dpf2.min_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ < ]]> dpf2.min_value) OR (dpf2.max_value IS NOT NULL AND sdr.ActualGeneration <![CDATA[ > ]]> dpf2.max_value),
@@ -1306,7 +1306,7 @@
 	
 	
 	<select id="getCustomerViewInfoMeter" resultType="Map" >
-			SELECT
+		SELECT
 			s.id,
 			s.kiosk_view,
 			SHA1(s.id) AS hash_id,
@@ -1318,12 +1318,11 @@
 			s.lng,
 			s.data_send_time,
 			t.`offset`,
-			IFNULL(today.energy_today, 0) AS energy_today,
-			IFNULL(ptoday.peak_power_today, 0) AS peak_power_today,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND(lifetime.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND((lifetime.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			IFNULL(lifetime.energy_lifetime, 0) AS energy_lifetime
-			
+			IFNULL(e.energy_today, 0) AS energy_today,
+			IFNULL(e.peak_power_today, 0) AS peak_power_today,
+			IF(e.energy_lifetime, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
+			IF(e.energy_lifetime, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
+			IFNULL(e.energy_lifetime, 0) AS energy_lifetime
 			
 		FROM
 			site s
@@ -1333,38 +1332,19 @@
 			LEFT JOIN(
 				SELECT
 					d.id_site,
-					ROUND(SUM(d.energy_today), 1) AS energy_today
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 3
-				GROUP BY d.id_site
-			)today ON today.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT
-				d.id_site,
-				ROUND(SUM( d.last_value ), 2) AS peak_power_today 
-			FROM
-				site s
-				LEFT JOIN device d ON s.id = d.id_site 
-			WHERE
-				s.`status` = 1 
-				AND d.`status` = 1 
-				AND d.id_device_type = 3 
-				AND s.id = #{id_site}
-			) ptoday ON ptoday.id_site = s.id	
-			
-			LEFT JOIN(
-				SELECT
-					d.id_site,
+					ROUND(SUM(d.energy_today), 1) AS energy_today,
+					ROUND(SUM(d.last_value), 2) AS peak_power_today,
 					ROUND(SUM(d.energy_lifetime), 0) AS energy_lifetime
 				FROM
 					device d
 					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 3
+				WHERE 
+					s.`status` = 1
+					AND d.`status` = 1
+					AND d.id_device_type IN (3,7,9)
+					AND d.is_excluded_meter = 0
 				GROUP BY d.id_site
-			)lifetime ON lifetime.id_site = s.id
+			) e ON e.id_site = s.id
 
 		WHERE
 			s.id = #{id_site}

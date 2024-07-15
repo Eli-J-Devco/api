@@ -502,15 +502,15 @@
 			JSON_ARRAYAGG(IF(t.id_device_type = 2 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", "N/A"), NULL )) AS noComTrackerList,
 			
 			
-			COUNT(IF(t.id_device_type = 3, 1, NULL)) AS totalMeter,
-			COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0, 1, NULL)) AS noComMeter,
-			COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionMeter,
-			COUNT(IF(t.id_device_type = 3, 1, NULL)) - (COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, 1, NULL )) ) AS healthyMeter,
-			COUNT(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, 1, NULL)) AS lowMeter,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoCom), NULL)) AS noComMeterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoProuduction), NULL)) AS noProductionMeterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND t.totalLowProduction = 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyMeterList,
-			JSON_ARRAYAGG(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowMeterList,
+			COUNT(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0, 1, NULL)) AS totalMeter,
+			COUNT(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalNoCom > 0, 1, NULL)) AS noComMeter,
+			COUNT(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalNoProuduction > 0, 1, NULL)) AS noProductionMeter,
+			COUNT(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0, 1, NULL)) - (COUNT(IF(t.id_device_type = 3 AND t.totalNoCom > 0 , 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalNoProuduction > 0, 1, NULL)) + COUNT(IF(t.id_device_type = 3 AND t.totalLowProduction > 0, 1, NULL )) ) AS healthyMeter,
+			COUNT(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalLowProduction > 0, 1, NULL)) AS lowMeter,
+			JSON_ARRAYAGG(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalNoCom > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoCom), NULL)) AS noComMeterList,
+			JSON_ARRAYAGG(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalNoProuduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedNoProuduction), NULL)) AS noProductionMeterList,
+			JSON_ARRAYAGG(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalNoCom = 0 AND t.totalNoProuduction = 0 AND t.totalLowProduction = 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedHealthy), NULL )) AS healthyMeterList,
+			JSON_ARRAYAGG(IF(t.id_device_type IN (3,7,9) AND t.is_excluded_meter = 0 AND t.totalLowProduction > 0, JSON_OBJECT("device", t.devicename, "dateChanged", t.dateChangedLowProduction), NULL )) AS lowMeterList,
 		
 			COUNT(IF(t.id_device_type = 4, 1, NULL)) AS totalWeatherStation,
 			COUNT(IF(t.id_device_type = 4 AND t.totalNoCom > 0, 1, NULL)) AS noComWeatherStation,
@@ -530,6 +530,7 @@
 			IFNULL(IF(noc.id_device = com.id_device, com.totalNoCom - 1, com.totalNoCom), 0) AS totalNoCom,
 			IFNULL(IF(noc.totalNoProuduction > 0 OR com.totalNoCom > 0, 0, low.totalLowProduction), 0) AS totalLowProduction,
 			dt.id as id_device_type,
+			d.is_excluded_meter,
 			DATE_FORMAT(CONVERT_TZ( noc.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoProuduction,
 			DATE_FORMAT(CONVERT_TZ( com.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoCom,
 			DATE_FORMAT(CONVERT_TZ( low.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedLowProduction,
@@ -547,7 +548,7 @@
 					LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level = 32
 					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 AND e.is_delete = 0 AND a.is_delete = 0
 					AND d.`status` = 1 AND d.id_site = #{id_site}
-					AND d.id_device_type IN (1,3)
+					AND (d.id_device_type = 1 OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
 					GROUP BY a.id_device
 				)noc ON d.id = noc.id_device
 				
@@ -558,7 +559,7 @@
 					LEFT JOIN error e ON e.id = a.id_error AND e.id_error_level = 33
 					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 AND e.is_delete = 0 AND a.is_delete = 0
 					AND d.`status` = 1 AND d.id_site = #{id_site}
-					AND d.id_device_type IN (1,2,3,4)
+					AND (d.id_device_type IN (1,2,4) OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
 					GROUP BY a.id_device
 				)com ON d.id = com.id_device
 				
@@ -569,7 +570,7 @@
 					LEFT JOIN error e ON e.id = a.id_error AND e.error_code = 1002
 					WHERE a.end_date IS NULL AND e.`status` = 1 AND a.`status` = 1 AND e.is_delete = 0 AND a.is_delete = 0
 					AND d.`status` = 1 AND d.id_site = #{id_site}
-					AND d.id_device_type IN (1,3)
+					AND (d.id_device_type = 1 OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
 					GROUP BY a.id_device
 				)low ON d.id = low.id_device
 				
@@ -580,13 +581,13 @@
 					LEFT JOIN error e ON e.id = a.id_error AND (e.id_error_level = 32 OR e.id_error_level = 33 OR e.error_code = 1002)
 					WHERE a.end_date IS NOT NULL AND e.`status` = 1 AND a.`status` = 0 AND e.is_delete = 0 AND a.is_delete = 0
 					AND d.`status` = 1 AND d.id_site = #{id_site}
-					AND d.id_device_type IN (1,2,3,4)
+					AND (d.id_device_type IN (1,2,4) OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
 					GROUP BY a.id_device
 				)hth ON d.id = hth.id_device
 				
 			WHERE
 				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
-				AND d.id_device_type IN (1,2,3,4)
+				AND (d.id_device_type IN (1,2,4) OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
 				AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		)t
 		 GROUP BY t.id_device_group ORDER BY t.id_device_type ASC;
