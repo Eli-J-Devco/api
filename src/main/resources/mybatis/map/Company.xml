@@ -36,11 +36,7 @@
 	
 	<select id="getList" resultType="Map" >
 		SELECT
-			s.id,
-			s.`name`,
-			s.`description`,
-			s.`status`,
-			s.is_delete
+			s.*
 		FROM
 			company s 
 		WHERE s.is_delete = 0
@@ -79,6 +75,28 @@
   	</select>
   	
   	
+  	
+  	<select id="getListContactInformation" resultType="Map" >
+		SELECT
+			s.*
+		FROM
+			contact_info_company s 
+		WHERE s.id_company = #{id}
+		
+	</select>
+	
+	
+	<select id="getListDataPhones" resultType="Map" >
+		SELECT
+			s.*
+		FROM
+			contact_info_company_phone s 
+		WHERE s.id_conact_info_company = #{id}
+		
+	</select>
+	
+  	
+  	
   	<update id="updateStatus">
 		UPDATE `company`
 		SET
@@ -98,10 +116,50 @@
 	<insert id="insertCompany" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `company`(
 			`name`,
-			`description`
+			`description`,
+			`entity_type`,
+			`ein`,
+			`state_of_incorporation`,
+			`id_country`,
+			`ba_street_address`,
+			`ba_city`,
+			`ba_id_state`,
+			`ba_zip_code`,
+			`ba_id_country`,
+			`bill_street_address`,
+			`bill_city`,
+			`bill_zip_code`,
+			`bill_id_state`,
+			`bill_id_country`,
+			`logo`,
+			`primary_contact`,
+			`created_date`,
+			`created_by`,
+			`updated_date`,
+			`updated_by`
 		)VALUES(
 			#{name},
-			#{description}
+			#{description},
+			#{entity_type},
+			#{ein},
+			#{state_of_incorporation},
+			#{id_country},
+			#{ba_street_address},
+			#{ba_city},
+			#{ba_id_state},
+			#{ba_zip_code},
+			#{ba_id_country},
+			#{bill_street_address},
+			#{bill_city},
+			#{bill_zip_code},
+			#{bill_id_state},
+			#{bill_id_country},
+			#{logo},
+			#{primary_contact},
+			NOW(),
+			#{created_by},
+			NOW(),
+			#{updated_by}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -109,11 +167,76 @@
         </selectKey>
 	</insert>
 	
+	
+	<insert id="insertContactInfoCompany" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `contact_info_company`(
+			`id_company`,
+			`first_name`,
+			`last_name`,
+			`email`,
+			`title_position`,
+			`primary_contact`
+		)VALUES(
+			#{id_company},
+			#{first_name},
+			#{last_name},
+			#{email},
+			#{title_position},
+			#{primary_contact}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<insert id="insertContactInfoCompanyPhone" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO `contact_info_company_phone`(
+			`id_conact_info_company`,
+			`phone_type`,
+			`phone_number`,
+			`phone_ext`
+		)VALUES(
+			#{id_conact_info_company},
+			#{phone_type},
+			#{phone_number},
+			#{phone_ext}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<update id="deleteContactInfoCompany">
+		DELETE from `contact_info_company` WHERE id_company = #{id};
+	</update>
+	
+	
 	<update id="updateCompany">
 		UPDATE `company`
 		SET
 			`name` = #{name},
-			`description` = #{description}
+			`description` = #{description},
+			`entity_type` = #{entity_type},
+			`ein` = #{ein},
+			`state_of_incorporation` = #{state_of_incorporation},
+			`id_country` = #{id_country},
+			`ba_street_address` = #{ba_street_address},
+			`ba_city` = #{ba_city},
+			`ba_id_state` = #{ba_id_state},
+			`ba_zip_code` = #{ba_zip_code},
+			`ba_id_country` = #{ba_id_country},
+			`bill_street_address` = #{bill_street_address},
+			`bill_city` = #{bill_city},
+			`bill_zip_code` = #{bill_zip_code},
+			`bill_id_state` = #{bill_id_state},
+			`bill_id_country` = #{bill_id_country},
+			`logo` = #{logo},
+			`primary_contact` = #{primary_contact},
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by}
 		WHERE
 			`id` = #{id}
 	</update>
