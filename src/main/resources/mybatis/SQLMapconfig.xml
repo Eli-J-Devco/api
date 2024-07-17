@@ -45,6 +45,7 @@
 		<mapper resource="mybatis/map/Site.xml" />
 		<mapper resource="mybatis/map/TimeZone.xml" />
 		<mapper resource="mybatis/map/Country.xml" />
+		<mapper resource="mybatis/map/State.xml" />
 		<mapper resource="mybatis/map/MiniSite.xml" />
 		<mapper resource="mybatis/map/DeviceType.xml" />
 		<mapper resource="mybatis/map/DeviceParameter.xml" />
