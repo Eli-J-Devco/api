@@ -241,6 +241,25 @@ public class DeviceController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list device parameter to scale old data
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-device-parameter-scale-old-data")
+	public Object getListDeviceParameterScaleOldData(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			List data = service.getListDeviceParameterScaleOldData(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description Get list device filter parameter
 	 * @author Hung.Bui
 	 * @since 2024-03-06
@@ -325,6 +344,25 @@ public class DeviceController extends BaseController {
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update old date on device
+	 * @author Duy.Phan
+	 * @since 2024-07-15
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-scale-old-data")
+	public Object updateScaleOldDate(@RequestBody DeviceEntity obj) {
+		try {
+			DeviceService service = new DeviceService();
+			service.updateScaleOldDate(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 }

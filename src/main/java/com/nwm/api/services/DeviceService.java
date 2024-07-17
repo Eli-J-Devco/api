@@ -411,6 +411,26 @@ public class DeviceService extends DB {
 	}
 	
 	/**
+	 * @description Get list device parameter
+	 * @author Hung.Bui
+	 * @since 2023-08-28
+	 * @param id_device
+	 * @return array
+	 */
+	
+	public List getListDeviceParameterScaleOldData(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Device.getListDeviceParameterScaleOldData", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	/**
 	 * @description Get list device filter parameter
 	 * @author Hung.Bui
 	 * @since 2024-03-06
@@ -506,6 +526,21 @@ public class DeviceService extends DB {
 			return true;
 		} catch (Exception ex) {
 			log.error("Device.saveDeviceFilterParameter", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update device status
+	 * @author long.pham
+	 * @since 2021-01-12
+	 * @param id
+	 */
+	public boolean updateScaleOldDate(DeviceEntity obj) {
+		try {
+			return update("Device.updateScaleOldDate", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Device.updateStatus", ex);
 			return false;
 		}
 	}

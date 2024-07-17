@@ -737,6 +737,27 @@
 		ORDER BY dp.id
 	</select>
 	
+	<select id="getListDeviceParameterScaleOldData" resultType="Map">
+		SELECT
+			dp.id,
+			IFNULL(dp.standard_name, dp.name) AS name,
+			IFNULL(dp.standard_name, dp.name) AS text,
+			dp.slug,
+			dp.is_active_power,
+			dp.is_energy,
+			dp.is_irradiance
+		FROM
+			device_parameters dp
+			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
+		WHERE
+			d.id = #{id}
+			AND d.status = 1
+			AND d.is_delete = 0
+			AND dp.status = 1
+			AND dp.is_delete = 0
+		ORDER BY dp.id
+	</select>
+	
 	<select id="getListDeviceFilterParameter" resultType="Map">
 		SELECT
 			dp.id,
