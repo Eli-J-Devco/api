@@ -806,7 +806,7 @@
 			`id` = #{id}
 	</update>
   	
-  	<select id="getList" resultType="map">
+  	<select id="getList" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
