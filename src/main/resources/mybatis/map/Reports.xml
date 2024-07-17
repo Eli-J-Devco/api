@@ -378,7 +378,8 @@
 			r.subscribers,
 			r.data_intervals,
 			r.type_report,
-			r.type_option
+			r.type_option,
+			r.cadence_range
 		FROM
 			report r
 			LEFT JOIN site_employee_map sem ON sem.id_employee = r.id_employee
