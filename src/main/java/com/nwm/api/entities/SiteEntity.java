@@ -218,9 +218,25 @@ public class SiteEntity {
 	private String sunset;
 	private Integer reporting_region;
 	private int is_solar_site;
+	private String domain;
+	private String site_domain_type;
 	
 	
 	
+	
+	
+	public String getSite_domain_type() {
+		return site_domain_type;
+	}
+	public void setSite_domain_type(String site_domain_type) {
+		this.site_domain_type = site_domain_type;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public String getTag_device() {
 		return tag_device;
 	}

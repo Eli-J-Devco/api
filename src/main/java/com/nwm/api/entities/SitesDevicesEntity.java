@@ -146,10 +146,17 @@ public class SitesDevicesEntity {
 	private String id_filter;
 	private double cost;
 	private String cost_unit;
+	private int site_domain_type;
 
 	
 	
 	
+	public int getSite_domain_type() {
+		return site_domain_type;
+	}
+	public void setSite_domain_type(int site_domain_type) {
+		this.site_domain_type = site_domain_type;
+	}
 	public double getCost() {
 		return cost;
 	}

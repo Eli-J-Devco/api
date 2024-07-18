@@ -85,6 +85,8 @@
 		<result property="mqtt_protocol" column="mqtt_protocol" />
 		<result property="mqtt_username" column="mqtt_username" />
 		<result property="mqtt_password" column="mqtt_password" />
+		<result property="site_domain_type" column="site_domain_type" />
+		
 		
 	
 		
@@ -150,6 +152,7 @@
 			s.mqtt_protocol,
 			s.mqtt_username,
 			s.mqtt_password,
+			s.site_domain_type,
 			IF(
 				s.expiration IS NOT NULL
 				AND CONVERT_TZ(NOW(), '+00:00', tz.offset) > DATE_SUB(s.expiration, INTERVAL 1 MONTH),
@@ -326,6 +329,23 @@
 			<if test="id_company != null and id_company != 0 and id_company > 1">
 				AND s.id_company = #{id_company}
 			</if>
+			
+			
+			<choose>
+			
+				<when test="(domain == 'localhost' or domain == 'nextwavemonitoring.com') and is_supper_admin == 1">
+					AND s.site_domain_type IN(1,2,3)
+				</when>
+				
+				<when test="(domain != 'nextwavemonitoring.com') and is_supper_admin != 1">
+					AND s.site_domain_type IN(2,3)
+				</when>
+				
+				<otherwise>
+					AND s.site_domain_type IN(1,3)
+				</otherwise>
+			</choose>
+				
 	      	
 	      	
 			
