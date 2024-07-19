@@ -333,7 +333,7 @@
 			
 			<choose>
 			
-				<when test="(domain == 'localhost' or domain == 'nextwavemonitoring.com') and is_supper_admin == 1">
+				<when test="(domain == 'localhost' or domain == 'nextwavemonitoring.com' or domain == 'staging.nextwavemonitoring.com') and is_supper_admin == 1">
 					AND s.site_domain_type IN(1,2,3)
 				</when>
 				
