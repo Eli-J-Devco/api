@@ -337,7 +337,11 @@
 					AND s.site_domain_type IN(1,2,3)
 				</when>
 				
-				<when test="(domain != 'nextwavemonitoring.com') and is_supper_admin != 1">
+				<when test="domain == 'buildings.nextwavemonitoring.com'">
+					AND s.site_domain_type IN(2,3)
+				</when>
+				
+				<when test="(domain != 'nextwavemonitoring.com') and (domain != 'buildings.nextwavemonitoring.com') and is_supper_admin != 1">
 					AND s.site_domain_type IN(2,3)
 				</when>
 				
