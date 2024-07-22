@@ -484,6 +484,21 @@ public class ImportOldDataService extends DB {
 				}
 				break;
 				
+			case "model_gas_meter":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelGasMeter.insertModelGasMeter", dataList.get(i));         
+				}
+				break;
+			case "model_water_meter":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelWaterMeter.insertModelWaterMeter", dataList.get(i));         
+				}
+				break;
+				
+			
+				
 			}
 			
 			session.commit();
@@ -3392,4 +3407,18 @@ public class ImportOldDataService extends DB {
 		rowItem.put("MeasuredProduction", !r.getCellText(57).toString().equals("") ? r.getCellText(57).toString() : "0.001");
 		return rowItem;
 	}
+	
+	
+	public Object setModelGasMeter(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("ReadingValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		return rowItem;
+	}
+	
+	public Object setModelWaterMeter(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("ReadingValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		return rowItem;
+	}
+	
 }
