@@ -237,7 +237,9 @@
 	<select id="getListParameterByDeviceGroup" resultType="Map">
 		SELECT
 			dp.id,
+			dp.id AS value,
 			dp.name,
+			IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name) AS label,
 			dp.standard_name,
 			dp.`status`,
 			dp.is_delete,
