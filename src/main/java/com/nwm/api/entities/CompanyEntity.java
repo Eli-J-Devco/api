@@ -50,9 +50,18 @@ public class CompanyEntity{
 	private List<?> contactInformation;
 	private String file_upload;
 	private int primary_contact;
+	private int bill_different_address;
 	
 	
 	
+	
+	
+	public int getBill_different_address() {
+		return bill_different_address;
+	}
+	public void setBill_different_address(int bill_different_address) {
+		this.bill_different_address = bill_different_address;
+	}
 	public int getPrimary_contact() {
 		return primary_contact;
 	}
