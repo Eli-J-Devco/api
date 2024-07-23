@@ -12,11 +12,31 @@ public class ModelWaterMeterEntity {
 	private int low_alarm;
 	private int high_alarm;
 	private double ReadingValue;
+	private double nvmActivePower;
+	private double nvmActiveEnergy;
 	private double MeasuredProduction;
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
 	
+	
+	
+
+	public double getNvmActivePower() {
+		return nvmActivePower;
+	}
+
+	public void setNvmActivePower(double nvmActivePower) {
+		this.nvmActivePower = nvmActivePower;
+	}
+
+	public double getNvmActiveEnergy() {
+		return nvmActiveEnergy;
+	}
+
+	public void setNvmActiveEnergy(double nvmActiveEnergy) {
+		this.nvmActiveEnergy = nvmActiveEnergy;
+	}
 
 	public double getMeasuredProduction() {
 		return MeasuredProduction;

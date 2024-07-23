@@ -3411,13 +3411,17 @@ public class ImportOldDataService extends DB {
 	
 	public Object setModelGasMeter(HashMap<String, String> rowItem, Row r) {
 		rowItem.put("ReadingValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
-		rowItem.put("MeasuredProduction", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
 		return rowItem;
 	}
 	
 	public Object setModelWaterMeter(HashMap<String, String> rowItem, Row r) {
 		rowItem.put("ReadingValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
-		rowItem.put("MeasuredProduction", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
 		return rowItem;
 	}
 	

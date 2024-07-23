@@ -11,6 +11,8 @@
 		<result property="low_alarm" column="low_alarm" />
 		<result property="high_alarm" column="high_alarm" />
 		<result property="ReadingValue" column="ReadingValue" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
 		<result property="datatablename" column="datatablename" />
 		<result property="view_tablename" column="view_tablename" />
@@ -40,7 +42,12 @@
 			<if test="ReadingValue != 0.001">
 				`ReadingValue`,
 			</if>
-			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
 			<if test="MeasuredProduction != 0.001">
 				`MeasuredProduction`,
 			</if>
@@ -65,7 +72,12 @@
 			<if test="ReadingValue != 0.001">
 				#{ReadingValue},
 			</if>
-			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
 			<if test="MeasuredProduction != 0.001">
 				#{MeasuredProduction},
 			</if>
@@ -87,6 +99,12 @@
 			</if>
 			<if test="ReadingValue != 0.001">
 				`ReadingValue` = #{ReadingValue},
+			</if>
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
 			</if>
 			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
 				`MeasuredProduction` = #{MeasuredProduction},

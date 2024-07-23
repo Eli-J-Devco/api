@@ -33,6 +33,9 @@ public class ModelGasMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				dataModel.setReadingValue(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				dataModel.setNvmActivePower(Double.parseDouble("0.001"));
+				dataModel.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
+				
 				return dataModel;
 				
 			} else {
