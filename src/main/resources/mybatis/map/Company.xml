@@ -136,7 +136,8 @@
 			`created_date`,
 			`created_by`,
 			`updated_date`,
-			`updated_by`
+			`updated_by`,
+			`bill_different_address`
 		)VALUES(
 			#{name},
 			#{description},
@@ -159,7 +160,8 @@
 			NOW(),
 			#{created_by},
 			NOW(),
-			#{updated_by}
+			#{updated_by},
+			#{bill_different_address}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -236,7 +238,8 @@
 			`logo` = #{logo},
 			`primary_contact` = #{primary_contact},
 			`updated_date` = NOW(),
-			`updated_by` = #{updated_by}
+			`updated_by` = #{updated_by},
+			`bill_different_address` = #{bill_different_address}
 		WHERE
 			`id` = #{id}
 	</update>
