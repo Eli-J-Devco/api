@@ -38,9 +38,9 @@
 			device_group AS t
 		WHERE
 			t.`status` = 1 AND t.is_delete = 0
-			<if test="id_device_type != null">
-			AND t.id_device_type = #{id_device_type}
-		</if> 
+			<if test="id_device_type != null and id_device_type != 0">
+				AND t.id_device_type = #{id_device_type}
+			</if> 
 	</select>
 	
 	<select id="getListDropdownForPageError" resultMap="DeviceGroupMap" parameterType="String">

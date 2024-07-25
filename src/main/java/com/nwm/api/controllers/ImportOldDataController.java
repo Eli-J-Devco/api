@@ -467,6 +467,12 @@ public class ImportOldDataController extends BaseController {
 										case "model_sma_inverter_stp62us41":
 											service.setModelSmaInverterStp62tlus41(rowItem, r);
 											break;
+										case "model_gas_meter":
+											service.setModelGasMeter(rowItem, r);
+											break;
+										case "model_water_meter":
+											service.setModelWaterMeter(rowItem, r);
+											break;
 											
 										}
 										

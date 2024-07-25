@@ -136,8 +136,8 @@ public class CompanyService extends DB {
 							Map<String, Object> itemPhone = (Map<String, Object>) dataPhones.get(j);
 							
 							Integer phone_type = itemPhone.get("phone_type") == null || Lib.isBlank(itemPhone.get("phone_type"))  ? 0 : Integer.parseInt(itemPhone.get("phone_type").toString()) ;
-							String phone_number = itemPhone.get("phone_number") == null ? "" : itemPhone.get("phone_number").toString();
-							String phone_ext = itemPhone.get("phone_ext") == null ? "": itemPhone.get("phone_ext").toString();
+							String phone_number = itemPhone.get("phone_number") == null || Lib.isBlank(itemPhone.get("phone_number")) ? "" : itemPhone.get("phone_number").toString();
+							String phone_ext = itemPhone.get("phone_ext") == null || Lib.isBlank(itemPhone.get("phone_ext")) ? "": itemPhone.get("phone_ext").toString();
 							
 							ContactInfoCompanyPhoneEntity mapItemPhone = this._buildContactInfoComanyPhoneMap(insertLastIdIC, phone_type, phone_number, phone_ext);
 							session.insert("Company.insertContactInfoCompanyPhone", mapItemPhone);
@@ -233,9 +233,9 @@ public class CompanyService extends DB {
 						for (int j = 0; j < dataPhones.size(); j++) {
 							Map<String, Object> itemPhone = (Map<String, Object>) dataPhones.get(j);
 							
-							int phone_type = itemPhone.get("phone_type") == null ? 0 :  Integer.parseInt(itemPhone.get("phone_type").toString());
-							String phone_number = itemPhone.get("phone_number") == null ? "" : itemPhone.get("phone_number").toString();
-							String phone_ext = itemPhone.get("phone_ext") == null ? "": itemPhone.get("phone_ext").toString();
+							int phone_type = itemPhone.get("phone_type") == null || Lib.isBlank(itemPhone.get("phone_type")) ? 0 :  Integer.parseInt(itemPhone.get("phone_type").toString());
+							String phone_number = itemPhone.get("phone_number") == null || Lib.isBlank(itemPhone.get("phone_number")) ? "" : itemPhone.get("phone_number").toString();
+							String phone_ext = itemPhone.get("phone_ext") == null || Lib.isBlank(itemPhone.get("phone_ext")) ? "": itemPhone.get("phone_ext").toString();
 							
 							ContactInfoCompanyPhoneEntity mapItemPhone = this._buildContactInfoComanyPhoneMap(insertLastIdIC, phone_type, phone_number, phone_ext);
 							session.insert("Company.insertContactInfoCompanyPhone", mapItemPhone);
