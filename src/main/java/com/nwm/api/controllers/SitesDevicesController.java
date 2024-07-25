@@ -96,12 +96,31 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get device yield list
+	 * @author Hung.Bui
+	 * @since 2024-07-24
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-yield-by-device")
+	public Object getListYieldByDevice(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDevicesService service = new SitesDevicesService();
+			List data = service.getListYieldByDevice(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description Get device detail by id 
 	 * @author long.pham
 	 * @since 2021-03-16
-	 * @param id_site
+	 * @param list_device
 	 * @return data (status, message, object, total_row
 	 */
 

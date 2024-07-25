@@ -380,6 +380,173 @@
 		 
 	</select>
 	
+	<select id="getListYieldByDevice" resultType="Map" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+		<foreach collection="list_device" item="item" separator="UNION ALL">
+			SELECT
+				id,
+				SHA1(id) AS hash_id,
+				devicename,
+				image,
+				totalError,
+				upTime,
+				ROUND(currentPower, 1) AS currentPower,
+				ROUND(MAX(yieldToday), 1) AS yieldToday,
+				ROUND(MAX(yieldYesterday), 1) AS yieldYesterday,
+				ROUND(MAX(yieldLast7Days), 1) AS yieldLast7Days,
+				ROUND(MAX(yieldYTD), 1) AS yieldYTD
+			FROM (
+				SELECT
+					id,
+					devicename,
+					image,
+					totalError,
+					upTime,
+					time_full,
+					currentPower,
+					CASE time_full
+						WHEN todayFormat THEN energy
+						ELSE NULL
+					END AS yieldToday,
+					CASE time_full
+						WHEN yesterdayFormat THEN energy
+						ELSE NULL
+					END AS yieldYesterday,
+					CASE time_full
+						WHEN last7DaysFormat THEN cummulativeEnergy
+						ELSE NULL
+					END AS yieldLast7Days,
+					CASE time_full
+						WHEN ytdFormat THEN cummulativeEnergy
+						ELSE NULL
+					END AS yieldYTD
+				FROM (
+					SELECT
+						id,
+						devicename,
+						image,
+						`offset`,
+						totalError,
+						upTime,
+						time_full,
+						DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), '%Y-%m-%d') AS todayFormat,
+						DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 1 DAY), '%Y-%m-%d') AS yesterdayFormat,
+						DATE_FORMAT(IF(time_full > DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 6 DAY), time_full, DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 6 DAY)), '%Y-%m-%d') AS last7DaysFormat,
+						DATE_FORMAT(MIN(time_full) OVER (ORDER BY time_full ASC), '%Y-%m-%d') AS ytdFormat,
+						currentPower,
+						MeasuredProduction AS energy,
+						SUM(MeasuredProduction) OVER (ORDER BY time_full DESC) AS cummulativeEnergy
+					FROM (
+						SELECT
+							d.id,
+							d.devicename,
+							dt.image,
+							tz.`offset`,
+							e.totalError,
+							IF(e.noComm > 0, '-', CONCAT(u.upTime, ' ', IF(u.upTime > 1, 'days', 'day'))) AS upTime,
+							DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', tz.`offset`), '%Y-%m-%d') AS time_full,
+							<choose>
+								<when test="item.id_device_type == 1 or item.id_device_type == 3 or item.id_device_type == 7 or item.id_device_type == 9">
+									d.last_value AS currentPower,
+									SUM(dv.MeasuredProduction) AS MeasuredProduction
+								</when>
+								<otherwise>
+									NULL AS currentPower,
+									NULL AS MeasuredProduction
+								</otherwise>
+							</choose>
+						FROM
+							${item.datatablename} dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN device_type dt ON dt.id = d.id_device_type
+							LEFT JOIN site s ON s.id = d.id_site
+							LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+							LEFT JOIN (
+								SELECT
+									a.id_device,
+									COUNT(a.id) AS totalError,
+									SUM(IF(e.error_code = '1001', 1, 0)) AS noComm
+								FROM
+									alert a
+									LEFT JOIN error e ON e.id = a.id_error
+								WHERE
+									a.`status` = 1
+									AND a.is_delete = 0
+									AND e.`status` = 1
+									AND e.is_delete = 0
+									AND a.id_device = #{item.id}
+								GROUP BY
+									a.id_device
+							) e ON e.id_device = d.id
+							LEFT JOIN (
+								SELECT
+									dv.id_device,
+									DATEDIFF(UTC_TIMESTAMP(), IF(a.upTime IS NOT NULL, a.upTime, dv.time)) AS upTime
+								FROM
+									(
+										<choose>
+											<when test="item.id_device_type == 5">
+												SELECT
+													d.id AS id_device,
+													s.commissioning AS time
+												FROM
+													site s
+													LEFT JOIN device d ON d.id_site = s.id
+												WHERE
+													d.id = #{item.id}
+											</when>
+											<otherwise>
+												SELECT
+													id_device,
+													time
+												FROM
+													${item.datatablename} dv
+												WHERE
+													id_device = #{item.id}
+												ORDER BY time ASC
+												LIMIT 1
+											</otherwise>
+										</choose>
+									) dv
+									LEFT JOIN (
+										SELECT
+											a.id_device,
+											MAX(a.end_date) AS upTime
+										FROM
+											alert a
+											LEFT JOIN error e ON e.id = a.id_error
+										WHERE
+											a.`status` = 0
+											AND a.is_delete = 0
+											AND e.`status` = 1
+											AND e.is_delete = 0
+											AND a.id_device = #{item.id}
+											AND e.error_code = '1001'
+										GROUP BY
+											a.id_device
+									) a ON a.id_device = dv.id_device
+							) u ON u.id_device = d.id
+						WHERE
+							dv.id_device = #{item.id}
+							AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.`offset`), '%Y-01-01 00:00:00'), tz.`offset`, '+00:00') AND UTC_TIMESTAMP()
+						GROUP BY
+							DAYOFYEAR(time_full)
+					) t
+				) t
+				WHERE
+					time_full = todayFormat
+					OR time_full = yesterdayFormat
+					OR time_full = last7DaysFormat
+					OR time_full = ytdFormat
+			) t
+			GROUP BY
+				id
+		</foreach>
+		
+		<if test="sort_column != null and sort_column != '' and order_by != null and order_by != ''">
+			ORDER BY ${sort_column} ${order_by}
+		</if>
+	</select>
+	
 	<select id="getDeviceDetail" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
