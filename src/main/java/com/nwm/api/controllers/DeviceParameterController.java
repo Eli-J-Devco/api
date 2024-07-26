@@ -166,6 +166,24 @@ public class DeviceParameterController extends BaseController {
 	}
 	
 	/**
+	 * @description Get list device group and categorize data
+	 * @author Hung.Bui
+	 * @since 2024-07-26
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-all-parameter-by-device-group-and-categorize-data")
+	public Object getListAllParameterByDeviceGroupAndCategorizeData(@RequestBody DeviceParameterEntity obj) {
+		try {
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.getListAllParameterByDeviceGroupAndCategorizeData(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description save device parameter
 	 * @author Hung.Bui
 	 * @since 2023-06-26
