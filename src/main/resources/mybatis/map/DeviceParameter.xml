@@ -6,6 +6,8 @@
 	<select id="getListCategorizeData" resultType="Map">
 		SELECT
 			id,
+			id AS value,
+			name AS label,
 			name AS text
 		FROM
 			categorize_data
@@ -237,9 +239,7 @@
 	<select id="getListParameterByDeviceGroup" resultType="Map">
 		SELECT
 			dp.id,
-			dp.id AS value,
 			dp.name,
-			IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name) AS label,
 			dp.standard_name,
 			dp.`status`,
 			dp.is_delete,
@@ -250,8 +250,7 @@
 			ct.name AS categorize_data_name
 		FROM
 			device_parameters AS dp
-			LEFT JOIN categorize_data_device_parameter_map m ON m.id_device_parameter = dp.id
-			LEFT JOIN categorize_data ct ON ct.id = m.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
 		WHERE
 			dp.id_device_group = #{id_device_group}
 			AND dp.`status` = 1
@@ -293,6 +292,21 @@
 		LIMIT ${limit} OFFSET ${offset};
 	</select>
 	
+	<select id="getListAllParameterByDeviceGroupAndCategorizeData" resultType="Map">
+		SELECT
+			id,
+			id AS value,
+			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS name,
+			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS label
+		FROM
+			device_parameters
+		WHERE
+			id_device_group = #{id_device_group}
+			AND id_categorize_data = #{id_categorize_data}
+			AND `status` = 1
+			AND is_delete = 0
+	</select>
+	
 	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
     	SELECT count(*) as totalRow
 		FROM device_parameters dp
@@ -324,6 +338,7 @@
 			`is_common` = #{is_common},
 			`standard_name` = #{standard_name},
 			`rounding_decimals` = #{rounding_decimals},
+			`id_categorize_data` = #{id_categorize_data},
 			`value_chart_tool` = #{value_chart_tool}
 		WHERE
 			`id` = #{id}
