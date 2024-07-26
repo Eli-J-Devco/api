@@ -256,7 +256,7 @@
 			dt.image,
 			s.datalogger_ip,
 			d.ip_address,
-			IFNULL(DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS last_updated,
+			IFNULL(DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%c/%e/%Y %h:%i %p'), 'N/A') AS last_updated,
 			t.offset,
 			p.totalError,
 			p.id_error_level,
@@ -783,7 +783,7 @@
 				WHEN CONVERT_TZ( dv.time, '+00:00', #{offset} ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', #{offset} ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			
-			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%m-%d-%Y %h:%i %p'), 'N/A') AS time
+			IFNULL(DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', #{offset} ) , '%c/%e/%Y %h:%i %p'), 'N/A') AS time
 			
 		FROM
 			${datatablename} dv
