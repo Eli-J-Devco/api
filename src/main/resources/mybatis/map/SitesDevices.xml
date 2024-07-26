@@ -643,8 +643,7 @@
 			device d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group 
 			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
-			LEFT JOIN categorize_data_device_parameter_map m ON m.id_device_parameter = dp.id
-			LEFT JOIN categorize_data ct ON ct.id = m.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
 			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id AND dps.id_device = d.id
 		WHERE
 			SHA1(d.id) = #{hash_id} AND d.`status` = 1 AND dp.`status` = 1;

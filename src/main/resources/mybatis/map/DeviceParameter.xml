@@ -250,8 +250,7 @@
 			ct.name AS categorize_data_name
 		FROM
 			device_parameters AS dp
-			LEFT JOIN categorize_data_device_parameter_map m ON m.id_device_parameter = dp.id
-			LEFT JOIN categorize_data ct ON ct.id = m.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
 		WHERE
 			dp.id_device_group = #{id_device_group}
 			AND dp.`status` = 1
@@ -324,6 +323,7 @@
 			`is_common` = #{is_common},
 			`standard_name` = #{standard_name},
 			`rounding_decimals` = #{rounding_decimals},
+			`id_categorize_data` = #{id_categorize_data},
 			`value_chart_tool` = #{value_chart_tool}
 		WHERE
 			`id` = #{id}
