@@ -79,6 +79,16 @@ public class ModelMeterIon8600V2Entity {
 	private String view_tablename;
 	private String job_tablename;
 	private int enable_alert;
+	private int data_send_time;
+	
+	
+	
+	public int getData_send_time() {
+		return data_send_time;
+	}
+	public void setData_send_time(int data_send_time) {
+		this.data_send_time = data_send_time;
+	}
 	
 	public int getEnable_alert() {
 		return enable_alert;

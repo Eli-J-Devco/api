@@ -140,6 +140,21 @@ public class ModelMeterIon8600V1Service extends DB{
 //				 }
 			 }
 
+			 if(measuredProduction > 3000) {
+				 switch(dataObj.getData_send_time()) {
+				 	// 1: 5 minutes, 2: 15 minutes, 3: 1 minute
+					 case 1:
+						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/5) : 0;
+						 break;
+					 case 2:
+						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/15) : 0;
+						 break;
+					 case 3:
+						 measuredProduction = obj.getNvmActivePower() >= 0 ? obj.getNvmActivePower() / (60/60) : 0;
+						 break;
+				 }
+			 }
+			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelMeterIon8600V1.insertModelMeterIon8600V1", obj);
