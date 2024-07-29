@@ -86,6 +86,7 @@ public class ModelXantrexInverterService extends DB {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+					 obj.setkWh(dataObj.getNvmActiveEnergy());
 				 }
 			 }
 
