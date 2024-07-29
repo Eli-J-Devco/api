@@ -105,6 +105,24 @@ public class SitesDevicesService extends DB {
 		
 	}
 	
+	/**
+	 * @description Get device yield list
+	 * @author Hung.Bui
+	 * @since 2024-07-24
+	 * @param list_device
+	 */
+	
+	public List getListYieldByDevice(SitesDevicesEntity obj) {
+		try {
+			if (obj.getList_device() == null || obj.getList_device().size() == 0) return new ArrayList();
+			List dataList = queryForList("SitesDevices.getListYieldByDevice", obj);
+			if (dataList == null) return new ArrayList();
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
 	
 	/**
 	 * @description get device detail by id
@@ -122,24 +140,6 @@ public class SitesDevicesService extends DB {
 				return new DeviceEntity();
 			}
 			obj.setDatatablename(data.getDatatablename());
-			
-			
-			Object dataListRowItem = queryForObject("SitesDevices.getModelLastRowItem", obj);
-			if(dataListRowItem != null) {
-				ObjectMapper oMapper = new ObjectMapper();
-				Map<String, Object> map = oMapper.convertValue(dataListRowItem, Map.class);
-//				data.setLast_communication(map.get("last_communication").toString());
-			} else {
-				// converting date format for US
-				Date date = new Date();
-		        SimpleDateFormat sdfAmerica = new SimpleDateFormat("MM/dd/yyyy, HH:mm:ss a");
-		        TimeZone tzInAmerica = TimeZone.getTimeZone(data.getTimezone());
-		        sdfAmerica.setTimeZone(tzInAmerica);
-				
-				data.setLast_communication(sdfAmerica.format(date) + " " + data.getAbbreviation_std());
-			}
-			
-			
 		} catch (Exception ex) {
 			return new DeviceEntity();
 		}

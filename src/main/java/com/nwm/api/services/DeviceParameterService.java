@@ -169,7 +169,22 @@ public class DeviceParameterService extends DB {
 		return dataList;
 	}
 	
+	/**
+	 * @description Get list device group and categorize data
+	 * @author Hung.Bui
+	 * @since 2024-07-26
+	 * @param id_device_group, id_categorize_data
+	 * @return data (status, message, array, total_row)
+	 */
 	
+	public List getListAllParameterByDeviceGroupAndCategorizeData(DeviceParameterEntity obj) {
+		try {
+			List dataList = queryForList("DeviceParameter.getListAllParameterByDeviceGroupAndCategorizeData", obj);
+			return dataList == null ? new ArrayList() : dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
 	
 	
 	public int getTotalRecordParameterByDeviceGroup(DeviceParameterEntity obj) {
@@ -210,22 +225,11 @@ public class DeviceParameterService extends DB {
 	 * @param id
 	 */
 	public boolean updateDeviceParameter(DeviceParameterEntity obj){
-		SqlSession session = this.beginTransaction();
 		try{
-			session.update("DeviceParameter.updateDeviceParameter", obj);
-			if (obj.getId_categorize_data() == 0) {
-				session.delete("DeviceParameter.deleteCategorizeDataDeviceParameterMap", obj);
-			} else {
-				session.update("DeviceParameter.insertCategorizeDataDeviceParameterMap", obj);
-			}
-			session.commit();
-			return true;
+			return update("DeviceParameter.updateDeviceParameter", obj) > 0;
 		}catch (Exception ex) {
-			session.rollback();
 			log.error("DeviceParameter.updateDeviceParameter", ex);
 			return false;
-		}finally {
-			session.close();
 		}
 	}
 	

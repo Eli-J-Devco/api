@@ -7,9 +7,7 @@
 	<select id="getList" resultType="Map" parameterType="com.nwm.api.entities.CategorizeDataEntity">
 		SELECT
 			ct.id,
-			ct.id AS value,
 			ct.name,
-			ct.name AS label,
 			ct.description
 		FROM
 			categorize_data AS ct
