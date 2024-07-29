@@ -139,6 +139,8 @@ public class DeviceEntity {
 	private Double offset_data_old;
 	private String date_time_offset;
 	private boolean is_excluded_meter;
+	private String group_name;
+	private String device_status;
 	
 	
 
@@ -906,6 +908,18 @@ public class DeviceEntity {
 	}
 	public void setIs_excluded_meter(boolean is_excluded_meter) {
 		this.is_excluded_meter = is_excluded_meter;
+	}
+	public String getGroup_name() {
+		return group_name;
+	}
+	public void setGroup_name(String group_name) {
+		this.group_name = group_name;
+	}
+	public String getDevice_status() {
+		return device_status;
+	}
+	public void setDevice_status(String device_status) {
+		this.device_status = device_status;
 	}
 	
 }

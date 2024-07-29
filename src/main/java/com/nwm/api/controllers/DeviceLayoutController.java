@@ -64,6 +64,24 @@ public class DeviceLayoutController extends BaseController {
 	}
 	
 	/**
+	 * @description Get device template list by device group
+	 * @author Hung.Bui
+	 * @since 2024-07-29
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-device-template-by-device-group")
+	public Object getListDeviceTemplateByDeviceGroup(@RequestBody DeviceLayoutEntity obj) {
+		try {
+			List data = service.getListDeviceTemplateByDeviceGroup(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
 	 * @description Save device layout template
 	 * @author Hung.Bui
 	 * @since 2024-07-18
