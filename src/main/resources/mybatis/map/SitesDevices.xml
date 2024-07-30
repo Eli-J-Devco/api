@@ -324,9 +324,29 @@
 						) t
 				GROUP BY t.id_device
 			) tag ON tag.id_device = d.id
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">			        
+		      LEFT JOIN (
+		        SELECT
+		          d.id_site,
+		          d.id,
+		          t.`name`
+		        FROM tag t
+		          LEFT JOIN tag_device_map td ON td.id_tag = t.id
+		          LEFT JOIN device d ON d.id = td.id_device
+		        WHERE
+				 	t.`name` = #{keyword}	         
+		          GROUP BY id_site
+		      ) td ON td.id= d.id
+ 			</if>
+			
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
+				AND td.name = #{keyword}
+			</if>
 			
 			order by
 	        <choose> 

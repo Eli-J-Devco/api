@@ -179,7 +179,7 @@
 				LEFT JOIN device d ON s.id = d.id_site
 			</if>
 			
-			<if test="tag_site != null and tag_site != ''">
+			<if test="(tag_site != null and tag_site != '') or (keyword != null and keyword != '' and sort_column == 'tag_site')">
 		      LEFT JOIN (     
 		        SELECT
 		          t.`name`,
@@ -187,12 +187,18 @@
 		        FROM tag t
 		          LEFT JOIN tag_site_map ts ON ts.id_tag = t.id
 		        WHERE
-		          t.`name` = #{tag_site}
+			        <if test="tag_site != null and tag_site != ''">
+					 	t.`name` = #{tag_site}
+					</if>
+					<if test="keyword != null and keyword != '' and sort_column == 'tag_site'">
+					 	t.`name` = #{keyword}
+					</if>
+					
 		          GROUP BY ts.id_site
 		        ) tid ON tid.id_site = s.id
 			</if>
 			
-			<if test="tag_device != null and tag_device != ''">			        
+ 			<if test="(tag_device != null and tag_device != '') or (keyword != null and keyword != '' and sort_column == 'tag_device')">			        
 		      LEFT JOIN (
 		        SELECT
 		          d.id_site,
@@ -202,10 +208,16 @@
 		          LEFT JOIN tag_device_map td ON td.id_tag = t.id
 		          LEFT JOIN device d ON d.id = td.id_device
 		        WHERE
-		          t.`name` = #{tag_device}
+		        	<if test="tag_device != null and tag_device != ''">
+						t.`name` = #{tag_device}
+					</if>
+					<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
+					 	t.`name` = #{keyword}
+					</if>
+		         
 		          GROUP BY id_site
 		      ) td ON td.id_site = s.id
-			</if>
+ 			</if>
 		WHERE
 			s.is_delete = 0
 			AND sem.is_hiding = 0
@@ -253,6 +265,14 @@
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'serial_number'">
 				AND d.serial_number LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
+				AND td.name = #{keyword}
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'tag_site'">
+				AND tid.name = #{keyword}
 			</if>
 			
 			<if test="ac_capacity != null and ac_capacity != '' and ac_capacity_condition == 'more'">	
