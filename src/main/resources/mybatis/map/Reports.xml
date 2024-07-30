@@ -372,6 +372,7 @@
 			s.id AS id_site,
 			s.`name` AS site_name,
 			s.table_data_report,
+			s.table_data_virtual,
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.offset), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -379,12 +380,27 @@
 			r.data_intervals,
 			r.type_report,
 			r.type_option,
-			r.cadence_range
+			r.cadence_range,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
 		FROM
 			report r
 			LEFT JOIN site_employee_map sem ON sem.id_employee = r.id_employee
 			LEFT JOIN site s ON s.id = sem.id_site
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+					AND d.id_site = #{id_site}
+			) v ON v.id_site = s.id
 		WHERE
 			r.id = #{id}
 			AND s.id = #{id_site}
@@ -1073,22 +1089,31 @@
 				<if test="enable_virtual_device.booleanValue()">
 					LEFT JOIN (
 						SELECT
-							DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%b-%y") AS time_full,
-							SUM(vir.nvmActiveEnergy) AS actualEnergy,
-							AVG(vir.expected_power_ac) AS expectedPower,
-							AVG(vir.nvm_irradiance) AS actualPOA
-						FROM
-							${table_data_virtual} vir
-							LEFT JOIN device d ON d.id = vir.id_device
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-						WHERE
-							d.id_site = #{id_site}
-							AND d.status = 1
-							AND d.is_delete = 0
-							AND s.status = 1
-							AND s.is_delete = 0
-							AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+							DATE_FORMAT(group_by_day, "%b-%y") AS time_full,
+							SUM(actualEnergy) AS actualEnergy,
+							AVG(expectedPower) AS expectedPower,
+							AVG(actualPOA) AS actualPOA
+						FROM (
+							SELECT
+								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%Y-%m-%d") AS group_by_day,
+								SUM(vir.nvmActiveEnergy) AS actualEnergy,
+								AVG(vir.expected_power_ac) AS expectedPower,
+								AVG(vir.nvm_irradiance) AS actualPOA
+							FROM
+								${table_data_virtual} vir
+								LEFT JOIN device d ON d.id = vir.id_device
+								LEFT JOIN site s ON s.id = d.id_site
+								LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+							WHERE
+								d.id_site = #{id_site}
+								AND d.status = 1
+								AND d.is_delete = 0
+								AND s.status = 1
+								AND s.is_delete = 0
+								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+							GROUP BY
+								group_by_day
+						) t
 						GROUP BY
 							time_full
 					) vir ON vir.time_full = sdr.time_full
