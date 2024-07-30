@@ -571,6 +571,7 @@
 			d.ssh_port,
 			dt.`name` AS device_type_name,
 			dt.image,
+			dg.group_name,
 			s.name AS site_name,
 			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication,
 			t.abbreviation_std,
@@ -578,13 +579,14 @@
 			g.total_error,
 			s.kiosk_view,
 			s.unit_type_temp,
-			s.unit_wind_speed
-			
+			s.unit_wind_speed,
+			IF(noComm > 0, 'Offline', 'Online') AS device_status
 			
 			
 		FROM
 			device AS d
 			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -594,6 +596,21 @@
 					LEFT JOIN alert a ON a.id_device = d.id
 				WHERE SHA1(d.id_site) = #{hash_id_site} AND d.`status` = 1 AND a.`status` = 1
 			)g ON g.id_site = d.id_site
+			LEFT JOIN (
+				SELECT
+					a.id_device,
+					COUNT(a.id) AS noComm
+				FROM
+					alert a
+					LEFT JOIN error e ON e.id = a.id_error
+				WHERE
+					SHA1(a.id_device) = #{hash_id}
+					AND a.status = 1
+					AND a.is_delete = 0
+					AND e.status = 1
+					AND e.is_delete = 0
+					AND e.error_code = '1001'
+			) a ON a.id_device = d.id
 		WHERE
 			SHA1(d.id) = #{hash_id}
 			

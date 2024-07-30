@@ -35,6 +35,31 @@
 			AND dp.status = 1
 			AND dp.is_delete = 0
 	</select>
+	
+	<select id="getListDeviceTemplateByDeviceGroup" resultType="Map">
+		SELECT
+			dt.id_device_group,
+			dt.id_categorize_data,
+			dl.data,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id_field', dt.id_field,
+				'id', dp.id,
+				'label', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name)
+			)) AS assignedField
+		FROM
+			device_template_field_map dt
+			LEFT JOIN device_parameters dp ON dp.id = dt.id_param
+			LEFT JOIN device_layout_template dl ON dl.id = dt.id_template
+		WHERE
+			dt.id_device_group = #{id_device_group}
+			AND dp.status = 1
+			AND dp.is_delete = 0
+			AND dl.status = 1
+			AND dl.is_delete = 0
+		GROUP BY
+			dt.id_device_group,
+			dt.id_categorize_data
+	</select>
   	
   	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `device_layout_template`(

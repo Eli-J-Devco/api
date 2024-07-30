@@ -193,6 +193,12 @@ public class ModelMeterIon8600V3Service extends DB {
 				 }
 			 }
 			 
+			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				 obj.setKWhDel(dataObj.getNvmActiveEnergy());
+			 }
+			 
+			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelMeterIon8600V3.insertModelMeterIon8600V3", obj);
