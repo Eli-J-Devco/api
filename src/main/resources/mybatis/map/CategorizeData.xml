@@ -8,7 +8,8 @@
 		SELECT
 			ct.id,
 			ct.name,
-			ct.description
+			ct.description,
+			ct.is_delete
 		FROM
 			categorize_data AS ct
 		WHERE
