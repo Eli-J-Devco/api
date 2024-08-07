@@ -354,12 +354,16 @@
 			wg.id_site,
 			dp.slug AS fieldname,
 			dp.id_device_group,
-			dg.table_name AS table_group
+			dg.table_name AS table_group,
+			IF(wgp.unit = 'USD', s.cost, NULL) AS cost,
+			tz.offset AS time_zone
 		FROM
 			widget_group_parameter wgp
 			LEFT JOIN widget_group wg ON wg.id = wgp.id_widget_group
 			LEFT JOIN device_parameters dp ON dp.id = wgp.id_group_parameter
 			LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+			LEFT JOIN site s ON s.id = wg.id_site
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			WHERE dp.`status` = 1 AND dp.is_delete = 0
 			<if test="id_site > 0">
 				AND wg.id_site = #{id_site}
@@ -369,10 +373,10 @@
 	
 	<select id="getValueField"  resultType="Long">
     	SELECT 
-    		SUM(t.valueField) AS valueField 
+    		SUM(t.valueField) <if test="cost != null"> * ${cost} </if> AS valueField 
     	FROM(
 			<if test="dataDevices != null and !dataDevices.isEmpty()">
-				<foreach collection="dataDevices" item="item" index="index" separator="union all">
+				<foreach collection="tablename" item="tablename" index="index" separator="union all">
 					(
 						SELECT 
 							<choose>
@@ -387,6 +391,9 @@
 							    </when>
 							    <when test="formula == 4">
 							      MIN( ${fieldname} ) AS valueField
+							    </when>
+							    <when test="formula == 5">
+							      MAX( ${fieldname} ) - MIN( ${fieldname} ) AS valueField
 							    </when>
 							    <otherwise>
 							      AVG( ${fieldname} ) AS valueField
@@ -406,7 +413,7 @@
 								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 DAY)
 								    </when>
 								    <when test="type == 4">
-								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -1 MONTH)
+								      time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', #{time_zone}), INTERVAL -1 MONTH), '%Y-%m-01 00:00:00'), #{time_zone}, '+00:00') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', #{time_zone}), INTERVAL -1 MONTH)), '%Y-%m-%d 23:59:59'), #{time_zone}, '+00:00')
 								    </when>
 								    <when test="type == 5">
 								      time <![CDATA[>=]]> DATE_ADD(NOW(), INTERVAL -12 MONTH)

@@ -8,10 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.CalculationMeasuredProductionEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.WidgetGroupParameterEntity;
 import com.nwm.api.services.CalculationMeasureProductionService;
@@ -270,9 +270,11 @@ public class CalculationMeasuredProductionController extends BaseController {
 				String[] arrDevices = idDevices.split(",");
 				ArrayList<String> strList = new ArrayList<String>( Arrays.asList(arrDevices)); 
 				if(strList.size() < 0) { continue; }
-				String tablename = "data"+strList.get(0)+"_"+deviceItem.get("table_group");
 				WidgetGroupParameterEntity item = new WidgetGroupParameterEntity();
-				item.setTablename(tablename);
+				
+				if (deviceItem.get("cost") != null) item.setCost(Double.parseDouble(deviceItem.get("cost").toString()));
+				item.setTime_zone(deviceItem.get("time_zone").toString());
+				item.setTablename(strList.stream().map(device -> "data" + device + "_" + deviceItem.get("table_group")).collect(Collectors.toList()));
 				item.setDataDevices(strList);
 				item.setFieldname(deviceItem.get("fieldname").toString());
 				item.setFormula(Integer.parseInt(deviceItem.get("formula").toString()));

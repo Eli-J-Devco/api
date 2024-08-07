@@ -20,10 +20,12 @@ public class WidgetGroupParameterEntity{
 	private int formula;
 	private double totalRecord;
 	private List dataDevices;
-	private String tablename;
+	private List<String> tablename;
 	private String fieldname;
 	private int type;
 	private String id_device;
+	private Double cost;
+	private String time_zone;
 	
 	
 	public String getId_device() {
@@ -104,10 +106,10 @@ public class WidgetGroupParameterEntity{
 	public void setDataDevices(List dataDevices) {
 		this.dataDevices = dataDevices;
 	}
-	public String getTablename() {
+	public List<String> getTablename() {
 		return tablename;
 	}
-	public void setTablename(String tablename) {
+	public void setTablename(List<String> tablename) {
 		this.tablename = tablename;
 	}
 	public String getFieldname() {
@@ -115,6 +117,18 @@ public class WidgetGroupParameterEntity{
 	}
 	public void setFieldname(String fieldname) {
 		this.fieldname = fieldname;
+	}
+	public Double getCost() {
+		return cost;
+	}
+	public void setCost(Double cost) {
+		this.cost = cost;
+	}
+	public String getTime_zone() {
+		return time_zone;
+	}
+	public void setTime_zone(String time_zone) {
+		this.time_zone = time_zone;
 	}
 	
 	
