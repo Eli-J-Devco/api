@@ -244,6 +244,7 @@
 			dp.`status`,
 			dp.is_delete,
 			IF(dp.is_common = 1, 1, 0) AS is_common,
+			IF(dp.is_user_defined = 1, 1, 0) AS is_user_defined,
 			ct.id AS id_categorize_data,
 			dp.rounding_decimals,
 			dp.value_chart_tool,
@@ -275,6 +276,10 @@
 	            
 	            <when test="sort_column == 'is_common'">
 	                dp.is_common ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'is_user_defined'">
+	                dp.is_user_defined ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'rounding_decimals'">
@@ -337,6 +342,7 @@
 		UPDATE `device_parameters`
 		SET
 			`is_common` = #{is_common},
+			`is_user_defined` = #{is_user_defined},
 			`standard_name` = #{standard_name},
 			`rounding_decimals` = #{rounding_decimals},
 			`id_categorize_data` = #{id_categorize_data},

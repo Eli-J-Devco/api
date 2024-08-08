@@ -49,6 +49,7 @@ public class DeviceParameterEntity{
 	private String filterBy;
 	private int writable;
 	private int rounding_decimals;
+	private int is_user_defined;
 	
 	
 	
@@ -293,6 +294,12 @@ public class DeviceParameterEntity{
 	}
 	public void setWritable(int writable) {
 		this.writable = writable;
+	}
+	public int getIs_user_defined() {
+		return is_user_defined;
+	}
+	public void setIs_user_defined(int is_user_defined) {
+		this.is_user_defined = is_user_defined;
 	}
 	
 
