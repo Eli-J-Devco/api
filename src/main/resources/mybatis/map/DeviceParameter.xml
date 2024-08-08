@@ -305,6 +305,7 @@
 			AND id_categorize_data = #{id_categorize_data}
 			AND `status` = 1
 			AND is_delete = 0
+			AND is_user_defined = 0
 	</select>
 	
 	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">

@@ -54,6 +54,7 @@
 			dt.id_device_group = #{id_device_group}
 			AND dp.status = 1
 			AND dp.is_delete = 0
+			AND dp.is_user_defined = 0
 			AND dl.status = 1
 			AND dl.is_delete = 0
 		GROUP BY

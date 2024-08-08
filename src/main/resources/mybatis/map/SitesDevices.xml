@@ -683,7 +683,10 @@
 			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
 			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id AND dps.id_device = d.id
 		WHERE
-			SHA1(d.id) = #{hash_id} AND d.`status` = 1 AND dp.`status` = 1;
+			SHA1(d.id) = #{hash_id}
+			AND d.`status` = 1
+			AND dp.`status` = 1
+			AND dp.is_user_defined = 0
 	</select>
 	
 	
