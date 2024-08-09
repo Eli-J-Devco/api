@@ -475,8 +475,8 @@
 								</otherwise>
 							</choose>
 						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
+							device d
+							LEFT JOIN ${item.datatablename} dv ON dv.id_device = d.id
 							LEFT JOIN device_type dt ON dt.id = d.id_device_type
 							LEFT JOIN site s ON s.id = d.id_site
 							LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
@@ -546,8 +546,15 @@
 									) a ON a.id_device = dv.id_device
 							) u ON u.id_device = d.id
 						WHERE
-							dv.id_device = #{item.id}
-							AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.`offset`), '%Y-01-01 00:00:00'), tz.`offset`, '+00:00') AND UTC_TIMESTAMP()
+							(
+								dv.id_device = #{item.id}
+								AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.`offset`), '%Y-01-01 00:00:00'), tz.`offset`, '+00:00') AND UTC_TIMESTAMP()
+							) 
+							OR <!-- case: include device that have no data -->
+							(
+								dv.id_device IS NULL
+								AND d.id = #{item.id}
+							)
 						GROUP BY
 							DAYOFYEAR(time_full)
 					) t
@@ -557,6 +564,7 @@
 					OR time_full = yesterdayFormat
 					OR time_full = last7DaysFormat
 					OR time_full = ytdFormat
+					OR time_full IS NULL <!-- case: include device that have no data -->
 			) t
 			GROUP BY
 				id
