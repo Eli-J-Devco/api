@@ -51,6 +51,7 @@ public class ScadaDeviceService extends DB {
 		try {
 			if(dataList.size() > 0 && dateTimeList.size() > 0) {
 				for (ScadaDeviceChartDataEntity dateTime: dateTimeList) {
+					boolean firstCategory = false;
 					boolean isFound = false;
 					
 					for(ScadaDeviceChartDataEntity data: dataList) {
@@ -60,11 +61,12 @@ public class ScadaDeviceService extends DB {
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
 							isFound = true;
+							firstCategory = true;
 							break;
 						}
 					}
 					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					if (!isFound && firstCategory) fulfilledDataList.add(dateTime);
 				}
 			}
 		} catch (Exception e) {

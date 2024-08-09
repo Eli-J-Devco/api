@@ -276,6 +276,7 @@ public class ReportsService extends DB {
 					start = start.plus(1, quarterlyReportByMonth ? ChronoUnit.MONTHS : ChronoUnit.DAYS);
 				}
 				
+				boolean firstCategory = false;
 				for (QuarterlyDateEntity dateTime: dateTimeList) {
 					boolean isFound = false;
 					
@@ -286,11 +287,12 @@ public class ReportsService extends DB {
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
 							isFound = true;
+							firstCategory = true;
 							break;
 						}
 					}
 					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					if (!isFound  && firstCategory) fulfilledDataList.add(dateTime);
 				}
 				
 				dataObj.setDataReports(fulfilledDataList);
@@ -341,6 +343,7 @@ public class ReportsService extends DB {
 					start = start.plus(1, ChronoUnit.MONTHS);
 				}
 				
+				boolean firstCategory = false;
 				for (AssetManagementAndOperationPerformanceDataEntity dateTime: dateTimeList) {
 					boolean isFound = false;
 					
@@ -351,11 +354,12 @@ public class ReportsService extends DB {
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
 							isFound = true;
+							firstCategory = true;
 							break;
 						}
 					}
 					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					if (!isFound && firstCategory) fulfilledDataList.add(dateTime);
 				}
 				
 				dataObj.setOperationPerformanceData(fulfilledDataList);
@@ -383,6 +387,7 @@ public class ReportsService extends DB {
 					start = start.plus(1, ChronoUnit.DAYS);
 				}
 				
+				boolean firstCategory = false;
 				for (AssetManagementAndOperationPerformanceDataEntity dateTime: dateTimeList) {
 					boolean isFound = false;
 					
@@ -393,11 +398,12 @@ public class ReportsService extends DB {
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
 							isFound = true;
+							firstCategory = true;
 							break;
 						}
 					}
 					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					if (!isFound && firstCategory) fulfilledDataList.add(dateTime);
 				}
 				
 				AssetManagementAndOperationPerformanceDataEntity initial = new AssetManagementAndOperationPerformanceDataEntity();
