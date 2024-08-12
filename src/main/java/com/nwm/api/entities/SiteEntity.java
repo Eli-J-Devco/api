@@ -220,6 +220,7 @@ public class SiteEntity {
 	private int is_solar_site;
 	private String domain;
 	private String site_domain_type;
+	private boolean have_poa;
 	
 	
 	
@@ -1418,6 +1419,12 @@ public class SiteEntity {
 	}
 	public void setIs_solar_site(int is_solar_site) {
 		this.is_solar_site = is_solar_site;
+	}
+	public boolean isHave_poa() {
+		return have_poa;
+	}
+	public void setHave_poa(boolean have_poa) {
+		this.have_poa = have_poa;
 	}
 	
 	
