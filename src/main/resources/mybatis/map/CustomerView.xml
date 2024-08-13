@@ -544,7 +544,7 @@
 			time_format,
 			time_full,
 			categories_time,
-			IFNULL(  ROUND(AVG(nvm_irradiance), 1), 0.001  ) AS nvm_irradiance,
+			ROUND(AVG(nvm_irradiance), 1) AS nvm_irradiance,
 			<choose>
 				<when test="is_show_each_meter == 1">
 					CASE
@@ -557,52 +557,7 @@
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF( SUM(meterPower) > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1) )
 						ELSE IF( SUM(meterEnergy) > 0, ROUND(SUM(meterEnergy), 1), ROUND(SUM(inverterEnergy), 1) )
 					END AS chart_energy_kwh,
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IFNULL(  ROUND(AVG(expected_power), 1), 0.001  )
-						ELSE
-							<choose>
-								<when test="data_send_time == 4">
-									IFNULL(ROUND(AVG(expected_power) * 24, 1), 0.001)
-								</when>
-								<when test="data_send_time == 5">
-									IFNULL(ROUND(AVG(expected_power) * 24 * IF(
-										DATEDIFF(#{end_date}, STR_TO_DATE(time_format, '%m-%d-%Y')) >= 7,
-										7,
-										(1 + DATEDIFF(#{end_date}, STR_TO_DATE(time_format, '%m-%d-%Y')))
-									), 1),0.001)
-								</when>
-								<when test="data_send_time == 6">
-									IFNULL(ROUND(AVG(expected_power) * 24 * IF(
-										DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
-										(1 + DATEDIFF(#{end_date}, #{start_date})),
-										IF(
-											time_format = DATE_FORMAT(#{start_date}, '%m/%Y'),
-											(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
-											IF(
-												time_format = DATE_FORMAT(#{end_date}, '%m/%Y'),
-												(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
-												DAYOFMONTH(LAST_DAY(STR_TO_DATE(time_format, '%m/%Y')))
-											)
-										)
-									), 1), 0.001)
-								</when>
-								<when test="data_send_time == 7">
-									IFNULL(ROUND(AVG(expected_power) * 24 * IF(
-										YEAR(#{end_date}) = YEAR(#{start_date}),
-										(1 + DATEDIFF(#{end_date}, #{start_date})),
-										IF(
-											time_format = DATE_FORMAT(#{start_date}, '%Y'),
-											(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
-											IF(
-												time_format = DATE_FORMAT(#{end_date}, '%Y'),
-												(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
-												DAYOFYEAR(DATE_FORMAT(STR_TO_DATE(time_format, '%Y'), '%Y-12-31'))
-											)
-										)
-									), 1), 0.001)
-								</when>
-							</choose>
-					END AS expected_power
+					ROUND(AVG(expected_power), 1) AS expected_power
 				</otherwise>
 			</choose>
 		FROM
@@ -632,38 +587,10 @@
 							DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 						</when>
 					</choose>
-					<choose>
-						<when test="pv_model == 1">
-							AVG(IF(d.id_device_type = 4,
-								IF(
-									IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
-									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-									s.ac_capacity
-								),
-								NULL
-							))
-						</when>
-						<when test="pv_model == 2">
-							AVG(IF(d.id_device_type = 4,
-								IF(
-									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
-									IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
-									s.ac_capacity
-								),
-								NULL
-							))
-						</when>
-						<otherwise>
-							AVG(IF(d.id_device_type = 4,
-								IF(
-									s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
-									NULL,
-									s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
-								),
-								NULL
-							))
-						</otherwise>
-					</choose> AS expected_power,
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN AVG(expected_power)
+						ELSE AVG(expected_power) * 24 * COUNT(*)
+					END AS expected_power,
 					AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)) AS nvm_irradiance,
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
@@ -686,27 +613,70 @@
 						IF(d.id_device_type = 1, sdr.ActualGeneration, 0)
 					)) AS inverterEnergy
 				FROM
-					${table_data_report} sdr
+					(
+						SELECT
+							sdr.time,
+							sdr.POAAVG,
+							sdr.PowerTodayAVG,
+							sdr.ActualGeneration,
+							sdr.id_device,
+							<choose>
+								<when test="pv_model == 1">
+									IF(d.id_device_type = 4,
+										IF(
+											IFNULL(s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100), 0) * IFNULL(s.inverter_efficiency, 96)/100 <![CDATA[<]]> s.ac_capacity,
+											s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - sdr.TCellAVG)) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+											s.ac_capacity
+										),
+										NULL
+									)
+								</when>
+								<when test="pv_model == 2">
+									IF(d.id_device_type = 4,
+										IF(
+											IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
+											IFNULL( s.dc_capacity * (ROUND(sdr.POAAVG,0) / s.global_solar_irradiance_at_stc) * (1 - ROUND((1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((sdr.TCellAVG - s.stc_temperature)/100), 4)) * (ROUND(POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100, 2) / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
+											s.ac_capacity
+										),
+										NULL
+									)
+								</when>
+								<otherwise>
+									IF(d.id_device_type = 4,
+										IF(
+											s.t_avg IS NULL OR NOT (sdr.POAAVG >= s.min_irradiance_limit AND (IF(sdr.PowerTodayAVG > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0)),
+											NULL,
+											s.dc_capacity * (sdr.POAAVG / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (sdr.TCellAVG + sdr.POAAVG/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+										),
+										NULL
+									)
+								</otherwise>
+							</choose> AS expected_power
+						FROM
+							${table_data_report} sdr
+							LEFT JOIN device d ON d.id = sdr.id_device
+							LEFT JOIN site s ON s.id = d.id_site
+						WHERE
+							s.`status` = 1
+							AND d.`status` = 1
+							AND d.id_site = #{id_site}
+							AND s.is_delete = 0
+							AND d.is_delete = 0
+							AND sdr.time BETWEEN #{start_date} AND #{end_date}
+							<foreach item="item" index="index" collection="hidden_data_list">
+								AND
+									CASE
+										WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
+										ELSE TRUE
+									END
+							</foreach>
+					) sdr
 					LEFT JOIN device d ON d.id = sdr.id_device
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN device_parameters dp1 ON dp1.id_device_group = d.id_device_group AND dp1.is_active_power = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf1 ON dp1.id = dpf1.id_device_parameter AND d.id = dpf1.id_device AND (dpf1.min_value IS NOT NULL OR dpf1.max_value IS NOT NULL)
 					LEFT JOIN device_parameters dp2 ON dp2.id_device_group = d.id_device_group AND dp2.is_user_defined = 1 AND dp2.is_energy = 1 AND ${filterEnabled} = true
 					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
-				WHERE
-					s.`status` = 1
-					AND d.`status` = 1
-					AND d.id_site = #{id_site}
-					AND s.is_delete = 0
-					AND d.is_delete = 0
-					AND ( sdr.time BETWEEN #{start_date} AND #{end_date})
-					<foreach item="item" index="index" collection="hidden_data_list">
-						AND
-							CASE
-								WHEN d.id = #{item.id_device} THEN sdr.time NOT BETWEEN #{item.date_from} AND #{item.date_to}
-								ELSE TRUE
-							END
-					</foreach>
 				GROUP BY
 					d.id,
 					time_format
@@ -723,57 +693,12 @@
 			time_format,
 			time_full,
 			categories_time,
-			IFNULL(ROUND(nvm_irradiance, 1), 0.001) AS nvm_irradiance,
+			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
 			CASE
-				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IFNULL(ROUND(nvmActivePower, 1), 0.001)
-				ELSE IFNULL(ROUND(nvmActiveEnergy, 1), 0.001)
+				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
+				ELSE ROUND(nvmActiveEnergy, 1)
 			END AS chart_energy_kwh,
-			CASE
-				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IFNULL(ROUND(expected_power, 1), 0.001)
-				ELSE
-					<choose>
-						<when test="data_send_time == 4">
-							IFNULL(ROUND(expected_power * 24, 1), 0.001)
-						</when>
-						<when test="data_send_time == 5">
-							IFNULL(ROUND(expected_power * 24 * IF(
-								DATEDIFF(#{end_date}, STR_TO_DATE(time_format, '%m-%d-%Y')) >= 7,
-								7,
-								(1 + DATEDIFF(#{end_date}, STR_TO_DATE(time_format, '%m-%d-%Y')))
-							), 1), 0.001)
-						</when>
-						<when test="data_send_time == 6">
-							IFNULL(ROUND(expected_power * 24 * IF(
-								DATE_FORMAT(#{end_date}, '%Y-%m') = DATE_FORMAT(#{start_date}, '%Y-%m'),
-								(1 + DATEDIFF(#{end_date}, #{start_date})),
-								IF(
-									time_format = DATE_FORMAT(#{start_date}, '%m/%Y'),
-									(1 + DATEDIFF(LAST_DAY(#{start_date}), #{start_date})),
-									IF(
-										time_format = DATE_FORMAT(#{end_date}, '%m/%Y'),
-										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-%m-01'))),
-										DAYOFMONTH(LAST_DAY(STR_TO_DATE(time_format, '%m/%Y')))
-									)
-								)
-							), 1), 0.001)
-						</when>
-						<when test="data_send_time == 7">
-							IFNULL(ROUND(expected_power * 24 * IF(
-								YEAR(#{end_date}) = YEAR(#{start_date}),
-								(1 + DATEDIFF(#{end_date}, #{start_date})),
-								IF(
-									time_format = DATE_FORMAT(#{start_date}, '%Y'),
-									(1 + DATEDIFF(DATE_FORMAT(#{start_date}, '%Y-12-31'), #{start_date})),
-									IF(
-										time_format = DATE_FORMAT(#{end_date}, '%Y'),
-										(1 + DATEDIFF(#{end_date}, DATE_FORMAT(#{end_date}, '%Y-01-01'))),
-										DAYOFYEAR(DATE_FORMAT(STR_TO_DATE(time_format, '%Y'), '%Y-12-31'))
-									)
-								)
-							), 1), 0.001)
-						</when>
-					</choose>
-			END AS expected_power
+			ROUND(expected_power, 1) AS expected_power
 		FROM
 			(
 				SELECT
@@ -781,15 +706,12 @@
 						<when test="data_send_time == 4">
 							DATE_FORMAT(group_by_time, '%m-%d-%Y')
 						</when>
-						
 						<when test="data_send_time == 5">
 							DATE_FORMAT(DATE_SUB(group_by_time, INTERVAL (MOD(DATEDIFF(group_by_time, #{start_date}), 7 )) DAY), '%m-%d-%Y')
 						</when>
-						
 						<when test="data_send_time == 6">
 							DATE_FORMAT(group_by_time, '%m/%Y')
 						</when>
-						
 						<when test="data_send_time == 7">
 							DATE_FORMAT(group_by_time, '%Y')
 						</when>
@@ -799,7 +721,10 @@
 					AVG(nvmActivePower) AS nvmActivePower,
 					SUM(nvmActiveEnergy) AS nvmActiveEnergy,
 					AVG(nvm_irradiance) AS nvm_irradiance,
-					AVG(expected_power) AS expected_power
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN AVG(expected_power)
+						ELSE AVG(expected_power) * 24 * COUNT(*)
+					END AS expected_power
 				FROM
 					(
 						SELECT
