@@ -5479,6 +5479,38 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            
+	            <when test="id_device_group == 94">
+	           		CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int DEFAULT NULL,
+						  `low_alarm` int DEFAULT NULL,
+						  `high_alarm` int DEFAULT NULL,
+						  `MODBUSID` double DEFAULT NULL,
+						  `BaudRate` double DEFAULT NULL,
+						  `ParityDataStopBits` double DEFAULT NULL,
+						  `DataOrder` double DEFAULT NULL,
+						  `CounterModeInput1` double DEFAULT NULL,
+						  `CounterEdgeInput1` double DEFAULT NULL,
+						  `ImpulseperRealValueInput1` double DEFAULT NULL,
+						  `DelayLowtoHighInput1` double DEFAULT NULL,
+						  `DelayHightoLowInput1` double DEFAULT NULL,
+						  `DigitalInput1binary` double DEFAULT NULL,
+						  `CounterInput132bit` double DEFAULT NULL,
+						  `CounterInput1RealValue` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                          
 	        </choose> 
 	        

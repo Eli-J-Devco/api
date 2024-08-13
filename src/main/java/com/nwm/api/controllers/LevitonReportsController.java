@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -105,10 +106,8 @@ public class LevitonReportsController extends BaseController {
 	// Write header with format
 	private static void writeHeaderLevitonReport(Sheet sheet, int rowIndex, ViewReportEntity dataObj) {
 		try {
-			DecimalFormat format = new DecimalFormat("###,###.0");
 			sheet.setDisplayGridlines(false);
 			DecimalFormat df = new DecimalFormat("###,###.#");
-			DecimalFormat dfs = new DecimalFormat("###,###");
 			// create CellStyle
 			
 			Font fontDef = sheet.getWorkbook().createFont();
@@ -540,7 +539,7 @@ public class LevitonReportsController extends BaseController {
 					
 					Cell cel32r = row28r.createCell(8);
 					cel32r.setCellStyle(cellStyleR);
-					cel32r.setCellValue(format.format((Double) item.get("start_read"))  );
+					cel32r.setCellValue( df.format(item.get("start_read") ) );
 					
 					Cell cel32r10 = row28r.createCell(9);
 					cel32r10.setCellStyle(cellStyleR);
@@ -556,7 +555,7 @@ public class LevitonReportsController extends BaseController {
 					
 					Cell cel34r = row28r.createCell(12);
 					cel34r.setCellStyle(cellStyleR);
-					cel34r.setCellValue(format.format((Double) item.get("end_read")) );
+					cel34r.setCellValue( df.format( item.get("end_read")));
 					
 					Cell cel34r10 = row28r.createCell(13);
 					cel34r10.setCellStyle(cellStyleR);
@@ -564,7 +563,7 @@ public class LevitonReportsController extends BaseController {
 					
 					Cell cel35r = row28r.createCell(14);
 					cel35r.setCellStyle(cellStyleR);
-					cel35r.setCellValue(format.format((Double) item.get("consumption")) );
+					cel35r.setCellValue(df.format( item.get("consumption")) );
 					
 					
 					Cell cel36r = row28r.createCell(15);
@@ -574,12 +573,12 @@ public class LevitonReportsController extends BaseController {
 					
 					Cell cel37r = row28r.createCell(16);
 					cel37r.setCellStyle(cellStyleR);
-					cel37r.setCellValue(item.get("cost_unit") +" "+ format.format((Double) item.get("cost")) );
+					cel37r.setCellValue(item.get("cost_unit") +" "+ df.format(item.get("cost")) );
 					
 					
 					Cell cel38r = row28r.createCell(17);
 					cel38r.setCellStyle(cellStyleR);
-					cel38r.setCellValue(item.get("cost_unit") +" "+ format.format((Double) item.get("total")) );
+					cel38r.setCellValue(item.get("cost_unit") +" "+ df.format(item.get("total")) );
 					
 				}
 			}
@@ -836,13 +835,13 @@ public class LevitonReportsController extends BaseController {
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("device_type"))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("device_name"))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("date_from"))));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format((Double)item.get("start_read")))));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format(item.get("start_read")))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("date_to"))));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format((Double)item.get("end_read")))));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format((Double)item.get("consumption")))));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format(item.get("end_read")))));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(df.format(item.get("consumption")))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph((String)item.get("consumption_unit"))));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ item.get("cost"))));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ df.format((Double)item.get("total")))));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph(item.get("cost_unit") +" "+ df.format(item.get("total")))));
 					}
 					
 					// Write the output to a file

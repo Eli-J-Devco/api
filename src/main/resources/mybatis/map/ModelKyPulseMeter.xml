@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelKyPulseMeter">
+	<resultMap id="ModelKyPulseMeterMap"
+		type="com.nwm.api.entities.ModelKyPulseMeterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="MODBUSID" column="MODBUSID" />
+		<result property="BaudRate" column="BaudRate" />
+		<result property="ParityDataStopBits" column="ParityDataStopBits" />
+		<result property="DataOrder" column="DataOrder" />
+		<result property="CounterModeInput1" column="CounterModeInput1" />
+		<result property="CounterEdgeInput1" column="CounterEdgeInput1" />
+		<result property="ImpulseperRealValueInput1" column="ImpulseperRealValueInput1" />
+		<result property="DelayLowtoHighInput1" column="DelayLowtoHighInput1" />
+		<result property="DelayHightoLowInput1" column="DelayHightoLowInput1" />
+		<result property="DigitalInput1binary" column="DigitalInput1binary" />
+		<result property="CounterInput132bit" column="CounterInput132bit" />
+		<result property="CounterInput1RealValue" column="CounterInput1RealValue" />
+		<result property="nvmActivePower" column="nvmActivePower" />
+		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		<result property="MeasuredProduction" column="MeasuredProduction" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelKyPulseMeter"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="MODBUSID != 0.001">
+				`MODBUSID`,
+			</if>
+			<if test="BaudRate != 0.001">
+				`BaudRate`,
+			</if>
+			<if test="ParityDataStopBits != 0.001">
+				`ParityDataStopBits`,
+			</if>
+			<if test="DataOrder != 0.001">
+				`DataOrder`,
+			</if>
+			<if test="CounterModeInput1 != 0.001">
+				`CounterModeInput1`,
+			</if>
+			<if test="CounterEdgeInput1 != 0.001">
+				`CounterEdgeInput1`,
+			</if>
+			<if test="ImpulseperRealValueInput1 != 0.001">
+				`ImpulseperRealValueInput1`,
+			</if>
+			<if test="DelayLowtoHighInput1 != 0.001">
+				`DelayLowtoHighInput1`,
+			</if>
+			<if test="DelayHightoLowInput1 != 0.001">
+				`DelayHightoLowInput1`,
+			</if>
+			<if test="DigitalInput1binary != 0.001">
+				`DigitalInput1binary`,
+			</if>
+			<if test="CounterInput132bit != 0.001">
+				`CounterInput132bit`,
+			</if>
+			<if test="CounterInput1RealValue != 0.001">
+				`CounterInput1RealValue`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="MODBUSID != 0.001">
+				#{MODBUSID},
+			</if>
+			<if test="BaudRate != 0.001">
+				#{BaudRate},
+			</if>
+			<if test="ParityDataStopBits != 0.001">
+				#{ParityDataStopBits},
+			</if>
+			<if test="DataOrder != 0.001">
+				#{DataOrder},
+			</if>
+			<if test="CounterModeInput1 != 0.001">
+				#{CounterModeInput1},
+			</if>
+			<if test="CounterEdgeInput1 != 0.001">
+				#{CounterEdgeInput1},
+			</if>
+			<if test="ImpulseperRealValueInput1 != 0.001">
+				#{ImpulseperRealValueInput1},
+			</if>
+			<if test="DelayLowtoHighInput1 != 0.001">
+				#{DelayLowtoHighInput1},
+			</if>
+			<if test="DelayHightoLowInput1 != 0.001">
+				#{DelayHightoLowInput1},
+			</if>
+			<if test="DigitalInput1binary != 0.001">
+				#{DigitalInput1binary},
+			</if>
+			<if test="CounterInput132bit != 0.001">
+				#{CounterInput132bit},
+			</if>
+			<if test="CounterInput1RealValue != 0.001">
+				#{CounterInput1RealValue},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="MODBUSID != 0.001">
+				MODBUSID = #{MODBUSID},
+			</if>
+			<if test="BaudRate != 0.001">
+				BaudRate = #{BaudRate},
+			</if>
+			<if test="ParityDataStopBits != 0.001">
+				ParityDataStopBits = #{ParityDataStopBits},
+			</if>
+			<if test="DataOrder != 0.001">
+				DataOrder = #{DataOrder},
+			</if>
+			<if test="CounterModeInput1 != 0.001">
+				CounterModeInput1 = #{CounterModeInput1},
+			</if>
+			<if test="CounterEdgeInput1 != 0.001">
+				CounterEdgeInput1 = #{CounterEdgeInput1},
+			</if>
+			<if test="ImpulseperRealValueInput1 != 0.001">
+				ImpulseperRealValueInput1 = #{ImpulseperRealValueInput1},
+			</if>
+			<if test="DelayLowtoHighInput1 != 0.001">
+				DelayLowtoHighInput1 = #{DelayLowtoHighInput1},
+			</if>
+			<if test="DelayHightoLowInput1 != 0.001">
+				DelayHightoLowInput1 = #{DelayHightoLowInput1},
+			</if>
+			<if test="DigitalInput1binary != 0.001">
+				DigitalInput1binary = #{DigitalInput1binary},
+			</if>
+			<if test="CounterInput132bit != 0.001">
+				CounterInput132bit = #{CounterInput132bit},
+			</if>
+			<if test="CounterInput1RealValue != 0.001">
+				CounterInput1RealValue = #{CounterInput1RealValue},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				nvmActivePower = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				nvmActiveEnergy = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelKyPulseMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+
+</mapper> 
