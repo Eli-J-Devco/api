@@ -64,7 +64,6 @@ public class SitesAnalyticsService extends DB {
 		
 		try {
 			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				boolean firstCategory = false;
 				for (Map<String, Object> dateTime: dateTimeList) {
 					boolean isFound = false;
 					
@@ -75,12 +74,11 @@ public class SitesAnalyticsService extends DB {
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
 							isFound = true;
-							firstCategory = true;
 							break;
 						}
 					}
 					
-					if (!isFound && firstCategory) fulfilledDataList.add(dateTime);
+					if (!isFound) fulfilledDataList.add(dateTime);
 				}
 			}
 		} catch (Exception e) {
