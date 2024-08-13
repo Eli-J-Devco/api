@@ -694,7 +694,7 @@
 			SHA1(d.id) = #{hash_id}
 			AND d.`status` = 1
 			AND dp.`status` = 1
-			AND dp.is_user_defined = 0
+			AND (dp.is_user_defined = 0 OR dg.id_device_type = 12)
 	</select>
 	
 	
