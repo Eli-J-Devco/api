@@ -986,12 +986,12 @@
 				<choose>
 					<when test="enable_virtual_device.booleanValue()">
 						vir.actualEnergy AS actualEnergy,
-						vir.expectedPower * 24 * DAY(LAST_DAY(STR_TO_DATE(vir.time_full, "%b-%y"))) AS expectedEnergy,
+						vir.expectedEnergy AS expectedEnergy,
 						vir.actualPOA AS actualPOA
 					</when>
 					<otherwise>
 						sdr.actualEnergy AS actualEnergy,
-						sdr.expectedPower * 24 * DAY(LAST_DAY(STR_TO_DATE(sdr.time_full, "%b-%y"))) AS expectedEnergy,
+						sdr.expectedEnergy AS expectedEnergy,
 						sdr.actualPOA AS actualPOA
 					</otherwise>
 				</choose>
@@ -1034,7 +1034,7 @@
 									),
 									NULL
 								))
-						END AS expectedPower,
+						END * 24 * COUNT(*) AS expectedEnergy,
 						AVG(IF(d.id_device_type = 4 AND d.reverse_poa = 0, sdr.POAAVG, NULL)) AS actualPOA,
 						SUM(ia.InverterAvailability) / DATE_FORMAT(LAST_DAY(sdr.time),'%d') AS InverterAvailability,
 						s.dc_capacity
@@ -1091,7 +1091,7 @@
 						SELECT
 							DATE_FORMAT(group_by_day, "%b-%y") AS time_full,
 							SUM(actualEnergy) AS actualEnergy,
-							AVG(expectedPower) AS expectedPower,
+							AVG(expectedPower) * 24 * COUNT(*) AS expectedEnergy,
 							AVG(actualPOA) AS actualPOA
 						FROM (
 							SELECT
