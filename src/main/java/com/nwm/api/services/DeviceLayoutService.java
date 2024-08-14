@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -112,12 +114,18 @@ public class DeviceLayoutService extends DB {
 	 * @since 2024-07-18
 	 */
 	public DeviceLayoutEntity saveFieldAssignment(DeviceLayoutEntity obj){
+		SqlSession session = this.beginTransaction();
 		try {
-	       Object insertId = insert("DeviceLayout.saveFieldAssignment", obj);
-    	   return insertId != null && insertId instanceof Integer ? obj : null;
+			session.delete("DeviceLayout.deleteFieldAssignment", obj);
+			session.insert("DeviceLayout.saveFieldAssignment", obj);
+			session.commit();
+			return obj;
 	    } catch(Exception ex) {
 	        log.error("DeviceLayout.insert", ex);
+	        session.rollback();
 	        return null;
-	    }
+	    } finally {
+			session.close();
+		}
 	}
 }

@@ -85,6 +85,13 @@
 			`id` = #{id}
 	</update>
 	
+	<delete id="deleteFieldAssignment">
+		DELETE FROM device_template_field_map
+		WHERE
+			id_device_group = #{id_device_group}
+			AND id_categorize_data = #{id_categorize_data}
+	</delete>
+	
 	<insert id="saveFieldAssignment">
 		INSERT INTO device_template_field_map (
 			id_template,
@@ -102,12 +109,6 @@
 					#{item.id_param}
 				)
 			</foreach>
-		ON DUPLICATE KEY UPDATE
-			id_template = VALUES(id_template),
-			id_device_group = VALUES(id_device_group),
-			id_categorize_data = VALUES(id_categorize_data),
-			id_field = VALUES(id_field),
-			id_param = VALUES(id_param)
 	</insert>
 	
 </mapper>
