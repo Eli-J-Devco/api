@@ -18,6 +18,7 @@ public class CategorizeDataEntity {
 	private String order_by;
 	private String sort_column;
 	private int screen_mode;
+	private int is_in_use;
 	
 	public int getId() {
 		return id;
@@ -90,6 +91,12 @@ public class CategorizeDataEntity {
 	}
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
+	}
+	public int getIs_in_use() {
+		return is_in_use;
+	}
+	public void setIs_in_use(int is_in_use) {
+		this.is_in_use = is_in_use;
 	}
 	
 }

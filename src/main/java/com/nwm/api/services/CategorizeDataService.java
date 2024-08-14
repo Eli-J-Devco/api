@@ -8,6 +8,8 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CategorizeDataEntity;
 
@@ -46,11 +48,20 @@ public class CategorizeDataService extends DB {
 	 * @param id
 	 */
 	public boolean delete(CategorizeDataEntity obj) {
+		SqlSession session = this.beginTransaction();
 		try {
-			return delete("CategorizeData.delete", obj) > 0;
+			if (obj.getId() == 1) return false;
+			session.update("CategorizeData.delete", obj);
+			session.update("CategorizeData.resetDeviceParameterToDefaultCategory", obj);
+			session.delete("CategorizeData.deleteDeviceTemplateMappingByCategorizeData", obj);
+			session.commit();
+			return true;
 		} catch (Exception ex) {
 			log.error("CategorizeData.delete", ex);
+			session.rollback();
 			return false;
+		} finally {
+			session.close();
 		}
 	}
 	

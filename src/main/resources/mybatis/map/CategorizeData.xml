@@ -9,15 +9,18 @@
 			ct.id,
 			ct.name,
 			ct.description,
-			ct.is_delete
+			ct.is_delete,
+			IF(COUNT(dp.id) > 0, 1, 0) AS is_in_use
 		FROM
 			categorize_data AS ct
+			LEFT JOIN device_parameters dp ON dp.id_categorize_data = ct.id
 		WHERE
 			ct.`status` = 1
 			AND ct.is_delete = 0
 			<if test="keyword != null">
 				AND ct.name LIKE CONCAT("%",#{keyword}, "%")
 			</if>
+	 	GROUP BY ct.id
 	    ORDER BY
 	        <choose>  
 	            <when test="sort_column == 'id'">
@@ -77,5 +80,19 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	<update id="resetDeviceParameterToDefaultCategory">
+		UPDATE device_parameters
+		SET
+			id_categorize_data = 1
+		WHERE
+			id_categorize_data = #{id}
+	</update>
+	
+	<delete id="deleteDeviceTemplateMappingByCategorizeData">
+		DELETE FROM device_template_field_map
+		WHERE
+			id_categorize_data = #{id}
+	</delete>
 	
 </mapper>
