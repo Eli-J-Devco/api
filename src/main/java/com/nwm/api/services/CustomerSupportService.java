@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CustomerSupportEntity;
+import com.nwm.api.entities.IconsEntity;
 import com.nwm.api.entities.SupportFileMapEntity;
 
 public class CustomerSupportService extends DB {
@@ -53,6 +55,34 @@ public class CustomerSupportService extends DB {
 			return null;
 		} finally {
 			session.close();
+		}
+	}
+	
+
+	/**
+	 * @description get list icon
+	 * @author long.pham
+	 * @since 2021-03-31
+	 * @param {}
+	 */
+
+	public List getList(CustomerSupportEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("CustomerSupport.getList", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	public int getTotalRecord(CustomerSupportEntity obj) {
+		try {
+			return (int)queryForObject("CustomerSupport.getTotalRecord", obj);
+		} catch (Exception ex) {
+			return 0;
 		}
 	}
 

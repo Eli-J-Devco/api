@@ -77,4 +77,73 @@
         </selectKey>
 	</insert>
 	
+	<select id="getList" resultType="Map" >
+		SELECT
+			s.id,
+			s.id_site,
+			ss.name AS site_name,
+			s.contact_person,
+			s.account_name,
+			s.phone,
+			s.email,
+			s.note,
+			s.parent,
+			s.id_support_type,
+			s.status,
+			DATE_FORMAT( CONVERT_TZ( s.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
+			JSON_ARRAYAGG(obj_support_file) AS support_file
+			
+		FROM
+			support s
+			LEFT JOIN (
+				SELECT
+						u.id_support,
+						JSON_OBJECT(
+							'id', u.id,
+							'id_support', u.id_support,
+							'file_name', u.file_name,
+							'file_size', u.file_size,
+							'file_type', u.file_type
+						) AS obj_support_file 
+					FROM
+						support_file u
+			) t ON t.id_support = s.id
+			LEFT JOIN site ss ON ss.id = s.id_site
+			LEFT JOIN time_zone t ON t.id = ss.id_time_zone
+			GROUP BY s.id
+		    order by
+	        <choose>  
+	            <when test="sort_column == 'id'">
+	                s.id ${order_by}
+	            </when>         
+	            <when test="sort_column == 'site_name'">
+	                ss.name ${order_by}
+	            </when>            
+	            <when test="sort_column == 'account_name'">
+	                s.account_name ${order_by}
+	            </when>
+	            <when test="sort_column == 'contact_person'">
+	                s.contact_person ${order_by}
+	            </when>
+	            <when test="sort_column == 'email'">
+	                s.email ${order_by}
+	            </when>
+	            <when test="sort_column == 'phone'">
+	                s.phone ${order_by}
+	            </when>
+	            
+	            <otherwise>
+			      s.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.CustomerSupportEntity">
+    	SELECT count(*) as totalRow
+		FROM support s 
+		
+  	</select>
+	
 </mapper>
