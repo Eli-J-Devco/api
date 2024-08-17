@@ -388,10 +388,10 @@ public class EmployeeService extends DB {
 	 * @since 2023-04-18
 	 * @param id
 	 */
-	public EmployeeManageEntity getTableColumn(int id) {
+	public EmployeeManageEntity getTableColumn(EmployeeManageEntity obj) {
 		EmployeeManageEntity employee = new EmployeeManageEntity();
 		try {
-			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", id);
+			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", obj);
 			if (employee == null)
 				return new EmployeeManageEntity();
 		} catch (Exception ex) {

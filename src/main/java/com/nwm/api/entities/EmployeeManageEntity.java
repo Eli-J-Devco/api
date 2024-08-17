@@ -62,6 +62,7 @@ public class EmployeeManageEntity{
 	private String created_by;
 	private int id_company;
 	private String note;
+	private String table;
 	
 	
 	
@@ -382,6 +383,12 @@ public class EmployeeManageEntity{
 	}
 	public void setCreated_by(String created_by) {
 		this.created_by = created_by;
+	}
+	public String getTable() {
+		return table;
+	}
+	public void setTable(String table) {
+		this.table = table;
 	}
 	
 	
