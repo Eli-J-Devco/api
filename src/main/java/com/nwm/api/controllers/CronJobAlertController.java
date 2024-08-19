@@ -789,9 +789,9 @@ public class CronJobAlertController extends BaseController {
 						String mailTo = "";
 						String mailToCC = "";
 						String mailToBCC = String.join(",", mailToBCCArr);
-						if (mailToBCC != null && !mailToBCC.isEmpty()) {
-							mailTo = "support@nwemon.com";
-						}
+//						if (mailToBCC != null && !mailToBCC.isEmpty()) {
+//							mailTo = "support@nwemon.com";
+//						}
 						
 						String subject = " Next Wave Alert - ".concat(siteObj.getName());
 						String tags = "run_cron_job";
