@@ -344,7 +344,7 @@ public class EmployeeController extends BaseController {
 	public Object getTableColumn(@RequestBody EmployeeManageEntity obj) {
 		try {
 			EmployeeService service = new EmployeeService();
-			EmployeeManageEntity data = service.getTableColumn(obj.getId());
+			EmployeeManageEntity data = service.getTableColumn(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
 		} catch (Exception e) {
 			// log error

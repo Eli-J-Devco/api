@@ -141,6 +141,8 @@ public class DeviceEntity {
 	private boolean is_excluded_meter;
 	private String group_name;
 	private String device_status;
+	private String ac_capacity;
+	private String dc_capacity;
 	
 	
 
@@ -920,6 +922,18 @@ public class DeviceEntity {
 	}
 	public void setDevice_status(String device_status) {
 		this.device_status = device_status;
+	}
+	public String getAc_capacity() {
+		return ac_capacity;
+	}
+	public void setAc_capacity(String ac_capacity) {
+		this.ac_capacity = ac_capacity;
+	}
+	public String getDc_capacity() {
+		return dc_capacity;
+	}
+	public void setDc_capacity(String dc_capacity) {
+		this.dc_capacity = dc_capacity;
 	}
 	
 }

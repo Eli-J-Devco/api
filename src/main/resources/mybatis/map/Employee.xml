@@ -555,23 +555,23 @@
 		UPDATE `employee`
 		SET
 			<if test="table_column != null">
-				`table_column` = #{table_column}
+				`table_column` = JSON_SET(IFNULL(table_column, '{}'), '$."${table}"', CAST(#{table_column} AS JSON))
 			</if>
 			<if test="table_order != null">
-				`table_order` = #{table_order}
+				`table_order` = JSON_SET(IFNULL(table_order, '{}'), '$."${table}"', CAST(#{table_order} AS JSON))
 			</if>
 			<if test="table_width != null">
-				`table_width` = #{table_width}
+				`table_width` = JSON_SET(IFNULL(table_width, '{}'), '$."${table}"', CAST(#{table_width} AS JSON))
 			</if>
 		WHERE
 			`id` = #{id};
 	</update>
 	
-  	<select id="getTableColumnEmployeeById" resultMap="EmployeeMap"  parameterType="int">
+  	<select id="getTableColumnEmployeeById" resultMap="EmployeeMap" parameterType = "com.nwm.api.entities.EmployeeManageEntity">
     	SELECT
-    		table_column,
-    		table_order,
-    		table_width
+	    	JSON_VALUE(table_column, '$."${table}"' RETURNING JSON) AS table_column,
+	    	JSON_VALUE(table_order, '$."${table}"' RETURNING JSON) AS table_order,
+	    	JSON_VALUE(table_width, '$."${table}"' RETURNING JSON) AS table_width
 		FROM `employee` u
 		WHERE u.id = #{id};
   	</select>
