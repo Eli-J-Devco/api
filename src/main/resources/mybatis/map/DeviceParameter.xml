@@ -393,5 +393,22 @@
 			lvp.id_device_parameter = #{id}
 	</select>
 	
+	<select id="getParameterDetail" resultType="com.nwm.api.entities.DeviceParameterEntity">
+		SELECT
+			id_categorize_data
+		FROM
+			device_parameters
+		WHERE
+			id = #{id}
+	</select>
+	
+	<update id="resetParameterFromTemplate">
+		UPDATE `device_template_field_map`
+		SET
+			`id_param` = NULL
+		WHERE
+			`id_param` = #{id}
+	</update>
+	
 	
 </mapper>

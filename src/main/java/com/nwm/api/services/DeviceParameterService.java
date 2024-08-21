@@ -225,11 +225,19 @@ public class DeviceParameterService extends DB {
 	 * @param id
 	 */
 	public boolean updateDeviceParameter(DeviceParameterEntity obj){
+		SqlSession session = this.beginTransaction();
 		try{
-			return update("DeviceParameter.updateDeviceParameter", obj) > 0;
+			DeviceParameterEntity param = session.selectOne("DeviceParameter.getParameterDetail", obj);
+			update("DeviceParameter.updateDeviceParameter", obj);
+			if (param.getId_categorize_data() != obj.getId_categorize_data()) update("DeviceParameter.resetParameterFromTemplate", obj);
+			session.commit();
+			return true;
 		}catch (Exception ex) {
+			session.rollback();
 			log.error("DeviceParameter.updateDeviceParameter", ex);
 			return false;
+		}finally {
+			session.close();
 		}
 	}
 	
