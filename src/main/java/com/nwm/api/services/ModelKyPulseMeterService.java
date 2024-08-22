@@ -28,7 +28,7 @@ public class ModelKyPulseMeterService extends DB {
 			if (words.size() > 0) {
 				ModelKyPulseMeterEntity dataModelIon = new ModelKyPulseMeterEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001");
+				Double power =  0.001; // Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				if(energy > 0) { energy = energy + offset_data_old; }
 				
@@ -42,16 +42,15 @@ public class ModelKyPulseMeterService extends DB {
 				dataModelIon.setBaudRate(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelIon.setParityDataStopBits(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelIon.setDataOrder(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataModelIon.setCounterModeInput1(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
-				dataModelIon.setCounterEdgeInput1(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
-				dataModelIon.setImpulseperRealValueInput1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				dataModelIon.setDelayLowtoHighInput1(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
+				dataModelIon.setCounterMode(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModelIon.setCounterEdge(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModelIon.setPulsesper18kWhDelivered(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModelIon.setDigitalInputBinary(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				
-				dataModelIon.setDelayHightoLowInput1(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
+				dataModelIon.setPulseCounter(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				
-				dataModelIon.setDigitalInput1binary(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelIon.setCounterInput132bit(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
-				dataModelIon.setCounterInput1RealValue(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
+				dataModelIon.setTrueCounter(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModelIon.setCumulativeEnergyDelivered(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelIon.setNvmActivePower(power);
@@ -88,7 +87,7 @@ public class ModelKyPulseMeterService extends DB {
 				 
 				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-					 obj.setCounterInput132bit(dataObj.getNvmActiveEnergy());
+					 obj.setCumulativeEnergyDelivered(dataObj.getNvmActiveEnergy());
 				 }
 			 }
 			 

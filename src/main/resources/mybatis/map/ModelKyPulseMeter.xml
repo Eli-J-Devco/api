@@ -14,14 +14,13 @@
 		<result property="BaudRate" column="BaudRate" />
 		<result property="ParityDataStopBits" column="ParityDataStopBits" />
 		<result property="DataOrder" column="DataOrder" />
-		<result property="CounterModeInput1" column="CounterModeInput1" />
-		<result property="CounterEdgeInput1" column="CounterEdgeInput1" />
-		<result property="ImpulseperRealValueInput1" column="ImpulseperRealValueInput1" />
-		<result property="DelayLowtoHighInput1" column="DelayLowtoHighInput1" />
-		<result property="DelayHightoLowInput1" column="DelayHightoLowInput1" />
-		<result property="DigitalInput1binary" column="DigitalInput1binary" />
-		<result property="CounterInput132bit" column="CounterInput132bit" />
-		<result property="CounterInput1RealValue" column="CounterInput1RealValue" />
+		<result property="CounterMode" column="CounterMode" />
+		<result property="CounterEdge" column="CounterEdge" />
+		<result property="Pulsesper18kWhDelivered" column="Pulsesper18kWhDelivered" />
+		<result property="DigitalInputBinary" column="DigitalInputBinary" />
+		<result property="PulseCounter" column="PulseCounter" />
+		<result property="TrueCounter" column="TrueCounter" />
+		<result property="CumulativeEnergyDelivered" column="CumulativeEnergyDelivered" />
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		<result property="MeasuredProduction" column="MeasuredProduction" />
@@ -62,29 +61,26 @@
 			<if test="DataOrder != 0.001">
 				`DataOrder`,
 			</if>
-			<if test="CounterModeInput1 != 0.001">
-				`CounterModeInput1`,
+			<if test="CounterMode != 0.001">
+				`CounterMode`,
 			</if>
-			<if test="CounterEdgeInput1 != 0.001">
-				`CounterEdgeInput1`,
+			<if test="CounterEdge != 0.001">
+				`CounterEdge`,
 			</if>
-			<if test="ImpulseperRealValueInput1 != 0.001">
-				`ImpulseperRealValueInput1`,
+			<if test="Pulsesper18kWhDelivered != 0.001">
+				`Pulsesper18kWhDelivered`,
 			</if>
-			<if test="DelayLowtoHighInput1 != 0.001">
-				`DelayLowtoHighInput1`,
+			<if test="DigitalInputBinary != 0.001">
+				`DigitalInputBinary`,
 			</if>
-			<if test="DelayHightoLowInput1 != 0.001">
-				`DelayHightoLowInput1`,
+			<if test="PulseCounter != 0.001">
+				`PulseCounter`,
 			</if>
-			<if test="DigitalInput1binary != 0.001">
-				`DigitalInput1binary`,
+			<if test="TrueCounter != 0.001">
+				`TrueCounter`,
 			</if>
-			<if test="CounterInput132bit != 0.001">
-				`CounterInput132bit`,
-			</if>
-			<if test="CounterInput1RealValue != 0.001">
-				`CounterInput1RealValue`,
+			<if test="CumulativeEnergyDelivered != 0.001">
+				`CumulativeEnergyDelivered`,
 			</if>
 			
 			<if test="nvmActivePower != 0.001">
@@ -127,30 +123,28 @@
 			<if test="DataOrder != 0.001">
 				#{DataOrder},
 			</if>
-			<if test="CounterModeInput1 != 0.001">
-				#{CounterModeInput1},
+			<if test="CounterMode != 0.001">
+				#{CounterMode},
 			</if>
-			<if test="CounterEdgeInput1 != 0.001">
-				#{CounterEdgeInput1},
+			<if test="CounterEdge != 0.001">
+				#{CounterEdge},
 			</if>
-			<if test="ImpulseperRealValueInput1 != 0.001">
-				#{ImpulseperRealValueInput1},
+			<if test="Pulsesper18kWhDelivered != 0.001">
+				#{Pulsesper18kWhDelivered},
 			</if>
-			<if test="DelayLowtoHighInput1 != 0.001">
-				#{DelayLowtoHighInput1},
+			<if test="DigitalInputBinary != 0.001">
+				#{DigitalInputBinary},
 			</if>
-			<if test="DelayHightoLowInput1 != 0.001">
-				#{DelayHightoLowInput1},
+			<if test="PulseCounter != 0.001">
+				#{PulseCounter},
 			</if>
-			<if test="DigitalInput1binary != 0.001">
-				#{DigitalInput1binary},
+			<if test="TrueCounter != 0.001">
+				#{TrueCounter},
 			</if>
-			<if test="CounterInput132bit != 0.001">
-				#{CounterInput132bit},
+			<if test="CumulativeEnergyDelivered != 0.001">
+				#{CumulativeEnergyDelivered},
 			</if>
-			<if test="CounterInput1RealValue != 0.001">
-				#{CounterInput1RealValue},
-			</if>
+
 			
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
@@ -191,29 +185,26 @@
 			<if test="DataOrder != 0.001">
 				DataOrder = #{DataOrder},
 			</if>
-			<if test="CounterModeInput1 != 0.001">
-				CounterModeInput1 = #{CounterModeInput1},
+			<if test="CounterMode != 0.001">
+				CounterMode = #{CounterMode},
 			</if>
-			<if test="CounterEdgeInput1 != 0.001">
-				CounterEdgeInput1 = #{CounterEdgeInput1},
+			<if test="CounterEdge != 0.001">
+				CounterEdge = #{CounterEdge},
 			</if>
-			<if test="ImpulseperRealValueInput1 != 0.001">
-				ImpulseperRealValueInput1 = #{ImpulseperRealValueInput1},
+			<if test="Pulsesper18kWhDelivered != 0.001">
+				Pulsesper18kWhDelivered = #{Pulsesper18kWhDelivered},
 			</if>
-			<if test="DelayLowtoHighInput1 != 0.001">
-				DelayLowtoHighInput1 = #{DelayLowtoHighInput1},
+			<if test="DigitalInputBinary != 0.001">
+				DigitalInputBinary = #{DigitalInputBinary},
 			</if>
-			<if test="DelayHightoLowInput1 != 0.001">
-				DelayHightoLowInput1 = #{DelayHightoLowInput1},
+			<if test="PulseCounter != 0.001">
+				PulseCounter = #{PulseCounter},
 			</if>
-			<if test="DigitalInput1binary != 0.001">
-				DigitalInput1binary = #{DigitalInput1binary},
+			<if test="TrueCounter != 0.001">
+				TrueCounter = #{TrueCounter},
 			</if>
-			<if test="CounterInput132bit != 0.001">
-				CounterInput132bit = #{CounterInput132bit},
-			</if>
-			<if test="CounterInput1RealValue != 0.001">
-				CounterInput1RealValue = #{CounterInput1RealValue},
+			<if test="CumulativeEnergyDelivered != 0.001">
+				CumulativeEnergyDelivered = #{CumulativeEnergyDelivered},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">

@@ -15,14 +15,13 @@ public class ModelKyPulseMeterEntity {
 	private double BaudRate;
 	private double ParityDataStopBits;
 	private double DataOrder;
-	private double CounterModeInput1;
-	private double CounterEdgeInput1;
-	private double ImpulseperRealValueInput1;
-	private double DelayLowtoHighInput1;
-	private double DelayHightoLowInput1;
-	private double DigitalInput1binary;
-	private double CounterInput132bit;
-	private double CounterInput1RealValue;
+	private double CounterMode;
+	private double CounterEdge;
+	private double Pulsesper18kWhDelivered;
+	private double DigitalInputBinary;
+	private double PulseCounter;
+	private double TrueCounter;
+	private double CumulativeEnergyDelivered;
 	
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
@@ -86,53 +85,47 @@ public class ModelKyPulseMeterEntity {
 	public void setDataOrder(double dataOrder) {
 		DataOrder = dataOrder;
 	}
-	public double getCounterModeInput1() {
-		return CounterModeInput1;
+	public double getCounterMode() {
+		return CounterMode;
 	}
-	public void setCounterModeInput1(double counterModeInput1) {
-		CounterModeInput1 = counterModeInput1;
+	public void setCounterMode(double counterMode) {
+		CounterMode = counterMode;
 	}
-	public double getCounterEdgeInput1() {
-		return CounterEdgeInput1;
+	public double getCounterEdge() {
+		return CounterEdge;
 	}
-	public void setCounterEdgeInput1(double counterEdgeInput1) {
-		CounterEdgeInput1 = counterEdgeInput1;
+	public void setCounterEdge(double counterEdge) {
+		CounterEdge = counterEdge;
 	}
-	public double getImpulseperRealValueInput1() {
-		return ImpulseperRealValueInput1;
+	public double getPulsesper18kWhDelivered() {
+		return Pulsesper18kWhDelivered;
 	}
-	public void setImpulseperRealValueInput1(double impulseperRealValueInput1) {
-		ImpulseperRealValueInput1 = impulseperRealValueInput1;
+	public void setPulsesper18kWhDelivered(double pulsesper18kWhDelivered) {
+		Pulsesper18kWhDelivered = pulsesper18kWhDelivered;
 	}
-	public double getDelayLowtoHighInput1() {
-		return DelayLowtoHighInput1;
+	public double getDigitalInputBinary() {
+		return DigitalInputBinary;
 	}
-	public void setDelayLowtoHighInput1(double delayLowtoHighInput1) {
-		DelayLowtoHighInput1 = delayLowtoHighInput1;
+	public void setDigitalInputBinary(double digitalInputBinary) {
+		DigitalInputBinary = digitalInputBinary;
 	}
-	public double getDelayHightoLowInput1() {
-		return DelayHightoLowInput1;
+	public double getPulseCounter() {
+		return PulseCounter;
 	}
-	public void setDelayHightoLowInput1(double delayHightoLowInput1) {
-		DelayHightoLowInput1 = delayHightoLowInput1;
+	public void setPulseCounter(double pulseCounter) {
+		PulseCounter = pulseCounter;
 	}
-	public double getDigitalInput1binary() {
-		return DigitalInput1binary;
+	public double getTrueCounter() {
+		return TrueCounter;
 	}
-	public void setDigitalInput1binary(double digitalInput1binary) {
-		DigitalInput1binary = digitalInput1binary;
+	public void setTrueCounter(double trueCounter) {
+		TrueCounter = trueCounter;
 	}
-	public double getCounterInput132bit() {
-		return CounterInput132bit;
+	public double getCumulativeEnergyDelivered() {
+		return CumulativeEnergyDelivered;
 	}
-	public void setCounterInput132bit(double counterInput132bit) {
-		CounterInput132bit = counterInput132bit;
-	}
-	public double getCounterInput1RealValue() {
-		return CounterInput1RealValue;
-	}
-	public void setCounterInput1RealValue(double counterInput1RealValue) {
-		CounterInput1RealValue = counterInput1RealValue;
+	public void setCumulativeEnergyDelivered(double cumulativeEnergyDelivered) {
+		CumulativeEnergyDelivered = cumulativeEnergyDelivered;
 	}
 	public double getNvmActivePower() {
 		return nvmActivePower;
@@ -182,7 +175,6 @@ public class ModelKyPulseMeterEntity {
 	public void setData_send_time(int data_send_time) {
 		this.data_send_time = data_send_time;
 	}
-
 	
 	
 }
