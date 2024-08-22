@@ -58,6 +58,7 @@ import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
 import com.nwm.api.entities.ModelJanitzaUmg604proEntity;
 import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
 import com.nwm.api.entities.ModelKlea220pEntity;
+import com.nwm.api.entities.ModelKyPulseMeterEntity;
 import com.nwm.api.entities.ModelLeviton70D48000Entity;
 import com.nwm.api.entities.ModelLevitonAbviusA891123ChannelEntity;
 import com.nwm.api.entities.ModelLevitonS40000rPowerMeterEntity;
@@ -131,6 +132,7 @@ import com.nwm.api.services.ModelIVTSolaronEXTService;
 import com.nwm.api.services.ModelJanitzaUmg604proService;
 import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
 import com.nwm.api.services.ModelKlea220pService;
+import com.nwm.api.services.ModelKyPulseMeterService;
 import com.nwm.api.services.ModelLeviton70D48000Service;
 import com.nwm.api.services.ModelLevitonAbviusA891123ChannelService;
 import com.nwm.api.services.ModelLevitonS40000rPowerMeterService;
@@ -7209,6 +7211,105 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataModelAcuvimIIR);
+														
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item, dataDevice);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
+												
+												
+											case "model_ky_pulse_meter":
+												ModelKyPulseMeterService serviceModelKyPulse = new ModelKyPulseMeterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelKyPulseMeterEntity dataModelKyPulse = serviceModelKyPulse.setModelKyPulseMeter(line, item.getOffset_data_old());
+														dataModelKyPulse.setId_device(item.getId());
+														dataModelKyPulse.setDatatablename(item.getDatatablename());
+														dataModelKyPulse.setView_tablename(item.getView_tablename());
+														dataModelKyPulse.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKyPulseMeterEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelKyPulse);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelKyPulse, scaledValue);
+																if (slug.equals("CumulativeEnergyDelivered")) dataModelKyPulse.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// SystempowerPsum
+														if(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 && dataModelKyPulse.getCumulativeEnergyDelivered() >= 0){
+															deviceUpdateE.setLast_updated(dataModelKyPulse.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 ? dataModelKyPulse.getCumulativeEnergyDelivered() : null);
+														deviceUpdateE.setField_value1(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 ? dataModelKyPulse.getCumulativeEnergyDelivered() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelKyPulse.insertModelKyPulseMeter(dataModelKyPulse);
 														
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
