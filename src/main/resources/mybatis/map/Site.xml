@@ -357,6 +357,10 @@
 					AND s.site_domain_type IN(1,2,3)
 				</when>
 				
+				<when test="(domain == 'demo.nextwavemonitoring.com')">
+					AND s.site_domain_type IN(1,2,3)
+				</when>
+				
 				<when test="domain == 'buildings.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(2,3)
 				</when>
