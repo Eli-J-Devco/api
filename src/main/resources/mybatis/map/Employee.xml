@@ -555,13 +555,13 @@
 		UPDATE `employee`
 		SET
 			<if test="table_column != null">
-				`table_column` = JSON_SET(IFNULL(table_column, '{}'), '$."${table}"', CAST(#{table_column} AS JSON))
+				`table_column` = JSON_SET(IF(table_column IS NULL OR table_column = '', '{}', table_column), '$."${table}"', CAST(#{table_column} AS JSON))
 			</if>
 			<if test="table_order != null">
-				`table_order` = JSON_SET(IFNULL(table_order, '{}'), '$."${table}"', CAST(#{table_order} AS JSON))
+				`table_order` = JSON_SET(IF(table_order IS NULL OR table_order = '', '{}', table_order), '$."${table}"', CAST(#{table_order} AS JSON))
 			</if>
 			<if test="table_width != null">
-				`table_width` = JSON_SET(IFNULL(table_width, '{}'), '$."${table}"', CAST(#{table_width} AS JSON))
+				`table_width` = JSON_SET(IF(table_width IS NULL OR table_width = '', '{}', table_width), '$."${table}"', CAST(#{table_width} AS JSON))
 			</if>
 		WHERE
 			`id` = #{id};
