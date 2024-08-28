@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="EmailTracking">
+	
+	<select id="getInfoSetup" resultType="com.nwm.api.entities.SitesDevicesEntity" parameterType="com.nwm.api.entities.SitesDevicesEntity">
+		SELECT
+			s.* 
+		FROM
+			site s 
+			WHERE `status` = 1 AND is_delete = 0
+		GROUP BY
+			s.id 
+			LIMIT 1
+	</select>
+	
+	
+	<update id="updateSiteEmailTrackingSetup">
+		UPDATE `site`
+		SET
+			`time_queue` = #{time_queue},
+			`threshold_item_max` = #{threshold_item_max}
+		WHERE 1
+	</update>
+	
+</mapper>

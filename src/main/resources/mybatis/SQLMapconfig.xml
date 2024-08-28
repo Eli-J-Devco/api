@@ -212,7 +212,7 @@
 		 <mapper resource="mybatis/map/UploadJSON.xml"/>
 		 <mapper resource="mybatis/map/LevitonReports.xml" />
 		 <mapper resource="mybatis/map/CronFindLogAlert.xml" />
-		 
+		  <mapper resource="mybatis/map/EmailTracking.xml"/>
 		 
 		 
 		 
@@ -222,6 +222,9 @@
 		<mapper resource="mybatis/map/ScadaOverview.xml"/>
 		<mapper resource="mybatis/map/ScadaAlert.xml"/>
 		<mapper resource="mybatis/map/ScadaCharting.xml"/>
+		
+		
+		
 		
 		
 		

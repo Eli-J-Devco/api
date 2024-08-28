@@ -221,11 +221,22 @@ public class SiteEntity {
 	private String domain;
 	private String site_domain_type;
 	private boolean have_poa;
+	private int time_queue;
+	private int threshold_item_max;
 	
 	
-	
-	
-	
+	public int getTime_queue() {
+		return time_queue;
+	}
+	public void setTime_queue(int time_queue) {
+		this.time_queue = time_queue;
+	}
+	public int getThreshold_item_max() {
+		return threshold_item_max;
+	}
+	public void setThreshold_item_max(int threshold_item_max) {
+		this.threshold_item_max = threshold_item_max;
+	}
 	public String getSite_domain_type() {
 		return site_domain_type;
 	}

@@ -147,10 +147,24 @@ public class SitesDevicesEntity {
 	private double cost;
 	private String cost_unit;
 	private int site_domain_type;
+	private int time_queue;
+	private int threshold_item_max;
 
 	
 	
 	
+	public int getTime_queue() {
+		return time_queue;
+	}
+	public void setTime_queue(int time_queue) {
+		this.time_queue = time_queue;
+	}
+	public int getThreshold_item_max() {
+		return threshold_item_max;
+	}
+	public void setThreshold_item_max(int threshold_item_max) {
+		this.threshold_item_max = threshold_item_max;
+	}
 	public int getSite_domain_type() {
 		return site_domain_type;
 	}
