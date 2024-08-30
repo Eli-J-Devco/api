@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.GroupEntity;
 
@@ -50,23 +53,25 @@ public class GroupService extends DB {
 	
 	
 	public List getList(GroupEntity obj) {
-		List dataList = new ArrayList();
-		List newDataList = new ArrayList<>();
 		try {
-			dataList = queryForList("Group.getList", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("Group.getList", obj);
+			if (dataList == null) return new ArrayList();
 			
+			ObjectMapper mapper = new ObjectMapper();
 			for (int i = 0; i < dataList.size(); i++) {
-				Map<String, Object> dataItem = (Map<String, Object>) dataList.get(i);
-				List subGroupList = queryForList("Group.getSubGroupByGroup", dataItem);
-				dataItem.put("sub_group_list", subGroupList);
-				newDataList.add(dataItem);
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("sub_group_list", mapper.readValue(item.get("sub_group_list").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("sub_group_list", new ArrayList<Map<String, Object>>());
+				}
 			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return newDataList;
 	}
 	
 	public int getTotalRecord(GroupEntity obj) {

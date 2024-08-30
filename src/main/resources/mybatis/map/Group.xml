@@ -46,10 +46,23 @@
 			s.is_delete,
 			s.order_id,
 			0 AS is_expand,
-			s.id_company
+			s.id_company,
+			IF(
+				COUNT(ssg.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', ssg.id,
+					'name', ssg.name,
+					'order_id', ssg.order_id,
+					'description', ssg.description
+				))
+			) AS sub_group_list
 		FROM
 			site_group s 
-		WHERE s.is_delete = 0
+			LEFT JOIN site_sub_group ssg ON ssg.id_site_group = s.id AND ssg.status = 1 AND ssg.is_delete = 0
+		WHERE
+			s.status = 1
+			AND s.is_delete = 0
 		<if test="keyword != null">
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 	
@@ -57,6 +70,8 @@
 		<if test="id_company != null and id_company != 0 and id_company > 1">
 			AND s.id_company = #{id_company}
 		</if>
+		GROUP BY
+			s.id
 			
 		    order by
 	        <choose>  
