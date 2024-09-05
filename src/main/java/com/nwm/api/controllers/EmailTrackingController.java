@@ -40,12 +40,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.EmailTrackingEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.services.AlertService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
@@ -101,13 +104,52 @@ public class EmailTrackingController extends BaseController {
 	
 	
 	
-//	/**
-//	 * @description Get list device by site
-//	 * @author long.pham
-//	 * @since 2022-02-09
-//	 * @return data (status, message, array, total_row
-//	 */
-//	@PostMapping("/get-list-device-by-id-site")
+	/**
+	 * @description Get data charting for email tracking
+	 * @author long.pham
+	 * @since 2024-08-27
+	 * @param id_site
+	 * @return data (status, message, object, total_row
+	 */
+
+	@PostMapping("/get-data-charting-for-email-tracking")
+	public Object getDataChartingForEmailTracking(@RequestBody EmailTrackingEntity obj) {
+		try {			
+			EmailTrackingService service = new EmailTrackingService();
+			EmailTrackingEntity getDetail = service.getDataChartingForEmailTracking(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list alert for email tracking
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @return data (status, message, array, total_row)
+	 */
+	
+	@PostMapping("/get-list-alert-for-email-tracking")
+    public Object getListAlertsForEmailTracking(@RequestBody AlertEntity obj){
+		try {
+			if(obj.getLimit() == 0) {
+				obj.setLimit(1000);
+			}
+			
+			EmailTrackingService service = new EmailTrackingService();
+			List data = service.getListAlertsEmailTracking(obj);
+			int totalRecord = service.getListAlertsEmailTrackingCount(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, null);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+		}
+    }
+	
+	
+	
 //	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
 //		try {
 //			EmailTrackingService service = new EmailTrackingService();

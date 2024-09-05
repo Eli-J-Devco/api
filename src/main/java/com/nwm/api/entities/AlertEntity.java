@@ -86,9 +86,15 @@ public class AlertEntity {
 	private String alert_mail_bcc;
 	private String alert_mail_cc;
 	private List listDevices;
+	private String tabs;
 	
 	
-	
+	public String getTabs() {
+		return tabs;
+	}
+	public void setTabs(String tabs) {
+		this.tabs = tabs;
+	}
 	public int getOpen_send_mail_client() {
 		return open_send_mail_client;
 	}
