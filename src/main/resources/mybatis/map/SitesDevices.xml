@@ -32,6 +32,7 @@
 			d.ip_address,
 			d.hidden,
 			d.modbusdevicenumber,
+			d.disable_alert,
 			tag.tags,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			CASE

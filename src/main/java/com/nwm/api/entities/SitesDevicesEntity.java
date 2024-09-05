@@ -149,6 +149,7 @@ public class SitesDevicesEntity {
 	private int site_domain_type;
 	private int time_queue;
 	private int threshold_item_max;
+	private int disable_alert;
 
 	
 	
@@ -969,6 +970,12 @@ public class SitesDevicesEntity {
 	}
 	public void setSunset(String sunset) {
 		this.sunset = sunset;
+	}
+	public int getDisable_alert() {
+		return disable_alert;
+	}
+	public void setDisable_alert(int disable_alert) {
+		this.disable_alert = disable_alert;
 	}
 	
 	

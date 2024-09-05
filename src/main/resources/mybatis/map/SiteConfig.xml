@@ -159,6 +159,7 @@
 	<select id="getListSiteConfig" resultType="Map" >
 		SELECT
 			s.id,
+			SHA1(s.id) AS hash_id,
 			s.id_company,
 			s.id_country,
 			s.id_time_zone,
@@ -178,8 +179,8 @@
 			s.emergency_contact,
 			s.ac_capacity,
 			s.dc_capacity,
-			s.status,
-			s.is_delete,
+			CAST(s.status AS UNSIGNED) AS status,
+			CAST(s.is_delete AS UNSIGNED) AS is_delete,
 			s.created_date,
 			s.created_by,
 			s.updated_date,

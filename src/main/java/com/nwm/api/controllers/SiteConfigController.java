@@ -164,15 +164,8 @@ public class SiteConfigController extends BaseController {
 			SiteConfigService service = new SiteConfigService();
 			List data = service.getListSiteConfig(obj);
 			
-			List newData = new ArrayList();
-			for(int i = 0; i < data.size(); i++) {
-				Map<String, Object> siteItem = (Map<String, Object>) data.get(i);
-				siteItem.put("hash_id", secretCard.encrypt( siteItem.get("id").toString()).toLowerCase() );
-				newData.add(siteItem);
-			}
-			
 			int totalRecord = service.getSiteConfigTotal(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, newData, totalRecord);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
