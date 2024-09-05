@@ -59,7 +59,7 @@ public class SiteConfigService extends DB {
 
 			// Delete error_level_site_map
 			session.update("SiteConfig.deleteErrorLevelSiteMap", obj);
-			if (errorLevel.size() > 0) {
+			if (errorLevel != null && errorLevel.size() > 0) {
 				session.update("SiteConfig.insertErrorLevelSiteMap", obj);
 			}
 
