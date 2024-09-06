@@ -6,9 +6,7 @@
 package com.nwm.api.controllers;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
@@ -17,25 +15,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.BuiltinFormats;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.ClientAnchor;
 import org.apache.poi.ss.usermodel.CreationHelper;
-import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Font;
@@ -57,11 +50,8 @@ import org.apache.poi.xddf.usermodel.chart.AxisCrossBetween;
 import org.apache.poi.xddf.usermodel.chart.AxisCrosses;
 import org.apache.poi.xddf.usermodel.chart.AxisPosition;
 import org.apache.poi.xddf.usermodel.chart.BarDirection;
-import org.apache.poi.xddf.usermodel.chart.BarGrouping;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
-import org.apache.poi.xddf.usermodel.chart.DisplayBlanks;
 import org.apache.poi.xddf.usermodel.chart.LegendPosition;
-import org.apache.poi.xddf.usermodel.chart.MarkerStyle;
 import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChart;
@@ -69,17 +59,14 @@ import org.apache.poi.xddf.usermodel.chart.XDDFChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartLegend;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
-import org.apache.poi.xddf.usermodel.chart.XDDFLineChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
 import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFChart;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.xwpf.usermodel.XWPFChart;
 import org.openxmlformats.schemas.drawingml.x2006.chart.CTPlotArea;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -2094,7 +2081,7 @@ public class SitesReportsController extends BaseController {
 
 						String tags = "report_REC";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";
-						boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+						boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 						if (!flagSent) {
 							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 						}

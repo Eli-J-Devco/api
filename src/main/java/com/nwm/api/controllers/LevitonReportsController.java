@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -710,7 +709,7 @@ public class LevitonReportsController extends BaseController {
 
 						String tags = "leviton_report";
 						String fromName = "NEXT WAVE ENERGY MONITORING INC";
-						boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+						boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 						if (!flagSent) {
 							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 						}
@@ -857,7 +856,7 @@ public class LevitonReportsController extends BaseController {
 				    
 				    String tags = "report_leviton";
 				    String fromName = "NEXT WAVE ENERGY MONITORING INC";
-				    boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+				    boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 				    if (!flagSent) {
 				    	throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 				    }

@@ -20,7 +20,7 @@ import com.sun.mail.smtp.SMTPTransport;
 
 public class SendMail {
 
-	public static boolean SendGmailTLSAttachmentattachment(String mail_from, String from_name, String mail_to, String subject, String body, String tags, String file) throws Exception {
+	public static boolean SendGmailTLSAttachment(String mail_from, String from_name, String mail_to, String subject, String body, String tags, String file) throws Exception {
         String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
         int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
         String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
