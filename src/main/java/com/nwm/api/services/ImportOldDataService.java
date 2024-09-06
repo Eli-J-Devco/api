@@ -496,6 +496,12 @@ public class ImportOldDataService extends DB {
 					session.insert("ModelWaterMeter.insertModelWaterMeter", dataList.get(i));         
 				}
 				break;
+			case "model_ky_pulse_meter":
+				obj.setId_device_type(3);
+				for (int i = 0; i < dataList.size(); i++) {
+					session.insert("ModelKyPulseMeter.insertModelKyPulseMeter", dataList.get(i));         
+				}
+				break;
 				
 			
 				
@@ -505,7 +511,6 @@ public class ImportOldDataService extends DB {
 			return obj;
 		} catch (Exception ex) {
 			session.rollback();
-			log.error("Site.insertSite", ex);
 			obj.setId(0);
 			return obj;
 		} finally {
@@ -3422,6 +3427,25 @@ public class ImportOldDataService extends DB {
 		rowItem.put("nvmActivePower", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
 		rowItem.put("nvmActiveEnergy", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		return rowItem;
+	}
+	
+	
+	public Object setModelKyPulseMeter(HashMap<String, String> rowItem, Row r) {
+		rowItem.put("MODBUSID", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("BaudRate", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("ParityDataStopBits", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("DataOrder", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("CounterMode", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("CounterEdge", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Pulsesper18kWhDelivered", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("DigitalInputBinary", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("PulseCounter", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("TrueCounter", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("CumulativeEnergyDelivered", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
 		return rowItem;
 	}
 	

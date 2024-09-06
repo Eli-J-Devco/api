@@ -474,6 +474,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelWaterMeter(rowItem, r);
 											break;
 											
+										case "model_ky_pulse_meter":
+											service.setModelKyPulseMeter(rowItem, r);
+											break;
+											
 										}
 										
 		
