@@ -29,37 +29,37 @@
 		SELECT
 			<choose>  
 	            <when test="id_filter == 'today'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d %H:00') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y %H:00') AS time_format,
+	                DATE_FORMAT(a.start_date, '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(a.start_date, '%m-%d-%Y %H:00') AS time_format,
 	            </when>         
 	            <when test="id_filter == '3_day'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				   DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	               DATE_FORMAT( a.start_date, '+00:00', '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_week'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'last_week'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_month'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == '12_month'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%b, %Y') AS date_group_by,
-				  	DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%b, %Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'year'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%b, %Y') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%b, %Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
 	            </when>
 	            
 	            <otherwise>
-			      DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				  DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+			      DATE_FORMAT(a.start_date, '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(a.start_date, '%m-%d-%Y') AS time_format,
 			    </otherwise>                                                  
 	        </choose>  
 	        
@@ -80,7 +80,8 @@
 			<!--AND a.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, #{offset_timezone},  '+00:00')
 			AND a.start_date <![CDATA[<=]]> CONVERT_TZ(#{end_date}, #{offset_timezone},  '+00:00') -->
 			
-			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+			<!-- AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date} -->
+			AND a.start_date BETWEEN #{start_date}  AND #{end_date}
 			
 			<if test="id_site != null and id_site != ''">
 			 	AND s.`id` = #{id_site}
@@ -94,39 +95,39 @@
 		SELECT
 			<choose>  
 	            <when test="id_filter == 'today'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d %H:00') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y %H:00') AS time_format,
+	                DATE_FORMAT(a.start_date, '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(a.start_date, '%m-%d-%Y %H:00') AS time_format,
 	            </when>         
 	            <when test="id_filter == '3_day'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				   DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	               DATE_FORMAT( a.start_date, '+00:00', '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_week'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'last_week'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_month'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == '12_month'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%b, %Y') AS date_group_by,
-				  	DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%b, %Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'year'">
-	                DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%b, %Y') AS date_group_by,
-				    DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%b, %Y') AS time_format,
+	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
 	            </when>
 	            
 	            <otherwise>
-			      DATE_FORMAT(  CONVERT_TZ(a.start_date, '+00:00', #{offset_timezone}), '%Y-%m-%d') AS date_group_by,
-				  DATE_FORMAT( CONVERT_TZ(a.start_date,  '+00:00', #{offset_timezone}), '%m-%d-%Y') AS time_format,
+			      DATE_FORMAT(a.start_date, '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(a.start_date, '%m-%d-%Y') AS time_format,
 			    </otherwise>                                                  
-	        </choose>  
+	        </choose> 
 			COUNT(a.id) AS count_alert,
 			a.*
 			FROM
@@ -142,7 +143,8 @@
 			AND d.is_delete = 0
 			<!-- AND a.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, #{offset_timezone}, '+00:00')
 			AND a.start_date <![CDATA[<=]]> CONVERT_TZ(#{end_date}, #{offset_timezone}, '+00:00') -->
-			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+			<!-- AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date} -->
+			AND a.start_date BETWEEN #{start_date}  AND #{end_date}
 			<if test="id_site != null and id_site != ''">
 			 	AND s.`id` = #{id_site}
 			</if>

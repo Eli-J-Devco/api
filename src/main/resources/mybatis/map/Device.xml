@@ -5510,6 +5510,55 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 95">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  `ACCurrent` double DEFAULT NULL,
+						  `PhaseACurrent` double DEFAULT NULL,
+						  `PhaseBCurrent` double DEFAULT NULL,
+						  `PhaseCCurrent` double DEFAULT NULL,
+						  `PhaseVoltageAB` double DEFAULT NULL,
+						  `PhaseVoltageBC` double DEFAULT NULL,
+						  `PhaseVoltageCA` double DEFAULT NULL,
+						  `PhaseVoltageAN` double DEFAULT NULL,
+						  `PhaseVoltageBN` double DEFAULT NULL,
+						  `PhaseVoltageCN` double DEFAULT NULL,
+						  `ACPower` double DEFAULT NULL,
+						  `LineFrequency` double DEFAULT NULL,
+						  `ACApparentPower` double DEFAULT NULL,
+						  `ACReactivePower` double DEFAULT NULL,
+						  `ACPowerFactor` double DEFAULT NULL,
+						  `ACEnergy` double DEFAULT NULL,
+						  `DCAmps` double DEFAULT NULL,
+						  `DCVoltage` double DEFAULT NULL,
+						  `DCPower` double DEFAULT NULL,
+						  `CabinetTemperature` double DEFAULT NULL,
+						  `HeatSinkTemperature` double DEFAULT NULL,
+						  `TransformerTemperature` double DEFAULT NULL,
+						  `OtherTemperature` double DEFAULT NULL,
+						  `OperatingState` double DEFAULT NULL,
+						  `VendorSpecificOperatingState` double DEFAULT NULL,
+						  `EventField` double DEFAULT NULL,
+						  `ReservedforFuture` double DEFAULT NULL,
+						  `VendorEvent1` double DEFAULT NULL,
+						  `VendorEvent2` double DEFAULT NULL,
+						  `VendorEvent3` double DEFAULT NULL,
+						  `VendorEvent4` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	                                                          
 	        </choose> 
 	        

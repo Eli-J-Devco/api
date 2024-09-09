@@ -91,6 +91,7 @@ import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
 import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
 import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
 import com.nwm.api.entities.ModelSth01TempSensorEntity;
+import com.nwm.api.entities.ModelSunSpecInverterEntity;
 import com.nwm.api.entities.ModelSungrowLogger1000Entity;
 import com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity;
 import com.nwm.api.entities.ModelTTiTrackerEntity;
@@ -165,6 +166,7 @@ import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
 import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
 import com.nwm.api.services.ModelSolectriaSGI226IVTService;
 import com.nwm.api.services.ModelSth01TempSensorService;
+import com.nwm.api.services.ModelSunSpecInverterService;
 import com.nwm.api.services.ModelSungrowLogger1000Service;
 import com.nwm.api.services.ModelSunnyCentralClass9775InverterService;
 import com.nwm.api.services.ModelTTiTrackerService;
@@ -7310,6 +7312,105 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														serviceModelKyPulse.insertModelKyPulseMeter(dataModelKyPulse);
+														
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item, dataDevice);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
+												
+												
+											case "model_sun_spec_inverter":
+												ModelSunSpecInverterService serviceModelSunSpec = new ModelSunSpecInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelSunSpecInverterEntity dataModelSunSpec = serviceModelSunSpec.setModelSunSpecInverter(line, item.getOffset_data_old());
+														dataModelSunSpec.setId_device(item.getId());
+														dataModelSunSpec.setDatatablename(item.getDatatablename());
+														dataModelSunSpec.setView_tablename(item.getView_tablename());
+														dataModelSunSpec.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunSpecInverterEntity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunSpec);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelSunSpec, scaledValue);
+																if (slug.equals("CumulativeEnergyDelivered")) dataModelSunSpec.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// ACPower
+														if(dataModelSunSpec.getACPower() != 0.001 && dataModelSunSpec.getACPower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelSunSpec.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelSunSpec.getACPower() != 0.001 ? dataModelSunSpec.getACPower() : null);
+														deviceUpdateE.setField_value1(dataModelSunSpec.getACPower() != 0.001 ? dataModelSunSpec.getACPower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelSunSpec.insertModelSunSpecInverter(dataModelSunSpec);
 														
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {

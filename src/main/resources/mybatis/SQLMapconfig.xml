@@ -149,6 +149,8 @@
 		<mapper resource="mybatis/map/ModelWaterMeter.xml"/>
 		<mapper resource="mybatis/map/UploadWaterAndGas.xml"/>
 		<mapper resource="mybatis/map/ModelKyPulseMeter.xml"/>
+		<mapper resource="mybatis/map/ModelSunSpecInverter.xml"/>
+		
 		
 		
 		
