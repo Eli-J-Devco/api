@@ -4,10 +4,9 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.List;
 import javax.validation.Valid;
 
@@ -16,9 +15,6 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.styledxmlparser.css.media.MediaDeviceDescription;
-import com.itextpdf.styledxmlparser.css.media.MediaType;
 import com.nwm.api.entities.SitesAnalyticsReportEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -196,7 +192,7 @@ public class SitesAnalyticsController extends BaseController {
 	@PostMapping("/send-pdf-report")
 	public @ResponseBody Object sendPDFReport(@RequestBody SitesAnalyticsReportEntity obj) {
 		try {
-			String fileName = obj.getFileName() + "." + obj.getFileType();
+			String fileName = URLEncoder.encode(obj.getFileName() + "." + obj.getFileType(), "UTF-8");
 			String htmlData = obj.getHtml();
 			String email = obj.getEmail();
 			String title = obj.getTitle() != null ? obj.getTitle() : "Custom Reports";
@@ -222,7 +218,7 @@ public class SitesAnalyticsController extends BaseController {
 
             String tags = "customReport";
 			String fromName = "NEXT WAVE ENERGY MONITORING INC";
-			boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, email, title, body, tags, fileName);
+			boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, email, title, body, tags, fileName);
 			if (!flagSent) {
 				throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 			}

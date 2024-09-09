@@ -2178,7 +2178,7 @@ public class ReportsController extends BaseController {
 
 			String tags = "report_" + cadenceRangeName.toLowerCase();
 			String fromName = "NEXT WAVE ENERGY MONITORING INC";
-			boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+			boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 			if (!flagSent) {
 				throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 			}
@@ -2213,7 +2213,7 @@ public class ReportsController extends BaseController {
 
 		String tags = "report_" + cadenceRangeName.toLowerCase();
 		String fromName = "NEXT WAVE ENERGY MONITORING INC";
-		boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, file.getAbsolutePath());
+		boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, file.getAbsolutePath());
 		if (!flagSent) {
 			throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 		}
@@ -2447,7 +2447,7 @@ public class ReportsController extends BaseController {
 
 					String tags = "asset-management-and-operation-performance-report";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
-					boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+					boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 					if (!flagSent) {
 						throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 					}
@@ -2569,7 +2569,7 @@ public class ReportsController extends BaseController {
 				String tags = "report_REC";
 				String fromName = "NEXT WAVE ENERGY MONITORING INC";
 				if(mailTo != null) {
-					boolean flagSent = SendMail.SendGmailTLSAttachmentattachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
+					boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
 					if (!flagSent) {
 						throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
 					}
