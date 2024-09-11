@@ -3,23 +3,6 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="DeviceParameter">
-	<select id="getGenericParameterTypesList" resultType="Map">
-		SELECT
-			id,
-			name
-		FROM
-			generic_parameter_type
-	</select>
-	
-	<select id="getGenericParametersList" resultType="Map">
-		SELECT
-			id,
-			id AS value,
-			name AS label,
-			name AS text
-		FROM
-			generic_parameters
-	</select>
 	
 	<select id="getListCategorizeData" resultType="Map">
 		SELECT
