@@ -15,10 +15,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.EmployeeFilterRecentlyEntity;
+import com.nwm.api.entities.ScadaChartingDeviceEntity;
 import com.nwm.api.entities.SitesAnalyticsReportEntity;
 
 
@@ -32,22 +36,19 @@ public class SitesAnalyticsService extends DB {
 	 */
 	public List getListDeviceBySite(DeviceEntity obj) {
 		try {
-			List dataListNew = new ArrayList();
 			List<Map<String, Object>> dataList = queryForList("SitesAnalytics.getListDeviceBySite", obj);
-			
-			if(dataList.size() > 0) {
-				Map<String, List> map = new HashMap<String, List>();
-				map.put("list", dataList);
-				List<Map<String, Object>> dataListParameter = queryForList("SitesAnalytics.getListDeviceParameter", map);
-				dataList.forEach(item -> {
-					item.put("dataParameter", dataListParameter.stream().filter(p -> p.get("id_device").equals(item.get("id"))).collect(Collectors.toList()));
-					dataListNew.add(item);
-				});
-			}
-			
-			return dataListNew;
+			ObjectMapper mapper = new ObjectMapper();
+			dataList.forEach(item -> {
+					try {
+						List<Map<String, Object>> parameters = mapper.readValue(item.get("parameters").toString(), new TypeReference<List<Map<String, Object>>>(){});
+						item.put("parameters", parameters.stream().sorted((param1, param2) -> param1.get("name").toString().compareTo(param2.get("name").toString())).collect(Collectors.toList()));
+					} catch (JsonProcessingException e) {
+						item.put("parameters", new ArrayList<Map<String, Object>>());
+					}
+			});
+			return dataList;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<Map<String, Object>>();
 		}
 	}
 	
@@ -108,7 +109,7 @@ public class SitesAnalyticsService extends DB {
 			boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
 		
 			switch (obj.getData_send_time()) {
-				case 4: // 1 minute
+				case 8: // 1 minute
 					interval = 1;
 					timeUnit = ChronoUnit.MINUTES;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -202,7 +203,7 @@ public class SitesAnalyticsService extends DB {
 	                }
 					break;
 					
-				case 5: // 1 day
+				case 4: // 1 day
 					interval = 1;
 					timeUnit = ChronoUnit.DAYS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -230,7 +231,7 @@ public class SitesAnalyticsService extends DB {
 					}
 					break;
 					
-				case 6: // 7 days
+				case 5: // 7 days
 					interval = 7;
 					timeUnit = ChronoUnit.DAYS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -248,7 +249,7 @@ public class SitesAnalyticsService extends DB {
 	                }
 					break;
 					
-				case 7: // 1 month
+				case 6: // 1 month
 					interval = 1;
 					timeUnit = ChronoUnit.MONTHS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
@@ -256,7 +257,7 @@ public class SitesAnalyticsService extends DB {
 					start = start.withDayOfMonth(1);
 					break;
 					
-				case 8: // 1 year
+				case 7: // 1 year
 					interval = 1;
 					timeUnit = ChronoUnit.YEARS;
 					fullTimeFormat = DateTimeFormatter.ofPattern("yyyy");
@@ -292,13 +293,14 @@ public class SitesAnalyticsService extends DB {
 		try {
 			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
-			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+			DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 						
 			if(dataDevice.size() > 0) {
 				List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
 				
-				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), dateFormat).withHour(0).withMinute(0).withSecond(0);
-				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), dateFormat).withHour(23).withMinute(59).withSecond(59);
+				LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
+				LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
 				long diff5Days = ChronoUnit.DAYS.between(startDate, endDate) + 1;
 				
 				for(int i = 0; i < dataDevice.size(); i++) {
@@ -312,8 +314,8 @@ public class SitesAnalyticsService extends DB {
 							
 							map.put("filterEnabled", obj.isFilterEnabled());
 							map.put("filterBy", obj.getFilterBy());
-							map.put("start_date", obj.getStart_date());
-							map.put("end_date", obj.getEnd_date());
+							map.put("start_date", startDate.format(isoDateFormat));
+							map.put("end_date", endDate.format(isoDateFormat));
 							map.put("diff5Days", diff5Days <= 5 && diff5Days > 0);
 							map.put("data_send_time", obj.getData_send_time());
 							
@@ -328,7 +330,7 @@ public class SitesAnalyticsService extends DB {
 							List<Map<String, Object>> getDataChartParameter = queryForList("SitesAnalytics.getDataChartParameter", map);
 							
 							maps.put("id", map.get("id"));
-							maps.put("device_name", map.get("devicename"));
+							maps.put("device_name", map.get("name"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
 							maps.put("data", fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter));

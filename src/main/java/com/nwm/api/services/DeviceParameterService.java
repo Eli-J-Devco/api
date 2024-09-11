@@ -18,6 +18,40 @@ import com.nwm.api.entities.DeviceParameterEntity;
 public class DeviceParameterService extends DB {
 	
 	/**
+	 * @description Get generic parameter types list
+	 * @author Hung.Bui
+	 * @since 2024-09-06
+	 * @param  empty
+	 * @return array
+	 */
+	
+	public List getGenericParameterTypesList(DeviceParameterEntity obj) {
+		try {
+			List dataList = queryForList("DeviceParameter.getGenericParameterTypesList", obj);
+			return dataList == null ? new ArrayList() : dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	/**
+	 * @description Get generic parameters list
+	 * @author Hung.Bui
+	 * @since 2024-09-06
+	 * @param  empty
+	 * @return array
+	 */
+	
+	public List getGenericParametersList(DeviceParameterEntity obj) {
+		try {
+			List dataList = queryForList("DeviceParameter.getGenericParametersList", obj);
+			return dataList == null ? new ArrayList() : dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	/**
 	 * @description Get categorize data list
 	 * @author Hung.Bui
 	 * @since 2023-11-14
@@ -26,15 +60,12 @@ public class DeviceParameterService extends DB {
 	 */
 	
 	public List getListCategorizeData(DeviceParameterEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("DeviceParameter.getListCategorizeData", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("DeviceParameter.getListCategorizeData", obj);
+			return dataList == null ? new ArrayList() : dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	
 	/**

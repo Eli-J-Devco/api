@@ -50,7 +50,7 @@ public class DeviceParameterEntity{
 	private int writable;
 	private int rounding_decimals;
 	private int is_user_defined;
-	
+	private Integer id_generic_parameter;
 	
 	
 	
@@ -300,6 +300,12 @@ public class DeviceParameterEntity{
 	}
 	public void setIs_user_defined(int is_user_defined) {
 		this.is_user_defined = is_user_defined;
+	}
+	public Integer getId_generic_parameter() {
+		return id_generic_parameter;
+	}
+	public void setId_generic_parameter(Integer id_generic_parameter) {
+		this.id_generic_parameter = id_generic_parameter;
 	}
 	
 

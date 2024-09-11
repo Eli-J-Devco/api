@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.ScadaChartingDeviceEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ScadaChartingEntity;
 import com.nwm.api.entities.ScadaEmployeeChartFilterEntity;
 import com.nwm.api.services.ScadaChartingService;
+import com.nwm.api.services.SitesAnalyticsService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -54,10 +55,10 @@ public class ScadaChartingController extends BaseController {
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/list-device-by-site")
-	public Object getListDeviceBySite(@RequestBody ScadaChartingEntity obj) {
+	public Object getListDeviceBySite(@RequestBody DeviceEntity obj) {
 		try {
-			ScadaChartingService service = new ScadaChartingService();
-			List<ScadaChartingDeviceEntity> data = service.getListDeviceBySite(obj);
+			SitesAnalyticsService service = new SitesAnalyticsService();
+			List data = service.getListDeviceBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
@@ -73,10 +74,10 @@ public class ScadaChartingController extends BaseController {
 	 * @return data (status, message, array, total_row)
 	 */
 	@PostMapping("/get-chart-data")
-	public Object getChartData(@RequestBody ScadaChartingEntity obj) {
+	public Object getChartData(@RequestBody DeviceEntity obj) {
 		try {
-			ScadaChartingService service = new ScadaChartingService();
-			List data = service.getChartData(obj);
+			SitesAnalyticsService service = new SitesAnalyticsService();
+			List data = service.getChartParameterDevice(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
