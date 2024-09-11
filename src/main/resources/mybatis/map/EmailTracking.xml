@@ -9,7 +9,7 @@
 			s.* 
 		FROM
 			site s 
-			WHERE `status` = 1 AND is_delete = 0
+			WHERE `status` = 1 AND is_delete = 0 AND s.id = #{id}
 		GROUP BY
 			s.id 
 			LIMIT 1
@@ -21,45 +21,58 @@
 		SET
 			`time_queue` = #{time_queue},
 			`threshold_item_max` = #{threshold_item_max}
-		WHERE 1
+		WHERE 
+		<choose>
+		<when test="checkall == 1">
+	      id IN (
+	      	SELECT * FROM (SELECT s.id FROM site s 
+			LEFT JOIN site_employee_map se ON se.id_site = s.id
+			WHERE se.id_employee = #{id_employee}) AS t
+	      )
+	    </when>
+	    <otherwise>
+	      id = #{id}
+	    </otherwise>
+	  </choose>
+		
 	</update>
 	
 	
-	<select id="getEmailSent" resultType="Map" >
+	<select id="getEmailSent" resultType="Map">
 		SELECT
 			<choose>  
 	            <when test="id_filter == 'today'">
-	                DATE_FORMAT(a.start_date, '%Y-%m-%d %H:00') AS date_group_by,
-				    DATE_FORMAT(a.start_date, '%m-%d-%Y %H:00') AS time_format,
+	                DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:00') AS time_format,
 	            </when>         
 	            <when test="id_filter == '3_day'">
-	               DATE_FORMAT( a.start_date, '+00:00', '%Y-%m-%d') AS date_group_by,
-				   DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	               DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_week'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'last_week'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_month'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == '12_month'">
-	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
-				  	DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'year'">
-	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
 	            </when>
 	            
 	            <otherwise>
-			      DATE_FORMAT(a.start_date, '%Y-%m-%d') AS date_group_by,
-				  DATE_FORMAT(a.start_date, '%m-%d-%Y') AS time_format,
+			      DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 			    </otherwise>                                                  
 	        </choose>  
 	        
@@ -72,17 +85,12 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 0 
+			a.`status` = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			<!--AND a.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, #{offset_timezone},  '+00:00')
-			AND a.start_date <![CDATA[<=]]> CONVERT_TZ(#{end_date}, #{offset_timezone},  '+00:00') -->
-			
-			<!-- AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date} -->
-			AND a.start_date BETWEEN #{start_date}  AND #{end_date}
-			
+			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` ) BETWEEN #{start_date}  AND #{end_date}
 			<if test="id_site != null and id_site != ''">
 			 	AND s.`id` = #{id_site}
 			</if>
@@ -95,39 +103,39 @@
 		SELECT
 			<choose>  
 	            <when test="id_filter == 'today'">
-	                DATE_FORMAT(a.start_date, '%Y-%m-%d %H:00') AS date_group_by,
-				    DATE_FORMAT(a.start_date, '%m-%d-%Y %H:00') AS time_format,
+	                DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:00') AS date_group_by,
+				    DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:00') AS time_format,
 	            </when>         
 	            <when test="id_filter == '3_day'">
-	               DATE_FORMAT( a.start_date, '+00:00', '%Y-%m-%d') AS date_group_by,
-				   DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	               DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				   DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_week'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'last_week'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'this_month'">
-	                DATE_FORMAT( a.start_date, '%Y-%m-%d') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%m-%d-%Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 	            </when>
 	            <when test="id_filter == '12_month'">
-	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
-				  	DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				  	DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
 	            </when>
 	            <when test="id_filter == 'year'">
-	                DATE_FORMAT( a.start_date, '%b, %Y') AS date_group_by,
-				    DATE_FORMAT( a.start_date, '%b, %Y') AS time_format,
+	                DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS date_group_by,
+				    DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%b, %Y') AS time_format,
 	            </when>
 	            
 	            <otherwise>
-			      DATE_FORMAT(a.start_date, '%Y-%m-%d') AS date_group_by,
-				  DATE_FORMAT(a.start_date, '%m-%d-%Y') AS time_format,
+			      DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%Y-%m-%d') AS date_group_by,
+				  DATE_FORMAT(CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y') AS time_format,
 			    </otherwise>                                                  
-	        </choose> 
+	        </choose>
 			COUNT(a.id) AS count_alert,
 			a.*
 			FROM
@@ -136,15 +144,13 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 0 
+			a.`status` = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			<!-- AND a.start_date <![CDATA[>=]]> CONVERT_TZ(#{start_date}, #{offset_timezone}, '+00:00')
-			AND a.start_date <![CDATA[<=]]> CONVERT_TZ(#{end_date}, #{offset_timezone}, '+00:00') -->
-			<!-- AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date} -->
-			AND a.start_date BETWEEN #{start_date}  AND #{end_date}
+			AND a.is_queue = 0
+			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` ) BETWEEN #{start_date}  AND #{end_date}
 			<if test="id_site != null and id_site != ''">
 			 	AND s.`id` = #{id_site}
 			</if>
@@ -295,6 +301,10 @@
 					</foreach>
 				)
 			</if>
+			  
+			<if test="tabs == 'queue'">
+				AND l.is_queue = 0
+			</if>
 			
 			GROUP BY l.id 
 			
@@ -401,6 +411,193 @@
 			</if>
 			
   	</select>
+  	
+  	
+  	<update id="deleteALertQueue">
+		UPDATE `alert_queue`
+		SET
+			`is_queue` = #{is_queue}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<insert id="insertAlertEmailtracking" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO alert (id_device, id_error, start_date, end_date, asset, capacity, `status`, created_date, created_by, updated_date, updated_by, is_delete, alert_acknowledged, disable_notification, resolved, open_send_mail, close_send_mail, note, is_read, is_notification, open_send_mail_client, close_send_mail_client )
+			SELECT
+			id_device,
+			id_error,
+			start_date,
+			end_date,
+			asset,
+			capacity,
+			`status`,
+			created_date,
+			created_by,
+			updated_date,
+			updated_by,
+			is_delete,
+			alert_acknowledged,
+			disable_notification,
+			resolved,
+			open_send_mail,
+			close_send_mail,
+			note,
+			is_read,
+			is_notification,
+			open_send_mail_client,
+			close_send_mail_client 
+			FROM
+				alert_queue aq
+			WHERE aq.id = #{id};
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	
+	<update id="updateAlertQueue">
+		UPDATE `alert_queue`
+		SET
+			`is_queue` = 1
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	
+	<select id="getDataSummaryForEmailTracking" resultType="com.nwm.api.entities.EmailTrackingEntity" parameterType="com.nwm.api.entities.EmailTrackingEntity">
+		SELECT 
+			(
+			SELECT
+					COUNT(l.id) as total_sent
+					
+				FROM
+					`alert` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = 214
+					AND l.is_delete = 0
+					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+					) AS total_sent,
+					
+			(
+			SELECT
+					COUNT(l.id) as total_sent_compare
+				FROM
+					`alert` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = 214
+					AND l.is_delete = 0
+					<choose>  
+			            <when test="id_filter == 'today'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+			            </when>         
+			            <when test="id_filter == '3_day'">
+			               AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -3 DAY)   AND DATE_ADD( #{end_date},INTERVAL -3 DAY)
+			            </when>
+			            <when test="id_filter == 'this_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'last_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'this_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -1 MONTH)
+			            </when>
+			            <when test="id_filter == '12_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -12 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -12 MONTH)
+			            </when>
+			            <when test="id_filter == 'year'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 YEAR)   AND DATE_ADD( #{end_date},INTERVAL -1 YEAR)
+			            </when>
+			            <otherwise>
+					      AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+					    </otherwise>                                                  
+			        </choose>
+					) AS total_sent_compare,
+					
+					
+				(
+			SELECT
+					COUNT(l.id) as total_queue
+					
+				FROM
+					`alert_queue` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = 214
+					AND l.is_delete = 0
+					AND l.is_queue = 0
+					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+					) AS total_queue,
+					
+				(
+			SELECT
+					COUNT(l.id) as total_queue_compare
+					
+				FROM
+					`alert_queue` l
+					LEFT JOIN error e ON e.id = l.id_error
+					LEFT JOIN device d ON d.id = l.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE  e.`status` = 1 
+					AND s.enable_alert = 1 
+					AND e.is_delete = 0  
+					AND s.id = 214
+					AND l.is_delete = 0
+					AND l.is_queue = 0
+					<choose>  
+			            <when test="id_filter == 'today'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+			            </when>         
+			            <when test="id_filter == '3_day'">
+			               AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -3 DAY)   AND DATE_ADD( #{end_date},INTERVAL -3 DAY)
+			            </when>
+			            <when test="id_filter == 'this_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'last_week'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 WEEK)   AND DATE_ADD( #{end_date},INTERVAL -1 WEEK)
+			            </when>
+			            <when test="id_filter == 'this_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -1 MONTH)
+			            </when>
+			            <when test="id_filter == '12_month'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -12 MONTH)   AND DATE_ADD( #{end_date},INTERVAL -12 MONTH)
+			            </when>
+			            <when test="id_filter == 'year'">
+			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 YEAR)   AND DATE_ADD( #{end_date},INTERVAL -1 YEAR)
+			            </when>
+			            <otherwise>
+					      AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
+					    </otherwise>                                                  
+			        </choose>
+					) AS total_queue_compare
+					
+					
+		
+					
+  	</select>
+	
+	
+	
   	
 	
 </mapper>

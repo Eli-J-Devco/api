@@ -87,8 +87,16 @@ public class AlertEntity {
 	private String alert_mail_cc;
 	private List listDevices;
 	private String tabs;
+	private int is_queue;
 	
 	
+	
+	public int getIs_queue() {
+		return is_queue;
+	}
+	public void setIs_queue(int is_queue) {
+		this.is_queue = is_queue;
+	}
 	public String getTabs() {
 		return tabs;
 	}

@@ -17,6 +17,7 @@ import org.apache.ibatis.session.SqlSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.AvatarEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.EmailTrackingEntity;
@@ -102,6 +103,29 @@ public class EmailTrackingService extends DB {
 	}
 	
 	
+	
+	
+	
+	/**
+	 * @description get data summary for email tracking
+	 * @author long.pham
+	 * @since 2021-03-12
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public EmailTrackingEntity getDataSummaryForEmailTracking(EmailTrackingEntity obj) {
+		EmailTrackingEntity dataObj = new EmailTrackingEntity();
+		try {
+			dataObj = (EmailTrackingEntity) queryForObject("EmailTracking.getDataSummaryForEmailTracking", obj);			
+			if (dataObj == null)
+				return new EmailTrackingEntity();
+		} catch (Exception ex) {
+			return new EmailTrackingEntity();
+		}
+		return dataObj;
+	}
+	
 	/**
 	 * @description get list alert for email tracking
 	 * @author long.pham
@@ -111,32 +135,6 @@ public class EmailTrackingService extends DB {
 
 	public List getListAlertsEmailTracking(AlertEntity obj) {
 		try {
-			// get user preference for table sorting column
-//			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-//			tablePreference.setId_employee(obj.getId_employee());
-//			tablePreference.setTable("SiteAlerts");
-//			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-//			
-//			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-//				if (tablePreference != null) {
-//					tablePreference.setOrder_by(obj.getOrder_by());
-//					tablePreference.setSort_column(obj.getSort_column());
-//					update("TablePreference.updatePreference", tablePreference);
-//				} else {
-//					tablePreference = new TablePreferenceEntity();
-//					tablePreference.setId_employee(obj.getId_employee());
-//					tablePreference.setTable("SiteAlerts");
-//					tablePreference.setOrder_by(obj.getOrder_by());
-//					tablePreference.setSort_column(obj.getSort_column());
-//					insert("TablePreference.insertPreference", tablePreference);
-//				}
-//			} else {
-//				if (tablePreference != null) {
-//					obj.setOrder_by(tablePreference.getOrder_by());
-//					obj.setSort_column(tablePreference.getSort_column());
-//				}
-//			}
-			
 			List rs = queryForList("EmailTracking.getListAlertsEmailTracking", obj);
 			if (rs == null) {
 				return new ArrayList<>();
@@ -162,6 +160,49 @@ public class EmailTrackingService extends DB {
 			return 0;
 		}
 	}
+	
+	
+	
+	
+	/** @description delete email tracking
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param id
+	 */
+	public boolean deleteALertQueue(AlertEntity obj) {
+		try {
+			return delete("EmailTracking.deleteALertQueue", obj) > 0;
+		} catch (Exception ex) {
+			log.error("EmailTracking.deleteALertQueue", ex);
+			return false;
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description update email tracking process
+	 * @author long.pham
+	 * @since 2024-09-04
+	 * @param id
+	 */
+	public boolean processALertQueue(AlertEntity obj){
+		
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("EmailTracking.updateAlertQueue", obj);
+			session.insert("EmailTracking.insertAlertEmailtracking", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
 	
 	
 	

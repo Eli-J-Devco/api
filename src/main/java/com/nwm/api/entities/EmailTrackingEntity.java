@@ -15,8 +15,36 @@ public class EmailTrackingEntity {
 	private List dataSents;
 	private List dataQueues;
 	private String offset_timezone;
+	private int total_sent;
+	private int total_queue;
+	private int total_sent_compare;
+	private int total_queue_compare;
 	
 	
+	public int getTotal_sent() {
+		return total_sent;
+	}
+	public void setTotal_sent(int total_sent) {
+		this.total_sent = total_sent;
+	}
+	public int getTotal_queue() {
+		return total_queue;
+	}
+	public void setTotal_queue(int total_queue) {
+		this.total_queue = total_queue;
+	}
+	public int getTotal_sent_compare() {
+		return total_sent_compare;
+	}
+	public void setTotal_sent_compare(int total_sent_compare) {
+		this.total_sent_compare = total_sent_compare;
+	}
+	public int getTotal_queue_compare() {
+		return total_queue_compare;
+	}
+	public void setTotal_queue_compare(int total_queue_compare) {
+		this.total_queue_compare = total_queue_compare;
+	}
 	public String getOffset_timezone() {
 		return offset_timezone;
 	}
