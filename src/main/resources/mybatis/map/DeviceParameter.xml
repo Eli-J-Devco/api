@@ -3,6 +3,24 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="DeviceParameter">
+	<select id="getGenericParameterTypesList" resultType="Map">
+		SELECT
+			id,
+			name
+		FROM
+			generic_parameter_type
+	</select>
+	
+	<select id="getGenericParametersList" resultType="Map">
+		SELECT
+			id,
+			id AS value,
+			name AS label,
+			name AS text
+		FROM
+			generic_parameters
+	</select>
+	
 	<select id="getListCategorizeData" resultType="Map">
 		SELECT
 			id,
@@ -248,10 +266,13 @@
 			ct.id AS id_categorize_data,
 			dp.rounding_decimals,
 			dp.value_chart_tool,
-			ct.name AS categorize_data_name
+			ct.name AS categorize_data_name,
+			gp.id AS id_generic_parameter,
+			gp.name AS generic_parameter_name
 		FROM
 			device_parameters AS dp
 			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			dp.id_device_group = #{id_device_group}
 			AND dp.`status` = 1
@@ -288,6 +309,10 @@
 	            
 	            <when test="sort_column == 'value_chart_tool'">
 	                dp.value_chart_tool ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'generic_parameter_name'">
+	                gp.name ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -346,7 +371,8 @@
 			`standard_name` = #{standard_name},
 			`rounding_decimals` = #{rounding_decimals},
 			`id_categorize_data` = #{id_categorize_data},
-			`value_chart_tool` = #{value_chart_tool}
+			`value_chart_tool` = #{value_chart_tool},
+			`id_generic_parameter` = #{id_generic_parameter}
 		WHERE
 			`id` = #{id}
 	</update>

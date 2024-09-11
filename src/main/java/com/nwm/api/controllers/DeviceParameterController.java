@@ -25,7 +25,45 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @RequestMapping("/device-parameter")
 public class DeviceParameterController extends BaseController {
+	
+	/**
+	 * @description Get generic parameter types list
+	 * @author Hung.Bui
+	 * @since 2024-09-06
+	 * @param  empty
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-generic-parameter-types")
+	public Object getGenericParameterTypesList(@RequestBody DeviceParameterEntity obj) {
+		try {
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.getGenericParameterTypesList(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 
+	/**
+	 * @description Get generic parameters list
+	 * @author Hung.Bui
+	 * @since 2024-09-06
+	 * @param  empty
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/list-generic-parameters")
+	public Object getGenericParametersList(@RequestBody DeviceParameterEntity obj) {
+		try {
+			DeviceParameterService service = new DeviceParameterService();
+			List data = service.getGenericParametersList(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	/**
 	 * @description Get categorize data list
 	 * @author Hung.Bui
