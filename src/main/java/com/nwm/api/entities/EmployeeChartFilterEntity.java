@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 @JsonInclude(Include.NON_NULL)
-public class ScadaEmployeeChartFilterEntity {
+public class EmployeeChartFilterEntity {
 	private int id;
 	private int id_employee;
 	private String hash_id_site;

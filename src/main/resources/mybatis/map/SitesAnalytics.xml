@@ -31,7 +31,6 @@
 				'max_value', IFNULL(dpf.max_value, 0.001),
 				'rounding_decimals', dp.rounding_decimals
 			)) AS parameters,
-			1 AS is_hidden,
 			0 AS checked
 		FROM
 			device d
@@ -476,4 +475,72 @@
 		GROUP BY
 			time_group_by
 	</select>
+	
+	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
+		SELECT
+			id,
+			id_employee,
+			id_site,
+			params,
+			DATE_FORMAT(created_date, "%m/%d/%Y %H:%i:%s") AS created_date,
+			name,
+			is_favorite
+		FROM
+			employee_chart_filter
+		WHERE
+			id_employee = #{id_employee}
+			AND SHA1(id_site) = #{hash_id_site}
+		ORDER BY id DESC
+	</select>
+	
+	<insert id="saveFilter" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO employee_chart_filter (
+			`id_employee`,
+			`id_site`,
+			`params`,
+			`created_date`,
+			`name`,
+			`is_favorite`
+		)
+		SELECT
+			#{id_employee} AS id_employee,
+			id AS id_site,
+			#{params} AS params,
+			#{created_date} AS created_date,
+			#{name} AS name,
+			#{is_favorite} AS is_favorite
+		FROM
+			site
+		WHERE
+			SHA1(id) = #{hash_id_site};
+		
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
+	
+	<select id="getFiltersCount" resultType="int">
+    	SELECT
+    		COUNT(*)
+		FROM
+			employee_chart_filter
+		WHERE
+			id_employee = #{id_employee}
+			AND SHA1(id_site) = #{hash_id_site}
+			AND is_favorite = #{is_favorite}
+  	</select>
+  	
+  	<delete id="deleteFilter">
+  		DELETE
+  		FROM
+  			employee_chart_filter
+	 	WHERE
+	 		id_employee = #{id_employee}
+	 		AND SHA1(id_site) = #{hash_id_site}
+	 		AND is_favorite = #{is_favorite}
+	 	ORDER BY id ASC
+	 	LIMIT 1
+	</delete>
+	
 </mapper>
