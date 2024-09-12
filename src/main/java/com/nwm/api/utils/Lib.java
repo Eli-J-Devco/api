@@ -22,6 +22,7 @@ import java.lang.management.MemoryUsage;
 import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
@@ -50,6 +51,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
 
 import javax.imageio.ImageIO;
 import javax.servlet.RequestDispatcher;
@@ -2917,4 +2919,22 @@ Lib {
 		}
 	}
 
+	public static String unzip(byte[] bytes) {
+		try (ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes)) {
+			try (GZIPInputStream gzipInputStream = new GZIPInputStream(byteArrayInputStream)) {
+				try (InputStreamReader inputStreamReader = new InputStreamReader(gzipInputStream, StandardCharsets.UTF_8)) {
+					try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+						StringBuilder output = new StringBuilder();
+						String line;
+						while((line = bufferedReader.readLine()) != null){
+							output.append(line);
+						}
+						return output.toString();
+					}
+				}
+			}
+		} catch(IOException e) {
+			throw new RuntimeException("Failed to unzip content", e);
+		}
+	}
 }
