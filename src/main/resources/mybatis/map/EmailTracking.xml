@@ -85,15 +85,13 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 1
+			a.`status` = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` ) BETWEEN #{start_date}  AND #{end_date}
-			<if test="id_site != null and id_site != ''">
-			 	AND s.`id` = #{id_site}
-			</if>
+			AND s.`id` = #{id_site}
 			GROUP BY date_group_by
 			ORDER BY date_group_by ASC
 	</select>
@@ -144,7 +142,7 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 1
+			a.`status` = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
@@ -263,18 +261,22 @@
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0 
+			WHERE 
+			s.enable_alert = 1 AND e.is_delete = 0 
 			
-			<if test="id_site != null and id_site > 0">
-				AND s.id = #{id_site}
-			</if>
+			<choose>
+				<when test="tabs == 'queue'">
+			      AND l.`status` = 0
+			    </when>
+			    <otherwise>
+			      AND l.`status` = 1
+			    </otherwise>
+			  </choose>
+			  
 			
+			AND s.id = #{id_site}
 			AND l.is_delete = 0
-			
-			<if test="start_date != null and end_date != null">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
-			</if>
-			
+			AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
 			
 			<if test="id_status != null and !id_status.isEmpty()">
 				AND l.status IN  (
@@ -374,16 +376,21 @@
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE  e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0  
-			<if test="id_site != null and id_site > 0">
-				AND s.id = #{id_site}
-			</if>
-			
+			WHERE  s.enable_alert = 1 AND e.is_delete = 0  
+			<choose>
+				<when test="tabs == 'queue'">
+			      AND l.`status` = 0
+			    </when>
+			    <otherwise>
+			      AND l.`status` = 1
+			    </otherwise>
+			  </choose>
+			  
+			AND s.id = #{id_site}
 			AND l.is_delete = 0
 			
-			<if test="start_date != null and end_date != null">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
-			</if>
+			AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
+			
 
 			<if test="id_status != null and !id_status.isEmpty()">
 				AND l.status IN  (
@@ -480,8 +487,9 @@
 					WHERE  e.`status` = 1 
 					AND s.enable_alert = 1 
 					AND e.is_delete = 0  
-					AND s.id = 214
+					AND s.id = #{id_site}
 					AND l.is_delete = 0
+					AND l.`status` = 0
 					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
 					) AS total_sent,
 					
@@ -497,8 +505,9 @@
 					WHERE  e.`status` = 1 
 					AND s.enable_alert = 1 
 					AND e.is_delete = 0  
-					AND s.id = 214
+					AND s.id = #{id_site}
 					AND l.is_delete = 0
+					AND l.`status` = 0
 					<choose>  
 			            <when test="id_filter == 'today'">
 			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
@@ -541,7 +550,7 @@
 					WHERE  e.`status` = 1 
 					AND s.enable_alert = 1 
 					AND e.is_delete = 0  
-					AND s.id = 214
+					AND s.id = #{id_site}
 					AND l.is_delete = 0
 					AND l.is_queue = 0
 					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
@@ -560,7 +569,7 @@
 					WHERE  e.`status` = 1 
 					AND s.enable_alert = 1 
 					AND e.is_delete = 0  
-					AND s.id = 214
+					AND s.id = #{id_site}
 					AND l.is_delete = 0
 					AND l.is_queue = 0
 					<choose>  
