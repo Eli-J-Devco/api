@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.entities.TagEntity;
 import com.nwm.api.services.AWSService;
 import com.nwm.api.services.SiteService;
+import com.nwm.api.services.TagService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -251,6 +254,32 @@ public class SiteController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description Get site detail
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/site-detail")
+	public Object getSiteDetail(@RequestBody SiteEntity obj) {
+		try {
+
+			SiteService service = new SiteService();
+
+			SiteEntity siteDetail = service.getSiteDetail(obj);
+			
+			if (siteDetail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, siteDetail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+		}
+	}
 	
 	/**
 	 * @description update site status
@@ -675,5 +704,88 @@ public class SiteController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description delete area
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area")
+	public Object deleteSiteArea(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteArea(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete building
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building")
+	public Object deleteSiteAreaBuilding(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuilding(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete unit 
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building-floor")
+	public Object deleteSiteAreaBuildingFloor(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuildingFloor(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete floor
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-area-building-floor-room")
+	public Object deleteSiteAreaBuildingFloorRoom(@Valid @RequestBody SiteAreaBuildingFloorRoomEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteAreaBuildingFloorRoom(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
 	
 }
