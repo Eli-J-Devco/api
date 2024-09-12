@@ -20,9 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
-import com.nwm.api.entities.EmployeeFilterRecentlyEntity;
-import com.nwm.api.entities.ScadaChartingDeviceEntity;
+import com.nwm.api.entities.EmployeeChartFilterEntity;
 import com.nwm.api.entities.SitesAnalyticsReportEntity;
 
 
@@ -356,125 +354,44 @@ public class SitesAnalyticsService extends DB {
 		
 	}
 	
-	
-	
+	/**
+	 * @description Get recently filter list
+	 * @author Hung.Bui
+	 * @since 2024-06-07
+	 * @param obj { id_employee, hash_id_site }
+	 * @return
+	 */
+	public List<EmployeeChartFilterEntity> getListFilter(EmployeeChartFilterEntity obj) {
+		try {
+			List<EmployeeChartFilterEntity> dataList = queryForList("SitesAnalytics.getListFilter", obj);
+			if (dataList == null) return new ArrayList<EmployeeChartFilterEntity>();
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<EmployeeChartFilterEntity>();
+		}
+	}
 	
 	/**
-	 * @description insert error level
-	 * @author long.pham
-	 * @since 2021-02-26
+	 * @description save filter
+	 * @author Hung.Bui
+	 * @since 2024-06-07
+	 * @param obj { id_employee, hash_id_site, params, created_date, name, is_favorite }
+	 * @return
 	 */
-	public EmployeeFilterFavoritesEntity saveEmployeeFilterFavorites(EmployeeFilterFavoritesEntity obj) {
+	public EmployeeChartFilterEntity saveFilter(EmployeeChartFilterEntity obj) {
 		try {
-			// Save
-			Object insertId = insert("EmployeeFilterFavorites.saveFilterFavorites", obj);
-			if (insertId != null && insertId instanceof Integer) {
-				Object total = queryForObject("EmployeeFilterFavorites.getListCount", obj);
-				if((int)total > 10) {
-					// Delete one row
-					delete("EmployeeFilterFavorites.deleteFilterFavorites", obj);
-				}
-				return obj;
-			} else {
-				return null;
-			}
-
+			Integer insertId = (Integer) insert("SitesAnalytics.saveFilter", obj);
+			if (insertId != null && insertId <= 0) return null;
+			Integer total = (Integer) queryForObject("SitesAnalytics.getFiltersCount", obj);
+			if(total > 10) delete("SitesAnalytics.deleteFilter", obj);
+			
+			return obj;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return null;
 		}
 	}
 	
-	
-	/**
-	 * @description insert error level
-	 * @author long.pham
-	 * @since 2022-05-03
-	 */
-	public EmployeeFilterRecentlyEntity saveRecentlyUsedFilter(EmployeeFilterRecentlyEntity obj) {
-		try {
-			// Save
-			Object insertId = insert("EmployeeFilterRecently.saveRecentlyUsedFilter", obj);
-			if (insertId != null && insertId instanceof Integer) {
-				Object total = queryForObject("EmployeeFilterRecently.getListCount", obj);
-				
-				if((int)total > 10) {
-					// Delete one row
-					delete("EmployeeFilterRecently.deleteRecentlyUsedFilter", obj);
-				}
-				
-				return obj;
-			} else {
-				return null;
-			}
-
-		} catch (Exception ex) {
-			log.error("insert", ex);
-			return null;
-		}
-	}
-	
-	
-	
-	/**
-	 * @description get list device by id_site
-	 * @author long.pham
-	 * @since 2021-03-16
-	 * @param id_site, id_device
-	 */
-	
-
-	public List getListEmployeeFilter(EmployeeFilterFavoritesEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("EmployeeFilterCharting.getListEmployeeFilter", obj);
-			return dataList;
-				
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-	}
-	
-	
-	/**
-	 * @description get list device by id_site
-	 * @author long.pham
-	 * @since 2021-03-16
-	 * @param id_site, id_device
-	 */
-	
-
-	public List getListRecently(EmployeeFilterRecentlyEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("EmployeeFilterRecently.getListRecently", obj);
-			return dataList;
-				
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-	}
-	
-	
-	
-	/**
-	 * @description get list favorites by id_site
-	 * @author long.pham
-	 * @since 2022-05-03
-	 * @param id_site
-	 */
-	
-
-	public List getListFavorites(EmployeeFilterFavoritesEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("EmployeeFilterFavorites.getListFavorites", obj);
-			return dataList;
-				
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-	}
 
 	public void sendCustomReport(SitesAnalyticsReportEntity obj) {
 
