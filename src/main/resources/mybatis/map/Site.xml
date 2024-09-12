@@ -736,6 +736,26 @@
 			`mqtt_protocol`,
 			`mqtt_username`,
 			`mqtt_password`,
+			`site_type`,
+			`dashboard_overview_note`,
+			`g_company_name`,
+			`g_account_number`,
+			`g_voltage_level_type`,
+			`g_voltage_level`,
+			`g_pcc_location`,
+			`g_maximum_capacity`,
+			`g_interconnection_agreement_details`,
+			`g_grid_contraints`,
+			`g_existing_ders`,
+			`g_der_capacities`,
+			`g_tariff_structure_rate_schedule`,
+			`g_net_metering_feed_in_tariff`,
+			`g_power_quality_requirements`,
+			`g_transformer_size`,
+			`g_transformer_type`,
+			`g_status`,
+			`g_lat`,
+			`g_lng`,		
 			`is_solar_site`
 		)VALUES(
 			#{id_company},
@@ -788,6 +808,26 @@
 			#{mqtt_protocol},
 			#{mqtt_username},
 			#{mqtt_password},
+			#{site_type},
+			#{dashboard_overview_note},
+			#{g_company_name},
+			#{g_account_number},
+			#{g_voltage_level_type},
+			#{g_voltage_level},
+			#{g_pcc_location},
+			#{g_maximum_capacity},
+			#{g_interconnection_agreement_details},
+			#{g_grid_contraints},
+			#{g_existing_ders},
+			#{g_der_capacities},
+			#{g_tariff_structure_rate_schedule},
+			#{g_net_metering_feed_in_tariff},
+			#{g_power_quality_requirements},
+			#{g_transformer_size},
+			#{g_transformer_type},
+			#{g_status},
+			#{g_lat},
+			#{g_lng},
 			#{is_solar_site}
 		);
 		<selectKey keyProperty="id" resultType="int">
@@ -848,7 +888,27 @@
 			`mqtt_port` = #{mqtt_port},
 			`mqtt_protocol` = #{mqtt_protocol},
 			`mqtt_username` = #{mqtt_username},
-			`mqtt_password` = #{mqtt_password},
+			`mqtt_password` = #{mqtt_password},		
+			`site_type` = #{site_type},
+			`dashboard_overview_note` = #{dashboard_overview_note},
+			`g_company_name` = #{g_company_name},
+			`g_account_number` = #{g_account_number},
+			`g_voltage_level_type` = #{g_voltage_level_type},
+			`g_voltage_level` = #{g_voltage_level},
+			`g_pcc_location` = #{g_pcc_location},
+			`g_maximum_capacity` = #{g_maximum_capacity},
+			`g_interconnection_agreement_details` = #{g_interconnection_agreement_details},
+			`g_grid_contraints` = #{g_grid_contraints},
+			`g_existing_ders` = #{g_existing_ders},
+			`g_der_capacities` = #{g_der_capacities},
+			`g_tariff_structure_rate_schedule` = #{g_tariff_structure_rate_schedule},
+			`g_net_metering_feed_in_tariff` = #{g_net_metering_feed_in_tariff},
+			`g_power_quality_requirements` = #{g_power_quality_requirements},
+			`g_transformer_size` = #{g_transformer_size},
+			`g_transformer_type` = #{g_transformer_type},
+			`g_status` = #{g_status},
+			`g_lat` = #{g_lat},
+			`g_lng` = #{g_lng},
 			`is_solar_site` = #{is_solar_site}
 		WHERE
 			`id` = #{id}
@@ -858,6 +918,7 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
+			s.id AS id_site,
 			s.id_company,
 			s.`name`,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
@@ -919,7 +980,28 @@
 			s.mqtt_port,
 			s.mqtt_protocol,
 			s.mqtt_username,
-			s.mqtt_password,
+			s.mqtt_password,		
+			s.site_type,
+			s.dashboard_overview_note,
+			s.b_year_built,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,		
 			s.is_solar_site
 		FROM
 			site s
@@ -955,7 +1037,11 @@
 						GROUP BY scm.id_site
 					)t ON t.id_site = s.id
 					
-		WHERE s.is_delete = 0 AND s.`status` = 1 AND sem.id_employee = #{id_employee}
+		WHERE s.is_delete = 0 AND s.`status` = 1
+		<if test="is_supper_admin != 1">
+			 AND sem.id_employee = #{id_employee}
+		</if>
+
 		<if test="keyword != null">
 			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if>
@@ -1029,8 +1115,14 @@
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRow
 		FROM site s
-		LEFT JOIN site_employee_map sem ON sem.id_site = s.id
-		WHERE s.`is_delete` = 0 AND s.`status` = 1 AND sem.id_employee = #{id_employee}
+		<if test="is_supper_admin != 1">
+			 LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+		</if>
+		WHERE s.`is_delete` = 0 AND s.`status` = 1
+		<if test="is_supper_admin != 1">
+			 AND sem.id_employee = #{id_employee}
+		</if>
+		
 		<if test="keyword != null">
 			AND (s.name LIKE CONCAT("%",#{keyword}, "%"))
 		</if> 
@@ -1200,50 +1292,6 @@
 			status = 1
 			AND is_delete = 0;
 	</select>
-	
-	
-	
-	
-	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
-  	
 
 	<select id="getAllSiteByIdCustomer" resultMap="SiteMap" parameterType="String">
 		SELECT
@@ -2316,5 +2364,290 @@
 			e.id = #{id_employee}
 			LIMIT 1;
   	</select>
+  	
+  	<select id="getSiteDetail" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			s.id,
+			s.id AS id_site,
+			SHA1(s.id) AS hash_id,
+			s.id_company,
+			s.`name`,
+			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
+			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
+			DATE_FORMAT(s.expiration,'%m/%d/%Y') AS expiration,
+			s.street,
+			s.lat,
+			s.lng,
+			IF(s.lat = 0, NULL, s.lat) AS view_lat,
+			IF(s.lng = 0, NULL, s.lng) AS view_lng,
+			s.number,
+			s.postal_code,
+			s.city,
+			s.state,
+			s.`status`,
+			s.is_delete,
+			s.ac_capacity,
+			s.id_country,
+			s.id_time_zone,
+			s.dc_capacity,
+			CONCAT_WS( ', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address,
+			s.site_default,
+			s.gallery,
+			s.data_send_time,
+			s.start_date_time,
+			s.end_date_time,
+			s.config_sunset_sunrise,
+			s.note,
+			t.customer_name,
+			t.ids_employee,
+			s.is_rec_report,
+			s.reporting_region,
+			s.datalogger_ip,
+			s.about,
+			s.kiosk_view,
+			s.site_logo,
+			s.id_site_group,
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			c.name AS company,
+			sg.name AS site_group,
+			tz.name AS time_zone,
+			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), 'N/A') AS last_modified,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.diagram,
+			h.is_hiding,
+			s.is_show_each_meter,
+			COUNT(td.id_site) AS virtual_status,
+			s.enable_alert,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.site_type,
+			s.dashboard_overview_note,
+			s.b_year_built,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,
+			t.dataEmployeeJSON,
+			sa.siteAreaJSON,
+			sb.siteAreaBuildingJSON,
+			sf.siteAreaBuildingFloorJSON,
+			sr.siteAreaBuildingFloorRoomJSON,
+			s.is_solar_site
+		FROM
+			site s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT d.id_site FROM device d WHERE d.id_device_type = 12 GROUP BY d.id_site
+			)td ON td.id_site = s.id
+			
+			LEFT JOIN (
+				SELECT
+					id_site,
+					MAX(is_hiding) AS is_hiding
+				FROM site_employee_map
+				GROUP BY id_site
+			) h ON h.id_site = s.id
+			LEFT JOIN company c ON c.id = s.id_company
+			LEFT JOIN site_group sg ON sg.id = s.id_site_group
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+						SELECT id_site,
+						MAX(modified_date) AS modified_date
+						FROM auditing_logs
+						GROUP BY id_site
+						
+			) al ON al.id_site = s.id
+			LEFT JOIN (
+						SELECT scm.id_site, 
+							GROUP_CONCAT(CONCAT_WS( ' ', c.first_name,c.last_name) SEPARATOR ', ') AS customer_name,
+							GROUP_CONCAT(c.id SEPARATOR ', ') AS ids_employee,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id', c.id,
+								'value', c.id,
+								'fullname', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'label', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'text', CONCAT_WS( ' ', c.first_name,c.last_name),
+								'email', c.email
+							)) AS dataEmployeeJSON
+						FROM site_employee_map scm
+						LEFT JOIN employee c ON c.id = scm.id_employee
+						WHERE scm.id_site = #{id}
+						GROUP BY scm.id_site
+					)t ON t.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site', sa.id_site,
+								'id', sa.id,
+								'name', sa.name,
+								'type', sa.type,
+								'total_area', sa.total_area,
+								'status', sa.status
+							)) AS siteAreaJSON
+						FROM
+							site_area sa
+						WHERE  sa.id_site = #{id}
+						GROUP BY sa.id_site
+					) sa ON sa.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sb.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_area', sb.id_area,
+								'id_site', sb.id_site,
+								'id', sb.id,
+								'name', sb.name,
+								'type', sb.type,
+								'total_area', sb.total_area,
+								'status', sb.status
+							)) AS siteAreaBuildingJSON
+						FROM
+							site_area_building sb
+						WHERE sb.id_site = #{id}
+						GROUP BY sb.id_site
+					) sb ON sb.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sf.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_building', sf.id_building,
+								'id_site', sf.id_site,
+								'id', sf.id,
+								'name', sf.name,
+								'type', sf.type,
+								'total_area', sf.total_area,
+								'status', sf.status
+							)) AS siteAreaBuildingFloorJSON
+						FROM
+							site_area_building_floor sf
+						WHERE sf.id_site = #{id}
+				) sf ON sf.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sr.id_site,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_floor', sr.id_floor,
+								'id_site', sr.id_site,
+								'id', sr.id,
+								'name', sr.name,
+								'type', sr.type,
+								'total_area', sr.total_area,
+								'status', sr.status
+							)) AS siteAreaBuildingFloorRoomJSON
+						FROM
+							site_area_building_floor_room sr
+						WHERE sr.id_site = #{id}
+				) sr ON sr.id_site = s.id
+							
+		WHERE s.is_delete = 0 AND s.`status` = 1 AND s.id = #{id}
+		GROUP BY s.id
+	</select>
+  	
+  	<insert id="insertSiteArea"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area` (id, id_site, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="areaList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteAreaBuilding"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building` (id, id_site, id_area, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="buildingList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_area}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_area = VALUES(id_area),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteAreaBuildingFloor"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building_floor` (id, id_site, id_building, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="floorList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_building}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_building = VALUES(id_building),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<insert id="insertSiteAreaBuildingFloorRoom"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_area_building_floor_room` (id, id_site, id_floor, name, type, total_area, status)
+	        VALUES
+	        <foreach collection="roomList" item="item" index="" separator=",">
+	            (#{item.id}, #{id_site}, #{item.id_floor}, #{item.name}, #{item.type}, #{item.total_area}, #{item.status})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site = VALUES(id_site),
+	        id_floor = VALUES(id_floor),
+	        name = VALUES(name),
+	        type = VALUES(type),
+	        total_area = VALUES(total_area),
+	        status = VALUES(status)
+	</insert>
+	
+	<delete id="deleteSiteArea">
+		DELETE FROM `site_area`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuilding">
+		DELETE FROM `site_area_building`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuildingFloor">
+		DELETE FROM `site_area_building_floor`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
+	
+	<delete id="deleteSiteAreaBuildingFloorRoom">
+		DELETE FROM `site_area_building_floor_room`
+		WHERE id = #{id} AND id_site = #{id_site}
+	</delete>
 	
 </mapper>

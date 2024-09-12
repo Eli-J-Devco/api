@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EmployeeRoleMapEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
+import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteCustomerMapEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
@@ -241,6 +242,19 @@ public class SiteService extends DB {
 					EmployeeSiteMapEntity siteEmployeeMaptItem = this._buildSiteEmployeeMapItem(insertLastId, id_employee);
 					session.insert("Site.insertSiteEmployeeMap", siteEmployeeMaptItem);
 				}
+				
+				if (obj.getSite_type() == 2) {
+					List areaList = obj.getAreaList();
+					obj.setId_site(insertLastId);
+					if (areaList != null) {
+						if (areaList.size() > 0) {
+							session.insert("Site.insertSiteArea", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				
+				
 			} else {
 				return null;
 			}
@@ -304,6 +318,41 @@ public class SiteService extends DB {
 				session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
 			}
 			
+			if (obj.getSite_type() == 2) {
+				// add Area
+				List areaList = obj.getAreaList();
+				if (areaList != null) {
+					if (areaList.size() > 0) {
+						session.insert("Site.insertSiteArea", obj);
+					}
+				}
+				
+				// add Building
+				List buildingList = obj.getBuildingList();
+				if (buildingList != null) {
+					if (buildingList.size() > 0) {
+						session.insert("Site.insertSiteAreaBuilding", obj);
+					}
+				}
+				
+				// add Floor
+				List floorList = obj.getFloorList();
+				if (floorList != null) {
+					if (floorList.size() > 0) {
+						session.insert("Site.insertSiteAreaBuildingFloor", obj);
+					}
+				}
+							
+				// add Room
+				List roomList = obj.getRoomList();
+				if (roomList != null) {
+					if (roomList.size() > 0) {
+						session.insert("Site.insertSiteAreaBuildingFloorRoom", obj);
+					}
+				}
+			}
+					
+			
 			session.update("Site.updateHidingSite", obj);
 
 			session.commit();
@@ -344,6 +393,26 @@ public class SiteService extends DB {
 		} catch (Exception ex) {
 			return 0;
 		}
+	}
+	
+	/**
+	 * @description get list site building floor
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 */
+	
+	
+	public SiteEntity getSiteDetail(SiteEntity obj) {
+		SiteEntity dataObj = null;
+		try {
+			 dataObj = (SiteEntity) queryForObject("Site.getSiteDetail", obj);
+			if (dataObj == null)
+				return new SiteEntity();
+		} catch (Exception ex) {
+			return new SiteEntity();
+		}
+		return dataObj;
 	}
 	
 	
@@ -935,4 +1004,63 @@ public class SiteService extends DB {
 
 	}
 	
+	/**
+	  * @description delete area 
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteArea(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteArea", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteArea", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete building
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuilding(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuilding", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuilding", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete floor
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuildingFloor(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuildingFloor", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuildingFloor", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete unit
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteAreaBuildingFloorRoom(SiteAreaBuildingFloorRoomEntity obj) {
+		try {		
+			return delete("Site.deleteSiteAreaBuildingFloorRoom", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteAreaBuildingFloorRoom", ex);
+			return false;
+		}
+	}
 }
