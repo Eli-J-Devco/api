@@ -119,7 +119,7 @@ public class SitesAnalyticsController extends BaseController {
 	public @ResponseBody Object sendPDFReport(@RequestBody SitesAnalyticsReportEntity obj) {
 		try {
 			String fileName = URLEncoder.encode(obj.getFileName() + "." + obj.getFileType(), "UTF-8");
-			String htmlData = obj.getHtml();
+			String htmlData = Lib.unzip(org.apache.commons.codec.binary.Base64.decodeBase64(obj.getHtml()));
 			String email = obj.getEmail();
 			String title = obj.getTitle() != null ? obj.getTitle() : "Custom Reports";
 
