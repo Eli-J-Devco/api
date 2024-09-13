@@ -15,6 +15,7 @@
 			dg.group_name,
 			dg.table_name,
 			dt.name AS device_type_name,
+            s.table_data_virtual,
 			JSON_ARRAYAGG(JSON_OBJECT(
 				'id', dp.id,
 				'name', IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name),
@@ -89,15 +90,15 @@
 		SELECT
 			categories_time,
 			<choose>
-				<when test="data_send_time == 6">
+				<when test="data_send_time == 5">
 					DATE_FORMAT(DATE_SUB(time_group_by, INTERVAL (MOD(DATEDIFF(time_group_by, #{start_date}), 7 )) DAY), '%Y-%m-%d')
 				</when>
 				
-				<when test="data_send_time == 7">
+				<when test="data_send_time == 6">
 					DATE_FORMAT(time_group_by, '%m/%Y')
 				</when>
 				
-				<when test="data_send_time == 8">
+				<when test="data_send_time == 7">
 					DATE_FORMAT(time_group_by, '%Y')
 				</when>
 				
