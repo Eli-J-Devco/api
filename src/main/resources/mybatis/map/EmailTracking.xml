@@ -379,7 +379,7 @@
 			WHERE  s.enable_alert = 1 AND e.is_delete = 0  
 			<choose>
 				<when test="tabs == 'queue'">
-			      AND l.`status` = 0
+			      AND l.`status` = 0 AND l.is_queue = 0
 			    </when>
 			    <otherwise>
 			      AND l.`status` = 1
@@ -416,6 +416,7 @@
 					</foreach>
 				)
 			</if>
+		
 			
   	</select>
   	
