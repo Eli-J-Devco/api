@@ -56,7 +56,7 @@
 		GROUP BY
 			d.id
 		ORDER BY
-			dt.order ASC, dg.group_name ASC, d.devicename ASC
+			dt.order ASC, d.devicename ASC
 	</select>
 	
 	<select id="getHiddenDataListByDevice" resultType="Map">
