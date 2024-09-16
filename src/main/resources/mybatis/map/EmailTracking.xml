@@ -85,7 +85,7 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 0
+			a.`status` = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
@@ -142,7 +142,7 @@
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE 
-			a.`status` = 0
+			a.`status` = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND d.`status` = 1 
@@ -490,7 +490,7 @@
 					AND e.is_delete = 0  
 					AND s.id = #{id_site}
 					AND l.is_delete = 0
-					AND l.`status` = 0
+					AND l.`status` = 1
 					AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{start_date}  AND #{end_date}
 					) AS total_sent,
 					
@@ -508,7 +508,7 @@
 					AND e.is_delete = 0  
 					AND s.id = #{id_site}
 					AND l.is_delete = 0
-					AND l.`status` = 0
+					AND l.`status` = 1
 					<choose>  
 			            <when test="id_filter == 'today'">
 			                AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_ADD(#{start_date},INTERVAL -1 DAY)   AND DATE_ADD( #{end_date},INTERVAL -1 DAY)
