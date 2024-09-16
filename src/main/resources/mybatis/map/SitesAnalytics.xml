@@ -474,7 +474,7 @@
 			ORDER BY time_group_by ASC
 		) t
 		GROUP BY
-			time_group_by
+			time_full
 	</select>
 	
 	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
