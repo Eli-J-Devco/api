@@ -796,7 +796,7 @@
   	
   	
   	<insert id="insertAlert" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO `alert`(
+		INSERT INTO `alert_queue`(
 			`id_device`,
 			`id_error`,
 			`start_date`,
