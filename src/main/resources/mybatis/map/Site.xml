@@ -418,20 +418,50 @@
 	<select id="getSiteGroupByEmployee" resultType="Map" >
 		SELECT
 			sg.id,
-			sg.`name`,
+			sg.name,
 			sg.order_id,
-			SHA2(sg.id, 256) AS hash_id,
-			0 AS is_expand
+			sg.hash_id,
+			0 AS is_expand,
+			IF(
+				COUNT(ssg.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', ssg.id,
+					'hash_id', SHA2(ssg.id, 512),
+					'id_site_group', ssg.id_site_group,
+					'name', ssg.name,
+					'order_id', ssg.order_id,
+					'is_expand', 1
+				))
+			) AS sub_group_list
 		FROM
-			site s
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
-			LEFT JOIN site_group sg ON sg.id = s.id_site_group
-		WHERE
-			s.is_delete = 0
-			AND s.status = 1
-			AND sg.is_delete = 0
-			AND sg.status = 1
-			AND sem.id_employee = #{id_employee}
+			(
+				SELECT
+					sg.id,
+					sg.`name`,
+					sg.order_id,
+					SHA2(sg.id, 256) AS hash_id
+				FROM
+					site s
+					LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+					LEFT JOIN site_group sg ON sg.id = s.id_site_group
+				WHERE
+					s.is_delete = 0
+					AND s.status = 1
+					AND sg.is_delete = 0
+					AND sg.status = 1
+					AND sem.id_employee = #{id_employee}
+				GROUP BY sg.id
+			) sg
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS totalSites,
+					id_site_group,
+					id_site_sub_group
+				FROM site
+				GROUP BY id_site_sub_group
+			) t ON t.id_site_group = sg.id AND t.totalSites > 0
+		   LEFT JOIN site_sub_group ssg ON ssg.id_site_group = t.id_site_group AND ssg.status = 1 AND ssg.is_delete = 0
 		GROUP BY sg.id
 	    ORDER BY sg.order_id ASC
 		 	 

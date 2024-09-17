@@ -56,7 +56,7 @@
 		GROUP BY
 			d.id
 		ORDER BY
-			dt.order ASC, dg.group_name ASC, d.devicename ASC
+			dt.order ASC, d.devicename ASC
 	</select>
 	
 	<select id="getHiddenDataListByDevice" resultType="Map">
@@ -474,7 +474,7 @@
 			ORDER BY time_group_by ASC
 		) t
 		GROUP BY
-			time_group_by
+			time_full
 	</select>
 	
 	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
