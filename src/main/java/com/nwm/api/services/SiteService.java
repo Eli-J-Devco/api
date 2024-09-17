@@ -100,23 +100,25 @@ public class SiteService extends DB {
 	 * @param id_employee
 	 */
 	public List getSiteGroupByEmployee(SiteEntity obj) {
-		List dataList = new ArrayList();
-		List newDataList = new ArrayList<>();
 		try {
-			dataList = queryForList("Site.getSiteGroupByEmployee", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("Site.getSiteGroupByEmployee", obj);
+			if (dataList == null) return new ArrayList();
 			
+			ObjectMapper mapper = new ObjectMapper();
 			for (int i = 0; i < dataList.size(); i++) {
-				Map<String, Object> dataItem = (Map<String, Object>) dataList.get(i);
-				List subGroupList = queryForList("Site.getSubGroupByGroup", dataItem);
-				dataItem.put("sub_group_list", subGroupList);
-				newDataList.add(dataItem);
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("sub_group_list", mapper.readValue(item.get("sub_group_list").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("sub_group_list", new ArrayList<Map<String, Object>>());
+				}
 			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	
 	/**
