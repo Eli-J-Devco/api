@@ -2536,13 +2536,13 @@ public class ReportsController extends BaseController {
 				for (int i = 0; i < data.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) data.get(i);
 					String[] record = { 
-							item.get("name").toString() + " - " + item.get("devicename").toString(),
-							" "+item.get("ru_id").toString(),
-							" "+item.get("gu_id").toString(),
-							" "+item.get("vintage_date").toString(),
-							" "+item.get("start_date").toString(),
-							" "+item.get("end_date").toString(),
-							" "+item.get("energy_this_month").toString()
+								(item.get("name") != null ? item.get("name").toString() : "") + " - " + (item.get("devicename") != null ? item.get("devicename").toString() : ""),
+							" "+(item.get("ru_id") != null ? item.get("ru_id").toString() : ""),
+							" "+(item.get("gu_id") != null ? item.get("gu_id").toString() : ""),
+							" "+(item.get("vintage_date") != null ? item.get("vintage_date").toString() : ""),
+							" "+(item.get("start_date") != null ? item.get("start_date").toString() : ""),
+							" "+(item.get("end_date") != null ? item.get("end_date").toString() : ""),
+							" "+(item.get("energy_this_month") != null ? item.get("energy_this_month").toString() : "")
 							};
 					list.add(record);
 				}
