@@ -305,57 +305,80 @@ public class SiteService extends DB {
 		
 		SqlSession session = this.beginTransaction();
 		try {
-			List dataEmployee = obj.getDataEmployee();
-			if (dataEmployee.size() <= 0) {
-				throw new Exception();
-			}
-
-			session.delete("Site.deleteSiteEmployeeMapEdit", obj);
-			session.update("Site.updateSite", obj);
-
-			for (int i = 0; i < dataEmployee.size(); i++) {
-				Map<String, Object> customer = (Map<String, Object>) dataEmployee.get(i);
-				int id_employee = (int) customer.get("id");
-				EmployeeSiteMapEntity siteCustomerMaptItem = this._buildSiteEmployeeMapItem(obj.getId(), id_employee);
-				session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
-			}
+			int insertLastId = obj.getId();
 			
-			if (obj.getSite_type() == 2) {
-				// add Area
-				List areaList = obj.getAreaList();
-				if (areaList != null) {
-					if (areaList.size() > 0) {
-						session.insert("Site.insertSiteArea", obj);
-					}
+			switch (obj.getTab_menu()) {
+			case 1:
+				List dataEmployee = obj.getDataEmployee();
+				if (dataEmployee.size() <= 0) {
+					throw new Exception();
+				}
+
+				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
+				session.update("Site.updateSite", obj);
+
+				for (int i = 0; i < dataEmployee.size(); i++) {
+					Map<String, Object> customer = (Map<String, Object>) dataEmployee.get(i);
+					int id_employee = (int) customer.get("id");
+					EmployeeSiteMapEntity siteCustomerMaptItem = this._buildSiteEmployeeMapItem(obj.getId(), id_employee);
+					session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
 				}
 				
-				// add Building
-				List buildingList = obj.getBuildingList();
-				if (buildingList != null) {
-					if (buildingList.size() > 0) {
-						session.insert("Site.insertSiteAreaBuilding", obj);
-					}
-				}
+				session.update("Site.updateHidingSite", obj);
 				
-				// add Floor
-				List floorList = obj.getFloorList();
-				if (floorList != null) {
-					if (floorList.size() > 0) {
-						session.insert("Site.insertSiteAreaBuildingFloor", obj);
+				if (obj.getSite_type() == 2) {
+					// add Area
+					List areaList = obj.getAreaList();
+					if (areaList != null) {
+						if (areaList.size() > 0) {
+							session.insert("Site.insertSiteArea", obj);
+						}
 					}
+					obj.setId(insertLastId);
 				}
-							
-				// add Room
-				List roomList = obj.getRoomList();
-				if (roomList != null) {
-					if (roomList.size() > 0) {
-						session.insert("Site.insertSiteAreaBuildingFloorRoom", obj);
+				break;
+			case 2:
+				if (obj.getSite_type() == 2) {
+					// add Building
+					List buildingList = obj.getBuildingList();
+					if (buildingList != null) {
+						if (buildingList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuilding", obj);
+						}
 					}
+					obj.setId(insertLastId);
 				}
-			}
-					
-			
-			session.update("Site.updateHidingSite", obj);
+				break;
+			case 3:
+				if (obj.getSite_type() == 2) {
+					// add Floor
+					List floorList = obj.getFloorList();
+					if (floorList != null) {
+						if (floorList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuildingFloor", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 4:
+				if (obj.getSite_type() == 2) {
+					// add Room
+					List roomList = obj.getRoomList();
+					if (roomList != null) {
+						if (roomList.size() > 0) {
+							session.insert("Site.insertSiteAreaBuildingFloorRoom", obj);
+						}
+					}
+					obj.setId(insertLastId);
+				}
+				break;
+			case 5:
+				session.update("Site.updateSite", obj);
+				break;
+			default:
+				break;
+			}			
 
 			session.commit();
 			return true;

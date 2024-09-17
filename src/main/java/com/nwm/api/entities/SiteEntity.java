@@ -254,6 +254,7 @@ public class SiteEntity {
 	private String siteAreaBuildingFloorJSON;
 	private String siteAreaBuildingFloorRoomJSON;
 	private String dataEmployeeJSON;
+	private int tab_menu;
 	
 	private String gas_company_name;
 	private String gas_account_number;
@@ -271,6 +272,12 @@ public class SiteEntity {
 	
 	
 	
+	public int getTab_menu() {
+		return tab_menu;
+	}
+	public void setTab_menu(int tab_menu) {
+		this.tab_menu = tab_menu;
+	}
 	public String getDataEmployeeJSON() {
 		return dataEmployeeJSON;
 	}
