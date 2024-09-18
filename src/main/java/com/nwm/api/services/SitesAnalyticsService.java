@@ -62,7 +62,7 @@ public class SitesAnalyticsService extends DB {
 		List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
 		
 		try {
-			if(dataList.size() > 0 && dateTimeList.size() > 0) {
+			if(dataList != null && dateTimeList.size() > 0) {
 				for (Map<String, Object> dateTime: dateTimeList) {
 					boolean isFound = false;
 					

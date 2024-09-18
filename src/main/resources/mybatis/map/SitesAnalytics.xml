@@ -159,23 +159,23 @@
 							(table_name == 'model_eri_weather_icp_class8050' and param.slug == 'solar_irradiation') or
 							(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 						">
-							IFNULL(ROUND(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), ${param.rounding_decimals}), 0.001) AS ${param.slug}
+							ROUND(IF(${param.value_chart_tool}(${param.slug}) <![CDATA[<]]> 0, 0, ${param.value_chart_tool}(${param.slug})), ${param.rounding_decimals}) AS ${param.slug}
 						</when>
 						
 						<when test="param.slug == 'MeasuredProduction'">
 							<choose>
 								<when test="filterBy == 'today' or filterBy == '3_day' or (filterBy == 'custom' and diff5Days)">
-									IFNULL(ROUND(AVG(MeasuredProduction), ${param.rounding_decimals}), 0.001) AS MeasuredProduction
+									ROUND(AVG(MeasuredProduction), ${param.rounding_decimals}) AS MeasuredProduction
 								</when>
 								
 								<otherwise>
-									IFNULL(ROUND(SUM(MeasuredProduction), ${param.rounding_decimals}), 0.001) AS MeasuredProduction
+									ROUND(SUM(MeasuredProduction), ${param.rounding_decimals}) AS MeasuredProduction
 								</otherwise>
 							</choose>
 						</when>
 						
 						<otherwise>
-							IFNULL(ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}), 0.001) AS ${param.slug}
+							ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}) AS ${param.slug}
 						</otherwise>
 					</choose>
 				</if>
