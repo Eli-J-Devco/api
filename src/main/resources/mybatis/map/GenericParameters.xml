@@ -28,7 +28,7 @@
 		
 	    ORDER BY
 	        <choose>
-				<when test="sort_column != null">
+				<when test="sort_column != null and sort_column != ''">
 	                ${sort_column} ${order_by}
 	            </when>    
 	            
