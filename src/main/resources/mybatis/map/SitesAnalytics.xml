@@ -15,6 +15,7 @@
 			dg.group_name,
 			dg.table_name,
 			dt.name AS device_type_name,
+			dt.order,
             s.table_data_virtual,
 			JSON_ARRAYAGG(JSON_OBJECT(
 				'id', dp.id,

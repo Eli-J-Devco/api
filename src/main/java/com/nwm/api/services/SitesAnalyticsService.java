@@ -331,6 +331,7 @@ public class SitesAnalyticsService extends DB {
 							maps.put("device_name", map.get("name"));
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
+							maps.put("order", map.get("order"));
 							maps.put("data", fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter));
 						} catch (Exception ex) {
 							log.error("getChartParameterDevice", ex);
