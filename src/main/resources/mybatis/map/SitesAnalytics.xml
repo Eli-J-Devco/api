@@ -452,7 +452,7 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_group_by
 				</if>
 				
-				<if test="filterBy == 'custom' and data_send_time == 5">
+				<if test="filterBy == 'custom' and data_send_time == 4">
 					CASE
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' )
 						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' )
