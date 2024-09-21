@@ -250,6 +250,7 @@
 			dp.rounding_decimals,
 			dp.value_chart_tool,
 			dp.id_device_group,
+			dp.unit,
 			ct.name AS categorize_data_name,
 			gp.id AS id_generic_parameter,
 			gp.name AS generic_parameter_name
@@ -297,6 +298,10 @@
 	            
 	            <when test="sort_column == 'generic_parameter_name'">
 	                gp.name ${order_by}
+	            </when>
+	            
+	            <when test="sort_column == 'unit'">
+	                dp.unit ${order_by}
 	            </when>
 	            
 	            <otherwise>
@@ -356,7 +361,8 @@
 			`rounding_decimals` = #{rounding_decimals},
 			`id_categorize_data` = #{id_categorize_data},
 			`value_chart_tool` = #{value_chart_tool},
-			`id_generic_parameter` = #{id_generic_parameter}
+			`id_generic_parameter` = #{id_generic_parameter},
+			`unit` = IF(#{unit} IS NOT NULL, TRIM(#{unit}), NULL)
 		WHERE
 			`id` = #{id}
 	</update>
