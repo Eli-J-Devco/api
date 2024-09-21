@@ -16,27 +16,27 @@
 	
 	<select id="getPaginatedList" resultType="Map">
 		SELECT
-			id,
-			name,
-			id_generic_parameter_type
+			gp.id,
+			gp.name,
+			gp.id_generic_parameter_type,
+			IF(COUNT(dp.id) > 0, 1, 0) AS is_in_use
 		FROM
-			generic_parameters
-		<if test="keyword != null">
-			WHERE 
-				name LIKE CONCAT("%",#{keyword}, "%")
-		</if> 	
-		
+			generic_parameters gp
+			LEFT JOIN device_parameters dp ON dp.id_generic_parameter = gp.id
+		WHERE 
+			gp.name LIKE CONCAT("%", IFNULL(#{keyword}, ""), "%")
+		GROUP BY
+			gp.id
 	    ORDER BY
 	        <choose>
 				<when test="sort_column != null and sort_column != ''">
-	                ${sort_column} ${order_by}
+	                gp.${sort_column} ${order_by}
 	            </when>    
 	            
 	            <otherwise>
-					id DESC
+					gp.id DESC
 			    </otherwise>                                                  
 	        </choose>
-        
 		LIMIT ${limit} OFFSET ${offset};
 	</select>
 	
