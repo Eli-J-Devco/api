@@ -226,6 +226,7 @@ public class DeviceParameterService extends DB {
 		try{
 			DeviceParameterEntity param = session.selectOne("DeviceParameter.getParameterDetail", obj);
 			update("DeviceParameter.updateDeviceParameter", obj);
+			if (obj.getId_generic_parameter() != null && obj.getId_generic_parameter() != param.getId_generic_parameter()) update("DeviceParameter.resetDuplicatedAssignedGenericParameter", obj);
 			if (param.getId_categorize_data() != obj.getId_categorize_data()) update("DeviceParameter.resetParameterFromTemplate", obj);
 			session.commit();
 			return true;

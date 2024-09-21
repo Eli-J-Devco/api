@@ -249,6 +249,7 @@
 			ct.id AS id_categorize_data,
 			dp.rounding_decimals,
 			dp.value_chart_tool,
+			dp.id_device_group,
 			ct.name AS categorize_data_name,
 			gp.id AS id_generic_parameter,
 			gp.name AS generic_parameter_name
@@ -404,6 +405,7 @@
 	
 	<select id="getParameterDetail" resultType="com.nwm.api.entities.DeviceParameterEntity">
 		SELECT
+			id_generic_parameter,
 			id_categorize_data
 		FROM
 			device_parameters
@@ -417,6 +419,16 @@
 			`id_param` = NULL
 		WHERE
 			`id_param` = #{id}
+	</update>
+	
+	<update id="resetDuplicatedAssignedGenericParameter">
+		UPDATE device_parameters
+		SET
+			id_generic_parameter = NULL
+		WHERE
+			id != #{id}
+			AND id_generic_parameter = #{id_generic_parameter}
+			AND id_device_group = #{id_device_group}
 	</update>
 	
 	
