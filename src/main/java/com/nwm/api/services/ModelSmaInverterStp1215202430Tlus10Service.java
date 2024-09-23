@@ -100,13 +100,13 @@ public class ModelSmaInverterStp1215202430Tlus10Service extends DB {
 			double measuredProduction = 0;
 			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-				if(measuredProduction < 0 ) { measuredProduction = 0;}
-				 
-				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-					 obj.setTotal_yield(dataObj.getNvmActiveEnergy());
-				 }
 			}
+			
+			if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setTotal_yield(dataObj.getNvmActiveEnergy());
+			}
+			 
 			obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelSmaInverterStp1215202430Tlus10.insertModelSmaInverterStp1215202430Tlus10", obj);

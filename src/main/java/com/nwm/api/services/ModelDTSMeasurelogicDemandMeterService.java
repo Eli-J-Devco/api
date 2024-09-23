@@ -89,13 +89,13 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 			double measuredProduction = 0;
 			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-				if(measuredProduction < 0 ) { measuredProduction = 0;}
-				 
-				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-					 obj.setEnergyP_Total(dataObj.getNvmActiveEnergy());
-				 }
 			}
+			
+			if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setEnergyP_Total(dataObj.getNvmActiveEnergy());
+			}
+			 
 			obj.setMeasuredProduction(measuredProduction);
 			 
 			Object insertId = insert("ModelDTSMeasurelogicDemandMeter.insertModelDTSMeasurelogicDemandMeter", obj);

@@ -159,19 +159,16 @@ public class ModelMeterIon8600V3Service extends DB {
 			 
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDel() > 0 && obj.getKWhDel() > 0 && obj.getKWhDel() != 0.001 ) {
 				 measuredProduction0 = obj.getKWhDel() - dataObj.getKWhDel();
-				 if(measuredProduction0 < 0 ) { measuredProduction0 = 0;}
 				 listMeasuredProduction.add(measuredProduction0);
 			 }
 			 
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDel_Rec() > 0 && obj.getKWhDel_Rec() > 0 && obj.getKWhDel_Rec() != 0.001 ) {
 				 measuredProduction1 = obj.getKWhDel_Rec() - dataObj.getKWhDel_Rec();
-				 if(measuredProduction1 < 0 ) { measuredProduction1 = 0;}
 				 listMeasuredProduction.add(measuredProduction1);
 			 }
 
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getKWhDelRec() > 0 && obj.getKWhDelRec() > 0 && obj.getKWhDelRec() != 0.001 ) {
 				 measuredProduction2 = obj.getKWhDelRec() - dataObj.getKWhDelRec();
-				 if(measuredProduction2 < 0 ) { measuredProduction2 = 0;}
 				 listMeasuredProduction.add(measuredProduction2);
 			 }
 			 if(listMeasuredProduction.size() > 0) {

@@ -63,7 +63,6 @@ public class ModelWaterMeterService extends DB {
 			double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getReadingValue() > 0 && obj.getReadingValue() > 0 && obj.getReadingValue() != 0.001 ) {
 				 measuredProduction = obj.getReadingValue() - dataObj.getReadingValue();
-				 if(measuredProduction < 0 ) { measuredProduction = 0;}
 			 }
 			 Object insertId = insert("ModelWaterMeter.insertModelWaterMeter", obj);
 		        if(insertId == null ) {
