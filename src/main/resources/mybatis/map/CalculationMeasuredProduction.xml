@@ -103,7 +103,7 @@
 								IF(
 									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
 									0,
-									GREATEST(LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) - LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)), 0)
+									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) - LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev))
 								) AS MeasuredProduction
 							FROM
 								(
@@ -131,7 +131,7 @@
 								IF(
 									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
 									0,
-									GREATEST(LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) - LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)), 0)
+									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) - LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev))
 								) AS MeasuredProduction
 							FROM
 								(
@@ -159,7 +159,7 @@
 								IF(
 									nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0,
 									0,
-									GREATEST(nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)), 0)
+									nvmActiveEnergy - (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time))
 								) AS MeasuredProduction
 							FROM
 								${datatablename}
