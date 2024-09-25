@@ -503,7 +503,11 @@
 			s.`name`,
 			DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
+			IF(
+				COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
+				ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
+				ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+			) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -640,7 +644,11 @@
 					s.id AS id_site,
 					s.`name`,
 					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-					IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+					IF(
+						COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
+						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
+						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
+					) AS actual,
 					CASE
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
@@ -693,7 +701,11 @@
 				s.`name`,
 				s.dc_capacity,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) ) AS actual,
+				IF(
+					COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
+					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
+					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
+				) AS actual,
 				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
 				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
 				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
@@ -726,7 +738,11 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m' ) AS month_number,
 			DATE_FORMAT( sdr.time, '%b' ) AS month,
-			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS chart_energy_kwh
+			IF(
+				COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
+				ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
+				ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+			) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
@@ -902,7 +918,11 @@
 				AS categories_time,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
 				DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
-				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0)), ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0) ) AS actual
+				IF(
+					COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
+					ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
+					ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+				) AS actual
 				
 			FROM
 				${table_data_report} sdr 
@@ -1002,7 +1022,7 @@
 						DATE_FORMAT(sdr.time, "%b") AS `month`,
 						DATE_FORMAT(sdr.time, "%Y") AS `year`,
 						IF(
-							SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) > 0,
+							COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
 							ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 1),
 							ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
 						) AS actualEnergy,
@@ -1179,7 +1199,7 @@
 								DATE_FORMAT(sdr.time, "%b") AS `month`,
 								DATE_FORMAT(sdr.time, "%Y") AS `year`,
 								IF(
-									SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) > 0,
+									COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
 									ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 1),
 									ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
 								) AS actualEnergy,
