@@ -136,10 +136,12 @@
     		d.id_site,
     		d.id_device_type,
     		d.id AS id_device,
-    		dg.table_name  AS device_group_table
+    		dg.table_name  AS device_group_table,
+    		s.table_data_report
 		FROM `file_import_data_old` u
 		LEFT JOIN device d ON d.id = u.id_device
 		LEFT JOIN device_group dg ON d.id_device_group = dg.id
+		LEFT JOIN site s ON s.id = d.id_site
 		WHERE u.id = #{id};
   	</select>
   	

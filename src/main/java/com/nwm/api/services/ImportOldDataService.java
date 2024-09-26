@@ -17,6 +17,7 @@ import org.dhatim.fastexcel.reader.Row;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.entities.ModelAcuRevProductionMeterEntity;
@@ -525,23 +526,35 @@ public class ImportOldDataService extends DB {
 	 * @author long.pham
 	 * @since 2022-12-26
 	 */
-	public ImportOldDataEntity insertSiteDataReport(ImportOldDataEntity obj) 
-	{
-		SqlSession session = this.beginTransaction();
+	public ImportOldDataEntity insertSiteDataReport(ImportOldDataEntity obj) {
 		try {
-			List dataListInverter = queryForList("ImportOldData.getListDeviceInverterBySite", obj);
-			List dataListMeter = queryForList("ImportOldData.getListDeviceMeterBySite", obj);
-			List dataListWeather = queryForList("ImportOldData.getListDeviceWeather", obj);
-			this.insertSiteDataReport(obj, dataListInverter, dataListMeter, dataListWeather);
-			session.commit();
-			return obj;
+			DeviceEntity deviceItem = new DeviceEntity();
+			deviceItem.setTable_data_report(obj.getTable_data_report());
+					
+			switch (obj.getId_device_type()) {
+				case 1:
+				case 3: {
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportIIMW", obj);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
+					}
+					break;
+				}
+				
+				case 4: {
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportWeather", obj);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
+					}
+					break;
+				}
+			}
 		} catch (Exception ex) {
-			session.rollback();
 			obj.setId(0);
-			return obj;
-		} finally {
-			session.close();
 		}			
+		return obj;
 	}
 	
 	
@@ -571,128 +584,6 @@ public class ImportOldDataService extends DB {
 			return null;
 		}
 	}
-	
-	/**
-	 * @description insert data to site_data_report
-	 * @author duy.phan
-	 * @since 2023-02-14
-	 */
-	public void insertSiteDataReport(ImportOldDataEntity obj, List dataListInverter, List dataListMeter, List dataListWeather) {
-		try {
-			// Case 1: inverter, meter, weather
-			if (dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
-				switch (obj.getId_device_type()) {
-					case 1:
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", obj);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-						break;
-					case 3:
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIMW", obj);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-						break;
-					case 4:
-						SiteDataReportEntity dataReportWeather = new SiteDataReportEntity();
-						dataReportWeather = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", obj);
-						if (dataReportWeather != null && dataReportWeather.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportWeather);
-						}
-						break;
-				}
-			}
-			
-			// Case 2: inverter, meter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
-				switch (obj.getId_device_type()) {
-					case 1:
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIM", obj);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-						break;
-					case 3:
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIM", obj);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-						break;						
-				}
-			}
-			
-			// Case 3: inverter, weather
-			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
-				switch (obj.getId_device_type()) {
-					case 1:
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", obj);
-						if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportInverter);
-						}
-						break;
-					case 4:
-						SiteDataReportEntity dataReportWeather = new SiteDataReportEntity();
-						dataReportWeather = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", obj);
-						if (dataReportWeather != null && dataReportWeather.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportWeather);
-						}
-						break;
-				}
-			}
-			
-			// Case 4: meter, weather
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
-				switch (obj.getId_device_type()) {
-					case 3:
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", obj);
-						if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportMeter);
-						}
-						break;
-					case 4:
-						SiteDataReportEntity dataReportWeather = new SiteDataReportEntity();
-						dataReportWeather = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", obj);
-						if (dataReportWeather != null && dataReportWeather.getId_device() > 0) {
-							insert("BatchJob.insertSiteDataReport", dataReportWeather);
-						}
-						break;
-				}
-			}
-			
-			// Case 5: meter
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
-				if (obj.getId_device() == 3) {
-					SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-					dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", obj);
-					if (dataReportMeter != null && dataReportMeter.getId_device() > 0) {
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-				}					
-			}
-			
-			// Case 6: inverter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
-				if (obj.getId_device() == 1) {
-					SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-					dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIW", obj);
-					if (dataReportInverter != null && dataReportInverter.getId_device() > 0) {
-						insert("BatchJob.insertSiteDataReport", dataReportInverter);
-					}
-				}
-			}
-		} catch(Exception ex)
-	    {
-	        log.error("insertDataGenerateReport", ex);
-	    }		
-	}
-	
 	
 	/**
 	 * @description insert file import data old

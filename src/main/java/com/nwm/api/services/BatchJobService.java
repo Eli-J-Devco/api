@@ -829,342 +829,48 @@ public class BatchJobService extends DB {
 	{
 		try
 	    {
-			List dataListInverter = queryForList("BatchJob.getListDeviceInverterBySite", obj);
-			List dataListMeter = queryForList("BatchJob.getListDeviceMeterBySite", obj);
+			List dataListMeterAndInverter = queryForList("BatchJob.getListDeviceMeterAndInverter", obj);
 			List dataListWeather = queryForList("BatchJob.getListDeviceWeather", obj);
 			
-			Date now = new Date();
+			SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+			SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 			TimeZone.setDefault(TimeZone.getTimeZone(obj.getTime_zone_value()));
-			SimpleDateFormat format = new SimpleDateFormat("yyyy", Locale.US);
-			String year = format.format(now);
-			
-			SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-			Calendar calCurrent = Calendar.getInstance();
-			
-			Calendar calNowDate = Calendar.getInstance();
-			calNowDate.setTime(now);
-			
-			int forTime = 2;
-			int setTime = 2;
-			if(obj.getStart_date() != null && obj.getEnd_date() != null) {
-				// Create list date 
-				SimpleDateFormat dateFormatCustom = new SimpleDateFormat("yyyy-MM-dd"); 
-				Date startDate = dateFormatCustom.parse(obj.getStart_date() + " AM");
-				Calendar calStartDate = Calendar.getInstance();
-				calStartDate.setTime(startDate);
-				
-				Date endDateCustom = dateFormatCustom.parse(obj.getEnd_date() + " PM");
-				Calendar calEndCustom = Calendar.getInstance();
-				calEndCustom.setTime(endDateCustom);
-				long forCountYTD = ChronoUnit.DAYS.between(calStartDate.getTime().toInstant(), calEndCustom.getTime().toInstant());
-				long forCountNow = ChronoUnit.DAYS.between(calStartDate.getTime().toInstant(), calNowDate.getTime().toInstant());
-				
-				forTime = (int) forCountNow + 2;
-				setTime = (int) forCountYTD + 2;
-			}
-			
-			
-			calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-			calCurrent.add(Calendar.DATE, -forTime);
-			
-			
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+			Date endDate = new Date();
 			Calendar cal = Calendar.getInstance();
-			Date currentDate = calCurrent.getTime();
+			cal.setTime(endDate);
+			cal.add(Calendar.DATE, -2);
+			Date startDate = new Date(cal.getTimeInMillis());
 			
-			
-			// Case 1: inverter, meter, weather
-			if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0) {
-				// Create list date 
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					// inverter 
-					for (int i = 0; i < dataListInverter.size(); i++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter == null) {
-							dataReportInverter = new SiteDataReportEntity();
-							dataReportInverter.setId_device(deviceItem.getId());
-							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
-							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
-							dataReportInverter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportInverter);
-					}
-					
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setGroupInverter(dataListInverter);
-						deviceItemMeter.setGroupWeather(dataListWeather);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIMW", deviceItemMeter);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemMeter.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
-							dataReportMeter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-					
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemWeather.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-					
-				}
+			if(obj.getStart_date() != null && obj.getEnd_date() != null) {
+				endDate = endDateFormat.parse(obj.getEnd_date());
+				startDate = startDateFormat.parse(obj.getStart_date());
 			}
 			
-			// Case 2: inverter, meter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0) {
-				// Create list date 
-				
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-
-					// inverter 
-					for (int k = 0; k < dataListInverter.size(); k++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
-						
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIM", deviceItem);
-						if (dataReportInverter == null) {
-							dataReportInverter = new SiteDataReportEntity();
-							dataReportInverter.setId_device(deviceItem.getId());
-							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
-							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
-							dataReportInverter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportInverter);
-					}
+			if(dataListMeterAndInverter.size() > 0) {
+				for (int k = 0; k < dataListMeterAndInverter.size(); k++) {
+					DeviceEntity deviceItem = (DeviceEntity) dataListMeterAndInverter.get(k);
+					deviceItem.setStart_date(startDateFormat.format(startDate));
+					deviceItem.setEnd_date(endDateFormat.format(endDate));
 					
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMIM", deviceItemMeter);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemMeter.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
-							dataReportMeter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportIIMW", deviceItem);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
 					}
 				}
 			}
 			
-			// Case 3: inverter, weather
-			else if(dataListInverter.size() > 0  && dataListMeter.size() <= 0 && dataListWeather.size() > 0 ) {
-				// Create list date 
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
+			if(dataListWeather.size() > 0) {
+				for (int j = 0; j < dataListWeather.size(); j++) {
+					DeviceEntity deviceItem = (DeviceEntity) dataListWeather.get(j);
+					deviceItem.setStart_date(startDateFormat.format(startDate));
+					deviceItem.setEnd_date(endDateFormat.format(endDate));
 					
-					//inverter
-					
-					for (int i = 0; i < dataListInverter.size(); i++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(i);
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupMeter(dataListMeter);
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIMW", deviceItem);
-						if (dataReportInverter == null) {
-							dataReportInverter = new SiteDataReportEntity();
-							dataReportInverter.setId_device(deviceItem.getId());
-							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
-							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
-							dataReportInverter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportInverter);
+					List<SiteDataReportEntity> dataReport = queryForList("BatchJob.getSiteDataReportWeather", deviceItem);
+					if (dataReport != null && dataReport.size() > 0) {
+						deviceItem.setDataDevice(dataReport);
+						insert("BatchJob.insertSiteDataReport", deviceItem);
 					}
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemWeather.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-				}
-			}
-			
-			// Case 4: meter, weather
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() > 0 ) {
-				// Create list date 
-				
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemMeter.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
-							dataReportMeter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-					
-					// weather station
-					for (int j = 0; j < dataListWeather.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemWeather = (DeviceEntity) dataListWeather.get(j);
-						deviceItemWeather.setYear( Integer.parseInt(year) );
-						deviceItemWeather.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemWeather.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportWeather", deviceItemWeather);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemWeather.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemWeather.getTable_data_report());
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-				}
-				
-				
-				
-				
-			}
-			// Case 5: meter
-			else if(dataListInverter.size() <= 0 && dataListMeter.size() > 0 && dataListWeather.size() <= 0 ) {
-				// Create list date 
-
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-					// meter 
-					for (int j = 0; j < dataListMeter.size(); j++) {
-						SiteDataReportEntity dataReportMeter = new SiteDataReportEntity();
-						DeviceEntity deviceItemMeter = (DeviceEntity) dataListMeter.get(j);
-						
-						deviceItemMeter.setYear( Integer.parseInt(year) );
-						deviceItemMeter.setGroupMeter(dataListMeter);
-						deviceItemMeter.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItemMeter.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-
-						dataReportMeter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportMM", deviceItemMeter);
-						if (dataReportMeter == null) {
-							dataReportMeter = new SiteDataReportEntity();
-							dataReportMeter.setId_device(deviceItemMeter.getId());
-							dataReportMeter.setTime(dateFormat.format(cal.getTime()));
-							dataReportMeter.setTable_data_report(deviceItemMeter.getTable_data_report());
-							dataReportMeter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportMeter);
-					}
-				}
-			}
-			// Case 6: inverter
-			else if(dataListInverter.size() > 0 && dataListMeter.size() <= 0 && dataListWeather.size() <= 0 ) {
-				// Create list date 
-				
-				for(int t = 0; t <= setTime; t++) {
-					cal.setTime(currentDate);
-					cal.add(Calendar.DATE, t);
-
-					// inverter 
-					for (int k = 0; k < dataListInverter.size(); k++) {
-						SiteDataReportEntity dataReportInverter = new SiteDataReportEntity();
-						
-						DeviceEntity deviceItem = (DeviceEntity) dataListInverter.get(k);
-						
-						
-						deviceItem.setYear( Integer.parseInt(year) );
-						deviceItem.setGroupInverter(dataListInverter);
-						deviceItem.setGroupWeather(dataListWeather);
-						
-						deviceItem.setStart_date(dateFormat.format(cal.getTime()) + " 08:00:00");
-						deviceItem.setEnd_date(dateFormat.format(cal.getTime())+ " 17:59:59");
-						
-						dataReportInverter = (SiteDataReportEntity) queryForObject("BatchJob.getSiteDataReportIIW", deviceItem);
-						if (dataReportInverter == null) {
-							dataReportInverter = new SiteDataReportEntity();
-							dataReportInverter.setId_device(deviceItem.getId());
-							dataReportInverter.setTime(dateFormat.format(cal.getTime()));
-							dataReportInverter.setTable_data_report(deviceItem.getTable_data_report());
-							dataReportInverter.setActualGeneration(0.0);
-						}
-						insert("BatchJob.insertSiteDataReport", dataReportInverter);
-					}
-					
 				}
 			}
 			

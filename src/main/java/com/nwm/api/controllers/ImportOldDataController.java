@@ -508,10 +508,11 @@ public class ImportOldDataController extends BaseController {
 								for (String s : setDate) {	
 									String[] year = s.split("-");
 									obj.setYear(year[0]);
-									obj.setStart_date(s + " 08:00:00");
-									obj.setEnd_date(s + " 17:59:59");
+									obj.setStart_date(s + " 00:00:00");
+									obj.setEnd_date(s + " 23:59:59");
 									obj.setDatatablename(obj.getTable_name());
 									obj.setId(dataFile.getId_device()); 
+									obj.setTable_data_report(getRowComplete.getTable_data_report());
 									
 									service.insertSiteDataReport(obj);
 									
