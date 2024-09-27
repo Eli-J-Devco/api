@@ -140,33 +140,26 @@ public class VirtualDeviceController extends BaseController {
 				
 				
 				if(listDevice.size() > 0) {
-					Date now = new Date();
+					SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+					SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 					TimeZone.setDefault(TimeZone.getTimeZone(siteItem.getTime_zone_value()));
-					SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-					Calendar calCurrent = Calendar.getInstance();
-					calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-					calCurrent.add(Calendar.DATE, -setTime);
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date endDate = new Date();
 					Calendar cal = Calendar.getInstance();
-					Date currentDate = calCurrent.getTime();
+					cal.setTime(endDate);
+					cal.add(Calendar.DATE, -setTime);
+					Date startDate = new Date(cal.getTimeInMillis());
 					
-					for(int t = 0; t <= setTime; t++) {
-						cal.setTime(currentDate);
-						cal.add(Calendar.DATE, t);
-						
-						siteItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
-						siteItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
-						
-						
-						List<?> dataPower = service.getDataPower(siteItem);
-						
-						if(dataPower.size() > 0){
-							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
-							deviceItem.setId_device(siteItem.getId_device());
-							deviceItem.setTable_data_virtual(siteItem.getTable_data_virtual());
-							deviceItem.setData(dataPower);
-							service.insertVirtualDevice(deviceItem);
-						}
+					siteItem.setStart_date(startDateFormat.format(startDate));
+					siteItem.setEnd_date(endDateFormat.format(endDate));
+					
+					List<?> dataPower = service.getDataPower(siteItem);
+					
+					if(dataPower.size() > 0){
+						ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
+						deviceItem.setId_device(siteItem.getId_device());
+						deviceItem.setTable_data_virtual(siteItem.getTable_data_virtual());
+						deviceItem.setData(dataPower);
+						service.insertVirtualDevice(deviceItem);
 					}
 					
 					// Updated last data
@@ -291,10 +284,10 @@ public class VirtualDeviceController extends BaseController {
 			DateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 			Date date1 = null;
 			Date date2 = null;
-			String startDate = obj.getCommissioning();
-			if (startDate != null) {
+			String commissioningDate = obj.getCommissioning();
+			if (commissioningDate != null) {
 				String endDate = simpleDateFormat.format(new Date());
-				date1 = simpleDateFormat.parse(startDate);
+				date1 = simpleDateFormat.parse(commissioningDate);
 				date2 = simpleDateFormat.parse(endDate);
 				long getDiff = date2.getTime() - date1.getTime();
 				long getDaysDiff = getDiff / (24 * 60 * 60 * 1000);
@@ -371,33 +364,26 @@ public class VirtualDeviceController extends BaseController {
 				
 				
 				if(listDevice.size() > 0) {
-					Date now = new Date();
+					SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+					SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
 					TimeZone.setDefault(TimeZone.getTimeZone(siteItem.getTime_zone_value()));
-					SimpleDateFormat dateFormatCurrent = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-					Calendar calCurrent = Calendar.getInstance();
-					calCurrent.setTime(dateFormatCurrent.parse(dateFormatCurrent.format(now)));
-					calCurrent.add(Calendar.DATE, -setTime);
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+					Date endDate = new Date();
 					Calendar cal = Calendar.getInstance();
-					Date currentDate = calCurrent.getTime();
+					cal.setTime(endDate);
+					cal.add(Calendar.DATE, -setTime);
+					Date startDate = new Date(cal.getTimeInMillis());
 					
-					for(int t = 0; t <= setTime; t++) {
-						cal.setTime(currentDate);
-						cal.add(Calendar.DATE, t);
-						
-						siteItem.setStart_date(dateFormat.format(cal.getTime()) + " 00:00:00");
-						siteItem.setEnd_date(dateFormat.format(cal.getTime()) + " 23:59:59");
-						
-						
-						List<?> dataPower = service.getDataPower(siteItem);
-						
-						if(dataPower.size() > 0){
-							ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
-							deviceItem.setId_device(siteItem.getId_device());
-							deviceItem.setTable_data_virtual(siteItem.getTable_data_virtual());
-							deviceItem.setData(dataPower);
-							service.insertVirtualDevice(deviceItem);
-						}
+					siteItem.setStart_date(startDateFormat.format(startDate));
+					siteItem.setEnd_date(endDateFormat.format(endDate));
+					
+					List<?> dataPower = service.getDataPower(siteItem);
+					
+					if(dataPower.size() > 0){
+						ModelVirtualMeterOrInverterEntity deviceItem = new ModelVirtualMeterOrInverterEntity();
+						deviceItem.setId_device(siteItem.getId_device());
+						deviceItem.setTable_data_virtual(siteItem.getTable_data_virtual());
+						deviceItem.setData(dataPower);
+						service.insertVirtualDevice(deviceItem);
 					}
 					
 					// Updated last data
