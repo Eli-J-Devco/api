@@ -20,6 +20,7 @@ import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteCustomerMapEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
 
 public class SiteService extends DB {
@@ -376,6 +377,36 @@ public class SiteService extends DB {
 			case 5:
 				session.update("Site.updateSite", obj);
 				break;
+			case 6:
+				session.update("Site.insertSiteGas", obj);
+				List gasRateSchedulesList = obj.getGasRateSchedulesList();
+				if (gasRateSchedulesList != null) {
+					if (gasRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteGasRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				session.update("Site.insertSiteWater", obj);
+				List waterRateSchedulesList = obj.getWaterRateSchedulesList();
+				if (waterRateSchedulesList != null) {
+					if (waterRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteWaterRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				session.update("Site.insertSiteElectricity", obj);
+				List electricityRateSchedulesList = obj.getElectricityRateSchedulesList();
+				if (electricityRateSchedulesList != null) {
+					if (electricityRateSchedulesList.size() > 0) {
+						session.insert("Site.insertSiteElectricityRateSchedules", obj);
+					}
+					obj.setId(insertLastId);
+				}
+				
+				break;
+
 			default:
 				break;
 			}			
@@ -1085,6 +1116,51 @@ public class SiteService extends DB {
 			return delete("Site.deleteSiteAreaBuildingFloorRoom", obj) > 0;
 		} catch (Exception ex) {
 			log.error("Site.deleteSiteAreaBuildingFloorRoom", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteWaterRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteWaterRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteWaterRateSchedule", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete gas rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteGasRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteGasRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteGasRateSchedule", ex);
+			return false;
+		}
+	}
+	
+	/**
+	  * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 */
+	public boolean deleteSiteElectricityRateSchedule(SiteGasWaterElectricityRateScheduleEntity obj) {
+		try {		
+			return delete("Site.deleteSiteElectricityRateSchedule", obj) > 0;
+		} catch (Exception ex) {
+			log.error("Site.deleteSiteElectricityRateSchedule", ex);
 			return false;
 		}
 	}

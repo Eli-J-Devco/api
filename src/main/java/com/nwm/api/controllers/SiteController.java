@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
 import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.entities.TagEntity;
 import com.nwm.api.services.AWSService;
@@ -779,6 +780,69 @@ public class SiteController extends BaseController {
 		SiteService service = new SiteService();
 		try {
 			boolean result = service.deleteSiteAreaBuildingFloorRoom(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete water rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-water-rate-schedule")
+	public Object deleteSiteWaterRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteWaterRateSchedule(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete gas rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-gas-rate-schedule")
+	public Object deleteSiteGasrRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteGasRateSchedule(obj);
+			if (result) {
+				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+			}
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description delete electricity rate schedule
+	 * @author Duy.Phan
+	 * @since 2024-06-03
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/delete-site-electricity-rate-schedule")
+	public Object deleteSiteElectricityRateSchedule(@Valid @RequestBody SiteGasWaterElectricityRateScheduleEntity obj) {
+		SiteService service = new SiteService();
+		try {
+			boolean result = service.deleteSiteElectricityRateSchedule(obj);
 			if (result) {
 				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
 			}

@@ -219,11 +219,11 @@
 		      ) td ON td.id_site = s.id
  			</if>
 		WHERE
-			s.is_delete = 0
-			AND sem.is_hiding = 0
+			s.is_delete = 0	
 			AND s.`status` = 1 
 			<if test="is_supper_admin != 1">
 				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
 			</if>
 			
 			
@@ -1031,7 +1031,52 @@
 			s.g_transformer_type,
 			s.g_status,
 			s.g_lat,
-			s.g_lng,		
+			s.g_lng,
+			g.gas_company_name,
+			g.gas_account_number,
+			g.gas_average_daily_consumption,
+			g.gas_peak_demand,
+			g.gas_service_type,
+			g.gas_service_pressure,
+			g.gas_interconnection_agreement,
+			g.gas_complicance_standard,
+			g.gas_safety_features,
+			g.gas_additional_notes,
+			g.gas_billing_cycle,
+			g.gas_billing_type,
+			g.gas_tariff_structure,
+			g.gas_billing_address,
+			g.gas_status,
+			w.water_company_name,
+			w.water_account_number,
+			w.water_service_connection_type,
+			w.water_quality_standard,
+			w.water_quality_parameter,
+			w.water_billing_cycle,
+			w.water_billing_type,
+			w.water_tariff_structure,
+			w.water_billing_address,
+			w.water_additional_notes,
+			w.water_status,
+			e.electricity_company_name,
+			e.electricity_account_number,
+			e.electricity_average_daily_consumption,
+			e.electricity_peak_demand,
+			e.electricity_service_type,
+			e.electricity_service_pressure,
+			e.electricity_interconnection_agreement,
+			e.electricity_complicance_standard,
+			e.electricity_safety_features,
+			e.electricity_additional_notes,
+			e.electricity_billing_cycle,
+			e.electricity_billing_type,
+			e.electricity_tariff_structure,
+			e.electricity_billing_address,
+			e.electricity_limit_power,
+			e.electricity_limit_power_unit,
+			e.electricity_over_limit_power_cost,
+			e.electricity_over_limit_power_per,
+			e.electricity_over_limit_power_unit,		
 			s.is_solar_site
 		FROM
 			site s
@@ -1066,6 +1111,9 @@
 						LEFT JOIN employee c ON c.id = scm.id_employee
 						GROUP BY scm.id_site
 					)t ON t.id_site = s.id
+			LEFT JOIN site_gas g ON g.id_site = s.id
+			LEFT JOIN site_water w ON w.id_site = s.id
+			LEFT JOIN site_electricity e ON e.id_site = s.id
 					
 		WHERE s.is_delete = 0 AND s.`status` = 1
 		<if test="is_supper_admin != 1">
@@ -2484,10 +2532,58 @@
 			s.g_lat,
 			s.g_lng,
 			t.dataEmployeeJSON,
+			se.siteElectricityRateSchedulesJSON,
+			sgg.siteGasRateSchedulesJSON,
+			sw.siteWaterRateSchedulesJSON,
 			sa.siteAreaJSON,
 			sb.siteAreaBuildingJSON,
 			sf.siteAreaBuildingFloorJSON,
 			sr.siteAreaBuildingFloorRoomJSON,
+			g.gas_company_name,
+			g.gas_account_number,
+			g.gas_average_daily_consumption,
+			g.gas_peak_demand,
+			g.gas_service_type,
+			g.gas_service_pressure,
+			g.gas_interconnection_agreement,
+			g.gas_complicance_standard,
+			g.gas_safety_features,
+			g.gas_additional_notes,
+			g.gas_billing_cycle,
+			g.gas_billing_type,
+			g.gas_tariff_structure,
+			g.gas_billing_address,
+			g.gas_status,
+			w.water_company_name,
+			w.water_account_number,
+			w.water_service_connection_type,
+			w.water_quality_standard,
+			w.water_quality_parameter,
+			w.water_billing_cycle,
+			w.water_billing_type,
+			w.water_tariff_structure,
+			w.water_billing_address,
+			w.water_additional_notes,
+			w.water_status,
+			e.electricity_company_name,
+			e.electricity_account_number,
+			e.electricity_average_daily_consumption,
+			e.electricity_peak_demand,
+			e.electricity_service_type,
+			e.electricity_service_pressure,
+			e.electricity_interconnection_agreement,
+			e.electricity_complicance_standard,
+			e.electricity_safety_features,
+			e.electricity_additional_notes,
+			e.electricity_billing_cycle,
+			e.electricity_billing_type,
+			e.electricity_tariff_structure,
+			e.electricity_billing_address,
+			e.electricity_limit_power,
+			e.electricity_limit_power_unit,
+			e.electricity_over_limit_power_cost,
+			e.electricity_over_limit_power_per,
+			e.electricity_over_limit_power_unit,
 			s.is_solar_site
 		FROM
 			site s
@@ -2596,6 +2692,69 @@
 							site_area_building_floor_room sr
 						WHERE sr.id_site = #{id}
 				) sr ON sr.id_site = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site_gas,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_gas', sa.id_site_gas,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'status', sa.status,
+								'cost_from', sa.cost_from,
+								'cost_to', sa.cost_to		
+							)) AS siteGasRateSchedulesJSON
+						FROM
+							site_gas_billing_rate_schedule sa
+						WHERE  sa.id_site_gas = #{id}
+						GROUP BY sa.id_site_gas
+					) sgg ON sgg.id_site_gas = s.id	
+			LEFT JOIN (
+						SELECT
+							sa.id_site_water,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_water', sa.id_site_water,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'status', sa.status,
+								'cost_from', sa.cost_from,
+								'cost_to', sa.cost_to		
+							)) AS siteWaterRateSchedulesJSON
+						FROM
+							site_water_billing_rate_schedule sa
+						WHERE  sa.id_site_water = #{id}
+						GROUP BY sa.id_site_water
+					) sw ON sw.id_site_water = s.id
+			LEFT JOIN (
+						SELECT
+							sa.id_site_electricity,
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id_site_electricity', sa.id_site_electricity,
+								'id', sa.id,
+								'cost', sa.cost,
+								'unit', sa.unit,
+								'date_from', sa.date_from,
+								'date_to', sa.date_to,
+								'time_from', sa.time_from,
+								'time_to', sa.time_to,
+								'status', sa.status,
+								'kwh_from', sa.kwh_from,
+								'kwh_to', sa.kwh_to		
+							)) AS siteElectricityRateSchedulesJSON
+						FROM
+							site_electricity_billing_rate_schedule sa
+						WHERE  sa.id_site_electricity = #{id}
+						GROUP BY sa.id_site_electricity
+					) se ON se.id_site_electricity = s.id
+				
+			LEFT JOIN site_gas g ON g.id_site = s.id
+			LEFT JOIN site_water w ON w.id_site = s.id
+			LEFT JOIN site_electricity e ON e.id_site = s.id
 							
 		WHERE s.is_delete = 0 AND s.`status` = 1 AND s.id = #{id}
 		GROUP BY s.id
@@ -2660,6 +2819,59 @@
 	        status = VALUES(status)
 	</insert>
 	
+	<insert id="insertSiteGasRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_gas_billing_rate_schedule` (id, id_site_gas, cost, unit, date_from, date_to, status, cost_from, cost_to)
+	        VALUES
+	        <foreach collection="gasRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_gas}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.cost_from}, #{item.cost_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_gas = VALUES(id_site_gas),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        cost_from = VALUES(cost_from),
+	        cost_to = VALUES(cost_to)
+	</insert>
+	
+	<insert id="insertSiteWaterRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_water_billing_rate_schedule` (id, id_site_water, cost, unit, date_from, date_to, status, cost_from, cost_to)
+	        VALUES
+	        <foreach collection="waterRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_water}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.cost_from}, #{item.cost_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_water = VALUES(id_site_water),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        cost_from = VALUES(cost_from),
+	        cost_to = VALUES(cost_to)
+	</insert>
+	
+	<insert id="insertSiteElectricityRateSchedules"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_electricity_billing_rate_schedule` (id, id_site_electricity, cost, unit, date_from, date_to, status, time_from, time_to, kwh_from, kwh_to)
+	        VALUES
+	        <foreach collection="electricityRateSchedulesList" item="item" index="" separator=",">
+	            (#{item.id}, #{item.id_site_electricity}, #{item.cost}, #{item.unit}, #{item.date_from}, #{item.date_to}, #{item.status}, #{item.time_from}, #{item.time_to}, #{item.kwh_from}, #{item.kwh_to})
+	        </foreach>
+	        ON DUPLICATE KEY UPDATE
+	        id_site_electricity = VALUES(id_site_electricity),
+	        cost = VALUES(cost),
+	        unit = VALUES(unit),
+	        date_from = VALUES(date_from),
+	        date_to = VALUES(date_to),
+	        status = VALUES(status),
+	        time_from = VALUES(time_from),
+	        time_to = VALUES(time_to),
+	        kwh_from = VALUES(kwh_from),
+	        kwh_to = VALUES(kwh_to)
+	</insert>
+	
 	<delete id="deleteSiteArea">
 		DELETE FROM `site_area`
 		WHERE id = #{id} AND id_site = #{id_site}
@@ -2679,5 +2891,84 @@
 		DELETE FROM `site_area_building_floor_room`
 		WHERE id = #{id} AND id_site = #{id_site}
 	</delete>
+	
+	<delete id="deleteSiteWaterRateSchedule">
+		DELETE FROM `site_water_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_water = #{id_site_water}
+	</delete>
+	
+	<delete id="deleteSiteGasRateSchedule">
+		DELETE FROM `site_gas_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_gas = #{id_site_gas}
+	</delete>
+	
+	<delete id="deleteSiteElectricityRateSchedule">
+		DELETE FROM `site_electricity_billing_rate_schedule`
+		WHERE id = #{id} AND id_site_electricity = #{id_site_electricity}
+	</delete>
+	
+	<insert id="insertSiteGas"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_gas` (id_site, gas_company_name, gas_account_number, gas_average_daily_consumption, gas_peak_demand, gas_service_type, gas_service_pressure, gas_interconnection_agreement, gas_complicance_standard, gas_safety_features, gas_additional_notes, gas_billing_cycle, gas_billing_type, gas_tariff_structure, gas_billing_address, gas_status)
+	        VALUES (#{id_site}, #{gas_company_name}, #{gas_account_number}, #{gas_average_daily_consumption}, #{gas_peak_demand}, #{gas_service_type}, #{gas_service_pressure}, #{gas_interconnection_agreement}, #{gas_complicance_standard}, #{gas_safety_features}, #{gas_additional_notes}, #{gas_billing_cycle},  #{gas_billing_type}, #{gas_tariff_structure}, #{gas_billing_address}, #{gas_status})
+	        ON DUPLICATE KEY UPDATE
+	        gas_company_name = VALUES(gas_company_name),
+	        gas_account_number = VALUES(gas_account_number),
+	        gas_average_daily_consumption = VALUES(gas_average_daily_consumption),
+	        gas_peak_demand = VALUES(gas_peak_demand),
+	        gas_service_type = VALUES(gas_service_type),
+	        gas_service_pressure = VALUES(gas_service_pressure),
+	        gas_interconnection_agreement = VALUES(gas_interconnection_agreement),
+	        gas_complicance_standard = VALUES(gas_complicance_standard),
+	        gas_safety_features = VALUES(gas_safety_features),
+	        gas_additional_notes = VALUES(gas_additional_notes),        
+	        gas_billing_cycle = VALUES(gas_billing_cycle),
+	        gas_billing_type = VALUES(gas_billing_type),        
+	        gas_tariff_structure = VALUES(gas_tariff_structure),
+	        gas_billing_address = VALUES(gas_billing_address),
+	        gas_status = VALUES(gas_status)	        
+	</insert>
+	
+	<insert id="insertSiteWater"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_water` (id_site, water_company_name, water_account_number, water_service_connection_type, water_quality_standard, water_quality_parameter, water_billing_cycle, water_billing_type, water_tariff_structure, water_billing_address, water_additional_notes, water_status)
+	        VALUES (#{id_site}, #{water_company_name}, #{water_account_number}, #{water_service_connection_type}, #{water_quality_standard}, #{water_quality_parameter}, #{water_billing_cycle}, #{water_billing_type}, #{water_tariff_structure}, #{water_billing_address}, #{water_additional_notes}, #{water_status})
+	        ON DUPLICATE KEY UPDATE
+	        water_company_name = VALUES(water_company_name),
+	        water_account_number = VALUES(water_account_number),
+	        water_service_connection_type = VALUES(water_service_connection_type),
+	        water_quality_standard = VALUES(water_quality_standard),
+	        water_quality_parameter = VALUES(water_quality_parameter),
+	        water_billing_cycle = VALUES(water_billing_cycle),
+	        water_billing_type = VALUES(water_billing_type),
+	        water_tariff_structure = VALUES(water_tariff_structure),
+	        water_billing_address = VALUES(water_billing_address),
+	        water_additional_notes = VALUES(water_additional_notes),        
+	        water_status = VALUES(water_status)        
+	</insert>
+	
+	<insert id="insertSiteElectricity"  useGeneratedKeys="true" keyProperty="id" >
+		INSERT INTO `site_electricity` (id_site, electricity_company_name, electricity_account_number, electricity_average_daily_consumption, electricity_peak_demand, electricity_service_type, electricity_service_pressure, electricity_interconnection_agreement, electricity_complicance_standard, electricity_safety_features, electricity_additional_notes, electricity_billing_cycle, electricity_billing_type, electricity_tariff_structure, electricity_billing_address, electricity_limit_power, electricity_limit_power_unit, electricity_over_limit_power_cost, electricity_over_limit_power_per, electricity_over_limit_power_unit, electricity_status)
+	        VALUES (#{id_site}, #{electricity_company_name}, #{electricity_account_number}, #{electricity_average_daily_consumption}, #{electricity_peak_demand}, #{electricity_service_type}, #{electricity_service_pressure}, #{electricity_interconnection_agreement}, #{electricity_complicance_standard}, #{electricity_safety_features}, #{electricity_additional_notes}, #{electricity_billing_cycle}, #{electricity_billing_type}, #{electricity_tariff_structure}, #{electricity_billing_address}, #{electricity_limit_power}, #{electricity_limit_power_unit}, #{electricity_over_limit_power_cost}, #{electricity_over_limit_power_per}, #{electricity_over_limit_power_unit}, #{electricity_status})
+	        ON DUPLICATE KEY UPDATE
+	        electricity_company_name = VALUES(electricity_company_name),
+	        electricity_account_number = VALUES(electricity_account_number),
+	        electricity_average_daily_consumption = VALUES(electricity_average_daily_consumption),
+	        electricity_peak_demand = VALUES(electricity_peak_demand),
+	        electricity_service_type = VALUES(electricity_service_type),
+	        electricity_service_pressure = VALUES(electricity_service_pressure),
+	        electricity_interconnection_agreement = VALUES(electricity_interconnection_agreement),
+	        electricity_complicance_standard = VALUES(electricity_complicance_standard),
+	        electricity_safety_features = VALUES(electricity_safety_features),
+	        electricity_additional_notes = VALUES(electricity_additional_notes),        
+	        electricity_billing_cycle = VALUES(electricity_billing_cycle),
+	        electricity_billing_type = VALUES(electricity_billing_type),
+	        electricity_tariff_structure = VALUES(electricity_tariff_structure),
+	        electricity_billing_address = VALUES(electricity_billing_address),
+	        electricity_limit_power = VALUES(electricity_limit_power),
+	        electricity_limit_power_unit = VALUES(electricity_limit_power_unit),
+	        electricity_over_limit_power_cost = VALUES(electricity_over_limit_power_cost),
+	        electricity_over_limit_power_per = VALUES(electricity_over_limit_power_per),
+	        electricity_over_limit_power_unit = VALUES(electricity_over_limit_power_unit),
+	        electricity_status = VALUES(electricity_status)  
+	</insert>
 	
 </mapper>

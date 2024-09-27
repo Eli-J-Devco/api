@@ -254,6 +254,7 @@ public class SiteEntity {
 	private String siteAreaBuildingFloorJSON;
 	private String siteAreaBuildingFloorRoomJSON;
 	private String dataEmployeeJSON;
+	
 	private int tab_menu;
 	
 	private String gas_company_name;
@@ -267,11 +268,286 @@ public class SiteEntity {
 	private String gas_safety_features;
 	private String gas_additional_notes;
 	private int gas_billing_cycle;
+	private int gas_billing_type;
 	private String gas_tariff_structure;
 	private String gas_billing_address;
+	private int gas_status;
+	private List gasRateSchedulesList;
+	private String siteGasRateSchedulesJSON;
+	
+	private String water_company_name;
+	private String water_account_number;
+	private int water_service_connection_type;
+	private double water_quality_standard;
+	private double water_quality_parameter;
+	private int water_billing_cycle;
+	private int water_billing_type;
+	private String water_tariff_structure;
+	private String water_billing_address;
+	private String water_additional_notes;
+	private int water_status;
+	private List waterRateSchedulesList;
+	private String siteWaterRateSchedulesJSON;
+	
+	private String electricity_company_name;
+	private String electricity_account_number;
+	private double electricity_average_daily_consumption;
+	private double electricity_peak_demand;
+	private int electricity_service_type;
+	private double electricity_service_pressure;
+	private String electricity_interconnection_agreement;
+	private String electricity_complicance_standard;
+	private String electricity_safety_features;
+	private String electricity_additional_notes;
+	private int electricity_billing_cycle;
+	private int electricity_billing_type;
+	private String electricity_tariff_structure;
+	private String electricity_billing_address;
+	private double electricity_limit_power;
+	private String electricity_limit_power_unit;
+	private double electricity_over_limit_power_cost;
+	private double electricity_over_limit_power_per;
+	private String electricity_over_limit_power_unit;	
+	private int electricity_status;
+	private List electricityRateSchedulesList;
+	private String siteElectricityRateSchedulesJSON;
 	
 	
 	
+	public String getElectricity_company_name() {
+		return electricity_company_name;
+	}
+	public void setElectricity_company_name(String electricity_company_name) {
+		this.electricity_company_name = electricity_company_name;
+	}
+	public String getElectricity_account_number() {
+		return electricity_account_number;
+	}
+	public void setElectricity_account_number(String electricity_account_number) {
+		this.electricity_account_number = electricity_account_number;
+	}
+	public double getElectricity_average_daily_consumption() {
+		return electricity_average_daily_consumption;
+	}
+	public void setElectricity_average_daily_consumption(double electricity_average_daily_consumption) {
+		this.electricity_average_daily_consumption = electricity_average_daily_consumption;
+	}
+	public double getElectricity_peak_demand() {
+		return electricity_peak_demand;
+	}
+	public void setElectricity_peak_demand(double electricity_peak_demand) {
+		this.electricity_peak_demand = electricity_peak_demand;
+	}
+	public int getElectricity_service_type() {
+		return electricity_service_type;
+	}
+	public void setElectricity_service_type(int electricity_service_type) {
+		this.electricity_service_type = electricity_service_type;
+	}
+	public double getElectricity_service_pressure() {
+		return electricity_service_pressure;
+	}
+	public void setElectricity_service_pressure(double electricity_service_pressure) {
+		this.electricity_service_pressure = electricity_service_pressure;
+	}
+	public String getElectricity_interconnection_agreement() {
+		return electricity_interconnection_agreement;
+	}
+	public void setElectricity_interconnection_agreement(String electricity_interconnection_agreement) {
+		this.electricity_interconnection_agreement = electricity_interconnection_agreement;
+	}
+	public String getElectricity_complicance_standard() {
+		return electricity_complicance_standard;
+	}
+	public void setElectricity_complicance_standard(String electricity_complicance_standard) {
+		this.electricity_complicance_standard = electricity_complicance_standard;
+	}
+	public String getElectricity_safety_features() {
+		return electricity_safety_features;
+	}
+	public void setElectricity_safety_features(String electricity_safety_features) {
+		this.electricity_safety_features = electricity_safety_features;
+	}
+	public String getElectricity_additional_notes() {
+		return electricity_additional_notes;
+	}
+	public void setElectricity_additional_notes(String electricity_additional_notes) {
+		this.electricity_additional_notes = electricity_additional_notes;
+	}
+	public int getElectricity_billing_cycle() {
+		return electricity_billing_cycle;
+	}
+	public void setElectricity_billing_cycle(int electricity_billing_cycle) {
+		this.electricity_billing_cycle = electricity_billing_cycle;
+	}
+	public int getElectricity_billing_type() {
+		return electricity_billing_type;
+	}
+	public void setElectricity_billing_type(int electricity_billing_type) {
+		this.electricity_billing_type = electricity_billing_type;
+	}
+	public String getElectricity_tariff_structure() {
+		return electricity_tariff_structure;
+	}
+	public void setElectricity_tariff_structure(String electricity_tariff_structure) {
+		this.electricity_tariff_structure = electricity_tariff_structure;
+	}
+	public String getElectricity_billing_address() {
+		return electricity_billing_address;
+	}
+	public void setElectricity_billing_address(String electricity_billing_address) {
+		this.electricity_billing_address = electricity_billing_address;
+	}
+	public double getElectricity_limit_power() {
+		return electricity_limit_power;
+	}
+	public void setElectricity_limit_power(double electricity_limit_power) {
+		this.electricity_limit_power = electricity_limit_power;
+	}
+	public String getElectricity_limit_power_unit() {
+		return electricity_limit_power_unit;
+	}
+	public void setElectricity_limit_power_unit(String electricity_limit_power_unit) {
+		this.electricity_limit_power_unit = electricity_limit_power_unit;
+	}
+	public double getElectricity_over_limit_power_cost() {
+		return electricity_over_limit_power_cost;
+	}
+	public void setElectricity_over_limit_power_cost(double electricity_over_limit_power_cost) {
+		this.electricity_over_limit_power_cost = electricity_over_limit_power_cost;
+	}
+	public double getElectricity_over_limit_power_per() {
+		return electricity_over_limit_power_per;
+	}
+	public void setElectricity_over_limit_power_per(double electricity_over_limit_power_per) {
+		this.electricity_over_limit_power_per = electricity_over_limit_power_per;
+	}
+	public String getElectricity_over_limit_power_unit() {
+		return electricity_over_limit_power_unit;
+	}
+	public void setElectricity_over_limit_power_unit(String electricity_over_limit_power_unit) {
+		this.electricity_over_limit_power_unit = electricity_over_limit_power_unit;
+	}
+	public int getElectricity_status() {
+		return electricity_status;
+	}
+	public void setElectricity_status(int electricity_status) {
+		this.electricity_status = electricity_status;
+	}
+	public List getElectricityRateSchedulesList() {
+		return electricityRateSchedulesList;
+	}
+	public void setElectricityRateSchedulesList(List electricityRateSchedulesList) {
+		this.electricityRateSchedulesList = electricityRateSchedulesList;
+	}
+	public String getSiteElectricityRateSchedulesJSON() {
+		return siteElectricityRateSchedulesJSON;
+	}
+	public void setSiteElectricityRateSchedulesJSON(String siteElectricityRateSchedulesJSON) {
+		this.siteElectricityRateSchedulesJSON = siteElectricityRateSchedulesJSON;
+	}
+	public String getWater_additional_notes() {
+		return water_additional_notes;
+	}
+	public void setWater_additional_notes(String water_additional_notes) {
+		this.water_additional_notes = water_additional_notes;
+	}
+	public int getWater_service_connection_type() {
+		return water_service_connection_type;
+	}
+	public void setWater_service_connection_type(int water_service_connection_type) {
+		this.water_service_connection_type = water_service_connection_type;
+	}
+	public String getWater_company_name() {
+		return water_company_name;
+	}
+	public void setWater_company_name(String water_company_name) {
+		this.water_company_name = water_company_name;
+	}
+	public String getWater_account_number() {
+		return water_account_number;
+	}
+	public void setWater_account_number(String water_account_number) {
+		this.water_account_number = water_account_number;
+	}
+	public double getWater_quality_standard() {
+		return water_quality_standard;
+	}
+	public void setWater_quality_standard(double water_quality_standard) {
+		this.water_quality_standard = water_quality_standard;
+	}
+	public double getWater_quality_parameter() {
+		return water_quality_parameter;
+	}
+	public void setWater_quality_parameter(double water_quality_parameter) {
+		this.water_quality_parameter = water_quality_parameter;
+	}
+	public int getWater_billing_cycle() {
+		return water_billing_cycle;
+	}
+	public void setWater_billing_cycle(int water_billing_cycle) {
+		this.water_billing_cycle = water_billing_cycle;
+	}
+	public int getWater_billing_type() {
+		return water_billing_type;
+	}
+	public void setWater_billing_type(int water_billing_type) {
+		this.water_billing_type = water_billing_type;
+	}
+	public String getWater_tariff_structure() {
+		return water_tariff_structure;
+	}
+	public void setWater_tariff_structure(String water_tariff_structure) {
+		this.water_tariff_structure = water_tariff_structure;
+	}
+	public String getWater_billing_address() {
+		return water_billing_address;
+	}
+	public void setWater_billing_address(String water_billing_address) {
+		this.water_billing_address = water_billing_address;
+	}
+	public int getWater_status() {
+		return water_status;
+	}
+	public void setWater_status(int water_status) {
+		this.water_status = water_status;
+	}
+	public List getWaterRateSchedulesList() {
+		return waterRateSchedulesList;
+	}
+	public void setWaterRateSchedulesList(List waterRateSchedulesList) {
+		this.waterRateSchedulesList = waterRateSchedulesList;
+	}
+	public String getSiteWaterRateSchedulesJSON() {
+		return siteWaterRateSchedulesJSON;
+	}
+	public void setSiteWaterRateSchedulesJSON(String siteWaterRateSchedulesJSON) {
+		this.siteWaterRateSchedulesJSON = siteWaterRateSchedulesJSON;
+	}
+	public int getGas_billing_type() {
+		return gas_billing_type;
+	}
+	public void setGas_billing_type(int gas_billing_type) {
+		this.gas_billing_type = gas_billing_type;
+	}
+	public int getGas_status() {
+		return gas_status;
+	}
+	public void setGas_status(int gas_status) {
+		this.gas_status = gas_status;
+	}
+	public List getGasRateSchedulesList() {
+		return gasRateSchedulesList;
+	}
+	public void setGasRateSchedulesList(List gasRateSchedulesList) {
+		this.gasRateSchedulesList = gasRateSchedulesList;
+	}
+	public String getSiteGasRateSchedulesJSON() {
+		return siteGasRateSchedulesJSON;
+	}
+	public void setSiteGasRateSchedulesJSON(String siteGasRateSchedulesJSON) {
+		this.siteGasRateSchedulesJSON = siteGasRateSchedulesJSON;
+	}
 	public int getTab_menu() {
 		return tab_menu;
 	}
