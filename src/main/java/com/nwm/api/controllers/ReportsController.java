@@ -2126,6 +2126,7 @@ public class ReportsController extends BaseController {
 					siteObj.setId_site((int) reportObj.getIds().get(i));
 					siteObj.setId(reportObj.getId());
 					siteObj.setData_intervals(reportObj.getData_intervals());
+					siteObj.setCadence_range(reportObj.getCadence_range());
 					siteObj.setStart_date(reportObj.getStart_date());
 					siteObj.setEnd_date(reportObj.getEnd_date());
 					
@@ -3193,7 +3194,7 @@ public class ReportsController extends BaseController {
 	}
 	
 	// Write header with format
-			private static void writeHeaderCustomReport(Sheet sheet, ViewReportEntity dataObj) {
+			private static void writeHeaderCustomReport(Sheet sheet, ViewReportEntity report, List<ViewReportEntity> dataList) {
 				try {
 					sheet.setDefaultColumnWidth(16);
 					sheet.setColumnWidth(0, 15 * 256);
@@ -3220,20 +3221,20 @@ public class ReportsController extends BaseController {
 
 					Row row = sheet.createRow(0);
 					Cell cell = row.createCell(0);
-					cell.setCellStyle(reportInfoBoldCellStyle);
-					cell.setCellValue("Site Name");
+//					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellValue("Site Name");
 					cell = row.createCell(1);
-					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellStyle(reportInfoBoldCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
 					
 					cell = row.createCell(2);
 					row.setHeight((short) 600);
-					cell.setCellStyle(reportInfoBoldCellStyle);
-					cell.setCellValue(dataObj.getSite_name());
+//					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellValue(dataObj.getSite_name());
 					cell = row.createCell(3);
-					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellStyle(reportInfoBoldCellStyle);
 					cell = row.createCell(4);
-					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellStyle(reportInfoBoldCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
 					
 					row = sheet.createRow(1);
@@ -3247,7 +3248,7 @@ public class ReportsController extends BaseController {
 					
 					cell = row.createCell(2);
 					cell.setCellStyle(reportInfoCellStyle);
-					cell.setCellValue(dataObj.getReport_date());
+					cell.setCellValue(dataList.get(0).getReport_date());
 					cell = row.createCell(3);
 					cell.setCellStyle(reportInfoCellStyle);
 					cell = row.createCell(4);
@@ -3263,9 +3264,15 @@ public class ReportsController extends BaseController {
 					cell.setCellStyle(reportInfoBoldCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
 					
+					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+					SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
+					if (report.getData_intervals() == Constants.DAILY_INTERVAL) format = new SimpleDateFormat("MM/dd/yyyy");
+					else if (report.getData_intervals() == Constants.MONTHLY_INTERVAL) format = new SimpleDateFormat("MM/yyyy");
+					else if (report.getData_intervals() == Constants.ANNUALLY_INTERVAL) format = new SimpleDateFormat("yyyy");
+					
 					cell = row.createCell(2);
 					cell.setCellStyle(reportInfoCellStyle);
-					cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+					cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
 					cell = row.createCell(3);
 					cell.setCellStyle(reportInfoCellStyle);
 					cell = row.createCell(4);
@@ -3275,19 +3282,19 @@ public class ReportsController extends BaseController {
 					row = sheet.createRow(3);
 					row.setHeight((short) 600);
 					cell = row.createCell(0);
-					cell.setCellStyle(reportInfoBoldCellStyle);
-					cell.setCellValue("System Size (kW DC)");
+//					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellValue("System Size (kW DC)");
 					cell = row.createCell(1);
-					cell.setCellStyle(reportInfoBoldCellStyle);
+//					cell.setCellStyle(reportInfoBoldCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1));
 					
 					cell = row.createCell(2);
-					cell.setCellStyle(reportInfoCellStyle);
-					cell.setCellValue(dataObj.getDc_capacity());
+//					cell.setCellStyle(reportInfoCellStyle);
+//					cell.setCellValue(dataObj.getDc_capacity());
 					cell = row.createCell(3);
-					cell.setCellStyle(reportInfoCellStyle);
+//					cell.setCellStyle(reportInfoCellStyle);
 					cell = row.createCell(4);
-					cell.setCellStyle(reportInfoCellStyle);
+//					cell.setCellStyle(reportInfoCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 4));
 					
 					for (int i = 0; i <= 3; i++) {
@@ -3301,48 +3308,56 @@ public class ReportsController extends BaseController {
 					sheet.addMergedRegion(new CellRangeAddress(0, 3, 5, 10));	
 					
 					row = sheet.createRow(24);
-					cell = row.createCell(3);
+					cell = row.createCell(0);
 					cell.setCellStyle(tableHeaderCellStyle);
 					cell.setCellValue("Timestamp");
-					cell = row.createCell(4);
+					cell = row.createCell(1);
 					cell.setCellStyle(tableHeaderCellStyle);
-					cell = row.createCell(5);
+					cell = row.createCell(2);
 					cell.setCellStyle(tableHeaderCellStyle);
-					sheet.addMergedRegion(new CellRangeAddress(24, 24, 3, 5));
+					sheet.addMergedRegion(new CellRangeAddress(24, 24, 0, 2));
 					
-					cell = row.createCell(6);
-					cell.setCellStyle(tableHeaderCellStyle);
-					cell.setCellValue("Actual Generation (kWh)");
-					cell = row.createCell(7);
-					cell.setCellStyle(tableHeaderCellStyle);
-					cell = row.createCell(8);
-					cell.setCellStyle(tableHeaderCellStyle);
-					sheet.addMergedRegion(new CellRangeAddress(24, 24, 6, 8));
 					
-					List dataExports = dataObj.getDataReports();
-					if(dataExports != null && dataExports.size() > 0) {
-						for(int i = 0 ;i < dataExports.size(); i++) {
-							Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
-							int t = 25 + i;
-							
-							Row row26 = sheet.createRow(t);
-							Cell cel26D = row26.createCell(3);
-							cel26D.setCellStyle(tableRowCellStyle);
-							cel26D.setCellValue(item.get("categories_time").toString());
-							Cell cel26E = row26.createCell(4);
-							cel26E.setCellStyle(tableRowCellStyle);
-							Cell cel26F = row26.createCell(5);
-							cel26F.setCellStyle(tableRowCellStyle);
-							sheet.addMergedRegion(new CellRangeAddress(t, t, 3, 5));
-							
-							Cell cel26G = row26.createCell(6);
-							cel26G.setCellStyle(tableRowNoDecimalCellStyle);
-							if(item.get("actual") != null) cel26G.setCellValue(Double.parseDouble(item.get("actual").toString()));
-							Cell cel26H = row26.createCell(7);
-							cel26H.setCellStyle(tableRowNoDecimalCellStyle);
-							Cell cel26I = row26.createCell(8);
-							cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-							sheet.addMergedRegion(new CellRangeAddress(t, t, 6, 8));
+					for (int i = 0; i < dataList.size(); i++) {
+						ViewReportEntity dataObj = dataList.get(i);
+						
+						cell = row.createCell(3 + 3*i);
+						cell.setCellStyle(tableHeaderCellStyle);
+						cell.setCellValue(dataObj.getSite_name());
+						cell = row.createCell(4 + 3*i);
+						cell.setCellStyle(tableHeaderCellStyle);
+						cell = row.createCell(5 + 3*i);
+						cell.setCellStyle(tableHeaderCellStyle);
+						sheet.addMergedRegion(new CellRangeAddress(24, 24, 3 + 3*i, 5 + 3*i));
+						
+						List<Map<String, Object>> dataExports = dataObj.getDataReports();
+						
+						if(dataExports != null && dataExports.size() > 0) {
+							for(int j = 0 ;j < dataExports.size(); j++) {
+								Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
+								int t = 25 + j;
+								
+								Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
+								if (i == 0) {
+									Cell cel26D = row26.createCell(0);
+									cel26D.setCellStyle(tableRowCellStyle);
+									cel26D.setCellValue(item.get("categories_time").toString());
+									Cell cel26E = row26.createCell(1);
+									cel26E.setCellStyle(tableRowCellStyle);
+									Cell cel26F = row26.createCell(2);
+									cel26F.setCellStyle(tableRowCellStyle);
+									sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+								}
+								
+								Cell cel26G = row26.createCell(3 + 3*i);
+								cel26G.setCellStyle(tableRowNoDecimalCellStyle);
+								if(item.get("actual") != null) cel26G.setCellValue(Double.parseDouble(item.get("actual").toString()));
+								Cell cel26H = row26.createCell(4 + 3*i);
+								cel26H.setCellStyle(tableRowNoDecimalCellStyle);
+								Cell cel26I = row26.createCell(5 + 3*i);
+								cel26I.setCellStyle(tableRowNoDecimalCellStyle);
+								sheet.addMergedRegion(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							}
 						}
 					}
 				} catch (Exception e) {
@@ -3361,60 +3376,50 @@ public class ReportsController extends BaseController {
 			public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 				try (XSSFWorkbook document = new XSSFWorkbook()) {
 					List<ViewReportEntity> dataObjList = getReportDataList(obj);
+					if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+					
+					XSSFSheet sheet = document.createSheet("Production Report");
+					
+					// insert logo image
 					int pictureIdx = readLogoImageFile(document);
+					ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
+					insertLogo(sheet, logoAnchor, pictureIdx);
+					
+					// chart
+					ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 6, 12, 22);
+					XDDFChart chart = insertChart(sheet, chartAnchor, "Actual Generation (kWh)");
+					
+					// category axis
+					XDDFCategoryAxis bottomAxis = createCategoryAxis(chart);
+					
+					// left value axis
+					XDDFValueAxis leftAxis = createLeftValueAxis(chart, "kWh");
+					
+					// report information and table
+					writeHeaderCustomReport(sheet, obj, dataObjList);
 					
 					for (int i = 0; i < dataObjList.size(); i++) {
 						ViewReportEntity dataObj = dataObjList.get(i);
 						
 						if (dataObj != null) {
-							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-							if (dataObj.getData_intervals() == Constants.DAILY_INTERVAL) format = new SimpleDateFormat("MM/dd/yyyy");
-							else if (dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL) format = new SimpleDateFormat("MM/yyyy");
-							else if (dataObj.getData_intervals() == Constants.ANNUALLY_INTERVAL) format = new SimpleDateFormat("yyyy");
-							dataObj.setStart_date(format.format(dateFormat.parse(obj.getStart_date())));
-							dataObj.setEnd_date(format.format(dateFormat.parse(obj.getEnd_date())));
 							List<Map<String, Object>> dataExports = dataObj.getDataReports();
 							int numOfPoints = dataExports != null ? dataExports.size() : 0;
 							
-							XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
-							
-							// insert logo image
-							ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
-							insertLogo(sheet, logoAnchor, pictureIdx);
-							
-							// report information and table
-							writeHeaderCustomReport(sheet, dataObj);
-							
-							// chart
 							if (numOfPoints > 0) {
-								ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 6, 12, 22);
-								XDDFChart chart = insertChart(sheet, chartAnchor, null);
-								
 								// data sources
-								XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3, 3));
-								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 6, 6));
-								
-								// category axis
-								XDDFCategoryAxis bottomAxis = createCategoryAxis(chart);
-								
-								// left value axis
-								XDDFValueAxis leftAxis = createLeftValueAxis(chart, "kWh");
+								XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0));
+								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i));
 								
 								XDDFChartData data = createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-								addSeries(dataExports.stream().allMatch(item -> item.get("actual") == null), data, categoriesData, valuesData, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
+								addSeries(dataExports.stream().allMatch(item -> item.get("actual") == null), data, categoriesData, valuesData, dataObj.getSite_name());
 								
 								chart.plot(data);
 							}
 						}
 					}
 					
-					if (dataObjList.stream().anyMatch(item -> item != null)) {
-						sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
-						return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-					} else {
-						return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-					}
+					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} catch (Exception e) {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 				}
@@ -4166,6 +4171,25 @@ public class ReportsController extends BaseController {
 			solidFillSeries(series, null, null);
 		} else {
 			solidFillSeries(series, color, borderColor);
+		}
+	}
+	
+	private static void addSeries(boolean isDataEmpty, XDDFChartData chartData, XDDFDataSource<String> categories, XDDFNumericalDataSource<Double> value, String name) {
+		if (categories == null || value == null) return;
+		
+		Series series = chartData.addSeries(categories, value);
+		series.setTitle(name, null);
+		
+		if (isDataEmpty) {
+			// If data is empty, chart plot will thrown error. So we need to add dummy data and set color to transparent.
+			Double[] dummyData = new Double[value.getPointCount()];
+			Arrays.fill(dummyData, 0d);
+			series.replaceData(categories, XDDFDataSourcesFactory.fromArray(dummyData));
+		}
+		
+		if (series.getClass() == XDDFLineChartData.Series.class) {
+			((XDDFLineChartData.Series) series).setSmooth(false);
+			((XDDFLineChartData.Series) series).setMarkerStyle(MarkerStyle.NONE);
 		}
 	}
 

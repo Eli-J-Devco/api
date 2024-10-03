@@ -38,6 +38,92 @@ import com.nwm.api.utils.Constants;
 public class ReportsService extends DB {
 	
 	/**
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param dateTimeList
+	 * @param dataList
+	 * @return
+	 */
+	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
+		List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
+		
+		try {
+			if(dataList != null && dateTimeList.size() > 0) {
+				for (Map<String, Object> dateTime: dateTimeList) {
+					boolean isFound = false;
+					
+					for(Map<String, Object> data: dataList) {
+						String fullTime = dateTime.get("categories_time").toString();
+						String powerTime = data.get("categories_time").toString();
+						
+						if (fullTime.equals(powerTime)) {
+							fulfilledDataList.add(data);
+							isFound = true;
+							break;
+						}
+					}
+					
+					if (!isFound) fulfilledDataList.add(dateTime);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return fulfilledDataList;
+	}
+	
+	/**
+	 * @description create date time list
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param obj device object
+	 * @param start start date time
+	 * @param end end date time
+	 * @return
+	 */
+	private List<Map<String, Object>> getDateTimeList(ViewReportEntity obj, LocalDateTime start, LocalDateTime end) {
+		List<Map<String, Object>> dateTimeList = new ArrayList<>();
+		
+		try {
+			int interval = 1;
+			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+			ChronoUnit timeUnit = ChronoUnit.MINUTES;
+		
+			switch (obj.getCadence_range()) {
+				case 5: // custom
+	                switch (obj.getData_intervals()) {
+	                	case 4:
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+	                		timeUnit = ChronoUnit.DAYS;
+	                		break;
+	                	case 6:
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
+	                		timeUnit = ChronoUnit.MONTHS;
+	                		break;
+	                	case 7:
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
+	                		timeUnit = ChronoUnit.YEARS;
+	                		break;
+	                }
+					break;
+			}
+			
+			while (!start.isAfter(end)) {
+				Map<String, Object> dateTime = new HashMap<String, Object>();
+				dateTime.put("categories_time", start.format(categoryTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return dateTimeList;
+	}
+	
+	/**
 	 * @description get monthly  report 
 	 * @author long.pham
 	 * @since 2022-08-23
@@ -786,19 +872,17 @@ public class ReportsService extends DB {
 	 */
 	
 	public Object getCustomReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-
-			if (dataObj == null) {
-				return null;
-			}
+			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (dataObj == null) return null;
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
-			List dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
-			if (dataPower.size() > 0 ) {
-				dataObj.setDataReports(dataPower);
-			}
+			List<Map<String, Object>> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
+			
+			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
+			dataObj.setDataReports(fulfillData(getDateTimeList(obj, startDate, endDate), dataPower));
 			
 			return dataObj;
 		} catch (Exception ex) {

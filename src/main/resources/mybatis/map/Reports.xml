@@ -916,8 +916,6 @@
 					</otherwise>
 				</choose>
 				AS categories_time,
-				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_full,
-				DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
 				IF(
 					COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0,
 					ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
@@ -940,20 +938,7 @@
 				
 			GROUP BY 
 				s.id,
-				<choose>
-					<when test="data_intervals == 4">
-						DATE_FORMAT( sdr.time , "%Y-%m-%d")
-					</when>
-					<when test="data_intervals == 6">
-						DATE_FORMAT( sdr.time , "%Y-%m")
-					</when>
-					<when test="data_intervals == 7">
-						DATE_FORMAT( sdr.time , "%Y")
-					</when>
-					<otherwise>
-						DATE_FORMAT( sdr.time , "%Y-%m")
-					</otherwise>
-				</choose>
+				categories_time
 	</select>
 	
 	<select id="getOperationPerformanceReport" resultType="com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity">
