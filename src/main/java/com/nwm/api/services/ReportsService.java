@@ -54,8 +54,8 @@ public class ReportsService extends DB {
 					boolean isFound = false;
 					
 					for(Map<String, Object> data: dataList) {
-						String fullTime = dateTime.get("time_full").toString();
-						String powerTime = data.get("time_full").toString();
+						String fullTime = dateTime.get("categories_time").toString();
+						String powerTime = data.get("categories_time").toString();
 						
 						if (fullTime.equals(powerTime)) {
 							fulfilledDataList.add(data);
@@ -87,15 +87,12 @@ public class ReportsService extends DB {
 		List<Map<String, Object>> dateTimeList = new ArrayList<>();
 		
 		try {
-			int interval = 0;
-			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			int interval = 1;
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 		
 			switch (obj.getCadence_range()) {
 				case 5: // custom
-					interval = 1;
-					fullTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 	                switch (obj.getData_intervals()) {
 	                	case 4:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
@@ -115,7 +112,6 @@ public class ReportsService extends DB {
 			
 			while (!start.isAfter(end)) {
 				Map<String, Object> dateTime = new HashMap<String, Object>();
-				dateTime.put("time_full", start.format(fullTimeFormat));
 				dateTime.put("categories_time", start.format(categoryTimeFormat));
 				dateTimeList.add(dateTime);
 				start = start.plus(interval, timeUnit);
