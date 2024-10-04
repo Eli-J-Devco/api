@@ -81,7 +81,6 @@
 		LEFT JOIN (
 			SELECT
 				time,
-				ROUND(
 					CASE
 						WHEN MeasuredProduction <![CDATA[>]]> #{maxPower} THEN
 							CASE
@@ -90,9 +89,7 @@
 								WHEN ${data_send_time} = 2 THEN nvmActivePower / (60 / 15)
 							END
 						ELSE MeasuredProduction
-					END,
-					2
-				) AS MeasuredProduction
+					END AS MeasuredProduction
 			FROM
 				(
 					<choose>

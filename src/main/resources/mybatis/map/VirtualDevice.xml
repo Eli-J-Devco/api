@@ -130,7 +130,7 @@
 		SELECT
 			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
 			ROUND(( SUM( t.power ) ), 2 ) AS nvmActivePower,
-			ROUND(( SUM( t.energy ) ), 2 ) AS nvmActiveEnergy,
+			SUM( t.energy ) AS nvmActiveEnergy,
 			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
 			ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
 			

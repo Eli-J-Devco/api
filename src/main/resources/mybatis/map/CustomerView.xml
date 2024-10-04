@@ -696,7 +696,10 @@
 			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
 			CASE
 				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
-				ELSE ROUND(nvmActiveEnergy, 1)
+				ELSE 
+				
+				IF(MOD(nvmActiveEnergy,1) = 0.5, CEIL(nvmActiveEnergy), ROUND( nvmActiveEnergy, 0 ))
+				
 			END AS chart_energy_kwh,
 			ROUND(expected_power, 1) AS expected_power
 		FROM
