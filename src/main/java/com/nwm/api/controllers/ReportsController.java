@@ -2537,7 +2537,7 @@ public class ReportsController extends BaseController {
 				for (int i = 0; i < data.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) data.get(i);
 					String[] record = { 
-								(item.get("name") != null ? item.get("name").toString() : "") + " - " + (item.get("devicename") != null ? item.get("devicename").toString() : ""),
+							obj.getRecVersion() == 2 ? "" : (item.get("name") != null ? item.get("name").toString() : "") + " - " + (item.get("devicename") != null ? item.get("devicename").toString() : ""),
 							" "+(item.get("ru_id") != null ? item.get("ru_id").toString() : ""),
 							" "+(item.get("gu_id") != null ? item.get("gu_id").toString() : ""),
 							" "+(item.get("vintage_date") != null ? item.get("vintage_date").toString() : ""),
@@ -3442,77 +3442,93 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+				
+				// total column: 12
+				Table table = new Table(12).useAllAvailableWidth();
+				table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+				table.setFontSize(8);
+				table.setTextAlignment(TextAlignment.CENTER);
+				
 				Image logoImage = readLogoImageFile();
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				SimpleDateFormat format  = new SimpleDateFormat("MM/yyyy");
+				DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
+				
+				// select format based on intervals
+				switch (obj.getData_intervals()) {
+					case Constants.DAILY_INTERVAL:
+						format = new SimpleDateFormat("MM/dd/yyyy");
+						dateTickUnitType = DateTickUnitType.DAY;
+						break;
+						
+					case Constants.MONTHLY_INTERVAL:
+						format = new SimpleDateFormat("MM/yyyy");
+						dateTickUnitType = DateTickUnitType.MONTH;
+						break;
+						
+					case Constants.ANNUALLY_INTERVAL:
+						format = new SimpleDateFormat("yyyy");
+						dateTickUnitType = DateTickUnitType.YEAR;
+						break;
+				}
+				
+				Date startDate = dateFormat.parse(obj.getStart_date());
+				Date endDate = dateFormat.parse(obj.getEnd_date());
+			
+				//====== table ============================================================
+				// header and logo
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+				table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObjList.get(0).getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(format.format(startDate) + " - " + format.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+				
+				// chart
+				com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+				table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+				
+				//====== chart ============================================================
+				JFreeChart chart = createJFreeChart("Actual Generation (kWh)");
+				XYPlot plot = chart.getXYPlot();
+				
+				// category axis
+				createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15), format), startDate, endDate);
+				// left axis
+				createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+				
+				DecimalFormat dfs = new DecimalFormat(noDecimalDataFormat);
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
 
 					if (dataObj != null) {
-						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-						SimpleDateFormat format  = new SimpleDateFormat("MM/yyyy");
-						DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
-						
-						// select format based on intervals
-						switch (obj.getData_intervals()) {
-							case Constants.DAILY_INTERVAL:
-								format = new SimpleDateFormat("MM/dd/yyyy");
-								dateTickUnitType = DateTickUnitType.DAY;
-								break;
-								
-							case Constants.MONTHLY_INTERVAL:
-								format = new SimpleDateFormat("MM/yyyy");
-								dateTickUnitType = DateTickUnitType.MONTH;
-								break;
-								
-							case Constants.ANNUALLY_INTERVAL:
-								format = new SimpleDateFormat("yyyy");
-								dateTickUnitType = DateTickUnitType.YEAR;
-								break;
-						}
-						
-						Date startDate = dateFormat.parse(obj.getStart_date());
-						Date endDate = dateFormat.parse(obj.getEnd_date());
-						dataObj.setStart_date(format.format(startDate));
-						dataObj.setEnd_date(format.format(endDate));
-						
 						List<Map<String, Object>> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 						
-						// total column: 12
-						Table table = new Table(12).useAllAvailableWidth();
-						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
-						table.setFontSize(8);
-						table.setTextAlignment(TextAlignment.CENTER);
-					
-						//====== table ============================================================
-						// header and logo
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 7).add(new Paragraph("PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
-						table.addCell(new com.itextpdf.layout.element.Cell(6, 2).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
-						
-						// chart
-						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
-						table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
 						// empty row
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
 						
 						// header of data table
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Timestamp").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Generation (kWh)").setBold()));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold()));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 						
+						// data source
+						TimeSeriesCollection lineDataset = createJFreeChartLineDataset(l, plot);
+						TimeSeries series = new TimeSeries(dataObj.getSite_name());
+						lineDataset.addSeries(series);
+						
 						// data table
-						DecimalFormat dfs = new DecimalFormat(noDecimalDataFormat);
 						for (int i = 0; i < dataExports.size(); i++) {
 							Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
 							String itemCategoryTime = item.get("categories_time").toString();
@@ -3522,22 +3538,6 @@ public class ReportsController extends BaseController {
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
-						}
-						
-						//====== chart ============================================================
-						JFreeChart chart = createJFreeChart(null);
-						XYPlot plot = chart.getXYPlot();
-						
-						// data source
-						TimeSeriesCollection lineDataset = createJFreeChartLineDataset(0, plot);
-						TimeSeries series = new TimeSeries("Actual Generation (kWh)");
-						lineDataset.addSeries(series);
-						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, BLUE_COLOR);
-						
-						for (int i = 0; i < dataExports.size(); i++) {
-							Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
-							String itemCategoryTime = item.get("categories_time").toString();
-							Double itemActual = item.get("actual") != null ? Double.parseDouble(item.get("actual").toString()) : null;
 							
 							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
 							if (obj.getData_intervals() == Constants.DAILY_INTERVAL) period = new Day(format.parse(itemCategoryTime));
@@ -3546,27 +3546,16 @@ public class ReportsController extends BaseController {
 							
 							series.add(period, itemActual);
 						}
-						
-						// category axis
-						createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, (int) Math.ceil(dataExports.size() > 0 ? (double) dataExports.size() / 15 : 1), format), startDate, endDate);
-						// left axis
-						createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
-						
-						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
-						document.add(table);
-						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
 					}
 				}
 				
+				chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
+				document.add(table);
 				// It must be closed before attach to mail
 				document.close();
 					
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			}
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);

@@ -48,6 +48,7 @@ public class ReportsEntity {
 	private int is_supper_admin;
 	private String table_data_report;
 	private Integer reporting_region;
+	private Integer recVersion;
 	
 	
 	
@@ -290,6 +291,12 @@ public class ReportsEntity {
 	}
 	public void setReporting_region(Integer reporting_region) {
 		this.reporting_region = reporting_region;
+	}
+	public Integer getRecVersion() {
+		return recVersion;
+	}
+	public void setRecVersion(Integer recVersion) {
+		this.recVersion = recVersion;
 	}
 	
 	
