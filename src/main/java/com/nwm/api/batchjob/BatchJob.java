@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.DirectoryStream;
@@ -30,17 +29,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
@@ -73,20 +68,12 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.nwm.api.controllers.BuiltInReportController;
 import com.nwm.api.controllers.ReportsController;
-import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.FileImportDataOldEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
 import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
-import com.nwm.api.entities.ModelSungrowSg110cxEntity;
-import com.nwm.api.entities.ModelSungrowSg50cxEntity;
-import com.nwm.api.entities.ModelSungrowUmg604Entity;
-import com.nwm.api.entities.ModelSungrowWeatherPvmet75200Entity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
@@ -96,16 +83,9 @@ import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
-import com.nwm.api.services.ModelSungrowSg110cxService;
-import com.nwm.api.services.ModelSungrowSg50cxService;
-import com.nwm.api.services.ModelSungrowUmg604Service;
-import com.nwm.api.services.ModelSungrowWeatherPvmet75200Service;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.FLLogger;
 import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.SendMail;
-import com.nwm.api.utils.Translator;
-import com.nwm.api.utils.SecretCards;
 
 public class BatchJob {
 	protected final FLLogger log = FLLogger.getLogger("batchjob/" + this.getClass().getSimpleName());
@@ -1183,8 +1163,6 @@ public class BatchJob {
 
 			ReportsController controller = new ReportsController();
 			BuiltInReportController builtInController = new BuiltInReportController();
-			ZonedDateTime startDate = null;
-			objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
 
 			switch (objReport.getType_report()) {
 				case 1: // Solar Production Report
@@ -1192,29 +1170,29 @@ public class BatchJob {
 					
 					switch (objReport.getCadence_range()) {
 						case 1: // daily
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(2)));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(3)));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfDailyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailDailyReport(objReport);
 							break;
 							
 						case 2: // monthly
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfMonthlyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailMonthlyReport(objReport);
 							break;
 							
 						case 3: // quarterly
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfQuarterlyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailQuarterlyReport(objReport);
 							break;
 							
 						case 4: // annually
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailAnnuallyReport(objReport);
 							break;
@@ -1227,22 +1205,22 @@ public class BatchJob {
 				case 2: // Production Trend Report
 					switch (objReport.getCadence_range()) {
 						case 2: // monthly
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfMonth())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailMonthlyTrendReport(objReport);
 							break;
 							
 						case 4: // annually
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.firstDayOfYear())));
-							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfYear())));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailAnnualTrendReport(objReport);
 							break;
 							
 						case 6: // weekly
-							startDate = nowTimeZonedDateTime.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
-							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(startDate));
+							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
+							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
 							if (objReport.getFile_type() == 1) builtInController.sentMailPdfWeeklyTrendReport(objReport);
 							else if (objReport.getFile_type() == 2) builtInController.sentMailWeeklyTrendReport(objReport);
 							break;
