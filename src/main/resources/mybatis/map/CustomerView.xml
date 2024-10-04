@@ -789,7 +789,7 @@
 						GROUP BY group_by_time
 					) t
 				GROUP BY
-					time_formata
+					time_format
 			) t
 	</select>
 		
