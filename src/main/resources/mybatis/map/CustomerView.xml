@@ -696,7 +696,7 @@
 			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
 			CASE
 				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
-				ELSE ROUND(nvmActiveEnergy, 0)
+				ELSE ROUND(nvmActiveEnergy, 1)
 			END AS chart_energy_kwh,
 			ROUND(expected_power, 1) AS expected_power
 		FROM
@@ -789,7 +789,7 @@
 						GROUP BY group_by_time
 					) t
 				GROUP BY
-					time_format
+					time_formata
 			) t
 	</select>
 		
