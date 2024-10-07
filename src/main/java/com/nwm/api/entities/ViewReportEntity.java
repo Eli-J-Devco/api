@@ -53,6 +53,7 @@ public class ViewReportEntity {
 	private String offset_timezone;
 	private int is_supper_admin;
 	private boolean have_poa;
+	private boolean have_meter;
 	
 	
 	private int type_report;
@@ -392,6 +393,12 @@ public class ViewReportEntity {
 	}
 	public void setCadence_range_name(String cadence_range_name) {
 		this.cadence_range_name = cadence_range_name;
+	}
+	public boolean isHave_meter() {
+		return have_meter;
+	}
+	public void setHave_meter(boolean have_meter) {
+		this.have_meter = have_meter;
 	}
 	
 	

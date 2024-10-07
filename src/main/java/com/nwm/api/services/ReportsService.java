@@ -301,6 +301,7 @@ public class ReportsService extends DB {
 			}
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
+			obj.setHave_meter(dataObj.isHave_meter());
 			List dataListInverter = queryForList("Reports.getListDeviceTypeInverter", obj);
 			List dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
 			
@@ -345,6 +346,7 @@ public class ReportsService extends DB {
 			boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
+			obj.setHave_meter(dataObj.isHave_meter());
 			List<QuarterlyDateEntity> dataEnergy = quarterlyReportByMonth ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			
 			if (dataEnergy != null && dataEnergy.size() > 0) {
@@ -765,6 +767,7 @@ public class ReportsService extends DB {
 			}
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
+			obj.setHave_meter(dataObj.isHave_meter());
 			List dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
 			if (dataEnergy.size() > 0) {
 				dataObj.setDataReports(dataEnergy);
@@ -877,6 +880,7 @@ public class ReportsService extends DB {
 			if (dataObj == null) return null;
 			
 			obj.setTable_data_report(dataObj.getTable_data_report());
+			obj.setHave_meter(dataObj.isHave_meter());
 			List<Map<String, Object>> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
 			
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
