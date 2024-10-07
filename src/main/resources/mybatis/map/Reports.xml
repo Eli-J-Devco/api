@@ -507,8 +507,8 @@
 			DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_format,
 			IF(
 				#{have_meter},
-				ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
-				ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+				ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
+				ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
 			) AS chart_energy_kwh
 			
 		FROM
@@ -648,8 +648,8 @@
 					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
 					IF(
 						#{have_meter},
-						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
-						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
+						CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL),
+						CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL)
 					) AS actual,
 					CASE
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
@@ -705,8 +705,8 @@
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
 				IF(
 					#{have_meter},
-					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
-					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
+					CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL),
+					CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL)
 				) AS actual,
 				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
 				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
@@ -742,8 +742,8 @@
 			DATE_FORMAT( sdr.time, '%b' ) AS month,
 			IF(
 				#{have_meter},
-				ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
-				ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+				ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
+				ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
 			) AS chart_energy_kwh
 			
 		FROM
@@ -920,8 +920,8 @@
 				AS categories_time,
 				IF(
 					#{have_meter},
-					ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 0),
-					ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 0)
+					ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
+					ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
 				) AS actual
 				
 			FROM
@@ -1010,8 +1010,8 @@
 						DATE_FORMAT(sdr.time, "%Y") AS `year`,
 						IF(
 							#{have_meter},
-							ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 1),
-							ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
+							ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
+							ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
 						) AS actualEnergy,
 						CASE
 							WHEN s.pv_model = 1 THEN
@@ -1187,8 +1187,8 @@
 								DATE_FORMAT(sdr.time, "%Y") AS `year`,
 								IF(
 									#{have_meter},
-									ROUND(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)), 1),
-									ROUND(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)), 1)
+									ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
+									ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
 								) AS actualEnergy,
 								CASE
 									WHEN s.pv_model = 1 THEN
