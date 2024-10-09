@@ -740,11 +740,11 @@
 			DATE_FORMAT( sdr.time, '%Y' ) AS year,
 			DATE_FORMAT( sdr.time, '%m' ) AS month_number,
 			DATE_FORMAT( sdr.time, '%b' ) AS month,
-			IF(
+			CAST(IF(
 				#{have_meter},
 				ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
 				ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
-			) AS chart_energy_kwh
+			) AS DOUBLE) AS chart_energy_kwh
 			
 		FROM
 			${table_data_report} sdr 
