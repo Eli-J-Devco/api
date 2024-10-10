@@ -56,7 +56,7 @@ public class EmployeeManageEntity{
 	private int failed_attempt;
 	private int account_locked;
 	private String lock_time;
-	private String filter;
+	private String filterBy;
 	private int is_send_email_unblock;
 	private String hash_id_user;
 	private String created_by;
@@ -372,11 +372,11 @@ public class EmployeeManageEntity{
 	public void setPage_login(String page_login) {
 		this.page_login = page_login;
 	}
-	public String getFilter() {
-		return filter;
+	public String getFilterBy() {
+		return filterBy;
 	}
-	public void setFilter(String filter) {
-		this.filter = filter;
+	public void setFilterBy(String filterBy) {
+		this.filterBy = filterBy;
 	}
 	public String getCreated_by() {
 		return created_by;

@@ -280,16 +280,16 @@
 		
 		<if test="keyword != null">
 			<choose>
-				<when test="filter == 'fullname'">
+				<when test="filterBy == 'fullname'">
 					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
 				</when>
-				<when test="filter == 'phone'">
+				<when test="filterBy == 'phone'">
 					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
 				</when>
-				<when test="filter == 'email'">
+				<when test="filterBy == 'email'">
 					AND e.email LIKE CONCAT("%",#{keyword}, "%")
 				</when>
-				<when test="filter == 'manage_site'">
+				<when test="filterBy == 'manage_site'">
 					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
 				</when>
 				<otherwise>
