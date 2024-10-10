@@ -160,26 +160,19 @@ public class EmployeeService extends DB {
 
 			session.insert("Employee.insertEmployee", obj);
 			int insertOrderLastId = obj.getId();
-
-			if (insertOrderLastId > 0) {
-				for (int i = 0; i < roles.size(); i++) {
-					Map<String, Object> user = (Map<String, Object>) roles.get(i);
-					int id = (int) user.get("id_role");
-					EmployeeRoleMapEntity employeeRoleMaptItem = this._buildEmployeeRoleMapItem(insertOrderLastId, id);
-					session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
-				}
-			} else {
-				return null;
-			}
+			if (insertOrderLastId == 0) return null;
+			
+			EmployeeRoleMapEntity employeeRoleMaptItem = new EmployeeRoleMapEntity();
+			employeeRoleMaptItem.setId_employee(insertOrderLastId);
+			employeeRoleMaptItem.setRoleList(roles);
+			session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
 			
 			List dataSite = obj.getDataSite();
 			if(dataSite != null && dataSite.size() > 0) {
-				for (int i = 0; i < dataSite.size(); i++) {
-					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
-					int id_site = (int) objSite.get("id");
-					EmployeeSiteMapEntity employeeSiteMaptItem = this._buildEmployeeSiteMapItem(id_site, insertOrderLastId);
-					session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
-				}
+				EmployeeSiteMapEntity employeeSiteMaptItem = new EmployeeSiteMapEntity();
+				employeeSiteMaptItem.setId_employee(insertOrderLastId);
+				employeeSiteMaptItem.setSiteList(dataSite);
+				session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
 			}
 
 			session.commit();
@@ -212,45 +205,6 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	private EmployeeRoleMapEntity _buildEmployeeRoleMapItem(int employeeId, int roleId) {
-		try {
-			EmployeeRoleMapEntity employeeRoleMapItem = new EmployeeRoleMapEntity();
-			employeeRoleMapItem.setId_employee(employeeId);
-			employeeRoleMapItem.setId_role(roleId);
-			return employeeRoleMapItem;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	
-	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	private EmployeeSiteMapEntity _buildEmployeeSiteMapItem(int id_site, int id_employee) {
-		try {
-			EmployeeSiteMapEntity employeeSiteMapItem = new EmployeeSiteMapEntity();
-			employeeSiteMapItem.setId_employee(id_employee);
-			employeeSiteMapItem.setId_site(id_site);
-			return employeeSiteMapItem;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-
-	/**
 	 * @description update Employee
 	 * @author long.pham
 	 * @since 2021-01-06
@@ -268,21 +222,17 @@ public class EmployeeService extends DB {
 			session.update("Employee.updateEmployee", obj);
 			session.delete("Employee.deleteSiteEmployeeMap", obj);
 
-			for (int i = 0; i < roles.size(); i++) {
-				Map<String, Object> user = (Map<String, Object>) roles.get(i);
-				int id = (int) user.get("id_role");
-				EmployeeRoleMapEntity employeeRoleMaptItem = this._buildEmployeeRoleMapItem(obj.getId(), id);
-				session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
-			}
+			EmployeeRoleMapEntity employeeRoleMaptItem = new EmployeeRoleMapEntity();
+			employeeRoleMaptItem.setId_employee(obj.getId());
+			employeeRoleMaptItem.setRoleList(roles);
+			session.insert("Employee.insertEmployeeRoleMap", employeeRoleMaptItem);
 			
 			List dataSite = obj.getDataSite();
 			if(dataSite != null && dataSite.size() > 0) {
-				for (int i = 0; i < dataSite.size(); i++) {
-					Map<String, Object> objSite = (Map<String, Object>) dataSite.get(i);
-					int id_site = (int) objSite.get("id");
-					EmployeeSiteMapEntity employeeSiteMaptItem = this._buildEmployeeSiteMapItem(id_site, obj.getId());
-					session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
-				}
+				EmployeeSiteMapEntity employeeSiteMaptItem = new EmployeeSiteMapEntity();
+				employeeSiteMaptItem.setId_employee(obj.getId());
+				employeeSiteMaptItem.setSiteList(dataSite);
+				session.insert("Employee.insertEmployeeSiteMap", employeeSiteMaptItem);
 			}
 
 			session.commit();

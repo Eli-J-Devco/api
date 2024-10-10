@@ -355,6 +355,12 @@
 				
 				GROUP BY er.id_employee
 			)t ON t.id_employee = e.id
+		LEFT JOIN (
+			SELECT id_employee, GROUP_CONCAT(s.`name`) AS site_name
+			FROM site_employee_map sem
+			LEFT JOIN site s ON s.id = sem.id_site
+			GROUP BY sem.id_employee
+		)m ON m.id_employee = e.id
 		
 		WHERE e.is_delete = 0
 		<if test="roles != null and !roles.isEmpty() ">
@@ -366,7 +372,23 @@
 		</if>
 		
 		<if test="keyword != null">
-			AND ( first_name LIKE CONCAT("%",#{keyword}, "%") OR last_name LIKE CONCAT("%",#{keyword}, "%") OR phone LIKE CONCAT("%",#{keyword}, "%") OR email LIKE CONCAT("%",#{keyword}, "%"))
+			<choose>
+				<when test="filterBy == 'fullname'">
+					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+				</when>
+				<when test="filterBy == 'phone'">
+					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'email'">
+					AND e.email LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'manage_site'">
+					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<otherwise>
+					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+				</otherwise>
+			</choose>
 		</if>
   	</select>
   	
@@ -496,14 +518,13 @@
 		INSERT INTO  `employee_role_map`(
 			id_employee,
 			id_role
-		)VALUES(
-			#{id_employee},
-			#{id_role}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+		)VALUES
+		<foreach collection="roleList" item="item" separator=",">
+			(
+				#{id_employee},
+				#{item.id_role}
+			)
+		</foreach>
 	</insert>
 	
 	
@@ -511,14 +532,13 @@
 		INSERT INTO  `site_employee_map`(
 			id_employee,
 			id_site
-		)VALUES(
-			#{id_employee},
-			#{id_site}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+		)VALUES
+		<foreach collection="siteList" item="item" separator=",">
+			(
+				#{id_employee},
+				#{item.id}
+			)
+		</foreach>
 	</insert>
 	
 	
