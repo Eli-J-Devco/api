@@ -572,7 +572,7 @@
 			DATE_FORMAT(#{end_date}, "%m/%Y") AS vintage_date,
 			0 AS is_edit,
 			CASE
-			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00', t.`offset`), '%m/%Y') THEN FORMAT(SUM(sdr.ActualGeneration) / 1000 * 0.97, 2) 
+			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00', t.`offset`), '%m/%Y') THEN FORMAT(CAST(SUM(sdr.ActualGeneration) AS DECIMAL) / 1000 * 0.97, 2) 
 			    ELSE 0
 			END AS energy_this_month
 			
