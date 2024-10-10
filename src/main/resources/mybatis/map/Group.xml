@@ -47,19 +47,24 @@
 			s.order_id,
 			0 AS is_expand,
 			s.id_company,
+			c.name AS company_name,
 			IF(
 				COUNT(ssg.id) = 0,
 				JSON_ARRAY(),
 				JSON_ARRAYAGG(JSON_OBJECT(
 					'id', ssg.id,
 					'name', ssg.name,
+					'id_company', c1.id,
+					'company_name', c1.name,
 					'order_id', ssg.order_id,
 					'description', ssg.description
 				))
 			) AS sub_group_list
 		FROM
 			site_group s 
+			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_sub_group ssg ON ssg.id_site_group = s.id AND ssg.status = 1 AND ssg.is_delete = 0
+			LEFT JOIN company c1 ON c1.id = ssg.id_company
 		WHERE
 			s.status = 1
 			AND s.is_delete = 0
