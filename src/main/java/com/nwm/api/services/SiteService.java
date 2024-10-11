@@ -1009,7 +1009,7 @@ public class SiteService extends DB {
 			tablePreference.setTable("Site");
 			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
 			
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
+			if ((obj.getOrder_by() != null) && (obj.getOrder_by() != "") && (obj.getSort_column() != null) && (obj.getSort_column() != "")) {
 				if (tablePreference != null) {
 					tablePreference.setOrder_by(obj.getOrder_by());
 					tablePreference.setSort_column(obj.getSort_column());
