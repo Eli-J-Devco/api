@@ -1143,7 +1143,7 @@
 	                s.name ${order_by}
 	            </when>
 	            <when test="sort_column == 'customer_name'">
-	                t.last_name ${order_by}
+	                t.customer_name ${order_by}
 	            </when>
 	            <when test="sort_column == 'dc_capacity'">
 	                dc_capacity ${order_by}
