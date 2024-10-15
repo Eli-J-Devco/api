@@ -1882,13 +1882,17 @@
 			l.disable_notification,
 			l.resolved,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
 			el.`name` AS `level`,
 			e.message,
 			e.error_code,
 			d.devicename,
 			s.`name` AS site_name,
 			s.id AS id_site,
+			SHA1(s.id) AS hash_id,
 			d.id as id_device,
+			d.id_device_type,
+			d.datatablename,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			el.level,
@@ -2206,8 +2210,6 @@
 			      ORDER BY l.start_date DESC
 			    </otherwise>
 			  </choose>
-  
-			LIMIT #{limit} OFFSET #{offset};
 	</select>
 	
 	
