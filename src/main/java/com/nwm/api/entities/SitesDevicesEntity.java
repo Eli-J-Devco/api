@@ -150,10 +150,31 @@ public class SitesDevicesEntity {
 	private int time_queue;
 	private int threshold_item_max;
 	private int disable_alert;
+	private String advance_tech_host;
+	private String advance_tech_pass;
+	private int advance_tech_status;
 
 	
 	
 	
+	public String getAdvance_tech_host() {
+		return advance_tech_host;
+	}
+	public void setAdvance_tech_host(String advance_tech_host) {
+		this.advance_tech_host = advance_tech_host;
+	}
+	public String getAdvance_tech_pass() {
+		return advance_tech_pass;
+	}
+	public void setAdvance_tech_pass(String advance_tech_pass) {
+		this.advance_tech_pass = advance_tech_pass;
+	}
+	public int getAdvance_tech_status() {
+		return advance_tech_status;
+	}
+	public void setAdvance_tech_status(int advance_tech_status) {
+		this.advance_tech_status = advance_tech_status;
+	}
 	public int getTime_queue() {
 		return time_queue;
 	}

@@ -96,7 +96,10 @@
 			s.cost_unit,
 			s.site_domain_type,
 			s.threshold_item_max,
-			s.time_queue
+			s.time_queue,
+			s.advance_tech_pass,
+			s.advance_tech_host,
+			advance_tech_status
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
