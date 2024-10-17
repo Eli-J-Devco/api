@@ -920,12 +920,12 @@
 	
 	<select id="getSiteDataReportIIMW" resultType="com.nwm.api.entities.SiteDataReportEntity">
 		SELECT
-			t.id_device,
-			t.time_full AS `time`,
+			ac.id_device,
+			ac.time_full AS `time`,
 			t.InverterUptime,
 			IFNULL((t.end_date_time - t.start_date_time), 10) AS DayTime,
 			ROUND(t.InverterUptime/ (IFNULL((t.end_date_time - t.start_date_time), 10 )), 2 ) AS InverterUptimeDaytime,
-			ROUND(ac.nvmActiveEnergy, 2) AS ActualGeneration,
+			ac.nvmActiveEnergy AS ActualGeneration,
 			ROUND(ac.estimated, 2) AS EstimatedGeneration,
 			ROUND(ac.nvmActiveEnergy/ac.estimated, 2) AS EstimatedGenerationIndex,
 			IF(ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2) > 1, 1, ROUND(t.InverterUptime / IFNULL((t.end_date_time - t.start_date_time), 10) ,2)) AS InverterAvailability,
@@ -937,44 +937,6 @@
 			SELECT 
 				iv.id_device,
 				iv.time_full,
-				iv.start_date_time,
-				iv.end_date_time,
-				iv.format_date,
-				COUNT(IF(iv.nvmActivePower > 0, 1, NULL)) AS InverterUptime
-			FROM (
-					SELECT
-						dv.id_device,
-						s.start_date_time,
-						s.end_date_time,
-						dv.time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
-						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower
-					FROM
-						${datatablename} dv
-						LEFT JOIN device d ON d.id = dv.id_device
-						LEFT JOIN site s ON s.id = d.id_site 
-						LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					WHERE
-						dv.id_device = #{id}
-						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-						AND s.`status` = 1 
-						AND d.`status` = 1 
-					GROUP BY
-						time_format
-			) iv
-			WHERE
-				HOUR(iv.time_format) <![CDATA[>=]]> 8
-				AND HOUR(iv.time_format) <![CDATA[<]]> 18
-			GROUP BY
-				iv.format_date
-		)t
-		
-		
-		LEFT JOIN (
-			SELECT 
-				iv.id_device,
 				iv.format_date,
 				iv.nvmActiveEnergy,
 				iv.nvmActivePower,
@@ -1018,7 +980,41 @@
 						d.id,
 						format_date
 			) iv
-		) ac ON ac.format_date = t.format_date
+		) ac
+		LEFT JOIN (
+			SELECT 
+				iv.id_device,
+				iv.start_date_time,
+				iv.end_date_time,
+				iv.format_date,
+				COUNT(IF(iv.nvmActivePower > 0, 1, NULL)) AS InverterUptime
+			FROM (
+					SELECT
+						dv.id_device,
+						s.start_date_time,
+						s.end_date_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
+						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower
+					FROM
+						${datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						dv.id_device = #{id}
+						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+						AND s.`status` = 1 
+						AND d.`status` = 1 
+					GROUP BY
+						time_format
+			) iv
+			WHERE
+				HOUR(iv.time_format) <![CDATA[>=]]> 8
+				AND HOUR(iv.time_format) <![CDATA[<]]> 18
+			GROUP BY
+				iv.format_date
+		) t ON t.format_date = ac.format_date
 	</select>
 	
 	
