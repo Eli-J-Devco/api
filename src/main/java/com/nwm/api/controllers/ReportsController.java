@@ -3180,13 +3180,9 @@ public class ReportsController extends BaseController {
 	@PostMapping("/custom-report")
 	public Object getCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
-			ReportsService service = new ReportsService();
-			ViewReportEntity dataObj = (ViewReportEntity) service.getCustomReport(obj);
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
