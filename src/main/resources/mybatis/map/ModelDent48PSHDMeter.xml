@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelDent48PSHDMeter">
+	<resultMap id="ModelDent48PSHDMeterMap" type="com.nwm.api.entities.ModelDent48PSHDMeterEntity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="CurrentSum" column="CurrentSum" />
+		   <result property="CurrentCH1A" column="CurrentCH1A" />
+		   <result property="CurrentCH2B" column="CurrentCH2B" />
+		   <result property="CurrentCH3C" column="CurrentCH3C" />
+		   <result property="VoltageLNAvg" column="VoltageLNAvg" />
+		   <result property="VoltageL1NAN" column="VoltageL1NAN" />
+		   <result property="VoltageL2NBN" column="VoltageL2NBN" />
+		   <result property="VoltageL3NCN" column="VoltageL3NCN" />
+		   <result property="VoltageLLAvg" column="VoltageLLAvg" />
+		   <result property="VoltageL1L2" column="VoltageL1L2" />
+		   <result property="VoltageL2L3" column="VoltageL2L3" />
+		   <result property="VoltageL3L1" column="VoltageL3L1" />
+		   <result property="LineFrequency" column="LineFrequency" />
+		   <result property="PowerSum" column="PowerSum" />
+		   <result property="PowerCH1A" column="PowerCH1A" />
+		   <result property="PowerCH2B" column="PowerCH2B" />
+		   <result property="PowerCH3C" column="PowerCH3C" />
+		   <result property="VASum" column="VASum" />
+		   <result property="VACH1A" column="VACH1A" />
+		   <result property="VACH2B" column="VACH2B" />
+		   <result property="VACH3C" column="VACH3C" />
+		   <result property="VARSum" column="VARSum" />
+		   <result property="VARCH1A" column="VARCH1A" />
+		   <result property="VARCH2B" column="VARCH2B" />
+		   <result property="VARCH3C" column="VARCH3C" />
+		   <result property="ApparentPFAvg" column="ApparentPFAvg" />
+		   <result property="ApparentPFCH1A" column="ApparentPFCH1A" />
+		   <result property="ApparentPFCH2B" column="ApparentPFCH2B" />
+		   <result property="ApparentPFCH3C" column="ApparentPFCH3C" />
+		   <result property="ExportedEnergySum" column="ExportedEnergySum" />
+		   <result property="ExportedEnergyCH1A" column="ExportedEnergyCH1A" />
+		   <result property="ExportedEnergyCH2B" column="ExportedEnergyCH2B" />
+		   <result property="ExportedEnergyCH3C" column="ExportedEnergyCH3C" />
+		   <result property="ImportedEnergySum" column="ImportedEnergySum" />
+		   <result property="ImportedEnergyCH1A" column="ImportedEnergyCH1A" />
+		   <result property="ImportedEnergyCH2B" column="ImportedEnergyCH2B" />
+		   <result property="ImportedEnergyCH3C" column="ImportedEnergyCH3C" />
+		   <result property="ExportedVAhSum" column="ExportedVAhSum" />
+		   <result property="ExportedVAhCH1A" column="ExportedVAhCH1A" />
+		   <result property="ExportedVAhCH2B" column="ExportedVAhCH2B" />
+		   <result property="ExportedVAhCH3C" column="ExportedVAhCH3C" />
+		   <result property="ImportedVAhSum" column="ImportedVAhSum" />
+		   <result property="ImportedVAhCH1A" column="ImportedVAhCH1A" />
+		   <result property="ImportedVAhCH2B" column="ImportedVAhCH2B" />
+		   <result property="ImportedVAhCH3C" column="ImportedVAhCH3C" />
+		   <result property="ImportedVARhQ1Sum" column="ImportedVARhQ1Sum" />
+		   <result property="ImportedVARhQ1A" column="ImportedVARhQ1A" />
+		   <result property="ImportedVARhQ1B" column="ImportedVARhQ1B" />
+		   <result property="ImportedVARhQ1C" column="ImportedVARhQ1C" />
+		   <result property="ImportedVARhQ2Sum" column="ImportedVARhQ2Sum" />
+		   <result property="ImportedVARhQ2A" column="ImportedVARhQ2A" />
+		   <result property="ImportedVARhQ2B" column="ImportedVARhQ2B" />
+		   <result property="ImportedVARhQ2C" column="ImportedVARhQ2C" />
+		   <result property="ExportedVARhQ3Sum" column="ExportedVARhQ3Sum" />
+		   <result property="ExportedVARhQ3A" column="ExportedVARhQ3A" />
+		   <result property="ExportedVARhQ3B" column="ExportedVARhQ3B" />
+		   <result property="ExportedVARhQ3C" column="ExportedVARhQ3C" />
+		   <result property="ExportedVARhQ4Sum" column="ExportedVARhQ4Sum" />
+		   <result property="ExportedVARhQ4A" column="ExportedVARhQ4A" />
+		   <result property="ExportedVARhQ4B" column="ExportedVARhQ4B" />
+		   <result property="ExportedVARhQ4C" column="ExportedVARhQ4C" />
+		   <result property="WattDemandElement" column="WattDemandElement" />
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelDent48PSHDMeter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="CurrentSum != 0.001" >
+                `CurrentSum`,
+          </if>
+          <if test="CurrentCH1A != 0.001" >
+                `CurrentCH1A`,
+          </if>
+          <if test="CurrentCH2B != 0.001" >
+                `CurrentCH2B`,
+          </if>
+          <if test="CurrentCH3C != 0.001" >
+                `CurrentCH3C`,
+          </if>
+          <if test="VoltageLNAvg != 0.001" >
+                `VoltageLNAvg`,
+          </if>
+          <if test="VoltageL1NAN != 0.001" >
+                `VoltageL1NAN`,
+          </if>
+          <if test="VoltageL2NBN != 0.001" >
+                `VoltageL2NBN`,
+          </if>
+          <if test="VoltageL3NCN != 0.001" >
+               `VoltageL3NCN`, 
+          </if>
+          <if test="VoltageLLAvg != 0.001" >
+                `VoltageLLAvg`,
+          </if>
+          <if test="VoltageL1L2 != 0.001" >
+                `VoltageL1L2`,
+          </if>
+          <if test="VoltageL2L3 != 0.001" >
+                `VoltageL2L3`,
+          </if>
+          <if test="VoltageL3L1 != 0.001" >
+                `VoltageL3L1`,
+          </if>
+          <if test="LineFrequency != 0.001" >
+                `LineFrequency`,
+          </if>
+          <if test="PowerSum != 0.001" >
+                `PowerSum`,
+          </if>
+          <if test="PowerCH1A != 0.001" >
+                `PowerCH1A`,
+          </if>
+          <if test="PowerCH2B != 0.001" >
+                `PowerCH2B`,
+          </if>
+          <if test="PowerCH3C != 0.001" >
+                `PowerCH3C`,
+          </if>
+          <if test="VASum != 0.001" >
+                `VASum`,
+          </if>
+          <if test="VACH1A != 0.001" >
+                `VACH1A`,
+          </if>
+          <if test="VACH2B != 0.001" >
+                `VACH2B`,
+          </if>
+          <if test="VACH3C != 0.001" >
+                `VACH3C`,
+          </if>
+          <if test="VARSum != 0.001" >
+                `VARSum`,
+          </if>
+          <if test="VARCH1A != 0.001" >
+                `VARCH1A`,
+          </if>
+          <if test="VARCH2B != 0.001" >
+                `VARCH2B`,
+          </if>
+          <if test="VARCH3C != 0.001" >
+                `VARCH3C`,
+          </if>
+          <if test="ApparentPFAvg != 0.001" >
+                `ApparentPFAvg`,
+          </if>
+          <if test="ApparentPFCH1A != 0.001" >
+                `ApparentPFCH1A`,
+          </if>
+          <if test="ApparentPFCH2B != 0.001" >
+                `ApparentPFCH2B`,
+          </if>
+          <if test="ApparentPFCH3C != 0.001" >
+                `ApparentPFCH3C`,
+          </if>
+          <if test="ExportedEnergySum != 0.001" >
+                `ExportedEnergySum`,
+          </if>
+          <if test="ExportedEnergyCH1A != 0.001" >
+                `ExportedEnergyCH1A`,
+          </if>
+          <if test="ExportedEnergyCH2B != 0.001" >
+                `ExportedEnergyCH2B`,
+          </if>
+          <if test="ExportedEnergyCH3C != 0.001" >
+                `ExportedEnergyCH3C`,
+          </if>
+          <if test="ImportedEnergySum != 0.001" >
+                `ImportedEnergySum`,
+          </if>
+          <if test="ImportedEnergyCH1A != 0.001" >
+                `ImportedEnergyCH1A`,
+          </if>
+          <if test="ImportedEnergyCH2B != 0.001" >
+                `ImportedEnergyCH2B`,
+          </if>
+          <if test="ImportedEnergyCH3C != 0.001" >
+               `ImportedEnergyCH3C`, 
+          </if>
+          <if test="ExportedVAhSum != 0.001" >
+                `ExportedVAhSum`,
+          </if>
+          <if test="ExportedVAhCH1A != 0.001" >
+                `ExportedVAhCH1A`,
+          </if>
+          <if test="ExportedVAhCH2B != 0.001" >
+                `ExportedVAhCH2B`,
+          </if>
+          <if test="ExportedVAhCH3C != 0.001" >
+                `ExportedVAhCH3C`,
+          </if>
+          <if test="ImportedVAhSum != 0.001" >
+                `ImportedVAhSum`,
+          </if>
+          <if test="ImportedVAhCH1A != 0.001" >
+                `ImportedVAhCH1A`,
+          </if>
+          <if test="ImportedVAhCH2B != 0.001" >
+                `ImportedVAhCH2B`,
+          </if>
+          <if test="ImportedVAhCH3C != 0.001" >
+                `ImportedVAhCH3C`,
+          </if>
+          <if test="ImportedVARhQ1Sum != 0.001" >
+                `ImportedVARhQ1Sum`,
+          </if>
+          <if test="ImportedVARhQ1A != 0.001" >
+                `ImportedVARhQ1A`,
+          </if>
+          <if test="ImportedVARhQ1B != 0.001" >
+                `ImportedVARhQ1B`,
+          </if>
+          <if test="ImportedVARhQ1C != 0.001" >
+                `ImportedVARhQ1C`,
+          </if>
+          <if test="ImportedVARhQ2Sum != 0.001" >
+                `ImportedVARhQ2Sum`,
+          </if>
+          <if test="ImportedVARhQ2A != 0.001" >
+                `ImportedVARhQ2A`,
+          </if>
+          <if test="ImportedVARhQ2B != 0.001" >
+                `ImportedVARhQ2B`,
+          </if>
+          <if test="ImportedVARhQ2C != 0.001" >
+                `ImportedVARhQ2C`,
+          </if>
+          <if test="ExportedVARhQ3Sum != 0.001" >
+                `ExportedVARhQ3Sum`,
+          </if>
+          <if test="ExportedVARhQ3A != 0.001" >
+                `ExportedVARhQ3A`,
+          </if>
+          <if test="ExportedVARhQ3B != 0.001" >
+                `ExportedVARhQ3B`,
+          </if>
+          <if test="ExportedVARhQ3C != 0.001" >
+                `ExportedVARhQ3C`,
+          </if>
+          <if test="ExportedVARhQ4Sum != 0.001" >
+                `ExportedVARhQ4Sum`,
+          </if>
+          <if test="ExportedVARhQ4A != 0.001" >
+                `ExportedVARhQ4A`,
+          </if>
+          <if test="ExportedVARhQ4B != 0.001" >
+                `ExportedVARhQ4B`,
+          </if>
+          <if test="ExportedVARhQ4C != 0.001" >
+                `ExportedVARhQ4C`,
+          </if>
+          <if test="WattDemandElement != 0.001" >
+                `WattDemandElement`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="CurrentSum != 0.001" >
+                #{CurrentSum},
+	          </if>
+	          <if test="CurrentCH1A != 0.001" >
+	                #{CurrentCH1A},
+	          </if>
+	          <if test="CurrentCH2B != 0.001" >
+	                #{CurrentCH2B},
+	          </if>
+	          <if test="CurrentCH3C != 0.001" >
+	                #{CurrentCH3C},
+	          </if>
+	          <if test="VoltageLNAvg != 0.001" >
+	                #{VoltageLNAvg},
+	          </if>
+	          <if test="VoltageL1NAN != 0.001" >
+	                #{VoltageL1NAN},
+	          </if>
+	          <if test="VoltageL2NBN != 0.001" >
+	                #{VoltageL2NBN},
+	          </if>
+	          <if test="VoltageL3NCN != 0.001" >
+	               #{VoltageL3NCN}, 
+	          </if>
+	          <if test="VoltageLLAvg != 0.001" >
+	                #{VoltageLLAvg},
+	          </if>
+	          <if test="VoltageL1L2 != 0.001" >
+	                #{VoltageL1L2},
+	          </if>
+	          <if test="VoltageL2L3 != 0.001" >
+	                #{VoltageL2L3},
+	          </if>
+	          <if test="VoltageL3L1 != 0.001" >
+	                #{VoltageL3L1},
+	          </if>
+	          <if test="LineFrequency != 0.001" >
+	                #{LineFrequency},
+	          </if>
+	          <if test="PowerSum != 0.001" >
+	                #{PowerSum},
+	          </if>
+	          <if test="PowerCH1A != 0.001" >
+	                #{PowerCH1A},
+	          </if>
+	          <if test="PowerCH2B != 0.001" >
+	                #{PowerCH2B},
+	          </if>
+	          <if test="PowerCH3C != 0.001" >
+	                #{PowerCH3C},
+	          </if>
+	          <if test="VASum != 0.001" >
+	                #{VASum},
+	          </if>
+	          <if test="VACH1A != 0.001" >
+	                #{VACH1A},
+	          </if>
+	          <if test="VACH2B != 0.001" >
+	                #{VACH2B},
+	          </if>
+	          <if test="VACH3C != 0.001" >
+	                #{VACH3C},
+	          </if>
+	          <if test="VARSum != 0.001" >
+	                #{VARSum},
+	          </if>
+	          <if test="VARCH1A != 0.001" >
+	                #{VARCH1A},
+	          </if>
+	          <if test="VARCH2B != 0.001" >
+	                #{VARCH2B},
+	          </if>
+	          <if test="VARCH3C != 0.001" >
+	                #{VARCH3C},
+	          </if>
+	          <if test="ApparentPFAvg != 0.001" >
+	                #{ApparentPFAvg},
+	          </if>
+	          <if test="ApparentPFCH1A != 0.001" >
+	                #{ApparentPFCH1A},
+	          </if>
+	          <if test="ApparentPFCH2B != 0.001" >
+	                #{ApparentPFCH2B},
+	          </if>
+	          <if test="ApparentPFCH3C != 0.001" >
+	                #{ApparentPFCH3C},
+	          </if>
+	          <if test="ExportedEnergySum != 0.001" >
+	                #{ExportedEnergySum},
+	          </if>
+	          <if test="ExportedEnergyCH1A != 0.001" >
+	                #{ExportedEnergyCH1A},
+	          </if>
+	          <if test="ExportedEnergyCH2B != 0.001" >
+	                #{ExportedEnergyCH2B},
+	          </if>
+	          <if test="ExportedEnergyCH3C != 0.001" >
+	                #{ExportedEnergyCH3C},
+	          </if>
+	          <if test="ImportedEnergySum != 0.001" >
+	                #{ImportedEnergySum},
+	          </if>
+	          <if test="ImportedEnergyCH1A != 0.001" >
+	                #{ImportedEnergyCH1A},
+	          </if>
+	          <if test="ImportedEnergyCH2B != 0.001" >
+	                #{ImportedEnergyCH2B},
+	          </if>
+	          <if test="ImportedEnergyCH3C != 0.001" >
+	               #{ImportedEnergyCH3C}, 
+	          </if>
+	          <if test="ExportedVAhSum != 0.001" >
+	                #{ExportedVAhSum},
+	          </if>
+	          <if test="ExportedVAhCH1A != 0.001" >
+	                #{ExportedVAhCH1A},
+	          </if>
+	          <if test="ExportedVAhCH2B != 0.001" >
+	                #{ExportedVAhCH2B},
+	          </if>
+	          <if test="ExportedVAhCH3C != 0.001" >
+	                #{ExportedVAhCH3C},
+	          </if>
+	          <if test="ImportedVAhSum != 0.001" >
+	                #{ImportedVAhSum},
+	          </if>
+	          <if test="ImportedVAhCH1A != 0.001" >
+	                #{ImportedVAhCH1A},
+	          </if>
+	          <if test="ImportedVAhCH2B != 0.001" >
+	                #{ImportedVAhCH2B},
+	          </if>
+	          <if test="ImportedVAhCH3C != 0.001" >
+	                #{ImportedVAhCH3C},
+	          </if>
+	          <if test="ImportedVARhQ1Sum != 0.001" >
+	                #{ImportedVARhQ1Sum},
+	          </if>
+	          <if test="ImportedVARhQ1A != 0.001" >
+	                #{ImportedVARhQ1A},
+	          </if>
+	          <if test="ImportedVARhQ1B != 0.001" >
+	                #{ImportedVARhQ1B},
+	          </if>
+	          <if test="ImportedVARhQ1C != 0.001" >
+	                #{ImportedVARhQ1C},
+	          </if>
+	          <if test="ImportedVARhQ2Sum != 0.001" >
+	                #{ImportedVARhQ2Sum},
+	          </if>
+	          <if test="ImportedVARhQ2A != 0.001" >
+	                #{ImportedVARhQ2A},
+	          </if>
+	          <if test="ImportedVARhQ2B != 0.001" >
+	                #{ImportedVARhQ2B},
+	          </if>
+	          <if test="ImportedVARhQ2C != 0.001" >
+	                #{ImportedVARhQ2C},
+	          </if>
+	          <if test="ExportedVARhQ3Sum != 0.001" >
+	                #{ExportedVARhQ3Sum},
+	          </if>
+	          <if test="ExportedVARhQ3A != 0.001" >
+	                #{ExportedVARhQ3A},
+	          </if>
+	          <if test="ExportedVARhQ3B != 0.001" >
+	                #{ExportedVARhQ3B},
+	          </if>
+	          <if test="ExportedVARhQ3C != 0.001" >
+	                #{ExportedVARhQ3C},
+	          </if>
+	          <if test="ExportedVARhQ4Sum != 0.001" >
+	                #{ExportedVARhQ4Sum},
+	          </if>
+	          <if test="ExportedVARhQ4A != 0.001" >
+	                #{ExportedVARhQ4A},
+	          </if>
+	          <if test="ExportedVARhQ4B != 0.001" >
+	                #{ExportedVARhQ4B},
+	          </if>
+	          <if test="ExportedVARhQ4C != 0.001" >
+	                #{ExportedVARhQ4C},
+	          </if>
+	          <if test="WattDemandElement != 0.001" >
+	                #{WattDemandElement},
+	          </if>
+	          
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+					#{MeasuredProduction},
+				</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="CurrentSum != 0.001" >
+        		`CurrentSum` = #{CurrentSum},
+	          </if>
+	          <if test="CurrentCH1A != 0.001" >
+	                `CurrentCH1A` = #{CurrentCH1A},
+	          </if>
+	          <if test="CurrentCH2B != 0.001" >
+	                `CurrentCH2B` = #{CurrentCH2B},
+	          </if>
+	          <if test="CurrentCH3C != 0.001" >
+	                `CurrentCH3C` = #{CurrentCH3C},
+	          </if>
+	          <if test="VoltageLNAvg != 0.001" >
+	                `VoltageLNAvg` = #{VoltageLNAvg},
+	          </if>
+	          <if test="VoltageL1NAN != 0.001" >
+	               `VoltageL1NAN` =  #{VoltageL1NAN},
+	          </if>
+	          <if test="VoltageL2NBN != 0.001" >
+	               `VoltageL2NBN` =  #{VoltageL2NBN},
+	          </if>
+	          <if test="VoltageL3NCN != 0.001" >
+	               `VoltageL3NCN` = #{VoltageL3NCN}, 
+	          </if>
+	          <if test="VoltageLLAvg != 0.001" >
+	                `VoltageLLAvg` = #{VoltageLLAvg},
+	          </if>
+	          <if test="VoltageL1L2 != 0.001" >
+	                `VoltageL1L2` = #{VoltageL1L2},
+	          </if>
+	          <if test="VoltageL2L3 != 0.001" >
+	                `VoltageL2L3` = #{VoltageL2L3},
+	          </if>
+	          <if test="VoltageL3L1 != 0.001" >
+	                `VoltageL3L1` = #{VoltageL3L1},
+	          </if>
+	          <if test="LineFrequency != 0.001" >
+	                `LineFrequency` = #{LineFrequency},
+	          </if>
+	          <if test="PowerSum != 0.001" >
+	                `PowerSum` = #{PowerSum},
+	          </if>
+	          <if test="PowerCH1A != 0.001" >
+	                `PowerCH1A` = #{PowerCH1A},
+	          </if>
+	          <if test="PowerCH2B != 0.001" >
+	                `PowerCH2B` = #{PowerCH2B},
+	          </if>
+	          <if test="PowerCH3C != 0.001" >
+	                `PowerCH3C` = #{PowerCH3C},
+	          </if>
+	          <if test="VASum != 0.001" >
+	                `VASum` = #{VASum},
+	          </if>
+	          <if test="VACH1A != 0.001" >
+	                `VACH1A` = #{VACH1A},
+	          </if>
+	          <if test="VACH2B != 0.001" >
+	                `VACH2B` = #{VACH2B},
+	          </if>
+	          <if test="VACH3C != 0.001" >
+	                `VACH3C` = #{VACH3C},
+	          </if>
+	          <if test="VARSum != 0.001" >
+	                `VARSum` = #{VARSum},
+	          </if>
+	          <if test="VARCH1A != 0.001" >
+	                `VARCH1A` = #{VARCH1A},
+	          </if>
+	          <if test="VARCH2B != 0.001" >
+	                `VARCH2B` = #{VARCH2B},
+	          </if>
+	          <if test="VARCH3C != 0.001" >
+	                `VARCH3C` = #{VARCH3C},
+	          </if>
+	          <if test="ApparentPFAvg != 0.001" >
+	                `ApparentPFAvg` = #{ApparentPFAvg},
+	          </if>
+	          <if test="ApparentPFCH1A != 0.001" >
+	                `ApparentPFCH1A` = #{ApparentPFCH1A},
+	          </if>
+	          <if test="ApparentPFCH2B != 0.001" >
+	                `ApparentPFCH2B` = #{ApparentPFCH2B},
+	          </if>
+	          <if test="ApparentPFCH3C != 0.001" >
+	                `ApparentPFCH3C` = #{ApparentPFCH3C},
+	          </if>
+	          <if test="ExportedEnergySum != 0.001" >
+	                `ExportedEnergySum` = #{ExportedEnergySum},
+	          </if>
+	          <if test="ExportedEnergyCH1A != 0.001" >
+	                `ExportedEnergyCH1A` = #{ExportedEnergyCH1A},
+	          </if>
+	          <if test="ExportedEnergyCH2B != 0.001" >
+	                `ExportedEnergyCH2B` = #{ExportedEnergyCH2B},
+	          </if>
+	          <if test="ExportedEnergyCH3C != 0.001" >
+	                `ExportedEnergyCH3C` = #{ExportedEnergyCH3C},
+	          </if>
+	          <if test="ImportedEnergySum != 0.001" >
+	                `ImportedEnergySum` = #{ImportedEnergySum},
+	          </if>
+	          <if test="ImportedEnergyCH1A != 0.001" >
+	                `ImportedEnergyCH1A` = #{ImportedEnergyCH1A},
+	          </if>
+	          <if test="ImportedEnergyCH2B != 0.001" >
+	                `ImportedEnergyCH2B` = #{ImportedEnergyCH2B},
+	          </if>
+	          <if test="ImportedEnergyCH3C != 0.001" >
+	               `ImportedEnergyCH3C` = #{ImportedEnergyCH3C}, 
+	          </if>
+	          <if test="ExportedVAhSum != 0.001" >
+	                `ExportedVAhSum` = #{ExportedVAhSum},
+	          </if>
+	          <if test="ExportedVAhCH1A != 0.001" >
+	                `ExportedVAhCH1A` = #{ExportedVAhCH1A},
+	          </if>
+	          <if test="ExportedVAhCH2B != 0.001" >
+	                `ExportedVAhCH2B` = #{ExportedVAhCH2B},
+	          </if>
+	          <if test="ExportedVAhCH3C != 0.001" >
+	                `ExportedVAhCH3C` = #{ExportedVAhCH3C},
+	          </if>
+	          <if test="ImportedVAhSum != 0.001" >
+	                `ImportedVAhSum` = #{ImportedVAhSum},
+	          </if>
+	          <if test="ImportedVAhCH1A != 0.001" >
+	                `ImportedVAhCH1A` = #{ImportedVAhCH1A},
+	          </if>
+	          <if test="ImportedVAhCH2B != 0.001" >
+	                `ImportedVAhCH2B` = #{ImportedVAhCH2B},
+	          </if>
+	          <if test="ImportedVAhCH3C != 0.001" >
+	                `ImportedVAhCH3C` = #{ImportedVAhCH3C},
+	          </if>
+	          <if test="ImportedVARhQ1Sum != 0.001" >
+	                `ImportedVARhQ1Sum` = #{ImportedVARhQ1Sum},
+	          </if>
+	          <if test="ImportedVARhQ1A != 0.001" >
+	                `ImportedVARhQ1A` = #{ImportedVARhQ1A},
+	          </if>
+	          <if test="ImportedVARhQ1B != 0.001" >
+	                `ImportedVARhQ1B` = #{ImportedVARhQ1B},
+	          </if>
+	          <if test="ImportedVARhQ1C != 0.001" >
+	                `ImportedVARhQ1C` = #{ImportedVARhQ1C},
+	          </if>
+	          <if test="ImportedVARhQ2Sum != 0.001" >
+	                `ImportedVARhQ2Sum` = #{ImportedVARhQ2Sum},
+	          </if>
+	          <if test="ImportedVARhQ2A != 0.001" >
+	                `ImportedVARhQ2A` = #{ImportedVARhQ2A},
+	          </if>
+	          <if test="ImportedVARhQ2B != 0.001" >
+	                `ImportedVARhQ2B` = #{ImportedVARhQ2B},
+	          </if>
+	          <if test="ImportedVARhQ2C != 0.001" >
+	                `ImportedVARhQ2C` = #{ImportedVARhQ2C},
+	          </if>
+	          <if test="ExportedVARhQ3Sum != 0.001" >
+	                `ExportedVARhQ3Sum` = #{ExportedVARhQ3Sum},
+	          </if>
+	          <if test="ExportedVARhQ3A != 0.001" >
+	                `ExportedVARhQ3A` = #{ExportedVARhQ3A},
+	          </if>
+	          <if test="ExportedVARhQ3B != 0.001" >
+	                `ExportedVARhQ3B` = #{ExportedVARhQ3B},
+	          </if>
+	          <if test="ExportedVARhQ3C != 0.001" >
+	                `ExportedVARhQ3C` = #{ExportedVARhQ3C},
+	          </if>
+	          <if test="ExportedVARhQ4Sum != 0.001" >
+	                `ExportedVARhQ4Sum` = #{ExportedVARhQ4Sum},
+	          </if>
+	          <if test="ExportedVARhQ4A != 0.001" >
+	                `ExportedVARhQ4A` = #{ExportedVARhQ4A},
+	          </if>
+	          <if test="ExportedVARhQ4B != 0.001" >
+	                `ExportedVARhQ4B` = #{ExportedVARhQ4B},
+	          </if>
+	          <if test="ExportedVARhQ4C != 0.001" >
+	                `ExportedVARhQ4C` = #{ExportedVARhQ4C},
+	          </if>
+	          <if test="WattDemandElement != 0.001" >
+	                `WattDemandElement` = #{WattDemandElement},
+	          </if>
+	          
+			  <if test="nvmActivePower != 0.001" >
+			  	`nvmActivePower` = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	`nvmActiveEnergy` = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+					`MeasuredProduction` = #{MeasuredProduction},
+				</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelDent48PSHDMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

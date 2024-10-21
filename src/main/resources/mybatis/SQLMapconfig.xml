@@ -101,6 +101,7 @@
 		<mapper resource="mybatis/map/ModelSmaInverterStp1200tlus10.xml"/>
 		<mapper resource="mybatis/map/ModelSmaInverterStp24ktlus10.xml"/>
 		<mapper resource="mybatis/map/ModelAdam4017WSClass8110Nelis190.xml"/>
+		<mapper resource="mybatis/map/ModelDent48PSHDMeter.xml"/>
 		
 		<mapper resource="mybatis/map/ModelCampellScientificMeter1.xml"/>
 		<mapper resource="mybatis/map/ModelCampellScientificMeter2.xml"/>

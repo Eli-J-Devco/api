@@ -318,6 +318,8 @@
 				WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 				
+				WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+				
 				
 				
 				ELSE "N/A"
