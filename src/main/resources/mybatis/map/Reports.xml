@@ -30,8 +30,9 @@
 		FROM
 			site AS s
 		WHERE
-			 s.is_delete = 0 AND s.`status` = 1
-			 <if test="id_sites != null">
+			 s.is_delete = 0
+			 AND s.`status` = 1
+			 <if test="is_supper_admin != 1 and id_sites != null">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item.id}
@@ -68,7 +69,7 @@
 			AND ssg.is_delete = 0
 			AND sg.status = 1
 			AND sg.is_delete = 0
-			<if test="id_sites != null">
+			<if test="is_supper_admin != 1 and id_sites != null">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item.id}
