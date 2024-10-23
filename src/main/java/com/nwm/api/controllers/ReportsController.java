@@ -2326,8 +2326,8 @@ public class ReportsController extends BaseController {
 						leftAxis = createLeftValueAxis(chart, null);
 						
 						chartData = createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						addSeries(data.stream().allMatch(item -> item.getEnergyIndex() == null), chartData, categories, actualPerformanceRatio, "Energy Index", PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						addSeries(data.stream().allMatch(item -> item.getWeatherAdjustedIndex() == null), chartData, categories, actualPerformanceRatio, "Weather Adjusted Index", PresetColor.DARK_GRAY, PresetColor.BLACK);
+						addSeries(data.stream().allMatch(item -> item.getEnergyIndex() == null), chartData, categories, energyIndex, "Energy Index", PresetColor.STEEL_BLUE, PresetColor.BLACK);
+						addSeries(data.stream().allMatch(item -> item.getWeatherAdjustedIndex() == null), chartData, categories, weatherAdjustedIndex, "Weather Adjusted Index", PresetColor.DARK_GRAY, PresetColor.BLACK);
 						
 						chart.plot(chartData);
 						
