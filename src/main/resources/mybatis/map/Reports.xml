@@ -23,23 +23,34 @@
 	
 	<select id="getListSiteByEmployee" resultType="Map">
 		SELECT
-			s.id,
-			s.id AS value,
-			s.`name` AS text,
-			s.`name` AS label
+			sg.id,
+			sg.id AS value,
+			sg.name AS text,
+			sg.name AS label,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', s.name,
+				'label', s.name,
+				'id_site_group', s.id_site_group
+			)) AS sitesJSON
 		FROM
-			site AS s
+			site_group AS sg
+			LEFT JOIN site s ON s.id_site_group = sg.id
 		WHERE
-			 s.is_delete = 0
-			 AND s.`status` = 1
-			 <if test="is_supper_admin != 1 and id_sites != null">
+			sg.status = 1
+			AND sg.is_delete = 0 
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			<if test="is_supper_admin != 1 and id_sites != null">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item.id}
 					</foreach>
 				)
 			</if>
-		ORDER BY s.`name` ASC
+		GROUP BY
+			sg.id
 	</select>
 	
 	<select id="getListSiteByIdEmployee" resultType="Map">
@@ -192,17 +203,24 @@
 		    		CASE
 		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Solar Production Report")
 		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Solar Production Report")
-		    			ELSE CONCAT_WS(" " , s.`name`, "Solar Production Report")
+		    			ELSE "Solar Production Report"
 		    		END
 		    	WHEN r.type_report = 2 THEN
 		    		CASE
 		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Production Trend Report")
 		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Production Trend Report")
 		    			WHEN r.type_option = 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Production Trend Report")
+		    			ELSE "Production Trend Report"
 		    		END
-		    	WHEN r.type_report = 3 THEN CONCAT_WS(" " , s.`name`, "Leviton BMO Consumption Report") 
-		    	WHEN r.type_report = 4 THEN CONCAT_WS(" " , s.`name`, "Asset Management and Operation Performance Report") 
-		    	ELSE s.`name`
+		    	WHEN r.type_report = 3 THEN
+		    		CASE
+		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Leviton BMO Consumption Report")
+		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Leviton BMO Consumption Report")
+		    			WHEN r.type_option = 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Leviton BMO Consumption Report")
+		    			ELSE "Leviton BMO Consumption Report"
+		    		END
+		    	WHEN r.type_report = 4 THEN CONCAT_WS(" " , t2.sites_name, "Asset Management and Operation Performance Report")
+		    	ELSE ""
 			END	AS report_name,
 			CASE
 		    	WHEN r.cadence_range = 1 THEN "Daily"
@@ -256,7 +274,10 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					JSON_ARRAYAGG(JSON_OBJECT(
 						'id', s.id,
-						'text', s.name
+						'value', s.id,
+						'text', s.name,
+						'label', s.name,
+						'id_site_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					site_employee_map sem 
@@ -274,7 +295,10 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					JSON_ARRAYAGG(JSON_OBJECT(
 						'id', s.id,
-						'text', s.name
+						'value', s.id,
+						'text', s.name,
+						'label', s.name,
+						'id_site_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					report_site_map rsm
@@ -292,7 +316,10 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					JSON_ARRAYAGG(JSON_OBJECT(
 						'id', s.id,
-						'text', s.name
+						'value', s.id,
+						'text', s.name,
+						'label', s.name,
+						'id_site_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					site s

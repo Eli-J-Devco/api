@@ -607,15 +607,25 @@ public class ReportsService extends DB {
 	 */
 
 	public List getListSiteByEmployee(ReportsEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Reports.getListSiteByEmployee", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = (List<Map<String, Object>>) queryForList("Reports.getListSiteByEmployee", obj);
+			if (dataList == null) return new ArrayList();
+			ObjectMapper mapper = new ObjectMapper();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+				
+				try {
+					item.put("options", mapper.readValue(item.get("sitesJSON").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+				} catch (JsonProcessingException e) {
+					item.put("options", new ArrayList<Map<String, Object>>());
+				}
+				
+				item.put("sitesJSON", null);
+			}
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	/**
 	 * @description Get list site sub-group by employee
