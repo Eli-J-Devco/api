@@ -281,7 +281,7 @@
 		<if test="keyword != null">
 			<choose>
 				<when test="filterBy == 'fullname'">
-					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+					AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
 				</when>
 				<when test="filterBy == 'phone'">
 					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
