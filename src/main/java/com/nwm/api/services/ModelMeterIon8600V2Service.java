@@ -30,7 +30,8 @@ public class ModelMeterIon8600V2Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
 				dataModelIon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

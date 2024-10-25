@@ -30,7 +30,8 @@ public class ModelAcuRevProductionMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				dataModelAcuRevMeter.setTime(words.get(0).replace("'", ""));
 				dataModelAcuRevMeter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

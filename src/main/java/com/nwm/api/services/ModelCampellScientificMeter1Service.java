@@ -29,7 +29,8 @@ public class ModelCampellScientificMeter1Service extends DB {
 				ModelCampellScientificMeter1Entity dataModelCSM1 = new ModelCampellScientificMeter1Entity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 		
 				dataModelCSM1.setTime(words.get(0).replace("'", ""));
 				dataModelCSM1.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

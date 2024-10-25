@@ -30,7 +30,8 @@ public class ModelKyPulseMeterService extends DB {
 				
 				Double power =  0.001; // Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));

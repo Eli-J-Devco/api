@@ -31,7 +31,8 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				dataModelElkor.setTime(words.get(0).replace("'", ""));
 				dataModelElkor.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));

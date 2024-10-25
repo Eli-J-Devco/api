@@ -30,7 +30,8 @@ public class ModelPowerMeasurementIon7650Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				
 				dataModelPP7650.setTime(words.get(0).replace("'", ""));

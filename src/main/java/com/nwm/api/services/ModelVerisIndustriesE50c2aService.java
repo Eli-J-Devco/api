@@ -31,7 +31,8 @@ public class ModelVerisIndustriesE50c2aService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 ) { energy = energy * -1; } 
+				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
