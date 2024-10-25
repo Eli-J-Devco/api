@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.apache.poi.ss.util.CellRangeAddress;
 
@@ -140,6 +139,7 @@ import com.nwm.api.config.ReportTaskScheduler;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.Book;
+import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
@@ -178,7 +178,7 @@ public class ReportsController extends BaseController {
 	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
 	
 	// Write header with format
-		private static void writeHeaderDailyReport(Sheet sheet, ViewReportEntity dataObj) {
+		private static void writeHeaderDailyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj) {
 			try {
 				sheet.setDefaultColumnWidth(16);
 				sheet.setColumnWidth(0, 15 * 256);
@@ -250,9 +250,11 @@ public class ReportsController extends BaseController {
 				cell.setCellStyle(reportInfoBoldCellStyle);
 				sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
 				
+				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 				cell = row.createCell(2);
 				cell.setCellStyle(reportInfoCellStyle);
-				cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+				cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
 				cell = row.createCell(3);
 				cell.setCellStyle(reportInfoCellStyle);
 				cell = row.createCell(4);
@@ -384,16 +386,13 @@ public class ReportsController extends BaseController {
 		public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				int pictureIdx = readLogoImageFile(document);
 				
 				for (int i = 0; i < dataObjList.size(); i++) {
 					ViewReportEntity dataObj = dataObjList.get(i);
 					
 					if (dataObj != null) {
-						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-						SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-						dataObj.setStart_date(format.format(dateFormat.parse(obj.getStart_date())));
-						dataObj.setEnd_date(format.format(dateFormat.parse(obj.getEnd_date())));
 						List<DailyDateEntity> dataExports = dataObj.getDataReports();
 						int numOfPoints = dataExports != null ? dataExports.size() : 0;
 						
@@ -404,7 +403,7 @@ public class ReportsController extends BaseController {
 						insertLogo(sheet, logoAnchor, pictureIdx);
 						
 						// report information and table
-						writeHeaderDailyReport(sheet, dataObj);
+						writeHeaderDailyReport(sheet, obj, dataObj);
 						
 						// chart
 						if (numOfPoints > 0) {
@@ -456,12 +455,8 @@ public class ReportsController extends BaseController {
 					}
 				}
 				
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			} catch (Exception e) {
 				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 			}
@@ -484,6 +479,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
@@ -592,12 +588,8 @@ public class ReportsController extends BaseController {
 				// It must be closed before attach to mail
 				document.close();
 				
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			}
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -630,7 +622,7 @@ public class ReportsController extends BaseController {
 	// end daily report ===================================================================================
 	
 	// Write header with format
-	private static void writeHeaderAnnuallyReport(Sheet sheet, ArrayList<String> categories, ArrayList<Double> actualGeneration, ViewReportEntity dataObj, ArrayList<Double> baselineGeneration, ArrayList<Double> baselineGenerationIndex, ArrayList<Double> actualGenerationTrailing, ArrayList<Double> baselineGenerationTrailing, ArrayList<Double> baselineGenerationIndexTrailing, ArrayList<Double> INVAvailability) {
+	private static void writeHeaderAnnuallyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 35 * 256);
@@ -688,9 +680,11 @@ public class ReportsController extends BaseController {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Covered Period");
 
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
 
 			row = sheet.createRow(3);
 			row.setHeight((short) 600);
@@ -720,7 +714,6 @@ public class ReportsController extends BaseController {
 			}
 			sheet.addMergedRegion(new CellRangeAddress(0, 5, 2, 10));
 
-			// Monthly Data
 			Row row7 = sheet.createRow(7);
 			Cell cell7 = row7.createCell(0);
 			cell7.setCellStyle(tableHeaderLeftAlignCellStyle);
@@ -728,16 +721,7 @@ public class ReportsController extends BaseController {
 			Cell cell71 = row7.createCell(1);
 			cell71.setCellStyle(tableHeaderLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(7, 7, 0, 1));
-
-			int r = 2;
-			for (int i = 0; i < categories.size(); i++) {
-				cell7 = row7.createCell(r + i);
-				cell7.setCellStyle(tableHeaderCellStyle);
-				cell7.setCellValue(categories.get(i));
-			}
 			
-
-			// Actual Generation (kWh)
 			Row row8 = sheet.createRow(8);
 			Cell cell8 = row8.createCell(0);
 			cell8.setCellStyle(tableRowLeftAlignCellStyle);
@@ -746,15 +730,6 @@ public class ReportsController extends BaseController {
 			cell81.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(8, 8, 0, 1));
 			
-			int v = 2;
-			for (int i = 0; i < actualGeneration.size(); i++) {
-				cell8 = row8.createCell(v + i);
-				cell8.setCellStyle(tableRowNoDecimalCellStyle);
-				if(actualGeneration.get(i) != null) cell8.setCellValue(actualGeneration.get(i));
-			}
-			
-
-			// Baseline Generation (kWh)
 			Row row9 = sheet.createRow(9);
 			Cell cell9 = row9.createCell(0);
 			cell9.setCellStyle(tableRowLeftAlignCellStyle);
@@ -763,15 +738,6 @@ public class ReportsController extends BaseController {
 			cell91.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(9, 9, 0, 1));
 			
-			int u = 2;
-			for (int i = 0; i < baselineGeneration.size(); i++) {
-				cell9 = row9.createCell(u + i);
-				cell9.setCellStyle(tableRowNoDecimalCellStyle);
-				if(baselineGeneration.get(i) != null) cell9.setCellValue(baselineGeneration.get(i));
-			}
-
-
-			// Baseline Generation Index (%)
 			Row row10 = sheet.createRow(10);
 			Cell cell10 = row10.createCell(0);
 			cell10.setCellStyle(tableRowLeftAlignCellStyle);
@@ -780,15 +746,6 @@ public class ReportsController extends BaseController {
 			cell101.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(10, 10, 0, 1));
 			
-			int n = 2;
-			for (int i = 0; i < baselineGenerationIndex.size(); i++) {
-				cell10 = row10.createCell(n + i);
-				cell10.setCellStyle(tableRowOneDecimalPlaceCellStyle);
-				if(baselineGenerationIndex.get(i) != null) cell10.setCellValue(baselineGenerationIndex.get(i));
-			}
-
-
-			// Trailing Twelve Month Generation
 			Row row11 = sheet.createRow(11);
 			Cell cell11 = row11.createCell(0);
 			cell11.setCellStyle(tableHeaderLeftAlignCellStyle);
@@ -797,38 +754,13 @@ public class ReportsController extends BaseController {
 			cell111.setCellStyle(tableHeaderLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(11, 11, 0, 1));
 			sheet.addMergedRegion(new CellRangeAddress(11, 11, 2, 13));
-			
-			// Actual Generation (kWh)
+
 			Row row12 = sheet.createRow(12);
 			Cell cell12 = row12.createCell(0);
 			cell12.setCellStyle(tableRowLeftAlignCellStyle);
 			cell12.setCellValue("Actual Generation (kWh)");
 			sheet.addMergedRegion(new CellRangeAddress(12, 12, 0, 1));
 			
-			int z = 2;
-			for (int i = 0; i < actualGenerationTrailing.size(); i++) {
-				cell12 = row12.createCell(z + i);
-				cell12.setCellStyle(tableRowNoDecimalCellStyle);
-				if(actualGenerationTrailing.get(i) != null) cell12.setCellValue(actualGenerationTrailing.get(i));
-			}
-
-			// Baseline Generation (kWh)
-			Row row13 = sheet.createRow(13);
-			Cell cell13 = row13.createCell(0);
-			cell13.setCellStyle(tableRowLeftAlignCellStyle);
-			cell13.setCellValue("Estimated Generation (kWh)");
-			Cell cell131 = row13.createCell(1);
-			cell131.setCellStyle(tableRowLeftAlignCellStyle);
-			sheet.addMergedRegion(new CellRangeAddress(13, 13, 0, 1));
-			
-			int m = 2;
-			for (int i = 0; i < baselineGenerationTrailing.size(); i++) {
-				cell13 = row13.createCell(m + i);
-				cell13.setCellStyle(tableRowNoDecimalCellStyle);
-				if (baselineGenerationTrailing.get(i) != null) cell13.setCellValue(baselineGenerationTrailing.get(i));
-			}
-
-			// Baseline Generation Index (%)
 			Row row14 = sheet.createRow(14);
 			Cell cell14 = row14.createCell(0);
 			cell14.setCellStyle(tableRowLeftAlignCellStyle);
@@ -837,15 +769,14 @@ public class ReportsController extends BaseController {
 			cell141.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(14, 14, 0, 1));
 			
-			int g = 2;
-			for (int i = 0; i < baselineGenerationIndexTrailing.size(); i++) {
-				cell14 = row14.createCell(g + i);
-				cell14.setCellStyle(tableRowOneDecimalPlaceCellStyle);
-				if (baselineGenerationIndexTrailing.get(i) != null) cell14.setCellValue(baselineGenerationIndexTrailing.get(i));
-			}
-
-
-			// Inverter Availability (%)
+			Row row13 = sheet.createRow(13);
+			Cell cell13 = row13.createCell(0);
+			cell13.setCellStyle(tableRowLeftAlignCellStyle);
+			cell13.setCellValue("Estimated Generation (kWh)");
+			Cell cell131 = row13.createCell(1);
+			cell131.setCellStyle(tableRowLeftAlignCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(13, 13, 0, 1));
+			
 			Row row15 = sheet.createRow(15);
 			Cell cell15 = row15.createCell(0);
 			cell15.setCellStyle(tableRowLeftAlignCellStyle);
@@ -853,14 +784,55 @@ public class ReportsController extends BaseController {
 			Cell cell151 = row15.createCell(1);
 			cell151.setCellStyle(tableRowLeftAlignCellStyle);
 			sheet.addMergedRegion(new CellRangeAddress(15, 15, 0, 1));
-
-			int h = 2;
-			for (int i = 0; i < INVAvailability.size(); i++) {
-				cell15 = row15.createCell(h + i);
-				cell15.setCellStyle(tableRowOneDecimalPlaceCellStyle);
-				if (INVAvailability.get(i) != null) cell15.setCellValue(INVAvailability.get(i));
-			}
 			
+			List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
+			if(dataExports != null && dataExports.size() > 0) {
+				int r = 2;
+				for (int i = 0; i < dataExports.size(); i++) {
+					QuarterlyDateEntity item = dataExports.get(i);
+					
+					// Monthly Categories
+					cell7 = row7.createCell(r + i);
+					cell7.setCellStyle(tableHeaderCellStyle);
+					cell7.setCellValue(item.getCategories_time());
+					
+					// Actual Generation (kWh)
+					cell8 = row8.createCell(r + i);
+					cell8.setCellStyle(tableRowNoDecimalCellStyle);
+					if(item.getActual() != null) cell8.setCellValue(item.getActual());
+					
+					// Estimated Generation (kWh)
+					cell9 = row9.createCell(r + i);
+					cell9.setCellStyle(tableRowNoDecimalCellStyle);
+					if(item.getEstimated() != null) cell9.setCellValue(item.getEstimated());
+					
+					// Estimated Generation Index (%)
+					cell10 = row10.createCell(r + i);
+					cell10.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+					if(item.getDifferencePercentage() != null) cell10.setCellValue(item.getDifferencePercentage());
+					
+					// Trailing Twelve Month Actual Generation
+					// Actual Generation
+					cell12 = row12.createCell(r + i);
+					cell12.setCellStyle(tableRowNoDecimalCellStyle);
+					if(item.getActualCumulative() != null) cell12.setCellValue(item.getActualCumulative());
+					
+					// Estimated Generation (kWh)
+					cell13 = row13.createCell(r + i);
+					cell13.setCellStyle(tableRowNoDecimalCellStyle);
+					if (item.getEstimatedCumulative() != null) cell13.setCellValue(item.getEstimatedCumulative());
+					
+					// Estimated Generation Index (%)
+					cell14 = row14.createCell(r + i);
+					cell14.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+					if (item.getCumulativeDifferencePercentage() != null) cell14.setCellValue(item.getCumulativeDifferencePercentage());
+					
+					// Inverter Availability (%)
+					cell15 = row15.createCell(r + i);
+					cell15.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+					if (item.getInverterAvailability() != null) cell15.setCellValue(item.getInverterAvailability());
+				}
+			}
 		} catch (Exception e) {
 		}
 
@@ -877,96 +849,15 @@ public class ReportsController extends BaseController {
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-					Date endDate = dateFormat.parse(obj.getEnd_date());
-					Date startDate = dateFormat.parse(obj.getStart_date());
-					dataObj.setStart_date(format.format(startDate));
-					dataObj.setEnd_date(format.format(endDate));
-					
-					ArrayList<String> categories = new ArrayList<String>();
-					ArrayList<Double> actualGeneration = new ArrayList<Double>();
-					ArrayList<Double> baselineGeneration = new ArrayList<Double>();
-					ArrayList<Double> baselineGenerationIndex = new ArrayList<Double>();
-					
-					ArrayList<Double> actualGenerationTrailing = new ArrayList<Double>();
-					ArrayList<Double> baselineGenerationTrailing = new ArrayList<Double>();
-					ArrayList<Double> baselineGenerationIndexTrailing = new ArrayList<Double>();
-					ArrayList<Double> INVAvailability = new ArrayList<Double>();
-				
-					SimpleDateFormat dateFormatCategories = new SimpleDateFormat("MMM-yyyy");
-					SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-					SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
-					List dataExports = dataObj.getDataReports();
-					List dataAvailability = dataObj.getDataAvailability();
-					List dataExpectations = dataObj.getDataExpectations();
-					Double totalGeneration = null;
-					Double totalExpectations = null;
-					
-					for (int k = 0; k < 12; k++) {
-						Calendar c = Calendar.getInstance();
-						c.setTime(startDate);
-						c.add(Calendar.MONTH, k);
-						categories.add(monthFormat.format(c.getTime()));
-						Double v = null;
-						
-						if(dataExports != null) {
-							for( int j = 0; j < dataExports.size(); j++){
-								Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
-								String date = (String) item.get("categories_time");
-								if(date.equals(dateFormatCategories.format(c.getTime()) )) {
-									v = (Double)item.get("chart_energy_kwh");
-									if(v != null) totalGeneration = totalGeneration != null ? totalGeneration + v : v;
-									break;
-								}
-							}
-						}
-						
-						actualGeneration.add(v);
-						actualGenerationTrailing.add(totalGeneration);
-						
-						Double availability = null;
-						
-						if(dataAvailability.size() > 0) {
-							for( int j = 0; j < dataAvailability.size(); j++){
-								Map<String, Object> item = (Map<String, Object>) dataAvailability.get(j);
-								String date = (String) item.get("time_full");
-								if(date.equals(dateFormatCategories.format(c.getTime()) )) {
-									availability = (Double)item.get("InverterAvailability");
-									break;
-								}
-							}
-						}
-						
-						INVAvailability.add(availability);
-						
-						// baseline Generation
-						Double baseline = null;
-						if(dataExpectations.size() > 0) {
-							for( int j = 0; j < dataExpectations.size(); j++){
-								Map<String, Object> itemEx = (Map<String, Object>) dataExpectations.get(j);
-								String year = itemEx.get("year").toString();
-								if(year.equals(yearFormat.format(c.getTime()))) {
-									Double monthValue = Double.parseDouble(itemEx.get((monthFormat.format(c.getTime())).toLowerCase()).toString());
-									baseline = monthValue;
-									if(baseline != null) totalExpectations = totalExpectations != null ? totalExpectations + baseline : baseline;
-									break;
-								}
-							}
-						}
-						
-						baselineGeneration.add(baseline);
-						baselineGenerationIndex.add(v != null && baseline != null && baseline != 0 ? (v/baseline) * 100 : null);
-						baselineGenerationTrailing.add(totalExpectations);
-						baselineGenerationIndexTrailing.add(totalGeneration != null && totalExpectations != null && totalExpectations != 0 ? (totalGeneration/totalExpectations) * 100 : null);
-					}
-					
+					List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
+					int numOfPoints = dataExports != null ? dataExports.size() : 0;
 					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName((i + 1) + "_" + dataObj.getSite_name()));
 					sheet.setZoom(95);
 
@@ -975,14 +866,13 @@ public class ReportsController extends BaseController {
 					insertLogo(sheet, logoAnchor, pictureIdx);
 
 					// report information and table
-					writeHeaderAnnuallyReport(sheet, categories, actualGeneration, dataObj, baselineGeneration, baselineGenerationIndex, actualGenerationTrailing, baselineGenerationTrailing, baselineGenerationIndexTrailing, INVAvailability );
+					writeHeaderAnnuallyReport(sheet, obj, dataObj);
 
 					// chart
 					ClientAnchor chartAnchor = new XSSFClientAnchor(5 * Units.EMU_PER_PIXEL, 0, 0, 0, 0, 18, 14, 40);
 					XDDFChart chart = insertChart(sheet, chartAnchor, "Annual Performance");
 					
 					// data sources
-					int numOfPoints = categories.size();
 					XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(7, 7, 2, 2 + numOfPoints - 1));
 					XDDFNumericalDataSource<Double> valuesData1 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(8, 8, 2, 2 + numOfPoints - 1));
 					XDDFNumericalDataSource<Double> valuesData2 = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(9, 9, 2, 2 + numOfPoints - 1));
@@ -995,8 +885,8 @@ public class ReportsController extends BaseController {
 					XDDFValueAxis leftAxis = createLeftValueAxis(chart, "GENERATION (KWH)");
 
 					XDDFChartData chartData = createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-					addSeries(actualGeneration.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-					addSeries(baselineGeneration.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+					addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
+					addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
 					
 					chart.plot(chartData);
 
@@ -1004,18 +894,14 @@ public class ReportsController extends BaseController {
 					XDDFValueAxis rightAxis = createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
 
 					chartData = createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-					addSeries(baselineGenerationIndex.stream().allMatch(item -> item == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", PresetColor.GRAY, null);
+					addSeries(dataExports.stream().allMatch(item -> item.getDifferencePercentage() == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", PresetColor.GRAY, null);
 					
 					chart.plot(chartData);
 				}
 			}
 				
-			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
-				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-			} else {
-				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-			}
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -1038,6 +924,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
@@ -1050,87 +937,8 @@ public class ReportsController extends BaseController {
 						dataObj.setStart_date(new SimpleDateFormat("MM/dd/yyyy").format(startDate));
 						dataObj.setEnd_date(new SimpleDateFormat("MM/dd/yyyy").format(endDate));
 						
-						List<?> dataExports = dataObj.getDataReports();
-						List<?> dataAvailability = dataObj.getDataAvailability();
-						List<?> dataExpectations = dataObj.getDataExpectations();
+						List<QuarterlyDateEntity> dataExports = dataObj.getDataReports();
 						
-						// calculate for data of table
-						ArrayList<String> categories = new ArrayList<String>();
-						ArrayList<String> monthYearCategories = new ArrayList<String>();
-						ArrayList<Double> actualGeneration = new ArrayList<Double>();
-						ArrayList<Double> baselineGeneration = new ArrayList<Double>();
-						ArrayList<Double> baselineGenerationIndex = new ArrayList<Double>();
-						
-						ArrayList<Double> actualGenerationTrailing = new ArrayList<Double>();
-						ArrayList<Double> baselineGenerationTrailing = new ArrayList<Double>();
-						ArrayList<Double> baselineGenerationIndexTrailing = new ArrayList<Double>();
-						ArrayList<Double> INVAvailability = new ArrayList<Double>();
-						
-						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
-						SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-						SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
-						
-						Double totalGeneration = null;
-						Double totalExpectations = null;
-						
-						for (int i = 0; i < 12; i++) {
-							Calendar c = Calendar.getInstance();
-							c.setTime(startDate);
-							c.add(Calendar.MONTH, i);
-							categories.add(monthFormat.format(c.getTime()));
-							monthYearCategories.add(monthYearFormat.format(c.getTime()));
-							Double v = null;
-							
-							if(dataExports != null) {
-								for( int j = 0; j < dataExports.size(); j++){
-									Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
-									String date = (String) item.get("categories_time");
-									if(date.equals(monthYearFormat.format(c.getTime()) )) {
-										v = (Double)item.get("chart_energy_kwh");
-										if(v != null) totalGeneration = totalGeneration != null ? totalGeneration + v : v;
-										break;
-									}
-								}
-							}
-							
-							actualGeneration.add(v);
-							actualGenerationTrailing.add(totalGeneration);
-							
-							Double availability = null;
-							
-							if(dataAvailability.size() > 0) {
-								for( int j = 0; j < dataAvailability.size(); j++){
-									Map<String, Object> item = (Map<String, Object>) dataAvailability.get(j);
-									String date = (String) item.get("time_full");
-									if(date.equals(monthYearFormat.format(c.getTime()) )) {
-										availability = (Double)item.get("InverterAvailability");
-										break;
-									}
-								}
-							}
-	
-							INVAvailability.add(availability);
-							
-							// baseline Generation
-							Double baseline = null;
-							if(dataExpectations.size() > 0) {
-								for( int k = 0; k < dataExpectations.size(); k++){
-									Map<String, Object> itemEx = (Map<String, Object>) dataExpectations.get(k);
-									String year = itemEx.get("year").toString();
-									if(year.equals(yearFormat.format(c.getTime()))) {
-										Double monthValue = Double.parseDouble(itemEx.get((monthFormat.format(c.getTime())).toLowerCase()).toString());
-										baseline = monthValue;
-										if(baseline != null) totalExpectations = totalExpectations != null ? totalExpectations + baseline : baseline;
-									}
-								}
-							}
-							
-							baselineGeneration.add(baseline);
-							baselineGenerationIndex.add(v != null && baseline != null && baseline != 0 ? (v/baseline) * 100 : null);
-							baselineGenerationTrailing.add(totalExpectations);
-							baselineGenerationIndexTrailing.add(totalGeneration != null && totalExpectations != null && totalExpectations != 0 ? (totalGeneration/totalExpectations) * 100 : null);
-						}
-	
 						// total column: 14
 						Table table = new Table(14).useAllAvailableWidth();
 						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
@@ -1163,26 +971,30 @@ public class ReportsController extends BaseController {
 	
 						// Monthly Data
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Monthly Data").setBold()).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < categories.size(); i++) {
-							table.addCell(new Paragraph(categories.get(i)).setBold());
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(new Paragraph(item.getCategories_time()).setBold());
 						}
 						
 						// Actual Generation (kWh)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < actualGeneration.size(); i++) {
-							table.addCell(actualGeneration.get(i) != null ? df.format(actualGeneration.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getActual() != null ? df.format(item.getActual()) : "");
 						}
 						
-						// Baseline Generation (kWh)
+						// Estimated Generation (kWh)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < baselineGeneration.size(); i++) {
-							table.addCell(baselineGeneration.get(i) != null ? df.format(baselineGeneration.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getEstimated() != null ? df.format(item.getEstimated()) : "");
 						}
 						
-						// Baseline Generation Index (%)
+						// Estimated Generation Index (%)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < baselineGenerationIndex.size(); i++) {
-							table.addCell(baselineGenerationIndex.get(i) != null ? dfp.format(baselineGenerationIndex.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getDifferencePercentage() != null ? dfp.format(item.getDifferencePercentage()) : "");
 						}
 						
 						// Trailing Twelve Month Generation
@@ -1191,26 +1003,30 @@ public class ReportsController extends BaseController {
 						
 						// Actual Generation (kWh)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Actual Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < actualGenerationTrailing.size(); i++) {
-							table.addCell(actualGenerationTrailing.get(i) != null ? df.format(actualGenerationTrailing.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getActualCumulative() != null ? df.format(item.getActualCumulative()) : "");
 						}
 						
-						// Baseline Generation (kWh)
+						// Estimated Generation (kWh)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation (kWh)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < baselineGenerationTrailing.size(); i++) {
-							table.addCell(baselineGenerationTrailing.get(i) != null ? df.format(baselineGenerationTrailing.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getEstimatedCumulative() != null ? df.format(item.getEstimatedCumulative()) : "");
 						}
 						
 						// Baseline Generation Index (%)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph("Estimated Generation Index (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < baselineGenerationIndexTrailing.size(); i++) {
-							table.addCell(baselineGenerationIndexTrailing.get(i) != null ? dfp.format(baselineGenerationIndexTrailing.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getCumulativeDifferencePercentage() != null ? dfp.format(item.getCumulativeDifferencePercentage()) : "");
 						}
 						
 						// Inverter Availability (%)
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObj.getDeviceType() == "meter" ? "Site Availability (%)" : "Inverter Availability (%)")).setTextAlignment(TextAlignment.LEFT));
-						for (int i = 0; i < INVAvailability.size(); i++) {
-							table.addCell(INVAvailability.get(i) != null ? dfp.format(INVAvailability.get(i)) : "");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							table.addCell(item.getInverterAvailability() != null ? dfp.format(item.getInverterAvailability()) : "");
 						}
 	
 						// empty row: gap between data table and chart
@@ -1238,12 +1054,16 @@ public class ReportsController extends BaseController {
 						lineDataset.addSeries(estimateIndexSeries);
 						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
 						
-						for (int i = 0; i < monthYearCategories.size(); i++) {
-							Month period = new Month(monthYearFormat.parse(monthYearCategories.get(i)));
+						SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
+						SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMM-yyyy");
+						for (int i = 0; i < dataExports.size(); i++) {
+							QuarterlyDateEntity item = dataExports.get(i);
+							Month period = new Month(monthYearFormat.parse(item.getCategories_time() + '-' + yearFormat.format(endDate)));
 							
-							actualSeries.add(period, actualGeneration.get(i));
-							estimateSeries.add(period, baselineGeneration.get(i));
-							estimateIndexSeries.add(period, baselineGenerationIndex.get(i));
+							actualSeries.add(period, item.getActual());
+							estimateSeries.add(period, item.getEstimated());
+							estimateIndexSeries.add(period, item.getDifferencePercentage());
 						}
 						
 						// category axis
@@ -1262,12 +1082,8 @@ public class ReportsController extends BaseController {
 				// It must be closed before attach to mail
 				document.close();
 				
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			}
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -1285,83 +1101,12 @@ public class ReportsController extends BaseController {
 	public Object getAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-
 			ViewReportEntity dataObj = (ViewReportEntity) service.getAnnuallyReport(obj);
-			
-			SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
-			SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			Date startDate = dateFormat.parse(obj.getStart_date());
-			Date endDate = dateFormat.parse(obj.getEnd_date());
-			
-			Calendar calQ = Calendar.getInstance();
-			calQ.setTime(startDate);
-			calQ.setTime(endDate);
-			
-			List categoriesHeader = new ArrayList ();
-			
-			SimpleDateFormat catFormatMonth = new SimpleDateFormat("MMM-yyyy");
-			SimpleDateFormat timeFullFormat = new SimpleDateFormat("MM-yyyy");
-			Calendar cal = Calendar.getInstance();
-			
-			for(int t = 0; t <12; t++) {
-				cal.setTime(startDate);
-				QuarterlyDateEntity headerDate = new QuarterlyDateEntity();
-				cal.add(Calendar.MONTH, t);
-				String timeFull = timeFullFormat.format(cal.getTime());
-				
-				headerDate.setMonth(monthFormat.format(cal.getTime()).toString());
-				headerDate.setYear(yearFormat.format(cal.getTime()).toString().toUpperCase());
-				headerDate.setTime_full(timeFull.toString());
-				String categoriesTime = catFormatMonth.format(cal.getTime());
-				headerDate.setCategories_time(categoriesTime);
-				headerDate.setTime_format(timeFull.toString());
-				headerDate.setMonth_number(1 + t);
-				categoriesHeader.add(headerDate);	
+			if (dataObj != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			}
-			
-
-			List dataExports = dataObj.getDataReports();
-			List dataNewExports = new ArrayList();
-			
-			for( int k = 0; k < categoriesHeader.size(); k++){
-				QuarterlyDateEntity itemC = (QuarterlyDateEntity) categoriesHeader.get(k);
-				String fullTime = itemC.getTime_full();
-				
-				boolean flag = false;
-				Map<String, Object> itemObj = new HashMap<String, Object>();
-				
-				if (dataExports != null && dataExports.size() > 0) {
-					for( int v = 0; v < dataExports.size(); v++){
-						Map<String, Object> itemT = (Map<String, Object>) dataExports.get(v);
-						if(fullTime.equals(itemT.get("time_full"))) {
-							flag = true;
-							itemObj = (Map<String, Object>) dataExports.get(v);
-						}
-					}
-				}
-				
-				if(flag == false) {
-					Map<String, Object> mapItem = new HashMap<String, Object>();
-					mapItem.put("year", itemC.getYear());
-					mapItem.put("month", itemC.getMonth());
-					
-					mapItem.put("time", "");
-					mapItem.put("time_format", itemC.getMonth());
-					mapItem.put("categories_time", itemC.getCategories_time());
-					mapItem.put("chart_energy_kwh", null);
-					mapItem.put("time_full", itemC.getTime_full());
-					mapItem.put("baseline", (double)0);
-					mapItem.put("month_number", itemC.getMonth_number());
-					dataNewExports.add(mapItem);
-				} else {
-					dataNewExports.add(itemObj);
-				}
-			}
-			
-			dataObj.setDataReports(dataNewExports);
-
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -1737,6 +1482,7 @@ public class ReportsController extends BaseController {
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = readLogoImageFile(document);
 				
 			for (int i = 0; i < dataObjList.size(); i++) {
@@ -1806,12 +1552,8 @@ public class ReportsController extends BaseController {
 				}
 			}
 					
-			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
-				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-			} else {
-				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-			}
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -1834,6 +1576,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
@@ -2039,12 +1782,8 @@ public class ReportsController extends BaseController {
 				// It must be closed before attach to mail
 				document.close();
 
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			}
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -2898,19 +2637,13 @@ public class ReportsController extends BaseController {
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = readLogoImageFile(document);
 			
 			for (int i = 0; i < dataObjList.size(); i++) {
 				ViewReportEntity dataObj = dataObjList.get(i);
 				
 				if (dataObj != null) {
-					SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-					SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
-					SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-					Date endDate = datetimeFormat.parse(obj.getEnd_date());
-					Date startDate = datetimeFormat.parse(obj.getStart_date());
-					dataObj.setStart_date(dateFormat.format(startDate));
-					dataObj.setEnd_date(dateFormat.format(endDate));
 					List<MonthlyDateEntity> dataExports = dataObj.getDataReports();
 					int numOfPoints = dataExports != null ? dataExports.size() : 0;
 					
@@ -2922,7 +2655,7 @@ public class ReportsController extends BaseController {
 					insertLogo(sheet, logoAnchor, pictureIdx);
 					
 					// report information and table
-					writeHeaderMonthlyReport(sheet, dataObj);
+					writeHeaderMonthlyReport(sheet, obj, dataObj);
 					
 					if (numOfPoints > 0) {
 						// 1st chart
@@ -2957,7 +2690,9 @@ public class ReportsController extends BaseController {
 						
 						// 2nd chart
 						chartAnchor = new XSSFClientAnchor(5, 5, 5, 5, 5, 25, 14, 41);
-						chart = insertChart(sheet, chartAnchor, monthYearFormat.format(startDate));
+						SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+						SimpleDateFormat monthYearFormat = new SimpleDateFormat("MMMM yyyy");
+						chart = insertChart(sheet, chartAnchor, monthYearFormat.format(datetimeFormat.parse(obj.getStart_date())));
 						
 						// data sources
 						XDDFDataSource<String> categoriesData2 = XDDFDataSourcesFactory.fromArray(new String[] {""});
@@ -2982,12 +2717,8 @@ public class ReportsController extends BaseController {
 				}
 			}
 				
-			if (dataObjList.stream().anyMatch(item -> item != null)) {
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
-				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-			} else {
-				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-			}
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -3010,6 +2741,7 @@ public class ReportsController extends BaseController {
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
 				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = readLogoImageFile();
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
@@ -3158,12 +2890,8 @@ public class ReportsController extends BaseController {
 				// It must be closed before attach to mail
 				document.close();
 
-				if (dataObjList.stream().anyMatch(item -> item != null)) {
-					sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
-					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
-				} else {
-					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-				}
+				sentPdfReportByMail(dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), file);
+				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			}
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -3326,18 +3054,18 @@ public class ReportsController extends BaseController {
 						cell.setCellStyle(tableHeaderCellStyle);
 						sheet.addMergedRegion(new CellRangeAddress(24, 24, 3 + 3*i, 5 + 3*i));
 						
-						List<Map<String, Object>> dataExports = dataObj.getDataReports();
+						List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
 						
 						if(dataExports != null && dataExports.size() > 0) {
 							for(int j = 0 ;j < dataExports.size(); j++) {
-								Map<String, Object> item = (Map<String, Object>) dataExports.get(j);
+								CustomReportDataEntity item = dataExports.get(j);
 								int t = 25 + j;
 								
 								Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
 								if (i == 0) {
 									Cell cel26D = row26.createCell(0);
 									cel26D.setCellStyle(tableRowCellStyle);
-									cel26D.setCellValue(item.get("categories_time").toString());
+									cel26D.setCellValue(item.getCategories_time());
 									Cell cel26E = row26.createCell(1);
 									cel26E.setCellStyle(tableRowCellStyle);
 									Cell cel26F = row26.createCell(2);
@@ -3347,7 +3075,7 @@ public class ReportsController extends BaseController {
 								
 								Cell cel26G = row26.createCell(3 + 3*i);
 								cel26G.setCellStyle(tableRowNoDecimalCellStyle);
-								if(item.get("actual") != null) cel26G.setCellValue(Double.parseDouble(item.get("actual").toString()));
+								if(item.getActual() != null) cel26G.setCellValue(item.getActual());
 								Cell cel26H = row26.createCell(4 + 3*i);
 								cel26H.setCellStyle(tableRowNoDecimalCellStyle);
 								Cell cel26I = row26.createCell(5 + 3*i);
@@ -3398,7 +3126,7 @@ public class ReportsController extends BaseController {
 						ViewReportEntity dataObj = dataObjList.get(i);
 						
 						if (dataObj != null) {
-							List<Map<String, Object>> dataExports = dataObj.getDataReports();
+							List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
 							int numOfPoints = dataExports != null ? dataExports.size() : 0;
 							
 							if (numOfPoints > 0) {
@@ -3407,7 +3135,7 @@ public class ReportsController extends BaseController {
 								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i));
 								
 								XDDFChartData data = createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-								addSeries(dataExports.stream().allMatch(item -> item.get("actual") == null), data, categoriesData, valuesData, dataObj.getSite_name());
+								addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
 								
 								chart.plot(data);
 							}
@@ -3508,7 +3236,7 @@ public class ReportsController extends BaseController {
 					ViewReportEntity dataObj = dataObjList.get(l);
 
 					if (dataObj != null) {
-						List<Map<String, Object>> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
+						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
 						
 						// empty row
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
@@ -3526,9 +3254,9 @@ public class ReportsController extends BaseController {
 						
 						// data table
 						for (int i = 0; i < dataExports.size(); i++) {
-							Map<String, Object> item = (Map<String, Object>) dataExports.get(i);
-							String itemCategoryTime = item.get("categories_time").toString();
-							Double itemActual = item.get("actual") != null ? Double.parseDouble(item.get("actual").toString()) : null;
+							CustomReportDataEntity item = dataExports.get(i);
+							String itemCategoryTime = item.getCategories_time();
+							Double itemActual = item.getActual();
 							
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
@@ -5232,7 +4960,7 @@ public class ReportsController extends BaseController {
 	}
 
 	// Write header with format
-	private static void writeHeaderMonthlyReport(Sheet sheet, ViewReportEntity dataObj ) {
+	private static void writeHeaderMonthlyReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj ) {
 		try {
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 30 * 256);
@@ -5294,9 +5022,11 @@ public class ReportsController extends BaseController {
 			cell.setCellStyle(reportInfoBoldCellStyle);
 			cell.setCellValue("Covered Period");
 
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 			cell = row.createCell(1);
 			cell.setCellStyle(reportInfoCellStyle);
-			cell.setCellValue(dataObj.getStart_date() + " - " + dataObj.getEnd_date());
+			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
 
 			row = sheet.createRow(3);
 			row.setHeight((short) 600);

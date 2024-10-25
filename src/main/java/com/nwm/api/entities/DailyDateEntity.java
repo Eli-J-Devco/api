@@ -5,32 +5,11 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class DailyDateEntity{
-	
-	private String time_format;
-	private String categories_time;
-	private String hour_time;
+public class DailyDateEntity extends DateTimeReportDataEntity {
 	private Double power;
 	private Double energy;
 	private Double irradiance;
-	public String getTime_format() {
-		return time_format;
-	}
-	public void setTime_format(String time_format) {
-		this.time_format = time_format;
-	}
-	public String getCategories_time() {
-		return categories_time;
-	}
-	public void setCategories_time(String categories_time) {
-		this.categories_time = categories_time;
-	}
-	public String getHour_time() {
-		return hour_time;
-	}
-	public void setHour_time(String hour_time) {
-		this.hour_time = hour_time;
-	}
+	
 	public Double getPower() {
 		return power;
 	}
@@ -49,9 +28,5 @@ public class DailyDateEntity{
 	public void setIrradiance(Double irradiance) {
 		this.irradiance = irradiance;
 	}
-	
-	
-	
-	
 	
 }
