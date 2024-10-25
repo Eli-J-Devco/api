@@ -64,7 +64,7 @@ public class CustomerController extends BaseController {
 		try {
 			CustomerService service = new CustomerService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

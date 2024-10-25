@@ -58,7 +58,7 @@ public class RoleController extends BaseController {
 		try {
 			RoleService service = new RoleService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
@@ -226,7 +226,7 @@ public class RoleController extends BaseController {
 		try {
 			RoleService service = new RoleService();
 			service.updateAllPermission(obj);
-			return this.jsonResult(true, "Update permission complate.", obj, 1);
+			return this.jsonResult(true, "Update permission complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

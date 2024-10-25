@@ -71,7 +71,7 @@ public class EmployeeController extends BaseController {
 		try {
 			EmployeeService service = new EmployeeService();
 			service.updateStatus(obj);
-			return this.jsonResult(true, "Update status complate.", obj, 1);
+			return this.jsonResult(true, "Update status complete.", obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
