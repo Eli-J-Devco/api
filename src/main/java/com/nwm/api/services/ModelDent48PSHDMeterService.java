@@ -29,8 +29,8 @@ public class ModelDent48PSHDMeterService extends DB {
 			if (words.size() > 0) {
 				ModelDent48PSHDMeterEntity dataModel = new ModelDent48PSHDMeterEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001");
 				if(energy < 0 ) { energy = energy * -1; } 
 				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
 				
@@ -39,8 +39,8 @@ public class ModelDent48PSHDMeterService extends DB {
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
 				dataModel.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
-				dataModel.setCurrentSum(energy);
-				dataModel.setCurrentCH1A(power);
+				dataModel.setCurrentSum(power);
+				dataModel.setCurrentCH1A(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModel.setCurrentCH2B(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModel.setCurrentCH3C(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModel.setVoltageLNAvg(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -73,7 +73,7 @@ public class ModelDent48PSHDMeterService extends DB {
 				
 				dataModel.setExportedEnergyCH2B(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
 				dataModel.setExportedEnergyCH3C(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModel.setImportedEnergySum(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModel.setImportedEnergySum(energy);
 				dataModel.setImportedEnergyCH1A(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
 				dataModel.setImportedEnergyCH2B(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
 				dataModel.setImportedEnergyCH3C(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
