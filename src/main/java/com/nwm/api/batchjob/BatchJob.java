@@ -1157,17 +1157,17 @@ public class BatchJob {
 		try {
 			ViewReportEntity objReport = report;
 			ZonedDateTime nowLocalDateTime = ZonedDateTime.now();
-			ZonedDateTime nowTimeZonedDateTime = nowLocalDateTime.withZoneSameInstant(ZoneId.of(objReport.getTime_zone()));
+			ZonedDateTime nowTimeZonedDateTime = nowLocalDateTime.withZoneSameInstant(ZoneId.of(objReport.getOffset_timezone()));
 			String startDateFormat = "yyyy-MM-dd 00:00:00";
 			String endDateFormat = "yyyy-MM-dd 23:59:59";
 
 			ReportsController controller = new ReportsController();
 			BuiltInReportController builtInController = new BuiltInReportController();
 
+			objReport.setIds(objReport.getId_sites() != null ? Arrays.asList(objReport.getId_sites().split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
+			
 			switch (objReport.getType_report()) {
 				case 1: // Solar Production Report
-					objReport.setIds(objReport.getId_sites() != null ? Arrays.asList(objReport.getId_sites().split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
-					
 					switch (objReport.getCadence_range()) {
 						case 1: // daily
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(3)));
@@ -1221,7 +1221,7 @@ public class BatchJob {
 						case 6: // weekly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
-							if (objReport.getFile_type() == 1) builtInController.sentMailPdfWeeklyTrendReport(objReport);
+							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInController.sentMailWeeklyTrendReport(objReport);
 							break;
 	

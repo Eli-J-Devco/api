@@ -1302,7 +1302,6 @@
 			r.file_type,
 			r.date_from,
 			r.date_to,
-			tz.`value` AS time_zone,
 			r.schedule_enable,
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
@@ -1318,7 +1317,6 @@
 				WHEN r.cadence_range = 6 THEN "Weekly"
 		    	ELSE ""
 			END	AS cadence_range_name,
-			s.id AS id_site,
 			CASE
 				WHEN r.type_option = 1 THEN t1.ids_site
 				WHEN r.type_option = 2 THEN t2.ids_site
@@ -1327,8 +1325,6 @@
 			END AS id_sites
 		FROM
 			report r
-			LEFT JOIN site s ON s.id = r.id_site
-			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT
 					sem.id_employee,
@@ -1372,7 +1368,6 @@
 			r.id = #{id}
 			AND r.status = 1
 			AND r.schedule_enable = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
 	<update id="updateReportScheduleNextRunTime">
