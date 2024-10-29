@@ -4,17 +4,17 @@
 * 
 *********************************************************/
 package com.nwm.api.services;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
@@ -22,37 +22,211 @@ import com.nwm.api.entities.WeeklyDateEntity;
 public class BuiltInReportService extends DB {
 	
 	/**
-	 * @description get list site in report 
-	 * @author long.pham
-	 * @since 2023-08-25
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param dateTimeList
+	 * @param dataList
+	 * @return
 	 */
-	
-	public List getListSiteInReport(ViewReportEntity obj) {
-		List dataList = new ArrayList();
+	private <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList) {
+		List<K> fulfilledDataList = new ArrayList<K>();
+		
 		try {
-			dataList = queryForList("BuiltInReport.getListSiteInReport", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
+			if(dataList != null && dateTimeList.size() > 0) {
+				for (K dateTime: dateTimeList) {
+					boolean isFound = false;
+					
+					for(K data: dataList) {
+						String fullTime = dateTime.getCategories_time();
+						String powerTime = data.getCategories_time();
+						
+						if (fullTime.equals(powerTime)) {
+							fulfilledDataList.add(data);
+							isFound = true;
+							break;
+						}
+					}
+					
+					if (!isFound) fulfilledDataList.add((K) dateTime);
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
-		return dataList;
+		
+		return fulfilledDataList;
 	}
 	
 	/**
-	 * @description get table data virtual
+	 * @description create date time list
 	 * @author Hung.Bui
-	 * @since 2023-11-21
+	 * @since 2024-05-03
+	 * @param obj device object
+	 * @param start start date time
+	 * @param end end date time
+	 * @return
 	 */
-	
-	public String getTableDataVirtual(ViewReportEntity obj) {
-		String data = new String();
+	private <K extends DateTimeReportDataEntity> List<K> getDateTimeList(ViewReportEntity obj, String inputDateFormat, Class<K> clazz) {
+		List<K> dateTimeList = new ArrayList<K>();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(inputDateFormat);
+		LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
+		LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
+		
 		try {
-			data = queryForObject("BuiltInReport.getTableDataVirtual", obj).toString();
-			return data;
-		} catch (Exception ex) {
-			return null;
+			int interval = 1;
+			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+			ChronoUnit timeUnit = ChronoUnit.DAYS;
+		
+			switch (obj.getCadence_range()) {
+				case 2: // monthly
+					switch (obj.getData_intervals()) {
+						case 2:
+							interval = 15;
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:00");
+							timeUnit = ChronoUnit.MINUTES;
+							break;
+						case 6:
+							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yy");
+							timeUnit = ChronoUnit.MONTHS;
+							break;
+					}
+					break;
+				case 4: // annual
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yy");
+					timeUnit = ChronoUnit.MONTHS;
+					break;
+				case 6: // weekly
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
+					timeUnit = ChronoUnit.DAYS;
+					break;
+			}
+			
+			while (!start.isAfter(end)) {
+				K dateTime = clazz.getDeclaredConstructor().newInstance();
+				dateTime.setCategories_time(start.format(categoryTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
+		
+		return dateTimeList;
+	}
+	
+	/**
+	 * @description Get data list in multi threads
+	 * @author Hung.Bui
+	 * @since 2024-07-01
+	 * @param id, ids, start_date, end_date
+	 * @return data list
+	 */
+	public List<ViewReportEntity> getReportDataList(ViewReportEntity reportObj) {
+		try {
+			List<CompletableFuture<ViewReportEntity>> list = new ArrayList<CompletableFuture<ViewReportEntity>>();
+			
+			if (reportObj.getIds() != null && reportObj.getIds().size() > 0) {
+				List<ViewReportEntity> siteReportList = queryForList("BuiltInReport.getSiteReportMappingList", reportObj);
+				
+				for (int i = 0; i < siteReportList.size(); i++) {
+					ViewReportEntity siteObj = siteReportList.get(i);
+					
+					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
+						try {
+							ViewReportEntity data = null;
+							if (siteObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyTrendBuitInReport(siteObj);
+							else if (siteObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyBuitInReport(siteObj);
+							else if (siteObj.getCadence_range() == 6) data = (ViewReportEntity) this.getWeeklyBuiltInReport(siteObj);
+							
+							return data;
+						} catch (Exception ex) {
+							log.error(ex);
+							return null;
+						}
+					});
+					
+					list.add(future);
+				}
+			}
+			
+			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
+			return combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	public <K extends DateTimeReportDataEntity> List<ViewReportEntity> summarizeReport(List<ViewReportEntity> dataList, Class<K> clazz) {
+		if (dataList == null || dataList.size() == 0) return new ArrayList<ViewReportEntity>();
+		
+		try {
+			ViewReportEntity findReport = dataList.stream().filter(item -> item.getDataReports() != null && item.getDataReports().size() > 0).findFirst().orElse(new ViewReportEntity());
+			List<K> summaryData = ((List<K>) findReport.getDataReports())
+					.stream()
+					.map(item -> {
+						try {
+							K target = clazz.getDeclaredConstructor().newInstance();
+							target.setCategories_time(item.getCategories_time());
+							return target;
+						} catch (Exception e) {
+							return null;
+						}
+					})
+					.collect(Collectors.toList());
+			
+			if (findReport.getCadence_range() == 4 || findReport.getCadence_range() == 6) {
+				for (int i = 0; i < summaryData.size(); i++) {
+					WeeklyDateEntity sum = (WeeklyDateEntity) summaryData.get(i);
+					
+					for (int j = 0; j < dataList.size(); j++) {
+						List<WeeklyDateEntity> dataReports = dataList.get(j).getDataReports();
+						if (dataReports == null || dataReports.size() == 0) continue;
+						WeeklyDateEntity item = dataReports.get(i);
+						
+						if (item != null && sum.getCategories_time().equals(item.getCategories_time())) {
+							if (item.getActualGeneration() != null) sum.setActualGeneration((sum.getActualGeneration() != null ? sum.getActualGeneration() : 0) + item.getActualGeneration());
+							if (item.getExpectedGeneration() != null) sum.setExpectedGeneration((sum.getExpectedGeneration() != null ? sum.getExpectedGeneration() : 0) + item.getExpectedGeneration());
+							if (item.getModeledGeneration() != null) sum.setModeledGeneration((sum.getModeledGeneration() != null ? sum.getModeledGeneration() : 0) + item.getModeledGeneration());
+							if (item.getPoa() != null) sum.setPoa((sum.getPoa() != null ? sum.getPoa() : 0) + item.getPoa());
+							if (item.getExpectedGenerationIndex() != null) sum.setExpectedGenerationIndex((sum.getExpectedGenerationIndex() != null ? sum.getExpectedGenerationIndex() : 0) + item.getExpectedGenerationIndex());
+							if (item.getModeledGenerationIndex() != null) sum.setModeledGenerationIndex((sum.getModeledGenerationIndex() != null ? sum.getModeledGenerationIndex() : 0) + item.getModeledGenerationIndex());
+						}
+					}
+					
+					if (sum.getPoa() != null) sum.setPoa(sum.getPoa() / dataList.size());
+					if (sum.getExpectedGenerationIndex() != null) sum.setExpectedGenerationIndex(sum.getExpectedGenerationIndex() / dataList.size());
+					if (sum.getModeledGenerationIndex() != null) sum.setModeledGenerationIndex(sum.getModeledGenerationIndex() / dataList.size());
+				}
+			} else if (findReport.getCadence_range() == 2 && findReport.getData_intervals() == 6) {
+				for (int i = 0; i < summaryData.size(); i++) {
+					MonthlyProductionTrendReportEntity sum = (MonthlyProductionTrendReportEntity) summaryData.get(i);
+					
+					for (int j = 0; j < dataList.size(); j++) {
+						List<MonthlyProductionTrendReportEntity> dataReports = dataList.get(j).getDataReports();
+						if (dataReports == null || dataReports.size() == 0) continue;
+						MonthlyProductionTrendReportEntity item = dataReports.get(i);
+						
+						if (item != null && sum.getCategories_time().equals(item.getCategories_time())) {
+							if (item.getMonthlyProduction() != null) sum.setMonthlyProduction((sum.getMonthlyProduction() != null ? sum.getMonthlyProduction() : 0) + item.getMonthlyProduction());
+						}
+					}
+				}
+			} else {
+				return dataList;
+			}
+			
+			Gson gson = new Gson();
+			ViewReportEntity summaryReport = gson.fromJson(gson.toJson(findReport), ViewReportEntity.class);
+			summaryReport.setDataReports(summaryData);
+			summaryReport.setSite_name("Summary");
+			
+			dataList.add(0, summaryReport);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return dataList;
 	}
 	
 	/**
@@ -63,119 +237,11 @@ public class BuiltInReportService extends DB {
 	 */
 	
 	public Object getAnnuallyBuitInReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			// Create list date
-			SimpleDateFormat startDateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-			Date startDate = startDateFormat.parse(obj.getStart_date());
-			Calendar cal = Calendar.getInstance();
+			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
+			obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", WeeklyDateEntity.class), data));
 			
-			List<WeeklyDateEntity> categories = new ArrayList<WeeklyDateEntity> ();
-			SimpleDateFormat dateFormat; 
-			SimpleDateFormat catFormat;
-			int forCount;
-			int calField;
-			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			LocalDateTime startLocalDateTime = LocalDateTime.parse(obj.getStart_date(), dateTimeFormatter);
-			LocalDateTime endLocalDateTime = LocalDateTime.parse(obj.getEnd_date(), dateTimeFormatter);
-			
-			switch (obj.getData_intervals()) {
-//				case 3:
-//					forCount = (int) (24 * (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1));
-//					calField = Calendar.HOUR_OF_DAY;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-//					break;
-//					
-//				case 4:
-//					forCount = (int) (ChronoUnit.DAYS.between(startLocalDateTime, endLocalDateTime) + 1);
-//					calField = Calendar.DAY_OF_YEAR;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-//					break;
-//					
-//				case 5:
-//					forCount = (int) (ChronoUnit.WEEKS.between(startLocalDateTime, endLocalDateTime) + 1);
-//					calField = Calendar.WEEK_OF_YEAR;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-//					break;
-					
-				case 6:
-				default:
-					forCount = (int) (ChronoUnit.MONTHS.between(startLocalDateTime, endLocalDateTime) + 1);
-					calField = Calendar.MONTH;
-					dateFormat = new SimpleDateFormat("MMM-yy");
-					catFormat = new SimpleDateFormat("MMM-yy");
-					break;
-			}
-			
-			for(int t = 0; t < forCount; t++) {
-				cal.setTime(startDate);
-				WeeklyDateEntity headerDate = new WeeklyDateEntity();
-				cal.add(calField, t);
-				headerDate.setTime_format(dateFormat.format(cal.getTime()));
-				headerDate.setCategories_time(catFormat.format(cal.getTime()));
-				headerDate.setActualGeneration(0.0);
-				headerDate.setExpectedGeneration(0.0);
-				headerDate.setModeledGeneration(0.0);
-				headerDate.setPoa(0.0);
-				headerDate.setExpectedGenerationIndex(0.0);
-				headerDate.setModeledGenerationIndex(0.0);
-				categories.add(headerDate);
-			}
-			
-			List data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
-			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
-			
-			if (categories.size() > 0) {
-				ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
-				
-				for (WeeklyDateEntity item : categories) {
-					boolean flag = false;
-					WeeklyDateEntity mapItem = new WeeklyDateEntity();
-					
-					if (data != null && data.size() > 0) {
-						for(int v = 0; v < data.size(); v++) {
-							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItem.setTime_format(itemT.get("time_format").toString());
-								mapItem.setCategories_time(itemT.get("categories_time").toString());
-								mapItem.setSiteName(itemT.get("name").toString());
-								mapItem.setActualGeneration(Double.parseDouble(itemT.get("ActualGeneration").toString()));
-								mapItem.setExpectedGeneration(Double.parseDouble(itemT.get("ExpectedGeneration").toString()));
-								mapItem.setModeledGeneration(Double.parseDouble(itemT.get("ModeledGeneration").toString()));
-								mapItem.setPoa(Double.parseDouble(itemT.get("POA").toString()));
-								mapItem.setExpectedGenerationIndex(Double.parseDouble(itemT.get("ExpectedGenerationIndex").toString()));
-								mapItem.setModeledGenerationIndex(Double.parseDouble(itemT.get("ModeledGenerationIndex").toString()));
-								break;
-							}
-						}
-					}
-					
-					if(flag == false) {
-						mapItem.setTime_format(item.getTime_format());
-						mapItem.setCategories_time(item.getCategories_time());
-						mapItem.setSiteName(site.getSite_name());
-						mapItem.setActualGeneration(item.getActualGeneration());
-						mapItem.setExpectedGeneration(item.getExpectedGeneration());
-						mapItem.setModeledGeneration(item.getModeledGeneration());
-						mapItem.setPoa(item.getPoa());
-						mapItem.setExpectedGenerationIndex(item.getExpectedGenerationIndex());
-						mapItem.setModeledGenerationIndex(item.getModeledGenerationIndex());
-					}
-					
-					dataNew.add(mapItem);
-				}
-			}
-			
-			dataObj.setDataReports(dataNew);
-			
-			return dataObj;
+			return obj;
 		} catch (Exception ex) {
 			return null;
 		}
@@ -190,131 +256,15 @@ public class BuiltInReportService extends DB {
 	 */
 	
 	public Object getMonthlyTrendBuitInReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			// Create list date
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
-			
-			Date startDate = dateFormat.parse(obj.getStart_date());
-			Calendar cal = Calendar.getInstance();
-			
-			List<MonthlyProductionTrendReportEntity> categories = new ArrayList<MonthlyProductionTrendReportEntity>();
-			int forCount;
-			int calAmount;
-			cal.setTime(startDate);
-			int daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-			
-			switch (obj.getData_intervals()) {
-//				case 1:
-//					forCount = daysInMonth * 24 * 12;
-//					calAmount = 5;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
-//					break;
-					
-				case 2:
-					forCount = daysInMonth * 24 * 4;
-					calAmount = 15;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:00");
-					break;
-					
-//				case 3:
-//					forCount = daysInMonth * 24;
-//					calAmount = 60;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-//					break;
-//					
-//				case 4:
-//					forCount = daysInMonth;
-//					calAmount = 1440;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-//					break;
-//					
-//				case 5:
-//					forCount = (int) Math.ceil(daysInMonth / 7);
-//					calAmount = 10080;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-//					break;
-				
-				case 6:
-				default:
-					forCount = 1;
-					calAmount = daysInMonth * 1440;
-					dateFormat = new SimpleDateFormat("MMM-yy");
-					catFormat = new SimpleDateFormat("MMM-yy");
-					break;
-			}
-			
-			for(int t = 0; t < forCount; t++) {
-				cal.setTime(startDate);
-				MonthlyProductionTrendReportEntity headerDate = new MonthlyProductionTrendReportEntity();
-				cal.add(Calendar.MINUTE, t * calAmount);
-				headerDate.setTime_format(dateFormat.format(cal.getTime()));
-				headerDate.setTime_full(catFormat.format(cal.getTime()));
-				headerDate.setMonthlyProduction(0.0);
-				categories.add(headerDate);
-			}
-			
-			List dataListDeviceMeter = queryForList("BuiltInReport.getListDeviceTypeMeter", obj);
-			
-			if(dataListDeviceMeter.size() > 0) {
-				obj.setGroupDevices(dataListDeviceMeter);
-			} else {
-				List dataListInverter = queryForList("BuiltInReport.getListDeviceTypeInverter", obj);
-				
-				if(dataListInverter.size() > 0) {
-					obj.setGroupDevices(dataListInverter);
-				}
-			}
-			
-			if (obj.getGroupDevices().size() > 0) {
+			List powerDeviceList = obj.isHave_meter() ? queryForList("BuiltInReport.getListDeviceTypeMeter", obj) : queryForList("BuiltInReport.getListDeviceTypeInverter", obj);
+			if (powerDeviceList.size() > 0) {
+				obj.setGroupDevices(powerDeviceList);
 				List<MonthlyProductionTrendReportEntity> data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-				List<MonthlyProductionTrendReportEntity> dataNew = new ArrayList<MonthlyProductionTrendReportEntity>();
-				
-				if (categories.size() > 0) {
-					ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
-					
-					for (MonthlyProductionTrendReportEntity item : categories) {
-						boolean flag = false;
-						MonthlyProductionTrendReportEntity mapItem = new MonthlyProductionTrendReportEntity();
-						
-						if (data != null && data.size() > 0) {
-							for(int v = 0; v < data.size(); v++) {
-								MonthlyProductionTrendReportEntity itemT = (MonthlyProductionTrendReportEntity) data.get(v);
-								String categoriesTime = item.getTime_format();
-								String powerTime = itemT.getTime_format();
-								
-								if (categoriesTime.equals(powerTime)) {
-									flag = true;
-									mapItem.setTime_format(itemT.getTime_format());
-									mapItem.setTime_full(itemT.getTime_full());
-									mapItem.setMonthlyProduction(itemT.getMonthlyProduction());
-									dataObj.setSite_name(itemT.getSite_name());
-									break;
-								}
-							}
-						}
-						
-						if(flag == false) {
-							mapItem.setTime_format(item.getTime_format());
-							mapItem.setTime_full(item.getTime_full());
-							mapItem.setMonthlyProduction(item.getMonthlyProduction());
-							dataObj.setSite_name(site.getSite_name());
-						}
-						
-						dataNew.add(mapItem);
-					}
-				}
-				
-				dataObj.setDataReports(dataNew);
+				obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", MonthlyProductionTrendReportEntity.class), data));
 			}
 			
-			return dataObj;
+			return obj;
 		} catch (Exception ex) {
 			return null;
 		}
@@ -327,117 +277,12 @@ public class BuiltInReportService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public Object getWeeklyBuiltInReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
+	public ViewReportEntity getWeeklyBuiltInReport(ViewReportEntity obj) {
 		try {
-			// Create list date
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); 
-			SimpleDateFormat catFormat = new SimpleDateFormat("MM/dd/yyyy");
+			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataWeeklyTrendReport", obj);
+			obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", WeeklyDateEntity.class), data));
 			
-			Date startDate = dateFormat.parse(obj.getStart_date());
-			Calendar cal = Calendar.getInstance();
-			
-			List<WeeklyDateEntity> categories = new ArrayList<WeeklyDateEntity> ();
-			int forCount = 7;
-			int calAmount = 1440;
-			
-			switch (obj.getData_intervals()) {
-//				case 1:
-//					forCount = 7 * 24 * 12;
-//					calAmount = 5;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-//					break;
-//					
-//				case 2:
-//					forCount = 7 * 24 * 4;
-//					calAmount = 15;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-//					break;
-//					
-//				case 3:
-//					forCount = 7 * 24;
-//					calAmount = 60;
-//					dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:00");
-//					catFormat = new SimpleDateFormat("MM/dd/yyyy HH:00");
-//					break;
-					
-				case 4:
-				default:
-					forCount = 7;
-					calAmount = 1440;
-					dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-					catFormat = new SimpleDateFormat("MM/dd/yyyy");
-					break;
-			}
-			
-			for(int t = 0; t < forCount; t++) {
-				cal.setTime(startDate);
-				WeeklyDateEntity headerDate = new WeeklyDateEntity();
-				cal.add(Calendar.MINUTE, t * calAmount);
-				headerDate.setTime_format(dateFormat.format(cal.getTime()));
-				headerDate.setCategories_time(catFormat.format(cal.getTime()));
-				headerDate.setActualGeneration(0.0);
-				headerDate.setExpectedGeneration(0.0);
-				headerDate.setModeledGeneration(0.0);
-				headerDate.setPoa(0.0);
-				headerDate.setExpectedGenerationIndex(0.0);
-				headerDate.setModeledGenerationIndex(0.0);
-				categories.add(headerDate);
-			}
-			
-			List data = queryForList("BuiltInReport.getDataWeeklyTrendReport", obj);
-			List<WeeklyDateEntity> dataNew = new ArrayList<WeeklyDateEntity>();
-			
-			if (categories.size() > 0) {
-				ViewReportEntity site = (ViewReportEntity) queryForObject("BuiltInReport.getSiteDetail", obj);
-				
-				for (WeeklyDateEntity item : categories) {
-					boolean flag = false;
-					WeeklyDateEntity mapItem = new WeeklyDateEntity();
-					
-					if (data != null && data.size() > 0) {
-						for(int v = 0; v < data.size(); v++) {
-							Map<String, Object> itemT = (Map<String, Object>) data.get(v);
-							String categoriesTime = item.getTime_format();
-							String powerTime = itemT.get("time_format").toString();
-							
-							if (categoriesTime.equals(powerTime)) {
-								flag = true;
-								mapItem.setTime_format(itemT.get("time_format").toString());
-								mapItem.setCategories_time(itemT.get("categories_time").toString());
-								mapItem.setSiteName(itemT.get("name").toString());
-								mapItem.setActualGeneration(Double.parseDouble(itemT.get("ActualGeneration").toString()));
-								mapItem.setExpectedGeneration(Double.parseDouble(itemT.get("ExpectedGeneration").toString()));
-								mapItem.setModeledGeneration(Double.parseDouble(itemT.get("ModeledGeneration").toString()));
-								mapItem.setPoa(Double.parseDouble(itemT.get("POA").toString()));
-								mapItem.setExpectedGenerationIndex(Double.parseDouble(itemT.get("ExpectedGenerationIndex").toString()));
-								mapItem.setModeledGenerationIndex(Double.parseDouble(itemT.get("ModeledGenerationIndex").toString()));
-								break;
-							}
-						}
-					}
-					
-					if(flag == false) {
-						mapItem.setTime_format(item.getTime_format());
-						mapItem.setCategories_time(item.getCategories_time());
-						mapItem.setSiteName(site.getSite_name());
-						mapItem.setActualGeneration(item.getActualGeneration());
-						mapItem.setExpectedGeneration(item.getExpectedGeneration());
-						mapItem.setModeledGeneration(item.getModeledGeneration());
-						mapItem.setPoa(item.getPoa());
-						mapItem.setExpectedGenerationIndex(item.getExpectedGenerationIndex());
-						mapItem.setModeledGenerationIndex(item.getModeledGenerationIndex());
-					}
-					
-					dataNew.add(mapItem);
-				}
-			}
-			
-			dataObj.setDataReports(dataNew);
-			
-			return dataObj;
+			return obj;
 		} catch (Exception ex) {
 			return null;
 		}

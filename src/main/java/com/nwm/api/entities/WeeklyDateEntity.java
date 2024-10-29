@@ -5,11 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class WeeklyDateEntity{
+public class WeeklyDateEntity extends DateTimeReportDataEntity {
 	
-	private String time_format;
-	private String categories_time;
-	private String site_name;
 	private Double actualGeneration;
 	private Double expectedGeneration;
 	private Double poa;
@@ -17,24 +14,6 @@ public class WeeklyDateEntity{
 	private Double expectedGenerationIndex;
 	private Double modeledGenerationIndex;
 	
-	public String getTime_format() {
-		return time_format;
-	}
-	public void setTime_format(String time_format) {
-		this.time_format = time_format;
-	}
-	public String getCategories_time() {
-		return categories_time;
-	}
-	public void setCategories_time(String categories_time) {
-		this.categories_time = categories_time;
-	}
-	public String getSite_name() {
-		return site_name;
-	}
-	public void setSiteName(String site_name) {
-		this.site_name = site_name;
-	}
 	public Double getActualGeneration() {
 		return actualGeneration;
 	}

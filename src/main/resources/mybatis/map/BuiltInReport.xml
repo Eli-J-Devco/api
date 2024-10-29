@@ -3,34 +3,55 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="BuiltInReport">
-	<resultMap id="BuiltInReportMap" type="com.nwm.api.entities.ReportsEntity">
-		<result property="id" column="id" />
-		<result property="id_site" column="id_site" />
-		<result property="id_employee" column="id_employee" />
-		<result property="report_type" column="report_type" />
-		<result property="cadence_range" column="cadence_range" />
-		<result property="date_from" column="date_from" />
-		<result property="date_to" column="date_to" />
-		<result property="subscribers" column="subscribers" />
-		<result property="data_intervals" column="data_intervals" />
-		<result property="file_type" column="file_type" />
-		<result property="status" column="status" />
-		<result property="created_date" column="created_date" />
-		<result property="created_by" column="created_by" />
-		<result property="updated_date" column="updated_date" />
-		<result property="updated_by" column="updated_by" />
-	</resultMap>
 	
-	
-	<select id="getTableDataVirtual" resultType="String">
+	<select id="getSiteReportMappingList" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
-			s.table_data_virtual
+			r.id,
+			s.id AS id_site,
+			s.`name` AS site_name,
+			s.table_data_report,
+			s.table_data_virtual,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.offset), '%m/%d/%Y') AS report_date,
+			s.ac_capacity,
+			s.dc_capacity,
+			r.subscribers,
+			r.data_intervals,
+			r.type_report,
+			r.type_option,
+			r.cadence_range,
+			#{start_date} AS start_date,
+			#{end_date} AS end_date,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0 AS have_meter,
+			COUNT(IF(d.id_device_type = 1, 1, NULL)) > 0 AS have_inverter
 		FROM
-			site s
+			report r
+			LEFT JOIN site_employee_map sem ON sem.id_employee = r.id_employee
+			LEFT JOIN site s ON s.id = sem.id_site
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+					<foreach collection="ids" item="item" open="AND d.id_site IN (" close=")" separator=",">#{item}</foreach>
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
+			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
-			s.`status` = 1 
-			AND s.is_delete = 0
-			AND s.id = #{id_site}
+			r.id = #{id}
+			<foreach collection="ids" item="item" open="AND s.id IN (" close=")" separator=",">#{item}</foreach>
+			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+		GROUP BY
+			s.id
 	</select>
 	
 	<select id="getListSiteInReport" resultType="com.nwm.api.entities.SiteEntity">
@@ -50,41 +71,6 @@
 					</foreach>
 				)
 			</if>
-	</select>
-	
-	<select id="getSiteDetail" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
-		SELECT
-			s.`name` AS site_name
-		FROM
-			site s 
-		WHERE
-			s.id = #{id_site}
-	</select>
-	
-	<select id="getDetailReport" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
-		SELECT
-			r.id,
-			s.id AS id_site,
-			s.`name` AS site_name,
-			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
-			s.ac_capacity,
-			s.dc_capacity,
-			"Normal" AS system_status,
-			r.cadence_range,
-			r.subscribers,
-			r.data_intervals,
-			CASE
-		    	WHEN r.type_report = 1 THEN CONCAT_WS( " " , s.`name`, "Solar Production Report") 
-		    	WHEN r.type_report = 2 THEN CONCAT_WS( " " , s.`name`, "Renewable Energy Credits") 
-		    
-		    ELSE s.`name`
-			END	AS report_name,
-			CONCAT_WS(', ', s.number, s.street, s.city, s.state, s.postal_code ) AS address
-		FROM
-			site s 
-			LEFT JOIN report r ON r.id_site = s.id
-		WHERE
-			s.id = #{id_site} AND r.id = #{id}
 	</select>
 	
 	<select id="getListDeviceTypeInverter" resultType="Map">
@@ -116,34 +102,12 @@
 	
 	
 	
-	<select id="getDataAnnualTrendReport" resultType="Map" >
+	<select id="getDataAnnualTrendReport" resultType="com.nwm.api.entities.WeeklyDateEntity" >
 		SELECT
-			<choose>
-				<!--<when test="data_intervals == 3">
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-				</when>
-				<when test="data_intervals == 4">
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
-				</when>
-				<when test="data_intervals == 5">
-					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
-					DATE_FORMAT( DATE_SUB( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( vir.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS categories_time,
-				</when>-->
-				<when test="data_intervals == 6">
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
-				</when>
-				<otherwise>
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
-				</otherwise>
-			</choose>
+			DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
 			IFNULL(ROUND(SUM(vir.nvmActiveEnergy), 0), 0) AS ActualGeneration,
 			IFNULL(ROUND(SUM(vir.expected_energy), 0), 0) AS ExpectedGeneration,
 			IFNULL(ROUND(AVG(vir.nvm_irradiance), 2), 0) AS POA,
-			
 			IFNULL( 
 			CASE
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
@@ -159,21 +123,6 @@
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 				 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 			END
-			<choose>
-				<!--<when test="data_intervals == 3">
-					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) / 24
-				</when>
-				<when test="data_intervals == 4">
-					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-				</when>
-				<when test="data_intervals == 5">
-					/ DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) * 7
-				</when>-->
-				<when test="data_intervals == 6">
-				</when>
-				<otherwise>
-				</otherwise>
-			</choose>
 			, 0) AS ModeledGeneration,
 			
 			IFNULL(ROUND( (SUM(vir.nvmActiveEnergy) / SUM(vir.expected_energy)) * 100, 1), 0) AS ExpectedGenerationIndex,
@@ -194,25 +143,9 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`=DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END) * 100
-					<choose>
-						<!--<when test="data_intervals == 3">
-							* 24 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-						</when>
-						<when test="data_intervals == 4">
-							* DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-						</when>
-						<when test="data_intervals == 5">
-							/ 7 * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-						</when>-->
-						<when test="data_intervals == 6">
-						</when>
-						<otherwise>
-						</otherwise>
-					</choose>
 				, 1)
 			, 0)
-			AS ModeledGenerationIndex,
-			s.name
+			AS ModeledGenerationIndex
 		FROM
 			${table_data_virtual} vir
 			LEFT JOIN device d ON d.id = vir.id_device
@@ -226,8 +159,8 @@
 			AND s.id = #{id_site}
 			AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			
-			GROUP BY time_format
+		GROUP BY
+			categories_time
 	</select>
 	
 	
@@ -254,48 +187,24 @@
 	
 	<select id="getMonthlyTrendBuitInReport" resultType="com.nwm.api.entities.MonthlyProductionTrendReportEntity" >
 		SELECT
-				t.time_format,
-				t.time_full,
-				t.name AS site_name,
+				t.categories_time,
 				IFNULL(ROUND(SUM( t.monthlyProduction)), 0.001)  AS monthlyProduction
-				
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 						SELECT
 							dv.time,
-							s.name,
 							<choose>
-								<!--<when test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i:00') AS time_full,
-								</when>-->
 								<when test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS time_full,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS categories_time,
 								</when>
-								<!--<when test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS time_full,
-								</when>
-								<when test="data_intervals == 4">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS time_full,
-								</when>
-								<when test="data_intervals == 5">
-									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( DATE_SUB( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), INTERVAL( MOD(DATEDIFF(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), #{start_date}), 7) ) DAY), '%m/%d/%Y' ) AS time_full,
-								</when>-->
 								<when test="data_intervals == 6">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
 								</when>
 								<otherwise>
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
 								</otherwise>
 							</choose>
-							
 							IFNULL(SUM(dv.MeasuredProduction), 0) AS monthlyProduction 
 						FROM
 							${item.datatablename} dv
@@ -310,41 +219,20 @@
 							AND d.`status` = 1 
 							AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 						GROUP BY
-							d.id, time_format
+							d.id,
+							categories_time
 			      </foreach>
 				) t 
 			GROUP BY
-				t.time_format
+				t.categories_time
 	</select>
 	
-	<select id="getDataWeeklyTrendReport" resultType="Map" >
+	<select id="getDataWeeklyTrendReport" resultType="com.nwm.api.entities.WeeklyDateEntity" >
 		SELECT
-			<choose>
-				<!--<when test="data_intervals == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-				</when>
-				<when test="data_intervals == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-				</when>
-				<when test="data_intervals == 3">
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-				</when>-->
-				<when test="data_intervals == 4">
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
-				</when>
-				<otherwise>
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
-				</otherwise>
-			</choose>
+			DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m/%d/%Y' ) AS categories_time,
 			IFNULL(ROUND(SUM(vir.nvmActiveEnergy), 0), 0) AS ActualGeneration,
 			IFNULL(ROUND(SUM(vir.expected_energy), 0), 0) AS ExpectedGeneration,
 			IFNULL(ROUND(AVG(vir.nvm_irradiance), 2), 0) AS POA,
-			
 			IFNULL( 
 				ROUND(
 					CASE
@@ -361,26 +249,9 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END / DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) ))
-					<choose>
-						<!--<when test="data_intervals == 1">
-							/ 24 / 12
-						</when>
-						<when test="data_intervals == 2">
-							/ 24 / 4
-						</when>
-						<when test="data_intervals == 3">
-							/ 24
-						</when>-->
-						<when test="data_intervals == 4">
-						</when>
-						<otherwise>
-						</otherwise>
-					</choose>
 				, 0)
 			, 0) AS ModeledGeneration,
-			
 			IFNULL(ROUND( (SUM(vir.nvmActiveEnergy) / SUM(vir.expected_energy)) * 100, 1), 0) AS ExpectedGenerationIndex,
-			
 			IFNULL(
 				ROUND( (SUM(vir.nvmActiveEnergy) / 
 					CASE
@@ -397,24 +268,8 @@
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 						 when DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%m' ) = '12' then ROUND((SELECT en.dec FROM energy_expectations en WHERE en.id_site= s.id AND `year`= DATE_FORMAT( CONVERT_TZ( vir.time, '+00:00', t.`offset` ), '%Y' )))
 					END * DAYOFMONTH(LAST_DAY( CONVERT_TZ( vir.time, '+00:00', t.`offset` ) )) ) * 100
-					<choose>
-						<!--<when test="data_intervals == 1">
-							* 24 * 12
-						</when>
-						<when test="data_intervals == 2">
-							* 24 * 4
-						</when>
-						<when test="data_intervals == 3">
-							* 24
-						</when>-->
-						<when test="data_intervals == 4">
-						</when>
-						<otherwise>
-						</otherwise>
-					</choose>
 				, 1)
-			, 0) AS ModeledGenerationIndex,
-			s.name
+			, 0) AS ModeledGenerationIndex
 		FROM
 			${table_data_virtual} vir
 			LEFT JOIN device d ON d.id = vir.id_device
@@ -428,7 +283,8 @@
 			AND s.id = #{id_site}
 			AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-		GROUP BY time_format
+		GROUP BY
+			categories_time
 	</select>
 	
 </mapper>
