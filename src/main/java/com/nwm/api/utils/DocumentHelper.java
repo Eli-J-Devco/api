@@ -185,8 +185,8 @@ public class DocumentHelper {
 		return chartData;
 	}
 	
-	public static void addSeries(boolean isDataEmpty, XDDFChartData chartData, XDDFDataSource<String> categories, XDDFNumericalDataSource<Double> value, String name, PresetColor color, PresetColor borderColor) {
-		if (categories == null || value == null) return;
+	public static Series addSeries(boolean isDataEmpty, XDDFChartData chartData, XDDFDataSource<String> categories, XDDFNumericalDataSource<Double> value, String name, XDDFColor color, XDDFColor borderColor) {
+		if (categories == null || value == null) return null;
 		
 		Series series = chartData.addSeries(categories, value);
 		series.setTitle(name, null);
@@ -200,10 +200,13 @@ public class DocumentHelper {
 		} else {
 			solidFillSeries(series, color, borderColor);
 		}
+		
+		return series;
 	}
 	
-	public static void addSeries(boolean isDataEmpty, XDDFChartData chartData, XDDFDataSource<String> categories, XDDFNumericalDataSource<Double> value, String name) {
-		if (categories == null || value == null) return;
+	// set default colors by system
+	public static Series addSeries(boolean isDataEmpty, XDDFChartData chartData, XDDFDataSource<String> categories, XDDFNumericalDataSource<Double> value, String name) {
+		if (categories == null || value == null) return null;
 		
 		Series series = chartData.addSeries(categories, value);
 		series.setTitle(name, null);
@@ -219,10 +222,12 @@ public class DocumentHelper {
 			((XDDFLineChartData.Series) series).setSmooth(false);
 			((XDDFLineChartData.Series) series).setMarkerStyle(MarkerStyle.NONE);
 		}
+		
+		return series;
 	}
 
-	public static void solidFillSeries(Series series, PresetColor color, PresetColor borderColor) {
-		XDDFFillProperties fill = color != null ? new XDDFSolidFillProperties(XDDFColor.from(color)) : new XDDFNoFillProperties();
+	private static void solidFillSeries(Series series, XDDFColor color, XDDFColor borderColor) {
+		XDDFFillProperties fill = color != null ? new XDDFSolidFillProperties(color) : new XDDFNoFillProperties();
 		XDDFShapeProperties properties = new XDDFShapeProperties();
 		
 		if (series.getClass() == XDDFLineChartData.Series.class) {
@@ -235,13 +240,21 @@ public class DocumentHelper {
 			properties.setFillProperties(fill);
 			
 			if (borderColor != null) {
-				XDDFFillProperties borderFill = new XDDFSolidFillProperties(XDDFColor.from(borderColor));
+				XDDFFillProperties borderFill = new XDDFSolidFillProperties(borderColor);
 				XDDFLineProperties borderProperties = new XDDFLineProperties(borderFill);
 				properties.setLineProperties(borderProperties);
 			}
 		}
 		
 		series.setShapeProperties(properties);
+	}
+	
+	public static void solidFillLineMarker(XDDFChart chart, Series series, int seriesIndex, MarkerStyle markerStyle, XDDFColor color) {
+		((XDDFLineChartData.Series) series).setMarkerStyle(markerStyle != null ? markerStyle : MarkerStyle.NONE);
+		XDDFShapeProperties propertiesMarker = new XDDFShapeProperties();
+		propertiesMarker.setFillProperties(new XDDFSolidFillProperties(color));
+		propertiesMarker.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
+        chart.getCTChart().getPlotArea().getLineChartArray(0).getSerArray(seriesIndex).getMarker().addNewSpPr().set(propertiesMarker.getXmlObject());
 	}
 
 	public static JFreeChart createJFreeChart(String title) {

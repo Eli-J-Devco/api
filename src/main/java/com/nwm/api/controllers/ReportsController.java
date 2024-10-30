@@ -38,6 +38,7 @@ import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.PresetColor;
+import org.apache.poi.xddf.usermodel.XDDFColor;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
 import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
@@ -373,7 +374,7 @@ public class ReportsController extends BaseController {
 							XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kW");
 							
 							XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getPower() == null), data, categoriesData, valuesData1, "Actual Power (kW)", PresetColor.STEEL_BLUE, null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getPower() == null), data, categoriesData, valuesData1, "Actual Power (kW)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
 							
 							chart.plot(data);
 							
@@ -381,7 +382,7 @@ public class ReportsController extends BaseController {
 							XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "kWh");
 							
 							data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Estimate Energy (kWh)",  PresetColor.LIGHT_SKY_BLUE, null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Estimate Energy (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 							
 							chart.plot(data);
 							
@@ -390,7 +391,7 @@ public class ReportsController extends BaseController {
 								rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "W/m2");
 								
 								data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-								DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getIrradiance() == null), data, categoriesData, valuesData3, "Irradiance (W/m2)",  PresetColor.DARK_ORANGE, null);
+								DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getIrradiance() == null), data, categoriesData, valuesData3, "Irradiance (W/m2)", XDDFColor.from(PresetColor.DARK_ORANGE), null);
 								
 								chart.plot(data);
 							}
@@ -827,8 +828,8 @@ public class ReportsController extends BaseController {
 					XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
 
 					XDDFChartData chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), chartData, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), chartData, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 					
 					chart.plot(chartData);
 
@@ -836,7 +837,7 @@ public class ReportsController extends BaseController {
 					XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
 
 					chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getDifferencePercentage() == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", PresetColor.GRAY, null);
+					DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getDifferencePercentage() == null), chartData, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
 					
 					chart.plot(chartData);
 				}
@@ -1462,8 +1463,8 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData1, "Estimated Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData2, "Actual Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData1, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData2, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 						
 						chart.plot(data);
 					
@@ -1482,8 +1483,8 @@ public class ReportsController extends BaseController {
 						leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
 						
 						data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimatedCumulative() == null), data, categoriesData2, valuesData12, "Estimated Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualCumulative() == null), data, categoriesData2, valuesData22, "Actual Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimatedCumulative() == null), data, categoriesData2, valuesData12, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualCumulative() == null), data, categoriesData2, valuesData22, "Actual Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 	
 						chart.plot(data);
 					}
@@ -1944,9 +1945,9 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
 						
 						XDDFChartData chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualEnergy() == null), chartData, categories, actualEnergy, "Actual Energy", PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledEnergy() == null), chartData, categories, modeledEnergy, "Modeled Energy", PresetColor.DARK_GRAY, PresetColor.BLACK);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getExpectedEnergy() == null), chartData, categories, expectedEnergy, "Actual Energy", PresetColor.LIGHT_STEEL_BLUE, PresetColor.BLACK);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualEnergy() == null), chartData, categories, actualEnergy, "Actual Energy", XDDFColor.from(PresetColor.STEEL_BLUE), XDDFColor.from(PresetColor.BLACK));
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledEnergy() == null), chartData, categories, modeledEnergy, "Modeled Energy", XDDFColor.from(PresetColor.DARK_GRAY), XDDFColor.from(PresetColor.BLACK));
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getExpectedEnergy() == null), chartData, categories, expectedEnergy, "Actual Energy", XDDFColor.from(PresetColor.LIGHT_STEEL_BLUE), XDDFColor.from(PresetColor.BLACK));
 						
 						chart.plot(chartData);
 						
@@ -1954,8 +1955,8 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, null);
 						
 						chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualPOA() == null), chartData, categories, actualIrradiance, "Actual Irradiance", PresetColor.DARK_ORANGE, null);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledPOA() == null), chartData, categories, modeledIrradiance, "Modeled Irradiance", PresetColor.GRAY, null);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualPOA() == null), chartData, categories, actualIrradiance, "Actual Irradiance", XDDFColor.from(PresetColor.DARK_ORANGE), null);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledPOA() == null), chartData, categories, modeledIrradiance, "Modeled Irradiance", XDDFColor.from(PresetColor.GRAY), null);
 						
 						chart.plot(chartData);
 						
@@ -1974,8 +1975,8 @@ public class ReportsController extends BaseController {
 						leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
 						
 						chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualPerformanceRatio() == null), chartData, categories, actualPerformanceRatio, "Actual Generation", PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledPerformanceRatio() == null), chartData, categories, modeledPerformanceRatio, "Modeled Generation", PresetColor.DARK_GRAY, PresetColor.BLACK);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualPerformanceRatio() == null), chartData, categories, actualPerformanceRatio, "Actual Generation", XDDFColor.from(PresetColor.STEEL_BLUE), XDDFColor.from(PresetColor.BLACK));
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledPerformanceRatio() == null), chartData, categories, modeledPerformanceRatio, "Modeled Generation", XDDFColor.from(PresetColor.DARK_GRAY), XDDFColor.from(PresetColor.BLACK));
 						
 						chart.plot(chartData);
 						
@@ -1996,8 +1997,8 @@ public class ReportsController extends BaseController {
 						leftAxis = DocumentHelper.createLeftValueAxis(chart, null);
 						
 						chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getEnergyIndex() == null), chartData, categories, energyIndex, "Energy Index", PresetColor.STEEL_BLUE, PresetColor.BLACK);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getWeatherAdjustedIndex() == null), chartData, categories, weatherAdjustedIndex, "Weather Adjusted Index", PresetColor.DARK_GRAY, PresetColor.BLACK);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getEnergyIndex() == null), chartData, categories, energyIndex, "Energy Index", XDDFColor.from(PresetColor.STEEL_BLUE), XDDFColor.from(PresetColor.BLACK));
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getWeatherAdjustedIndex() == null), chartData, categories, weatherAdjustedIndex, "Weather Adjusted Index", XDDFColor.from(PresetColor.DARK_GRAY), XDDFColor.from(PresetColor.BLACK));
 						
 						chart.plot(chartData);
 						
@@ -2005,8 +2006,8 @@ public class ReportsController extends BaseController {
 						rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, null);
 						
 						chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getWeatherIndex() == null), chartData, categories, weatherIndex, "Weather Index", PresetColor.GRAY, null);
-						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getInverterAvailability() == null), chartData, categories, inverterAvailability, "Inverter Availability", PresetColor.DARK_ORANGE, null);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getWeatherIndex() == null), chartData, categories, weatherIndex, "Weather Index", XDDFColor.from(PresetColor.GRAY), null);
+						DocumentHelper.addSeries(data.stream().allMatch(item -> item.getInverterAvailability() == null), chartData, categories, inverterAvailability, "Inverter Availability", XDDFColor.from(PresetColor.DARK_ORANGE), null);
 						
 						chart.plot(chartData);
 					}
@@ -2058,13 +2059,13 @@ public class ReportsController extends BaseController {
 							
 							XDDFChartData chartData = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
 							
-							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualEnergy() == null), chartData, categories, actualEnergy, "Actual", PresetColor.STEEL_BLUE, PresetColor.BLACK);
-							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getExpectedEnergy() == null), chartData, categories, expectedEnergy, "Expected*", PresetColor.DARK_GRAY, PresetColor.BLACK);
+							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getActualEnergy() == null), chartData, categories, actualEnergy, "Actual", XDDFColor.from(PresetColor.STEEL_BLUE), XDDFColor.from(PresetColor.BLACK));
+							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getExpectedEnergy() == null), chartData, categories, expectedEnergy, "Expected*", XDDFColor.from(PresetColor.DARK_GRAY), XDDFColor.from(PresetColor.BLACK));
 
 							chart.plot(chartData);
 							
 							chartData = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledEnergy() == null), chartData, categories, modeledEnergy, "Modeled**", PresetColor.DARK_ORANGE, null);
+							DocumentHelper.addSeries(data.stream().allMatch(item -> item.getModeledEnergy() == null), chartData, categories, modeledEnergy, "Modeled**", XDDFColor.from(PresetColor.DARK_ORANGE), null);
 
 							chart.plot(chartData);
 						}
@@ -2458,8 +2459,8 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEstimated() == null), data, categoriesData, valuesData2, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 						
 						chart.plot(data);
 						
@@ -2467,7 +2468,7 @@ public class ReportsController extends BaseController {
 						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
 						
 						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData, valuesData3, "Estimated Generation Index (%)", PresetColor.GRAY, null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData, valuesData3, "Estimated Generation Index (%)", XDDFColor.from(PresetColor.GRAY), null);
 						
 						chart.plot(data);
 						
@@ -2492,8 +2493,8 @@ public class ReportsController extends BaseController {
 						((XDDFBarChartData) data).setOverlap((byte) -24);
 						((XDDFBarChartData) data).setGapWidth(400);
 						
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData2, valuesData12, "Actual Generation (kWh)", PresetColor.STEEL_BLUE, null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", PresetColor.LIGHT_SKY_BLUE, null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData2, valuesData12, "Actual Generation (kWh)", XDDFColor.from(PresetColor.STEEL_BLUE), null);
+						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null || item.getEstimated() == null), data, categoriesData2, valuesData22, "Estimated Generation (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 						
 						chart.plot(data);
 					}
