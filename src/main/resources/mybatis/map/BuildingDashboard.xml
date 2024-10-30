@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BuildingDashboard">
+	<select id="getListLoadMeterDevices" resultType="Map">
+		SELECT
+			d.id,
+			d.datatablename,
+			d.devicename,
+			IFNULL(d.energy_today, 0) AS energy_today,
+			IFNULL(d.energy_this_week, 0) AS energy_this_week,
+			IFNULL(d.energy_this_month, 0) AS energy_this_month,
+			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
+			IFNULL(d.energy_this_year, 0) AS energy_this_year,
+			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
+			d.id_device_group
+		FROM
+			device d 
+		WHERE
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7)
+	</select>
+	
+	
+	
+	<select id="getListDeviceDataField" resultType="Map">
+		SELECT
+			* 
+		FROM
+			dashboard_device_group ddg 
+		WHERE
+			ddg.id_device_group = #{id_device_group}
+			AND ddg.`status` = 1 
+		ORDER BY
+			menu_order DESC
+	</select>
+	
+	
+	<select id="getListField" resultType="Map">
+		SELECT
+			dp.id,
+			dp.`name`,
+			dp.unit,
+			dp.slug,
+			IFNULL(dp.standard_name, dp.`name`) AS standard_name
+		FROM
+			dashboard_device_group_field df
+			LEFT JOIN device_parameters dp ON dp.id = df.id_device_parameters
+		WHERE
+			df.id_dashboard_device_group = #{id}
+			GROUP BY dp.id
+	</select>
+	
+</mapper>
