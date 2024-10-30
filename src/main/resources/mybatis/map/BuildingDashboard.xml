@@ -42,7 +42,7 @@
 			dp.`name`,
 			dp.unit,
 			dp.slug,
-			IFNULL(dp.standard_name, dp.`name`) AS standard_name
+			IF(dp.standard_name IS NULL OR dp.standard_name = '',dp.`name`,dp.standard_name) AS standard_name
 		FROM
 			dashboard_device_group_field df
 			LEFT JOIN device_parameters dp ON dp.id = df.id_device_parameters
@@ -50,5 +50,12 @@
 			df.id_dashboard_device_group = #{id}
 			GROUP BY dp.id
 	</select>
+	
+	
+	<select id="getLastDataField" resultType="Map">
+		SELECT dv.* FROM ${datatablename} dv 
+		WHERE dv.time >= DATE_ADD( NOW() ,INTERVAL -30 MINUTE)  AND dv.id_device = #{id}
+		ORDER BY time DESC LIMIT 1;
+  	</select>
 	
 </mapper>

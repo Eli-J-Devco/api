@@ -14,6 +14,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.BuildingDashboardService;
+import com.nwm.api.services.CustomerViewService;
 import com.nwm.api.services.DeviceGroupService;
 import com.nwm.api.utils.Constants;
 
@@ -57,6 +58,27 @@ public class BuildingDashboardController extends BaseController {
 			BuildingDashboardService service = new BuildingDashboardService();
 			List data = service.getListDeviceDataField(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get dashboard chart data
+	 * @author long.pham
+	 * @since 2024-10-30
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-dashboard-chart-data")
+	public Object getDashboardChartData(@RequestBody SiteEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			List dataEnergy = service.getDashboardChartData(obj);
+			obj.setEnergy(dataEnergy);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
