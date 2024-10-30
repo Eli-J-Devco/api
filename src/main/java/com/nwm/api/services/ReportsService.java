@@ -81,9 +81,9 @@ public class ReportsService extends DB {
 	 * @param end end date time
 	 * @return
 	 */
-	private <K extends DateTimeReportDataEntity> List<K> getDateTimeList(ViewReportEntity obj, String inputDateFormat, Class<K> clazz) {
+	private <K extends DateTimeReportDataEntity> List<K> getDateTimeList(ViewReportEntity obj, Class<K> clazz) {
 		List<K> dateTimeList = new ArrayList<K>();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(inputDateFormat);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
 		LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
 		
@@ -188,7 +188,7 @@ public class ReportsService extends DB {
 			}
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
-			List<DailyDateEntity> dateTimeList = getDateTimeList(obj, "yyyy-MM-dd HH:mm", DailyDateEntity.class);
+			List<DailyDateEntity> dateTimeList = getDateTimeList(obj, DailyDateEntity.class);
 			List<DailyDateEntity> fulfillData = fulfillData(dateTimeList, dataPower);
 			
 			// get irradiance 
@@ -231,7 +231,7 @@ public class ReportsService extends DB {
 			obj.setHave_meter(dataObj.isHave_meter());
 			obj.setHave_inverter(dataObj.isHave_inverter());
 			List<QuarterlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", QuarterlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -258,7 +258,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", QuarterlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -654,7 +654,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", MonthlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -680,7 +680,7 @@ public class ReportsService extends DB {
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
 			
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", CustomReportDataEntity.class), dataPower));
+			dataObj.setDataReports(fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower));
 			
 			return dataObj;
 		} catch (Exception ex) {

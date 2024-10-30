@@ -67,9 +67,9 @@ public class BuiltInReportService extends DB {
 	 * @param end end date time
 	 * @return
 	 */
-	private <K extends DateTimeReportDataEntity> List<K> getDateTimeList(ViewReportEntity obj, String inputDateFormat, Class<K> clazz) {
+	private <K extends DateTimeReportDataEntity> List<K> getDateTimeList(ViewReportEntity obj, Class<K> clazz) {
 		List<K> dateTimeList = new ArrayList<K>();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(inputDateFormat);
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
 		LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
 		
@@ -239,7 +239,7 @@ public class BuiltInReportService extends DB {
 	public Object getAnnuallyBuitInReport(ViewReportEntity obj) {
 		try {
 			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
-			obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", WeeklyDateEntity.class), data));
+			obj.setDataReports(fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data));
 			
 			return obj;
 		} catch (Exception ex) {
@@ -261,7 +261,7 @@ public class BuiltInReportService extends DB {
 			if (powerDeviceList.size() > 0) {
 				obj.setGroupDevices(powerDeviceList);
 				List<MonthlyProductionTrendReportEntity> data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-				obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", MonthlyProductionTrendReportEntity.class), data));
+				obj.setDataReports(fulfillData(getDateTimeList(obj, MonthlyProductionTrendReportEntity.class), data));
 			}
 			
 			return obj;
@@ -280,7 +280,7 @@ public class BuiltInReportService extends DB {
 	public ViewReportEntity getWeeklyBuiltInReport(ViewReportEntity obj) {
 		try {
 			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataWeeklyTrendReport", obj);
-			obj.setDataReports(fulfillData(getDateTimeList(obj, "yyyy-MM-dd HH:mm:ss", WeeklyDateEntity.class), data));
+			obj.setDataReports(fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data));
 			
 			return obj;
 		} catch (Exception ex) {
