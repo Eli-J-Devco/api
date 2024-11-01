@@ -211,7 +211,7 @@ public class BuiltInReportController extends BaseController {
 				}
 			} else {
 				XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName("Monthly Interval"));
-				ClientAnchor logoAnchor = new XSSFClientAnchor(90 * Units.EMU_PER_PIXEL, 0, 0, 0, 4, 1, 5, 4);
+				ClientAnchor logoAnchor = new XSSFClientAnchor(50 * Units.EMU_PER_PIXEL, -20 * Units.EMU_PER_PIXEL, 0, 20 * Units.EMU_PER_PIXEL, 4, 1, 5, 4);
 				DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
 				
 				writeHeaderMonthTrendReportMonthlyInterval(sheet, summarizedList);
@@ -301,7 +301,7 @@ public class BuiltInReportController extends BaseController {
 					Cell cell64f = row6f.createCell(4);
 					cell64f.setCellStyle(tableRowNoDecimalCellStyle);
 					List<MonthlyProductionTrendReportEntity> dataReport = item.getDataReports();
-					if(dataReport != null && dataReport.size() > 0) cell64f.setCellValue(dataReport.get(0).getMonthlyProduction());
+					if(dataReport != null && dataReport.size() > 0 && dataReport.get(0).getMonthlyProduction() != null) cell64f.setCellValue(dataReport.get(0).getMonthlyProduction());
 				}
 			}
 		} catch (Exception e) {
