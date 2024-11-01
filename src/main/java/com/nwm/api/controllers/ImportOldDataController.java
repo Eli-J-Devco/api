@@ -478,6 +478,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelKyPulseMeter(rowItem, r);
 											break;
 											
+										case "model_dent_48pshd_meter":
+											service.setModelDent48pshdMeter(rowItem, r);
+											break;
+											
 										}
 										
 		
