@@ -617,14 +617,23 @@
 			0 AS is_edit,
 			CASE
 			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00', t.`offset`), '%m/%Y') THEN FORMAT(CAST(SUM(sdr.ActualGeneration) AS DECIMAL) / 1000 * 0.97, 2) 
-			    ELSE 0
+			    ELSE NULL
 			END AS energy_this_month
 			
 		FROM
-			${item.table_data_report} sdr 
-			LEFT JOIN device d ON d.id = sdr.id_device
-			LEFT JOIN site s ON s.id = d.id_site
+			site s
+			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					time,
+					id_device,
+					ActualGeneration
+				FROM
+					${item.table_data_report}
+				WHERE
+					DATE_FORMAT(time, '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
+			) sdr ON sdr.id_device = d.id
 			
 		WHERE
 			s.`status` = 1
@@ -634,7 +643,6 @@
 			AND d.id = #{item.value}
 			AND d.id_device_type IN (3,7,9)
 			AND d.is_excluded_meter = 0
-			AND DATE_FORMAT(sdr.time, '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
 			AND s.is_rec_report = 1
 			AND s.reporting_region = #{reporting_region}
 		GROUP BY
