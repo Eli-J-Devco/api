@@ -5639,6 +5639,84 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 97">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`ActiveEnergyDelivered` double DEFAULT NULL,
+							`ActiveEnergyReceived` double DEFAULT NULL,
+							`ActiveEnergyDeliveredPlusReceived` double DEFAULT NULL,
+							`ActiveEnergyDeliveredMinusReceived` double DEFAULT NULL,
+							`ReactiveEnergyDelivered` double DEFAULT NULL,
+							`ReactiveEnergyReceived` double DEFAULT NULL,
+							`ReactiveEnergyDeliveredPlusReceived` double DEFAULT NULL,
+							`ReactiveEnergyDeliveredMinusReceived` double DEFAULT NULL,
+							`ApparentEnergyDelivered` double DEFAULT NULL,
+							`ApparentEnergyReceived` double DEFAULT NULL,
+							`ApparentEnergyDeliveredPlusReceived` double DEFAULT NULL,
+							`ApparentEnergyDeliveredMinusReceived` double DEFAULT NULL,
+							`ActiveEnergyinQuadrantI` double DEFAULT NULL,
+							`ActiveEnergyinQuadrantII` double DEFAULT NULL,
+							`ActiveEnergyinQuadrantIII` double DEFAULT NULL,
+							`ActiveEnergyinQuadrantIV` double DEFAULT NULL,
+							`ReactiveEnergyinQuadrantI` double DEFAULT NULL,
+							`ReactiveEnergyinQuadrantII` double DEFAULT NULL,
+							`ReactiveEnergyinQuadrantIII` double DEFAULT NULL,
+							`ReactiveEnergyinQuadrantIV` double DEFAULT NULL,
+							`ApparentEnergyinQuadrantI` double DEFAULT NULL,
+							`ApparentEnergyinQuadrantII` double DEFAULT NULL,
+							`ApparentEnergyinQuadrantIII` double DEFAULT NULL,
+							`ApparentEnergyinQuadrantIV` double DEFAULT NULL,
+							`CurrentPhaseA` double DEFAULT NULL,
+							`CurrentPhaseB` double DEFAULT NULL,
+							`CurrentPhaseC` double DEFAULT NULL,
+							`CurrentNeutralLine` double DEFAULT NULL,
+							`CurrentGroundLine` double DEFAULT NULL,
+							`CurrentAverage` double DEFAULT NULL,
+							`CurrentUnbalanceWorst` double DEFAULT NULL,
+							`VoltagePhaseAB` double DEFAULT NULL,
+							`VoltagePhaseBC` double DEFAULT NULL,
+							`VoltagePhaseCA` double DEFAULT NULL,
+							`VoltageLLAverage` double DEFAULT NULL,
+							`VoltageAN` double DEFAULT NULL,
+							`VoltageBN` double DEFAULT NULL,
+							`VoltageCN` double DEFAULT NULL,
+							`VoltageLNAverage` double DEFAULT NULL,
+							`VoltageUnbalanceLNWorst` double DEFAULT NULL,
+							`ActivePowerPhaseA` double DEFAULT NULL,
+							`ActivePowerPhaseB` double DEFAULT NULL,
+							`ActivePowerPhaseC` double DEFAULT NULL,
+							`ActivePowerTotal` double DEFAULT NULL,
+							`ReactivePowerPhaseA` double DEFAULT NULL,
+							`ReactivePowerPhaseB` double DEFAULT NULL,
+							`ReactivePowerPhaseC` double DEFAULT NULL,
+							`ReactivePowerTotal` double DEFAULT NULL,
+							`ApparentPowerPhaseA` double DEFAULT NULL,
+							`ApparentPowerPhaseB` double DEFAULT NULL,
+							`ApparentPowerPhaseC` double DEFAULT NULL,
+							`ApparentPowerTotal` double DEFAULT NULL,
+							`Frequency` double DEFAULT NULL,
+							`PowerFactorPhaseA` double DEFAULT NULL,
+							`PowerFactorPhaseB` double DEFAULT NULL,
+							`PowerFactorPhaseC` double DEFAULT NULL,
+							`PowerFactorTotal` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+							`nvmActiveEnergy` double DEFAULT NULL,
+							`MeasuredProduction` double DEFAULT NULL,
+							
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	            
 	                                                          
 	        </choose> 
@@ -6481,6 +6559,19 @@
 					)
 					SELECT
 		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AveragePhaseVoltage`, `PhaseAVoltage`, `PhaseBVoltage`, `PhaseCVoltage`, `AverageLineVoltage`, `LineVoltageAB`, `LineVoltageBC`, `LineVoltageCA`, `Frequency`, `TotalCurrent`, `PhaseACurrent`, `PhaseBCurrent`, `PhaseCCurrent`, `TotalRealPower`, `PhaseAPower`, `PhaseBPower`, `PhaseCPower`, `TotalApparentPower`, `PhaseAApparentPower`, `PhaseBApparentPower`, `PhaseCApparentPower`, `TotalReactivePower`, `PhaseAReactivePower`, `PhaseBReactivePower`, `PhaseCReactivePower`, `TotalPowerFactor`, `PhaseAPowerFactor`, `PhaseBPowerFactor`, `PhaseCPowerFactor`, `NeutralCurrent`, `Temperature`, `TotalExportedEnergy`, `PhaseAExportedEnergy`, `PhaseBExportedEnergy`, `PhaseCExportedEnergy`, `TotalImportedEnergy`, `PhaseAImportedEnergy`, `PhaseBImportedEnergy`, `PhaseCImportedEnergy`, `TotalExportedApparentEnergy`, `PhaseAExportedApparentEnergy`, `PhaseBExportedApparentEnergy`, `PhaseCExportedApparentEnergy`, `TotalImportedApparentEnergy`, `PhaseAImportedApparentEnergy`, `PhaseBImportedApparentEnergy`, `PhaseCImportedApparentEnergy`, `TotalPowerDemand`, `TotalReactivePowerDemand`, `TotalApparentPowerDemand`, `PhaseACurrentDemand`, `PhaseBCurrentDemand`, `PhaseCCurrentDemand`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+				<when test="id_device_group == 97">
+	            	<!-- model_power_logic_pm8000_load_meter -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActiveEnergyDelivered`, `ActiveEnergyReceived`, `ActiveEnergyDeliveredPlusReceived`, `ActiveEnergyDeliveredMinusReceived`, `ReactiveEnergyDelivered`, `ReactiveEnergyReceived`, `ReactiveEnergyDeliveredPlusReceived`, `ReactiveEnergyDeliveredMinusReceived`, `ApparentEnergyDelivered`, `ApparentEnergyReceived`, `ApparentEnergyDeliveredPlusReceived`, `ApparentEnergyDeliveredMinusReceived`, `ActiveEnergyinQuadrantI`, `ActiveEnergyinQuadrantII`, `ActiveEnergyinQuadrantIII`, `ActiveEnergyinQuadrantIV`, `ReactiveEnergyinQuadrantI`, `ReactiveEnergyinQuadrantII`, `ReactiveEnergyinQuadrantIII`, `ReactiveEnergyinQuadrantIV`, `ApparentEnergyinQuadrantI`, `ApparentEnergyinQuadrantII`, `ApparentEnergyinQuadrantIII`, `ApparentEnergyinQuadrantIV`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `CurrentNeutralLine`, `CurrentGroundLine`, `CurrentAverage`, `CurrentUnbalanceWorst`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseCA`, `VoltageLLAverage`, `VoltageAN`, `VoltageBN`, `VoltageCN`, `VoltageLNAverage`, `VoltageUnbalanceLNWorst`, `ActivePowerPhaseA`, `ActivePowerPhaseB`, `ActivePowerPhaseC`, `ActivePowerTotal`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ReactivePowerTotal`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `ApparentPowerTotal`, `Frequency`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `PowerFactorTotal`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActiveEnergyDelivered`, `ActiveEnergyReceived`, `ActiveEnergyDeliveredPlusReceived`, `ActiveEnergyDeliveredMinusReceived`, `ReactiveEnergyDelivered`, `ReactiveEnergyReceived`, `ReactiveEnergyDeliveredPlusReceived`, `ReactiveEnergyDeliveredMinusReceived`, `ApparentEnergyDelivered`, `ApparentEnergyReceived`, `ApparentEnergyDeliveredPlusReceived`, `ApparentEnergyDeliveredMinusReceived`, `ActiveEnergyinQuadrantI`, `ActiveEnergyinQuadrantII`, `ActiveEnergyinQuadrantIII`, `ActiveEnergyinQuadrantIV`, `ReactiveEnergyinQuadrantI`, `ReactiveEnergyinQuadrantII`, `ReactiveEnergyinQuadrantIII`, `ReactiveEnergyinQuadrantIV`, `ApparentEnergyinQuadrantI`, `ApparentEnergyinQuadrantII`, `ApparentEnergyinQuadrantIII`, `ApparentEnergyinQuadrantIV`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `CurrentNeutralLine`, `CurrentGroundLine`, `CurrentAverage`, `CurrentUnbalanceWorst`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseCA`, `VoltageLLAverage`, `VoltageAN`, `VoltageBN`, `VoltageCN`, `VoltageLNAverage`, `VoltageUnbalanceLNWorst`, `ActivePowerPhaseA`, `ActivePowerPhaseB`, `ActivePowerPhaseC`, `ActivePowerTotal`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ReactivePowerTotal`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `ApparentPowerTotal`, `Frequency`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `PowerFactorTotal`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
 					    ${device_group_table}
 					WHERE

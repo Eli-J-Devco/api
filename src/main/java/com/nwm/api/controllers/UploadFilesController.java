@@ -77,6 +77,7 @@ import com.nwm.api.entities.ModelPVPInverterEntity;
 import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
 import com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity;
 import com.nwm.api.entities.ModelPoaTempEntity;
+import com.nwm.api.entities.ModelPowerLogicPM8000LoadMeterEntity;
 import com.nwm.api.entities.ModelPowerMeasurementIon7650Entity;
 import com.nwm.api.entities.ModelPyranometerPoaEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
@@ -153,6 +154,7 @@ import com.nwm.api.services.ModelPVPInverterService;
 import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
 import com.nwm.api.services.ModelPhoenixContactQuintUPSService;
 import com.nwm.api.services.ModelPoaTempService;
+import com.nwm.api.services.ModelPowerLogicPM8000LoadMeterService;
 import com.nwm.api.services.ModelPowerMeasurementIon7650Service;
 import com.nwm.api.services.ModelPyranometerPoaService;
 import com.nwm.api.services.ModelRT1Class30000Service;
@@ -7466,7 +7468,7 @@ public class UploadFilesController extends BaseController {
 																String slug = scaledDeviceParameter.getParameter_slug();
 																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
 																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunSpecInverterEntity.class);
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelDent48PSHDMeterService.class);
 																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelDent);
 																if (initialValue == 0.001) continue;
 																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
@@ -7514,6 +7516,105 @@ public class UploadFilesController extends BaseController {
 //														}
 														
 														serviceModelDent.insertModelDent48PSHDMeter(dataModelDent);
+														
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item, dataDevice);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){  }
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {  }		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
+												break;
+												
+											case "model_power_logic_pm8000_load_meter":
+												ModelPowerLogicPM8000LoadMeterService serviceModelPM8000 = new ModelPowerLogicPM8000LoadMeterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelPowerLogicPM8000LoadMeterEntity dataModelPM8000 = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line, item.getOffset_data_old());
+														dataModelPM8000.setId_device(item.getId());
+														dataModelPM8000.setDatatablename(item.getDatatablename());
+														dataModelPM8000.setView_tablename(item.getView_tablename());
+														dataModelPM8000.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPowerLogicPM8000LoadMeterService.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM8000);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelPM8000, scaledValue);
+																if (slug.equals("ActivePowerTotal")) dataModelPM8000.setNvmActivePower(scaledValue);
+																if (slug.equals("ActiveEnergyDelivered")) dataModelPM8000.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// ACPower
+														if(dataModelPM8000.getActivePowerTotal() != 0.001 && dataModelPM8000.getActivePowerTotal() >= 0){
+															deviceUpdateE.setLast_updated(dataModelPM8000.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelPM8000.getActivePowerTotal() != 0.001 ? dataModelPM8000.getActivePowerTotal() : null);
+														deviceUpdateE.setField_value1(dataModelPM8000.getActivePowerTotal() != 0.001 ? dataModelPM8000.getActivePowerTotal() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataModelPM8000);
 														
 														// low production alert
 														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {

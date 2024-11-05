@@ -482,6 +482,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelDent48pshdMeter(rowItem, r);
 											break;
 											
+										case "model_power_logic_pm8000_load_meter":
+											service.setModelPowerLogicPM8000LoadMeter(rowItem, r);
+											break;
+											
 										}
 										
 		

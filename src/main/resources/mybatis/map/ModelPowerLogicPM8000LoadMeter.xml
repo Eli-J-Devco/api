@@ -1,0 +1,629 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelPowerLogicPM8000LoadMeter">
+
+	<insert id="insertModelPowerLogicPM8000LoadMeter" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				`time`,
+			</if>
+			<if test="id_device != 0.001" >
+				`id_device`,
+			</if>
+			<if test="error != 0.001" >
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001" >
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001" >
+				`high_alarm`,
+			</if>
+			
+			<if test="ActiveEnergyDelivered != 0.001" >
+				`ActiveEnergyDelivered`,
+			</if>
+			<if test="ActiveEnergyReceived != 0.001" >
+				`ActiveEnergyReceived`,
+			</if>
+			<if test="ActiveEnergyDeliveredPlusReceived != 0.001" >
+				`ActiveEnergyDeliveredPlusReceived`,
+			</if>
+			<if test="ActiveEnergyDeliveredMinusReceived != 0.001" >
+				`ActiveEnergyDeliveredMinusReceived`,
+			</if>
+			<if test="ReactiveEnergyDelivered != 0.001" >
+				`ReactiveEnergyDelivered`,
+			</if>
+			<if test="ReactiveEnergyReceived != 0.001" >
+				`ReactiveEnergyReceived`,
+			</if>
+			<if test="ReactiveEnergyDeliveredPlusReceived != 0.001" >
+				`ReactiveEnergyDeliveredPlusReceived`,
+			</if>
+			<if test="ReactiveEnergyDeliveredMinusReceived != 0.001" >
+				`ReactiveEnergyDeliveredMinusReceived`,
+			</if>
+			<if test="ApparentEnergyDelivered != 0.001" >
+				`ApparentEnergyDelivered`,
+			</if>
+			<if test="ApparentEnergyReceived != 0.001" >
+				`ApparentEnergyReceived`,
+			</if>
+			<if test="ApparentEnergyDeliveredPlusReceived != 0.001" >
+				`ApparentEnergyDeliveredPlusReceived`,
+			</if>
+			<if test="ApparentEnergyDeliveredMinusReceived != 0.001" >
+				`ApparentEnergyDeliveredMinusReceived`,
+			</if>
+			<if test="ActiveEnergyinQuadrantI != 0.001" >
+				`ActiveEnergyinQuadrantI`,
+			</if>
+			<if test="ActiveEnergyinQuadrantII != 0.001" >
+				`ActiveEnergyinQuadrantII`,
+			</if>
+			<if test="ActiveEnergyinQuadrantIII != 0.001" >
+				`ActiveEnergyinQuadrantIII`,
+			</if>
+			<if test="ActiveEnergyinQuadrantIV != 0.001" >
+				`ActiveEnergyinQuadrantIV`,
+			</if>
+			<if test="ReactiveEnergyinQuadrantI != 0.001" >
+				`ReactiveEnergyinQuadrantI`,
+			</if>
+			<if test="ReactiveEnergyinQuadrantII != 0.001" >
+				`ReactiveEnergyinQuadrantII`,
+			</if>
+			<if test="ReactiveEnergyinQuadrantIII != 0.001" >
+				`ReactiveEnergyinQuadrantIII`,
+			</if>
+			<if test="ReactiveEnergyinQuadrantIV != 0.001" >
+				`ReactiveEnergyinQuadrantIV`,
+			</if>
+			<if test="ApparentEnergyinQuadrantI != 0.001" >
+				`ApparentEnergyinQuadrantI`,
+			</if>
+			<if test="ApparentEnergyinQuadrantII != 0.001" >
+				`ApparentEnergyinQuadrantII`,
+			</if>
+			<if test="ApparentEnergyinQuadrantIII != 0.001" >
+				`ApparentEnergyinQuadrantIII`,
+			</if>
+			<if test="ApparentEnergyinQuadrantIV != 0.001" >
+				`ApparentEnergyinQuadrantIV`,
+			</if>
+			<if test="CurrentPhaseA != 0.001" >
+				`CurrentPhaseA`,
+			</if>
+			<if test="CurrentPhaseB != 0.001" >
+				`CurrentPhaseB`,
+			</if>
+			<if test="CurrentPhaseC != 0.001" >
+				`CurrentPhaseC`,
+			</if>
+			<if test="CurrentNeutralLine != 0.001" >
+				`CurrentNeutralLine`,
+			</if>
+			<if test="CurrentGroundLine != 0.001" >
+				`CurrentGroundLine`,
+			</if>
+			<if test="CurrentAverage != 0.001" >
+				`CurrentAverage`,
+			</if>
+			<if test="CurrentUnbalanceWorst != 0.001" >
+				`CurrentUnbalanceWorst`,
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB`,
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC`,
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA`,
+			</if>
+			<if test="VoltageLLAverage != 0.001" >
+				`VoltageLLAverage`,
+			</if>
+			<if test="VoltageAN != 0.001" >
+				`VoltageAN`,
+			</if>
+			<if test="VoltageBN != 0.001" >
+				`VoltageBN`,
+			</if>
+			<if test="VoltageCN != 0.001" >
+				`VoltageCN`,
+			</if>
+			<if test="VoltageLNAverage != 0.001" >
+				`VoltageLNAverage`,
+			</if>
+			<if test="VoltageUnbalanceLNWorst != 0.001" >
+				`VoltageUnbalanceLNWorst`,
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA`,
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB`,
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC`,
+			</if>
+			<if test="ActivePowerTotal != 0.001" >
+				`ActivePowerTotal`,
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA`,
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB`,
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC`,
+			</if>
+			<if test="ReactivePowerTotal != 0.001" >
+				`ReactivePowerTotal`,
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA`,
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB`,
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC`,
+			</if>
+			<if test="ApparentPowerTotal != 0.001" >
+				`ApparentPowerTotal`,
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency`,
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA`,
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB`,
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC`,
+			</if>
+			<if test="PowerFactorTotal != 0.001" >
+				`PowerFactorTotal`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+				#{time},
+			</if>
+			<if test="id_device != 0.001" >
+				#{id_device},
+			</if>
+			<if test="error != 0.001" >
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				#{high_alarm},
+			</if>
+			
+			<if test="ActiveEnergyDelivered != 0.001" >
+				#{ActiveEnergyDelivered},
+			</if>
+			<if test="ActiveEnergyReceived != 0.001" >
+				#{ActiveEnergyReceived},
+			</if>
+			<if test="ActiveEnergyDeliveredPlusReceived != 0.001" >
+				#{ActiveEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ActiveEnergyDeliveredMinusReceived != 0.001" >
+				#{ActiveEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ReactiveEnergyDelivered != 0.001" >
+				#{ReactiveEnergyDelivered},
+			</if>
+			<if test="ReactiveEnergyReceived != 0.001" >
+				#{ReactiveEnergyReceived},
+			</if>
+			<if test="ReactiveEnergyDeliveredPlusReceived != 0.001" >
+				#{ReactiveEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ReactiveEnergyDeliveredMinusReceived != 0.001" >
+				#{ReactiveEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ApparentEnergyDelivered != 0.001" >
+				#{ApparentEnergyDelivered},
+			</if>
+			<if test="ApparentEnergyReceived != 0.001" >
+				#{ApparentEnergyReceived},
+			</if>
+			<if test="ApparentEnergyDeliveredPlusReceived != 0.001" >
+				#{ApparentEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ApparentEnergyDeliveredMinusReceived != 0.001" >
+				#{ApparentEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ActiveEnergyinQuadrantI != 0.001" >
+				#{ActiveEnergyinQuadrantI},
+			</if>
+			<if test="ActiveEnergyinQuadrantII != 0.001" >
+				#{ActiveEnergyinQuadrantII},
+			</if>
+			<if test="ActiveEnergyinQuadrantIII != 0.001" >
+				#{ActiveEnergyinQuadrantIII},
+			</if>
+			<if test="ActiveEnergyinQuadrantIV != 0.001" >
+				#{ActiveEnergyinQuadrantIV},
+			</if>
+			<if test="ReactiveEnergyinQuadrantI != 0.001" >
+				#{ReactiveEnergyinQuadrantI},
+			</if>
+			<if test="ReactiveEnergyinQuadrantII != 0.001" >
+				#{ReactiveEnergyinQuadrantII},
+			</if>
+			<if test="ReactiveEnergyinQuadrantIII != 0.001" >
+				#{ReactiveEnergyinQuadrantIII},
+			</if>
+			<if test="ReactiveEnergyinQuadrantIV != 0.001" >
+				#{ReactiveEnergyinQuadrantIV},
+			</if>
+			<if test="ApparentEnergyinQuadrantI != 0.001" >
+				#{ApparentEnergyinQuadrantI},
+			</if>
+			<if test="ApparentEnergyinQuadrantII != 0.001" >
+				#{ApparentEnergyinQuadrantII},
+			</if>
+			<if test="ApparentEnergyinQuadrantIII != 0.001" >
+				#{ApparentEnergyinQuadrantIII},
+			</if>
+			<if test="ApparentEnergyinQuadrantIV != 0.001" >
+				#{ApparentEnergyinQuadrantIV},
+			</if>
+			<if test="CurrentPhaseA != 0.001" >
+				#{CurrentPhaseA},
+			</if>
+			<if test="CurrentPhaseB != 0.001" >
+				#{CurrentPhaseB},
+			</if>
+			<if test="CurrentPhaseC != 0.001" >
+				#{CurrentPhaseC},
+			</if>
+			<if test="CurrentNeutralLine != 0.001" >
+				#{CurrentNeutralLine},
+			</if>
+			<if test="CurrentGroundLine != 0.001" >
+				#{CurrentGroundLine},
+			</if>
+			<if test="CurrentAverage != 0.001" >
+				#{CurrentAverage},
+			</if>
+			<if test="CurrentUnbalanceWorst != 0.001" >
+				#{CurrentUnbalanceWorst},
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				#{VoltagePhaseAB},
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				#{VoltagePhaseBC},
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				#{VoltagePhaseCA},
+			</if>
+			<if test="VoltageLLAverage != 0.001" >
+				#{VoltageLLAverage},
+			</if>
+			<if test="VoltageAN != 0.001" >
+				#{VoltageAN},
+			</if>
+			<if test="VoltageBN != 0.001" >
+				#{VoltageBN},
+			</if>
+			<if test="VoltageCN != 0.001" >
+				#{VoltageCN},
+			</if>
+			<if test="VoltageLNAverage != 0.001" >
+				#{VoltageLNAverage},
+			</if>
+			<if test="VoltageUnbalanceLNWorst != 0.001" >
+				#{VoltageUnbalanceLNWorst},
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				#{ActivePowerPhaseA},
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				#{ActivePowerPhaseB},
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				#{ActivePowerPhaseC},
+			</if>
+			<if test="ActivePowerTotal != 0.001" >
+				#{ActivePowerTotal},
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				#{ReactivePowerPhaseA},
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				#{ReactivePowerPhaseB},
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				#{ReactivePowerPhaseC},
+			</if>
+			<if test="ReactivePowerTotal != 0.001" >
+				#{ReactivePowerTotal},
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				#{ApparentPowerPhaseA},
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				#{ApparentPowerPhaseB},
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				#{ApparentPowerPhaseC},
+			</if>
+			<if test="ApparentPowerTotal != 0.001" >
+				#{ApparentPowerTotal},
+			</if>
+			<if test="Frequency != 0.001" >
+				#{Frequency},
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				#{PowerFactorPhaseA},
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				#{PowerFactorPhaseB},
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				#{PowerFactorPhaseC},
+			</if>
+			<if test="PowerFactorTotal != 0.001" >
+				#{PowerFactorTotal},
+			</if>
+			
+			<if test="nvmActivePower != 0.001" >
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix="" suffixOverrides=",">
+			<if test="id_device != 0.001" >
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001" >
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001" >
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001" >
+				high_alarm = #{high_alarm},
+			</if>
+			
+			<if test="ActiveEnergyDelivered != 0.001" >
+				`ActiveEnergyDelivered` = #{ActiveEnergyDelivered},
+			</if>
+			<if test="ActiveEnergyReceived != 0.001" >
+				`ActiveEnergyReceived` = #{ActiveEnergyReceived},
+			</if>
+			<if test="ActiveEnergyDeliveredPlusReceived != 0.001" >
+				`ActiveEnergyDeliveredPlusReceived` = #{ActiveEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ActiveEnergyDeliveredMinusReceived != 0.001" >
+				`ActiveEnergyDeliveredMinusReceived` = #{ActiveEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ReactiveEnergyDelivered != 0.001" >
+				`ReactiveEnergyDelivered` = #{ReactiveEnergyDelivered},
+			</if>
+			<if test="ReactiveEnergyReceived != 0.001" >
+				`ReactiveEnergyReceived` = #{ReactiveEnergyReceived},
+			</if>
+			<if test="ReactiveEnergyDeliveredPlusReceived != 0.001" >
+				`ReactiveEnergyDeliveredPlusReceived` = #{ReactiveEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ReactiveEnergyDeliveredMinusReceived != 0.001" >
+				`ReactiveEnergyDeliveredMinusReceived` = #{ReactiveEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ApparentEnergyDelivered != 0.001" >
+				`ApparentEnergyDelivered` = #{ApparentEnergyDelivered},
+			</if>
+			<if test="ApparentEnergyReceived != 0.001" >
+				`ApparentEnergyReceived` = #{ApparentEnergyReceived},
+			</if>
+			<if test="ApparentEnergyDeliveredPlusReceived != 0.001" >
+				`ApparentEnergyDeliveredPlusReceived` = #{ApparentEnergyDeliveredPlusReceived},
+			</if>
+			<if test="ApparentEnergyDeliveredMinusReceived != 0.001" >
+				`ApparentEnergyDeliveredMinusReceived` = #{ApparentEnergyDeliveredMinusReceived},
+			</if>
+			<if test="ActiveEnergyinQuadrantI != 0.001" >
+				`ActiveEnergyinQuadrantI` = #{ActiveEnergyinQuadrantI},
+			</if>
+			<if test="ActiveEnergyinQuadrantII != 0.001" >
+				`ActiveEnergyinQuadrantII` = #{ActiveEnergyinQuadrantII},
+			</if>
+			<if test="ActiveEnergyinQuadrantIII != 0.001" >
+				`ActiveEnergyinQuadrantIII` = #{ActiveEnergyinQuadrantIII},
+			</if>
+			<if test="ActiveEnergyinQuadrantIV != 0.001" >
+				`ActiveEnergyinQuadrantIV` = #{ActiveEnergyinQuadrantIV},
+			</if>
+			<if test="ReactiveEnergyinQuadrantI != 0.001" >
+				`ReactiveEnergyinQuadrantI` = #{ReactiveEnergyinQuadrantI},
+			</if>
+			<if test="ReactiveEnergyinQuadrantII != 0.001" >
+				`ReactiveEnergyinQuadrantII` = #{ReactiveEnergyinQuadrantII},
+			</if>
+			<if test="ReactiveEnergyinQuadrantIII != 0.001" >
+				`ReactiveEnergyinQuadrantIII` = #{ReactiveEnergyinQuadrantIII},
+			</if>
+			<if test="ReactiveEnergyinQuadrantIV != 0.001" >
+				`ReactiveEnergyinQuadrantIV` = #{ReactiveEnergyinQuadrantIV},
+			</if>
+			<if test="ApparentEnergyinQuadrantI != 0.001" >
+				`ApparentEnergyinQuadrantI` = #{ApparentEnergyinQuadrantI},
+			</if>
+			<if test="ApparentEnergyinQuadrantII != 0.001" >
+				`ApparentEnergyinQuadrantII` = #{ApparentEnergyinQuadrantII},
+			</if>
+			<if test="ApparentEnergyinQuadrantIII != 0.001" >
+				`ApparentEnergyinQuadrantIII` = #{ApparentEnergyinQuadrantIII},
+			</if>
+			<if test="ApparentEnergyinQuadrantIV != 0.001" >
+				`ApparentEnergyinQuadrantIV` = #{ApparentEnergyinQuadrantIV},
+			</if>
+			<if test="CurrentPhaseA != 0.001" >
+				`CurrentPhaseA` = #{CurrentPhaseA},
+			</if>
+			<if test="CurrentPhaseB != 0.001" >
+				`CurrentPhaseB` = #{CurrentPhaseB},
+			</if>
+			<if test="CurrentPhaseC != 0.001" >
+				`CurrentPhaseC` = #{CurrentPhaseC},
+			</if>
+			<if test="CurrentNeutralLine != 0.001" >
+				`CurrentNeutralLine` = #{CurrentNeutralLine},
+			</if>
+			<if test="CurrentGroundLine != 0.001" >
+				`CurrentGroundLine` = #{CurrentGroundLine},
+			</if>
+			<if test="CurrentAverage != 0.001" >
+				`CurrentAverage` = #{CurrentAverage},
+			</if>
+			<if test="CurrentUnbalanceWorst != 0.001" >
+				`CurrentUnbalanceWorst` = #{CurrentUnbalanceWorst},
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB` = #{VoltagePhaseAB},
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC` = #{VoltagePhaseBC},
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA` = #{VoltagePhaseCA},
+			</if>
+			<if test="VoltageLLAverage != 0.001" >
+				`VoltageLLAverage` = #{VoltageLLAverage},
+			</if>
+			<if test="VoltageAN != 0.001" >
+				`VoltageAN` = #{VoltageAN},
+			</if>
+			<if test="VoltageBN != 0.001" >
+				`VoltageBN` = #{VoltageBN},
+			</if>
+			<if test="VoltageCN != 0.001" >
+				`VoltageCN` = #{VoltageCN},
+			</if>
+			<if test="VoltageLNAverage != 0.001" >
+				`VoltageLNAverage` = #{VoltageLNAverage},
+			</if>
+			<if test="VoltageUnbalanceLNWorst != 0.001" >
+				`VoltageUnbalanceLNWorst` = #{VoltageUnbalanceLNWorst},
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA` = #{ActivePowerPhaseA},
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB` = #{ActivePowerPhaseB},
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC` = #{ActivePowerPhaseC},
+			</if>
+			<if test="ActivePowerTotal != 0.001" >
+				`ActivePowerTotal` = #{ActivePowerTotal},
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA` = #{ReactivePowerPhaseA},
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB` = #{ReactivePowerPhaseB},
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC` = #{ReactivePowerPhaseC},
+			</if>
+			<if test="ReactivePowerTotal != 0.001" >
+				`ReactivePowerTotal` = #{ReactivePowerTotal},
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA` = #{ApparentPowerPhaseA},
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB` = #{ApparentPowerPhaseB},
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC` = #{ApparentPowerPhaseC},
+			</if>
+			<if test="ApparentPowerTotal != 0.001" >
+				`ApparentPowerTotal` = #{ApparentPowerTotal},
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency` = #{Frequency},
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA` = #{PowerFactorPhaseA},
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB` = #{PowerFactorPhaseB},
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC` = #{PowerFactorPhaseC},
+			</if>
+			<if test="PowerFactorTotal != 0.001" >
+				`PowerFactorTotal` = #{PowerFactorTotal},
+			</if>
+	          
+			<if test="nvmActivePower != 0.001" >
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelPowerLogicPM8000LoadMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
