@@ -202,7 +202,7 @@ public class ModelShark100Service extends DB {
 			 
 			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setW_hours_net(dataObj.getNvmActiveEnergy());
+				 obj.setW_hours_total(dataObj.getNvmActiveEnergy());
 			 }
 			 
 			 obj.setMeasuredProduction(measuredProduction);

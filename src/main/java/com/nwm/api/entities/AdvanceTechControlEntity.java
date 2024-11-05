@@ -20,7 +20,30 @@ public class AdvanceTechControlEntity {
 	private String advance_tech_field_stop;
 	private String advance_tech_field_start;
 	
+	private String advance_tech_value_restart;
+	private String advance_tech_value_stop;
+	private String advance_tech_value_start;
 	
+	
+	
+	public String getAdvance_tech_value_restart() {
+		return advance_tech_value_restart;
+	}
+	public void setAdvance_tech_value_restart(String advance_tech_value_restart) {
+		this.advance_tech_value_restart = advance_tech_value_restart;
+	}
+	public String getAdvance_tech_value_stop() {
+		return advance_tech_value_stop;
+	}
+	public void setAdvance_tech_value_stop(String advance_tech_value_stop) {
+		this.advance_tech_value_stop = advance_tech_value_stop;
+	}
+	public String getAdvance_tech_value_start() {
+		return advance_tech_value_start;
+	}
+	public void setAdvance_tech_value_start(String advance_tech_value_start) {
+		this.advance_tech_value_start = advance_tech_value_start;
+	}
 	public String getAdvance_tech_field_restart() {
 		return advance_tech_field_restart;
 	}

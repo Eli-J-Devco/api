@@ -104,17 +104,17 @@ public class AdvancetechAPIController extends BaseController {
 							String tagKey = ""; String tagValue = ""; String message = "";
 							if (obj.getDevice_type().equals("inv") && obj.getStatus_type().equals("restart")) {
 								tagKey = obj.getAdvance_tech_field_restart();
-								tagValue = "200";
-								message = "Restart successful";
+								tagValue = obj.getAdvance_tech_value_restart();
+								message = "RestetAart successful";
 							}
 							if (obj.getDevice_type().equals("inv") && obj.getStatus_type().equals("stop")) {
 								tagKey = obj.getAdvance_tech_field_stop();
-								tagValue = "200";
+								tagValue = obj.getAdvance_tech_value_stop();
 								message = "Stop successful";
 							}
 							if (obj.getDevice_type().equals("inv") && obj.getStatus_type().equals("start")) {
 								tagKey = obj.getAdvance_tech_field_start();
-								tagValue = "200";
+								tagValue = obj.getAdvance_tech_value_start();
 								message = "Start successful";
 							}
 							
