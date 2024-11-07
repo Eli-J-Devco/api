@@ -197,7 +197,7 @@
 				SELECT
 					t.categories_time,
 					t.hour_time,
-					ROUND(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)), 1) AS energy,
+					CAST(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)) AS DECIMAL) AS energy,
 					ROUND(AVG(IF(t.id_device_type IN (4,6), t.`value`, NULL)), 1) AS irradiance
 				FROM
 					(
@@ -235,7 +235,7 @@
 			<otherwise>
 				SELECT
 					categories_time,
-					ROUND(IF(meterEnergy > 0, meterEnergy, inverterEnergy), 1) AS energy,
+					CAST(IF(meterEnergy > 0, meterEnergy, inverterEnergy) AS DECIMAL) AS energy,
 					ROUND(nvm_irradiance, 1) AS irradiance
 				FROM (
 					SELECT
@@ -278,7 +278,7 @@
 				hour_time,
 			</if>
 			categories_time,
-			ROUND(SUM(nvmActiveEnergy), 1) AS energy,
+			CAST(SUM(nvmActiveEnergy) AS DECIMAL) AS energy,
 			ROUND(AVG(nvm_irradiance), 1) AS irradiance
 		FROM (
 				SELECT
