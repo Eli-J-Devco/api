@@ -51,7 +51,7 @@
 			null AS start_date,
 			null AS end_date,
 			null AS MeasuredProduction,
-			t.`offset` AS time_zone_value,
+			t.value AS time_zone_value,
 			d.view_tablename,
 			d.job_tablename,
 			dg.table_name AS device_group_table,
@@ -117,7 +117,7 @@
 										${datatablename}
 									WHERE
 										id_device = #{id}
-										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, '+00:00') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, '+00:00')
+										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
 								) t
 						</when>
 						
@@ -145,7 +145,7 @@
 										${datatablename}
 									WHERE
 										id_device = #{id}
-										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, '+00:00') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, '+00:00')
+										AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
 								) t
 						</when>
 						
@@ -162,7 +162,7 @@
 								${datatablename}
 							WHERE
 								id_device = #{id}
-								AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, '+00:00') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, '+00:00')
+								AND time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
 						</otherwise>
 					</choose>
 				) t
@@ -170,7 +170,7 @@
 		SET dv.MeasuredProduction = t.MeasuredProduction
 		WHERE
 			dv.id_device = #{id}
-			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, '+00:00') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, '+00:00')
+			AND dv.time BETWEEN CONVERT_TZ(#{start_date}, #{time_zone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{time_zone_value}, 'UTC')
 	</update>
 	
 	

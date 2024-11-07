@@ -332,7 +332,7 @@
 			) t3 ON t3.id_site_sub_group = r.id_sub_group
 		WHERE
 			r.status = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		
 		<if test="is_supper_admin != 1">
 			AND r.id_employee = #{id_employee} 
@@ -401,7 +401,7 @@
 			s.`name` AS site_name,
 			s.table_data_report,
 			s.table_data_virtual,
-			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.offset), '%m/%d/%Y') AS report_date,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
 			r.subscribers,
@@ -435,45 +435,9 @@
 		WHERE
 			r.id = #{id}
 			AND s.id = #{id_site}
-			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
   	
-  	
-  	
-  	<select id="getReportYearDataEnergy" resultType="Map" >
-		SELECT 
-			t.convert_time,
-			SUM(t.tmp_energy) AS sumEergy,
-			t.year,
-			t.month
-		FROM (
-			SELECT
-				iv.time,
-				si.id,
-				<if test="table_name = 'model_shark100'">
-					MAX(iv.w_hours_received) - MIN(iv.w_hours_received) AS tmp_energy,
-				</if>
-				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS local_time,
-				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b. %y' ) AS convert_time,
-				DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%Y' ) AS year,
-				LOWER( DATE_FORMAT( CONVERT_TZ( iv.time, '+00:00', t.`offset` ), '%b' ) )  AS month
-				
-				
-			FROM
-				site si
-				LEFT JOIN time_zone t ON t.id = si.id_time_zone
-				LEFT JOIN device d ON d.id_site = si.id
-				LEFT JOIN ${table_name} iv ON iv.id_device = d.id 
-			WHERE
-				si.id = #{id_site}
-				AND si.`status` = 1
-				AND si.is_delete = 0 
-				AND iv.error = 0
-				AND (CONVERT_TZ( iv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-				GROUP BY local_time, d.id
-		)t GROUP BY t.convert_time ORDER BY t.time
-	</select>
-	
 	
 	<select id="getReportEnergyExpectations" resultType="Map" >
 		SELECT
@@ -616,7 +580,7 @@
 			DATE_FORMAT(#{end_date}, "%m/%Y") AS vintage_date,
 			0 AS is_edit,
 			CASE
-			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'+00:00', t.`offset`), '%m/%Y') THEN FORMAT(CAST(SUM(sdr.ActualGeneration) AS DECIMAL) / 1000 * 0.97, 2) 
+			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'UTC', t.`value`), '%m/%Y') THEN FORMAT(CAST(SUM(sdr.ActualGeneration) AS DECIMAL) / 1000 * 0.97, 2) 
 			    ELSE NULL
 			END AS energy_this_month
 			
@@ -906,13 +870,13 @@
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
 								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								</if>
 								AVG(dv.nvmActivePower) AS nvmActivePower 
 							FROM
@@ -924,7 +888,7 @@
 								s.id = #{item.id_site}
 								AND d.id_device_type IN (3,7,9)
 								AND d.is_excluded_meter = 0
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
 							GROUP BY
@@ -951,13 +915,13 @@
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
 								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								</if>
 								AVG(dv.nvmActivePower) AS nvmActivePower 
 							FROM
@@ -968,7 +932,7 @@
 							WHERE
 								s.id = #{item.id_site}
 								AND d.id_device_type = 1
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
 							GROUP BY
@@ -1180,7 +1144,7 @@
 							AVG(actualPOA) AS actualPOA
 						FROM (
 							SELECT
-								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%Y-%m-%d") AS group_by_day,
+								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y-%m-%d") AS group_by_day,
 								SUM(vir.nvmActiveEnergy) AS actualEnergy,
 								AVG(vir.expected_power_ac) AS expectedPower,
 								AVG(vir.nvm_irradiance) AS actualPOA
@@ -1195,7 +1159,7 @@
 								AND d.is_delete = 0
 								AND s.status = 1
 								AND s.is_delete = 0
-								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, tz.`value`, 'UTC')
 							GROUP BY
 								group_by_day
 						) t
@@ -1238,9 +1202,9 @@
 					<choose>
 						<when test="enable_virtual_device.booleanValue()">
 							SELECT
-								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%m/%d/%Y") AS time_full,
-								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%b") AS `month`,
-								DATE_FORMAT(CONVERT_TZ(vir.time, "+00:00", tz.`offset`), "%Y") AS `year`,
+								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%m/%d/%Y") AS time_full,
+								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b") AS `month`,
+								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
 								SUM(vir.nvmActiveEnergy) AS actualEnergy,
 								AVG(vir.expected_power_ac) AS expectedPower
 							FROM
@@ -1254,7 +1218,7 @@
 								AND d.is_delete = 0
 								AND s.status = 1
 								AND s.is_delete = 0
-								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+								AND vir.time BETWEEN CONVERT_TZ(#{start_date}, tz.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, tz.`value`, 'UTC')
 							GROUP BY
 								time_full
 						</when>
@@ -1338,9 +1302,9 @@
 				er.message AS event,
 				d.devicename,
 				IFNULL(d.rating_ac_power, 0) / s.ac_capacity AS ratio,
-				DATE_FORMAT(CONVERT_TZ(al.start_date, "+00:00", tz.`offset`), "%m/%d/%Y %h:%i %p") AS startTime,
-				DATE_FORMAT(CONVERT_TZ(al.end_date, "+00:00", tz.`offset`), "%m/%d/%Y %h:%i %p") AS endTime,
-				DATEDIFF(IFNULL(CONVERT_TZ(al.end_date, "+00:00", tz.`offset`), CONVERT_TZ(UTC_TIMESTAMP(), "+00:00", tz.`offset`)), CONVERT_TZ(al.start_date, "+00:00", tz.`offset`)) AS duration,
+				DATE_FORMAT(CONVERT_TZ(al.start_date, 'UTC', tz.`value`), "%m/%d/%Y %h:%i %p") AS startTime,
+				DATE_FORMAT(CONVERT_TZ(al.end_date, 'UTC', tz.`value`), "%m/%d/%Y %h:%i %p") AS endTime,
+				DATEDIFF(IFNULL(CONVERT_TZ(al.end_date, 'UTC', tz.`value`), CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.`value`)), CONVERT_TZ(al.start_date, 'UTC', tz.`value`)) AS duration,
 				ROUND(
 					CASE
 						WHEN DATE_FORMAT(#{start_date}, "%b") = "Jan" THEN ee.jan
@@ -1377,7 +1341,7 @@
 				AND er.error_code = "1000"
 				AND al.is_delete = 0
 				AND al.start_date IS NOT NULL
-				AND al.start_date BETWEEN CONVERT_TZ(#{start_date}, tz.`offset`, "+00:00") AND CONVERT_TZ(#{end_date}, tz.`offset`, "+00:00")
+				AND al.start_date BETWEEN CONVERT_TZ(#{start_date}, tz.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, tz.`value`, 'UTC')
 		) m
 	</select>
 	
@@ -1390,13 +1354,13 @@
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
 								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								</if>
 								AVG(dv.nvm_irradiance) AS irradiance 
 							FROM
@@ -1407,7 +1371,7 @@
 							WHERE
 								s.id = #{item.id_site}
 								AND d.id_device_type IN(4,6)
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
 							GROUP BY

@@ -958,10 +958,10 @@
 			FROM (
 					SELECT
 						dv.id_device,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m' ) AS time_month,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_year,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d 00:00' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m' ) AS time_month,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_year,
 						<!--MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS nvmActiveEnergy, -->
 						SUM(dv.MeasuredProduction) AS nvmActiveEnergy,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
@@ -973,7 +973,7 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						dv.id_device = #{id}
-						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
@@ -993,8 +993,8 @@
 						dv.id_device,
 						s.start_date_time,
 						s.end_date_time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-						DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower
 					FROM
 						${datatablename} dv
@@ -1003,7 +1003,7 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						dv.id_device = #{id}
-						AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
@@ -1040,9 +1040,9 @@
 				s.start_date_time,
 				s.end_date_time,
 				dv.time,
-				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d 00:00' ) AS time_full,
-				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS format_date,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d 00:00' ) AS time_full,
+				DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS format_date,
 				IF(SUM(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, SUM(dv.nvm_irradiance)) AS nvm_irradiance,
 				IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_irradiance)) AS avg_nvm_irradiance,
 				IF(AVG(dv.nvm_temperature) <![CDATA[<]]> 0.1, 0, AVG(dv.nvm_temperature)) AS avg_nvm_temperature
@@ -1053,7 +1053,7 @@
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			WHERE
 				dv.id_device = #{id}
-				AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+				AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 				AND s.`status` = 1 
 				AND d.`status` = 1 
 			GROUP BY d.id, time_format

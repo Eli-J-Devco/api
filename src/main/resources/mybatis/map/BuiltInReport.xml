@@ -11,7 +11,7 @@
 			s.`name` AS site_name,
 			s.table_data_report,
 			s.table_data_virtual,
-			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.offset), '%m/%d/%Y') AS report_date,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
 			r.subscribers,
@@ -49,7 +49,7 @@
 		WHERE
 			r.id = #{id}
 			<foreach collection="ids" item="item" open="AND s.id IN (" close=")" separator=",">#{item}</foreach>
-			AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY
 			s.id
 	</select>
@@ -113,38 +113,38 @@
 			ROUND(SUM(ActualGeneration) / ModeledGeneration * 100, 1) AS ModeledGenerationIndex
 		FROM (
 			SELECT
-				DATE_FORMAT(CONVERT_TZ(vir.time, '+00:00', t.`offset`), '%Y-%m-%d') AS group_by_day,
+				DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%Y-%m-%d') AS group_by_day,
 				SUM(vir.nvmActiveEnergy) AS ActualGeneration,
 				AVG(vir.expected_power_ac) AS ExpectedPower,
 				AVG(vir.nvm_irradiance) AS POA,
 				CASE
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 01 THEN ee.jan
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 02 THEN ee.feb
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 03 THEN ee.mar
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 04 THEN ee.apr
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 05 THEN ee.may
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 06 THEN ee.jun
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 07 THEN ee.jul
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 08 THEN ee.aug
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 09 THEN ee.sep
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 10 THEN ee.oct
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 11 THEN ee.nov
-					 WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 12 THEN ee.dec
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 01 THEN ee.jan
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 02 THEN ee.feb
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 03 THEN ee.mar
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 04 THEN ee.apr
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 05 THEN ee.may
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 06 THEN ee.jun
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 07 THEN ee.jul
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 08 THEN ee.aug
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 09 THEN ee.sep
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 10 THEN ee.oct
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 11 THEN ee.nov
+					 WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 12 THEN ee.dec
 				END AS ModeledGeneration
 			FROM
 				${table_data_virtual} vir
 				LEFT JOIN device d ON d.id = vir.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.year = DATE_FORMAT(CONVERT_TZ(vir.time, '+00:00', t.`offset`), '%Y')
+				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.year = DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%Y')
 			WHERE
 				d.`status` = 1 
 				AND d.is_delete = 0 
 				AND s.`status` = 1 
 				AND d.is_delete = 0 
 				AND s.id = #{id_site}
-				AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ( vir.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			GROUP BY
 				group_by_day
 		) t
@@ -184,13 +184,13 @@
 						SELECT
 							<choose>
 								<when test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS categories_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i:00') AS categories_time,
 								</when>
 								<when test="data_intervals == 6">
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%y' ) AS categories_time,
 								</when>
 								<otherwise>
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%y' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%y' ) AS categories_time,
 								</otherwise>
 							</choose>
 							SUM(dv.MeasuredProduction) AS monthlyProduction 
@@ -202,10 +202,10 @@
 						WHERE
 							s.id = #{item.id_site}
 							AND d.id_device_type = #{item.id_device_type}
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+							AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 							AND s.`status` = 1 
 							AND d.`status` = 1 
-							AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+							AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 						GROUP BY
 							d.id,
 							categories_time
@@ -226,38 +226,38 @@
 			ROUND(ActualGeneration / ModeledGeneration  * 100, 1) AS ModeledGenerationIndex
 		FROM (
 			SELECT
-				DATE_FORMAT(CONVERT_TZ(vir.time, '+00:00', t.`offset`), '%m/%d/%Y' ) AS categories_time,
+				DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%m/%d/%Y' ) AS categories_time,
 				SUM(vir.nvmActiveEnergy) AS ActualGeneration,
 				AVG(vir.expected_power_ac) * 24 AS ExpectedGeneration,
 				AVG(vir.nvm_irradiance) AS POA,
 				CASE
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 01 THEN (ee.jan / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 02 THEN (ee.feb / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 03 THEN (ee.mar / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 04 THEN (ee.apr / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 05 THEN (ee.may / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 06 THEN (ee.jun / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 07 THEN (ee.jul / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 08 THEN (ee.aug / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 09 THEN (ee.sep / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 10 THEN (ee.oct / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 11 THEN (ee.nov / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
-					WHEN MONTH(CONVERT_TZ( vir.time, '+00:00', t.`offset` )) = 12 THEN (ee.dec / DAY(LAST_DAY(CONVERT_TZ(vir.time, '+00:00', t.`offset`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 01 THEN (ee.jan / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 02 THEN (ee.feb / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 03 THEN (ee.mar / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 04 THEN (ee.apr / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 05 THEN (ee.may / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 06 THEN (ee.jun / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 07 THEN (ee.jul / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 08 THEN (ee.aug / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 09 THEN (ee.sep / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 10 THEN (ee.oct / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 11 THEN (ee.nov / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
+					WHEN MONTH(CONVERT_TZ( vir.time, 'UTC', t.`value` )) = 12 THEN (ee.dec / DAY(LAST_DAY(CONVERT_TZ(vir.time, 'UTC', t.`value`))))
 				END AS ModeledGeneration
 			FROM
 				${table_data_virtual} vir
 				LEFT JOIN device d ON d.id = vir.id_device
 				LEFT JOIN site s ON s.id = d.id_site 
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.year = DATE_FORMAT(CONVERT_TZ(vir.time, '+00:00', t.`offset`), '%Y')
+				LEFT JOIN energy_expectations ee ON ee.id_site = s.id AND ee.year = DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%Y')
 			WHERE
 				d.`status` = 1 
 				AND d.is_delete = 0 
 				AND s.`status` = 1 
 				AND d.is_delete = 0 
 				AND s.id = #{id_site}
-				AND (CONVERT_TZ( vir.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ( vir.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			GROUP BY
 				categories_time
 		) t

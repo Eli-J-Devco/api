@@ -128,7 +128,7 @@
 	
 	<select id="getDataPower" resultType="Map">
 		SELECT
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
 			ROUND(( SUM( t.power ) ), 2 ) AS nvmActivePower,
 			SUM( t.energy ) AS nvmActiveEnergy,
 			ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
@@ -253,7 +253,7 @@
 			
 			<foreach collection="devices" item="item" index="index" separator="union all">
 			SELECT
-				m.`offset`,
+				m.value,
 				m.time_format,
 				SUM( m.power ) AS power,
 				SUM( m.energy ) AS energy,
@@ -267,8 +267,8 @@
 			FROM
 				(
 				SELECT
-					t.`offset`,
-					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
+					t.value,
+					FROM_UNIXTIME((( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}  )* #{level_sent_time}  ), '%Y-%m-%d %H:%i:00' ) AS time_format,
 					AVG(IF(dv.nvmActivePower <![CDATA[<]]> 0 , 0 , dv.nvmActivePower)) AS power,
 					SUM(dv.MeasuredProduction) AS energy
 				FROM
@@ -279,7 +279,7 @@
 				WHERE
 					d.id = #{item.id}
 					AND d.id_device_type = #{item.id_device_type}
-                    AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+                    AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 					AND s.`status` = 1 
 					AND d.`status` = 1 
 				GROUP BY
@@ -295,7 +295,7 @@
 			<if test="weathers != null and !weathers.isEmpty()">
 				UNION ALL
 				SELECT
-					w.`offset`,
+					w.value,
 					w.time_format,
 					NULL AS power,
 					NULL AS energy,
@@ -310,8 +310,8 @@
 				FROM (
 				<foreach collection="weathers" item="v" index="index" separator="union all">
 					SELECT
-						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						NULL AS power,
 						NULL AS energy,
 						NULL AS irradiance,
@@ -334,7 +334,7 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{id}
-						AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 						AND s.`status` = 1 
 						AND d.`status` = 1
 						AND d.id = #{v.id}
@@ -351,8 +351,8 @@
 				UNION ALL
 				<foreach collection="weatherRPOA" item="ritem" index="index" separator="union all">
 					SELECT
-						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						NULL AS power,
 						NULL AS energy,
 						NULL AS irradiance,
@@ -371,7 +371,7 @@
 					WHERE
 						s.id = #{id}
 						AND d.id_device_type IN(4)
-						AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 						AND s.`status` = 1 
 						AND d.`status` = 1
 						AND d.id = #{ritem.id}
@@ -387,7 +387,7 @@
 			<if test="weatherPOA != null and !weatherPOA.isEmpty()">
 				UNION ALL
 				SELECT
-					i.`offset`,
+					i.value,
 					i.time_format,
 					NULL AS power,
 					NULL AS energy,
@@ -403,8 +403,8 @@
 				(
 				<foreach collection="weatherPOA" item="pitem" index="index" separator="union all">
 					SELECT
-						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						NULL AS power,
 						NULL AS energy,
 						IF(dv.error = 0,
@@ -424,7 +424,7 @@
 					WHERE
 						s.id = #{id}
 						AND d.id_device_type IN(4)
-						AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 						AND s.`status` = 1 
 						AND d.`status` = 1
 						AND d.id = #{pitem.id}
@@ -442,8 +442,8 @@
 				<foreach collection="sensorAmbientTemp" item="sitem" index="index" separator="union all">
 				
 					SELECT
-						t.`offset`,
-						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+						t.value,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 						NULL AS power,
 						NULL AS energy,
 						NULL AS irradiance,
@@ -464,7 +464,7 @@
 						s.id = #{id}
 						AND d.id_device_type IN(6)
 						AND d.id_device_group IN(18)
-						AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+						AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 						AND s.`status` = 1 
 						AND d.`status` = 1
 						AND d.id = #{sitem.id}
@@ -484,7 +484,7 @@
 	
 	<select id="getDataPowerNREL" resultType="Map">
 		SELECT 
-			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( h.time_format, h.`offset`, '+00:00' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+			FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( h.time_format, h.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
 			h.time_format,
 			ROUND( SUM(h.power), 2) AS nvmActivePower,
 			ROUND( SUM(h.energy), 2) AS nvmActiveEnergy,
@@ -503,7 +503,7 @@
 			<if test="devices != null and !devices.isEmpty()">
 				<foreach collection="devices" item="item" index="index" separator="union all">
 					SELECT
-							m.`offset`,
+							m.value,
 							m.time_format,
 							SUM( m.power ) AS power,
 							SUM( m.energy ) AS energy,
@@ -563,9 +563,9 @@
 						FROM
 							(
 								SELECT
-									t.`offset`,
+									t.value,
 									d.rating_ac_power,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time} ), '%Y-%m-%d %H:%i:00' ) AS time_format,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time} ), '%Y-%m-%d %H:%i:00' ) AS time_format,
 									AVG(IF(dv.nvmActivePower <![CDATA[<]]> 0 , 0 , dv.nvmActivePower)) AS power,
 									SUM(dv.MeasuredProduction) AS energy
 								FROM
@@ -575,7 +575,7 @@
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
 									d.id = #{item.id}
-									AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+									AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 									AND s.`status` = 1 
 									AND d.`status` = 1 
 								GROUP BY d.id, time_format 
@@ -597,9 +597,9 @@
 												t.number_of_strings,
 												t.kwp_dc_for_each_solar_module,
 												t.data_interval_factor,
-												t.`offset`,
+												t.value,
 												t.time_format,
-												FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.`offset`, '+00:00' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
+												FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( t.time_format, t.value, 'UTC' )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time,
 												ROUND(( SUM( t.irradiance ) ), 2 ) AS nvm_irradiance,
 												ROUND(( SUM( t.temperature ) ), 2 ) AS nvm_temperature,
 												ROUND(( SUM( t.rpoa ) ), 2 ) AS rpoa,
@@ -631,8 +631,8 @@
 														s.data_interval_factor,
 														s.ac_capacity,
 														s.dc_capacity,
-														t.`offset`,
-														FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+														t.value,
+														FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 														NULL AS power,
 														NULL AS energy,
 														NULL AS irradiance,
@@ -650,7 +650,7 @@
 													WHERE
 														s.id = #{id}
 														AND d.id = #{v.id}
-														AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+														AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 														AND s.`status` = 1 
 														AND d.`status` = 1
 													GROUP BY
@@ -681,8 +681,8 @@
 													s.data_interval_factor,
 													s.ac_capacity,
 													s.dc_capacity,
-													t.`offset`,
-													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time} ) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 													NULL AS power,
 													NULL AS energy,
 													IF(AVG(dv.nvm_irradiance) <![CDATA[<]]> 0, 0, AVG(dv.nvm_irradiance)) AS irradiance,
@@ -700,7 +700,7 @@
 												WHERE
 													s.id =  #{id}
 													AND d.id = #{pitem.id}
-													AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 													AND s.`status` = 1 
 													AND d.`status` = 1
 												GROUP BY
@@ -728,8 +728,8 @@
 													s.data_interval_factor,
 													s.ac_capacity,
 													s.dc_capacity,
-													t.`offset`,
-													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 													NULL AS power,
 													NULL AS energy,
 													NULL AS irradiance,
@@ -747,7 +747,7 @@
 												WHERE
 													s.id = #{id}
 													AND d.id = #{ritem.id}
-													AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 													AND s.`status` = 1 
 													AND d.`status` = 1
 												GROUP BY
@@ -777,8 +777,8 @@
 													s.data_interval_factor,
 													s.ac_capacity,
 													s.dc_capacity,
-													t.`offset`,
-													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, '+00:00', t.`offset` )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
+													t.value,
+													FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV #{level_sent_time}) * #{level_sent_time}), '%Y-%m-%d %H:%i:00') AS time_format,
 													NULL AS power,
 													NULL AS energy,
 													NULL AS irradiance,
@@ -796,7 +796,7 @@
 												WHERE
 													s.id = #{id}
 													AND d.id = #{sitem.id}
-													AND CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date}
+													AND CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
 													AND s.`status` = 1 
 													AND d.`status` = 1
 												GROUP BY

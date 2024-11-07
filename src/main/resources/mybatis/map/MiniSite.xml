@@ -121,7 +121,7 @@
 			AND s.kiosk_view = 1
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 	</select>
 	
 	
@@ -145,7 +145,7 @@
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY d.id_device_type
 	</select>
 	
@@ -168,7 +168,7 @@
 			AND SHA1(d.id_site) = #{hash_id}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY d.id_device_type
 	</select>
 	
@@ -203,9 +203,9 @@
 					(
 						<foreach collection="groupDevices" item="item" index="index" separator="union all">
 							SELECT
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
 								d.id_device_type,
 								<choose>
 									<when test="item.id_device_type == 4 or item.id_device_type == 6">
@@ -222,7 +222,7 @@
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
 								SHA1(s.id) = #{hash_id}
-								AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
 							GROUP BY
@@ -284,21 +284,21 @@
 				SELECT
 					<choose>
 						<when test="filterBy == 'today'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:00' ) AS categories_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%H:00' ) AS hour_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
 						</when>
 						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d' ) AS categories_time,
 						</when>
 						<when test="filterBy == '12_month'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b-%Y' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b-%Y' ) AS categories_time,
 						</when>
 						<when test="filterBy == 'lifetime'">
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y' ) AS categories_time,
 						</when>
 					</choose>
 					SUM(dv.nvmActiveEnergy) AS nvmActiveEnergy,
@@ -311,7 +311,7 @@
 				WHERE
 					s.id = #{id}
 					AND d.id_device_type = 12
-					AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
+					AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 					AND s.`status` = 1 
 					AND d.`status` = 1 
 				GROUP BY
