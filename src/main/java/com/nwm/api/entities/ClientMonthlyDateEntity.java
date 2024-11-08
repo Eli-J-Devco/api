@@ -22,6 +22,30 @@ public class ClientMonthlyDateEntity{
 	private Double nvmActivePower;
 	private Double nvmActiveEnergy;
 	
+	private Double energy_output;
+	private Double energy_usage;
+	private Double energy;
+	
+	
+	
+	public Double getEnergy_output() {
+		return energy_output;
+	}
+	public void setEnergy_output(Double energy_output) {
+		this.energy_output = energy_output;
+	}
+	public Double getEnergy_usage() {
+		return energy_usage;
+	}
+	public void setEnergy_usage(Double energy_usage) {
+		this.energy_usage = energy_usage;
+	}
+	public Double getEnergy() {
+		return energy;
+	}
+	public void setEnergy(Double energy) {
+		this.energy = energy;
+	}
 	public Integer getId() {
 		return id;
 	}
