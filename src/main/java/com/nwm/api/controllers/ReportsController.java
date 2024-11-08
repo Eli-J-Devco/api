@@ -2825,46 +2825,82 @@ public class ReportsController extends BaseController {
 					cell.setCellStyle(tableHeaderCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(24, 24, 0, 2));
 					
-					
-					for (int i = 0; i < dataList.size(); i++) {
-						ViewReportEntity dataObj = dataList.get(i);
-						
-						cell = row.createCell(3 + 3*i);
-						cell.setCellStyle(tableHeaderCellStyle);
-						cell.setCellValue(dataObj.getSite_name());
-						cell = row.createCell(4 + 3*i);
-						cell.setCellStyle(tableHeaderCellStyle);
-						cell = row.createCell(5 + 3*i);
-						cell.setCellStyle(tableHeaderCellStyle);
-						sheet.addMergedRegion(new CellRangeAddress(24, 24, 3 + 3*i, 5 + 3*i));
-						
-						List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
-						
-						if(dataExports != null && dataExports.size() > 0) {
-							for(int j = 0 ;j < dataExports.size(); j++) {
-								CustomReportDataEntity item = dataExports.get(j);
-								int t = 25 + j;
-								
-								Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
-								if (i == 0) {
-									Cell cel26D = row26.createCell(0);
-									cel26D.setCellStyle(tableRowCellStyle);
-									cel26D.setCellValue(item.getCategories_time());
-									Cell cel26E = row26.createCell(1);
-									cel26E.setCellStyle(tableRowCellStyle);
-									Cell cel26F = row26.createCell(2);
-									cel26F.setCellStyle(tableRowCellStyle);
-									sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+					if (report.isTransposed()) {
+						for (int i = 0; i < dataList.size(); i++) {
+							ViewReportEntity dataObj = dataList.get(i);
+							
+							cell = row.createCell(3 + 3*i);
+							cell.setCellStyle(tableHeaderCellStyle);
+							cell.setCellValue(dataObj.getSite_name());
+							cell = row.createCell(4 + 3*i);
+							cell.setCellStyle(tableHeaderCellStyle);
+							cell = row.createCell(5 + 3*i);
+							cell.setCellStyle(tableHeaderCellStyle);
+							sheet.addMergedRegion(new CellRangeAddress(24, 24, 3 + 3*i, 5 + 3*i));
+							
+							List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
+							
+							if(dataExports != null && dataExports.size() > 0) {
+								for(int j = 0 ; j < dataExports.size(); j++) {
+									CustomReportDataEntity item = dataExports.get(j);
+									if (item.getCategories_time().equals("Total") && !report.isShowTotal()) continue;
+									int t = 25 + j;
+									
+									Row row26 = sheet.getRow(t) != null ? sheet.getRow(t) : sheet.createRow(t);
+									if (i == 0) {
+										Cell cel26D = row26.createCell(0);
+										cel26D.setCellStyle(tableRowCellStyle);
+										cel26D.setCellValue(item.getCategories_time());
+										cel26D = row26.createCell(1);
+										cel26D.setCellStyle(tableRowCellStyle);
+										cel26D = row26.createCell(2);
+										cel26D.setCellStyle(tableRowCellStyle);
+										sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+									}
+									
+									Cell cel26G = row26.createCell(3 + 3*i);
+									cel26G.setCellStyle(tableRowNoDecimalCellStyle);
+									if(item.getActual() != null) cel26G.setCellValue(item.getActual());
+									Cell cel26H = row26.createCell(4 + 3*i);
+									cel26H.setCellStyle(tableRowNoDecimalCellStyle);
+									Cell cel26I = row26.createCell(5 + 3*i);
+									cel26I.setCellStyle(tableRowNoDecimalCellStyle);
+									sheet.addMergedRegion(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
 								}
-								
-								Cell cel26G = row26.createCell(3 + 3*i);
-								cel26G.setCellStyle(tableRowNoDecimalCellStyle);
-								if(item.getActual() != null) cel26G.setCellValue(item.getActual());
-								Cell cel26H = row26.createCell(4 + 3*i);
-								cel26H.setCellStyle(tableRowNoDecimalCellStyle);
-								Cell cel26I = row26.createCell(5 + 3*i);
-								cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-								sheet.addMergedRegion(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							}
+						}
+					} else {
+						for (int i = 0; i < dataList.size(); i++) {
+							ViewReportEntity dataObj = dataList.get(i);
+							
+							int t = 25 + i;
+							Row row26 = sheet.createRow(t);
+							Cell cel26D = row26.createCell(0);
+							cel26D.setCellStyle(tableRowCellStyle);
+							cel26D.setCellValue(dataObj.getSite_name());
+							cel26D = row26.createCell(1);
+							cel26D.setCellStyle(tableRowCellStyle);
+							cel26D = row26.createCell(2);
+							cel26D.setCellStyle(tableRowCellStyle);
+							sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+							
+							List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
+							
+							if(dataExports != null && dataExports.size() > 0) {
+								for(int j = 0 ; j < dataExports.size(); j++) {
+									CustomReportDataEntity item = dataExports.get(j);
+									if (item.getCategories_time().equals("Total") && !report.isShowTotal()) continue;
+									
+									if (i == 0) {
+										cell = row.createCell(3 + j);
+										cell.setCellStyle(tableHeaderCellStyle);
+										cell.setCellValue(item.getCategories_time());
+									}
+									
+									cel26D = row26.createCell(3 + j);
+									cel26D.setCellStyle(tableRowNoDecimalCellStyle);
+									if(item.getActual() != null) cel26D.setCellValue(item.getActual());
+								}
 							}
 						}
 					}
@@ -2911,12 +2947,12 @@ public class ReportsController extends BaseController {
 						
 						if (dataObj != null) {
 							List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
-							int numOfPoints = dataExports != null ? dataExports.size() : 0;
+							int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
 							
 							if (numOfPoints > 0) {
 								// data sources
-								XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0));
-								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i));
+								XDDFDataSource<String> categoriesData = XDDFDataSourcesFactory.fromStringCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 0, 0) : new CellRangeAddress(24, 24, 3, 3 + numOfPoints - 1));
+								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 								
 								XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
 								DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
@@ -3042,11 +3078,13 @@ public class ReportsController extends BaseController {
 							String itemCategoryTime = item.getCategories_time();
 							Double itemActual = item.getActual();
 							
+							if (itemCategoryTime.equals("Total") && !obj.isShowTotal()) continue;
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setBorder(Border.NO_BORDER));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(itemCategoryTime)));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(itemActual != null ? dfs.format(itemActual).toString() : "")));
 							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 							
+							if (itemCategoryTime.equals("Total")) continue;
 							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
 							if (obj.getData_intervals() == Constants.DAILY_INTERVAL) period = new Day(format.parse(itemCategoryTime));
 							else if (obj.getData_intervals() == Constants.MONTHLY_INTERVAL) period = new Month(format.parse(itemCategoryTime));

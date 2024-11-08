@@ -68,6 +68,8 @@ public class ViewReportEntity {
 	private String datatablename;
 	
 	private List<Map<String, Object>> dataFields;
+	private boolean transposed;
+	private boolean showTotal;
 	
 	
 
@@ -406,6 +408,18 @@ public class ViewReportEntity {
 	}
 	public void setHave_inverter(boolean have_inverter) {
 		this.have_inverter = have_inverter;
+	}
+	public boolean isTransposed() {
+		return transposed;
+	}
+	public void setTransposed(boolean transposed) {
+		this.transposed = transposed;
+	}
+	public boolean isShowTotal() {
+		return showTotal;
+	}
+	public void setShowTotal(boolean showTotal) {
+		this.showTotal = showTotal;
 	}
 	
 	
