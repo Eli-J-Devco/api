@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -137,6 +138,7 @@ public class ReportsService extends DB {
 	                		timeUnit = ChronoUnit.DAYS;
 	                		break;
 	                	case 6:
+	                		end = end.with(TemporalAdjusters.lastDayOfMonth());
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
 	                		timeUnit = ChronoUnit.MONTHS;
 	                		break;
@@ -679,8 +681,16 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
+			List<CustomReportDataEntity> fulfillData = fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower);
+			if (fulfillData.size() > 0) {
+				CustomReportDataEntity totalRow = new CustomReportDataEntity();
+				totalRow.setCategories_time("Total");
+				totalRow.setActual(fulfillData.stream().filter(item -> item.getActual() != null).mapToDouble(item -> item.getActual()).sum());
+				
+				fulfillData.add(totalRow);
+			}
 			
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower));
+			dataObj.setDataReports(fulfillData);
 			
 			return dataObj;
 		} catch (Exception ex) {
