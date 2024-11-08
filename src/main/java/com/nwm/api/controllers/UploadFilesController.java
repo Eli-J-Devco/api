@@ -87,6 +87,7 @@ import com.nwm.api.entities.ModelSevSg110cxEntity;
 import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelShark100v1Entity;
+import com.nwm.api.entities.ModelShark250Entity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
@@ -164,6 +165,7 @@ import com.nwm.api.services.ModelSevSg110cxService;
 import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelShark100v1Service;
+import com.nwm.api.services.ModelShark250Service;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
@@ -7640,6 +7642,110 @@ public class UploadFilesController extends BaseController {
 														
 													}
 												}
+												
+												break;
+												
+											case "model_shark250":
+												ModelShark250Service serviceModelShark250 = new ModelShark250Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelShark250Entity dataModelShark250 = serviceModelShark250.setModelShark250(line, item.getOffset_data_old());
+														dataModelShark250.setId_device(item.getId());
+														dataModelShark250.setDatatablename(item.getDatatablename());
+														dataModelShark250.setView_tablename(item.getView_tablename());
+														dataModelShark250.setJob_tablename(item.getJob_tablename());
+														
+														// scaling device parameter
+														if (scaledDeviceParameters.size() > 0) {
+															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+																String slug = scaledDeviceParameter.getParameter_slug();
+																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+																String variableName = scaledDeviceParameter.getVariable_name();
+																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark250Entity.class);
+																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark250);
+																if (initialValue == 0.001) continue;
+																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+																pd.getWriteMethod().invoke(dataModelShark250, scaledValue);
+																if (slug.equals("ActivePower")) dataModelShark250.setNvmActivePower(scaledValue);
+																if (slug.equals("ActiveEnergyNet")) dataModelShark250.setNvmActiveEnergy(scaledValue);
+															}
+														}
+														
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														// active power
+														if(dataModelShark250.getActivePower() != 0.001 && dataModelShark250.getActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataModelShark250.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataModelShark250.getActivePower() != 0.001 ? dataModelShark250.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataModelShark250.getActivePower() != 0.001 ? dataModelShark250.getActivePower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														
+														
+														// Insert alert
+//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
+//															// Check error code
+//															BatchJobService service = new BatchJobService();
+//															ErrorEntity errorItem = new ErrorEntity();
+//															errorItem.setId_device_group(item.getId_device_group());
+//															errorItem.setError_code(words.get(1));
+//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
+//															if(rowItemError.getId() > 0) {
+//																AlertEntity alertItem = new AlertEntity();
+//																alertItem.setId_device(item.getId());
+//																alertItem.setStart_date(words.get(0).replace("'", ""));
+//																alertItem.setId_error(rowItemError.getId());
+//																boolean checkAlertExist = service.checkAlertExist(alertItem);
+//																if(!checkAlertExist && alertItem.getId_device() > 0) {
+//																	// Insert alert
+//																	service.insertAlert(alertItem);
+//																}
+//															}
+//														}
+														
+														serviceModelShark250.insertModelShark250(dataModelShark250);
+
+														// low production alert
+														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
+															item.setLast_updated(deviceUpdateE.getLast_updated());
+															serviceD.checkLowProduction(item, dataDevice);
+														}
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){    
+															}
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {     
+															}		
+														}  
+														catch(Exception e){    
+															e.printStackTrace();  
+														}
+														
+													}
+												}
+												
 												
 												break;
 						                        

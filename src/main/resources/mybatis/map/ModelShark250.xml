@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelShark250">
+
+	<insert id="insertModelShark250" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="ActivePower != 0.001" >
+                `ActivePower`,
+          </if>
+          <if test="ReactivePower != 0.001" >
+                `ReactivePower`,
+          </if>
+          <if test="ApparentPower != 0.001" >
+                `ApparentPower`,
+          </if>
+          <if test="ActiveEnergyReceived != 0.001" >
+                `ActiveEnergyReceived`,
+          </if>
+          <if test="ActiveEnergyDelivered != 0.001" >
+                `ActiveEnergyDelivered`,
+          </if>
+          <if test="ActiveEnergyNet != 0.001" >
+                `ActiveEnergyNet`,
+          </if>
+          <if test="ReactiveEnergyReceived != 0.001" >
+                `ReactiveEnergyReceived`,
+          </if>
+          <if test="ReactiveEnergyDelivered != 0.001" >
+               `ReactiveEnergyDelivered`, 
+          </if>
+          <if test="ReactiveEnergyNet != 0.001" >
+                `ReactiveEnergyNet`,
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                `ApparentEnergy`,
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="PowerFactor != 0.001" >
+                `PowerFactor`,
+          </if>
+          <if test="ActiveEnergyReceivedRaw != 0.001" >
+                `ActiveEnergyReceivedRaw`,
+          </if>
+          <if test="ActiveEnergyDeliveredRaw != 0.001" >
+                `ActiveEnergyDeliveredRaw`,
+          </if>
+          <if test="ActiveEnergyNetRaw != 0.001" >
+                `ActiveEnergyNetRaw`,
+          </if>
+          <if test="VoltageAN != 0.001" >
+                `VoltageAN`,
+          </if>
+          <if test="VoltageBN != 0.001" >
+                `VoltageBN`,
+          </if>
+          <if test="VoltageCN != 0.001" >
+                `VoltageCN`,
+          </if>
+          <if test="VoltageAB != 0.001" >
+                `VoltageAB`,
+          </if>
+          <if test="VoltageBC != 0.001" >
+                `VoltageBC`,
+          </if>
+          <if test="VoltageCA != 0.001" >
+                `VoltageCA`,
+          </if>
+          <if test="ACCurrentA != 0.001" >
+                `ACCurrentA`,
+          </if>
+          <if test="ACCurrentB != 0.001" >
+                `ACCurrentB`,
+          </if>
+          <if test="ACCurrentC != 0.001" >
+                `ACCurrentC`,
+          </if>
+          <if test="ACCurrentNeutral != 0.001" >
+                `ACCurrentNeutral`,
+          </if>
+          <if test="ActivePowerA != 0.001" >
+                `ActivePowerA`,
+          </if>
+          <if test="ActivePowerB != 0.001" >
+                `ActivePowerB`,
+          </if>
+          <if test="ActivePowerC != 0.001" >
+                `ActivePowerC`,
+          </if>
+          <if test="ReactivePowerA != 0.001" >
+                `ReactivePowerA`,
+          </if>
+          <if test="ReactivePowerB != 0.001" >
+                `ReactivePowerB`,
+          </if>
+          <if test="ReactivePowerC != 0.001" >
+                `ReactivePowerC`,
+          </if>
+          <if test="PowerFactorA != 0.001" >
+                `PowerFactorA`,
+          </if>
+          <if test="PowerFactorB != 0.001" >
+                `PowerFactorB`,
+          </if>
+          <if test="PowerFactorC != 0.001" >
+                `PowerFactorC`,
+          </if>
+          <if test="Serialnumber != 0.001" >
+                `Serialnumber`,
+          </if>
+          <if test="Firmwareversion != 0.001" >
+                `Firmwareversion`,
+          </if>
+          <if test="CurrentTransformerPrimary != 0.001" >
+               `CurrentTransformerPrimary`, 
+          </if>
+          <if test="PotentialTransformerPrimary != 0.001" >
+                `PotentialTransformerPrimary`,
+          </if>
+          <if test="PotentialTransformerSecondary != 0.001" >
+                `PotentialTransformerSecondary`,
+          </if>
+          <if test="CurrentTransformerSecondary != 0.001" >
+                `CurrentTransformerSecondary`,
+          </if>
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="ActivePower != 0.001" >
+                #{ActivePower},
+          </if>
+          <if test="ReactivePower != 0.001" >
+                #{ReactivePower},
+          </if>
+          <if test="ApparentPower != 0.001" >
+                #{ApparentPower},
+          </if>
+          <if test="ActiveEnergyReceived != 0.001" >
+                #{ActiveEnergyReceived},
+          </if>
+          <if test="ActiveEnergyDelivered != 0.001" >
+                #{ActiveEnergyDelivered},
+          </if>
+          <if test="ActiveEnergyNet != 0.001" >
+                #{ActiveEnergyNet},
+          </if>
+          <if test="ReactiveEnergyReceived != 0.001" >
+                #{ReactiveEnergyReceived},
+          </if>
+          <if test="ReactiveEnergyDelivered != 0.001" >
+               #{ReactiveEnergyDelivered}, 
+          </if>
+          <if test="ReactiveEnergyNet != 0.001" >
+                #{ReactiveEnergyNet},
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                #{ApparentEnergy},
+          </if>
+          <if test="Frequency != 0.001" >
+                #{Frequency},
+          </if>
+          <if test="PowerFactor != 0.001" >
+                #{PowerFactor},
+          </if>
+          <if test="ActiveEnergyReceivedRaw != 0.001" >
+                #{ActiveEnergyReceivedRaw},
+          </if>
+          <if test="ActiveEnergyDeliveredRaw != 0.001" >
+                #{ActiveEnergyDeliveredRaw},
+          </if>
+          <if test="ActiveEnergyNetRaw != 0.001" >
+                #{ActiveEnergyNetRaw},
+          </if>
+          <if test="VoltageAN != 0.001" >
+                #{VoltageAN},
+          </if>
+          <if test="VoltageBN != 0.001" >
+                #{VoltageBN},
+          </if>
+          <if test="VoltageCN != 0.001" >
+                #{VoltageCN},
+          </if>
+          <if test="VoltageAB != 0.001" >
+                #{VoltageAB},
+          </if>
+          <if test="VoltageBC != 0.001" >
+                #{VoltageBC},
+          </if>
+          <if test="VoltageCA != 0.001" >
+                #{VoltageCA},
+          </if>
+          <if test="ACCurrentA != 0.001" >
+                #{ACCurrentA},
+          </if>
+          <if test="ACCurrentB != 0.001" >
+                #{ACCurrentB},
+          </if>
+          <if test="ACCurrentC != 0.001" >
+                #{ACCurrentC},
+          </if>
+          <if test="ACCurrentNeutral != 0.001" >
+                #{ACCurrentNeutral},
+          </if>
+          <if test="ActivePowerA != 0.001" >
+                #{ActivePowerA},
+          </if>
+          <if test="ActivePowerB != 0.001" >
+                #{ActivePowerB},
+          </if>
+          <if test="ActivePowerC != 0.001" >
+                #{ActivePowerC},
+          </if>
+          <if test="ReactivePowerA != 0.001" >
+                #{ReactivePowerA},
+          </if>
+          <if test="ReactivePowerB != 0.001" >
+                #{ReactivePowerB},
+          </if>
+          <if test="ReactivePowerC != 0.001" >
+                #{ReactivePowerC},
+          </if>
+          <if test="PowerFactorA != 0.001" >
+                #{PowerFactorA},
+          </if>
+          <if test="PowerFactorB != 0.001" >
+                #{PowerFactorB},
+          </if>
+          <if test="PowerFactorC != 0.001" >
+                #{PowerFactorC},
+          </if>
+          <if test="Serialnumber != 0.001" >
+                #{Serialnumber},
+          </if>
+          <if test="Firmwareversion != 0.001" >
+                #{Firmwareversion},
+          </if>
+          <if test="CurrentTransformerPrimary != 0.001" >
+               #{CurrentTransformerPrimary}, 
+          </if>
+          <if test="PotentialTransformerPrimary != 0.001" >
+                #{PotentialTransformerPrimary},
+          </if>
+          <if test="PotentialTransformerSecondary != 0.001" >
+                #{PotentialTransformerSecondary},
+          </if>
+          <if test="CurrentTransformerSecondary != 0.001" >
+                #{CurrentTransformerSecondary},
+          </if>
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	#{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	#{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="ActivePower != 0.001" >
+                `ActivePower` = #{ActivePower},
+          </if>
+          <if test="ReactivePower != 0.001" >
+                `ReactivePower` = #{ReactivePower},
+          </if>
+          <if test="ApparentPower != 0.001" >
+                `ApparentPower` = #{ApparentPower},
+          </if>
+          <if test="ActiveEnergyReceived != 0.001" >
+                `ActiveEnergyReceived` = #{ActiveEnergyReceived},
+          </if>
+          <if test="ActiveEnergyDelivered != 0.001" >
+                `ActiveEnergyDelivered` = #{ActiveEnergyDelivered},
+          </if>
+          <if test="ActiveEnergyNet != 0.001" >
+                `ActiveEnergyNet` = #{ActiveEnergyNet},
+          </if>
+          <if test="ReactiveEnergyReceived != 0.001" >
+                `ReactiveEnergyReceived` = #{ReactiveEnergyReceived},
+          </if>
+          <if test="ReactiveEnergyDelivered != 0.001" >
+               `ReactiveEnergyDelivered` = #{ReactiveEnergyDelivered}, 
+          </if>
+          <if test="ReactiveEnergyNet != 0.001" >
+                `ReactiveEnergyNet` = #{ReactiveEnergyNet},
+          </if>
+          <if test="ApparentEnergy != 0.001" >
+                `ApparentEnergy` = #{ApparentEnergy},
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency` = #{Frequency},
+          </if>
+          <if test="PowerFactor != 0.001" >
+                `PowerFactor` = #{PowerFactor},
+          </if>
+          <if test="ActiveEnergyReceivedRaw != 0.001" >
+                `ActiveEnergyReceivedRaw` = #{ActiveEnergyReceivedRaw},
+          </if>
+          <if test="ActiveEnergyDeliveredRaw != 0.001" >
+                `ActiveEnergyDeliveredRaw` = #{ActiveEnergyDeliveredRaw},
+          </if>
+          <if test="ActiveEnergyNetRaw != 0.001" >
+                `ActiveEnergyNetRaw` = #{ActiveEnergyNetRaw},
+          </if>
+          <if test="VoltageAN != 0.001" >
+                `VoltageAN` = #{VoltageAN},
+          </if>
+          <if test="VoltageBN != 0.001" >
+                `VoltageBN` = #{VoltageBN},
+          </if>
+          <if test="VoltageCN != 0.001" >
+                `VoltageCN` = #{VoltageCN},
+          </if>
+          <if test="VoltageAB != 0.001" >
+                `VoltageAB` = #{VoltageAB},
+          </if>
+          <if test="VoltageBC != 0.001" >
+                `VoltageBC` = #{VoltageBC},
+          </if>
+          <if test="VoltageCA != 0.001" >
+                `VoltageCA` = #{VoltageCA},
+          </if>
+          <if test="ACCurrentA != 0.001" >
+                `ACCurrentA` = #{ACCurrentA},
+          </if>
+          <if test="ACCurrentB != 0.001" >
+               `ACCurrentB` = #{ACCurrentB},
+          </if>
+          <if test="ACCurrentC != 0.001" >
+                `ACCurrentC` = #{ACCurrentC},
+          </if>
+          <if test="ACCurrentNeutral != 0.001" >
+                `ACCurrentNeutral` = #{ACCurrentNeutral},
+          </if>
+          <if test="ActivePowerA != 0.001" >
+                `ActivePowerA = `#{ActivePowerA},
+          </if>
+          <if test="ActivePowerB != 0.001" >
+                `ActivePowerB` = #{ActivePowerB},
+          </if>
+          <if test="ActivePowerC != 0.001" >
+               `ActivePowerC` = #{ActivePowerC},
+          </if>
+          <if test="ReactivePowerA != 0.001" >
+                `ReactivePowerA` = #{ReactivePowerA},
+          </if>
+          <if test="ReactivePowerB != 0.001" >
+                `ReactivePowerB` = #{ReactivePowerB},
+          </if>
+          <if test="ReactivePowerC != 0.001" >
+                `ReactivePowerC` = #{ReactivePowerC},
+          </if>
+          <if test="PowerFactorA != 0.001" >
+                `PowerFactorA` = #{PowerFactorA},
+          </if>
+          <if test="PowerFactorB != 0.001" >
+                `PowerFactorB` = #{PowerFactorB},
+          </if>
+          <if test="PowerFactorC != 0.001" >
+                `PowerFactorC` = #{PowerFactorC},
+          </if>
+          <if test="Serialnumber != 0.001" >
+                `Serialnumber` = #{Serialnumber},
+          </if>
+          <if test="Firmwareversion != 0.001" >
+                `Firmwareversion` = #{Firmwareversion},
+          </if>
+          <if test="CurrentTransformerPrimary != 0.001" >
+               `CurrentTransformerPrimary` = #{CurrentTransformerPrimary}, 
+          </if>
+          <if test="PotentialTransformerPrimary != 0.001" >
+                `PotentialTransformerPrimary` = #{PotentialTransformerPrimary},
+          </if>
+          <if test="PotentialTransformerSecondary != 0.001" >
+                `PotentialTransformerSecondary` = #{PotentialTransformerSecondary},
+          </if>
+          <if test="CurrentTransformerSecondary != 0.001" >
+                `CurrentTransformerSecondary` = #{CurrentTransformerSecondary},
+          </if>
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower` = #{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy` = #{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelShark250Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
