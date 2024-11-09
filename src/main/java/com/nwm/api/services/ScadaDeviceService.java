@@ -6,7 +6,6 @@
 package com.nwm.api.services;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -50,21 +49,20 @@ public class ScadaDeviceService extends DB {
 		
 		try {
 			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				for (ScadaDeviceChartDataEntity dateTime: dateTimeList) {
-					boolean isFound = false;
-					
-					for(ScadaDeviceChartDataEntity data: dataList) {
-						String fullTime = dateTime.getFull_time();
-						String powerTime = data.getFull_time();
-						
-						if (fullTime.equals(powerTime)) {
-							fulfilledDataList.add(data);
-							isFound = true;
-							break;
-						}
+				int count = 0;
+				for (int i = 0; i < dateTimeList.size(); i++) {
+					ScadaDeviceChartDataEntity dateTimeItem = dateTimeList.get(i);
+					if (i - count > dataList.size() - 1) {
+						fulfilledDataList.add(dateTimeItem);
+						continue;
 					}
-					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					ScadaDeviceChartDataEntity dataItem = dataList.get(i - count);
+					if (dateTimeItem.getFull_time().equals(dataItem.getFull_time())) {
+						fulfilledDataList.add(dataItem);
+					} else {
+						fulfilledDataList.add(dateTimeItem);
+						count++;
+					}
 				}
 			}
 		} catch (Exception e) {

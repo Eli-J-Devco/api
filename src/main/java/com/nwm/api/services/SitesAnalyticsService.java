@@ -63,21 +63,20 @@ public class SitesAnalyticsService extends DB {
 		
 		try {
 			if(dataList != null && dateTimeList.size() > 0) {
-				for (Map<String, Object> dateTime: dateTimeList) {
-					boolean isFound = false;
-					
-					for(Map<String, Object> data: dataList) {
-						String fullTime = dateTime.get("time_full").toString();
-						String powerTime = data.get("time_full").toString();
-						
-						if (fullTime.equals(powerTime)) {
-							fulfilledDataList.add(data);
-							isFound = true;
-							break;
-						}
+				int count = 0;
+				for (int i = 0; i < dateTimeList.size(); i++) {
+					Map<String, Object> dateTimeItem = dateTimeList.get(i);
+					if (i - count > dataList.size() - 1) {
+						fulfilledDataList.add(dateTimeItem);
+						continue;
 					}
-					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					Map<String, Object> dataItem = dataList.get(i - count);
+					if (dateTimeItem.get("time_full").toString().equals(dataItem.get("time_full").toString())) {
+						fulfilledDataList.add(dataItem);
+					} else {
+						fulfilledDataList.add(dateTimeItem);
+						count++;
+					}
 				}
 			}
 		} catch (Exception e) {

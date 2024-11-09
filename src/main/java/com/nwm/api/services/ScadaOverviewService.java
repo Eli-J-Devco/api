@@ -37,21 +37,20 @@ public class ScadaOverviewService extends DB {
 		
 		try {
 			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				for (ClientMonthlyDateEntity dateTime: dateTimeList) {
-					boolean isFound = false;
-					
-					for(ClientMonthlyDateEntity data: dataList) {
-						String timeFull = dateTime.getTime_full();
-						String powerTime = data.getTime_full();
-						
-						if (timeFull.equals(powerTime)) {
-							fulfilledDataList.add(data);
-							isFound = true;
-							break;
-						}
+				int count = 0;
+				for (int i = 0; i < dateTimeList.size(); i++) {
+					ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
+					if (i - count > dataList.size() - 1) {
+						fulfilledDataList.add(dateTimeItem);
+						continue;
 					}
-					
-					if (!isFound) fulfilledDataList.add(dateTime);
+					ClientMonthlyDateEntity dataItem = dataList.get(i - count);
+					if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
+						fulfilledDataList.add(dataItem);
+					} else {
+						fulfilledDataList.add(dateTimeItem);
+						count++;
+					}
 				}
 			}
 		} catch (Exception e) {
