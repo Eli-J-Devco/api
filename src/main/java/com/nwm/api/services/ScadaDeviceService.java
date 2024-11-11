@@ -147,6 +147,11 @@ public class ScadaDeviceService extends DB {
 	                	case "last_month":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
 	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		break;
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -169,6 +174,11 @@ public class ScadaDeviceService extends DB {
 	                	case "this_month":
 	                	case "last_month":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                		break;
+	                	case "12_month":
+	                	case "year":
+	                	case "lifetime":
+	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
@@ -193,6 +203,7 @@ public class ScadaDeviceService extends DB {
 	                		break;
 	                	case "12_month":
 	                	case "year":
+	                	case "lifetime":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                	case "custom":
@@ -212,6 +223,7 @@ public class ScadaDeviceService extends DB {
 	                		break;
 	                	case "12_month":
 	                	case "year":
+	                	case "lifetime":
 	                	case "custom":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
