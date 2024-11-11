@@ -49,21 +49,20 @@ public class ReportsService extends DB {
 		
 		try {
 			if(dataList != null && dateTimeList.size() > 0) {
-				for (K dateTime: dateTimeList) {
-					boolean isFound = false;
-					
-					for(K data: dataList) {
-						String fullTime = dateTime.getCategories_time();
-						String powerTime = data.getCategories_time();
-						
-						if (fullTime.equals(powerTime)) {
-							fulfilledDataList.add(data);
-							isFound = true;
-							break;
-						}
+				int count = 0;
+				for (int i = 0; i < dateTimeList.size(); i++) {
+					K dateTimeItem = dateTimeList.get(i);
+					if (i - count > dataList.size() - 1) {
+						fulfilledDataList.add(dateTimeItem);
+						continue;
 					}
-					
-					if (!isFound) fulfilledDataList.add((K) dateTime);
+					K dataItem = dataList.get(i - count);
+					if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
+						fulfilledDataList.add(dataItem);
+					} else {
+						fulfilledDataList.add(dateTimeItem);
+						count++;
+					}
 				}
 			}
 		} catch (Exception e) {
