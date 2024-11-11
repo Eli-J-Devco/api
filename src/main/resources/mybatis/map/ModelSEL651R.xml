@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSEL651R">
+
+	<insert id="insertModelSEL651R" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="PhaseACurrent != 0.001" >
+                `PhaseACurrent`,
+          </if>
+          <if test="PhaseAAngle != 0.001" >
+                `PhaseAAngle`,
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                `PhaseBCurrent`,
+          </if>
+          <if test="PhaseBAngle != 0.001" >
+                `PhaseBAngle`,
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                `PhaseCCurrent`,
+          </if>
+          <if test="PhaseCAngle != 0.001" >
+                `PhaseCAngle`,
+          </if>
+          <if test="ResidualGroundCurrent != 0.001" >
+                `ResidualGroundCurrent`,
+          </if>
+          <if test="ResidualGroundCurrentAngle != 0.001" >
+               `ResidualGroundCurrentAngle`, 
+          </if>
+          <if test="NeutralCurrent != 0.001" >
+                `NeutralCurrent`,
+          </if>
+          <if test="NeutralCurrentAngle != 0.001" >
+                `NeutralCurrentAngle`,
+          </if>
+          <if test="PhaseAVoltageYTerminals != 0.001" >
+                `PhaseAVoltageYTerminals`,
+          </if>
+          <if test="PhaseAVoltageAngleYTerminals != 0.001" >
+                `PhaseAVoltageAngleYTerminals`,
+          </if>
+          <if test="PhaseBVoltageYTerminals != 0.001" >
+                `PhaseBVoltageYTerminals`,
+          </if>
+          <if test="PhaseBVoltageAngleYTerminals != 0.001" >
+                `PhaseBVoltageAngleYTerminals`,
+          </if>
+          <if test="PhaseCVoltageYTerminals != 0.001" >
+                `PhaseCVoltageYTerminals`,
+          </if>
+          <if test="PhaseCVoltageAngleYTerminals != 0.001" >
+                `PhaseCVoltageAngleYTerminals`,
+          </if>
+          <if test="PhaseAVoltageZTerminals != 0.001" >
+                `PhaseAVoltageZTerminals`,
+          </if>
+          <if test="PhaseAVoltageAngleZTerminals != 0.001" >
+                `PhaseAVoltageAngleZTerminals`,
+          </if>
+          <if test="PhaseBVoltageZTerminals != 0.001" >
+                `PhaseBVoltageZTerminals`,
+          </if>
+          <if test="PhaseBVoltageAngleZTerminals != 0.001" >
+                `PhaseBVoltageAngleZTerminals`,
+          </if>
+          <if test="PhaseCVoltageZTerminals != 0.001" >
+                `PhaseCVoltageZTerminals`,
+          </if>
+          <if test="PhaseCVoltageAngleZTerminals != 0.001" >
+                `PhaseCVoltageAngleZTerminals`,
+          </if>
+          <if test="ThreePhaseRealPower != 0.001" >
+                `ThreePhaseRealPower`,
+          </if>
+          <if test="ThreePhaseReactivePower != 0.001" >
+                `ThreePhaseReactivePower`,
+          </if>
+          <if test="ThreePhasePowerFactor != 0.001" >
+                `ThreePhasePowerFactor`,
+          </if>
+          <if test="ThreePhasePowerFactorLeading != 0.001" >
+                `ThreePhasePowerFactorLeading`,
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="DCBatteryVoltage != 0.001" >
+                `DCBatteryVoltage`,
+          </if>
+          <if test="ThreePhaseRealEnergyIn != 0.001" >
+                `ThreePhaseRealEnergyIn`,
+          </if>
+          <if test="ThreePhaseRealEnergyOut != 0.001" >
+                `ThreePhaseRealEnergyOut`,
+          </if>
+          <if test="ThreePhaseReactiveEnergyIn != 0.001" >
+                `ThreePhaseReactiveEnergyIn`,
+          </if>
+          <if test="ThreePhaseReactiveEnergyOut != 0.001" >
+                `ThreePhaseReactiveEnergyOut`,
+          </if>
+          <if test="ActiveSettingsGroup != 0.001" >
+                `ActiveSettingsGroup`,
+          </if>
+          <if test="FrontPanelLEDs1 != 0.001" >
+                `FrontPanelLEDs1`,
+          </if>
+          <if test="FrontPanelLEDs2 != 0.001" >
+                `FrontPanelLEDs2`,
+          </if>
+          <if test="FrontPanelLEDs3 != 0.001" >
+                `FrontPanelLEDs3`,
+          </if>
+          <if test="Row64 != 0.001" >
+               `Row64`, 
+          </if>
+          <if test="Row18 != 0.001" >
+                `Row18`,
+          </if>
+          <if test="OperatingStatus != 0.001" >
+                `OperatingStatus`,
+          </if>
+          <if test="BreakerStatus != 0.001" >
+                `BreakerStatus`,
+          </if>
+          
+          
+          
+          <if test="TargetReset != 0.001" >
+                `TargetReset`,
+          </if>
+          <if test="Open != 0.001" >
+                `Open`,
+          </if>
+          <if test="Close != 0.001" >
+                `Close`,
+          </if>
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="PhaseACurrent != 0.001" >
+                #{PhaseACurrent},
+          </if>
+          <if test="PhaseAAngle != 0.001" >
+                #{PhaseAAngle},
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                #{PhaseBCurrent},
+          </if>
+          <if test="PhaseBAngle != 0.001" >
+                #{PhaseBAngle},
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                #{PhaseCCurrent},
+          </if>
+          <if test="PhaseCAngle != 0.001" >
+                #{PhaseCAngle},
+          </if>
+          <if test="ResidualGroundCurrent != 0.001" >
+                #{ResidualGroundCurrent},
+          </if>
+          <if test="ResidualGroundCurrentAngle != 0.001" >
+               #{ResidualGroundCurrentAngle}, 
+          </if>
+          <if test="NeutralCurrent != 0.001" >
+                #{NeutralCurrent},
+          </if>
+          <if test="NeutralCurrentAngle != 0.001" >
+                #{NeutralCurrentAngle},
+          </if>
+          <if test="PhaseAVoltageYTerminals != 0.001" >
+                #{PhaseAVoltageYTerminals},
+          </if>
+          <if test="PhaseAVoltageAngleYTerminals != 0.001" >
+                #{PhaseAVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseBVoltageYTerminals != 0.001" >
+                #{PhaseBVoltageYTerminals},
+          </if>
+          <if test="PhaseBVoltageAngleYTerminals != 0.001" >
+                #{PhaseBVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseCVoltageYTerminals != 0.001" >
+                #{PhaseCVoltageYTerminals},
+          </if>
+          <if test="PhaseCVoltageAngleYTerminals != 0.001" >
+                #{PhaseCVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseAVoltageZTerminals != 0.001" >
+                #{PhaseAVoltageZTerminals},
+          </if>
+          <if test="PhaseAVoltageAngleZTerminals != 0.001" >
+                #{PhaseAVoltageAngleZTerminals},
+          </if>
+          <if test="PhaseBVoltageZTerminals != 0.001" >
+                #{PhaseBVoltageZTerminals},
+          </if>
+          <if test="PhaseBVoltageAngleZTerminals != 0.001" >
+                #{PhaseBVoltageAngleZTerminals},
+          </if>
+          <if test="PhaseCVoltageZTerminals != 0.001" >
+                #{PhaseCVoltageZTerminals},
+          </if>
+          <if test="PhaseCVoltageAngleZTerminals != 0.001" >
+                #{PhaseCVoltageAngleZTerminals},
+          </if>
+          <if test="ThreePhaseRealPower != 0.001" >
+                #{ThreePhaseRealPower},
+          </if>
+          <if test="ThreePhaseReactivePower != 0.001" >
+                #{ThreePhaseReactivePower},
+          </if>
+          <if test="ThreePhasePowerFactor != 0.001" >
+                #{ThreePhasePowerFactor},
+          </if>
+          <if test="ThreePhasePowerFactorLeading != 0.001" >
+                #{ThreePhasePowerFactorLeading},
+          </if>
+          <if test="Frequency != 0.001" >
+                #{Frequency},
+          </if>
+          <if test="DCBatteryVoltage != 0.001" >
+                #{DCBatteryVoltage},
+          </if>
+          <if test="ThreePhaseRealEnergyIn != 0.001" >
+                #{ThreePhaseRealEnergyIn},
+          </if>
+          <if test="ThreePhaseRealEnergyOut != 0.001" >
+                #{ThreePhaseRealEnergyOut},
+          </if>
+          <if test="ThreePhaseReactiveEnergyIn != 0.001" >
+                #{ThreePhaseReactiveEnergyIn},
+          </if>
+          <if test="ThreePhaseReactiveEnergyOut != 0.001" >
+                #{ThreePhaseReactiveEnergyOut},
+          </if>
+          <if test="ActiveSettingsGroup != 0.001" >
+                #{ActiveSettingsGroup},
+          </if>
+          <if test="FrontPanelLEDs1 != 0.001" >
+                #{FrontPanelLEDs1},
+          </if>
+          <if test="FrontPanelLEDs2 != 0.001" >
+                #{FrontPanelLEDs2},
+          </if>
+          <if test="FrontPanelLEDs3 != 0.001" >
+                #{FrontPanelLEDs3},
+          </if>
+          <if test="Row64 != 0.001" >
+               #{Row64}, 
+          </if>
+          <if test="Row18 != 0.001" >
+                #{Row18},
+          </if>
+          <if test="OperatingStatus != 0.001" >
+                #{OperatingStatus},
+          </if>
+          <if test="BreakerStatus != 0.001" >
+                #{BreakerStatus},
+          </if>
+          
+          
+          
+          <if test="TargetReset != 0.001" >
+                #{TargetReset},
+          </if>
+          <if test="Open != 0.001" >
+                #{Open},
+          </if>
+          <if test="Close != 0.001" >
+                #{Close},
+          </if>
+         
+      <if test="nvmActivePower != 0.001" >
+        #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001" >
+        #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001">
+        #{MeasuredProduction},
+      </if>
+			
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="PhaseACurrent != 0.001" >
+                `PhaseACurrent` = #{PhaseACurrent},
+          </if>
+          <if test="PhaseAAngle != 0.001" >
+                `PhaseAAngle` = #{PhaseAAngle},
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                `PhaseBCurrent` = #{PhaseBCurrent},
+          </if>
+          <if test="PhaseBAngle != 0.001" >
+                `PhaseBAngle` = #{PhaseBAngle},
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                `PhaseCCurrent` = #{PhaseCCurrent},
+          </if>
+          <if test="PhaseCAngle != 0.001" >
+                `PhaseCAngle` = #{PhaseCAngle},
+          </if>
+          <if test="ResidualGroundCurrent != 0.001" >
+                `ResidualGroundCurrent` = #{ResidualGroundCurrent},
+          </if>
+          <if test="ResidualGroundCurrentAngle != 0.001" >
+               `ResidualGroundCurrentAngle` = #{ResidualGroundCurrentAngle}, 
+          </if>
+          <if test="NeutralCurrent != 0.001" >
+                `NeutralCurrent` = #{NeutralCurrent},
+          </if>
+          <if test="NeutralCurrentAngle != 0.001" >
+                `NeutralCurrentAngle` = #{NeutralCurrentAngle},
+          </if>
+          <if test="PhaseAVoltageYTerminals != 0.001" >
+                `PhaseAVoltageYTerminals` = #{PhaseAVoltageYTerminals},
+          </if>
+          <if test="PhaseAVoltageAngleYTerminals != 0.001" >
+                `PhaseAVoltageAngleYTerminals` = #{PhaseAVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseBVoltageYTerminals != 0.001" >
+                `PhaseBVoltageYTerminals` = #{PhaseBVoltageYTerminals},
+          </if>
+          <if test="PhaseBVoltageAngleYTerminals != 0.001" >
+                `PhaseBVoltageAngleYTerminals` = #{PhaseBVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseCVoltageYTerminals != 0.001" >
+                `PhaseCVoltageYTerminals` = #{PhaseCVoltageYTerminals},
+          </if>
+          <if test="PhaseCVoltageAngleYTerminals != 0.001" >
+                `PhaseCVoltageAngleYTerminals` = #{PhaseCVoltageAngleYTerminals},
+          </if>
+          <if test="PhaseAVoltageZTerminals != 0.001" >
+                `PhaseAVoltageZTerminals` = #{PhaseAVoltageZTerminals},
+          </if>
+          <if test="PhaseAVoltageAngleZTerminals != 0.001" >
+                `PhaseAVoltageAngleZTerminals` = #{PhaseAVoltageAngleZTerminals},
+          </if>
+          <if test="PhaseBVoltageZTerminals != 0.001" >
+                `PhaseBVoltageZTerminals` = #{PhaseBVoltageZTerminals},
+          </if>
+          <if test="PhaseBVoltageAngleZTerminals != 0.001" >
+                `PhaseBVoltageAngleZTerminals` = #{PhaseBVoltageAngleZTerminals},
+          </if>
+          <if test="PhaseCVoltageZTerminals != 0.001" >
+                `PhaseCVoltageZTerminals` = #{PhaseCVoltageZTerminals},
+          </if>
+          <if test="PhaseCVoltageAngleZTerminals != 0.001" >
+                `PhaseCVoltageAngleZTerminals` = #{PhaseCVoltageAngleZTerminals},
+          </if>
+          <if test="ThreePhaseRealPower != 0.001" >
+                `ThreePhaseRealPower` = #{ThreePhaseRealPower},
+          </if>
+          <if test="ThreePhaseReactivePower != 0.001" >
+                `ThreePhaseReactivePower` = #{ThreePhaseReactivePower},
+          </if>
+          <if test="ThreePhasePowerFactor != 0.001" >
+                `ThreePhasePowerFactor` = #{ThreePhasePowerFactor},
+          </if>
+          <if test="ThreePhasePowerFactorLeading != 0.001" >
+                `ThreePhasePowerFactorLeading` = #{ThreePhasePowerFactorLeading},
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency` = #{Frequency},
+          </if>
+          <if test="DCBatteryVoltage != 0.001" >
+                `DCBatteryVoltage` = #{DCBatteryVoltage},
+          </if>
+          <if test="ThreePhaseRealEnergyIn != 0.001" >
+                `ThreePhaseRealEnergyIn` = #{ThreePhaseRealEnergyIn},
+          </if>
+          <if test="ThreePhaseRealEnergyOut != 0.001" >
+               `ThreePhaseRealEnergyOut` = #{ThreePhaseRealEnergyOut},
+          </if>
+          <if test="ThreePhaseReactiveEnergyIn != 0.001" >
+               `ThreePhaseReactiveEnergyIn` = #{ThreePhaseReactiveEnergyIn},
+          </if>
+          <if test="ThreePhaseReactiveEnergyOut != 0.001" >
+               `ThreePhaseReactiveEnergyOut` =  #{ThreePhaseReactiveEnergyOut},
+          </if>
+          <if test="ActiveSettingsGroup != 0.001" >
+                `ActiveSettingsGroup` = #{ActiveSettingsGroup},
+          </if>
+          <if test="FrontPanelLEDs1 != 0.001" >
+                `FrontPanelLEDs1` = #{FrontPanelLEDs1},
+          </if>
+          <if test="FrontPanelLEDs2 != 0.001" >
+                `FrontPanelLEDs2` = #{FrontPanelLEDs2},
+          </if>
+          <if test="FrontPanelLEDs3 != 0.001" >
+                `FrontPanelLEDs3` = #{FrontPanelLEDs3},
+          </if>
+          <if test="Row64 != 0.001" >
+               `Row64` = #{Row64}, 
+          </if>
+          <if test="Row18 != 0.001" >
+                `Row18` = #{Row18},
+          </if>
+          <if test="OperatingStatus != 0.001" >
+                `OperatingStatus` = #{OperatingStatus},
+          </if>
+          <if test="BreakerStatus != 0.001" >
+                `BreakerStatus` = #{BreakerStatus},
+          </if>
+          
+          
+          
+          <if test="TargetReset != 0.001" >
+                `TargetReset` = #{TargetReset},
+          </if>
+          <if test="Open != 0.001" >
+                `Open` = #{Open},
+          </if>
+          <if test="Close != 0.001" >
+                `Close` = #{Close},
+          </if>
+         
+          
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower` = #{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy` = #{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSEL651REntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
