@@ -85,6 +85,7 @@ public class SitesDevicesEntity {
 	private int display_time_format;
 	private int display_date_format;
 	private String date_format;
+	private String java_date_format;
 	private int checkall;
 	private int pv_model;
 	private Double pv_module_temperature_coeff;
@@ -1018,6 +1019,12 @@ public class SitesDevicesEntity {
 	}
 	public void setDisable_alert(int disable_alert) {
 		this.disable_alert = disable_alert;
+	}
+	public String getJava_date_format() {
+		return java_date_format;
+	}
+	public void setJava_date_format(String java_date_format) {
+		this.java_date_format = java_date_format;
 	}
 	
 	

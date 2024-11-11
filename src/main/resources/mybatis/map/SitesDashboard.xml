@@ -56,6 +56,7 @@
 			s.display_time_format,
 			s.display_date_format,
 			d.name AS date_format,
+			d.java_format AS java_date_format,
 			s.pv_model,
 			s.pv_module_temperature_coeff,
 			s.global_solar_irradiance_at_stc,

@@ -5,12 +5,17 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -277,6 +282,144 @@ public class SitesAnalyticsService extends DB {
 		return dateTimeList;
 	}
 	
+	/**
+	 * @description convert date time format
+	 * @author Hung.Bui
+	 * @since 2024-11-11
+	 */
+	private  List<Map<String, Object>> convertDateTimeFormat(DeviceEntity obj, List<Map<String, Object>> dataList, LocalDateTime start, LocalDateTime end) {
+		try {
+			if (obj.getDate_format() == null || obj.getTime_format() == 0 || obj.getLocale() == null) return dataList;
+			Locale locale = new Locale(obj.getLocale());
+			DateTimeFormatter fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+			DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern(obj.getDate_format() + (obj.getTime_format() == 2 ? " hh:mm a" : " HH:mm"), locale);
+			DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(obj.getDate_format(), locale);
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern(obj.getTime_format() == 2 ? "ha" : "HH:mm", locale);
+			
+			for (Map<String, Object> data: dataList) {
+				switch (obj.getFilterBy()) {
+					case "today":
+						switch (obj.getData_send_time()) {
+							case 8: // 1 minute
+							case 1: // 5 minutes
+							case 2: // 15 minutes
+							case 3: // 1 hour
+								categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		        				data.put("categories_time", LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
+		                		break;
+							case 4: // 1 day
+							case 5: // 7 days
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+		        				data.put("categories_time", LocalDate.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)));
+								break;
+						}
+						break;
+					
+					case "3_day":
+                	case "this_week":
+                	case "last_week":
+                		switch (obj.getData_send_time()) {
+							case 8: // 1 minute
+							case 1: // 5 minutes
+							case 2: // 15 minutes
+							case 3: // 1 hour
+								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
+		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		        				data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern("dd. LLL", locale)) + " " + LocalTime.parse(data.get("categories_time").toString(), categoryTimeFormat).format(timeFormat));
+		                		break;
+							case 4: // 1 day
+							case 5: // 7 days
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+		                		data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+		                		break;
+						}
+						break;
+					
+                	case "this_month":
+                	case "last_month":
+                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+                		switch (obj.getData_send_time()) {
+							case 2: // 15 minutes
+							case 3: // 1 hour
+		        				data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		                		break;
+							case 4: // 1 day
+							case 5: // 7 days
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+		                		break;
+						}
+                		data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+                		break;
+                		
+                	case "12_month":
+                	case "year":
+                	case "lifetime":
+                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+                		switch (obj.getData_send_time()) {
+							case 2: // 15 minutes
+							case 3: // 1 hour
+		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+		                		break;
+							case 4: // 1 day
+							case 5: // 7 days
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+		                		break;
+							case 6: // 1 month
+		                		data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								break;
+						}
+                		break;
+                	
+                	case "custom":
+                		boolean isDiffLessThan45Days = ChronoUnit.DAYS.between(start, end) < 45;
+	            		switch (obj.getData_send_time()) {
+							case 8: // 1 minute
+							case 1: // 5 minutes
+							case 2: // 15 minutes
+							case 3: // 1 hour
+								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
+		                		data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));
+		                		if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+		                		else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(dateFormat));
+		                		break;
+							case 4: // 1 day
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoryTimeFormat = DateTimeFormatter.ofPattern(isDiffLessThan45Days ? "MM/dd" : "LLL. yyyy");
+		                		data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+		                		if (isDiffLessThan45Days) data.put("categories_time", MonthDay.parse(data.get("categories_time").toString(), categoryTimeFormat).format(DateTimeFormatter.ofPattern(obj.getLocale().equals("vi") ? "dd/MM" : "MM/dd", locale)));
+		                		else data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+		                		break;
+							case 5: // 7 days
+								fullTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+								data.put("time_full", LocalDate.parse(data.get("time_full").toString(), fullTimeFormat).format(dateFormat));
+								data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(categoryTimeFormat.withLocale(locale)));
+								break;
+							case 6: // 1 month
+								categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+								dateFormat = categoryTimeFormat.withLocale(locale);
+								data.put("categories_time", YearMonth.parse(data.get("categories_time").toString(), categoryTimeFormat).format(dateFormat));
+								break;
+						}
+						break;
+				}
+			}
+		} catch (Exception e) {
+		}
+		
+		return dataList;
+	}
+	
 	
 	/**
 	 * @description get list device parameter
@@ -331,7 +474,7 @@ public class SitesAnalyticsService extends DB {
 							maps.put("id_device_group", map.get("id_device_group"));
 							maps.put("id_device_type", map.get("id_device_type"));
 							maps.put("order", map.get("order"));
-							maps.put("data", fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter));
+							maps.put("data", convertDateTimeFormat(obj, fulfillData(getDateTimeList(obj, startDate, endDate), getDataChartParameter), startDate, endDate));
 						} catch (Exception ex) {
 							log.error("getChartParameterDevice", ex);
 						}

@@ -143,6 +143,9 @@ public class DeviceEntity {
 	private String device_status;
 	private String ac_capacity;
 	private String dc_capacity;
+	private String date_format;
+	private int time_format;
+	private String locale;
 	
 	
 
@@ -934,6 +937,24 @@ public class DeviceEntity {
 	}
 	public void setDc_capacity(String dc_capacity) {
 		this.dc_capacity = dc_capacity;
+	}
+	public String getDate_format() {
+		return date_format;
+	}
+	public void setDate_format(String date_format) {
+		this.date_format = date_format;
+	}
+	public int getTime_format() {
+		return time_format;
+	}
+	public void setTime_format(int time_format) {
+		this.time_format = time_format;
+	}
+	public String getLocale() {
+		return locale;
+	}
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 	
 }
