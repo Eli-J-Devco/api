@@ -252,7 +252,7 @@ public class ReportsController extends BaseController {
 				
 				cell = row.createCell(6);
 				cell.setCellStyle(tableHeaderCellStyle);
-				cell.setCellValue("Estimate Energy (kWh)");
+				cell.setCellValue("Actual Energy (kWh)");
 				cell = row.createCell(7);
 				cell.setCellStyle(tableHeaderCellStyle);
 				cell = row.createCell(8);
@@ -381,7 +381,7 @@ public class ReportsController extends BaseController {
 							XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "kWh");
 							
 							data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Estimate Energy (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
+							DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getEnergy() == null), data, categoriesData, valuesData2, "Actual Energy (kWh)", XDDFColor.from(PresetColor.LIGHT_SKY_BLUE), null);
 							
 							chart.plot(data);
 							
@@ -470,7 +470,7 @@ public class ReportsController extends BaseController {
 						// header of data table
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Time").setBold()));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Power (kW)").setBold()));
-						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Estimated Energy (kWh)").setBold()));
+						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Energy (kWh)").setBold()));
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Irradiance (W/m2)").setBold()));
 						
 						// data table
@@ -495,7 +495,7 @@ public class ReportsController extends BaseController {
 						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
 						
 						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot);
-						TimeSeries energySeries = new TimeSeries("Estimate Energy (kWh)");
+						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
 						energyDataset.addSeries(energySeries);
 						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
 						

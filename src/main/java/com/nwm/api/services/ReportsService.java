@@ -256,21 +256,14 @@ public class ReportsService extends DB {
 	
 	public ViewReportEntity getDailyReport(ViewReportEntity obj) {
 		try {
-			ViewReportEntity dataObj = new ViewReportEntity();
-			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null) return null;
+			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
 			List<DailyDateEntity> dataPower = new ArrayList<DailyDateEntity>();
-			List dataListDeviceMeter = queryForList("Reports.getListDeviceTypeMeter", obj);
-			if(dataListDeviceMeter.size() > 0 ) {
-				obj.setGroupDevices(dataListDeviceMeter);
+			List powerDeviceList = dataObj.isHave_meter() ? queryForList("Reports.getListDeviceTypeMeter", obj) : queryForList("Reports.getListDeviceTypeInverter", obj);
+			if(powerDeviceList.size() > 0 ) {
+				obj.setGroupDevices(powerDeviceList);
 				dataPower = queryForList("Reports.getDataEnergyMeterDailyReport", obj);
-			} else {
-				List dataListInverter = queryForList("Reports.getListDeviceTypeInverter", obj);
-				if(dataListInverter.size() > 0) {
-					obj.setGroupDevices(dataListInverter);
-					dataPower = queryForList("Reports.getDataEnergyInverterDailyReport", obj);
-				} 
 			}
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
@@ -307,10 +300,9 @@ public class ReportsService extends DB {
 	 */
 	
 	public Object getAnnuallyReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null) return null;
+			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
@@ -334,10 +326,9 @@ public class ReportsService extends DB {
 	 */
 	
 	public Object getQuarterlyReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null) return null;
+			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
@@ -731,10 +722,9 @@ public class ReportsService extends DB {
 	 */
 	
 	public Object getMonthlyReport(ViewReportEntity obj) {
-		ViewReportEntity dataObj = new ViewReportEntity();
 		try {
-			dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null) return null;
+			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
+			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
@@ -759,7 +749,7 @@ public class ReportsService extends DB {
 	public Object getCustomReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null) return null;
+			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
