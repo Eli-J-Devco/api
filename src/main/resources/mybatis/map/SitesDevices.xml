@@ -624,7 +624,8 @@
 			s.kiosk_view,
 			s.unit_type_temp,
 			s.unit_wind_speed,
-			IF(noComm > 0, 'Offline', 'Online') AS device_status
+			IF(noComm > 0, 'Offline', 'Online') AS device_status,
+			d.mfa_control
 			
 			
 		FROM

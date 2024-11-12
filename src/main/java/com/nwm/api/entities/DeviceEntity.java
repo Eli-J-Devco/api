@@ -146,10 +146,17 @@ public class DeviceEntity {
 	private String date_format;
 	private int time_format;
 	private String locale;
+	private int mfa_control = 0;
 	
 	
 
 	
+	public int getMfa_control() {
+		return mfa_control;
+	}
+	public void setMfa_control(int mfa_control) {
+		this.mfa_control = mfa_control;
+	}
 	public String getDate_time_offset() {
 		return date_time_offset;
 	}

@@ -94,7 +94,8 @@
 			s.enable_alert,
 			s.data_send_time,
 			IFNULL(d.offset_data_old, 0) AS offset_data_old,
-			d.date_time_offset
+			d.date_time_offset,
+			d.mfa_control
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -211,7 +212,8 @@
 			s.table_share_data,
 			IFNULL(s.offset_data_old, 0) AS offset_data_old,
 			s.date_time_offset,
-			s.is_excluded_meter
+			s.is_excluded_meter,
+			s.mfa_control
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -355,7 +357,8 @@
 			`table_share_data`,
 			`offset_data_old`,
 			`date_time_offset`,
-			`is_excluded_meter`
+			`is_excluded_meter`,
+			`mfa_control`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -391,7 +394,8 @@
 			#{table_share_data},
 			#{offset_data_old},
 			#{date_time_offset},
-			#{is_excluded_meter}
+			#{is_excluded_meter},
+			#{mfa_control}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -443,7 +447,8 @@
 				table_share_data = #{table_share_data},
 				offset_data_old = #{offset_data_old},
 				date_time_offset = #{date_time_offset},
-				is_excluded_meter = #{is_excluded_meter}
+				is_excluded_meter = #{is_excluded_meter},
+				mfa_control = #{mfa_control}
 			WHERE
 				`id` = #{id}
 		</if>
