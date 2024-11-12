@@ -7,8 +7,6 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -329,7 +327,8 @@ public class ReportsController extends BaseController {
 		@PostMapping("/sent-mail-excel-daily-report")
 		public Object sentMailDailyReport(@RequestBody ViewReportEntity obj) {
 			try (XSSFWorkbook document = new XSSFWorkbook()) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
@@ -422,7 +421,8 @@ public class ReportsController extends BaseController {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -791,7 +791,8 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-annually-report")
 	public Object sentMailAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			ReportsService service = new ReportsService();
+			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
@@ -866,7 +867,8 @@ public class ReportsController extends BaseController {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -1420,7 +1422,8 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-quarterly-report")
 	public Object sentMailQuarterlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			ReportsService service = new ReportsService();
+			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 				
@@ -1514,7 +1517,8 @@ public class ReportsController extends BaseController {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -1776,55 +1780,6 @@ public class ReportsController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
-		}
-	}
-	
-	/**
-	 * @description Get data list in multi threads
-	 * @author Hung.Bui
-	 * @since 2024-07-01
-	 * @param ids, id, data_intervals, start_date, end_date
-	 * @return data list
-	 */
-	private List<ViewReportEntity> getReportDataList(ViewReportEntity reportObj) {
-		try {
-			ReportsService service = new ReportsService();
-			List<CompletableFuture<ViewReportEntity>> list = new ArrayList<CompletableFuture<ViewReportEntity>>();
-			
-			if (reportObj.getIds() != null && reportObj.getIds().size() > 0) {
-				for (int i = 0; i < reportObj.getIds().size(); i++) {
-					ViewReportEntity siteObj = new ViewReportEntity();
-					siteObj.setId_site((int) reportObj.getIds().get(i));
-					siteObj.setId(reportObj.getId());
-					siteObj.setData_intervals(reportObj.getData_intervals());
-					siteObj.setCadence_range(reportObj.getCadence_range());
-					siteObj.setStart_date(reportObj.getStart_date());
-					siteObj.setEnd_date(reportObj.getEnd_date());
-					
-					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
-						try {
-							ViewReportEntity data = null;
-							if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) service.getDailyReport(siteObj);
-							else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) service.getMonthlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) service.getQuarterlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) service.getAnnuallyReport(siteObj);
-							else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) service.getCustomReport(siteObj);
-							
-							return data;
-						} catch (Exception ex) {
-							log.error(ex);
-							return null;
-						}
-					});
-					
-					list.add(future);
-				}
-			}
-			
-			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
-			return combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
-		} catch (Exception e) {
-			return new ArrayList<>();
 		}
 	}
 	
@@ -2420,7 +2375,8 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sent-mail-excel-monthly-report")
 	public Object sentMailMonthlyReport(@RequestBody ViewReportEntity obj) {
 		try (XSSFWorkbook document = new XSSFWorkbook()) {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			ReportsService service = new ReportsService();
+			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 			int pictureIdx = DocumentHelper.readLogoImageFile(document);
 			
@@ -2524,7 +2480,8 @@ public class ReportsController extends BaseController {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				Image logoImage = DocumentHelper.readLogoImageFile();
 				
@@ -2692,7 +2649,8 @@ public class ReportsController extends BaseController {
 	@PostMapping("/custom-report")
 	public Object getCustomReport(@RequestBody ViewReportEntity obj) {
 		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			ReportsService service = new ReportsService();
+			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
 		} catch (Exception e) {
@@ -2828,6 +2786,7 @@ public class ReportsController extends BaseController {
 					if (report.isTransposed()) {
 						for (int i = 0; i < dataList.size(); i++) {
 							ViewReportEntity dataObj = dataList.get(i);
+							if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 							
 							cell = row.createCell(3 + 3*i);
 							cell.setCellStyle(tableHeaderCellStyle);
@@ -2872,6 +2831,7 @@ public class ReportsController extends BaseController {
 					} else {
 						for (int i = 0; i < dataList.size(); i++) {
 							ViewReportEntity dataObj = dataList.get(i);
+							if (dataObj.getSite_name().equals("Total") && !report.isShowTotal()) continue;
 							
 							int t = 25 + i;
 							Row row26 = sheet.createRow(t);
@@ -2919,7 +2879,8 @@ public class ReportsController extends BaseController {
 			@PostMapping("/sent-mail-excel-custom-report")
 			public Object sentMailCustomReport(@RequestBody ViewReportEntity obj) {
 				try (XSSFWorkbook document = new XSSFWorkbook()) {
-					List<ViewReportEntity> dataObjList = getReportDataList(obj);
+					ReportsService service = new ReportsService();
+					List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 					if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 					
 					XSSFSheet sheet = document.createSheet("Production Report");
@@ -2944,6 +2905,7 @@ public class ReportsController extends BaseController {
 					
 					for (int i = 0; i < dataObjList.size(); i++) {
 						ViewReportEntity dataObj = dataObjList.get(i);
+						if (dataObj.getSite_name().equals("Total")) continue; // exclude total by interval
 						
 						if (dataObj != null) {
 							List<CustomReportDataEntity> dataExports = dataObj.getDataReports();
@@ -2985,7 +2947,8 @@ public class ReportsController extends BaseController {
 				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
 				Document document = new Document(pdfDocument, PageSize.A3.rotate());
 			) {
-				List<ViewReportEntity> dataObjList = getReportDataList(obj);
+				ReportsService service = new ReportsService();
+				List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 				if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 				
 				// total column: 12
@@ -3054,6 +3017,7 @@ public class ReportsController extends BaseController {
 				
 				for (int l = 0; l < dataObjList.size(); l++) {
 					ViewReportEntity dataObj = dataObjList.get(l);
+					if (dataObj.getSite_name().equals("Total") && !obj.isShowTotal()) continue;
 
 					if (dataObj != null) {
 						List<CustomReportDataEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();

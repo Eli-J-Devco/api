@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
@@ -160,6 +162,89 @@ public class ReportsService extends DB {
 		}
 		
 		return dateTimeList;
+	}
+	
+	/**
+	 * @description Summarize data by interval for whole sites
+	 * @author Hung.Bui
+	 * @since 2024-11-12
+	 * @param dataList
+	 * @return data list
+	 */
+	private List<ViewReportEntity> dataSummarize(List<ViewReportEntity> dataList) {
+		try {
+			ViewReportEntity sumObj = new ViewReportEntity();
+			sumObj.setSite_name("Total");
+			
+			List<CustomReportDataEntity> sumReport = dataList
+					.stream()
+					.map(item -> (List<CustomReportDataEntity>) item.getDataReports())
+					.reduce(new ArrayList<CustomReportDataEntity>(), (acc, item) -> {
+						for (int i = 0; i < item.size(); i++) {
+							if (acc.size() < item.size()) acc.add(new CustomReportDataEntity());
+							if (acc.get(i).getCategories_time() == null) acc.get(i).setCategories_time(item.get(i).getCategories_time());
+							if (item.get(i).getActual() != null) acc.get(i).setActual(Optional.ofNullable(acc.get(i).getActual()).orElse(0.0) + item.get(i).getActual());
+						}
+						
+						return acc;
+					});
+			
+			sumObj.setDataReports(sumReport);
+			dataList.add(sumObj);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		return dataList;
+	}
+	
+	/**
+	 * @description Get data list in multi threads
+	 * @author Hung.Bui
+	 * @since 2024-07-01
+	 * @param ids, id, data_intervals, start_date, end_date
+	 * @return data list
+	 */
+	public List<ViewReportEntity> getReportDataList(ViewReportEntity reportObj) {
+		try {
+			List<CompletableFuture<ViewReportEntity>> list = new ArrayList<CompletableFuture<ViewReportEntity>>();
+			
+			if (reportObj.getIds() != null && reportObj.getIds().size() > 0) {
+				for (int i = 0; i < reportObj.getIds().size(); i++) {
+					ViewReportEntity siteObj = new ViewReportEntity();
+					siteObj.setId_site((int) reportObj.getIds().get(i));
+					siteObj.setId(reportObj.getId());
+					siteObj.setData_intervals(reportObj.getData_intervals());
+					siteObj.setCadence_range(reportObj.getCadence_range());
+					siteObj.setStart_date(reportObj.getStart_date());
+					siteObj.setEnd_date(reportObj.getEnd_date());
+					
+					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
+						try {
+							ViewReportEntity data = null;
+							if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) this.getDailyReport(siteObj);
+							else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
+							else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
+							else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
+							else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) this.getCustomReport(siteObj);
+							
+							return data;
+						} catch (Exception ex) {
+							log.error(ex);
+							return null;
+						}
+					});
+					
+					list.add(future);
+				}
+			}
+			
+			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
+			List<ViewReportEntity> dataList =  combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList())).get();
+			return reportObj.getCadence_range() == 5 ? this.dataSummarize(dataList) : dataList;
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
 	}
 	
 	/**

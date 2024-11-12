@@ -150,7 +150,7 @@ public class BuiltInReportService extends DB {
 			}
 			
 			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
-			return combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
+			return combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList())).get();
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
