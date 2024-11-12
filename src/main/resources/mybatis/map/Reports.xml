@@ -858,58 +858,8 @@
 	<select id="getDataEnergyMeterDailyReport" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
-				ROUND(SUM( t.nvmActivePower), 0) AS power,
-				<choose>
-					<when test="data_intervals == 1">ROUND(SUM(t.nvmActivePower) / 60 * 5, 0)</when>
-					<when test="data_intervals == 2">ROUND(SUM(t.nvmActivePower) / 60 * 15, 0)</when>
-					<when test="data_intervals == 3">ROUND(SUM(t.nvmActivePower), 0)</when>
-					<otherwise>ROUND(SUM(t.nvmActivePower), 0)</otherwise>
-				</choose> AS energy
-			FROM
-				(
-					<foreach collection="groupDevices" item="item" index="index" separator="union all">
-							SELECT
-								<if test="data_intervals == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 300)*300), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
-								</if>
-								<if test="data_intervals == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
-								</if>
-								AVG(dv.nvmActivePower) AS nvmActivePower 
-							FROM
-								${item.datatablename} dv
-								LEFT JOIN device d ON d.id = dv.id_device
-								LEFT JOIN site s ON s.id = d.id_site 
-								LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							WHERE
-								s.id = #{item.id_site}
-								AND d.id_device_type IN (3,7,9)
-								AND d.is_excluded_meter = 0
-								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
-								AND s.`status` = 1 
-								AND d.`status` = 1 
-							GROUP BY
-								d.id, categories_time
-			      </foreach>
-				) t 
-			GROUP BY
-				t.categories_time
-	</select>
-	
-	
-	<select id="getDataEnergyInverterDailyReport" resultType="com.nwm.api.entities.DailyDateEntity" >
-			SELECT
-				t.categories_time,
 				ROUND(SUM(t.nvmActivePower), 0) AS power,
-				<choose>
-					<when test="data_intervals == 1">ROUND(SUM(t.nvmActivePower) / 60 * 5, 0)</when>
-					<when test="data_intervals == 2">ROUND(SUM(t.nvmActivePower) / 60 * 15, 0)</when>
-					<when test="data_intervals == 3">ROUND(SUM(t.nvmActivePower), 0)</when>
-					<otherwise>ROUND(SUM(t.nvmActivePower), 0)</otherwise>
-				</choose> AS energy
+				CAST(SUM(t.energy) AS DECIMAL) AS energy
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -923,7 +873,8 @@
 								<if test="data_intervals == 3">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
 								</if>
-								AVG(dv.nvmActivePower) AS nvmActivePower 
+								AVG(dv.nvmActivePower) AS nvmActivePower,
+								SUM(dv.MeasuredProduction) AS energy
 							FROM
 								${item.datatablename} dv
 								LEFT JOIN device d ON d.id = dv.id_device
@@ -931,7 +882,6 @@
 								LEFT JOIN time_zone t ON t.id = s.id_time_zone
 							WHERE
 								s.id = #{item.id_site}
-								AND d.id_device_type = 1
 								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
 								AND s.`status` = 1 
 								AND d.`status` = 1 
