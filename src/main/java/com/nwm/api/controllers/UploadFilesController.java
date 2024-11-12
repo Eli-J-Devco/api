@@ -598,7 +598,7 @@ public class UploadFilesController extends BaseController {
 															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
 															pd.getWriteMethod().invoke(dataModelShark100v1, scaledValue);
 															if (slug.equals("watts_3ph_total")) dataModelShark100v1.setNvmActivePower(scaledValue);
-															if (slug.equals("w_hours_total")) dataModelShark100v1.setNvmActiveEnergy(scaledValue);
+															if (slug.equals("w_hours_net")) dataModelShark100v1.setNvmActiveEnergy(scaledValue);
 														}
 													}
 													
