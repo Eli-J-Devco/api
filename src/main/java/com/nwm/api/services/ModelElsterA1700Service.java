@@ -30,8 +30,12 @@ public class ModelElsterA1700Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
-				if(energy < 0 ) { energy = energy * -1; } 
-				if(offset_data_old > 0 && energy > 0 ) { energy = energy + offset_data_old; }
+				if(energy < 0 && offset_data_old > 0) {
+					energy = energy * -1;
+					energy = (energy + offset_data_old) * -1;
+				} else if(offset_data_old > 0 && energy > 0) {
+					energy = energy + offset_data_old;
+				}
 				
 				
 				dataModelElsterA1700.setTime(words.get(0).replace("'", ""));

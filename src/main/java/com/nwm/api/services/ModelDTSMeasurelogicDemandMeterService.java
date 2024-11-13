@@ -30,7 +30,12 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001");
-				if(energy > 0) { energy = energy + offset_data_old; }
+				if(energy < 0 && offset_data_old > 0) {
+					energy = energy * -1;
+					energy = (energy + offset_data_old) * -1;
+				} else if(offset_data_old > 0 && energy > 0) {
+					energy = energy + offset_data_old;
+				}
 				
 				dataModelDTSMeter.setTime(words.get(0).replace("'", ""));
 				dataModelDTSMeter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
