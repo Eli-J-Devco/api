@@ -13,6 +13,9 @@ import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.element.Div;
+import com.itextpdf.layout.element.IElement;
+import com.itextpdf.layout.element.Table;
 import com.nwm.api.entities.SitesAnalyticsReportEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -132,7 +135,18 @@ public class SitesAnalyticsController extends BaseController {
 
 			File file = new File(fileName);
 			PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
-			pdfDocument.setDefaultPageSize(PageSize.A3);
+			
+			IElement tableEl = HtmlConverter.convertToElements(htmlData)
+					.stream()
+					.filter(item -> item instanceof Div)
+					.flatMap(item -> ((Div) item).getChildren().stream())
+					.filter(item -> item instanceof Table)
+					.findFirst()
+					.orElse(null);
+			PageSize pageSize = PageSize.A3;
+			if (tableEl != null) pageSize.setWidth(Math.max(842, ((Table) tableEl).getNumberOfColumns() * 88));
+			pdfDocument.setDefaultPageSize(pageSize);
+			
 			HtmlConverter.convertToPdf(htmlData, pdfDocument, new ConverterProperties());
 
 			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
