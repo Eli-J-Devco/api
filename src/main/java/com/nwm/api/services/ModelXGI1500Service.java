@@ -71,7 +71,7 @@ public class ModelXGI1500Service extends DB {
 				dataModelXGI1500.setFault1(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModelXGI1500.setFault2(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModelXGI1500.setFault3(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
-				dataModelXGI1500.setSerialNumberHex4Reg(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModelXGI1500.setSerialNumberHex4Reg(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001");
 				
 				dataModelXGI1500.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
 				dataModelXGI1500.setHeatSinkTemperature(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));

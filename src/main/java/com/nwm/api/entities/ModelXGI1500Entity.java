@@ -37,7 +37,7 @@ public class ModelXGI1500Entity {
 	private double Fault1;
 	private double Fault2;
 	private double Fault3;
-	private double SerialNumberHex4Reg;
+	private String SerialNumberHex4Reg;
 	private double CabinetTemperature;
 	private double HeatSinkTemperature;
 	private double OtherTemperature;
@@ -258,10 +258,10 @@ public class ModelXGI1500Entity {
 	public void setFault3(double fault3) {
 		Fault3 = fault3;
 	}
-	public double getSerialNumberHex4Reg() {
+	public String getSerialNumberHex4Reg() {
 		return SerialNumberHex4Reg;
 	}
-	public void setSerialNumberHex4Reg(double serialNumberHex4Reg) {
+	public void setSerialNumberHex4Reg(String serialNumberHex4Reg) {
 		SerialNumberHex4Reg = serialNumberHex4Reg;
 	}
 	public double getCabinetTemperature() {
