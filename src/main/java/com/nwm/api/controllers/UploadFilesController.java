@@ -53,6 +53,7 @@ import com.nwm.api.entities.ModelElkorProductionMeterEntity;
 import com.nwm.api.entities.ModelElkorProductionMeterv1Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelElsterA1700Entity;
+import com.nwm.api.entities.ModelG3LightControllerEntity;
 import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
 import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
@@ -135,6 +136,7 @@ import com.nwm.api.services.ModelElkorProductionMeterService;
 import com.nwm.api.services.ModelElkorProductionMeterv1Service;
 import com.nwm.api.services.ModelElkorWattsonPVMeterService;
 import com.nwm.api.services.ModelElsterA1700Service;
+import com.nwm.api.services.ModelG3LightControllerService;
 import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
 import com.nwm.api.services.ModelIMTSolarClass8000Service;
 import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
@@ -8093,6 +8095,63 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+												
+											case "model_g3_light_controller":
+												ModelG3LightControllerService serviceModelG3 = new ModelG3LightControllerService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														DeviceEntity deviceUpdateE = new DeviceEntity();
+														
+														
+														// WindSpeed
+														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+														
+														// value 2
+														deviceUpdateE.setField_value2(null);
+														
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														ModelG3LightControllerEntity dataModelG3 = serviceModelG3.setModelG3LightController(line);
+														dataModelG3.setId_device(item.getId());
+														dataModelG3.setDatatablename(item.getDatatablename());
+														dataModelG3.setView_tablename(item.getView_tablename());
+														dataModelG3.setJob_tablename(item.getJob_tablename());
+														dataModelG3.setEnable_alert(item.getEnable_alert());
+														serviceModelG3.insertModelG3LightController(dataModelG3);
+														
+														try  
+														{ 
+															File logFile = new File(root.resolve(fileName).toString());
+															if(logFile.delete()){   
+															}
+															
+															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
+																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
+																	+ timeStamp + ".log.gz");
+															File logGzFile = new File(path.toString());
+															
+															if(logGzFile.delete()) {     
+															}		
+														}  
+														catch(Exception e){  
+															e.printStackTrace();  
+														}
+													}
+												}
+												
+												break;
+												
 												
 						                        
 											

@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelG3LightController">
+
+	<insert id="insertModelG3LightController"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="InputsStatus164 != 0.001">
+				`InputsStatus164`,
+			</if>
+			<if test="InputsManualFlag164 != 0.001">
+				`InputsManualFlag164`,
+			</if>
+			<if test="ZonesStatus164 != 0.001">
+				`ZonesStatus164`,
+			</if>
+			<if test="ZonesManualFlag164 != 0.001">
+				`ZonesManualFlag164`,
+			</if>
+			<if test="ZonesFeedbackState164 != 0.001">
+				`ZonesFeedbackState164`,
+			</if>
+			<if test="ZonesAlarmState164 != 0.001">
+				`ZonesAlarmState164`,
+			</if>
+			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
+				`ZoneswithNonRespondingBreaker164`,
+			</if>
+			<if test="BreakersPanel0L != 0.001">
+				`BreakersPanel0L`,
+			</if>
+			<if test="BreakersPanel0R != 0.001">
+				`BreakersPanel0R`,
+			</if>
+			<if test="BreakersPanel1L != 0.001">
+				`BreakersPanel1L`,
+			</if>
+			<if test="BreakersPanel1R != 0.001">
+				`BreakersPanel1R`,
+			</if>
+			<if test="BreakersPanel2L != 0.001">
+				`BreakersPanel2L`,
+			</if>
+			<if test="BreakersPanel2R != 0.001">
+				`BreakersPanel2R`,
+			</if>
+			<if test="BreakerUnresponsivePanel0L != 0.001">
+				`BreakerUnresponsivePanel0L`,
+			</if>
+			<if test="BreakerUnresponsivePanel0R != 0.001">
+				`BreakerUnresponsivePanel0R`,
+			</if>
+			<if test="BreakerUnresponsivePanel1L != 0.001">
+				`BreakerUnresponsivePanel1L`,
+			</if>
+			<if test="BreakerUnresponsivePanel1R != 0.001">
+				`BreakerUnresponsivePanel1R`,
+			</if>
+			<if test="BreakerUnresponsivePanel2L != 0.001">
+				`BreakerUnresponsivePanel2L`,
+			</if>
+			<if test="BreakerUnresponsivePanel2R != 0.001">
+				`BreakerUnresponsivePanel2R`,
+			</if>
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="InputsStatus164 != 0.001">
+				#{InputsStatus164},
+			</if>
+			<if test="InputsManualFlag164 != 0.001">
+				#{InputsManualFlag164},
+			</if>
+			<if test="ZonesStatus164 != 0.001">
+				#{ZonesStatus164},
+			</if>
+			<if test="ZonesManualFlag164 != 0.001">
+				#{ZonesManualFlag164},
+			</if>
+			<if test="ZonesFeedbackState164 != 0.001">
+				#{ZonesFeedbackState164},
+			</if>
+			<if test="ZonesAlarmState164 != 0.001">
+				#{ZonesAlarmState164},
+			</if>
+			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
+				#{ZoneswithNonRespondingBreaker164},
+			</if>
+			<if test="BreakersPanel0L != 0.001">
+				#{BreakersPanel0L},
+			</if>
+			<if test="BreakersPanel0R != 0.001">
+				#{BreakersPanel0R},
+			</if>
+			<if test="BreakersPanel1L != 0.001">
+				#{BreakersPanel1L},
+			</if>
+			<if test="BreakersPanel1R != 0.001">
+				#{BreakersPanel1R},
+			</if>
+			<if test="BreakersPanel2L != 0.001">
+				#{BreakersPanel2L},
+			</if>
+			<if test="BreakersPanel2R != 0.001">
+				#{BreakersPanel2R},
+			</if>
+			<if test="BreakerUnresponsivePanel0L != 0.001">
+				#{BreakerUnresponsivePanel0L},
+			</if>
+			<if test="BreakerUnresponsivePanel0R != 0.001">
+				#{BreakerUnresponsivePanel0R},
+			</if>
+			<if test="BreakerUnresponsivePanel1L != 0.001">
+				#{BreakerUnresponsivePanel1L},
+			</if>
+			<if test="BreakerUnresponsivePanel1R != 0.001">
+				#{BreakerUnresponsivePanel1R},
+			</if>
+			<if test="BreakerUnresponsivePanel2L != 0.001">
+				#{BreakerUnresponsivePanel2L},
+			</if>
+			<if test="BreakerUnresponsivePanel2R != 0.001">
+				#{BreakerUnresponsivePanel2R},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="InputsStatus164 != 0.001">
+				`InputsStatus164` = #{InputsStatus164},
+			</if>
+			<if test="InputsManualFlag164 != 0.001">
+				`InputsManualFlag164` = #{InputsManualFlag164},
+			</if>
+			<if test="ZonesStatus164 != 0.001">
+				`ZonesStatus164` = #{ZonesStatus164},
+			</if>
+			<if test="ZonesManualFlag164 != 0.001">
+				`ZonesManualFlag164` = #{ZonesManualFlag164},
+			</if>
+			<if test="ZonesFeedbackState164 != 0.001">
+				`ZonesFeedbackState164` = #{ZonesFeedbackState164},
+			</if>
+			<if test="ZonesAlarmState164 != 0.001">
+				`ZonesAlarmState164` = #{ZonesAlarmState164},
+			</if>
+			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
+				`ZoneswithNonRespondingBreaker164` = #{ZoneswithNonRespondingBreaker164},
+			</if>
+			<if test="BreakersPanel0L != 0.001">
+				`BreakersPanel0L` = #{BreakersPanel0L},
+			</if>
+			<if test="BreakersPanel0R != 0.001">
+				`BreakersPanel0R` = #{BreakersPanel0R},
+			</if>
+			<if test="BreakersPanel1L != 0.001">
+				`BreakersPanel1L` = #{BreakersPanel1L},
+			</if>
+			<if test="BreakersPanel1R != 0.001">
+				`BreakersPanel1R` = #{BreakersPanel1R},
+			</if>
+			<if test="BreakersPanel2L != 0.001">
+				`BreakersPanel2L` = #{BreakersPanel2L},
+			</if>
+			<if test="BreakersPanel2R != 0.001">
+				`BreakersPanel2R` = #{BreakersPanel2R},
+			</if>
+			<if test="BreakerUnresponsivePanel0L != 0.001">
+				`BreakerUnresponsivePanel0L` = #{BreakerUnresponsivePanel0L},
+			</if>
+			<if test="BreakerUnresponsivePanel0R != 0.001">
+				`BreakerUnresponsivePanel0R` = #{BreakerUnresponsivePanel0R},
+			</if>
+			<if test="BreakerUnresponsivePanel1L != 0.001">
+				`BreakerUnresponsivePanel1L` = #{BreakerUnresponsivePanel1L},
+			</if>
+			<if test="BreakerUnresponsivePanel1R != 0.001">
+				`BreakerUnresponsivePanel1R` = #{BreakerUnresponsivePanel1R},
+			</if>
+			<if test="BreakerUnresponsivePanel2L != 0.001">
+				`BreakerUnresponsivePanel2L` = #{BreakerUnresponsivePanel2L},
+			</if>
+			<if test="BreakerUnresponsivePanel2R != 0.001">
+				`BreakerUnresponsivePanel2R` = #{BreakerUnresponsivePanel2R},
+			</if>
+		</trim>
+	</insert>
+
+</mapper> 
