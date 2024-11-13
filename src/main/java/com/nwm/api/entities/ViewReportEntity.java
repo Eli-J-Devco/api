@@ -70,6 +70,7 @@ public class ViewReportEntity {
 	private List<Map<String, Object>> dataFields;
 	private boolean transposed;
 	private boolean showTotal;
+	private int sort_by;
 	
 	
 
@@ -420,6 +421,12 @@ public class ViewReportEntity {
 	}
 	public void setShowTotal(boolean showTotal) {
 		this.showTotal = showTotal;
+	}
+	public int getSort_by() {
+		return sort_by;
+	}
+	public void setSort_by(int sort_by) {
+		this.sort_by = sort_by;
 	}
 	
 	

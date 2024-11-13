@@ -199,6 +199,28 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	 * @description Sort data
+	 * @author Hung.Bui
+	 * @since 2024-11-13
+	 * @param dataList
+	 * @return data list
+	 */
+	private List<ViewReportEntity> dataSort(List<ViewReportEntity> dataList, ViewReportEntity reportObj) {
+		try {
+			List<ViewReportEntity> sortedDataList = new ArrayList<ViewReportEntity>();
+			if 		(reportObj.getSort_by() == 1) sortedDataList = dataList.stream().sorted((a, b) -> a.getSite_name().compareTo(b.getSite_name())).collect(Collectors.toList());
+			else if (reportObj.getSort_by() == 2) sortedDataList = dataList.stream().sorted((a, b) -> b.getSite_name().compareTo(a.getSite_name())).collect(Collectors.toList());
+			else if (reportObj.getSort_by() == 3) sortedDataList = dataList.stream().sorted((a, b) -> Double.compare(((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual())).collect(Collectors.toList());
+			else if (reportObj.getSort_by() == 4) sortedDataList = dataList.stream().sorted((a, b) -> Double.compare(((List<CustomReportDataEntity>) a.getDataReports()).get(a.getDataReports().size() - 1).getActual(), ((List<CustomReportDataEntity>) b.getDataReports()).get(b.getDataReports().size() - 1).getActual())).collect(Collectors.toList());
+			else 								  sortedDataList = dataList;
+			
+			return sortedDataList;
+		} catch (Exception ex) {
+			return dataList;
+		}
+	}
+	
+	/**
 	 * @description Get data list in multi threads
 	 * @author Hung.Bui
 	 * @since 2024-07-01
@@ -241,7 +263,7 @@ public class ReportsService extends DB {
 			
 			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
 			List<ViewReportEntity> dataList =  combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList())).get();
-			return reportObj.getCadence_range() == 5 ? this.dataSummarize(dataList) : dataList;
+			return reportObj.getCadence_range() == 5 ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
