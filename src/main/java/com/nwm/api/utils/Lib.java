@@ -88,6 +88,18 @@ public final class
 
 Lib {
 	
+	public static int hexToDec(String hex) 
+    { 
+        int len = hex.length(); 
+        int dec = 0; 
+        for (int i = 0; i < len; i++) { 
+            char c = hex.charAt(i); 
+            int digit = Character.digit(c, 16); 
+            dec = dec * 16 + digit; 
+        } 
+        return dec; 
+    }
+	
 	public static String getDomain() {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
