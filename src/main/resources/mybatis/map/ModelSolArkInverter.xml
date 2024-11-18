@@ -1,0 +1,705 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSolArkInverter">
+
+	<insert id="insertModelSolArkInverter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="ActivePowerGenerationToday != 0.001" >
+                `ActivePowerGenerationToday`,
+          </if>
+          <if test="ReactivePowerGenerationToday != 0.001" >
+                `ReactivePowerGenerationToday`,
+          </if>
+          <if test="Invertergridsidetotalactivepowergeneration != 0.001" >
+                `Invertergridsidetotalactivepowergeneration`,
+          </if>
+          <if test="Invertergridsidetotalreactivepowergeneration != 0.001" >
+                `Invertergridsidetotalreactivepowergeneration`,
+          </if>
+          <if test="PhaseAPower != 0.001" >
+                `PhaseAPower`,
+          </if>
+          <if test="PhaseBPower != 0.001" >
+                `PhaseBPower`,
+          </if>
+          <if test="PhaseCPower != 0.001" >
+                `PhaseCPower`,
+          </if>
+          <if test="TotalActivePower != 0.001" >
+               `TotalActivePower`, 
+          </if>
+          <if test="TotalApparentPower != 0.001" >
+                `TotalApparentPower`,
+          </if>
+          <if test="PhaseAVoltage != 0.001" >
+                `PhaseAVoltage`,
+          </if>
+          <if test="PhaseBVoltage != 0.001" >
+                `PhaseBVoltage`,
+          </if>
+          <if test="PhaseCVoltage != 0.001" >
+                `PhaseCVoltage`,
+          </if>
+          <if test="PhaseACurrent != 0.001" >
+                `PhaseACurrent`,
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                `PhaseBCurrent`,
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                `PhaseCCurrent`,
+          </if>
+          <if test="PhaseAReactivePower != 0.001" >
+                `PhaseAReactivePower`,
+          </if>
+          <if test="PhaseBReactivePower != 0.001" >
+                `PhaseBReactivePower`,
+          </if>
+          <if test="PhaseCReactivePower != 0.001" >
+                `PhaseCReactivePower`,
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="PV1Voltage != 0.001" >
+                `PV1Voltage`,
+          </if>
+          <if test="PV1Current != 0.001" >
+                `PV1Current`,
+          </if>
+          <if test="PV2Voltage != 0.001" >
+                `PV2Voltage`,
+          </if>
+          <if test="PV2Current != 0.001" >
+                `PV2Current`,
+          </if>
+          <if test="PV3Voltage != 0.001" >
+                `PV3Voltage`,
+          </if>
+          <if test="PV3Current != 0.001" >
+                `PV3Current`,
+          </if>
+          <if test="PV4Voltage != 0.001" >
+                `PV4Voltage`,
+          </if>
+          <if test="PV4Current != 0.001" >
+                `PV4Current`,
+          </if>
+          <if test="Operationstatus != 0.001" >
+                `Operationstatus`,
+          </if>
+          <if test="Warningmessageword1 != 0.001" >
+                `Warningmessageword1`,
+          </if>
+          <if test="Warningmessageword2 != 0.001" >
+                `Warningmessageword2`,
+          </if>
+          <if test="Faultmessageword1 != 0.001" >
+                `Faultmessageword1`,
+          </if>
+          <if test="Faultmessageword2 != 0.001" >
+                `Faultmessageword2`,
+          </if>
+          <if test="Faultmessageword3 != 0.001" >
+                `Faultmessageword3`,
+          </if>
+          <if test="Faultmessageword4 != 0.001" >
+                `Faultmessageword4`,
+          </if>
+          <if test="PhaseAPowerlow16bits != 0.001" >
+                `PhaseAPowerlow16bits`,
+          </if>
+          <if test="PhaseAPowerhigh16bits != 0.001" >
+                `PhaseAPowerhigh16bits`,
+          </if>
+          <if test="PhaseBPowerlow16bits != 0.001" >
+               `PhaseBPowerlow16bits`, 
+          </if>
+          <if test="PhaseBPowerhigh16bits != 0.001" >
+                `PhaseBPowerhigh16bits`,
+          </if>
+          <if test="PhaseCPowerlow16bits != 0.001" >
+                `PhaseCPowerlow16bits`,
+          </if>
+          <if test="PhaseCPowerhigh16bits != 0.001" >
+                `PhaseCPowerhigh16bits`,
+          </if>
+          <if test="TotalActivePowerlow16bits != 0.001" >
+                `TotalActivePowerlow16bits`,
+          </if>
+          <if test="TotalActivePowerhigh16bits != 0.001" >
+                `TotalActivePowerhigh16bits`,
+          </if>
+          <if test="TotalApparentPowerlow16bits != 0.001" >
+                `TotalApparentPowerlow16bits`,
+          </if>
+          <if test="TotalApparentPowerhigh16bits != 0.001" >
+                `TotalApparentPowerhigh16bits`,
+          </if>
+          <if test="DCinvertertemperature != 0.001" >
+                `DCinvertertemperature`,
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                `Heatsinktemperature`,
+          </if>
+          <if test="Batterychargeoftheday != 0.001" >
+                `Batterychargeoftheday`,
+          </if>
+          <if test="Batterydischargeoftheday != 0.001" >
+                `Batterydischargeoftheday`,
+          </if>
+          <if test="Totalchargetothebattery != 0.001" >
+                `Totalchargetothebattery`,
+          </if>
+          <if test="Totaldischargeofthebattery != 0.001" >
+                `Totaldischargeofthebattery`,
+          </if>
+          <if test="Battery1temperature != 0.001" >
+                `Battery1temperature`,
+          </if>
+          <if test="Battery1voltage != 0.001" >
+                `Battery1voltage`,
+          </if>
+          <if test="Battery1Current != 0.001" >
+                `Battery1Current`,
+          </if>
+          <if test="Battery1OutputPower != 0.001" >
+                `Battery1OutputPower`,
+          </if>
+          <if test="Battery1CorrectedCapacityAH != 0.001" >
+                `Battery1CorrectedCapacityAH`,
+          </if>
+          <if test="Battery1SOC != 0.001" >
+                `Battery1SOC`,
+          </if>
+          <if test="Battery2Temperature != 0.001" >
+                `Battery2Temperature`,
+          </if>
+          <if test="Battery2Voltage != 0.001" >
+                `Battery2Voltage`,
+          </if>
+          <if test="Battery2Current != 0.001" >
+                `Battery2Current`,
+          </if>
+          <if test="Battery2OutputPower != 0.001" >
+                `Battery2OutputPower`,
+          </if>
+          <if test="Battery2CorrectedCapacityAH != 0.001" >
+                `Battery2CorrectedCapacityAH`,
+          </if>
+          <if test="Battery2SOC != 0.001" >
+                `Battery2SOC`,
+          </if>
+          <if test="Negativecurrentfrombattery1 != 0.001" >
+                `Negativecurrentfrombattery1`,
+          </if>
+          <if test="Negativecurrentfrombattery2 != 0.001" >
+                `Negativecurrentfrombattery2`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="ActivePowerGenerationToday != 0.001" >
+                #{ActivePowerGenerationToday},
+          </if>
+          <if test="ReactivePowerGenerationToday != 0.001" >
+                #{ReactivePowerGenerationToday},
+          </if>
+          <if test="Invertergridsidetotalactivepowergeneration != 0.001" >
+                #{Invertergridsidetotalactivepowergeneration},
+          </if>
+          <if test="Invertergridsidetotalreactivepowergeneration != 0.001" >
+                #{Invertergridsidetotalreactivepowergeneration},
+          </if>
+          <if test="PhaseAPower != 0.001" >
+                #{PhaseAPower},
+          </if>
+          <if test="PhaseBPower != 0.001" >
+                #{PhaseBPower},
+          </if>
+          <if test="PhaseCPower != 0.001" >
+                #{PhaseCPower},
+          </if>
+          <if test="TotalActivePower != 0.001" >
+               #{TotalActivePower}, 
+          </if>
+          <if test="TotalApparentPower != 0.001" >
+                #{TotalApparentPower},
+          </if>
+          <if test="PhaseAVoltage != 0.001" >
+                #{PhaseAVoltage},
+          </if>
+          <if test="PhaseBVoltage != 0.001" >
+                #{PhaseBVoltage},
+          </if>
+          <if test="PhaseCVoltage != 0.001" >
+                #{PhaseCVoltage},
+          </if>
+          <if test="PhaseACurrent != 0.001" >
+                #{PhaseACurrent},
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                #{PhaseBCurrent},
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                #{PhaseCCurrent},
+          </if>
+          <if test="PhaseAReactivePower != 0.001" >
+                #{PhaseAReactivePower},
+          </if>
+          <if test="PhaseBReactivePower != 0.001" >
+                #{PhaseBReactivePower},
+          </if>
+          <if test="PhaseCReactivePower != 0.001" >
+                #{PhaseCReactivePower},
+          </if>
+          <if test="Frequency != 0.001" >
+                #{Frequency},
+          </if>
+          <if test="PV1Voltage != 0.001" >
+                #{PV1Voltage},
+          </if>
+          <if test="PV1Current != 0.001" >
+                #{PV1Current},
+          </if>
+          <if test="PV2Voltage != 0.001" >
+                #{PV2Voltage},
+          </if>
+          <if test="PV2Current != 0.001" >
+                #{PV2Current},
+          </if>
+          <if test="PV3Voltage != 0.001" >
+                #{PV3Voltage},
+          </if>
+          <if test="PV3Current != 0.001" >
+                #{PV3Current},
+          </if>
+          <if test="PV4Voltage != 0.001" >
+                #{PV4Voltage},
+          </if>
+          <if test="PV4Current != 0.001" >
+                #{PV4Current},
+          </if>
+          <if test="Operationstatus != 0.001" >
+                #{Operationstatus},
+          </if>
+          <if test="Warningmessageword1 != 0.001" >
+                #{Warningmessageword1},
+          </if>
+          <if test="Warningmessageword2 != 0.001" >
+                #{Warningmessageword2},
+          </if>
+          <if test="Faultmessageword1 != 0.001" >
+                #{Faultmessageword1},
+          </if>
+          <if test="Faultmessageword2 != 0.001" >
+                #{Faultmessageword2},
+          </if>
+          <if test="Faultmessageword3 != 0.001" >
+                #{Faultmessageword3},
+          </if>
+          <if test="Faultmessageword4 != 0.001" >
+                #{Faultmessageword4},
+          </if>
+          <if test="PhaseAPowerlow16bits != 0.001" >
+                #{PhaseAPowerlow16bits},
+          </if>
+          <if test="PhaseAPowerhigh16bits != 0.001" >
+                #{PhaseAPowerhigh16bits},
+          </if>
+          <if test="PhaseBPowerlow16bits != 0.001" >
+               #{PhaseBPowerlow16bits}, 
+          </if>
+          <if test="PhaseBPowerhigh16bits != 0.001" >
+                #{PhaseBPowerhigh16bits},
+          </if>
+          <if test="PhaseCPowerlow16bits != 0.001" >
+                #{PhaseCPowerlow16bits},
+          </if>
+          <if test="PhaseCPowerhigh16bits != 0.001" >
+                #{PhaseCPowerhigh16bits},
+          </if>
+          <if test="TotalActivePowerlow16bits != 0.001" >
+                #{TotalActivePowerlow16bits},
+          </if>
+          <if test="TotalActivePowerhigh16bits != 0.001" >
+                #{TotalActivePowerhigh16bits},
+          </if>
+          <if test="TotalApparentPowerlow16bits != 0.001" >
+                #{TotalApparentPowerlow16bits},
+          </if>
+          <if test="TotalApparentPowerhigh16bits != 0.001" >
+                #{TotalApparentPowerhigh16bits},
+          </if>
+          <if test="DCinvertertemperature != 0.001" >
+                #{DCinvertertemperature},
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                #{Heatsinktemperature},
+          </if>
+          <if test="Batterychargeoftheday != 0.001" >
+                #{Batterychargeoftheday},
+          </if>
+          <if test="Batterydischargeoftheday != 0.001" >
+                #{Batterydischargeoftheday},
+          </if>
+          <if test="Totalchargetothebattery != 0.001" >
+                #{Totalchargetothebattery},
+          </if>
+          <if test="Totaldischargeofthebattery != 0.001" >
+                #{Totaldischargeofthebattery},
+          </if>
+          <if test="Battery1temperature != 0.001" >
+                #{Battery1temperature},
+          </if>
+          <if test="Battery1voltage != 0.001" >
+                #{Battery1voltage},
+          </if>
+          <if test="Battery1Current != 0.001" >
+                #{Battery1Current},
+          </if>
+          <if test="Battery1OutputPower != 0.001" >
+                #{Battery1OutputPower},
+          </if>
+          <if test="Battery1CorrectedCapacityAH != 0.001" >
+                #{Battery1CorrectedCapacityAH},
+          </if>
+          <if test="Battery1SOC != 0.001" >
+                #{Battery1SOC},
+          </if>
+          <if test="Battery2Temperature != 0.001" >
+                #{Battery2Temperature},
+          </if>
+          <if test="Battery2Voltage != 0.001" >
+                #{Battery2Voltage},
+          </if>
+          <if test="Battery2Current != 0.001" >
+                #{Battery2Current},
+          </if>
+          <if test="Battery2OutputPower != 0.001" >
+                #{Battery2OutputPower},
+          </if>
+          <if test="Battery2CorrectedCapacityAH != 0.001" >
+                #{Battery2CorrectedCapacityAH},
+          </if>
+          <if test="Battery2SOC != 0.001" >
+                #{Battery2SOC},
+          </if>
+          <if test="Negativecurrentfrombattery1 != 0.001" >
+                #{Negativecurrentfrombattery1},
+          </if>
+          <if test="Negativecurrentfrombattery2 != 0.001" >
+                #{Negativecurrentfrombattery2},
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	#{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	#{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="ActivePowerGenerationToday != 0.001" >
+                `ActivePowerGenerationToday` = #{ActivePowerGenerationToday},
+          </if>
+          <if test="ReactivePowerGenerationToday != 0.001" >
+                `ReactivePowerGenerationToday` = #{ReactivePowerGenerationToday},
+          </if>
+          <if test="Invertergridsidetotalactivepowergeneration != 0.001" >
+                `Invertergridsidetotalactivepowergeneration` = #{Invertergridsidetotalactivepowergeneration},
+          </if>
+          <if test="Invertergridsidetotalreactivepowergeneration != 0.001" >
+                `Invertergridsidetotalreactivepowergeneration` = #{Invertergridsidetotalreactivepowergeneration},
+          </if>
+          <if test="PhaseAPower != 0.001" >
+                `PhaseAPower` = #{PhaseAPower},
+          </if>
+          <if test="PhaseBPower != 0.001" >
+                `PhaseBPower` = #{PhaseBPower},
+          </if>
+          <if test="PhaseCPower != 0.001" >
+                `PhaseCPower` = #{PhaseCPower},
+          </if>
+          <if test="TotalActivePower != 0.001" >
+               `TotalActivePower` = #{TotalActivePower}, 
+          </if>
+          <if test="TotalApparentPower != 0.001" >
+                `TotalApparentPower` = #{TotalApparentPower},
+          </if>
+          <if test="PhaseAVoltage != 0.001" >
+                `PhaseAVoltage` = #{PhaseAVoltage},
+          </if>
+          <if test="PhaseBVoltage != 0.001" >
+                `PhaseBVoltage` = #{PhaseBVoltage},
+          </if>
+          <if test="PhaseCVoltage != 0.001" >
+                `PhaseCVoltage` = #{PhaseCVoltage},
+          </if>
+          <if test="PhaseACurrent != 0.001" >
+                `PhaseACurrent` = #{PhaseACurrent},
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                `PhaseBCurrent` = #{PhaseBCurrent},
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                `PhaseCCurrent` = #{PhaseCCurrent},
+          </if>
+          <if test="PhaseAReactivePower != 0.001" >
+                `PhaseAReactivePower` = #{PhaseAReactivePower},
+          </if>
+          <if test="PhaseBReactivePower != 0.001" >
+                `PhaseBReactivePower` = #{PhaseBReactivePower},
+          </if>
+          <if test="PhaseCReactivePower != 0.001" >
+                `PhaseCReactivePower` = #{PhaseCReactivePower},
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency` = #{Frequency},
+          </if>
+          <if test="PV1Voltage != 0.001" >
+                `PV1Voltage` = #{PV1Voltage},
+          </if>
+          <if test="PV1Current != 0.001" >
+                `PV1Current` = #{PV1Current},
+          </if>
+          <if test="PV2Voltage != 0.001" >
+                `PV2Voltage` = #{PV2Voltage},
+          </if>
+          <if test="PV2Current != 0.001" >
+                `PV2Current` = #{PV2Current},
+          </if>
+          <if test="PV3Voltage != 0.001" >
+                `PV3Voltage` = #{PV3Voltage},
+          </if>
+          <if test="PV3Current != 0.001" >
+                `PV3Current` = #{PV3Current},
+          </if>
+          <if test="PV4Voltage != 0.001" >
+                `PV4Voltage` = #{PV4Voltage},
+          </if>
+          <if test="PV4Current != 0.001" >
+                `PV4Current` = #{PV4Current},
+          </if>
+          <if test="Operationstatus != 0.001" >
+                `Operationstatus` = #{Operationstatus},
+          </if>
+          <if test="Warningmessageword1 != 0.001" >
+                `Warningmessageword1` = #{Warningmessageword1},
+          </if>
+          <if test="Warningmessageword2 != 0.001" >
+                `Warningmessageword2` = #{Warningmessageword2},
+          </if>
+          <if test="Faultmessageword1 != 0.001" >
+                `Faultmessageword1` = #{Faultmessageword1},
+          </if>
+          <if test="Faultmessageword2 != 0.001" >
+                `Faultmessageword2` = #{Faultmessageword2},
+          </if>
+          <if test="Faultmessageword3 != 0.001" >
+                `Faultmessageword3` = #{Faultmessageword3},
+          </if>
+          <if test="Faultmessageword4 != 0.001" >
+                `Faultmessageword4` = #{Faultmessageword4},
+          </if>
+          <if test="PhaseAPowerlow16bits != 0.001" >
+                `PhaseAPowerlow16bits` = #{PhaseAPowerlow16bits},
+          </if>
+          <if test="PhaseAPowerhigh16bits != 0.001" >
+                `PhaseAPowerhigh16bits` = #{PhaseAPowerhigh16bits},
+          </if>
+          <if test="PhaseBPowerlow16bits != 0.001" >
+               `PhaseBPowerlow16bits` = #{PhaseBPowerlow16bits}, 
+          </if>
+          <if test="PhaseBPowerhigh16bits != 0.001" >
+                `PhaseBPowerhigh16bits` = #{PhaseBPowerhigh16bits},
+          </if>
+          <if test="PhaseCPowerlow16bits != 0.001" >
+                `PhaseCPowerlow16bits` = #{PhaseCPowerlow16bits},
+          </if>
+          <if test="PhaseCPowerhigh16bits != 0.001" >
+                `PhaseCPowerhigh16bits` = #{PhaseCPowerhigh16bits},
+          </if>
+          <if test="TotalActivePowerlow16bits != 0.001" >
+                `TotalActivePowerlow16bits` = #{TotalActivePowerlow16bits},
+          </if>
+          <if test="TotalActivePowerhigh16bits != 0.001" >
+                `TotalActivePowerhigh16bits` = #{TotalActivePowerhigh16bits},
+          </if>
+          <if test="TotalApparentPowerlow16bits != 0.001" >
+                `TotalApparentPowerlow16bits` = #{TotalApparentPowerlow16bits},
+          </if>
+          <if test="TotalApparentPowerhigh16bits != 0.001" >
+                `TotalApparentPowerhigh16bits` = #{TotalApparentPowerhigh16bits},
+          </if>
+          <if test="DCinvertertemperature != 0.001" >
+                `DCinvertertemperature` = #{DCinvertertemperature},
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                `Heatsinktemperature` = #{Heatsinktemperature},
+          </if>
+          <if test="Batterychargeoftheday != 0.001" >
+                `Batterychargeoftheday` = #{Batterychargeoftheday},
+          </if>
+          <if test="Batterydischargeoftheday != 0.001" >
+                `Batterydischargeoftheday` = #{Batterydischargeoftheday},
+          </if>
+          <if test="Totalchargetothebattery != 0.001" >
+                `Totalchargetothebattery` = #{Totalchargetothebattery},
+          </if>
+          <if test="Totaldischargeofthebattery != 0.001" >
+                `Totaldischargeofthebattery` = #{Totaldischargeofthebattery},
+          </if>
+          <if test="Battery1temperature != 0.001" >
+                `Battery1temperature` = #{Battery1temperature},
+          </if>
+          <if test="Battery1voltage != 0.001" >
+                `Battery1voltage` = #{Battery1voltage},
+          </if>
+          <if test="Battery1Current != 0.001" >
+                `Battery1Current` = #{Battery1Current},
+          </if>
+          <if test="Battery1OutputPower != 0.001" >
+                `Battery1OutputPower` = #{Battery1OutputPower},
+          </if>
+          <if test="Battery1CorrectedCapacityAH != 0.001" >
+                `Battery1CorrectedCapacityAH` = #{Battery1CorrectedCapacityAH},
+          </if>
+          <if test="Battery1SOC != 0.001" >
+                `Battery1SOC` = #{Battery1SOC},
+          </if>
+          <if test="Battery2Temperature != 0.001" >
+                `Battery2Temperature` = #{Battery2Temperature},
+          </if>
+          <if test="Battery2Voltage != 0.001" >
+                `Battery2Voltage` = #{Battery2Voltage},
+          </if>
+          <if test="Battery2Current != 0.001" >
+                `Battery2Current` = #{Battery2Current},
+          </if>
+          <if test="Battery2OutputPower != 0.001" >
+                `Battery2OutputPower` = #{Battery2OutputPower},
+          </if>
+          <if test="Battery2CorrectedCapacityAH != 0.001" >
+                `Battery2CorrectedCapacityAH` = #{Battery2CorrectedCapacityAH},
+          </if>
+          <if test="Battery2SOC != 0.001" >
+                `Battery2SOC` = #{Battery2SOC},
+          </if>
+          <if test="Negativecurrentfrombattery1 != 0.001" >
+                `Negativecurrentfrombattery1` = #{Negativecurrentfrombattery1},
+          </if>
+          <if test="Negativecurrentfrombattery2 != 0.001" >
+                `Negativecurrentfrombattery2` = #{Negativecurrentfrombattery2},
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower` = #{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy` = #{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSolArkInverterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
