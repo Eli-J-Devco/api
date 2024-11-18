@@ -419,10 +419,12 @@
 				id,
 				SHA1(id) AS hash_id,
 				devicename,
+				id_device_type,
+				rating_ac_power,
 				image,
 				totalError,
 				upTime,
-				ROUND(currentPower, 1) AS currentPower,
+				IFNULL(ROUND(currentPower, 1), 0) AS currentPower,
 				ROUND(MAX(yieldToday), 1) AS yieldToday,
 				ROUND(MAX(yieldYesterday), 1) AS yieldYesterday,
 				ROUND(MAX(yieldLast7Days), 1) AS yieldLast7Days,
@@ -430,6 +432,8 @@
 			FROM (
 				SELECT
 					id,
+					id_device_type,
+					rating_ac_power,
 					devicename,
 					image,
 					totalError,
@@ -455,6 +459,8 @@
 				FROM (
 					SELECT
 						id,
+						id_device_type,
+						rating_ac_power,
 						devicename,
 						image,
 						`offset`,
@@ -471,6 +477,8 @@
 					FROM (
 						SELECT
 							d.id,
+							d.id_device_type,
+							d.rating_ac_power,
 							d.devicename,
 							dt.image,
 							tz.`offset`,

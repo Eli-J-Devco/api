@@ -1276,7 +1276,7 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
+													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line, item.getOffset_data_old());
 													dataModelAdvancedEnergySolaron.setId_device(item.getId());
 													dataModelAdvancedEnergySolaron.setDatatablename(item.getDatatablename());
 													dataModelAdvancedEnergySolaron.setView_tablename(item.getView_tablename());

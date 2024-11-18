@@ -30,12 +30,19 @@ public class ModelAdvancedEnergySolaronService extends DB {
 	 * @param data
 	 */
 	
-	public ModelAdvancedEnergySolaronEntity setModelAdvancedEnergySolaron(String line) {
+	public ModelAdvancedEnergySolaronEntity setModelAdvancedEnergySolaron(String line, double offset_data_old) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = new ModelAdvancedEnergySolaronEntity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
+				if(energy < 0 && offset_data_old > 0) {
+					energy = energy * -1;
+					energy = (energy + offset_data_old) * -1;
+				} else if(offset_data_old > 0 && energy > 0) {
+					energy = energy + offset_data_old;
+				}
 		
 				dataModelAdvancedEnergySolaron.setTime(words.get(0).replace("'", ""));
 				dataModelAdvancedEnergySolaron.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -43,7 +50,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				dataModelAdvancedEnergySolaron.setHigh_alarm(Integer.parseInt(!Lib.isBlank(words.get(3)) ? words.get(3) : "0"));
 				
 				dataModelAdvancedEnergySolaron.setToday_kwh(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
-				dataModelAdvancedEnergySolaron.setYtd_kwh_total(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelAdvancedEnergySolaron.setYtd_kwh_total(energy);
 				dataModelAdvancedEnergySolaron.setLife_kwh_total(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				dataModelAdvancedEnergySolaron.setYtd_kwh(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelAdvancedEnergySolaron.setLife_kwh(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
@@ -84,7 +91,7 @@ public class ModelAdvancedEnergySolaronService extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelAdvancedEnergySolaron.setNvmActivePower(power);
-				dataModelAdvancedEnergySolaron.setNvmActiveEnergy(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
+				dataModelAdvancedEnergySolaron.setNvmActiveEnergy(energy);
 				return dataModelAdvancedEnergySolaron;
 				
 			} else {
