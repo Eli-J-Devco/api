@@ -157,10 +157,17 @@ public class SitesDevicesEntity {
 	private String advance_tech_field_restart;
 	private String advance_tech_field_stop;
 	private String advance_tech_field_start;
+	private int advance_tech_control_enable = 0;
 
 	
 	
 	
+	public int getAdvance_tech_control_enable() {
+		return advance_tech_control_enable;
+	}
+	public void setAdvance_tech_control_enable(int advance_tech_control_enable) {
+		this.advance_tech_control_enable = advance_tech_control_enable;
+	}
 	public String getAdvance_tech_field_restart() {
 		return advance_tech_field_restart;
 	}

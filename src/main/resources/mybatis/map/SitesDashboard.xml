@@ -101,6 +101,7 @@
 			s.advance_tech_pass,
 			s.advance_tech_host,
 			s.advance_tech_status,
+			s.advance_tech_control_enable,
 			s.serial_number
 		FROM
 			site s 
