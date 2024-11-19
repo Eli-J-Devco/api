@@ -40,8 +40,6 @@ public class ModelElkorWattsonPVMeterService extends DB {
 				}
 				
 				
-				System.out.println(energy);
-				
 				dataModelElkor.setTime(words.get(0).replace("'", ""));
 				dataModelElkor.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModelElkor.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
