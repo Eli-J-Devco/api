@@ -13,7 +13,6 @@ import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CustomerSupportEntity;
-import com.nwm.api.entities.IconsEntity;
 import com.nwm.api.entities.SupportFileMapEntity;
 
 public class CustomerSupportService extends DB {
@@ -105,6 +104,21 @@ public class CustomerSupportService extends DB {
 			return item;
 		} catch (Exception e) {
 			return null;
+		}
+	}
+	
+	/**
+	 * @description update icon status
+	 * @author long.pham
+	 * @since 2021-05-17
+	 * @param id
+	 */
+	public boolean updateStatus(CustomerSupportEntity obj){
+		try{
+			return update("CustomerSupport.updateStatus", obj)>0;
+		}catch (Exception ex) {
+			log.error("CustomerSupport.updateStatus", ex);
+			return false;
 		}
 	}
 

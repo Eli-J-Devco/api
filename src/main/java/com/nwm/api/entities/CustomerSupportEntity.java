@@ -32,8 +32,15 @@ public class CustomerSupportEntity{
 	private int screen_mode;
 	private List fileUploads;
 	private String contact_person;
+	private int inactive_support_tickets;
 	
 	
+	public int getInactive_support_tickets() {
+		return inactive_support_tickets;
+	}
+	public void setInactive_support_tickets(int inactive_support_tickets) {
+		this.inactive_support_tickets = inactive_support_tickets;
+	}
 	public String getContact_person() {
 		return contact_person;
 	}

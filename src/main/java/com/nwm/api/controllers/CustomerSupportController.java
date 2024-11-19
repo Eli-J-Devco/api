@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.nwm.api.entities.CustomerSupportEntity;
 import com.nwm.api.services.AWSService;
 import com.nwm.api.services.CustomerSupportService;
@@ -95,6 +96,25 @@ public class CustomerSupportController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update icon status
+	 * @author long.pham
+	 * @since 2021-03-31
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-status")
+	public Object updateStatus(@RequestBody CustomerSupportEntity obj) {
+		try {
+			CustomerSupportService service = new CustomerSupportService();
+			service.updateStatus(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}

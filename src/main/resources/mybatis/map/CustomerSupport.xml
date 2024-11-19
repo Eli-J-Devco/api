@@ -31,7 +31,6 @@
 			`note`,
 			`parent`,
 			`id_support_type`,
-			`status`,
 			`created_date`,
 			`updated_date`,
 			`created_by`,
@@ -45,7 +44,6 @@
 			#{note},
 			#{parent},
 			#{id_support_type},
-			#{status},
 			NOW(),
 			NOW(),
 			#{created_by},
@@ -89,7 +87,7 @@
 			s.note,
 			s.parent,
 			s.id_support_type,
-			s.status,
+			s.`status`,
 			DATE_FORMAT( CONVERT_TZ( s.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
 			JSON_ARRAYAGG(obj_support_file) AS support_file
 			
@@ -110,6 +108,11 @@
 			) t ON t.id_support = s.id
 			LEFT JOIN site ss ON ss.id = s.id_site
 			LEFT JOIN time_zone t ON t.id = ss.id_time_zone
+		WHERE
+			s.id_site is not null
+			<if test="inactive_support_tickets == 1">
+				AND s.`status` = 0
+			</if>
 			GROUP BY s.id
 		    order by
 	        <choose>  
@@ -131,6 +134,9 @@
 	            <when test="sort_column == 'phone'">
 	                s.phone ${order_by}
 	            </when>
+	            <when test="sort_column == 'status'">
+	                s.status ${order_by}
+	            </when>
 	            
 	            <otherwise>
 			      s.id DESC
@@ -143,7 +149,19 @@
 	<select id="getTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.CustomerSupportEntity">
     	SELECT count(*) as totalRow
 		FROM support s 
-		
+		WHERE
+			s.id_site is not null
+			<if test="inactive_support_tickets == 1">
+				AND s.`status` = 0
+			</if>
   	</select>
+  	
+  	<update id="updateStatus">
+		UPDATE `support`
+		SET	
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
 	
 </mapper>
