@@ -246,6 +246,8 @@ public class SiteService extends DB {
 					session.insert("Site.insertSiteEmployeeMap", siteEmployeeMaptItem);
 				}
 				
+				session.update("Site.updateHidingSite", obj);
+				
 				if (obj.getSite_type() == 2) {
 					List areaList = obj.getAreaList();
 					obj.setId_site(insertLastId);
