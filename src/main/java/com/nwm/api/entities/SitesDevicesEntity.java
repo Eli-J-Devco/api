@@ -158,10 +158,17 @@ public class SitesDevicesEntity {
 	private String advance_tech_field_stop;
 	private String advance_tech_field_start;
 	private int advance_tech_control_enable = 0;
+	private String domain;
 
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getAdvance_tech_control_enable() {
 		return advance_tech_control_enable;
 	}

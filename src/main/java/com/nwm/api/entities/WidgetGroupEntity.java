@@ -36,9 +36,16 @@ public class WidgetGroupEntity{
 	private String unit;
 	private int id_device;
 	private String datatablename;
+	private String domain;
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getId_device() {
 		return id_device;
 	}

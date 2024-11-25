@@ -147,10 +147,23 @@ public class DeviceEntity {
 	private int time_format;
 	private String locale;
 	private int mfa_control = 0;
+	private int show_on_domain = 1;
+	private String domain;
 	
 	
-
 	
+	public int getShow_on_domain() {
+		return show_on_domain;
+	}
+	public void setShow_on_domain(int show_on_domain) {
+		this.show_on_domain = show_on_domain;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getMfa_control() {
 		return mfa_control;
 	}

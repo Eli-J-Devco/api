@@ -63,6 +63,15 @@ public class DashboardEntity {
 	private double generationNow;
 	private int totalSite;
 	private double ratedDCCapacity;
+	private String domain;
+	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getId() {
 		return id;
 	}

@@ -88,9 +88,16 @@ public class AlertEntity {
 	private List listDevices;
 	private String tabs;
 	private int is_queue;
+	private String domain;
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getIs_queue() {
 		return is_queue;
 	}

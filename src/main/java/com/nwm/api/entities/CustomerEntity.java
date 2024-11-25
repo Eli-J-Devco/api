@@ -49,6 +49,14 @@ public class CustomerEntity {
 	private int value;
 	private int is_technical;
 	private String re_email;
+	private String domain;
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	/**
 	 * @return the id
 	 */

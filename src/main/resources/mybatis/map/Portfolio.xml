@@ -173,6 +173,27 @@
 					d.id_device_type = 4 
 					AND s.`status` = 1 
 					AND d.`status` = 1 
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 				GROUP BY
 					s.id
 			)t ON t.id_site = s.id
@@ -190,6 +211,27 @@
 					AND s.is_delete = 0
 					AND d.is_delete = 0 
 					AND d.`status` = 1 
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 				GROUP BY
 					s.id
 			)m ON m.id_site = s.id 
@@ -208,6 +250,27 @@
 					AND s.`status` = 1 
 					AND s.is_delete = 0
 					AND d.`status` = 1 
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 				GROUP BY
 					s.id
 			)ivt ON ivt.id_site = s.id
@@ -229,7 +292,30 @@
 						LEFT JOIN error er ON a.id_error = er.id 
 						LEFT JOIN error_level el ON el.id = er.id_error_level
 						LEFT JOIN icon i ON i.id = el.id_icon
-					WHERE sem.id_employee = #{id_employee} AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
+					WHERE sem.id_employee = #{id_employee} 
+					AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
+		        
 						GROUP BY s.id, el.id
 						) t
 						GROUP BY t.id_site
@@ -253,6 +339,27 @@
 					AND e.`is_delete` = 0
 					AND d.`status` = 1
 					AND d.`is_delete` = 0
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 				GROUP BY s.id 
 				) eer ON eer.id_site = s.id
 				
@@ -334,6 +441,27 @@
 							AND d.id_device_type IN (1, 3)
 							AND d.status = 1 
 							AND d.is_delete = 0
+							<choose> 
+					       		<when test="domain == 'test.nextwavemonitoring.com'">
+					                AND d.show_on_domain IN(1,2,4)
+					            </when>
+					             
+					            <when test="domain == 'staging.nextwavemonitoring.com'">
+					                AND d.show_on_domain IN(1,3,4)
+					            </when>
+					            
+					            <when test="domain == 'nextwavemonitoring.com'">
+					                AND d.show_on_domain IN(1,5,7)
+					            </when>
+					            
+					            <when test="domain == 'buildings.nextwavemonitoring.com'">
+					                AND d.show_on_domain IN(1,6,7)
+					            </when>
+					            
+					            <otherwise>
+							      AND d.show_on_domain IN(1)
+							    </otherwise>                                                  
+					        </choose>
 					) gg
 				GROUP BY
 					gg.id_site
@@ -369,6 +497,28 @@
 					<if test="is_supper_admin != 1">	
 			 			AND sem.id_employee = #{id_employee} 
 					</if>
+					
+					<choose> 
+		       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 					
 					AND s.`status` = 1 AND s.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
 					GROUP BY s.id
@@ -536,6 +686,27 @@
 			LEFT JOIN error_level el ON el.id = er.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			WHERE s.id = #{id} AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
+			<choose> 
+		       		<when test="domain == 'test.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,2,4)
+		            </when>
+		             
+		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,3,4)
+		            </when>
+		            
+		            <when test="domain == 'nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,5,7)
+		            </when>
+		            
+		            <when test="domain == 'buildings.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,6,7)
+		            </when>
+		            
+		            <otherwise>
+				      AND d.show_on_domain IN(1)
+				    </otherwise>                                                  
+		        </choose>
 		GROUP BY s.id, el.id
 	</select>
 	
@@ -599,6 +770,28 @@
 						</foreach>
 					)
 				</if>
+				
+				<choose> 
+		       		<when test="domain == 'test.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,2,4)
+		            </when>
+		             
+		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,3,4)
+		            </when>
+		            
+		            <when test="domain == 'nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,5,7)
+		            </when>
+		            
+		            <when test="domain == 'buildings.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,6,7)
+		            </when>
+		            
+		            <otherwise>
+				      AND d.show_on_domain IN(1)
+				    </otherwise>                                                  
+		        </choose>
 		) AS totalAlert,
 		
 		(
@@ -618,6 +811,28 @@
 						</foreach>
 					)
 				</if>
+				
+				<choose> 
+		       		<when test="domain == 'test.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,2,4)
+		            </when>
+		             
+		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,3,4)
+		            </when>
+		            
+		            <when test="domain == 'nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,5,7)
+		            </when>
+		            
+		            <when test="domain == 'buildings.nextwavemonitoring.com'">
+		                AND d.show_on_domain IN(1,6,7)
+		            </when>
+		            
+		            <otherwise>
+				      AND d.show_on_domain IN(1)
+				    </otherwise>                                                  
+		        </choose>
 		) AS totalPower
 			
   	</select>

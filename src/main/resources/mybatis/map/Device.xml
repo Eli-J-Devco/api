@@ -46,6 +46,7 @@
 		<result property="data_send_time" column="data_send_time" />
 		<result property="offset_data_old" column="offset_data_old" />
 		<result property="date_time_offset" column="date_time_offset" />
+		<result property="show_on_domain" column="show_on_domain" />
 		
 		
 		
@@ -95,7 +96,8 @@
 			s.data_send_time,
 			IFNULL(d.offset_data_old, 0) AS offset_data_old,
 			d.date_time_offset,
-			d.mfa_control
+			d.mfa_control,
+			d.show_on_domain
 		FROM
 			device AS d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -213,7 +215,8 @@
 			IFNULL(s.offset_data_old, 0) AS offset_data_old,
 			s.date_time_offset,
 			s.is_excluded_meter,
-			s.mfa_control
+			s.mfa_control,
+			s.show_on_domain
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type
@@ -358,7 +361,8 @@
 			`offset_data_old`,
 			`date_time_offset`,
 			`is_excluded_meter`,
-			`mfa_control`
+			`mfa_control`,
+			`show_on_domain`
 		)VALUES(
 			#{id_site},
 			#{id_vendor},
@@ -395,7 +399,8 @@
 			#{offset_data_old},
 			#{date_time_offset},
 			#{is_excluded_meter},
-			#{mfa_control}
+			#{mfa_control},
+			#{show_on_domain}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -448,7 +453,8 @@
 				offset_data_old = #{offset_data_old},
 				date_time_offset = #{date_time_offset},
 				is_excluded_meter = #{is_excluded_meter},
-				mfa_control = #{mfa_control}
+				mfa_control = #{mfa_control},
+				show_on_domain = #{show_on_domain}
 			WHERE
 				`id` = #{id}
 		</if>

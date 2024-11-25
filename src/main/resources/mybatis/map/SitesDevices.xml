@@ -320,6 +320,27 @@
 					AND d.`status` = 1
 					AND d.is_delete = 0
 					AND d.id_site = #{id_site}
+					<choose> 
+			       		<when test="domain == 'test.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,2,4)
+			            </when>
+			             
+			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,3,4)
+			            </when>
+			            
+			            <when test="domain == 'nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,5,7)
+			            </when>
+			            
+			            <when test="domain == 'buildings.nextwavemonitoring.com'">
+			                AND d.show_on_domain IN(1,6,7)
+			            </when>
+			            
+			            <otherwise>
+					      AND d.show_on_domain IN(1)
+					    </otherwise>                                                  
+			        </choose>
 				GROUP BY d.id
 			) p ON p.id_device = d.id
 			
@@ -362,6 +383,28 @@
 			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
 				AND td.name = #{keyword}
 			</if>
+			
+			<choose> 
+	       		<when test="domain == 'test.nextwavemonitoring.com'">
+	                AND d.show_on_domain IN(1,2,4)
+	            </when>
+	             
+	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	                AND d.show_on_domain IN(1,3,4)
+	            </when>
+	            
+	            <when test="domain == 'nextwavemonitoring.com'">
+	                AND d.show_on_domain IN(1,5,7)
+	            </when>
+	            
+	            <when test="domain == 'buildings.nextwavemonitoring.com'">
+	                AND d.show_on_domain IN(1,6,7)
+	            </when>
+	            
+	            <otherwise>
+			      AND d.show_on_domain IN(1)
+			    </otherwise>                                                  
+	        </choose>
 			
 			order by
 	        <choose> 
