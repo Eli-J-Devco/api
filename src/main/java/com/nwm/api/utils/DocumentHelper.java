@@ -2,6 +2,7 @@ package com.nwm.api.utils;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Shape;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -287,13 +288,18 @@ public class DocumentHelper {
 		return dataset;
 	}
 	
-	public static TimeSeriesCollection createJFreeChartLineDataset(int datasetIndex, XYPlot plot) {
+	public static TimeSeriesCollection createJFreeChartLineDataset(int datasetIndex, XYPlot plot, Shape markerShape) {
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
 		dataset.setXPosition(TimePeriodAnchor.MIDDLE);
 		plot.setDataset(datasetIndex, dataset);
 		
 		XYLineAndShapeRenderer lineRenderer = new XYLineAndShapeRenderer(true, false);
 		lineRenderer.setSeriesStroke(0, new BasicStroke(2));
+		if (markerShape != null) {
+			lineRenderer.setDefaultShapesVisible(true);
+			lineRenderer.setSeriesShape(0, markerShape);
+			lineRenderer.setDefaultLegendShape(markerShape);
+		}
 		plot.setRenderer(datasetIndex, lineRenderer);
 		
 		return dataset;

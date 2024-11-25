@@ -8,6 +8,7 @@ package com.nwm.api.controllers;
 import java.util.List;
 import java.util.Map;
 import java.awt.Color;
+import java.awt.geom.Ellipse2D;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -38,6 +39,7 @@ import org.apache.poi.util.Units;
 import org.apache.poi.xddf.usermodel.PresetColor;
 import org.apache.poi.xddf.usermodel.XDDFColor;
 import org.apache.poi.xddf.usermodel.chart.ChartTypes;
+import org.apache.poi.xddf.usermodel.chart.MarkerStyle;
 import org.apache.poi.xddf.usermodel.chart.XDDFBarChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFCategoryAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChart;
@@ -46,6 +48,7 @@ import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
+import org.apache.poi.xddf.usermodel.chart.XDDFChartData.Series;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
@@ -489,17 +492,17 @@ public class ReportsController extends BaseController {
 						XYPlot plot = chart.getXYPlot();
 						
 						// data source
-						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot);
+						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
 						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
 						powerDataset.addSeries(powerSeries);
 						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
 						
-						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot);
+						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
 						energyDataset.addSeries(energySeries);
 						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
 						
-						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot);
+						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
 						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
 						irradianceDataset.addSeries(irradianceSeries);
 						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
@@ -994,7 +997,7 @@ public class ReportsController extends BaseController {
 						barDataset.addSeries(estimateSeries);
 						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot);
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
 						lineDataset.addSeries(estimateIndexSeries);
 						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
@@ -2575,7 +2578,7 @@ public class ReportsController extends BaseController {
 						barDataset.addSeries(estimateSeries);
 						plot.getRendererForDataset(barDataset).setSeriesPaint(1, LIGHT_BLUE_COLOR);
 						
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot);
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
 						TimeSeries estimateIndexSeries = new TimeSeries("Estimate Generation Index (%)");
 						lineDataset.addSeries(estimateIndexSeries);
 						plot.getRendererForDataset(lineDataset).setSeriesPaint(0, Color.gray);
@@ -2917,8 +2920,8 @@ public class ReportsController extends BaseController {
 								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 								
 								XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-								DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
-								
+								Series lineSeries = DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
+								if (numOfPoints == 1) DocumentHelper.solidFillLineMarker(chart, lineSeries, 0, MarkerStyle.CIRCLE, null);
 								chart.plot(data);
 							}
 						}
@@ -3032,9 +3035,10 @@ public class ReportsController extends BaseController {
 						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setBorder(Border.NO_BORDER));
 						
 						// data source
-						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot);
+						int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
+						TimeSeriesCollection lineDataset = DocumentHelper.createJFreeChartLineDataset(l, plot, numOfPoints == 1 ? new Ellipse2D.Double(-3, -3, 6, 6) : null);
 						TimeSeries series = new TimeSeries(dataObj.getSite_name());
-						lineDataset.addSeries(series);
+						if (!dataObj.getSite_name().equals("Total")) lineDataset.addSeries(series);
 						
 						// data table
 						for (int i = 0; i < dataExports.size(); i++) {
