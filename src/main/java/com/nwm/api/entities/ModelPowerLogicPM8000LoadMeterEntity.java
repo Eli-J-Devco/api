@@ -77,6 +77,7 @@ public class ModelPowerLogicPM8000LoadMeterEntity {
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+	private int enable_alert;
 	
 	public String getTime() {
 		return time;
@@ -485,6 +486,12 @@ public class ModelPowerLogicPM8000LoadMeterEntity {
 	}
 	public void setJob_tablename(String job_tablename) {
 		this.job_tablename = job_tablename;
+	}
+	public int getEnable_alert() {
+		return enable_alert;
+	}
+	public void setEnable_alert(int enable_alert) {
+		this.enable_alert = enable_alert;
 	}
 	
 }

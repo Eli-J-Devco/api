@@ -2917,7 +2917,7 @@ public class ReportsController extends BaseController {
 								XDDFNumericalDataSource<Double> valuesData = XDDFDataSourcesFactory.fromNumericCellRange(sheet, obj.isTransposed() ? new CellRangeAddress(25, 25 + numOfPoints - 1, 3 + 3*i, 3 + 3*i) : new CellRangeAddress(25 + i, 25 + i, 3, 3 + numOfPoints - 1));
 								
 								XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, leftAxis);
-								DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
+								DocumentHelper.addSeries(dataExports.stream().filter(item -> !item.getCategories_time().equals("Total")).allMatch(item -> item.getActual() == null), data, categoriesData, valuesData, dataObj.getSite_name());
 								
 								chart.plot(data);
 							}
