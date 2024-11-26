@@ -591,13 +591,13 @@
 				<when test="is_show_each_meter == 1">
 					CASE
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(SUM(meterPower), 1)
-						ELSE ROUND(SUM(meterEnergy), 0)
+						ELSE CAST(SUM(meterEnergy) AS DECIMAL)
 					END AS chart_energy_kwh
 				</when>
 				<otherwise>
 					CASE
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF( SUM(meterPower) > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1) )
-						ELSE IF( SUM(meterEnergy) >= 0, ROUND(SUM(meterEnergy), 0), ROUND(SUM(inverterEnergy), 0) )
+						ELSE IF(SUM(meterEnergy) >= 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
 					END AS chart_energy_kwh,
 					ROUND(AVG(expected_power), 1) AS expected_power
 				</otherwise>
@@ -738,10 +738,7 @@
 			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
 			CASE
 				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
-				ELSE 
-				
-				IF(MOD(nvmActiveEnergy,1) = 0.5, CEIL(nvmActiveEnergy), ROUND( nvmActiveEnergy, 0 ))
-				
+				ELSE CAST(nvmActiveEnergy AS DECIMAL)
 			END AS chart_energy_kwh,
 			ROUND(expected_power, 1) AS expected_power
 		FROM
