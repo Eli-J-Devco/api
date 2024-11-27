@@ -65,32 +65,17 @@ public class CustomerSupportController extends BaseController {
 						saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport);
 						fileName = randomAlphabetic(16) + "-" + new Date().getTime();
 						String saveFileName = Lib.uploadFromBase64(objFile.get("file_upload").toString(), fileName, saveDir);
-//						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
-//						objFile.put("file_name", filePath);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
+						objFile.put("file_name", filePath);
 						files.add(saveDir + "/"+ saveFileName);
 					}
 				}
 				obj.setFileUploads(fileUploads);
 				CustomerSupportEntity data = service.insertCustomerSupport(obj);
 				if (data != null) {
-					
-					// send email 
-					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-					String dir = uploadRootPath() + "/"
-							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-//					String fileName = dir + "/Renewable-energy-credits-" + timeStamp + ".csv";
-//					try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
-//			            writer.writeAll(list, false);
-//			            writer.flush();
-//			        }
-					
-					
-					
-					 
-
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 					String msgTemplate = Constants.getMailTempleteByState(22);
-					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getTitle(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
+					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
 					String mailTo = "tngo@nwemon.com";
 					String subject = Constants.getMailSubjectByState(22);
 					String tags = "support_ticket";

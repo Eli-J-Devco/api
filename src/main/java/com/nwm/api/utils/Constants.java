@@ -132,7 +132,8 @@ public class Constants {
 	public static final String mailSupportTicket = "mailSupportTicket";
 	public static final String mailSupportTicketBody = "mailSupportTicketBody";
 	
-	
+	public static final String mailAddSite = "mailAddSite";
+	public static final String mailAddSiteBody = "mailAddSiteBody";
 	
 	
 	
@@ -552,10 +553,14 @@ public class Constants {
 		
 		case 20:
 			// Send OTP
-			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPBody);
 		case 22:
 			// Send support ticket
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketBody);
+			
+		case 23:
+			// Add a new site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSiteBody);
 		default:
 			return null;
 		}
@@ -622,6 +627,9 @@ public class Constants {
 		case 22:
 			// Support 
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
+		case 23:
+			// Support 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSite);
 		default:
 			return null;
 		}

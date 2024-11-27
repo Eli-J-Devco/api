@@ -41,10 +41,8 @@
 			`created_by`,
 			`updated_by`,
 			`contact_person`,
-			`title`,
 			`subject`,
-			`issue_type`,
-			`company`
+			`issue_type`
 		)VALUES(
 			#{id_site},
 			#{account_name},
@@ -58,10 +56,8 @@
 			#{created_by},
 			#{updated_by},
 			#{contact_person},
-			#{title},
 			#{subject},
-			#{issue_type},
-			#{company}
+			#{issue_type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -101,8 +97,6 @@
 			s.parent,
 			s.id_support_type,
 			s.`status`,
-			s.title,
-			s.company,
 			s.issue_type,
 			s.subject,
 			DATE_FORMAT( CONVERT_TZ( s.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
