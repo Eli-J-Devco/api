@@ -22,6 +22,8 @@ import com.nwm.api.services.SiteService;
 import com.nwm.api.services.TagService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SendMail;
+import com.nwm.api.utils.Translator;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
@@ -218,6 +220,24 @@ public class SiteController extends BaseController {
 			
 			if (obj.getScreen_mode() == 1) {
 				SiteEntity data = service.insertSite(obj);
+				
+				// Send mail to customer 
+				if(data != null) {
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+							Constants.mailFromContact);
+
+					String msgTemplate = Constants.getMailTempleteByState(23);
+					String body = String.format(msgTemplate, obj.getName());
+					String mailTo = obj.getMail_to();
+					String subject = obj.getName() + " has been added to your account.";
+
+					String tags = "notify_add_site";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = obj.getMail_cc();
+					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
+				}
+				
 				return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			} else {
 				boolean insert = service.updateSite(obj);

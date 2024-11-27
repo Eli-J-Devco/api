@@ -311,9 +311,23 @@ public class SiteEntity {
 	private int electricity_status;
 	private List electricityRateSchedulesList;
 	private String siteElectricityRateSchedulesJSON;
+	private String mail_to;
+	private String mail_cc;
 	
 	
 	
+	public String getMail_to() {
+		return mail_to;
+	}
+	public void setMail_to(String mail_to) {
+		this.mail_to = mail_to;
+	}
+	public String getMail_cc() {
+		return mail_cc;
+	}
+	public void setMail_cc(String mail_cc) {
+		this.mail_cc = mail_cc;
+	}
 	public String getElectricity_company_name() {
 		return electricity_company_name;
 	}
