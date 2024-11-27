@@ -11,7 +11,7 @@
 			s.`name` AS site_name,
 			s.table_data_report,
 			s.table_data_virtual,
-			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value), '%m/%d/%Y') AS report_date,
+			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
 			r.subscribers,
