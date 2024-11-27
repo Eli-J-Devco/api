@@ -91,7 +91,7 @@ public class CustomerSupportController extends BaseController {
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 					String msgTemplate = Constants.getMailTempleteByState(22);
 					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getTitle(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
-					String mailTo = "vanlong200880@gmail.com";
+					String mailTo = "tngo@nwemon.com";
 					String subject = Constants.getMailSubjectByState(22);
 					String tags = "support_ticket";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
