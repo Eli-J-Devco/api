@@ -129,6 +129,10 @@ public class Constants {
 	public static final String mailOTPBody = "mailOTPBody";
 	
 	
+	public static final String mailSupportTicket = "mailSupportTicket";
+	public static final String mailSupportTicketBody = "mailSupportTicketBody";
+	
+	
 	
 	
 	
@@ -548,7 +552,10 @@ public class Constants {
 		
 		case 20:
 			// Send OTP
-			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPBody);
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
+		case 22:
+			// Send support ticket
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicketBody);
 		default:
 			return null;
 		}
@@ -611,6 +618,10 @@ public class Constants {
 		case 20:
 			// Send OTP
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailOTPTitle);
+			
+		case 22:
+			// Support 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
 		default:
 			return null;
 		}

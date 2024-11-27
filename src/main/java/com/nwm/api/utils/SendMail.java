@@ -2,6 +2,7 @@ package com.nwm.api.utils;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import javax.mail.BodyPart;
@@ -19,6 +20,70 @@ import javax.mail.internet.MimeMultipart;
 import com.sun.mail.smtp.SMTPTransport;
 
 public class SendMail {
+	
+	public static boolean SendGmailTLSAttachmentMultiFiles(String mail_from, String from_name, String mail_to, String subject, String body, String tags, List files) throws Exception {
+        String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);
+        int PORT = Lib.strToInteger(Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPort));
+        String AUTH = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAuth);
+        String  TLS = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailTLS);
+        final String SMTP_USERNAME = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailUserName);	
+        final String SMTP_PASSWORD = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailPassword);
+		
+        Properties prop = new Properties();
+        prop.put("mail.smtp.host", HOST);
+        prop.put("mail.smtp.port", PORT);
+        prop.put("mail.smtp.auth", AUTH);
+        prop.put("mail.smtp.starttls.enable", TLS); //TLS
+        boolean flg;
+        Session session = Session.getInstance(prop,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(SMTP_USERNAME, SMTP_PASSWORD);
+                    }
+                });
+
+        try {
+
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(mail_from));
+            message.setRecipients(
+                    Message.RecipientType.BCC,
+                    InternetAddress.parse(mail_to)
+            );
+            message.setSubject(subject);
+            BodyPart messageBodyPart = new MimeBodyPart(); 
+            messageBodyPart.setText("Mail Body");
+            messageBodyPart.setContent(body, "text/html");
+            
+            
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            
+            
+            if(files.size() > 0) {
+            	for(int i = 0; i < files.size(); i++) {
+            		Object file = files.get(i);
+            		MimeBodyPart attachmentPart = new MimeBodyPart();
+            		attachmentPart.attachFile(new File(file.toString()));
+            		multipart.addBodyPart(attachmentPart);
+            	}
+            }
+            
+            
+            
+            message.setContent(multipart);
+            
+            Transport.send(message);
+            flg = true;
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            flg = false;
+        }
+        
+        return flg;
+	}
+	
 
 	public static boolean SendGmailTLSAttachment(String mail_from, String from_name, String mail_to, String subject, String body, String tags, String file) throws Exception {
         String HOST = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSmtpServer);

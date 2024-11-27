@@ -20,6 +20,11 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="contact_person" column="contact_person" />
 		
+		<result property="title" column="title" />
+		<result property="company" column="company" />
+		<result property="issue_type" column="issue_type" />
+		<result property="subject" column="subject" />
+		
 	</resultMap>
 	
 	<insert id="insertCustomerSupport" useGeneratedKeys="true" keyProperty="id">
@@ -35,7 +40,11 @@
 			`updated_date`,
 			`created_by`,
 			`updated_by`,
-			`contact_person`
+			`contact_person`,
+			`title`,
+			`subject`,
+			`issue_type`,
+			`company`
 		)VALUES(
 			#{id_site},
 			#{account_name},
@@ -48,7 +57,11 @@
 			NOW(),
 			#{created_by},
 			#{updated_by},
-			#{contact_person}
+			#{contact_person},
+			#{title},
+			#{subject},
+			#{issue_type},
+			#{company}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -88,6 +101,10 @@
 			s.parent,
 			s.id_support_type,
 			s.`status`,
+			s.title,
+			s.company,
+			s.issue_type,
+			s.subject,
 			DATE_FORMAT( CONVERT_TZ( s.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
 			JSON_ARRAYAGG(obj_support_file) AS support_file
 			

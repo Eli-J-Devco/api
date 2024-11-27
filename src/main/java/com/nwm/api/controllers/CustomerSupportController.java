@@ -7,6 +7,10 @@ package com.nwm.api.controllers;
 
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
+import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,9 @@ import com.nwm.api.services.AWSService;
 import com.nwm.api.services.CustomerSupportService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.SendMail;
+import com.nwm.api.utils.Translator;
+import com.opencsv.CSVWriter;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -48,6 +55,7 @@ public class CustomerSupportController extends BaseController {
 			CustomerSupportService service = new CustomerSupportService();
 			String fileName = "";
 			String saveDir = "";
+			List files = new ArrayList();
 
 			if (obj.getScreen_mode() == 1) {
 				List fileUploads = obj.getFileUploads();
@@ -57,13 +65,43 @@ public class CustomerSupportController extends BaseController {
 						saveDir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport);
 						fileName = randomAlphabetic(16) + "-" + new Date().getTime();
 						String saveFileName = Lib.uploadFromBase64(objFile.get("file_upload").toString(), fileName, saveDir);
-						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
-						objFile.put("file_name", filePath);
+//						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeySupport) + "/" + saveFileName);
+//						objFile.put("file_name", filePath);
+						files.add(saveDir + "/"+ saveFileName);
 					}
 				}
 				obj.setFileUploads(fileUploads);
 				CustomerSupportEntity data = service.insertCustomerSupport(obj);
 				if (data != null) {
+					
+					// send email 
+					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+					String dir = uploadRootPath() + "/"
+							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+//					String fileName = dir + "/Renewable-energy-credits-" + timeStamp + ".csv";
+//					try (CSVWriter writer = new CSVWriter(new FileWriter(fileName))) {
+//			            writer.writeAll(list, false);
+//			            writer.flush();
+//			        }
+					
+					
+					
+					 
+
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
+					String msgTemplate = Constants.getMailTempleteByState(22);
+					String body = String.format(msgTemplate, obj.getWe_support(), obj.getSite_name(), obj.getIssue_name(), obj.getTitle(), obj.getContact_person(), obj.getAccount_name(),obj.getPhone(), obj.getEmail(), obj.getSubject(), obj.getNote());
+					String mailTo = "vanlong200880@gmail.com";
+					String subject = Constants.getMailSubjectByState(22);
+					String tags = "support_ticket";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					if(mailTo != null) {
+						boolean flagSent = SendMail.SendGmailTLSAttachmentMultiFiles(mailFromContact, fromName, mailTo, subject, body, tags, files);
+						if (!flagSent) {
+							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
+						}
+					}
+					
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
 				} else {
 					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
