@@ -252,6 +252,7 @@ public class DocumentHelper {
 	
 	public static void solidFillLineMarker(XDDFChart chart, Series series, int seriesIndex, MarkerStyle markerStyle, XDDFColor color) {
 		((XDDFLineChartData.Series) series).setMarkerStyle(markerStyle != null ? markerStyle : MarkerStyle.NONE);
+		if (color == null) return;
 		XDDFShapeProperties propertiesMarker = new XDDFShapeProperties();
 		propertiesMarker.setFillProperties(new XDDFSolidFillProperties(color));
 		propertiesMarker.setLineProperties(new XDDFLineProperties(new XDDFNoFillProperties()));
