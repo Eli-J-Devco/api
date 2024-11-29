@@ -67,7 +67,7 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 				dataModelSEI.setI_AC_VAR_SF(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				dataModelSEI.setI_AC_PF(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModelSEI.setI_AC_PF_SF(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModelSEI.setI_AC_Energy_WH(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModelSEI.setI_AC_Energy_WH(nvmActiveEnergy);
 				dataModelSEI.setI_AC_Energy_WH_SF(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				dataModelSEI.setI_DC_Current(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
 				
@@ -87,7 +87,7 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSEI.setNvmActivePower(power);
-				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy);
+				dataModelSEI.setNvmActiveEnergy(nvmActiveEnergy/1000);
 				
 				return dataModelSEI;
 				
@@ -120,7 +120,7 @@ public class ModelSolarEdgeInverterV1Service extends DB {
 			 
 			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setI_AC_Energy_WH(dataObj.getNvmActiveEnergy());
+				 obj.setI_AC_Energy_WH(dataObj.getI_AC_Energy_WH());
 			 }
 
 			 obj.setMeasuredProduction(measuredProduction);
