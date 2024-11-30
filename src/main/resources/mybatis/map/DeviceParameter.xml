@@ -330,18 +330,19 @@
 	
 	<select id="getListAllParameterByDeviceGroupAndCategorizeData" resultType="Map">
 		SELECT
-			id,
-			id AS value,
-			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS name,
-			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS label
+			dp.id,
+			dp.id AS value,
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS name,
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS label
 		FROM
-			device_parameters
+			device_parameters dp
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
-			id_device_group = #{id_device_group}
-			AND id_categorize_data = #{id_categorize_data}
-			AND `status` = 1
-			AND is_delete = 0
-			AND is_user_defined = 0
+			dp.id_device_group = #{id_device_group}
+			AND dp.id_categorize_data = #{id_categorize_data}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+			AND dp.is_user_defined = 0
 	</select>
 	
 	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">

@@ -731,13 +731,13 @@
 	<select id="getListDeviceParameter" resultType="Map">
 		SELECT
 			dp.id,
-			IFNULL(dp.standard_name, dp.name) AS name,
-			CONCAT(IFNULL(dp.standard_name, dp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dps.scale
 		FROM
 			device_parameters dp
 			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
 			LEFT JOIN device_parameter_scale dps ON dps.id_device_parameter = dp.id AND dps.id_device = d.id
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			d.id = #{id}
 			AND d.status = 1
@@ -751,8 +751,7 @@
 	<select id="getListDeviceParameterScaleOldData" resultType="Map">
 		SELECT
 			dp.id,
-			IFNULL(dp.standard_name, dp.name) AS name,
-			IFNULL(dp.standard_name, dp.name) AS text,
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS text,
 			dp.slug,
 			dp.is_active_power,
 			dp.is_energy,
@@ -760,6 +759,7 @@
 		FROM
 			device_parameters dp
 			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			d.id = #{id}
 			AND d.status = 1
@@ -772,14 +772,14 @@
 	<select id="getListDeviceFilterParameter" resultType="Map">
 		SELECT
 			dp.id,
-			IFNULL(dp.standard_name, dp.name),
-			CONCAT(IFNULL(dp.standard_name, dp.name), IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
+			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dpf.min_value IS NULL AND dpf.max_value IS NULL, "", " (Filtered)")) AS text,
 			dpf.min_value,
 			dpf.max_value
 		FROM
 			device_parameters dp
 			LEFT JOIN device d ON d.id_device_group = dp.id_device_group
 			LEFT JOIN device_parameter_filter dpf ON dpf.id_device_parameter = dp.id AND dpf.id_device = d.id
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			d.id = #{id}
 			AND d.status = 1

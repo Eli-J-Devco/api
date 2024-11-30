@@ -23,10 +23,11 @@
 			dt.id_field,
 			dp.id,
 			dp.id AS value,
-			IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name) AS label
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS label
 		FROM
 			device_template_field_map dt
 			LEFT JOIN device_parameters dp ON dp.id = dt.id_param
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			dt.id_template = #{id_template}
 			AND dt.id_device_group = #{id_device_group}
@@ -44,12 +45,13 @@
 			JSON_ARRAYAGG(JSON_OBJECT(
 				'id_field', dt.id_field,
 				'id', dp.id,
-				'label', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name)
+				'label', IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name)
 			)) AS assignedField
 		FROM
 			device_template_field_map dt
 			LEFT JOIN device_parameters dp ON dp.id = dt.id_param
 			LEFT JOIN device_layout_template dl ON dl.id = dt.id_template
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			dt.id_device_group = #{id_device_group}
 			AND dp.status = 1
