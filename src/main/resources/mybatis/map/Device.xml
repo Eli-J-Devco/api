@@ -76,6 +76,7 @@
 			d.datatablename,
 			d.id_device_group,
 			d.id_device_type,
+			d.is_excluded_meter,
 			s.start_date_time,
 			s.end_date_time,
 			t.`offset` AS timezone_offset,
@@ -817,7 +818,13 @@
 		SELECT
 			dps.scale AS parameter_scale,
 			dps.variable_name,
-			dp.slug AS parameter_slug
+			dp.slug AS parameter_slug,
+			dp.is_user_defined,
+			dp.is_active_power,
+			dp.is_energy,
+			dp.is_irradiance,
+			dp.is_temperature,
+			dp.is_panel_temperature
 		FROM
 			device_parameter_scale dps
 			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
