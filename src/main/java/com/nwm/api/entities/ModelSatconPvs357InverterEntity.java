@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelSatconPvs357InverterEntity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelSatconPvs357InverterEntity extends ModelBaseEntity {
 	private double Software_Identification_Number;
 	private double Fault_Word1;
 	private double Fault_Word2;
@@ -141,8 +136,6 @@ public class ModelSatconPvs357InverterEntity {
 	private double Serial_number_word3;
 	private double Serial_number_word4;
 	private double Number_of_Strings;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
 	
 	private int totalFaultWord1;
 	private int totalFaultWord2;
@@ -151,54 +144,6 @@ public class ModelSatconPvs357InverterEntity {
 	private int totalFaultWord5;
 	private int totalFaultWord6;
 	private int totalFaultWord7;
-	private double MeasuredProduction;
-	private String datatablename;
-	private String view_tablename;
-	private String job_tablename;
-private int enable_alert;
-	
-	
-	
-	public int getEnable_alert() {
-		return enable_alert;
-	}
-	public void setEnable_alert(int enable_alert) {
-		this.enable_alert = enable_alert;
-	}
-	
-	
-	
-	
-	public String getDatatablename() {
-		return datatablename;
-	}
-	public void setDatatablename(String datatablename) {
-		this.datatablename = datatablename;
-	}
-	public String getView_tablename() {
-		return view_tablename;
-	}
-	public void setView_tablename(String view_tablename) {
-		this.view_tablename = view_tablename;
-	}
-	public String getJob_tablename() {
-		return job_tablename;
-	}
-	public void setJob_tablename(String job_tablename) {
-		this.job_tablename = job_tablename;
-	}
-	
-	
-	
-	
-	public double getMeasuredProduction() {
-		return MeasuredProduction;
-	}
-	public void setMeasuredProduction(double measuredProduction) {
-		MeasuredProduction = measuredProduction;
-	}
-	
-	
 	
 	public int getTotalFaultWord1() {
 		return totalFaultWord1;
@@ -241,36 +186,6 @@ private int enable_alert;
 	}
 	public void setTotalFaultWord7(int totalFaultWord7) {
 		this.totalFaultWord7 = totalFaultWord7;
-	}
-	public String getTime() {
-		return time;
-	}
-	public void setTime(String time) {
-		this.time = time;
-	}
-	public int getId_device() {
-		return id_device;
-	}
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	public int getError() {
-		return error;
-	}
-	public void setError(int error) {
-		this.error = error;
-	}
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
 	}
 	public double getSoftware_Identification_Number() {
 		return Software_Identification_Number;
@@ -1051,18 +966,6 @@ private int enable_alert;
 	}
 	public void setNumber_of_Strings(double number_of_Strings) {
 		Number_of_Strings = number_of_Strings;
-	}
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

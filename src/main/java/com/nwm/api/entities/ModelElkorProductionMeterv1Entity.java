@@ -5,12 +5,7 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class ModelElkorProductionMeterv1Entity {
-	private String time;
-	private int id_device;
-	private int error;
-	private int low_alarm;
-	private int high_alarm;
+public class ModelElkorProductionMeterv1Entity extends ModelBaseEntity {
 	private double ActivePowerTotal;
 	private double ReactivePowerTotal;
 	private double ApparentPowerTotal;
@@ -91,116 +86,7 @@ public class ModelElkorProductionMeterv1Entity {
 	private double Q4ReactiveEnergyA;
 	private double Q4ReactiveEnergyB;
 	private double Q4ReactiveEnergyC;
-	private double nvmActivePower;
-	private double nvmActiveEnergy;
 	
-	private double MeasuredProduction;
-	private String datatablename;
-	private String view_tablename;
-	private String job_tablename;
-private int enable_alert;
-	
-	
-	
-	public int getEnable_alert() {
-		return enable_alert;
-	}
-	public void setEnable_alert(int enable_alert) {
-		this.enable_alert = enable_alert;
-	}
-	
-	
-	
-	
-	public String getDatatablename() {
-		return datatablename;
-	}
-	public void setDatatablename(String datatablename) {
-		this.datatablename = datatablename;
-	}
-	public String getView_tablename() {
-		return view_tablename;
-	}
-	public void setView_tablename(String view_tablename) {
-		this.view_tablename = view_tablename;
-	}
-	public String getJob_tablename() {
-		return job_tablename;
-	}
-	public void setJob_tablename(String job_tablename) {
-		this.job_tablename = job_tablename;
-	}
-	
-	
-	
-	
-	public double getMeasuredProduction() {
-		return MeasuredProduction;
-	}
-	public void setMeasuredProduction(double measuredProduction) {
-		MeasuredProduction = measuredProduction;
-	}
-	
-	/**
-	 * @return the time
-	 */
-	public String getTime() {
-		return time;
-	}
-	/**
-	 * @param time the time to set
-	 */
-	public void setTime(String time) {
-		this.time = time;
-	}
-	/**
-	 * @return the id_device
-	 */
-	public int getId_device() {
-		return id_device;
-	}
-	/**
-	 * @param id_device the id_device to set
-	 */
-	public void setId_device(int id_device) {
-		this.id_device = id_device;
-	}
-	/**
-	 * @return the error
-	 */
-	public int getError() {
-		return error;
-	}
-	/**
-	 * @param error the error to set
-	 */
-	public void setError(int error) {
-		this.error = error;
-	}
-	/**
-	 * @return the low_alarm
-	 */
-	public int getLow_alarm() {
-		return low_alarm;
-	}
-	/**
-	 * @param low_alarm the low_alarm to set
-	 */
-	public void setLow_alarm(int low_alarm) {
-		this.low_alarm = low_alarm;
-	}
-	/**
-	 * @return the high_alarm
-	 */
-	public int getHigh_alarm() {
-		return high_alarm;
-	}
-	/**
-	 * @param high_alarm the high_alarm to set
-	 */
-	public void setHigh_alarm(int high_alarm) {
-		this.high_alarm = high_alarm;
-	}
 	/**
 	 * @return the activePowerTotal
 	 */
@@ -1160,30 +1046,6 @@ private int enable_alert;
 	 */
 	public void setQ4ReactiveEnergyC(double q4ReactiveEnergyC) {
 		Q4ReactiveEnergyC = q4ReactiveEnergyC;
-	}
-	/**
-	 * @return the nvmActivePower
-	 */
-	public double getNvmActivePower() {
-		return nvmActivePower;
-	}
-	/**
-	 * @param nvmActivePower the nvmActivePower to set
-	 */
-	public void setNvmActivePower(double nvmActivePower) {
-		this.nvmActivePower = nvmActivePower;
-	}
-	/**
-	 * @return the nvmActiveEnergy
-	 */
-	public double getNvmActiveEnergy() {
-		return nvmActiveEnergy;
-	}
-	/**
-	 * @param nvmActiveEnergy the nvmActiveEnergy to set
-	 */
-	public void setNvmActiveEnergy(double nvmActiveEnergy) {
-		this.nvmActiveEnergy = nvmActiveEnergy;
 	}
 	
 	

@@ -27,9 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
 import com.nwm.api.entities.ModelATiTrackerEntity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
@@ -40,6 +38,7 @@ import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.entities.ModelAeRefusolEntity;
 import com.nwm.api.entities.ModelAesTxInverterEntity;
+import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelCampellScientificMeter1Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter2Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter3Entity;
@@ -112,7 +111,6 @@ import com.nwm.api.entities.ModelXGI1500Entity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.entities.ModelXantrexInverterEntity;
-import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelATiTrackerService;
@@ -199,7 +197,6 @@ import com.nwm.api.services.ModelXantrexInverterService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
-import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
 import java.beans.PropertyDescriptor;
@@ -211,7 +208,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -359,6 +355,7 @@ public class UploadFilesController extends BaseController {
 							        
 									if( modbusdevice.equals(item.getModbusdevicenumber())) {
 										List<DeviceEntity> scaledDeviceParameters = serviceD.getListScaledDeviceParameter(item);
+										DeviceEntity deviceUpdateE = new DeviceEntity();
 										
 										switch (item.getDevice_group_table()) {
 
@@ -372,95 +369,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelPVPowered3550260500kwInverterEntity dataModelPVPowered = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
-													dataModelPVPowered.setId_device(item.getId());
-													dataModelPVPowered.setDatatablename(item.getDatatablename());
-													dataModelPVPowered.setView_tablename(item.getView_tablename());
-													dataModelPVPowered.setJob_tablename(item.getJob_tablename());
+													ModelPVPowered3550260500kwInverterEntity dataEntity = serviceModelPVPowered.setModelPVPowered3550260KWInverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPowered3550260500kwInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPowered);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelPVPowered, scaledValue);
-															if (slug.equals("OutputGeneration")) dataModelPVPowered.setNvmActivePower(scaledValue);
-															if (slug.equals("TotalEnergyGeneration")) dataModelPVPowered.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// OutputGeneration
-													if(dataModelPVPowered.getOutputGeneration() != 0.001 && dataModelPVPowered.getOutputGeneration() >= 0){
-														deviceUpdateE.setLast_updated(dataModelPVPowered.getTime());
+													if(dataEntity.getOutputGeneration() != 0.001 && dataEntity.getOutputGeneration() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 
-													deviceUpdateE.setLast_value(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
-													deviceUpdateE.setField_value1(dataModelPVPowered.getOutputGeneration() != 0.001 ? dataModelPVPowered.getOutputGeneration() : null);
+													deviceUpdateE.setLast_value(dataEntity.getOutputGeneration() != 0.001 ? dataEntity.getOutputGeneration() : null);
+													deviceUpdateE.setField_value1(dataEntity.getOutputGeneration() != 0.001 ? dataEntity.getOutputGeneration() : null);
 													
 													// DCInputVoltage
-													deviceUpdateE.setField_value2(dataModelPVPowered.getDCInputVoltage() != 0.001 ? dataModelPVPowered.getDCInputVoltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
 													
 													// DCInputCurrent
-													deviceUpdateE.setField_value3(dataModelPVPowered.getDCInputCurrent() != 0.001 ? dataModelPVPowered.getDCInputCurrent() : null);
+													deviceUpdateE.setField_value3(dataEntity.getDCInputCurrent() != 0.001 ? dataEntity.getDCInputCurrent() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataModelPVPowered);
-													
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){    
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataEntity);
 												}
 											}
 											
@@ -476,97 +411,32 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100Entity dataModelShark100 = serviceModelShark100.setModelShark100(line, item.getOffset_data_old());
-													dataModelShark100.setId_device(item.getId());
-													dataModelShark100.setDatatablename(item.getDatatablename());
-													dataModelShark100.setView_tablename(item.getView_tablename());
-													dataModelShark100.setJob_tablename(item.getJob_tablename());
+													ModelShark100Entity dataEntity = serviceModelShark100.setModelShark100(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelShark100, scaledValue);
-															if (slug.equals("watts_3ph_total")) dataModelShark100.setNvmActivePower(scaledValue);
-															if (slug.equals("w_hours_total")) dataModelShark100.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// watts_3ph_total
-													if(dataModelShark100.getWatts_3ph_total() != 0.001 && dataModelShark100.getWatts_3ph_total() >= 0){
-														deviceUpdateE.setLast_updated(dataModelShark100.getTime());
+													if(dataEntity.getWatts_3ph_total() != 0.001 && dataEntity.getWatts_3ph_total() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
-													deviceUpdateE.setField_value1(dataModelShark100.getWatts_3ph_total() != 0.001 ? dataModelShark100.getWatts_3ph_total() : null);
+													deviceUpdateE.setLast_value(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
+													deviceUpdateE.setField_value1(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
 													
 													// vars_3ph_total
-													deviceUpdateE.setField_value2(dataModelShark100.getVars_3ph_total() != 0.001 ? dataModelShark100.getVars_3ph_total() : null);
+													deviceUpdateE.setField_value2(dataEntity.getVars_3ph_total() != 0.001 ? dataEntity.getVars_3ph_total() : null);
 													
 													// vas_3ph_total
-													deviceUpdateE.setField_value3(dataModelShark100.getVas_3ph_total() != 0.001 ? dataModelShark100.getVas_3ph_total() : null);
+													deviceUpdateE.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													
-													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelShark100.insertModelShark100(dataModelShark100);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){    
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){    
-														e.printStackTrace();  
-													}
-													
+													serviceModelShark100.insertModelShark100(dataEntity);
 												}
 											}
 											
@@ -583,97 +453,32 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100v1Entity dataModelShark100v1 = serviceModelShark100v1.setModelShark100v1(line, item.getOffset_data_old());
-													dataModelShark100v1.setId_device(item.getId());
-													dataModelShark100v1.setDatatablename(item.getDatatablename());
-													dataModelShark100v1.setView_tablename(item.getView_tablename());
-													dataModelShark100v1.setJob_tablename(item.getJob_tablename());
+													ModelShark100v1Entity dataEntity = serviceModelShark100v1.setModelShark100v1(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark100v1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark100v1);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelShark100v1, scaledValue);
-															if (slug.equals("watts_3ph_total")) dataModelShark100v1.setNvmActivePower(scaledValue);
-															if (slug.equals("w_hours_net")) dataModelShark100v1.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// watts_3ph_total
-													if(dataModelShark100v1.getWatts_3ph_total() != 0.001 && dataModelShark100v1.getWatts_3ph_total() >= 0){
-														deviceUpdateE.setLast_updated(dataModelShark100v1.getTime());
+													if(dataEntity.getWatts_3ph_total() != 0.001 && dataEntity.getWatts_3ph_total() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelShark100v1.getWatts_3ph_total() != 0.001 ? dataModelShark100v1.getWatts_3ph_total() : null);
-													deviceUpdateE.setField_value1(dataModelShark100v1.getWatts_3ph_total() != 0.001 ? dataModelShark100v1.getWatts_3ph_total() : null);
+													deviceUpdateE.setLast_value(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
+													deviceUpdateE.setField_value1(dataEntity.getWatts_3ph_total() != 0.001 ? dataEntity.getWatts_3ph_total() : null);
 													
 													// vars_3ph_total
-													deviceUpdateE.setField_value2(dataModelShark100v1.getVars_3ph_total() != 0.001 ? dataModelShark100v1.getVars_3ph_total() : null);
+													deviceUpdateE.setField_value2(dataEntity.getVars_3ph_total() != 0.001 ? dataEntity.getVars_3ph_total() : null);
 													
 													// vas_3ph_total
-													deviceUpdateE.setField_value3(dataModelShark100v1.getVas_3ph_total() != 0.001 ? dataModelShark100v1.getVas_3ph_total() : null);
+													deviceUpdateE.setField_value3(dataEntity.getVas_3ph_total() != 0.001 ? dataEntity.getVas_3ph_total() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													
-													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelShark100v1.insertModelShark100v1(dataModelShark100v1);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){    
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){    
-														e.printStackTrace();  
-													}
-													
+													serviceModelShark100v1.insertModelShark100v1(dataEntity);
 												}
 											}
 											
@@ -689,42 +494,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelRT1Class30000Entity dataModelRTC30000 = serviceModelRT1Class30000.setModelRT1Class30000(line);
-													dataModelRTC30000.setId_device(item.getId());
-													dataModelRTC30000.setDatatablename(item.getDatatablename());
-													dataModelRTC30000.setView_tablename(item.getView_tablename());
-													dataModelRTC30000.setJob_tablename(item.getJob_tablename());
+													ModelRT1Class30000Entity dataEntity = serviceModelRT1Class30000.setModelRT1Class30000(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelRT1Class30000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelRTC30000);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelRTC30000, scaledValue);
-															if (slug.equals("sensor1_data")) dataModelRTC30000.setNvm_irradiance(scaledValue);
-															if (slug.equals("panel_temperature")) dataModelRTC30000.setNvm_temperature(scaledValue);
-															if (slug.equals("panel_temperature")) dataModelRTC30000.setNvm_panel_temperature(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// sensor1_data
 													
-													if(dataModelRTC30000.getSensor1_data() != 0.001 && dataModelRTC30000.getSensor1_data() >= 0){
-														deviceUpdateE.setLast_updated(dataModelRTC30000.getTime());
+													if(dataEntity.getSensor1_data() != 0.001 && dataEntity.getSensor1_data() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
-													deviceUpdateE.setField_value1(dataModelRTC30000.getSensor1_data() != 0.001 ? dataModelRTC30000.getSensor1_data() : null);
+													deviceUpdateE.setLast_value(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
+													deviceUpdateE.setField_value1(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
 													
 													// panel_temperature
-													deviceUpdateE.setField_value2(dataModelRTC30000.getPanel_temperature() != 0.001 ? dataModelRTC30000.getPanel_temperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getPanel_temperature() != 0.001 ? dataEntity.getPanel_temperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -732,46 +520,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelRT1Class30000.insertModelRT1Class30000(dataModelRTC30000);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelRT1Class30000.insertModelRT1Class30000(dataEntity);
 												}
 											}
 											
@@ -788,43 +537,25 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelKippZonenRT1Class8009Entity dataKippZonen = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
-													dataKippZonen.setId_device(item.getId());
-													dataKippZonen.setDatatablename(item.getDatatablename());
-													dataKippZonen.setView_tablename(item.getView_tablename());
-													dataKippZonen.setJob_tablename(item.getJob_tablename());
+													ModelKippZonenRT1Class8009Entity dataEntity = serviceModelKippzonen.setModelKippZonenRT1Class8009(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKippZonenRT1Class8009Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataKippZonen);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataKippZonen, scaledValue);
-															if (slug.equals("sensor1_data")) dataKippZonen.setNvm_irradiance(scaledValue);
-															if (slug.equals("panel_temperature")) dataKippZonen.setNvm_temperature(scaledValue);
-															if (slug.equals("panel_temperature")) dataKippZonen.setNvm_panel_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Sensor1_data
 													
-													if(dataKippZonen.getSensor1_data() != 0.001 && dataKippZonen.getSensor1_data() >= 0){
-														deviceUpdateE.setLast_updated(dataKippZonen.getTime());
+													if(dataEntity.getSensor1_data() != 0.001 && dataEntity.getSensor1_data() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
-													deviceUpdateE.setField_value1(dataKippZonen.getSensor1_data() != 0.001 ? dataKippZonen.getSensor1_data() : null);
+													deviceUpdateE.setLast_value(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
+													deviceUpdateE.setField_value1(dataEntity.getSensor1_data() != 0.001 ? dataEntity.getSensor1_data() : null);
 													
 													// panel_temperature
-													deviceUpdateE.setField_value2(dataKippZonen.getPanel_temperature() != 0.001 ? dataKippZonen.getPanel_temperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getPanel_temperature() != 0.001 ? dataEntity.getPanel_temperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -832,46 +563,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataKippZonen);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelKippzonen.insertModelKippZonenRT1Class8009(dataEntity);
 												}
 											}
 											
@@ -888,95 +580,33 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelIVTSolaronEXTEntity dataModelIVTSolaronEXT = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
-													dataModelIVTSolaronEXT.setId_device(item.getId());
-													dataModelIVTSolaronEXT.setDatatablename(item.getDatatablename());
-													dataModelIVTSolaronEXT.setView_tablename(item.getView_tablename());
-													dataModelIVTSolaronEXT.setJob_tablename(item.getJob_tablename());
+													ModelIVTSolaronEXTEntity dataEntity = serviceModelIVTSolaronEXT.setModelIVTSolaronEXT(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIVTSolaronEXTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIVTSolaronEXT);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIVTSolaronEXT, scaledValue);
-															if (slug.equals("ac_power")) dataModelIVTSolaronEXT.setNvmActivePower(scaledValue);
-															if (slug.equals("ytd_kwh_total")) dataModelIVTSolaronEXT.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ac_power
 													
-													if(dataModelIVTSolaronEXT.getAc_power()  != 0.001 && dataModelIVTSolaronEXT.getAc_power()  >= 0){
-														deviceUpdateE.setLast_updated(dataModelIVTSolaronEXT.getTime());
+													if(dataEntity.getAc_power()  != 0.001 && dataEntity.getAc_power()  >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
-													deviceUpdateE.setField_value1(dataModelIVTSolaronEXT.getAc_power() != 0.001 ? dataModelIVTSolaronEXT.getAc_power() : null);
+													deviceUpdateE.setLast_value(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
+													deviceUpdateE.setField_value1(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
 													
 													// ac_frequency
-													deviceUpdateE.setField_value2(dataModelIVTSolaronEXT.getAc_frequency() != 0.001 ? dataModelIVTSolaronEXT.getAc_frequency() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAc_frequency() != 0.001 ? dataEntity.getAc_frequency() : null);
 													
 													// pv_voltage
-													deviceUpdateE.setField_value3(dataModelIVTSolaronEXT.getPv_voltage() != 0.001 ? dataModelIVTSolaronEXT.getPv_voltage() : null);
+													deviceUpdateE.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataModelIVTSolaronEXT);
-													
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataEntity);
 												}
 											}
 											
@@ -991,42 +621,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelHukselfluxSr30d1DeviceclassV0Entity dataModelHukselfluxSr30d1DeviceclassV0 = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
-													dataModelHukselfluxSr30d1DeviceclassV0.setId_device(item.getId());
-													dataModelHukselfluxSr30d1DeviceclassV0.setDatatablename(item.getDatatablename());
-													dataModelHukselfluxSr30d1DeviceclassV0.setView_tablename(item.getView_tablename());
-													dataModelHukselfluxSr30d1DeviceclassV0.setJob_tablename(item.getJob_tablename());
+													ModelHukselfluxSr30d1DeviceclassV0Entity dataEntity = serviceModelHukselfluxSr30d1DeviceclassV0.setModelHukselfluxSr30d1DeviceclassV0(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelHukselfluxSr30d1DeviceclassV0Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelHukselfluxSr30d1DeviceclassV0, scaledValue);
-															if (slug.equals("IrradianceTcs")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_irradiance(scaledValue);
-															if (slug.equals("SensorBodyTemperature")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_temperature(scaledValue);
-															if (slug.equals("SensorBodyTemperature")) dataModelHukselfluxSr30d1DeviceclassV0.setNvm_panel_temperature(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// IrradianceTcs
 													
-													if(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 && dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs()  >= 0){
-														deviceUpdateE.setLast_updated(dataModelHukselfluxSr30d1DeviceclassV0.getTime());
+													if(dataEntity.getIrradianceTcs() != 0.001 && dataEntity.getIrradianceTcs()  >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
-													deviceUpdateE.setField_value1(dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getIrradianceTcs() : null);
+													deviceUpdateE.setLast_value(dataEntity.getIrradianceTcs() != 0.001 ? dataEntity.getIrradianceTcs() : null);
+													deviceUpdateE.setField_value1(dataEntity.getIrradianceTcs() != 0.001 ? dataEntity.getIrradianceTcs() : null);
 													
 													// SensorBodyTemperature
-													deviceUpdateE.setField_value2(dataModelHukselfluxSr30d1DeviceclassV0.getSensorBodyTemperature() != 0.001 ? dataModelHukselfluxSr30d1DeviceclassV0.getSensorBodyTemperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getSensorBodyTemperature() != 0.001 ? dataEntity.getSensorBodyTemperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -1034,45 +647,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataModelHukselfluxSr30d1DeviceclassV0);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelHukselfluxSr30d1DeviceclassV0.insertModelHukselfluxSr30d1DeviceclassV0(dataEntity);
 												}
 											}
 											
@@ -1087,42 +662,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelIMTSolarClass8000Entity dataModelIMTSolarClass = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
-													dataModelIMTSolarClass.setId_device(item.getId());
-													dataModelIMTSolarClass.setDatatablename(item.getDatatablename());
-													dataModelIMTSolarClass.setView_tablename(item.getView_tablename());
-													dataModelIMTSolarClass.setJob_tablename(item.getJob_tablename());
+													ModelIMTSolarClass8000Entity dataEntity = serviceModelIMTSolarClass8000.setModelIMTSolarClass8000(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarClass8000Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarClass);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIMTSolarClass, scaledValue);
-															if (slug.equals("irradiance")) dataModelIMTSolarClass.setNvm_irradiance(scaledValue);
-															if (slug.equals("tcell")) dataModelIMTSolarClass.setNvm_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
-													
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// irradiance
 													
-													if(dataModelIMTSolarClass.getIrradiance() != 0.001 && dataModelIMTSolarClass.getIrradiance()  >= 0){
-														deviceUpdateE.setLast_updated(dataModelIMTSolarClass.getTime());
+													if(dataEntity.getIrradiance() != 0.001 && dataEntity.getIrradiance()  >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
-													deviceUpdateE.setField_value1(dataModelIMTSolarClass.getIrradiance() != 0.001 ? dataModelIMTSolarClass.getIrradiance() : null);
+													deviceUpdateE.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													deviceUpdateE.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
 													
 													// tcell
-													deviceUpdateE.setField_value2(dataModelIMTSolarClass.getTcell() != 0.001 ? dataModelIMTSolarClass.getTcell() : null);
+													deviceUpdateE.setField_value2(dataEntity.getTcell() != 0.001 ? dataEntity.getTcell() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -1130,45 +688,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataModelIMTSolarClass);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelIMTSolarClass8000.insertModelIMTSolarClass8000(dataEntity);
 												}
 											}
 											
@@ -1184,37 +704,22 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelIMTSolarTmodulClass8006Entity dataModelIMTSolarTmodulClass8006 = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
-													dataModelIMTSolarTmodulClass8006.setId_device(item.getId());
-													dataModelIMTSolarTmodulClass8006.setDatatablename(item.getDatatablename());
-													dataModelIMTSolarTmodulClass8006.setView_tablename(item.getView_tablename());
-													dataModelIMTSolarTmodulClass8006.setJob_tablename(item.getJob_tablename());
+													ModelIMTSolarTmodulClass8006Entity dataEntity = serviceModelIMTSolarTmodulClass8006.setDataModelIMTSolarTmodulClass8006(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelIMTSolarTmodulClass8006Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIMTSolarTmodulClass8006);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelIMTSolarTmodulClass8006, scaledValue);
-															if (slug.equals("ModuleTemperature")) dataModelIMTSolarTmodulClass8006.setNvm_temperature(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ModuleTemperature
-													if(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 && dataModelIMTSolarTmodulClass8006.getModuleTemperature() >= 0){
-														deviceUpdateE.setLast_updated(dataModelIMTSolarTmodulClass8006.getTime());
+													if(dataEntity.getModuleTemperature() != 0.001 && dataEntity.getModuleTemperature() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
 													
-													deviceUpdateE.setLast_value(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
-													deviceUpdateE.setField_value1(dataModelIMTSolarTmodulClass8006.getModuleTemperature() != 0.001 ? dataModelIMTSolarTmodulClass8006.getModuleTemperature() : null);
+													deviceUpdateE.setLast_value(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
+													deviceUpdateE.setField_value1(dataEntity.getModuleTemperature() != 0.001 ? dataEntity.getModuleTemperature() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -1225,45 +730,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataModelIMTSolarTmodulClass8006);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelIMTSolarTmodulClass8006.insertModelIMTSolarTmodulClass8006(dataEntity);
 												}
 											}
 											
@@ -1278,96 +745,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelAdvancedEnergySolaronEntity dataModelAdvancedEnergySolaron = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line, item.getOffset_data_old());
-													dataModelAdvancedEnergySolaron.setId_device(item.getId());
-													dataModelAdvancedEnergySolaron.setDatatablename(item.getDatatablename());
-													dataModelAdvancedEnergySolaron.setView_tablename(item.getView_tablename());
-													dataModelAdvancedEnergySolaron.setJob_tablename(item.getJob_tablename());
+													ModelAdvancedEnergySolaronEntity dataEntity = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdvancedEnergySolaronEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdvancedEnergySolaron);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelAdvancedEnergySolaron, scaledValue);
-															if (slug.equals("ac_power")) dataModelAdvancedEnergySolaron.setNvmActivePower(scaledValue);
-															if (slug.equals("ytd_kwh_total")) dataModelAdvancedEnergySolaron.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ac_power
 													
-													if(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 && dataModelAdvancedEnergySolaron.getAc_power() >= 0){
-														deviceUpdateE.setLast_updated(dataModelAdvancedEnergySolaron.getTime());
+													if(dataEntity.getAc_power() != 0.001 && dataEntity.getAc_power() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
-													deviceUpdateE.setField_value1(dataModelAdvancedEnergySolaron.getAc_power() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_power() : null);
+													deviceUpdateE.setLast_value(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
+													deviceUpdateE.setField_value1(dataEntity.getAc_power() != 0.001 ? dataEntity.getAc_power() : null);
 													
 													// ac_frequency
-													deviceUpdateE.setField_value2(dataModelAdvancedEnergySolaron.getAc_frequency() != 0.001 ? dataModelAdvancedEnergySolaron.getAc_frequency() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAc_frequency() != 0.001 ? dataEntity.getAc_frequency() : null);
 													
 													// pv_voltage
-													deviceUpdateE.setField_value3(dataModelAdvancedEnergySolaron.getPv_voltage() != 0.001 ? dataModelAdvancedEnergySolaron.getPv_voltage() : null);
+													deviceUpdateE.setField_value3(dataEntity.getPv_voltage() != 0.001 ? dataEntity.getPv_voltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-													
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataModelAdvancedEnergySolaron);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataEntity);
 												}
 											}
 											
@@ -1383,90 +787,33 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelPVMet100Entity dataPVMet100 = servicePVMet100.setModelPVMet100(line);
-													dataPVMet100.setId_device(item.getId());
-													dataPVMet100.setDatatablename(item.getDatatablename());
-													dataPVMet100.setView_tablename(item.getView_tablename());
-													dataPVMet100.setJob_tablename(item.getJob_tablename());
+													ModelPVMet100Entity dataEntity = servicePVMet100.setModelPVMet100(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVMet100Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataPVMet100);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataPVMet100, scaledValue);
-															if (slug.equals("TransientHorizontalIrradiance")) dataPVMet100.setNvm_irradiance(scaledValue);
-															if (slug.equals("AmbientTemperature")) dataPVMet100.setNvm_temperature(scaledValue);
-															if (slug.equals("Temperature")) dataPVMet100.setNvm_panel_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Irradiance
 													
-													if(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 && dataPVMet100.getTransientHorizontalIrradiance() >= 0){
-														deviceUpdateE.setLast_updated(dataPVMet100.getTime());
+													if(dataEntity.getTransientHorizontalIrradiance() != 0.001 && dataEntity.getTransientHorizontalIrradiance() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
-													deviceUpdateE.setField_value1(dataPVMet100.getTransientHorizontalIrradiance() != 0.001 ? dataPVMet100.getTransientHorizontalIrradiance() : null);
+													deviceUpdateE.setLast_value(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
+													deviceUpdateE.setField_value1(dataEntity.getTransientHorizontalIrradiance() != 0.001 ? dataEntity.getTransientHorizontalIrradiance() : null);
 													
 													// Ambient Temperature
-													deviceUpdateE.setField_value2(dataPVMet100.getAmbientTemperature() != 0.001 ? dataPVMet100.getAmbientTemperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAmbientTemperature() != 0.001 ? dataEntity.getAmbientTemperature() : null);
 													
 													// PV Temperature Module
-													deviceUpdateE.setField_value3(dataPVMet100.getTemperature() != 0.001 ? dataPVMet100.getTemperature() : null);
+													deviceUpdateE.setField_value3(dataEntity.getTemperature() != 0.001 ? dataEntity.getTemperature() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													servicePVMet100.insertModelPVMet100(dataPVMet100);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){    
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													servicePVMet100.insertModelPVMet100(dataEntity);
 												}
 											}
 											
@@ -1483,90 +830,33 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelPVMet200Entity dataPVMet200 = servicePVMet200.setModelPVMet200(line);
-													dataPVMet200.setId_device(item.getId());
-													dataPVMet200.setDatatablename(item.getDatatablename());
-													dataPVMet200.setView_tablename(item.getView_tablename());
-													dataPVMet200.setJob_tablename(item.getJob_tablename());
+													ModelPVMet200Entity dataEntity = servicePVMet200.setModelPVMet200(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVMet200Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataPVMet200);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataPVMet200, scaledValue);
-															if (slug.equals("E_Irradiance_Plane_Of_Array_1")) dataPVMet200.setNvm_irradiance(scaledValue);
-															if (slug.equals("E_BaseMet_Air_Temperature")) dataPVMet200.setNvm_temperature(scaledValue);
-															if (slug.equals("E_BOM_Temp_1")) dataPVMet200.setNvm_panel_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Irradiance
 													
-													if(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 && dataPVMet200.getE_Irradiance_Plane_Of_Array_1() >= 0){
-														deviceUpdateE.setLast_updated(dataPVMet200.getTime());
+													if(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 && dataEntity.getE_Irradiance_Plane_Of_Array_1() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataPVMet200.getE_Irradiance_Plane_Of_Array_1() : null);
-													deviceUpdateE.setField_value1(dataPVMet200.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataPVMet200.getE_Irradiance_Plane_Of_Array_1() : null);
+													deviceUpdateE.setLast_value(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataEntity.getE_Irradiance_Plane_Of_Array_1() : null);
+													deviceUpdateE.setField_value1(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataEntity.getE_Irradiance_Plane_Of_Array_1() : null);
 													
 													// Ambient Temperature
-													deviceUpdateE.setField_value2(dataPVMet200.getE_BaseMet_Air_Temperature() != 0.001 ? dataPVMet200.getE_BaseMet_Air_Temperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getE_BaseMet_Air_Temperature() != 0.001 ? dataEntity.getE_BaseMet_Air_Temperature() : null);
 													
 													// PV Temperature Module
-													deviceUpdateE.setField_value3(dataPVMet200.getE_BOM_Temp_1() != 0.001 ? dataPVMet200.getE_BOM_Temp_1() : null);
+													deviceUpdateE.setField_value3(dataEntity.getE_BOM_Temp_1() != 0.001 ? dataEntity.getE_BOM_Temp_1() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													servicePVMet200.insertModelPVMet200(dataPVMet200);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){    
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													servicePVMet200.insertModelPVMet200(dataEntity);
 												}
 											}
 											
@@ -1582,95 +872,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelPVPInverterEntity dataModelPVPInverter = serviceModelPVPInverter.setModelPVPInverter(line);
-													dataModelPVPInverter.setId_device(item.getId());
-													dataModelPVPInverter.setDatatablename(item.getDatatablename());
-													dataModelPVPInverter.setView_tablename(item.getView_tablename());
-													dataModelPVPInverter.setJob_tablename(item.getJob_tablename());
+													ModelPVPInverterEntity dataEntity = serviceModelPVPInverter.setModelPVPInverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPVPInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPVPInverter);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelPVPInverter, scaledValue);
-															if (slug.equals("line_kw")) dataModelPVPInverter.setNvmActivePower(scaledValue);
-															if (slug.equals("total_kwh_delivered")) dataModelPVPInverter.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// line_kw
 													
-													if(dataModelPVPInverter.getLine_kw() != 0.001 && dataModelPVPInverter.getLine_kw() >= 0){
-														deviceUpdateE.setLast_updated(dataModelPVPInverter.getTime());
+													if(dataEntity.getLine_kw() != 0.001 && dataEntity.getLine_kw() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
-													deviceUpdateE.setField_value1(dataModelPVPInverter.getLine_kw() != 0.001 ? dataModelPVPInverter.getLine_kw() : null);
+													deviceUpdateE.setLast_value(dataEntity.getLine_kw() != 0.001 ? dataEntity.getLine_kw() : null);
+													deviceUpdateE.setField_value1(dataEntity.getLine_kw() != 0.001 ? dataEntity.getLine_kw() : null);
 													
 													// dc_output_voltage
-													deviceUpdateE.setField_value2(dataModelPVPInverter.getDc_output_voltage() != 0.001 ? dataModelPVPInverter.getDc_output_voltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getDc_output_voltage() != 0.001 ? dataEntity.getDc_output_voltage() : null);
 													
 													// dc_output_current
-													deviceUpdateE.setField_value3(dataModelPVPInverter.getDc_output_current() != 0.001 ? dataModelPVPInverter.getDc_output_current() : null);
+													deviceUpdateE.setField_value3(dataEntity.getDc_output_current() != 0.001 ? dataEntity.getDc_output_current() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelPVPInverter.insertModelPVPInverter(dataModelPVPInverter);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelPVPInverter.insertModelPVPInverter(dataEntity);
 												}
 											}
 											
@@ -1686,95 +914,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelChintSolectriaInverterClass9725Entity dataModelChint = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
-													dataModelChint.setId_device(item.getId());
-													dataModelChint.setDatatablename(item.getDatatablename());
-													dataModelChint.setView_tablename(item.getView_tablename());
-													dataModelChint.setJob_tablename(item.getJob_tablename());
+													ModelChintSolectriaInverterClass9725Entity dataEntity = serviceModelChintSolectria.setModelChintSolectriaInverterClass9725(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelChintSolectriaInverterClass9725Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelChint);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelChint, scaledValue);
-															if (slug.equals("AC_ActivePower")) dataModelChint.setNvmActivePower(scaledValue);
-															if (slug.equals("TotalEnergyToEnergy")) dataModelChint.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// AC_ActivePower
 													
-													if(dataModelChint.getAC_ActivePower() != 0.001 && dataModelChint.getAC_ActivePower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelChint.getTime());
+													if(dataEntity.getAC_ActivePower() != 0.001 && dataEntity.getAC_ActivePower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
-													deviceUpdateE.setField_value1(dataModelChint.getAC_ActivePower() != 0.001 ? dataModelChint.getAC_ActivePower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getAC_ActivePower() != 0.001 ? dataEntity.getAC_ActivePower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getAC_ActivePower() != 0.001 ? dataEntity.getAC_ActivePower() : null);
 													
 													// AC_ApparentPower
-													deviceUpdateE.setField_value2(dataModelChint.getAC_ApparentPower() != 0.001 ? dataModelChint.getAC_ApparentPower() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAC_ApparentPower() != 0.001 ? dataEntity.getAC_ApparentPower() : null);
 													
 													// PV1_Voltage
-													deviceUpdateE.setField_value3(dataModelChint.getPV1_Voltage() != 0.001 ? dataModelChint.getPV1_Voltage() : null);
+													deviceUpdateE.setField_value3(dataEntity.getPV1_Voltage() != 0.001 ? dataEntity.getPV1_Voltage() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													
-													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataModelChint);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														logFile.delete();
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														logGzFile.delete();	
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataEntity);
 												}
 											}
 											
@@ -1790,94 +957,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelVerisIndustriesE51c2PowerMeterEntity dataModelVeris = serviceModelVeris.setModelChintSolectriaInverterClass9725(line, item.getOffset_data_old());
-													dataModelVeris.setId_device(item.getId());
-													dataModelVeris.setDatatablename(item.getDatatablename());
-													dataModelVeris.setView_tablename(item.getView_tablename());
-													dataModelVeris.setJob_tablename(item.getJob_tablename());
+													ModelVerisIndustriesE51c2PowerMeterEntity dataEntity = serviceModelVeris.setModelChintSolectriaInverterClass9725(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE51c2PowerMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
-															if (slug.equals("TotalNetInstantaneousRealPower")) dataModelVeris.setNvmActivePower(scaledValue);
-															if (slug.equals("AccumulatedRealEnergyNet")) dataModelVeris.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// TotalNetInstantaneousRealPower
 													
-													if(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 && dataModelVeris.getTotalNetInstantaneousRealPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+													if(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 && dataEntity.getTotalNetInstantaneousRealPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
-													deviceUpdateE.setField_value1(dataModelVeris.getTotalNetInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalNetInstantaneousRealPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getTotalNetInstantaneousRealPower() != 0.001 ? dataEntity.getTotalNetInstantaneousRealPower() : null);
 													
 													// RealPowerPhaseA
-													deviceUpdateE.setField_value2(dataModelVeris.getRealPowerPhaseA() != 0.001 ? dataModelVeris.getRealPowerPhaseA() : null);
+													deviceUpdateE.setField_value2(dataEntity.getRealPowerPhaseA() != 0.001 ? dataEntity.getRealPowerPhaseA() : null);
 													
 													// RealPowerPhaseB
-													deviceUpdateE.setField_value3(dataModelVeris.getRealPowerPhaseB() != 0.001 ? dataModelVeris.getRealPowerPhaseB() : null);
+													deviceUpdateE.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataModelVeris);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataEntity);
 												}
 											}
 											
@@ -1894,93 +1000,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSatconPvs357InverterEntity dataModelSatcon = serviceModelSatcon.setModelSatconPvs357Inverter(line);
-													dataModelSatcon.setId_device(item.getId());
-													dataModelSatcon.setDatatablename(item.getDatatablename());
-													dataModelSatcon.setView_tablename(item.getView_tablename());
-													dataModelSatcon.setJob_tablename(item.getJob_tablename());
+													ModelSatconPvs357InverterEntity dataEntity = serviceModelSatcon.setModelSatconPvs357Inverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPvs357InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSatcon, scaledValue);
-															if (slug.equals("Output_kw")) dataModelSatcon.setNvmActivePower(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													//Output_kw
 													
-													if(dataModelSatcon.getOutput_kw() != 0.001 && dataModelSatcon.getOutput_kw() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSatcon.getTime());
+													if(dataEntity.getOutput_kw() != 0.001 && dataEntity.getOutput_kw() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
-													deviceUpdateE.setField_value1(dataModelSatcon.getOutput_kw() != 0.001 ? dataModelSatcon.getOutput_kw() : null);
+													deviceUpdateE.setLast_value(dataEntity.getOutput_kw() != 0.001 ? dataEntity.getOutput_kw() : null);
+													deviceUpdateE.setField_value1(dataEntity.getOutput_kw() != 0.001 ? dataEntity.getOutput_kw() : null);
 													
 													// Input_kW
-													deviceUpdateE.setField_value2(dataModelSatcon.getInput_kW() != 0.001 ? dataModelSatcon.getInput_kW() : null);
+													deviceUpdateE.setField_value2(dataEntity.getInput_kW() != 0.001 ? dataEntity.getInput_kW() : null);
 													
 													// DC_Input_Volts
-													deviceUpdateE.setField_value3(dataModelSatcon.getDC_Input_Volts() != 0.001 ? dataModelSatcon.getDC_Input_Volts() : null);
+													deviceUpdateE.setField_value3(dataEntity.getDC_Input_Volts() != 0.001 ? dataEntity.getDC_Input_Volts() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSatcon.insertModelSatconPvs357Inverter(dataModelSatcon);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelSatcon.insertModelSatconPvs357Inverter(dataEntity);
 												}
 											}
 											
@@ -1997,94 +1043,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorWattsonPVMeterEntity dataModelElkor = serviceModelElkor.setModelElkorWattsonPVMeter(line, item.getOffset_data_old());
-													dataModelElkor.setId_device(item.getId());
-													dataModelElkor.setDatatablename(item.getDatatablename());
-													dataModelElkor.setView_tablename(item.getView_tablename());
-													dataModelElkor.setJob_tablename(item.getJob_tablename());
+													ModelElkorWattsonPVMeterEntity dataEntity = serviceModelElkor.setModelElkorWattsonPVMeter(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorWattsonPVMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkor);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelElkor, scaledValue);
-															if (slug.equals("TotalRealPower")) dataModelElkor.setNvmActivePower(scaledValue);
-															if (slug.equals("TotalEnergyConsumption")) dataModelElkor.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// TotalRealPower
 													
-													if(dataModelElkor.getTotalRealPower() != 0.001 && dataModelElkor.getTotalRealPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelElkor.getTime());
+													if(dataEntity.getTotalRealPower() != 0.001 && dataEntity.getTotalRealPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
-													deviceUpdateE.setField_value1(dataModelElkor.getTotalRealPower() != 0.001 ? dataModelElkor.getTotalRealPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
 													
 													// TotalReactivePower
-													deviceUpdateE.setField_value2(dataModelElkor.getTotalReactivePower() != 0.001 ? dataModelElkor.getTotalReactivePower() : null);
+													deviceUpdateE.setField_value2(dataEntity.getTotalReactivePower() != 0.001 ? dataEntity.getTotalReactivePower() : null);
 													
 													// TotalApparentPower
-													deviceUpdateE.setField_value3(dataModelElkor.getTotalApparentPower() != 0.001 ? dataModelElkor.getTotalApparentPower() : null);
+													deviceUpdateE.setField_value3(dataEntity.getTotalApparentPower() != 0.001 ? dataEntity.getTotalApparentPower() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelElkor.insertModelElkorWattsonPVMeter(dataModelElkor);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelElkor.insertModelElkorWattsonPVMeter(dataEntity);
 												}
 											}
 											
@@ -2101,42 +1086,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelWKippZonenRT1Entity dataModelWkipp = serviceModelWkipp.setModelWKippZonenRT1(line);
-													dataModelWkipp.setId_device(item.getId());
-													dataModelWkipp.setDatatablename(item.getDatatablename());
-													dataModelWkipp.setView_tablename(item.getView_tablename());
-													dataModelWkipp.setJob_tablename(item.getJob_tablename());
+													ModelWKippZonenRT1Entity dataEntity = serviceModelWkipp.setModelWKippZonenRT1(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelWKippZonenRT1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelWkipp);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelWkipp, scaledValue);
-															if (slug.equals("SunPOATempComp")) dataModelWkipp.setNvm_irradiance(scaledValue);
-															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_temperature(scaledValue);
-															if (slug.equals("PanelTemperature")) dataModelWkipp.setNvm_panel_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// SunPOATempComp
 													
-													if(dataModelWkipp.getSunPOATempComp() != 0.001 && dataModelWkipp.getSunPOATempComp() >= 0){
-														deviceUpdateE.setLast_updated(dataModelWkipp.getTime());
+													if(dataEntity.getSunPOATempComp() != 0.001 && dataEntity.getSunPOATempComp() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
-													deviceUpdateE.setField_value1(dataModelWkipp.getSunPOATempComp() != 0.001 ? dataModelWkipp.getSunPOATempComp() : null);
+													deviceUpdateE.setLast_value(dataEntity.getSunPOATempComp() != 0.001 ? dataEntity.getSunPOATempComp() : null);
+													deviceUpdateE.setField_value1(dataEntity.getSunPOATempComp() != 0.001 ? dataEntity.getSunPOATempComp() : null);
 
 													// PanelTemperature
-													deviceUpdateE.setField_value2(dataModelWkipp.getPanelTemperature() != 0.001 ? dataModelWkipp.getPanelTemperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getPanelTemperature() != 0.001 ? dataEntity.getPanelTemperature() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2144,46 +1112,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelWkipp.insertModelWKippZonenRT1(dataModelWkipp);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelWkipp.insertModelWKippZonenRT1(dataEntity);
 												}
 											}
 											
@@ -2199,95 +1128,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorProductionMeterEntity dataModelElkorP = serviceModelElkorP.setModelElkorProductionMeter(line, item.getOffset_data_old());
-													dataModelElkorP.setId_device(item.getId());
-													dataModelElkorP.setDatatablename(item.getDatatablename());
-													dataModelElkorP.setView_tablename(item.getView_tablename());
-													dataModelElkorP.setJob_tablename(item.getJob_tablename());
+													ModelElkorProductionMeterEntity dataEntity = serviceModelElkorP.setModelElkorProductionMeter(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorP);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelElkorP, scaledValue);
-															if (slug.equals("ActivePowerTotal")) dataModelElkorP.setNvmActivePower(scaledValue);
-															if (slug.equals("TotalImportEnergy")) dataModelElkorP.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// ActivePowerTotal
 													
-													if(dataModelElkorP.getActivePowerTotal() != 0.001 && dataModelElkorP.getActivePowerTotal() >= 0){
-														deviceUpdateE.setLast_updated(dataModelElkorP.getTime());
+													if(dataEntity.getActivePowerTotal() != 0.001 && dataEntity.getActivePowerTotal() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
-													deviceUpdateE.setField_value1(dataModelElkorP.getActivePowerTotal() != 0.001 ? dataModelElkorP.getActivePowerTotal() : null);
+													deviceUpdateE.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													deviceUpdateE.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
 													
 													// VoltageA
-													deviceUpdateE.setField_value2(dataModelElkorP.getVoltageA() != 0.001 ? dataModelElkorP.getVoltageA() : null);
+													deviceUpdateE.setField_value2(dataEntity.getVoltageA() != 0.001 ? dataEntity.getVoltageA() : null);
 													
 													// VoltageB
-													deviceUpdateE.setField_value3(dataModelElkorP.getVoltageB() != 0.001 ? dataModelElkorP.getVoltageB() : null);
+													deviceUpdateE.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelElkorP.insertModelElkorProductionMeter(dataModelElkorP);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelElkorP.insertModelElkorProductionMeter(dataEntity);
 												}
 											}
 											
@@ -2302,95 +1170,34 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorProductionMeterv1Entity dataModelElkorPv1 = serviceModelElkorPv1.setModelElkorProductionMeterv1(line, item.getOffset_data_old());
-													dataModelElkorPv1.setId_device(item.getId());
-													dataModelElkorPv1.setDatatablename(item.getDatatablename());
-													dataModelElkorPv1.setView_tablename(item.getView_tablename());
-													dataModelElkorPv1.setJob_tablename(item.getJob_tablename());
+													ModelElkorProductionMeterv1Entity dataEntity = serviceModelElkorPv1.setModelElkorProductionMeterv1(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElkorProductionMeterv1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElkorPv1);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelElkorPv1, scaledValue);
-															if (slug.equals("ActivePowerTotal")) dataModelElkorPv1.setNvmActivePower(scaledValue);
-															if (slug.equals("NetTotalEnergy")) dataModelElkorPv1.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// ActivePowerTotal
 													
-													if(dataModelElkorPv1.getActivePowerTotal() != 0.001 && dataModelElkorPv1.getActivePowerTotal() >= 0){
-														deviceUpdateE.setLast_updated(dataModelElkorPv1.getTime());
+													if(dataEntity.getActivePowerTotal() != 0.001 && dataEntity.getActivePowerTotal() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelElkorPv1.getActivePowerTotal() != 0.001 ? dataModelElkorPv1.getActivePowerTotal() : null);
-													deviceUpdateE.setField_value1(dataModelElkorPv1.getActivePowerTotal() != 0.001 ? dataModelElkorPv1.getActivePowerTotal() : null);
+													deviceUpdateE.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+													deviceUpdateE.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
 													
 													// VoltageA
-													deviceUpdateE.setField_value2(dataModelElkorPv1.getVoltageA() != 0.001 ? dataModelElkorPv1.getVoltageA() : null);
+													deviceUpdateE.setField_value2(dataEntity.getVoltageA() != 0.001 ? dataEntity.getVoltageA() : null);
 													
 													// VoltageB
-													deviceUpdateE.setField_value3(dataModelElkorPv1.getVoltageB() != 0.001 ? dataModelElkorPv1.getVoltageB() : null);
+													deviceUpdateE.setField_value3(dataEntity.getVoltageB() != 0.001 ? dataEntity.getVoltageB() : null);
 													
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataModelElkorPv1);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataEntity);
 												}
 											}
 											
@@ -2407,42 +1214,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelAbbTrioClass6210Entity dataModelABB = serviceModelABB.setModelAbbTrioClass6210(line);
-													dataModelABB.setId_device(item.getId());
-													dataModelABB.setDatatablename(item.getDatatablename());
-													dataModelABB.setView_tablename(item.getView_tablename());
-													dataModelABB.setJob_tablename(item.getJob_tablename());
+													ModelAbbTrioClass6210Entity dataEntity = serviceModelABB.setModelAbbTrioClass6210(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbTrioClass6210Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelABB);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelABB, scaledValue);
-															if (slug.equals("GridPower")) dataModelABB.setNvmActivePower(scaledValue);
-															if (slug.equals("TotalEnergy")) dataModelABB.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// GridPower
 													
-													if(dataModelABB.getGridPower() != 0.001 && dataModelABB.getGridPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelABB.getTime());
+													if(dataEntity.getGridPower() != 0.001 && dataEntity.getGridPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
-													deviceUpdateE.setField_value1(dataModelABB.getGridPower() != 0.001 ? dataModelABB.getGridPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getGridPower() != 0.001 ? dataEntity.getGridPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getGridPower() != 0.001 ? dataEntity.getGridPower() : null);
 													
 													// Input1Voltage
-													deviceUpdateE.setField_value2(dataModelABB.getInput1Voltage() != 0.001 ? dataModelABB.getInput1Voltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getInput1Voltage() != 0.001 ? dataEntity.getInput1Voltage() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2450,52 +1240,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													 
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelABB.insertModelAbbTrioClass6210(dataModelABB);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelABB.insertModelAbbTrioClass6210(dataEntity);
 												}
 											}
 											
@@ -2512,41 +1257,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelLufftClass8020Entity dataModelLufftC = serviceModelLufft.setModelLufftClass8020(line);
-													dataModelLufftC.setId_device(item.getId());
-													dataModelLufftC.setDatatablename(item.getDatatablename());
-													dataModelLufftC.setView_tablename(item.getView_tablename());
-													dataModelLufftC.setJob_tablename(item.getJob_tablename());
+													ModelLufftClass8020Entity dataEntity = serviceModelLufft.setModelLufftClass8020(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftClass8020Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufftC);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelLufftC, scaledValue);
-															if (slug.equals("IrradianceActual")) dataModelLufftC.setNvm_irradiance(scaledValue);
-															if (slug.equals("AirTemperatureActual")) dataModelLufftC.setNvm_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// AirTemperatureActual
 													
-													if(dataModelLufftC.getAirTemperatureActual() != 0.001 && dataModelLufftC.getAirTemperatureActual() >= 0){
-														deviceUpdateE.setLast_updated(dataModelLufftC.getTime());
+													if(dataEntity.getAirTemperatureActual() != 0.001 && dataEntity.getAirTemperatureActual() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
-													deviceUpdateE.setField_value1(dataModelLufftC.getAirTemperatureActual() != 0.001 ? dataModelLufftC.getAirTemperatureActual() : null);
+													deviceUpdateE.setLast_value(dataEntity.getAirTemperatureActual() != 0.001 ? dataEntity.getAirTemperatureActual() : null);
+													deviceUpdateE.setField_value1(dataEntity.getAirTemperatureActual() != 0.001 ? dataEntity.getAirTemperatureActual() : null);
 													
 													// IrradianceActual
-													deviceUpdateE.setField_value2(dataModelLufftC.getIrradianceActual() != 0.001 ? dataModelLufftC.getIrradianceActual() : null);
+													deviceUpdateE.setField_value2(dataEntity.getIrradianceActual() != 0.001 ? dataEntity.getIrradianceActual() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2554,45 +1283,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-
-													serviceModelLufft.insertModelLufftClass8020(dataModelLufftC);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelLufft.insertModelLufftClass8020(dataEntity);
 												}
 											}
 											
@@ -2608,38 +1299,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelSth01TempSensorEntity dataModelSth01TempSensor = serviceSth01TempSensor.setModelSth01TempSensor(line);
-														dataModelSth01TempSensor.setId_device(item.getId());
-														dataModelSth01TempSensor.setDatatablename(item.getDatatablename());
-														dataModelSth01TempSensor.setView_tablename(item.getView_tablename());
-														dataModelSth01TempSensor.setJob_tablename(item.getJob_tablename());
+														ModelSth01TempSensorEntity dataEntity = serviceSth01TempSensor.setModelSth01TempSensor(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSth01TempSensorEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSth01TempSensor);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelSth01TempSensor, scaledValue);
-																if (slug.equals("TEMPRATURE")) dataModelSth01TempSensor.setNvm_temperature(scaledValue);
-																if (slug.equals("TEMPRATURE")) dataModelSth01TempSensor.setNvm_panel_temperature(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// TEMPRATURE
 														
-														if(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 && dataModelSth01TempSensor.getTEMPRATURE() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSth01TempSensor.getTime());
+														if(dataEntity.getTEMPRATURE() != 0.001 && dataEntity.getTEMPRATURE() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 ? dataModelSth01TempSensor.getTEMPRATURE() : null);
-														deviceUpdateE.setField_value1(dataModelSth01TempSensor.getTEMPRATURE() != 0.001 ? dataModelSth01TempSensor.getTEMPRATURE() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTEMPRATURE() != 0.001 ? dataEntity.getTEMPRATURE() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTEMPRATURE() != 0.001 ? dataEntity.getTEMPRATURE() : null);
 														
 														// value 2
 														deviceUpdateE.setField_value2(null);
@@ -2650,45 +1325,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-
-														serviceSth01TempSensor.insertModelSth01TempSensor(dataModelSth01TempSensor);
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceSth01TempSensor.insertModelSth01TempSensor(dataEntity);
 													}
 												}
 												
@@ -2704,41 +1341,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelLufftWS501UMBWeatherEntity dataModelLufft = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
-													dataModelLufft.setId_device(item.getId());
-													dataModelLufft.setDatatablename(item.getDatatablename());
-													dataModelLufft.setView_tablename(item.getView_tablename());
-													dataModelLufft.setJob_tablename(item.getJob_tablename());
+													ModelLufftWS501UMBWeatherEntity dataEntity = serviceModelLufftWS501.setModelLufftWS501UMBWeather(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLufftWS501UMBWeatherEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelLufft);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelLufft, scaledValue);
-															if (slug.equals("GlobalRadiation")) dataModelLufft.setNvm_irradiance(scaledValue);
-															if (slug.equals("AirTemperatureCActual")) dataModelLufft.setNvm_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// AirTemperatureActual
 													
-													if(dataModelLufft.getAirTemperatureCActual() != 0.001 && dataModelLufft.getAirTemperatureCActual() >= 0){
-														deviceUpdateE.setLast_updated(dataModelLufft.getTime());
+													if(dataEntity.getAirTemperatureCActual() != 0.001 && dataEntity.getAirTemperatureCActual() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
-													deviceUpdateE.setField_value1(dataModelLufft.getAirTemperatureCActual() != 0.001 ? dataModelLufft.getAirTemperatureCActual() : null);
+													deviceUpdateE.setLast_value(dataEntity.getAirTemperatureCActual() != 0.001 ? dataEntity.getAirTemperatureCActual() : null);
+													deviceUpdateE.setField_value1(dataEntity.getAirTemperatureCActual() != 0.001 ? dataEntity.getAirTemperatureCActual() : null);
 													
 													// GlobalRadiation
-													deviceUpdateE.setField_value2(dataModelLufft.getGlobalRadiation() != 0.001 ? dataModelLufft.getGlobalRadiation() : null);
+													deviceUpdateE.setField_value2(dataEntity.getGlobalRadiation() != 0.001 ? dataEntity.getGlobalRadiation() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2746,45 +1367,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataModelLufft);
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelLufftWS501.insertModelLufftWS501UMBWeather(dataEntity);
 												}
 											}
 											
@@ -2799,42 +1382,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSolectriaSGI226IVTEntity dataModelSolectria226 = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
-													dataModelSolectria226.setId_device(item.getId());
-													dataModelSolectria226.setDatatablename(item.getDatatablename());
-													dataModelSolectria226.setView_tablename(item.getView_tablename());
-													dataModelSolectria226.setJob_tablename(item.getJob_tablename());
+													ModelSolectriaSGI226IVTEntity dataEntity = serviceModelSolectriaSGI226IVT.setModelSolectriaSGI226IVT(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaSGI226IVTEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectria226);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSolectria226, scaledValue);
-															if (slug.equals("ACPowerOutput")) dataModelSolectria226.setNvmActivePower(scaledValue);
-															if (slug.equals("CumulativeACEnergy")) dataModelSolectria226.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ACPowerOutput
 													
-													if(dataModelSolectria226.getACPowerOutput() != 0.001 && dataModelSolectria226.getACPowerOutput() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSolectria226.getTime());
+													if(dataEntity.getACPowerOutput() != 0.001 && dataEntity.getACPowerOutput() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
-													deviceUpdateE.setField_value1(dataModelSolectria226.getACPowerOutput() != 0.001 ? dataModelSolectria226.getACPowerOutput() : null);
+													deviceUpdateE.setLast_value(dataEntity.getACPowerOutput() != 0.001 ? dataEntity.getACPowerOutput() : null);
+													deviceUpdateE.setField_value1(dataEntity.getACPowerOutput() != 0.001 ? dataEntity.getACPowerOutput() : null);
 													
 													// DCVoltage
-													deviceUpdateE.setField_value2(dataModelSolectria226.getDCVoltage() != 0.001 ? dataModelSolectria226.getDCVoltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getDCVoltage() != 0.001 ? dataEntity.getDCVoltage() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2842,53 +1408,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataModelSolectria226);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataEntity);
 												}
 											}
 											
@@ -2904,42 +1424,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSolectriaINV00SLC3146Entity dataModelSolectriaINV00SLC3146 = serviceModelSolectriaINV00SLC3146.setModelSolectriaINV00SLC3146(line);
-													dataModelSolectriaINV00SLC3146.setId_device(item.getId());
-													dataModelSolectriaINV00SLC3146.setDatatablename(item.getDatatablename());
-													dataModelSolectriaINV00SLC3146.setView_tablename(item.getView_tablename());
-													dataModelSolectriaINV00SLC3146.setJob_tablename(item.getJob_tablename());
+													ModelSolectriaINV00SLC3146Entity dataEntity = serviceModelSolectriaINV00SLC3146.setModelSolectriaINV00SLC3146(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolectriaINV00SLC3146Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSolectriaINV00SLC3146);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSolectriaINV00SLC3146, scaledValue);
-															if (slug.equals("RealACPower")) dataModelSolectriaINV00SLC3146.setNvmActivePower(scaledValue);
-															if (slug.equals("ACEnergy")) dataModelSolectriaINV00SLC3146.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ACPowerOutput
 													
-													if(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 && dataModelSolectriaINV00SLC3146.getRealACPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSolectriaINV00SLC3146.getTime());
+													if(dataEntity.getRealACPower() != 0.001 && dataEntity.getRealACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 ? dataModelSolectriaINV00SLC3146.getRealACPower() : null);
-													deviceUpdateE.setField_value1(dataModelSolectriaINV00SLC3146.getRealACPower() != 0.001 ? dataModelSolectriaINV00SLC3146.getRealACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getRealACPower() != 0.001 ? dataEntity.getRealACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getRealACPower() != 0.001 ? dataEntity.getRealACPower() : null);
 													
 													// DCVoltage
-													deviceUpdateE.setField_value2(dataModelSolectriaINV00SLC3146.getDCVoltage() != 0.001 ? dataModelSolectriaINV00SLC3146.getDCVoltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getDCVoltage() != 0.001 ? dataEntity.getDCVoltage() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -2947,53 +1450,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataModelSolectriaINV00SLC3146);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataEntity);
 												}
 											}
 											
@@ -3009,7 +1466,6 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													double setAngle = Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.0");
 													setAngle = Math.round((setAngle * 180) / 3.14);
 													
@@ -3037,27 +1493,6 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
 													ModelTTiTrackerEntity dataModelTTiTracker = serviceModelTTiTracker.setModelTTiTracker(line);
 													dataModelTTiTracker.setId_device(item.getId());
 													dataModelTTiTracker.setDatatablename(item.getDatatablename());
@@ -3066,24 +1501,6 @@ public class UploadFilesController extends BaseController {
 													dataModelTTiTracker.setEnable_alert(item.getEnable_alert());
 													
 													serviceModelTTiTracker.insertModelTTiTracker(dataModelTTiTracker);
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
 												}
 											}
 											
@@ -3100,39 +1517,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSolarEdgeInverterEntity dataModelSET = serviceModelSET.setModelSolarEdgeInverter(line);
-													dataModelSET.setId_device(item.getId());
-													dataModelSET.setDatatablename(item.getDatatablename());
-													dataModelSET.setView_tablename(item.getView_tablename());
-													dataModelSET.setJob_tablename(item.getJob_tablename());
+													ModelSolarEdgeInverterEntity dataEntity = serviceModelSET.setModelSolarEdgeInverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSET);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSET, scaledValue);
-															if (slug.equals("I_AC_Power")) dataModelSET.setNvmActivePower(scaledValue);
-															if (slug.equals("I_AC_Energy_WH")) dataModelSET.setNvmActiveEnergy(scaledValue / 1000);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// I_AC_Power
 													
-													if(dataModelSET.getI_AC_Power() != 0.001 && dataModelSET.getI_AC_Power() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSET.getTime());
+													if(dataEntity.getI_AC_Power() != 0.001 && dataEntity.getI_AC_Power() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
-													deviceUpdateE.setField_value1(dataModelSET.getI_AC_Power() != 0.001 ? dataModelSET.getI_AC_Power() : null);
+													deviceUpdateE.setLast_value(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
+													deviceUpdateE.setField_value1(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3143,53 +1543,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSET.insertModelSolarEdgeInverter(dataModelSET);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelSET.insertModelSolarEdgeInverter(dataEntity);
 												}
 											}
 											
@@ -3204,39 +1558,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSolarEdgeInverterV1Entity dataModelSETV1 = serviceModelSETV1.setModelSolarEdgeInverterV1(line);
-													dataModelSETV1.setId_device(item.getId());
-													dataModelSETV1.setDatatablename(item.getDatatablename());
-													dataModelSETV1.setView_tablename(item.getView_tablename());
-													dataModelSETV1.setJob_tablename(item.getJob_tablename());
+													ModelSolarEdgeInverterV1Entity dataEntity = serviceModelSETV1.setModelSolarEdgeInverterV1(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolarEdgeInverterV1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSETV1);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSETV1, scaledValue);
-															if (slug.equals("I_AC_Power")) dataModelSETV1.setNvmActivePower(scaledValue);
-															if (slug.equals("I_AC_Energy_WH")) dataModelSETV1.setNvmActiveEnergy(scaledValue / 1000);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// I_AC_Power
 													
-													if(dataModelSETV1.getI_AC_Power() != 0.001 && dataModelSETV1.getI_AC_Power() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSETV1.getTime());
+													if(dataEntity.getI_AC_Power() != 0.001 && dataEntity.getI_AC_Power() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSETV1.getI_AC_Power() != 0.001 ? dataModelSETV1.getI_AC_Power() : null);
-													deviceUpdateE.setField_value1(dataModelSETV1.getI_AC_Power() != 0.001 ? dataModelSETV1.getI_AC_Power() : null);
+													deviceUpdateE.setLast_value(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
+													deviceUpdateE.setField_value1(dataEntity.getI_AC_Power() != 0.001 ? dataEntity.getI_AC_Power() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3247,53 +1584,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataModelSETV1);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
-													
+													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataEntity);
 												}
 											}
 											
@@ -3309,94 +1600,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelXantrexGT100250500Entity dataModelXantrex = serviceModelXantrex.setModelXantrexGT100250500(line);
-													dataModelXantrex.setId_device(item.getId());
-													dataModelXantrex.setDatatablename(item.getDatatablename());
-													dataModelXantrex.setView_tablename(item.getView_tablename());
-													dataModelXantrex.setJob_tablename(item.getJob_tablename());
+													ModelXantrexGT100250500Entity dataEntity = serviceModelXantrex.setModelXantrexGT100250500(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
-															if (slug.equals("ReadPower")) dataModelXantrex.setNvmActivePower(scaledValue);
-															if (slug.equals("AccumulatedEnergy")) dataModelXantrex.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// ReadPower
 													
-													if(dataModelXantrex.getReadPower() != 0.001 && dataModelXantrex.getReadPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelXantrex.getTime());
+													if(dataEntity.getReadPower() != 0.001 && dataEntity.getReadPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
-													deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
 													
 													// PVVoltage
-													deviceUpdateE.setField_value2(dataModelXantrex.getPVVoltage() != 0.001 ? dataModelXantrex.getPVVoltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
 													
 													// PVCurrent
-													deviceUpdateE.setField_value3(dataModelXantrex.getPVCurrent() != 0.001 ? dataModelXantrex.getPVCurrent() : null);
+													deviceUpdateE.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelXantrex.insertModelXantrexGT100250500(dataModelXantrex);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {    
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelXantrex.insertModelXantrexGT100250500(dataEntity);
 												}
 											}
 											
@@ -3412,42 +1642,25 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelAdam4017WSClass8110Nelis190Entity dataModelAdam4017 = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
-													dataModelAdam4017.setId_device(item.getId());
-													dataModelAdam4017.setDatatablename(item.getDatatablename());
-													dataModelAdam4017.setView_tablename(item.getView_tablename());
-													dataModelAdam4017.setJob_tablename(item.getJob_tablename());
+													ModelAdam4017WSClass8110Nelis190Entity dataEntity = serviceModelAdam4017.setModelAdam4017WSClass8110Nelis190(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAdam4017WSClass8110Nelis190Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAdam4017);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelAdam4017, scaledValue);
-															if (slug.equals("POACMP11")) dataModelAdam4017.setNvm_irradiance(scaledValue);
-															if (slug.equals("AmbientTemp")) dataModelAdam4017.setNvm_temperature(scaledValue);
-															if (slug.equals("PVPanelTemp")) dataModelAdam4017.setNvm_panel_temperature(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// POACMP11
 													
-													if(dataModelAdam4017.getPOACMP11() != 0.001 && dataModelAdam4017.getPOACMP11() >= 0){
-														deviceUpdateE.setLast_updated(dataModelAdam4017.getTime());
+													if(dataEntity.getPOACMP11() != 0.001 && dataEntity.getPOACMP11() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
-													deviceUpdateE.setField_value1(dataModelAdam4017.getPOACMP11() != 0.001 ? dataModelAdam4017.getPOACMP11() : null);
+													deviceUpdateE.setLast_value(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
+													deviceUpdateE.setField_value1(dataEntity.getPOACMP11() != 0.001 ? dataEntity.getPOACMP11() : null);
 													
 													// AmbientTemp
-													deviceUpdateE.setField_value2(dataModelAdam4017.getAmbientTemp() != 0.001 ? dataModelAdam4017.getAmbientTemp() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAmbientTemp() != 0.001 ? dataEntity.getAmbientTemp() : null);
 													
 													// value 3
 													deviceUpdateE.setField_value3(null);
@@ -3455,46 +1668,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataModelAdam4017);
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelAdam4017.inserModelAdam4017WSClass8110Nelis190(dataEntity);
 												}
 											}
 											
@@ -3511,38 +1685,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter1Entity dataModelCSM1 = serviceModelCSM1.setModelCampellScientificMeter1(line, item.getOffset_data_old());
-													dataModelCSM1.setId_device(item.getId());
-													dataModelCSM1.setDatatablename(item.getDatatablename());
-													dataModelCSM1.setView_tablename(item.getView_tablename());
-													dataModelCSM1.setJob_tablename(item.getJob_tablename());
+													ModelCampellScientificMeter1Entity dataEntity = serviceModelCSM1.setModelCampellScientificMeter1(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter1Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM1);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM1, scaledValue);
-															if (slug.equals("Meter1_ACPower")) dataModelCSM1.setNvmActivePower(scaledValue);
-															if (slug.equals("Total_Energy")) dataModelCSM1.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter1_ACPower
 													
-													if(dataModelCSM1.getMeter1_ACPower() != 0.001 && dataModelCSM1.getMeter1_ACPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelCSM1.getTime());
+													if(dataEntity.getMeter1_ACPower() != 0.001 && dataEntity.getMeter1_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
-													deviceUpdateE.setField_value1(dataModelCSM1.getMeter1_ACPower() != 0.001 ? dataModelCSM1.getMeter1_ACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getMeter1_ACPower() != 0.001 ? dataEntity.getMeter1_ACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getMeter1_ACPower() != 0.001 ? dataEntity.getMeter1_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3552,52 +1710,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelCSM1.insertModelCampellScientificMeter1(dataModelCSM1);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelCSM1.insertModelCampellScientificMeter1(dataEntity);
 												}
 											}
 											
@@ -3613,38 +1726,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter2Entity dataModelCSM2 = serviceModelCSM2.setModelCampellScientificMeter2(line, item.getOffset_data_old());
-													dataModelCSM2.setId_device(item.getId());
-													dataModelCSM2.setDatatablename(item.getDatatablename());
-													dataModelCSM2.setView_tablename(item.getView_tablename());
-													dataModelCSM2.setJob_tablename(item.getJob_tablename());
+													ModelCampellScientificMeter2Entity dataEntity = serviceModelCSM2.setModelCampellScientificMeter2(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter2Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM2);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM2, scaledValue);
-															if (slug.equals("Meter2_ACPower")) dataModelCSM2.setNvmActivePower(scaledValue);
-															if (slug.equals("Total_Energy")) dataModelCSM2.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// Meter2_ACPower
 													
-													if(dataModelCSM2.getMeter2_ACPower() != 0.001 && dataModelCSM2.getMeter2_ACPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelCSM2.getTime());
+													if(dataEntity.getMeter2_ACPower() != 0.001 && dataEntity.getMeter2_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
-													deviceUpdateE.setField_value1(dataModelCSM2.getMeter2_ACPower() != 0.001 ? dataModelCSM2.getMeter2_ACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getMeter2_ACPower() != 0.001 ? dataEntity.getMeter2_ACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getMeter2_ACPower() != 0.001 ? dataEntity.getMeter2_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3654,52 +1751,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelCSM2.insertModelCampellScientificMeter2(dataModelCSM2);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelCSM2.insertModelCampellScientificMeter2(dataEntity);
 												}
 											}
 											
@@ -3714,38 +1766,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter3Entity dataModelCSM3 = serviceModelCSM3.setModelCampellScientificMeter3(line, item.getOffset_data_old());
-													dataModelCSM3.setId_device(item.getId());
-													dataModelCSM3.setDatatablename(item.getDatatablename());
-													dataModelCSM3.setView_tablename(item.getView_tablename());
-													dataModelCSM3.setJob_tablename(item.getJob_tablename());
+													ModelCampellScientificMeter3Entity dataEntity = serviceModelCSM3.setModelCampellScientificMeter3(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter3Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM3);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM3, scaledValue);
-															if (slug.equals("Meter3_ACPower")) dataModelCSM3.setNvmActivePower(scaledValue);
-															if (slug.equals("Total_Energy")) dataModelCSM3.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter3_ACPower
 													
-													if(dataModelCSM3.getMeter3_ACPower()  != 0.001 && dataModelCSM3.getMeter3_ACPower()  >= 0){
-														deviceUpdateE.setLast_updated(dataModelCSM3.getTime());
+													if(dataEntity.getMeter3_ACPower()  != 0.001 && dataEntity.getMeter3_ACPower()  >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
-													deviceUpdateE.setField_value1(dataModelCSM3.getMeter3_ACPower() != 0.001 ? dataModelCSM3.getMeter3_ACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getMeter3_ACPower() != 0.001 ? dataEntity.getMeter3_ACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getMeter3_ACPower() != 0.001 ? dataEntity.getMeter3_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3755,52 +1791,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelCSM3.insertModelCampellScientificMeter3(dataModelCSM3);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelCSM3.insertModelCampellScientificMeter3(dataEntity);
 												}
 											}
 											
@@ -3816,38 +1807,22 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter4Entity dataModelCSM4 = serviceModelCSM4.setModelCampellScientificMeter4(line, item.getOffset_data_old());
-													dataModelCSM4.setId_device(item.getId());
-													dataModelCSM4.setDatatablename(item.getDatatablename());
-													dataModelCSM4.setView_tablename(item.getView_tablename());
-													dataModelCSM4.setJob_tablename(item.getJob_tablename());
+													ModelCampellScientificMeter4Entity dataEntity = serviceModelCSM4.setModelCampellScientificMeter4(line, item.getOffset_data_old());
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelCampellScientificMeter4Entity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelCSM4);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelCSM4, scaledValue);
-															if (slug.equals("Meter4_ACPower")) dataModelCSM4.setNvmActivePower(scaledValue);
-															if (slug.equals("Total_Energy")) dataModelCSM4.setNvmActiveEnergy(scaledValue);
-														}
-													}
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
 													// Meter4_ACPower
 													
-													if(dataModelCSM4.getMeter4_ACPower() != 0.001 && dataModelCSM4.getMeter4_ACPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelCSM4.getTime());
+													if(dataEntity.getMeter4_ACPower() != 0.001 && dataEntity.getMeter4_ACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
-													deviceUpdateE.setField_value1(dataModelCSM4.getMeter4_ACPower() != 0.001 ? dataModelCSM4.getMeter4_ACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getMeter4_ACPower() != 0.001 ? dataEntity.getMeter4_ACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getMeter4_ACPower() != 0.001 ? dataEntity.getMeter4_ACPower() : null);
 													
 													// value 2
 													deviceUpdateE.setField_value2(null);
@@ -3857,52 +1832,7 @@ public class UploadFilesController extends BaseController {
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelCSM4.insertModelCampellScientificMeter4(dataModelCSM4);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelCSM4.insertModelCampellScientificMeter4(dataEntity);
 												}
 											}
 											
@@ -3918,95 +1848,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSatconPowergate225InverterEntity dataModelSatcon225 = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
-													dataModelSatcon225.setId_device(item.getId());
-													dataModelSatcon225.setDatatablename(item.getDatatablename());
-													dataModelSatcon225.setView_tablename(item.getView_tablename());
-													dataModelSatcon225.setJob_tablename(item.getJob_tablename());
+													ModelSatconPowergate225InverterEntity dataEntity = serviceModelSatcon225.setModelSatconPowergate225Inverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSatconPowergate225InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSatcon225);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSatcon225, scaledValue);
-															if (slug.equals("OutputKW")) dataModelSatcon225.setNvmActivePower(scaledValue);
-															if (slug.equals("KWH")) dataModelSatcon225.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// OutputKW
 														
-														if(dataModelSatcon225.getLineFreq() != 0.001 && dataModelSatcon225.getLineFreq() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSatcon225.getTime());
+														if(dataEntity.getLineFreq() != 0.001 && dataEntity.getLineFreq() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
-														deviceUpdateE.setField_value1(dataModelSatcon225.getOutputKW() != 0.001 ? dataModelSatcon225.getOutputKW() : null);
+														deviceUpdateE.setLast_value(dataEntity.getOutputKW() != 0.001 ? dataEntity.getOutputKW() : null);
+														deviceUpdateE.setField_value1(dataEntity.getOutputKW() != 0.001 ? dataEntity.getOutputKW() : null);
 													
 													// Line Freq
-													deviceUpdateE.setField_value2(dataModelSatcon225.getLineFreq() != 0.001 ? dataModelSatcon225.getLineFreq() : null);
+													deviceUpdateE.setField_value2(dataEntity.getLineFreq() != 0.001 ? dataEntity.getLineFreq() : null);
 													
 													// DC Input Voltage
-													deviceUpdateE.setField_value3(dataModelSatcon225.getDCInputVoltage() != 0.001 ? dataModelSatcon225.getDCInputVoltage() : null);
+													deviceUpdateE.setField_value3(dataEntity.getDCInputVoltage() != 0.001 ? dataEntity.getDCInputVoltage() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataModelSatcon225);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){   
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {     
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataEntity);
 												}
 											}
 											
@@ -4023,95 +1891,33 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelSunnyCentralClass9775InverterEntity dataModelSunnyClass9775 = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
-													dataModelSunnyClass9775.setId_device(item.getId());
-													dataModelSunnyClass9775.setDatatablename(item.getDatatablename());
-													dataModelSunnyClass9775.setView_tablename(item.getView_tablename());
-													dataModelSunnyClass9775.setJob_tablename(item.getJob_tablename());
+													ModelSunnyCentralClass9775InverterEntity dataEntity = serviceModelSunnyClass9775.setModelSunnyCentralClass9775Inverter(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													// scaling device parameter
-													if (scaledDeviceParameters.size() > 0) {
-														for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-															DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-															String slug = scaledDeviceParameter.getParameter_slug();
-															String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-															String variableName = scaledDeviceParameter.getVariable_name();
-															PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunnyCentralClass9775InverterEntity.class);
-															Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunnyClass9775);
-															if (initialValue == 0.001) continue;
-															Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-															pd.getWriteMethod().invoke(dataModelSunnyClass9775, scaledValue);
-															if (slug.equals("ACPower")) dataModelSunnyClass9775.setNvmActivePower(scaledValue);
-															if (slug.equals("LifekWhTotal")) dataModelSunnyClass9775.setNvmActiveEnergy(scaledValue);
-														}
-													}
-													
-													DeviceEntity deviceUpdateE = new DeviceEntity();
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 													// ACPower
 													
-													if(dataModelSunnyClass9775.getACPower() != 0.001 && dataModelSunnyClass9775.getACPower() >= 0){
-														deviceUpdateE.setLast_updated(dataModelSunnyClass9775.getTime());
+													if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
-													deviceUpdateE.setField_value1(dataModelSunnyClass9775.getACPower() != 0.001 ? dataModelSunnyClass9775.getACPower() : null);
+													deviceUpdateE.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+													deviceUpdateE.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
 													
 													// ACVoltage
-													deviceUpdateE.setField_value2(dataModelSunnyClass9775.getACVoltage() != 0.001 ? dataModelSunnyClass9775.getACVoltage() : null);
+													deviceUpdateE.setField_value2(dataEntity.getACVoltage() != 0.001 ? dataEntity.getACVoltage() : null);
 													
 													// InteriorTemperature
-													deviceUpdateE.setField_value3(dataModelSunnyClass9775.getInteriorTemperature() != 0.001 ? dataModelSunnyClass9775.getInteriorTemperature() : null);
+													deviceUpdateE.setField_value3(dataEntity.getInteriorTemperature() != 0.001 ? dataEntity.getInteriorTemperature() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
-													// Insert alert
-//													if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//														// Check error code
-//														BatchJobService service = new BatchJobService();
-//														ErrorEntity errorItem = new ErrorEntity();
-//														errorItem.setId_device_group(item.getId_device_group());
-//														errorItem.setError_code(words.get(1));
-//														ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//														
-//														if(rowItemError.getId() > 0) {
-//															AlertEntity alertItem = new AlertEntity();
-//															alertItem.setId_device(item.getId());
-//															alertItem.setStart_date(words.get(0).replace("'", ""));
-//															alertItem.setId_error(rowItemError.getId());
-//															boolean checkAlertExist = service.checkAlertExist(alertItem);
-//															if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																// Insert alert
-//																service.insertAlert(alertItem);
-//															}
-//														}
-//													}
-													
-													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataModelSunnyClass9775);
-
-													// low production alert
-													if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-														item.setLast_updated(deviceUpdateE.getLast_updated());
-														serviceD.checkLowProduction(item, dataDevice);
-													}
-													
-													try  
-													{ 
-														File logFile = new File(root.resolve(fileName).toString());
-														if(logFile.delete()){  
-														}
-														
-														Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																+ timeStamp + ".log.gz");
-														File logGzFile = new File(path.toString());
-														
-														if(logGzFile.delete()) {  
-														}		
-													}  
-													catch(Exception e){  
-														e.printStackTrace();  
-													}
+													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataEntity);
 												}
 											}
 											
@@ -4126,94 +1932,33 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelVerisIndustriesE50c2aEntity dataModelVeris = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line, item.getOffset_data_old());
-														dataModelVeris.setId_device(item.getId());
-														dataModelVeris.setDatatablename(item.getDatatablename());
-														dataModelVeris.setView_tablename(item.getView_tablename());
-														dataModelVeris.setJob_tablename(item.getJob_tablename());
+														ModelVerisIndustriesE50c2aEntity dataEntity = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelVerisIndustriesE50c2aEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelVeris);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelVeris, scaledValue);
-																if (slug.equals("TotalInstantaneousRealPower")) dataModelVeris.setNvmActivePower(scaledValue);
-																if (slug.equals("RealEnergyConsumption")) dataModelVeris.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// TotalInstantaneousRealPower
 														
-														if(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 && dataModelVeris.getTotalInstantaneousRealPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelVeris.getTime());
+														if(dataEntity.getTotalInstantaneousRealPower() != 0.001 && dataEntity.getTotalInstantaneousRealPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
-														deviceUpdateE.setField_value1(dataModelVeris.getTotalInstantaneousRealPower() != 0.001 ? dataModelVeris.getTotalInstantaneousRealPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
 														
 														// RealPowerPhaseA
-														deviceUpdateE.setField_value2(dataModelVeris.getRealPowerPhaseA() != 0.001 ? dataModelVeris.getRealPowerPhaseA() : null);
+														deviceUpdateE.setField_value2(dataEntity.getRealPowerPhaseA() != 0.001 ? dataEntity.getRealPowerPhaseA() : null);
 														
 														// RealPowerPhaseB
-														deviceUpdateE.setField_value3(dataModelVeris.getRealPowerPhaseB() != 0.001 ? dataModelVeris.getRealPowerPhaseB() : null);
+														deviceUpdateE.setField_value3(dataEntity.getRealPowerPhaseB() != 0.001 ? dataEntity.getRealPowerPhaseB() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataModelVeris);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataEntity);
 													}
 												}
 												
@@ -4228,94 +1973,33 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelAE1000NXClass9644Entity dataModelAE1000NX = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
-														dataModelAE1000NX.setId_device(item.getId());
-														dataModelAE1000NX.setDatatablename(item.getDatatablename());
-														dataModelAE1000NX.setView_tablename(item.getView_tablename());
-														dataModelAE1000NX.setJob_tablename(item.getJob_tablename());
+														ModelAE1000NXClass9644Entity dataEntity = serviceModelAE1000NX.setModelAE1000NXClass9644(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAE1000NXClass9644Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAE1000NX);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAE1000NX, scaledValue);
-																if (slug.equals("ACPower")) dataModelAE1000NX.setNvmActivePower(scaledValue);
-																if (slug.equals("LifekWhTotal")) dataModelAE1000NX.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// AC Power
 														
-														if(dataModelAE1000NX.getACPower() != 0.001 && dataModelAE1000NX.getACPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelAE1000NX.getTime());
+														if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
-														deviceUpdateE.setField_value1(dataModelAE1000NX.getACPower() != 0.001 ? dataModelAE1000NX.getACPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
 														
 														// AC Frequency
-														deviceUpdateE.setField_value2(dataModelAE1000NX.getACFrequency() != 0.001 ? dataModelAE1000NX.getACFrequency() : null);
+														deviceUpdateE.setField_value2(dataEntity.getACFrequency() != 0.001 ? dataEntity.getACFrequency() : null);
 														
 														// PV Voltage
-														deviceUpdateE.setField_value3(dataModelAE1000NX.getPVVoltage() != 0.001 ? dataModelAE1000NX.getPVVoltage() : null);
+														deviceUpdateE.setField_value3(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataModelAE1000NX);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataEntity);
 													}
 												}
 												
@@ -4331,38 +2015,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelAesTxInverterEntity dataModelAesTx = serviceModelAesTx.setModelAesTxInverter(line);
-														dataModelAesTx.setId_device(item.getId());
-														dataModelAesTx.setDatatablename(item.getDatatablename());
-														dataModelAesTx.setView_tablename(item.getView_tablename());
-														dataModelAesTx.setJob_tablename(item.getJob_tablename());
+														ModelAesTxInverterEntity dataEntity = serviceModelAesTx.setModelAesTxInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAesTxInverterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAesTx);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAesTx, scaledValue);
-																if (slug.equals("pt33")) dataModelAesTx.setNvmActivePower(scaledValue);
-																if (slug.equals("pt34")) dataModelAesTx.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// pt33
 														
-														if(dataModelAesTx.getPt33() != 0.001 && dataModelAesTx.getPt33() >= 0){
-															deviceUpdateE.setLast_updated(dataModelAesTx.getTime());
+														if(dataEntity.getPt33() != 0.001 && dataEntity.getPt33() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
-														deviceUpdateE.setField_value1(dataModelAesTx.getPt33() != 0.001 ? dataModelAesTx.getPt33() : null);
+														deviceUpdateE.setLast_value(dataEntity.getPt33() != 0.001 ? dataEntity.getPt33() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPt33() != 0.001 ? dataEntity.getPt33() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4370,50 +2038,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelAesTx.insertModelAesTxInverter(dataModelAesTx);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															logFile.delete();
-
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															logGzFile.delete();		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelAesTx.insertModelAesTxInverter(dataEntity);
 													}
 												}
 												
@@ -4430,38 +2055,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600Entity dataModelIon = serviceModelIon.setModelMeterIon8600(line, item.getOffset_data_old());
-														dataModelIon.setId_device(item.getId());
-														dataModelIon.setDatatablename(item.getDatatablename());
-														dataModelIon.setView_tablename(item.getView_tablename());
-														dataModelIon.setJob_tablename(item.getJob_tablename());
+														ModelMeterIon8600Entity dataEntity = serviceModelIon.setModelMeterIon8600(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIon);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIon, scaledValue);
-																if (slug.equals("kWTot")) dataModelIon.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDelRec")) dataModelIon.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
 														
-														if(dataModelIon.getKWTot() != 0.001 && dataModelIon.getKWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelIon.getTime());
+														if(dataEntity.getKWTot() != 0.001 && dataEntity.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
-														deviceUpdateE.setField_value1(dataModelIon.getKWTot() != 0.001 ? dataModelIon.getKWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4469,52 +2078,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelIon.insertModelMeterIon8600(dataModelIon);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelIon.insertModelMeterIon8600(dataEntity);
 													}
 												}
 												
@@ -4529,38 +2093,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V1Entity dataModelIonV1 = serviceModelIonV1.setModelMeterIon8600V1(line, item.getOffset_data_old());
-														dataModelIonV1.setId_device(item.getId());
-														dataModelIonV1.setDatatablename(item.getDatatablename());
-														dataModelIonV1.setView_tablename(item.getView_tablename());
-														dataModelIonV1.setJob_tablename(item.getJob_tablename());
+														ModelMeterIon8600V1Entity dataEntity = serviceModelIonV1.setModelMeterIon8600V1(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600V1Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIonV1);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIonV1, scaledValue);
-																if (slug.equals("kWTot")) dataModelIonV1.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDelRec")) dataModelIonV1.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// kWTot
 														
-														if(dataModelIonV1.getKWTot() != 0.001 && dataModelIonV1.getKWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelIonV1.getTime());
+														if(dataEntity.getKWTot() != 0.001 && dataEntity.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelIonV1.getKWTot() != 0.001 ? dataModelIonV1.getKWTot() : null);
-														deviceUpdateE.setField_value1(dataModelIonV1.getKWTot() != 0.001 ? dataModelIonV1.getKWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4568,52 +2116,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelIonV1.insertModelMeterIon8600V1(dataModelIonV1);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelIonV1.insertModelMeterIon8600V1(dataEntity);
 													}
 												}
 												
@@ -4628,38 +2131,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V2Entity dataModelIonV2 = serviceModelIonV2.setModelMeterIon8600V2(line, item.getOffset_data_old());
-														dataModelIonV2.setId_device(item.getId());
-														dataModelIonV2.setDatatablename(item.getDatatablename());
-														dataModelIonV2.setView_tablename(item.getView_tablename());
-														dataModelIonV2.setJob_tablename(item.getJob_tablename());
+														ModelMeterIon8600V2Entity dataEntity = serviceModelIonV2.setModelMeterIon8600V2(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600V2Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIonV2);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIonV2, scaledValue);
-																if (slug.equals("kWTot")) dataModelIonV2.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDelRec")) dataModelIonV2.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
 														
-														if(dataModelIonV2.getKWTot() != 0.001 && dataModelIonV2.getKWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelIonV2.getTime());
+														if(dataEntity.getKWTot() != 0.001 && dataEntity.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelIonV2.getKWTot() != 0.001 ? dataModelIonV2.getKWTot() : null);
-														deviceUpdateE.setField_value1(dataModelIonV2.getKWTot() != 0.001 ? dataModelIonV2.getKWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4667,52 +2154,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelIonV2.insertModelMeterIon8600V2(dataModelIonV2);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelIonV2.insertModelMeterIon8600V2(dataEntity);
 													}
 												}
 												
@@ -4727,38 +2169,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V3Entity dataModelIonV3 = serviceModelIonV3.setModelMeterIon8600V3(line, item.getOffset_data_old());
-														dataModelIonV3.setId_device(item.getId());
-														dataModelIonV3.setDatatablename(item.getDatatablename());
-														dataModelIonV3.setView_tablename(item.getView_tablename());
-														dataModelIonV3.setJob_tablename(item.getJob_tablename());
+														ModelMeterIon8600V3Entity dataEntity = serviceModelIonV3.setModelMeterIon8600V3(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600V3Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIonV3);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIonV3, scaledValue);
-																if (slug.equals("kWTot")) dataModelIonV3.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDelRec")) dataModelIonV3.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
 														
-														if(dataModelIonV3.getKWTot() != 0.001 && dataModelIonV3.getKWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelIonV3.getTime());
+														if(dataEntity.getKWTot() != 0.001 && dataEntity.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelIonV3.getKWTot() != 0.001 ? dataModelIonV3.getKWTot() : null);
-														deviceUpdateE.setField_value1(dataModelIonV3.getKWTot() != 0.001 ? dataModelIonV3.getKWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4766,52 +2192,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelIonV3.insertModelMeterIon8600V3(dataModelIonV3);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelIonV3.insertModelMeterIon8600V3(dataEntity);
 													}
 												}
 												
@@ -4826,38 +2207,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V4Entity dataModelIonV4 = serviceModelIonV4.setModelMeterIon8600V4(line, item.getOffset_data_old());
-														dataModelIonV4.setId_device(item.getId());
-														dataModelIonV4.setDatatablename(item.getDatatablename());
-														dataModelIonV4.setView_tablename(item.getView_tablename());
-														dataModelIonV4.setJob_tablename(item.getJob_tablename());
+														ModelMeterIon8600V4Entity dataEntity = serviceModelIonV4.setModelMeterIon8600V4(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600V4Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelIonV4);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelIonV4, scaledValue);
-																if (slug.equals("kWTot")) dataModelIonV4.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDelRec")) dataModelIonV4.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
 														
-														if(dataModelIonV4.getKWTot() != 0.001 && dataModelIonV4.getKWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelIonV4.getTime());
+														if(dataEntity.getKWTot() != 0.001 && dataEntity.getKWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelIonV4.getKWTot() != 0.001 ? dataModelIonV4.getKWTot() : null);
-														deviceUpdateE.setField_value1(dataModelIonV4.getKWTot() != 0.001 ? dataModelIonV4.getKWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getKWTot() != 0.001 ? dataEntity.getKWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4865,52 +2230,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelIonV4.insertModelMeterIon8600V4(dataModelIonV4);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelIonV4.insertModelMeterIon8600V4(dataEntity);
 													}
 												}
 												
@@ -4925,38 +2245,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelPowerMeasurementIon7650Entity dataModelPM7650 = serviceModelPM7650.setModelPowerMeasurementIon7650(line, item.getOffset_data_old());
-														dataModelPM7650.setId_device(item.getId());
-														dataModelPM7650.setDatatablename(item.getDatatablename());
-														dataModelPM7650.setView_tablename(item.getView_tablename());
-														dataModelPM7650.setJob_tablename(item.getJob_tablename());
+														ModelPowerMeasurementIon7650Entity dataEntity = serviceModelPM7650.setModelPowerMeasurementIon7650(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon8600Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM7650);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelPM7650, scaledValue);
-																if (slug.equals("kWTot")) dataModelPM7650.setNvmActivePower(scaledValue);
-																if (slug.equals("kWhDel")) dataModelPM7650.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// kWTot
 														
-														if(dataModelPM7650.getkWTot() != 0.001 && dataModelPM7650.getkWTot() >= 0){
-															deviceUpdateE.setLast_updated(dataModelPM7650.getTime());
+														if(dataEntity.getkWTot() != 0.001 && dataEntity.getkWTot() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
-														deviceUpdateE.setField_value1(dataModelPM7650.getkWTot() != 0.001 ? dataModelPM7650.getkWTot() : null);
+														deviceUpdateE.setLast_value(dataEntity.getkWTot() != 0.001 ? dataEntity.getkWTot() : null);
+														deviceUpdateE.setField_value1(dataEntity.getkWTot() != 0.001 ? dataEntity.getkWTot() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -4964,52 +2268,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataModelPM7650);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataEntity);
 													}
 												}
 												
@@ -5025,94 +2284,33 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelXantrexInverterEntity dataModelXantrex = serviceModelXINV.setModelXantrexInverter(line);
-														dataModelXantrex.setId_device(item.getId());
-														dataModelXantrex.setDatatablename(item.getDatatablename());
-														dataModelXantrex.setView_tablename(item.getView_tablename());
-														dataModelXantrex.setJob_tablename(item.getJob_tablename());
+														ModelXantrexInverterEntity dataEntity = serviceModelXINV.setModelXantrexInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT100250500Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXantrex);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelXantrex, scaledValue);
-																if (slug.equals("ReadPower")) dataModelXantrex.setNvmActivePower(scaledValue);
-																if (slug.equals("kWh")) dataModelXantrex.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// ReadPower
 														
-														if(dataModelXantrex.getReadPower() != 0.001 && dataModelXantrex.getReadPower() >= 0){
+														if(dataEntity.getReadPower() != 0.001 && dataEntity.getReadPower() >= 0){
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														}
 														
-														deviceUpdateE.setLast_value(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
-														deviceUpdateE.setField_value1(dataModelXantrex.getReadPower() != 0.001 ? dataModelXantrex.getReadPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getReadPower() != 0.001 ? dataEntity.getReadPower() : null);
 														
 														// PVVoltage
-														deviceUpdateE.setField_value2(dataModelXantrex.getPVVoltage() != 0.001 ? dataModelXantrex.getPVVoltage() : null);
+														deviceUpdateE.setField_value2(dataEntity.getPVVoltage() != 0.001 ? dataEntity.getPVVoltage() : null);
 														
 														// PVCurrent
-														deviceUpdateE.setField_value3(dataModelXantrex.getPVCurrent() != 0.001 ? dataModelXantrex.getPVCurrent() : null);
+														deviceUpdateE.setField_value3(dataEntity.getPVCurrent() != 0.001 ? dataEntity.getPVCurrent() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelXINV.insertModelXantrexInverter(dataModelXantrex);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelXINV.insertModelXantrexInverter(dataEntity);
 													}
 												}
 												
@@ -5128,39 +2326,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelPoaTempEntity dataModel = serviceModelPoaTemp.setModelPoaTemp(line);
-														dataModel.setId_device(item.getId());
-														dataModel.setDatatablename(item.getDatatablename());
-														dataModel.setView_tablename(item.getView_tablename());
-														dataModel.setJob_tablename(item.getJob_tablename());
+														ModelPoaTempEntity dataEntity = serviceModelPoaTemp.setModelPoaTemp(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPoaTempEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModel, scaledValue);
-																if (slug.equals("T_AMB")) dataModel.setNvm_temperature(scaledValue);
-																if (slug.equals("T_AMB")) dataModel.setNvm_panel_temperature(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// T_AMB
 														
-														if(dataModel.getT_AMB() != 0.001 && dataModel.getT_AMB() >= 0){
-															deviceUpdateE.setLast_updated(dataModel.getTime());
+														if(dataEntity.getT_AMB() != 0.001 && dataEntity.getT_AMB() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
-														deviceUpdateE.setField_value1(dataModel.getT_AMB() != 0.001 ? dataModel.getT_AMB() : null);
+														deviceUpdateE.setLast_value(dataEntity.getT_AMB() != 0.001 ? dataEntity.getT_AMB() : null);
+														deviceUpdateE.setField_value1(dataEntity.getT_AMB() != 0.001 ? dataEntity.getT_AMB() : null);
 														
 														// value 2
 														deviceUpdateE.setField_value2(null);
@@ -5171,46 +2352,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelPoaTemp.insertModelPoaTemp(dataModel);
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelPoaTemp.insertModelPoaTemp(dataEntity);
 													}
 												}
 												
@@ -5227,38 +2369,22 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelPyranometerPoaEntity dataModelPy = serviceModelPy.setModelPyranometer(line);
-														dataModelPy.setId_device(item.getId());
-														dataModelPy.setDatatablename(item.getDatatablename());
-														dataModelPy.setView_tablename(item.getView_tablename());
-														dataModelPy.setJob_tablename(item.getJob_tablename());
+														ModelPyranometerPoaEntity dataEntity = serviceModelPy.setModelPyranometer(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPyranometerPoaEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPy);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelPy, scaledValue);
-//																if (slug.equals("ReadPower")) dataModelPy.setNvmActivePower(scaledValue);
-//																if (slug.equals("kWh")) dataModelPy.setNvmActiveEnergy(scaledValue);
-															}
-														}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														// ReadPower
 														
-														if(dataModelPy.getPoa() != 0.001 && dataModelPy.getPoa() >= 0){
+														if(dataEntity.getPoa() != 0.001 && dataEntity.getPoa() >= 0){
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														}
 														
-														deviceUpdateE.setLast_value(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
-														deviceUpdateE.setField_value1(dataModelPy.getPoa() != 0.001 ? dataModelPy.getPoa() : null);
+														deviceUpdateE.setLast_value(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPoa() != 0.001 ? dataEntity.getPoa() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -5266,52 +2392,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelPy.insertModelPyranometer(dataModelPy);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){   
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
+														serviceModelPy.insertModelPyranometer(dataEntity);
 													}
 												}
 												
@@ -5327,90 +2408,33 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelERIWeatherICPClass8050Entity dataModel = serviceModelERIWeatherICPClass8050.setModelERIWeatherICPClass8050(line);
-														dataModel.setId_device(item.getId());
-														dataModel.setDatatablename(item.getDatatablename());
-														dataModel.setView_tablename(item.getView_tablename());
-														dataModel.setJob_tablename(item.getJob_tablename());
+														ModelERIWeatherICPClass8050Entity dataEntity = serviceModelERIWeatherICPClass8050.setModelERIWeatherICPClass8050(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPoaTempEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModel, scaledValue);
-																if (slug.equals("solar_irradiation")) dataModel.setNvm_irradiance(scaledValue);
-																if (slug.equals("ambient_temp")) dataModel.setNvm_temperature(scaledValue);
-																if (slug.equals("panel_temp")) dataModel.setNvm_panel_temperature(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// solar_irradiation
 														
-														if(dataModel.getSolar_irradiation() != 0.001 && dataModel.getSolar_irradiation() >= 0){
-															deviceUpdateE.setLast_updated(dataModel.getTime());
+														if(dataEntity.getSolar_irradiation() != 0.001 && dataEntity.getSolar_irradiation() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModel.getSolar_irradiation() != 0.001 ? dataModel.getSolar_irradiation() : null);
-														deviceUpdateE.setField_value1(dataModel.getSolar_irradiation() != 0.001 ? dataModel.getSolar_irradiation() : null);
+														deviceUpdateE.setLast_value(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
+														deviceUpdateE.setField_value1(dataEntity.getSolar_irradiation() != 0.001 ? dataEntity.getSolar_irradiation() : null);
 														
 														// ambient_temp
-														deviceUpdateE.setField_value2(dataModel.getAmbient_temp() != 0.001 ? dataModel.getAmbient_temp() : null);
+														deviceUpdateE.setField_value2(dataEntity.getAmbient_temp() != 0.001 ? dataEntity.getAmbient_temp() : null);
 														
 														// panel_temp
-														deviceUpdateE.setField_value3(dataModel.getPanel_temp() != 0.001 ? dataModel.getPanel_temp() : null);
+														deviceUpdateE.setField_value3(dataEntity.getPanel_temp() != 0.001 ? dataEntity.getPanel_temp() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataModel);
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){    
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelERIWeatherICPClass8050.insertModelERIWeatherICPClass8050(dataEntity);
 													}
 												}
 												
@@ -5427,40 +2451,25 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelXantrexGT500EEntity dataModel = serviceModelgt500.setModelXantrexGT500E(line);
-														dataModel.setId_device(item.getId());
-														dataModel.setDatatablename(item.getDatatablename());
-														dataModel.setView_tablename(item.getView_tablename());
-														dataModel.setJob_tablename(item.getJob_tablename());
+														ModelXantrexGT500EEntity dataEntity = serviceModelgt500.setModelXantrexGT500E(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXantrexGT500EEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModel, scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// solar_irradiation
 														
-														if(dataModel.getAC_POWER() != 0.001 && dataModel.getAC_POWER() >= 0){
-															deviceUpdateE.setLast_updated(dataModel.getTime());
+														if(dataEntity.getAC_POWER() != 0.001 && dataEntity.getAC_POWER() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
-														deviceUpdateE.setLast_value(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
-														deviceUpdateE.setField_value1(dataModel.getAC_POWER() != 0.001 ? dataModel.getAC_POWER() : null);
+														deviceUpdateE.setLast_value(dataEntity.getAC_POWER() != 0.001 ? dataEntity.getAC_POWER() : null);
+														deviceUpdateE.setField_value1(dataEntity.getAC_POWER() != 0.001 ? dataEntity.getAC_POWER() : null);
 														
 														// DC_POWER
 														deviceUpdateE.setField_value2(null);
-														deviceUpdateE.setField_value2(dataModel.getDC_POWER() != 0.001 ? dataModel.getDC_POWER() : null);
+														deviceUpdateE.setField_value2(dataEntity.getDC_POWER() != 0.001 ? dataEntity.getDC_POWER() : null);
 														
 														//
 														deviceUpdateE.setField_value3(null);
@@ -5468,44 +2477,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelgt500.insertModelXantrexGT500EService(dataModel);
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){   }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) { }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelgt500.insertModelXantrexGT500EService(dataEntity);
 													}
 												}
 												
@@ -5521,7 +2493,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.0");
 														
 														// ReadAngle
@@ -5542,27 +2513,6 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
 														ModelWattsunTcuEntity dataModelTcu = serviceModelTcu.setModelWattsunTcu(line);
 														dataModelTcu.setId_device(item.getId());
 														dataModelTcu.setDatatablename(item.getDatatablename());
@@ -5570,22 +2520,6 @@ public class UploadFilesController extends BaseController {
 														dataModelTcu.setJob_tablename(item.getJob_tablename());
 														
 														serviceModelTcu.insertModelWattsunTcu(dataModelTcu);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -5600,7 +2534,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.0");
 														
 														// ReadAngle
@@ -5621,27 +2554,6 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
 														ModelWattsunTrackerEntity dataModelWT = serviceModelWT.setModelWattsunTracker(line);
 														dataModelWT.setId_device(item.getId());
 														dataModelWT.setDatatablename(item.getDatatablename());
@@ -5649,22 +2561,6 @@ public class UploadFilesController extends BaseController {
 														dataModelWT.setJob_tablename(item.getJob_tablename());
 														
 														serviceModelWT.insertModelWattsunTracker(dataModelWT);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -5680,7 +2576,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.0");
 														
 														// ac power
@@ -5704,27 +2599,6 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
 														ModelSevSg110cxEntity dataModelSev = serviceModel.setModelSevSg110cx(line);
 														dataModelSev.setId_device(item.getId());
 														dataModelSev.setDatatablename(item.getDatatablename());
@@ -5733,22 +2607,6 @@ public class UploadFilesController extends BaseController {
 														dataModelSev.setTimezone_value(item.getTimezone_value());
 														
 														serviceModel.insertModelSevSg110cx(dataModelSev);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -5764,39 +2622,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelElsterA1700Entity dataModelElsterA1700 = serviceModelElsterA1700.setModelElsterA1700(line, item.getOffset_data_old());
-														dataModelElsterA1700.setId_device(item.getId());
-														dataModelElsterA1700.setDatatablename(item.getDatatablename());
-														dataModelElsterA1700.setView_tablename(item.getView_tablename());
-														dataModelElsterA1700.setJob_tablename(item.getJob_tablename());
+														ModelElsterA1700Entity dataEntity = serviceModelElsterA1700.setModelElsterA1700(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelElsterA1700Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelElsterA1700);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelElsterA1700, scaledValue);
-																if (slug.equals("TotalActivePower")) dataModelElsterA1700.setNvmActivePower(scaledValue);
-																if (slug.equals("TotalForwardActiveEnergy")) dataModelElsterA1700.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalActivePower
-														if(dataModelElsterA1700.getTotalActivePower() != 0.001 && dataModelElsterA1700.getTotalActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelElsterA1700.getTime());
+														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
-														deviceUpdateE.setField_value1(dataModelElsterA1700.getTotalActivePower() != 0.001 ? dataModelElsterA1700.getTotalActivePower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -5804,53 +2645,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelElsterA1700.insertModelElsterA1700(dataModelElsterA1700);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelElsterA1700.insertModelElsterA1700(dataEntity);
 													}
 												}
 												
@@ -5867,38 +2662,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAeRefusolEntity dataModelAeR = serviceModelAeR.setModelAeRefusol(line);
-														dataModelAeR.setId_device(item.getId());
-														dataModelAeR.setDatatablename(item.getDatatablename());
-														dataModelAeR.setView_tablename(item.getView_tablename());
-														dataModelAeR.setJob_tablename(item.getJob_tablename());
+														ModelAeRefusolEntity dataEntity = serviceModelAeR.setModelAeRefusol(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAeRefusolEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAeR);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAeR, scaledValue);
-																if (slug.equals("ACPower")) dataModelAeR.setNvmActivePower(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// TotalActivePower
-														if(dataModelAeR.getACPower() != 0.001 && dataModelAeR.getACPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelAeR.getTime());
+														if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModelAeR.getACPower() != 0.001 ? dataModelAeR.getACPower() : null);
-														deviceUpdateE.setField_value1(dataModelAeR.getACPower() != 0.001 ? dataModelAeR.getACPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -5906,53 +2685,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelAeR.insertModelAeRefusol(dataModelAeR);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelAeR.insertModelAeRefusol(dataEntity);
 													}
 												}
 												
@@ -5968,38 +2701,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSungrowLogger1000Entity dataModelSG1000 = serviceModelSG1000.setModelSungrowLogger1000(line);
-														dataModelSG1000.setId_device(item.getId());
-														dataModelSG1000.setDatatablename(item.getDatatablename());
-														dataModelSG1000.setView_tablename(item.getView_tablename());
-														dataModelSG1000.setJob_tablename(item.getJob_tablename());
+														ModelSungrowLogger1000Entity dataEntity = serviceModelSG1000.setModelSungrowLogger1000(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSungrowLogger1000Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSG1000);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelSG1000, scaledValue);
-																if (slug.equals("TotalActivePower")) dataModelSG1000.setNvmActivePower(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalActivePower
-														if(dataModelSG1000.getTotalActivePower() != 0.001 && dataModelSG1000.getTotalActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSG1000.getTime());
+														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModelSG1000.getTotalActivePower() != 0.001 ? dataModelSG1000.getTotalActivePower() : null);
-														deviceUpdateE.setField_value1(dataModelSG1000.getTotalActivePower() != 0.001 ? dataModelSG1000.getTotalActivePower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6007,53 +2724,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelSG1000.insertModelSungrowLogger1000(dataModelSG1000);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelSG1000.insertModelSungrowLogger1000(dataEntity);
 													}
 												}
 												
@@ -6069,39 +2740,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelDTSMeasurelogicDemandMeterEntity dataModelDTSMeter = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line, item.getOffset_data_old());
-														dataModelDTSMeter.setId_device(item.getId());
-														dataModelDTSMeter.setDatatablename(item.getDatatablename());
-														dataModelDTSMeter.setView_tablename(item.getView_tablename());
-														dataModelDTSMeter.setJob_tablename(item.getJob_tablename());
+														ModelDTSMeasurelogicDemandMeterEntity dataEntity = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelDTSMeasurelogicDemandMeterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelDTSMeter);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelDTSMeter, scaledValue);
-																if (slug.equals("PowerP_Total")) dataModelDTSMeter.setNvmActivePower(scaledValue);
-																if (slug.equals("EnergyP_Total")) dataModelDTSMeter.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// PowerFactor_DTS_Overall
-														if(dataModelDTSMeter.getPowerFactor_DTS_Overall() != 0.001 && dataModelDTSMeter.getPowerFactor_DTS_Overall() >= 0){
-															deviceUpdateE.setLast_updated(dataModelDTSMeter.getTime());
+														if(dataEntity.getPowerFactor_DTS_Overall() != 0.001 && dataEntity.getPowerFactor_DTS_Overall() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModelDTSMeter.getPowerFactor_DTS_Overall() != 0.001 ? dataModelDTSMeter.getPowerFactor_DTS_Overall() : null);
-														deviceUpdateE.setField_value1(dataModelDTSMeter.getPowerFactor_DTS_Overall() != 0.001 ? dataModelDTSMeter.getPowerFactor_DTS_Overall() : null);
+														deviceUpdateE.setLast_value(dataEntity.getPowerFactor_DTS_Overall() != 0.001 ? dataEntity.getPowerFactor_DTS_Overall() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPowerFactor_DTS_Overall() != 0.001 ? dataEntity.getPowerFactor_DTS_Overall() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6109,53 +2763,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataModelDTSMeter);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataEntity);
 													}
 												}
 												
@@ -6172,39 +2780,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelJanitzaUmg604proEntity dataModelJan = serviceModelJan.setModelJanitzaUmg604pro(line, item.getOffset_data_old());
-														dataModelJan.setId_device(item.getId());
-														dataModelJan.setDatatablename(item.getDatatablename());
-														dataModelJan.setView_tablename(item.getView_tablename());
-														dataModelJan.setJob_tablename(item.getJob_tablename());
+														ModelJanitzaUmg604proEntity dataEntity = serviceModelJan.setModelJanitzaUmg604pro(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelJanitzaUmg604proEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelJan);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelJan, scaledValue);
-																if (slug.equals("TotalPower")) dataModelJan.setNvmActivePower(scaledValue);
-																if (slug.equals("TotalForwardActiveEnergy")) dataModelJan.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// PowerFactor_DTS_Overall
-														if(dataModelJan.getTotalPower() != 0.001 && dataModelJan.getTotalPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelJan.getTime());
+														if(dataEntity.getTotalPower() != 0.001 && dataEntity.getTotalPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModelJan.getTotalPower() != 0.001 ? dataModelJan.getTotalPower() : null);
-														deviceUpdateE.setField_value1(dataModelJan.getTotalPower() != 0.001 ? dataModelJan.getTotalPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTotalPower() != 0.001 ? dataEntity.getTotalPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalPower() != 0.001 ? dataEntity.getTotalPower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6212,53 +2803,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelJan.insertModelJanitzaUmg604pro(dataModelJan);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelJan.insertModelJanitzaUmg604pro(dataEntity);
 													}
 												}
 												
@@ -6274,39 +2819,22 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelLeviton70D48000Entity dataModel70D = serviceModel70D.setModelLeviton70D48000(line, item.getOffset_data_old());
-														dataModel70D.setId_device(item.getId());
-														dataModel70D.setDatatablename(item.getDatatablename());
-														dataModel70D.setView_tablename(item.getView_tablename());
-														dataModel70D.setJob_tablename(item.getJob_tablename());
+														ModelLeviton70D48000Entity dataEntity = serviceModel70D.setModelLeviton70D48000(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLeviton70D48000Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModel70D);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModel70D, scaledValue);
-																if (slug.equals("PowerSum")) dataModel70D.setNvmActivePower(scaledValue);
-																if (slug.equals("ExportedEnergySum")) dataModel70D.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// PowerFactor_DTS_Overall
-														if(dataModel70D.getPowerSum() != 0.001 && dataModel70D.getPowerSum() >= 0){
-															deviceUpdateE.setLast_updated(dataModel70D.getTime());
+														if(dataEntity.getPowerSum() != 0.001 && dataEntity.getPowerSum() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
 														
-														deviceUpdateE.setLast_value(dataModel70D.getPowerSum() != 0.001 ? dataModel70D.getPowerSum() : null);
-														deviceUpdateE.setField_value1(dataModel70D.getPowerSum() != 0.001 ? dataModel70D.getPowerSum() : null);
+														deviceUpdateE.setLast_value(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6314,53 +2842,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModel70D.insertModelLeviton70D48000(dataModel70D);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModel70D.insertModelLeviton70D48000(dataEntity);
 													}
 												}
 												
@@ -6376,38 +2858,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuRevProductionMeterEntity dataModelAcuRevMeter = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line, item.getOffset_data_old());
-														dataModelAcuRevMeter.setId_device(item.getId());
-														dataModelAcuRevMeter.setDatatablename(item.getDatatablename());
-														dataModelAcuRevMeter.setView_tablename(item.getView_tablename());
-														dataModelAcuRevMeter.setJob_tablename(item.getJob_tablename());
+														ModelAcuRevProductionMeterEntity dataEntity = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAcuRevProductionMeterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAcuRevMeter);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAcuRevMeter, scaledValue);
-																if (slug.equals("TotalRealPower")) dataModelAcuRevMeter.setNvmActivePower(scaledValue);
-																if (slug.equals("TotalImportedEnergy")) dataModelAcuRevMeter.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalRealPower
-														if(dataModelAcuRevMeter.getTotalRealPower() != 0.001 && dataModelAcuRevMeter.getTotalRealPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelAcuRevMeter.getTime());
+														if(dataEntity.getTotalRealPower() != 0.001 && dataEntity.getTotalRealPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelAcuRevMeter.getTotalRealPower() != 0.001 ? dataModelAcuRevMeter.getTotalRealPower() : null);
-														deviceUpdateE.setField_value1(dataModelAcuRevMeter.getTotalRealPower() != 0.001 ? dataModelAcuRevMeter.getTotalRealPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalRealPower() != 0.001 ? dataEntity.getTotalRealPower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6415,51 +2880,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataModelAcuRevMeter);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataEntity);
 													}
 												}
 												
@@ -6475,35 +2896,20 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelPhoenixContactQuintUPSEntity data = serviceModelPhoenixContactQuintUPS.setModelPhoenixContactQuintUPS(line);
-														data.setId_device(item.getId());
-														data.setDatatablename(item.getDatatablename());
-														data.setView_tablename(item.getView_tablename());
-														data.setJob_tablename(item.getJob_tablename());
+														ModelPhoenixContactQuintUPSEntity dataEntity = serviceModelPhoenixContactQuintUPS.setModelPhoenixContactQuintUPS(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPhoenixContactQuintUPSEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(data);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(data, scaledValue);
-															}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														if(dataEntity.getStateofHealth() != 0.001 && dataEntity.getStateofHealth() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
-														if(data.getStateofHealth() != 0.001 && data.getStateofHealth() >= 0){
-															deviceUpdateE.setLast_updated(data.getTime());
-														}
-														
-														deviceUpdateE.setLast_value(data.getStateofHealth() != 0.001 ? data.getStateofHealth() : null);
-														deviceUpdateE.setField_value1(data.getStateofHealth() != 0.001 ? data.getStateofHealth() : null);
+														deviceUpdateE.setLast_value(dataEntity.getStateofHealth() != 0.001 ? dataEntity.getStateofHealth() : null);
+														deviceUpdateE.setField_value1(dataEntity.getStateofHealth() != 0.001 ? dataEntity.getStateofHealth() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -6511,51 +2917,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS(data);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelPhoenixContactQuintUPS.insertModelPhoenixContactQuintUPS(dataEntity);
 													}
 												}
 												
@@ -6571,38 +2933,21 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                            
-						                            ModelSmaInverterStp1215202430Tlus10Entity dataModelSma30Tlus10 = serviceModelSma30Tlus10.setModelSmaInverterStp1215202430Tlus10(line);
-						                            dataModelSma30Tlus10.setId_device(item.getId());
-						                            dataModelSma30Tlus10.setDatatablename(item.getDatatablename());
-						                            dataModelSma30Tlus10.setView_tablename(item.getView_tablename());
-						                            dataModelSma30Tlus10.setJob_tablename(item.getJob_tablename());
+						                            ModelSmaInverterStp1215202430Tlus10Entity dataEntity = serviceModelSma30Tlus10.setModelSmaInverterStp1215202430Tlus10(line);
+						                            dataEntity.setId_device(item.getId());
+						                            dataEntity.setDatatablename(item.getDatatablename());
+						                            dataEntity.setView_tablename(item.getView_tablename());
+						                            dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSmaInverterStp1215202430Tlus10Entity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSma30Tlus10);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(dataModelSma30Tlus10, scaledValue);
-						                                if (slug.equals("Power")) dataModelSma30Tlus10.setNvmActivePower(scaledValue);
-						                                if (slug.equals("Total_yield")) dataModelSma30Tlus10.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
-						                            
+													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 						                            // lPower
-						                            if(dataModelSma30Tlus10.getPower() != 0.001 && dataModelSma30Tlus10.getPower() >= 0){
-						                              deviceUpdateE.setLast_updated(dataModelSma30Tlus10.getTime());
+						                            if(dataEntity.getPower() != 0.001 && dataEntity.getPower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(dataModelSma30Tlus10.getPower() != 0.001 ? dataModelSma30Tlus10.getPower() : null);
-						                            deviceUpdateE.setField_value1(dataModelSma30Tlus10.getPower() != 0.001 ? dataModelSma30Tlus10.getPower() : null);
+						                            deviceUpdateE.setLast_value(dataEntity.getPower() != 0.001 ? dataEntity.getPower() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getPower() != 0.001 ? dataEntity.getPower() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -6610,51 +2955,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataModelSma30Tlus10);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataEntity);
 						                          }
 						                        }
 						                        
@@ -6671,38 +2972,21 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelAbbUnoDm1250tpPlusEntity dataModelSma1250Tlus = serviceModelSma1250Tlus.setModelAbbUnoDm1250tpPlus(line);
-						                        	  dataModelSma1250Tlus.setId_device(item.getId());
-						                        	  dataModelSma1250Tlus.setDatatablename(item.getDatatablename());
-						                        	  dataModelSma1250Tlus.setView_tablename(item.getView_tablename());
-						                        	  dataModelSma1250Tlus.setJob_tablename(item.getJob_tablename());
+						                        	  ModelAbbUnoDm1250tpPlusEntity dataEntity = serviceModelSma1250Tlus.setModelAbbUnoDm1250tpPlus(line);
+						                        	  dataEntity.setId_device(item.getId());
+						                        	  dataEntity.setDatatablename(item.getDatatablename());
+						                        	  dataEntity.setView_tablename(item.getView_tablename());
+						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAbbUnoDm1250tpPlusEntity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSma1250Tlus);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(dataModelSma1250Tlus, scaledValue);
-						                                if (slug.equals("ACActivePower")) dataModelSma1250Tlus.setNvmActivePower(scaledValue);
-						                                if (slug.equals("TotalEnergy")) dataModelSma1250Tlus.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // ACActivePower
-						                            if(dataModelSma1250Tlus.getACActivePower() != 0.001 && dataModelSma1250Tlus.getACActivePower() >= 0){
-						                              deviceUpdateE.setLast_updated(dataModelSma1250Tlus.getTime());
+						                            if(dataEntity.getACActivePower() != 0.001 && dataEntity.getACActivePower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(dataModelSma1250Tlus.getACActivePower() != 0.001 ? dataModelSma1250Tlus.getACActivePower() : null);
-						                            deviceUpdateE.setField_value1(dataModelSma1250Tlus.getACActivePower() != 0.001 ? dataModelSma1250Tlus.getACActivePower() : null);
+						                            deviceUpdateE.setLast_value(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getACActivePower() != 0.001 ? dataEntity.getACActivePower() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -6710,51 +2994,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataModelSma1250Tlus);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataEntity);
 						                          }
 						                        }
 						                        
@@ -6771,38 +3011,21 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelKlea220pEntity dataModelKlea = serviceModelKlea.setModelKlea220p(line, item.getOffset_data_old());
-						                        	  dataModelKlea.setId_device(item.getId());
-						                        	  dataModelKlea.setDatatablename(item.getDatatablename());
-						                        	  dataModelKlea.setView_tablename(item.getView_tablename());
-						                        	  dataModelKlea.setJob_tablename(item.getJob_tablename());
+						                        	  ModelKlea220pEntity dataEntity = serviceModelKlea.setModelKlea220p(line, item.getOffset_data_old());
+						                        	  dataEntity.setId_device(item.getId());
+						                        	  dataEntity.setDatatablename(item.getDatatablename());
+						                        	  dataEntity.setView_tablename(item.getView_tablename());
+						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKlea220pEntity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(dataModelKlea);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(dataModelKlea, scaledValue);
-						                                if (slug.equals("TotalActivePower")) dataModelKlea.setNvmActivePower(scaledValue);
-						                                if (slug.equals("TotalEnergy")) dataModelKlea.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
-						                            
+						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 						                            // TotalActivePower
-						                            if(dataModelKlea.getTotalActivePower() != 0.001 && dataModelKlea.getTotalActivePower() >= 0){
-						                              deviceUpdateE.setLast_updated(dataModelKlea.getTime());
+						                            if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(dataModelKlea.getTotalActivePower() != 0.001 ? dataModelKlea.getTotalActivePower() : null);
-						                            deviceUpdateE.setField_value1(dataModelKlea.getTotalActivePower() != 0.001 ? dataModelKlea.getTotalActivePower() : null);
+						                            deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -6810,51 +3033,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelKlea.insertModelKlea220p(dataModelKlea);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelKlea.insertModelKlea220p(dataEntity);
 						                          }
 						                        }
 						                        
@@ -6870,38 +3049,21 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelMeterIon6200Entity data = serviceModelMeterIon6200.setModelMeterIon6200(line, item.getOffset_data_old());
-						                        	  data.setId_device(item.getId());
-						                        	  data.setDatatablename(item.getDatatablename());
-						                        	  data.setView_tablename(item.getView_tablename());
-						                        	  data.setJob_tablename(item.getJob_tablename());
+						                        	  ModelMeterIon6200Entity dataEntity = serviceModelMeterIon6200.setModelMeterIon6200(line, item.getOffset_data_old());
+						                        	  dataEntity.setId_device(item.getId());
+						                        	  dataEntity.setDatatablename(item.getDatatablename());
+						                        	  dataEntity.setView_tablename(item.getView_tablename());
+						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelMeterIon6200Entity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(data);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(data, scaledValue);
-						                                if (slug.equals("kWtotal")) data.setNvmActivePower(scaledValue);
-						                                if (slug.equals("kVARhdel")) data.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
-						                            
+						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 						                            // kWtotal
-						                            if(data.getkWtotal() != 0.001 && data.getkWtotal() >= 0){
-						                              deviceUpdateE.setLast_updated(data.getTime());
+						                            if(dataEntity.getkWtotal() != 0.001 && dataEntity.getkWtotal() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(data.getkWtotal() != 0.001 ? data.getkWtotal() : null);
-						                            deviceUpdateE.setField_value1(data.getkWtotal() != 0.001 ? data.getkWtotal() : null);
+						                            deviceUpdateE.setLast_value(dataEntity.getkWtotal() != 0.001 ? dataEntity.getkWtotal() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getkWtotal() != 0.001 ? dataEntity.getkWtotal() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -6909,51 +3071,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelMeterIon6200.insertModelMeterIon6200(data);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelMeterIon6200.insertModelMeterIon6200(dataEntity);
 						                          }
 						                        }
 						                        
@@ -6970,38 +3088,21 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelLevitonS40000rPowerMeterEntity data = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line, item.getOffset_data_old());
-						                        	  data.setId_device(item.getId());
-						                        	  data.setDatatablename(item.getDatatablename());
-						                        	  data.setView_tablename(item.getView_tablename());
-						                        	  data.setJob_tablename(item.getJob_tablename());
-						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLevitonS40000rPowerMeterEntity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(data);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(data, scaledValue);
-						                                if (slug.equals("TotalInstantaneousRealPower")) data.setNvmActivePower(scaledValue);
-						                                if (slug.equals("RealEnergyConsumption")) data.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                        	  ModelLevitonS40000rPowerMeterEntity dataEntity = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line, item.getOffset_data_old());
+						                        	  dataEntity.setId_device(item.getId());
+						                        	  dataEntity.setDatatablename(item.getDatatablename());
+						                        	  dataEntity.setView_tablename(item.getView_tablename());
+						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
+						                        	  
+						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // kWtotal
-						                            if(data.getTotalInstantaneousRealPower() != 0.001 && data.getTotalInstantaneousRealPower() >= 0){
-						                              deviceUpdateE.setLast_updated(data.getTime());
+						                            if(dataEntity.getTotalInstantaneousRealPower() != 0.001 && dataEntity.getTotalInstantaneousRealPower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
 						                            }
 						                            
-						                            deviceUpdateE.setLast_value(data.getTotalInstantaneousRealPower() != 0.001 ? data.getTotalInstantaneousRealPower() : null);
-						                            deviceUpdateE.setField_value1(data.getTotalInstantaneousRealPower() != 0.001 ? data.getTotalInstantaneousRealPower() : null);
+						                            deviceUpdateE.setLast_value(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getTotalInstantaneousRealPower() != 0.001 ? dataEntity.getTotalInstantaneousRealPower() : null);
 						                            
 						                            deviceUpdateE.setField_value2(null);
 						                            deviceUpdateE.setField_value3(null);
@@ -7009,51 +3110,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(data);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(dataEntity);
 						                          }
 						                        }
 						                        
@@ -7070,31 +3127,14 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelLevitonAbviusA891123ChannelEntity data = serviceModelA891123.setModelLevitonAbviusA891123Channel(line);
-						                        	  data.setId_device(item.getId());
-						                        	  data.setDatatablename(item.getDatatablename());
-						                        	  data.setView_tablename(item.getView_tablename());
-						                        	  data.setJob_tablename(item.getJob_tablename());
-						                        	  data.setId_site(item.getId_site());
-						                            
-						                            // scaling device parameter
-						                            if (scaledDeviceParameters.size() > 0) {
-						                              for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-						                                DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-						                                String slug = scaledDeviceParameter.getParameter_slug();
-						                                String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-						                                String variableName = scaledDeviceParameter.getVariable_name();
-						                                PropertyDescriptor pd = new PropertyDescriptor(slug, ModelLevitonAbviusA891123ChannelEntity.class);
-						                                Double initialValue = (Double) pd.getReadMethod().invoke(data);
-						                                if (initialValue == 0.001) continue;
-						                                Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-						                                pd.getWriteMethod().invoke(data, scaledValue);
-//						                                if (slug.equals("TotalInstantaneousRealPower")) data.setNvmActivePower(scaledValue);
-//						                                if (slug.equals("RealEnergyConsumption")) data.setNvmActiveEnergy(scaledValue);
-						                              }
-						                            }
-						                            
-						                            DeviceEntity deviceUpdateE = new DeviceEntity();
+						                        	  ModelLevitonAbviusA891123ChannelEntity dataEntity = serviceModelA891123.setModelLevitonAbviusA891123Channel(line);
+						                        	  dataEntity.setId_device(item.getId());
+						                        	  dataEntity.setDatatablename(item.getDatatablename());
+						                        	  dataEntity.setView_tablename(item.getView_tablename());
+						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
+						                        	  dataEntity.setId_site(item.getId_site());
+						                        	  
+						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // kWtotal
 //						                            if(data.getTotalInstantaneousRealPower() != 0.001 && data.getTotalInstantaneousRealPower() >= 0){
@@ -7110,51 +3150,7 @@ public class UploadFilesController extends BaseController {
 						                            deviceUpdateE.setId(item.getId());
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
-						                            // Insert alert
-						//                            if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-						//                              // Check error code
-						//                              BatchJobService service = new BatchJobService();
-						//                              ErrorEntity errorItem = new ErrorEntity();
-						//                              errorItem.setId_device_group(item.getId_device_group());
-						//                              errorItem.setError_code(words.get(1));
-						//                              ErrorEntity rowItemError = service.getErrorItem(errorItem);
-						//                              if(rowItemError.getId() > 0) {
-						//                                AlertEntity alertItem = new AlertEntity();
-						//                                alertItem.setId_device(item.getId());
-						//                                alertItem.setStart_date(words.get(0).replace("'", ""));
-						//                                alertItem.setId_error(rowItemError.getId());
-						//                                boolean checkAlertExist = service.checkAlertExist(alertItem);
-						//                                if(!checkAlertExist && alertItem.getId_device() > 0) {
-						//                                  // Insert alert
-						//                                  service.insertAlert(alertItem);
-						//                                }
-						//                              }
-						//                            }
-						                            
-						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(data);
-						                            
-						                            // low production alert
-						                            if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-						                              item.setLast_updated(deviceUpdateE.getLast_updated());
-						                              serviceD.checkLowProduction(item, dataDevice);
-						                            }
-						                            
-						                            try  
-						                            { 
-						                              File logFile = new File(root.resolve(fileName).toString());
-						                              if(logFile.delete()){  }
-						                              
-						                              Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-						                                  Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-						                                  + timeStamp + ".log.gz");
-						                              File logGzFile = new File(path.toString());
-						                              
-						                              if(logGzFile.delete()) {  }   
-						                            }  
-						                            catch(Exception e){  
-						                              e.printStackTrace();  
-						                            }
-						                            
+						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(dataEntity);
 						                          }
 						                        }
 						                        
@@ -7170,38 +3166,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuvimIIREntity dataModelAcuvimIIR = serviceModelAcuvimIIR.setModelAcuvimIIR(line, item.getOffset_data_old());
-														dataModelAcuvimIIR.setId_device(item.getId());
-														dataModelAcuvimIIR.setDatatablename(item.getDatatablename());
-														dataModelAcuvimIIR.setView_tablename(item.getView_tablename());
-														dataModelAcuvimIIR.setJob_tablename(item.getJob_tablename());
+														ModelAcuvimIIREntity dataEntity = serviceModelAcuvimIIR.setModelAcuvimIIR(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelAcuvimIIREntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelAcuvimIIR);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelAcuvimIIR, scaledValue);
-																if (slug.equals("SystempowerPsum")) dataModelAcuvimIIR.setNvmActivePower(scaledValue);
-																if (slug.equals("EnergyTotal")) dataModelAcuvimIIR.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// SystempowerPsum
-														if(dataModelAcuvimIIR.getSystempowerPsum() != 0.001 && dataModelAcuvimIIR.getSystempowerPsum() >= 0){
-															deviceUpdateE.setLast_updated(dataModelAcuvimIIR.getTime());
+														if(dataEntity.getSystempowerPsum() != 0.001 && dataEntity.getSystempowerPsum() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelAcuvimIIR.getSystempowerPsum() != 0.001 ? dataModelAcuvimIIR.getSystempowerPsum() : null);
-														deviceUpdateE.setField_value1(dataModelAcuvimIIR.getSystempowerPsum() != 0.001 ? dataModelAcuvimIIR.getSystempowerPsum() : null);
+														deviceUpdateE.setLast_value(dataEntity.getSystempowerPsum() != 0.001 ? dataEntity.getSystempowerPsum() : null);
+														deviceUpdateE.setField_value1(dataEntity.getSystempowerPsum() != 0.001 ? dataEntity.getSystempowerPsum() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7209,51 +3188,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataModelAcuvimIIR);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataEntity);
 													}
 												}
 												
@@ -7270,37 +3205,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelKyPulseMeterEntity dataModelKyPulse = serviceModelKyPulse.setModelKyPulseMeter(line, item.getOffset_data_old());
-														dataModelKyPulse.setId_device(item.getId());
-														dataModelKyPulse.setDatatablename(item.getDatatablename());
-														dataModelKyPulse.setView_tablename(item.getView_tablename());
-														dataModelKyPulse.setJob_tablename(item.getJob_tablename());
+														ModelKyPulseMeterEntity dataEntity = serviceModelKyPulse.setModelKyPulseMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelKyPulseMeterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelKyPulse);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelKyPulse, scaledValue);
-																if (slug.equals("CumulativeEnergyDelivered")) dataModelKyPulse.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// SystempowerPsum
-														if(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 && dataModelKyPulse.getCumulativeEnergyDelivered() >= 0){
-															deviceUpdateE.setLast_updated(dataModelKyPulse.getTime());
+														if(dataEntity.getCumulativeEnergyDelivered() != 0.001 && dataEntity.getCumulativeEnergyDelivered() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 ? dataModelKyPulse.getCumulativeEnergyDelivered() : null);
-														deviceUpdateE.setField_value1(dataModelKyPulse.getCumulativeEnergyDelivered() != 0.001 ? dataModelKyPulse.getCumulativeEnergyDelivered() : null);
+														deviceUpdateE.setLast_value(dataEntity.getCumulativeEnergyDelivered() != 0.001 ? dataEntity.getCumulativeEnergyDelivered() : null);
+														deviceUpdateE.setField_value1(dataEntity.getCumulativeEnergyDelivered() != 0.001 ? dataEntity.getCumulativeEnergyDelivered() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7308,51 +3227,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelKyPulse.insertModelKyPulseMeter(dataModelKyPulse);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelKyPulse.insertModelKyPulseMeter(dataEntity);
 													}
 												}
 												
@@ -7369,38 +3244,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSunSpecInverterEntity dataModelSunSpec = serviceModelSunSpec.setModelSunSpecInverter(line, item.getOffset_data_old());
-														dataModelSunSpec.setId_device(item.getId());
-														dataModelSunSpec.setDatatablename(item.getDatatablename());
-														dataModelSunSpec.setView_tablename(item.getView_tablename());
-														dataModelSunSpec.setJob_tablename(item.getJob_tablename());
+														ModelSunSpecInverterEntity dataEntity = serviceModelSunSpec.setModelSunSpecInverter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSunSpecInverterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSunSpec);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelSunSpec, scaledValue);
-																if (slug.equals("ACPower")) dataModelSunSpec.setNvmActivePower(scaledValue);
-																if (slug.equals("ACEnergy")) dataModelSunSpec.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// ACPower
-														if(dataModelSunSpec.getACPower() != 0.001 && dataModelSunSpec.getACPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSunSpec.getTime());
+														if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelSunSpec.getACPower() != 0.001 ? dataModelSunSpec.getACPower() : null);
-														deviceUpdateE.setField_value1(dataModelSunSpec.getACPower() != 0.001 ? dataModelSunSpec.getACPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getACPower() != 0.001 ? dataEntity.getACPower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7408,51 +3266,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelSunSpec.insertModelSunSpecInverter(dataModelSunSpec);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelSunSpec.insertModelSunSpecInverter(dataEntity);
 													}
 												}
 												
@@ -7469,38 +3283,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelDent48PSHDMeterEntity dataModelDent = serviceModelDent.setModelDent48PSHDMeter(line, item.getOffset_data_old());
-														dataModelDent.setId_device(item.getId());
-														dataModelDent.setDatatablename(item.getDatatablename());
-														dataModelDent.setView_tablename(item.getView_tablename());
-														dataModelDent.setJob_tablename(item.getJob_tablename());
+														ModelDent48PSHDMeterEntity dataEntity = serviceModelDent.setModelDent48PSHDMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelDent48PSHDMeterService.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelDent);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelDent, scaledValue);
-																if (slug.equals("PowerSum")) dataModelDent.setNvmActivePower(scaledValue);
-																if (slug.equals("ImportedEnergySum")) dataModelDent.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// ACPower
-														if(dataModelDent.getPowerSum() != 0.001 && dataModelDent.getPowerSum() >= 0){
-															deviceUpdateE.setLast_updated(dataModelDent.getTime());
+														if(dataEntity.getPowerSum() != 0.001 && dataEntity.getPowerSum() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelDent.getPowerSum() != 0.001 ? dataModelDent.getPowerSum() : null);
-														deviceUpdateE.setField_value1(dataModelDent.getPowerSum() != 0.001 ? dataModelDent.getPowerSum() : null);
+														deviceUpdateE.setLast_value(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
+														deviceUpdateE.setField_value1(dataEntity.getPowerSum() != 0.001 ? dataEntity.getPowerSum() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7508,51 +3305,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelDent.insertModelDent48PSHDMeter(dataModelDent);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelDent.insertModelDent48PSHDMeter(dataEntity);
 													}
 												}
 												
@@ -7568,38 +3321,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelPowerLogicPM8000LoadMeterEntity dataModelPM8000 = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line, item.getOffset_data_old());
-														dataModelPM8000.setId_device(item.getId());
-														dataModelPM8000.setDatatablename(item.getDatatablename());
-														dataModelPM8000.setView_tablename(item.getView_tablename());
-														dataModelPM8000.setJob_tablename(item.getJob_tablename());
+														ModelPowerLogicPM8000LoadMeterEntity dataEntity = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelPowerLogicPM8000LoadMeterService.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelPM8000);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelPM8000, scaledValue);
-																if (slug.equals("ActivePowerTotal")) dataModelPM8000.setNvmActivePower(scaledValue);
-																if (slug.equals("ActiveEnergyDelivered")) dataModelPM8000.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// ACPower
-														if(dataModelPM8000.getActivePowerTotal() != 0.001 && dataModelPM8000.getActivePowerTotal() >= 0){
-															deviceUpdateE.setLast_updated(dataModelPM8000.getTime());
+														if(dataEntity.getActivePowerTotal() != 0.001 && dataEntity.getActivePowerTotal() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelPM8000.getActivePowerTotal() != 0.001 ? dataModelPM8000.getActivePowerTotal() : null);
-														deviceUpdateE.setField_value1(dataModelPM8000.getActivePowerTotal() != 0.001 ? dataModelPM8000.getActivePowerTotal() : null);
+														deviceUpdateE.setLast_value(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePowerTotal() != 0.001 ? dataEntity.getActivePowerTotal() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7607,51 +3343,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataModelPM8000);
-														
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){  }
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {  }		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
-														
+														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataEntity);
 													}
 												}
 												
@@ -7667,38 +3359,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelShark250Entity dataModelShark250 = serviceModelShark250.setModelShark250(line, item.getOffset_data_old());
-														dataModelShark250.setId_device(item.getId());
-														dataModelShark250.setDatatablename(item.getDatatablename());
-														dataModelShark250.setView_tablename(item.getView_tablename());
-														dataModelShark250.setJob_tablename(item.getJob_tablename());
+														ModelShark250Entity dataEntity = serviceModelShark250.setModelShark250(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelShark250Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelShark250);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelShark250, scaledValue);
-																if (slug.equals("ActivePower")) dataModelShark250.setNvmActivePower(scaledValue);
-																if (slug.equals("ActiveEnergyNet")) dataModelShark250.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
 														// active power
-														if(dataModelShark250.getActivePower() != 0.001 && dataModelShark250.getActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelShark250.getTime());
+														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelShark250.getActivePower() != 0.001 ? dataModelShark250.getActivePower() : null);
-														deviceUpdateE.setField_value1(dataModelShark250.getActivePower() != 0.001 ? dataModelShark250.getActivePower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7706,55 +3381,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelShark250.insertModelShark250(dataModelShark250);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){    
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){    
-															e.printStackTrace();  
-														}
-														
+														serviceModelShark250.insertModelShark250(dataEntity);
 													}
 												}
 												
@@ -7771,38 +3398,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelXGI1500Entity dataModelXGI1500 = serviceModelXGI1500.setModelXGI1500(line, item.getOffset_data_old());
-														dataModelXGI1500.setId_device(item.getId());
-														dataModelXGI1500.setDatatablename(item.getDatatablename());
-														dataModelXGI1500.setView_tablename(item.getView_tablename());
-														dataModelXGI1500.setJob_tablename(item.getJob_tablename());
+														ModelXGI1500Entity dataEntity = serviceModelXGI1500.setModelXGI1500(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelXGI1500Entity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelXGI1500);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelXGI1500, scaledValue);
-																if (slug.equals("ActivePower")) dataModelXGI1500.setNvmActivePower(scaledValue);
-																if (slug.equals("ActiveEnergyGross")) dataModelXGI1500.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// active power
-														if(dataModelXGI1500.getActivePower() != 0.001 && dataModelXGI1500.getActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelXGI1500.getTime());
+														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelXGI1500.getActivePower() != 0.001 ? dataModelXGI1500.getActivePower() : null);
-														deviceUpdateE.setField_value1(dataModelXGI1500.getActivePower() != 0.001 ? dataModelXGI1500.getActivePower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7810,55 +3420,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelXGI1500.insertModelXGI1500(dataModelXGI1500);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){    
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){    
-															e.printStackTrace();  
-														}
-														
+														serviceModelXGI1500.insertModelXGI1500(dataEntity);
 													}
 												}
 												
@@ -7876,38 +3438,21 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSEL651REntity dataModelSEL651R = serviceModelSEL651R.setModelSEL651R(line, item.getOffset_data_old());
-														dataModelSEL651R.setId_device(item.getId());
-														dataModelSEL651R.setDatatablename(item.getDatatablename());
-														dataModelSEL651R.setView_tablename(item.getView_tablename());
-														dataModelSEL651R.setJob_tablename(item.getJob_tablename());
+														ModelSEL651REntity dataEntity = serviceModelSEL651R.setModelSEL651R(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSEL651REntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSEL651R);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelSEL651R, scaledValue);
-																if (slug.equals("ThreePhaseRealPower")) dataModelSEL651R.setNvmActivePower(scaledValue);
-																if (slug.equals("ThreePhaseRealEnergyOut")) dataModelSEL651R.setNvmActiveEnergy(scaledValue);
-															}
-														}
-														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// active power
-														if(dataModelSEL651R.getThreePhaseRealPower() != 0.001 && dataModelSEL651R.getThreePhaseRealPower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSEL651R.getTime());
+														if(dataEntity.getThreePhaseRealPower() != 0.001 && dataEntity.getThreePhaseRealPower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataModelSEL651R.getThreePhaseRealPower() != 0.001 ? dataModelSEL651R.getThreePhaseRealPower() : null);
-														deviceUpdateE.setField_value1(dataModelSEL651R.getThreePhaseRealPower() != 0.001 ? dataModelSEL651R.getThreePhaseRealPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getThreePhaseRealPower() != 0.001 ? dataEntity.getThreePhaseRealPower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getThreePhaseRealPower() != 0.001 ? dataEntity.getThreePhaseRealPower() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
@@ -7915,55 +3460,7 @@ public class UploadFilesController extends BaseController {
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelSEL651R.insertModelSEL651R(dataModelSEL651R);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){    
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){    
-															e.printStackTrace();  
-														}
-														
+														serviceModelSEL651R.insertModelSEL651R(dataEntity);
 													}
 												}
 												
@@ -7979,7 +3476,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.0");
 //														setAngle = Math.round((setAngle * 180) / 3.14);
 														
@@ -8011,24 +3507,6 @@ public class UploadFilesController extends BaseController {
 														dataModelATiTracker.setJob_tablename(item.getJob_tablename());
 														dataModelATiTracker.setEnable_alert(item.getEnable_alert());
 														serviceModelATiTracker.insertModelATiTracker(dataModelATiTracker);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){   
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -8043,7 +3521,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
 														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.0");
 //														setAngle = Math.round((setAngle * 180) / 3.14);
 														
@@ -8075,24 +3552,6 @@ public class UploadFilesController extends BaseController {
 														dataModelQUPS.setJob_tablename(item.getJob_tablename());
 														dataModelQUPS.setEnable_alert(item.getEnable_alert());
 														serviceModelQUPS.insertModelQuint4UPS(dataModelQUPS);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){   
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -8108,9 +3567,6 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														DeviceEntity deviceUpdateE = new DeviceEntity();
-														
-														
 														// WindSpeed
 														deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
 														deviceUpdateE.setLast_value(null);
@@ -8131,24 +3587,6 @@ public class UploadFilesController extends BaseController {
 														dataModelG3.setJob_tablename(item.getJob_tablename());
 														dataModelG3.setEnable_alert(item.getEnable_alert());
 														serviceModelG3.insertModelG3LightController(dataModelG3);
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){   
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){  
-															e.printStackTrace();  
-														}
 													}
 												}
 												
@@ -8165,97 +3603,32 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSolArkInverterEntity dataModelSol = serviceModelSol.setModelSolArkInverter(line, item.getOffset_data_old());
-														dataModelSol.setId_device(item.getId());
-														dataModelSol.setDatatablename(item.getDatatablename());
-														dataModelSol.setView_tablename(item.getView_tablename());
-														dataModelSol.setJob_tablename(item.getJob_tablename());
+														ModelSolArkInverterEntity dataEntity = serviceModelSol.setModelSolArkInverter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														// scaling device parameter
-														if (scaledDeviceParameters.size() > 0) {
-															for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-																DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-																String slug = scaledDeviceParameter.getParameter_slug();
-																String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-																String variableName = scaledDeviceParameter.getVariable_name();
-																PropertyDescriptor pd = new PropertyDescriptor(slug, ModelSolArkInverterEntity.class);
-																Double initialValue = (Double) pd.getReadMethod().invoke(dataModelSol);
-																if (initialValue == 0.001) continue;
-																Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-																pd.getWriteMethod().invoke(dataModelSol, scaledValue);
-																if (slug.equals("TotalActivePower")) dataModelSol.setNvmActivePower(scaledValue);
-																if (slug.equals("Totalchargetothebattery")) dataModelSol.setNvmActiveEnergy(scaledValue);
-															}
+														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// 
+														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														DeviceEntity deviceUpdateE = new DeviceEntity();
+														deviceUpdateE.setLast_value(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
 														// 
-														if(dataModelSol.getTotalActivePower() != 0.001 && dataModelSol.getTotalActivePower() >= 0){
-															deviceUpdateE.setLast_updated(dataModelSol.getTime());
-														}
-														
-														deviceUpdateE.setLast_value(dataModelSol.getTotalActivePower() != 0.001 ? dataModelSol.getTotalActivePower() : null);
-														deviceUpdateE.setField_value1(dataModelSol.getTotalActivePower() != 0.001 ? dataModelSol.getTotalActivePower() : null);
+														deviceUpdateE.setField_value2(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
 														// 
-														deviceUpdateE.setField_value2(dataModelSol.getTotalActivePower() != 0.001 ? dataModelSol.getTotalActivePower() : null);
-														
-														// 
-														deviceUpdateE.setField_value3(dataModelSol.getTotalActivePower() != 0.001 ? dataModelSol.getTotalActivePower() : null);
+														deviceUpdateE.setField_value3(dataEntity.getTotalActivePower() != 0.001 ? dataEntity.getTotalActivePower() : null);
 														
 														deviceUpdateE.setId(item.getId());
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
-														
-														
-														// Insert alert
-//														if(Integer.parseInt(words.get(1)) > 0 && hours >= item.getStart_date_time() && hours <= item.getEnd_date_time() ){
-//															// Check error code
-//															BatchJobService service = new BatchJobService();
-//															ErrorEntity errorItem = new ErrorEntity();
-//															errorItem.setId_device_group(item.getId_device_group());
-//															errorItem.setError_code(words.get(1));
-//															ErrorEntity rowItemError = service.getErrorItem(errorItem);
-//															if(rowItemError.getId() > 0) {
-//																AlertEntity alertItem = new AlertEntity();
-//																alertItem.setId_device(item.getId());
-//																alertItem.setStart_date(words.get(0).replace("'", ""));
-//																alertItem.setId_error(rowItemError.getId());
-//																boolean checkAlertExist = service.checkAlertExist(alertItem);
-//																if(!checkAlertExist && alertItem.getId_device() > 0) {
-//																	// Insert alert
-//																	service.insertAlert(alertItem);
-//																}
-//															}
-//														}
-														
-														serviceModelSol.insertModelSolArkInverter(dataModelSol);
-
-														// low production alert
-														if ((hours >= item.getStart_date_time()) && (hours <= item.getEnd_date_time())) {
-															item.setLast_updated(deviceUpdateE.getLast_updated());
-															serviceD.checkLowProduction(item, dataDevice);
-														}
-														
-														try  
-														{ 
-															File logFile = new File(root.resolve(fileName).toString());
-															if(logFile.delete()){    
-															}
-															
-															Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-																	Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "."
-																	+ timeStamp + ".log.gz");
-															File logGzFile = new File(path.toString());
-															
-															if(logGzFile.delete()) {     
-															}		
-														}  
-														catch(Exception e){    
-															e.printStackTrace();  
-														}
-														
+														serviceModelSol.insertModelSolArkInverter(dataEntity);
 													}
 												}
 												
@@ -8266,6 +3639,29 @@ public class UploadFilesController extends BaseController {
 											
 										}
 										
+										// low production alert
+										if (
+											(item.getId_device_type() == 1 || ((item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter())) &&
+											(hours >= item.getStart_date_time()) &&
+											(hours <= item.getEnd_date_time())
+										) {
+											item.setLast_updated(deviceUpdateE.getLast_updated());
+											serviceD.checkLowProduction(item, dataDevice);
+										}
+										
+										try { 
+											File logFile = new File(root.resolve(fileName).toString());
+											if(logFile.delete()) {}
+											
+											Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey)
+													+ "/" + "bm-" + modbusdevice  + "-" + unique + "."
+													+ timeStamp + ".log.gz");
+											File logGzFile = new File(path.toString());
+											
+											if(logGzFile.delete()) {}		
+										} catch(Exception e) {
+											e.printStackTrace();
+										}
 										
 										// Save to datalogger
 										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
@@ -8369,6 +3765,34 @@ public class UploadFilesController extends BaseController {
 		}
 	}
 	
+	private <T extends ModelBaseEntity> void scalingDeviceParameters(List<DeviceEntity> scaledDeviceParameters, T entity) {
+		try {
+			if (scaledDeviceParameters.size() > 0) {
+				for (int j = 0; j < scaledDeviceParameters.size(); j++) {
+					DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
+					if(scaledDeviceParameter.is_user_defined()) continue;
+					String slug = scaledDeviceParameter.getParameter_slug();
+					String scaleExpressions = scaledDeviceParameter.getParameter_scale();
+					String variableName = scaledDeviceParameter.getVariable_name();
+					PropertyDescriptor pd = new PropertyDescriptor(slug, entity.getClass());
+					Double initialValue = (Double) pd.getReadMethod().invoke(entity);
+					if (initialValue == 0.001) continue;
+					Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
+					pd.getWriteMethod().invoke(entity, scaledValue);
+					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
+					if (scaledDeviceParameter.is_energy()) {
+						int scaleFactor = 1;
+						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
+						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
+					}
+					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
+					if (scaledDeviceParameter.is_temperature()) entity.setNvm_temperature(scaledValue);
+					if (scaledDeviceParameter.is_panel_temperature()) entity.setNvm_panel_temperature(scaledValue);
+				}
+			}
+		} catch (Exception e) {
+		}
+	}
 	
 	@PostMapping("/test")
 	@ResponseBody
