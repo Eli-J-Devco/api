@@ -375,28 +375,37 @@
 			
 			<choose>
 			
-				<when test="(domain == 'nextwavemonitoring.com' or domain == 'staging.nextwavemonitoring.com') and is_supper_admin == 1">
-					AND s.site_domain_type IN(1,2,3)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,3)
-				</when>
-				
-				<when test="(domain == 'localhost')">
-					AND s.site_domain_type IN(1,2,3)
+			<!-- 1: all, 
+			2: test server, 
+			3: staging server, 
+			4: Test and staging server, 
+			5: only solar domain, 
+			6: only building domain, 
+			7: solar and building -->
+			
+			
+				<when test="(domain == 'nextwavemonitoring.com')">
+					AND s.site_domain_type IN(1,5,7)
 				</when>
 				
 				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(2,3)
+					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain != 'nextwavemonitoring.com') and (domain != 'staging.nextwavemonitoring.com') and is_supper_admin != 1">
-					AND s.site_domain_type IN(2,3)
+				<when test="(domain == 'staging.nextwavemonitoring.com')">
+					AND s.site_domain_type IN(1,3,4)
+				</when>
+				
+				<when test="(domain == 'test.nextwavemonitoring.com')">
+					AND s.site_domain_type IN(1,2,4)
+				</when>
+				
+				<when test="(domain == 'demo.nextwavemonitoring.com')">
+					AND s.site_domain_type IN(1,4,7)
 				</when>
 				
 				<otherwise>
-					AND s.site_domain_type IN(1,3)
+					AND s.site_domain_type IN(1,2,3)
 				</otherwise>
 			</choose>
 				
