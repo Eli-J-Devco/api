@@ -375,7 +375,7 @@
 			
 			<choose>
 			
-				<when test="(domain == 'localhost' or domain == 'nextwavemonitoring.com' or domain == 'staging.nextwavemonitoring.com') and is_supper_admin == 1">
+				<when test="(domain == 'nextwavemonitoring.com' or domain == 'staging.nextwavemonitoring.com') and is_supper_admin == 1">
 					AND s.site_domain_type IN(1,2,3)
 				</when>
 				
@@ -383,11 +383,15 @@
 					AND s.site_domain_type IN(1,2,3)
 				</when>
 				
+				<when test="(domain == 'localhost')">
+					AND s.site_domain_type IN(1,2,3)
+				</when>
+				
 				<when test="domain == 'buildings.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(2,3)
 				</when>
 				
-				<when test="(domain != 'nextwavemonitoring.com') and (domain != 'buildings.nextwavemonitoring.com') and is_supper_admin != 1">
+				<when test="(domain != 'nextwavemonitoring.com') and (domain != 'staging.nextwavemonitoring.com') and is_supper_admin != 1">
 					AND s.site_domain_type IN(2,3)
 				</when>
 				
@@ -645,11 +649,18 @@
 	<select id="getManageSiteTotalRecord"  resultType="int" parameterType="com.nwm.api.entities.SiteEntity">
     	SELECT count(*) as totalRecord
 		FROM site s  
-		LEFT JOIN site_employee_map scm ON scm.id_site = s.id
-		WHERE s.is_delete = 0 AND s.status = 1 AND scm.id_employee = #{id_employee}
-		<if test="keyword != null">
-			AND s.name LIKE CONCAT("%",#{keyword}, "%")
+		<if test="is_supper_admin != 1">
+			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
 		</if>
+		WHERE
+			s.is_delete = 0
+			AND s.status = 1
+			<if test="is_supper_admin != 1">
+				AND scm.id_employee = #{id_employee}
+			</if>
+			<if test="keyword != null">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
   	</select>
   	
   	

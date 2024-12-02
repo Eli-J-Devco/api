@@ -149,6 +149,12 @@ public class DeviceEntity {
 	private int mfa_control = 0;
 	private int show_on_domain = 1;
 	private String domain;
+	private boolean is_user_defined;
+	private boolean is_active_power;
+	private boolean is_energy;
+	private boolean is_irradiance;
+	private boolean is_temperature;
+	private boolean is_panel_temperature;
 	
 	
 	
@@ -975,6 +981,42 @@ public class DeviceEntity {
 	}
 	public void setLocale(String locale) {
 		this.locale = locale;
+	}
+	public boolean is_user_defined() {
+		return is_user_defined;
+	}
+	public void setIs_user_defined(boolean is_user_defined) {
+		this.is_user_defined = is_user_defined;
+	}
+	public boolean is_active_power() {
+		return is_active_power;
+	}
+	public void setIs_active_power(boolean is_active_power) {
+		this.is_active_power = is_active_power;
+	}
+	public boolean is_energy() {
+		return is_energy;
+	}
+	public void setIs_energy(boolean is_energy) {
+		this.is_energy = is_energy;
+	}
+	public boolean is_irradiance() {
+		return is_irradiance;
+	}
+	public void setIs_irradiance(boolean is_irradiance) {
+		this.is_irradiance = is_irradiance;
+	}
+	public boolean is_temperature() {
+		return is_temperature;
+	}
+	public void setIs_temperature(boolean is_temperature) {
+		this.is_temperature = is_temperature;
+	}
+	public boolean is_panel_temperature() {
+		return is_panel_temperature;
+	}
+	public void setIs_panel_temperature(boolean is_panel_temperature) {
+		this.is_panel_temperature = is_panel_temperature;
 	}
 	
 }

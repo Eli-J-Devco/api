@@ -51,6 +51,11 @@ public class DeviceParameterEntity{
 	private int rounding_decimals;
 	private int is_user_defined;
 	private Integer id_generic_parameter;
+	private boolean is_active_power;
+	private boolean is_energy;
+	private boolean is_irradiance;
+	private boolean is_temperature;
+	private boolean is_panel_temperature;
 	
 	
 	
@@ -306,6 +311,36 @@ public class DeviceParameterEntity{
 	}
 	public void setId_generic_parameter(Integer id_generic_parameter) {
 		this.id_generic_parameter = id_generic_parameter;
+	}
+	public boolean is_active_power() {
+		return is_active_power;
+	}
+	public void setIs_active_power(boolean is_active_power) {
+		this.is_active_power = is_active_power;
+	}
+	public boolean is_energy() {
+		return is_energy;
+	}
+	public void setIs_energy(boolean is_energy) {
+		this.is_energy = is_energy;
+	}
+	public boolean is_irradiance() {
+		return is_irradiance;
+	}
+	public void setIs_irradiance(boolean is_irradiance) {
+		this.is_irradiance = is_irradiance;
+	}
+	public boolean is_temperature() {
+		return is_temperature;
+	}
+	public void setIs_temperature(boolean is_temperature) {
+		this.is_temperature = is_temperature;
+	}
+	public boolean is_panel_temperature() {
+		return is_panel_temperature;
+	}
+	public void setIs_panel_temperature(boolean is_panel_temperature) {
+		this.is_panel_temperature = is_panel_temperature;
 	}
 	
 

@@ -263,6 +263,11 @@
 			dp.is_delete,
 			IF(dp.is_common = 1, 1, 0) AS is_common,
 			IF(dp.is_user_defined = 1, 1, 0) AS is_user_defined,
+			IF(dp.is_active_power = 1, 1, 0) AS is_active_power,
+			IF(dp.is_energy = 1, 1, 0) AS is_energy,
+			IF(dp.is_irradiance = 1, 1, 0) AS is_irradiance,
+			IF(dp.is_temperature = 1, 1, 0) AS is_temperature,
+			IF(dp.is_panel_temperature = 1, 1, 0) AS is_panel_temperature,
 			ct.id AS id_categorize_data,
 			dp.rounding_decimals,
 			dp.value_chart_tool,
@@ -281,48 +286,20 @@
 			AND dp.is_delete = 0
 	    ORDER BY
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                dp.id ${order_by}
-	            </when>     
-	                
-	            <when test="sort_column == 'name'">
-	                dp.name ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'standard_name'">
-	                dp.standard_name ${order_by}
-	            </when>
-	            
 	            <when test="sort_column == 'categorize_data_name'">
 	                ct.name ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'is_common'">
-	                dp.is_common ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'is_user_defined'">
-	                dp.is_user_defined ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'rounding_decimals'">
-	                dp.rounding_decimals ${order_by}
-	            </when>
-	            
-	            <when test="sort_column == 'value_chart_tool'">
-	                dp.value_chart_tool ${order_by}
 	            </when>
 	            
 	            <when test="sort_column == 'generic_parameter_name'">
 	                gp.name ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'unit'">
-	                dp.unit ${order_by}
-	            </when>
-	            
+	            <when test="sort_column != null and sort_column != ''">
+	            	dp.${sort_column} ${order_by}
+				</when>
+				
 	            <otherwise>
-			      dp.id DESC
+				 	dp.id DESC
 			    </otherwise>                                                  
 	        </choose>  
 		LIMIT ${limit} OFFSET ${offset};
@@ -330,18 +307,19 @@
 	
 	<select id="getListAllParameterByDeviceGroupAndCategorizeData" resultType="Map">
 		SELECT
-			id,
-			id AS value,
-			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS name,
-			IF(standard_name IS NULL OR standard_name = '', name, standard_name) AS label
+			dp.id,
+			dp.id AS value,
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS name,
+			IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name) AS label
 		FROM
-			device_parameters
+			device_parameters dp
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
-			id_device_group = #{id_device_group}
-			AND id_categorize_data = #{id_categorize_data}
-			AND `status` = 1
-			AND is_delete = 0
-			AND is_user_defined = 0
+			dp.id_device_group = #{id_device_group}
+			AND dp.id_categorize_data = #{id_categorize_data}
+			AND dp.`status` = 1
+			AND dp.is_delete = 0
+			AND dp.is_user_defined = 0
 	</select>
 	
 	<select id="getTotalRecordParameterByDeviceGroup" resultType="int" parameterType="com.nwm.api.entities.DeviceParameterEntity">
@@ -374,6 +352,11 @@
 		SET
 			`is_common` = #{is_common},
 			`is_user_defined` = #{is_user_defined},
+			`is_active_power` = #{is_active_power},
+			`is_energy` = #{is_energy},
+			`is_irradiance` = #{is_irradiance},
+			`is_temperature` = #{is_temperature},
+			`is_panel_temperature` = #{is_panel_temperature},
 			`standard_name` = #{standard_name},
 			`rounding_decimals` = #{rounding_decimals},
 			`id_categorize_data` = #{id_categorize_data},
