@@ -212,7 +212,7 @@
 			t.group_roles,
 			t.role_ids,
 			t.color,
-			IFNULL(st.manage_site_total, 0) AS manage_site_total,
+			m.manage_site_total,
 			m.ids_site,
 			s.last_login,
 			s.offset_timezone,
@@ -228,11 +228,20 @@
 			`employee` e	
 			
 			LEFT JOIN (
-						SELECT id_employee, GROUP_CONCAT(sem.`id_site`) AS ids_site, GROUP_CONCAT(s.`name`) AS site_name
-						FROM site_employee_map sem
-						LEFT JOIN site s ON s.id = sem.id_site
-						GROUP BY sem.id_employee
-					)m ON m.id_employee = e.id
+						SELECT
+							id_employee,
+							GROUP_CONCAT(sem.`id_site`) AS ids_site,
+							GROUP_CONCAT(s.`name`) AS site_name,
+							COUNT(sem.id_employee) AS manage_site_total
+						FROM
+							site_employee_map sem
+							LEFT JOIN site s ON s.id = sem.id_site
+						WHERE
+							s.status = 1
+							AND s.is_delete = 0
+						GROUP BY
+							sem.id_employee
+			)m ON m.id_employee = e.id
 					
 					
 			LEFT JOIN (
@@ -254,10 +263,6 @@
 						GROUP BY er.id_employee
 					)t ON t.id_employee = e.id
 					
-			LEFT JOIN (
-				SELECT COUNT(se.id_employee) AS manage_site_total, se.id_employee FROM site_employee_map se GROUP BY se.id_employee
-			)st ON st.id_employee = e.id
-
 			LEFT JOIN (
 				SELECT *
 				FROM account_status
@@ -321,7 +326,7 @@
 	                s.last_login ${order_by}
 	            </when>
 	            <when test="sort_column == 'manage_site'">
-	                st.manage_site_total ${order_by}
+	                m.manage_site_total ${order_by}
 	            </when>
 	            <when test="sort_column == 'locked'">
 	                e.status ${order_by}
