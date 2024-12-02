@@ -660,6 +660,24 @@
   	</select>
   	
   	
+  	
+  	<select id="getEmailCC"  resultType="string" parameterType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			GROUP_CONCAT(e.email) AS mail_cc
+		FROM
+			employee e 
+		WHERE e.is_delete = 0 AND e.`status` = 1
+		
+		<if test="dataEmployee != null">
+			<foreach collection="dataEmployee" item="value" open="AND `id` IN (" separator="," close=")">
+					#{value}
+			</foreach>
+		</if>
+			
+  	</select>
+  	
+  	
+  	
   	<insert id="insertSiteEmployeeMap" useGeneratedKeys="true" keyProperty="id_site">
 		INSERT INTO `site_employee_map`(
 			id_employee,

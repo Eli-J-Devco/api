@@ -4,6 +4,8 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,6 +184,25 @@ public class SiteController extends BaseController {
 	}
 	
 	
+	public static String getSHAHash(String input) {
+	    try {
+	      MessageDigest md = MessageDigest.getInstance("SHA-1");
+	      byte[] messageDigest = md.digest(input.getBytes());
+	      return convertByteToHex(messageDigest);
+	    } catch (NoSuchAlgorithmException e) {
+	      throw new RuntimeException(e);
+	    }
+  }
+	
+public static String convertByteToHex(byte[] data) {
+	    StringBuffer sb = new StringBuffer();
+	    for (int i = 0; i < data.length; i++) {
+	      sb.append(Integer.toString((data[i] & 0xff) + 0x100, 16).substring(1));
+	    }
+	    return sb.toString();
+  }
+
+
 	/**
 	 * @description save customer
 	 * @author long.pham
@@ -225,9 +246,12 @@ public class SiteController extends BaseController {
 				if(data != null) {
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 							Constants.mailFromContact);
+					
+					String hashedText = getSHAHash(String.valueOf(data.getId()));
 
 					String msgTemplate = Constants.getMailTempleteByState(23);
-					String body = String.format(msgTemplate, obj.getName());
+					String domain = "https://" + obj.getDomain() + "/management/sites/"+ hashedText +"/dashboard";
+					String body = String.format(msgTemplate, domain, obj.getName());
 					String mailTo = obj.getMail_to();
 					String subject = obj.getName() + " has been added to your account.";
 
@@ -332,8 +356,28 @@ public class SiteController extends BaseController {
 	public Object delete(@Valid @RequestBody SiteEntity obj) {
 		SiteService service = new SiteService();
 		try {
+			String mailCC = service.getEmailCC(obj);
+			
+			System.out.println(mailCC);
 			boolean result = service.deleteEmployee(obj);
 			if (result) {
+				if(obj.getMail_to() != null && mailCC != null) {
+					// send mail
+					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
+							Constants.mailFromContact);
+					String msgTemplate = Constants.getMailTempleteByState(24);
+					String body = String.format(msgTemplate, obj.getName());
+					String mailTo = obj.getMail_to();
+					String subject = obj.getName() + " has been deleted from your account.";
+
+					String tags = "notify_add_site";
+					String fromName = "NEXT WAVE ENERGY MONITORING INC";
+					String mailToBCC = "";
+					String mailToCC = mailCC;
+					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
+					
+				}
+				
 				if (obj.getIs_delete() == 0) {
 					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
 				}

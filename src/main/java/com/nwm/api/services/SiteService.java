@@ -169,6 +169,20 @@ public class SiteService extends DB {
 	}
 	
 	
+	/**
+	 * @description get Email CC
+	 * @author long.pham
+	 * @since 2021-01-06
+	 */
+	public String getEmailCC(SiteEntity obj) {
+		try {
+			return (String) queryForObject("Site.getEmailCC", obj);
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
+	
 	
 	/**
 	 * @description insert site employee map

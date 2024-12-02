@@ -136,6 +136,10 @@ public class Constants {
 	public static final String mailAddSiteBody = "mailAddSiteBody";
 	
 	
+	public static final String mailDeleteSite = "mailDeleteSite";
+	public static final String mailDeleteSiteBody = "mailDeleteSiteBody";
+	
+	
 	
 	public static final String mailInscriptionToCustomerBody = "mailInscriptionToCustomerBody";
 	public static final String mailInscriptionToAvisBody = "mailInscriptionToAvisBody";
@@ -561,6 +565,10 @@ public class Constants {
 		case 23:
 			// Add a new site
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSiteBody);
+			
+		case 24:
+			// Add a new site
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSiteBody);
 		default:
 			return null;
 		}
@@ -628,8 +636,12 @@ public class Constants {
 			// Support 
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSupportTicket);
 		case 23:
-			// Support 
+			// add site 
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailAddSite);
+			
+		case 24:
+			// delete site 
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSite);
 		default:
 			return null;
 		}
