@@ -340,7 +340,8 @@ public class DeviceService extends DB {
 		try {
 			int noProduction = (int) queryForObject("BatchJob.checkNoProductionAlertlExist", obj);
 			if (noProduction > 0) return;
-			Integer lowProduction = (Integer) queryForObject("Device.getLowProductionErrorId", obj);
+			obj.setError_code("1002");
+			Integer lowProduction = (Integer) queryForObject("Device.getErrorId", obj);
 			if (lowProduction == null) return;
 			List<HashMap<String, Object>> latest4HoursComparisonRatioDataList = new ArrayList<HashMap<String, Object>>(); 
 			List poaDevicesList = devicesList.stream().filter(item -> item.getId_device_type() == 4).collect(Collectors.toList());
@@ -372,8 +373,7 @@ public class DeviceService extends DB {
 			
 			if (hours >= 4 && isComparisonRatioLessThanOrEqual70) {
 				boolean checkAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
-				boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
-				if (!checkAlertExist && errorExits) {
+				if (!checkAlertExist) {
 					insert("BatchJob.insertAlert", alertDeviceItem);
 				}
 			} else {

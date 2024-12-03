@@ -38,7 +38,6 @@ import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
 import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
 import com.nwm.api.entities.ModelAeRefusolEntity;
 import com.nwm.api.entities.ModelAesTxInverterEntity;
-import com.nwm.api.entities.ModelBaseEntity;
 import com.nwm.api.entities.ModelCampellScientificMeter1Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter2Entity;
 import com.nwm.api.entities.ModelCampellScientificMeter3Entity;
@@ -194,12 +193,10 @@ import com.nwm.api.services.ModelXGI1500Service;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.services.ModelXantrexGT500EService;
 import com.nwm.api.services.ModelXantrexInverterService;
+import com.nwm.api.services.UploadFilesService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
-import net.objecthunter.exp4j.ExpressionBuilder;
-
-import java.beans.PropertyDescriptor;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -291,25 +288,21 @@ public class UploadFilesController extends BaseController {
 					String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
 					fileNames.add(file.getOriginalFilename());
 
-					Path root = Paths.get(
-							Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
+					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 					String unique = UUID.randomUUID().toString();
 					byte[] bytes;
 					try {
 						bytes = file.getBytes();
+						fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 						switch (ext) {
 							case "gz":
-	
-								Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-										Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice + "-" + unique + "." + timeStamp
-										+ ".log.gz");
+								Path path = root.resolve(fileName.concat(".gz"));
 								Files.write(path, bytes);
 	
 								InputStream fis = file.getInputStream();
 								GZIPInputStream gis = new GZIPInputStream(fis);
 	
-								fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 								FileOutputStream fos = new FileOutputStream(root.resolve(fileName).toString());
 								byte[] buffer = new byte[1024 * 1024];
 								int len = 0;
@@ -322,11 +315,8 @@ public class UploadFilesController extends BaseController {
 								break;
 							case "log":
 								// code block
-								Path pathLogUplad = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName,
-										Constants.uploadRootPathConfigKey) + "/" + "bm-" + modbusdevice  + "-" + unique + "." + timeStamp
-										+ ".log");
+								Path pathLogUplad = root.resolve(fileName);
 								Files.write(pathLogUplad, bytes);
-								fileName = "bm-" + modbusdevice  + "-" + unique + "." + timeStamp + ".log";
 								break;
 						}
 
@@ -341,6 +331,7 @@ public class UploadFilesController extends BaseController {
 							StringBuffer sb = new StringBuffer(); // constructs a string buffer with no characters
 							String line;
 
+							UploadFilesService uploadFilesService = new UploadFilesService();
 							DeviceService serviceD = new DeviceService();
 							DeviceEntity deviceE = new DeviceEntity();
 							deviceE.setSerial_number(serialnumber);
@@ -375,7 +366,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// OutputGeneration
 													if(dataEntity.getOutputGeneration() != 0.001 && dataEntity.getOutputGeneration() >= 0){
@@ -396,6 +387,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelPVPowered.insertModelPVPowered3550260KWInverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -417,7 +410,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// watts_3ph_total
 													if(dataEntity.getWatts_3ph_total() != 0.001 && dataEntity.getWatts_3ph_total() >= 0){
@@ -437,6 +430,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelShark100.insertModelShark100(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -459,7 +454,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// watts_3ph_total
 													if(dataEntity.getWatts_3ph_total() != 0.001 && dataEntity.getWatts_3ph_total() >= 0){
@@ -479,6 +474,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelShark100v1.insertModelShark100v1(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -500,7 +497,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// sensor1_data
 													
@@ -543,7 +540,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Sensor1_data
 													
@@ -586,7 +583,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ac_power
 													
@@ -607,6 +604,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelIVTSolaronEXT.insertModelIVTSolaronEXT(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -627,7 +626,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// IrradianceTcs
 													
@@ -668,7 +667,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// irradiance
 													
@@ -710,7 +709,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ModuleTemperature
 													if(dataEntity.getModuleTemperature() != 0.001 && dataEntity.getModuleTemperature() >= 0){
@@ -751,7 +750,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ac_power
 													
@@ -772,6 +771,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelAdvancedEnergySolaron.insertModelAdvancedEnergySolaron(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -793,7 +794,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Irradiance
 													
@@ -836,7 +837,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Irradiance
 													
@@ -878,7 +879,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// line_kw
 													
@@ -899,6 +900,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelPVPInverter.insertModelPVPInverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -920,7 +923,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// AC_ActivePower
 													
@@ -942,6 +945,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelChintSolectria.insertModelChintSolectriaInverterClass9725(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -963,7 +968,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// TotalNetInstantaneousRealPower
 													
@@ -984,6 +989,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelVeris.insertModelVerisIndustriesE51c2PowerMeter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1006,7 +1013,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													//Output_kw
 													
@@ -1027,6 +1034,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSatcon.insertModelSatconPvs357Inverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1049,7 +1058,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// TotalRealPower
 													
@@ -1070,6 +1079,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelElkor.insertModelElkorWattsonPVMeter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1092,7 +1103,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// SunPOATempComp
 													
@@ -1134,7 +1145,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ActivePowerTotal
 													
@@ -1156,6 +1167,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelElkorP.insertModelElkorProductionMeter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1176,7 +1189,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// ActivePowerTotal
 													
@@ -1198,6 +1211,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelElkorPv1.insertModelElkorProductionMeterv1(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1220,7 +1235,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// GridPower
 													
@@ -1241,6 +1256,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													 
 													serviceModelABB.insertModelAbbTrioClass6210(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1263,7 +1280,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// AirTemperatureActual
 													
@@ -1305,7 +1322,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TEMPRATURE
 														
@@ -1347,7 +1364,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// AirTemperatureActual
 													
@@ -1388,7 +1405,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ACPowerOutput
 													
@@ -1409,6 +1426,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSolectriaSGI226IVT.insertModelSolectriaSGI226IVT(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1430,7 +1449,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// ACPowerOutput
 													
@@ -1451,6 +1470,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSolectriaINV00SLC3146.insertModelSolectriaINV00SLC3146(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1523,7 +1544,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// I_AC_Power
 													
@@ -1544,6 +1565,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSET.insertModelSolarEdgeInverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1564,7 +1587,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// I_AC_Power
 													
@@ -1585,6 +1608,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSETV1.insertModelSolarEdgeInverterV1(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1606,7 +1631,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// ReadPower
 													
@@ -1627,6 +1652,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelXantrex.insertModelXantrexGT100250500(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1648,7 +1675,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// POACMP11
 													
@@ -1691,7 +1718,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Meter1_ACPower
 													
@@ -1711,6 +1738,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelCSM1.insertModelCampellScientificMeter1(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1732,7 +1761,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// Meter2_ACPower
 													
@@ -1752,6 +1781,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelCSM2.insertModelCampellScientificMeter2(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1772,7 +1803,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Meter3_ACPower
 													
@@ -1792,6 +1823,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelCSM3.insertModelCampellScientificMeter3(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1813,7 +1846,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// Meter4_ACPower
 													
@@ -1833,6 +1866,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelCSM4.insertModelCampellScientificMeter4(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1854,7 +1889,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// OutputKW
 														
@@ -1875,6 +1910,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSatcon225.insertModelSatconPowergate225Inverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1897,7 +1934,7 @@ public class UploadFilesController extends BaseController {
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
 													
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 													// ACPower
 													
@@ -1918,6 +1955,8 @@ public class UploadFilesController extends BaseController {
 													serviceD.updateLastUpdated(deviceUpdateE);
 													
 													serviceModelSunnyClass9775.insertModelSunnyCentralClass9775Inverter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 												}
 											}
 											
@@ -1938,7 +1977,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalInstantaneousRealPower
 														
@@ -1959,6 +1998,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelVeris50c2a.insertModelVerisIndustriesE50c2a(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -1979,7 +2020,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// AC Power
 														
@@ -2000,6 +2041,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelAE1000NX.insertModelAE1000NXClass9644(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2021,7 +2064,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// pt33
 														
@@ -2039,6 +2082,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelAesTx.insertModelAesTxInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2061,7 +2106,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// kWTot
 														
@@ -2079,6 +2124,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelIon.insertModelMeterIon8600(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2099,7 +2146,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// kWTot
 														
@@ -2117,6 +2164,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelIonV1.insertModelMeterIon8600V1(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2137,7 +2186,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// kWTot
 														
@@ -2155,6 +2204,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelIonV2.insertModelMeterIon8600V2(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2175,7 +2226,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// kWTot
 														
@@ -2193,6 +2244,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelIonV3.insertModelMeterIon8600V3(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2213,7 +2266,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// kWTot
 														
@@ -2231,6 +2284,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelIonV4.insertModelMeterIon8600V4(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2251,7 +2306,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// kWTot
 														
@@ -2269,6 +2324,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelPM7650.insertModelPowerMeasurementIon7650(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2290,7 +2347,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// ReadPower
 														
@@ -2311,6 +2368,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelXINV.insertModelXantrexInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2332,7 +2391,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// T_AMB
 														
@@ -2375,7 +2434,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// ReadPower
 														
@@ -2414,7 +2473,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// solar_irradiation
 														
@@ -2457,7 +2516,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// solar_irradiation
 														
@@ -2478,6 +2537,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelgt500.insertModelXantrexGT500EService(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2628,7 +2689,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalActivePower
 														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
@@ -2646,6 +2707,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelElsterA1700.insertModelElsterA1700(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2668,7 +2731,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// TotalActivePower
 														if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
@@ -2686,6 +2749,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelAeR.insertModelAeRefusol(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2707,7 +2772,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalActivePower
 														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
@@ -2725,6 +2790,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSG1000.insertModelSungrowLogger1000(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2746,7 +2813,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// PowerFactor_DTS_Overall
 														if(dataEntity.getPowerFactor_DTS_Overall() != 0.001 && dataEntity.getPowerFactor_DTS_Overall() >= 0){
@@ -2764,6 +2831,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelDTSMeter.insertModelDTSMeasurelogicDemandMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2786,7 +2855,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// PowerFactor_DTS_Overall
 														if(dataEntity.getTotalPower() != 0.001 && dataEntity.getTotalPower() >= 0){
@@ -2804,6 +2873,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelJan.insertModelJanitzaUmg604pro(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2825,7 +2896,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// PowerFactor_DTS_Overall
 														if(dataEntity.getPowerSum() != 0.001 && dataEntity.getPowerSum() >= 0){
@@ -2843,6 +2914,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModel70D.insertModelLeviton70D48000(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2864,7 +2937,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// TotalRealPower
 														if(dataEntity.getTotalRealPower() != 0.001 && dataEntity.getTotalRealPower() >= 0){
@@ -2881,6 +2954,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelAcuRevMeter.insertModelAcuRevProductionMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -2902,7 +2977,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														if(dataEntity.getStateofHealth() != 0.001 && dataEntity.getStateofHealth() >= 0){
 															deviceUpdateE.setLast_updated(dataEntity.getTime());
@@ -2939,7 +3014,7 @@ public class UploadFilesController extends BaseController {
 						                            dataEntity.setView_tablename(item.getView_tablename());
 						                            dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-													this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 						                            // lPower
 						                            if(dataEntity.getPower() != 0.001 && dataEntity.getPower() >= 0){
@@ -2956,6 +3031,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelSma30Tlus10.insertModelSmaInverterStp1215202430Tlus10(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -2978,7 +3055,7 @@ public class UploadFilesController extends BaseController {
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // ACActivePower
 						                            if(dataEntity.getACActivePower() != 0.001 && dataEntity.getACActivePower() >= 0){
@@ -2995,6 +3072,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelSma1250Tlus.insertModelAbbUnoDm1250tpPlus(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -3017,7 +3096,7 @@ public class UploadFilesController extends BaseController {
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 						                            // TotalActivePower
 						                            if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
@@ -3034,6 +3113,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelKlea.insertModelKlea220p(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -3055,7 +3136,7 @@ public class UploadFilesController extends BaseController {
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                            
-						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 						                            // kWtotal
 						                            if(dataEntity.getkWtotal() != 0.001 && dataEntity.getkWtotal() >= 0){
@@ -3072,6 +3153,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelMeterIon6200.insertModelMeterIon6200(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -3094,7 +3177,7 @@ public class UploadFilesController extends BaseController {
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                        	  
-						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // kWtotal
 						                            if(dataEntity.getTotalInstantaneousRealPower() != 0.001 && dataEntity.getTotalInstantaneousRealPower() >= 0){
@@ -3111,6 +3194,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelMeterS40000.insertModelLevitonS40000rPowerMeter(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -3134,7 +3219,7 @@ public class UploadFilesController extends BaseController {
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
 						                        	  dataEntity.setId_site(item.getId_site());
 						                        	  
-						                        	this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
 						                            // kWtotal
 //						                            if(data.getTotalInstantaneousRealPower() != 0.001 && data.getTotalInstantaneousRealPower() >= 0){
@@ -3151,6 +3236,8 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelA891123.insertModelLevitonAbviusA891123Channel(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
 						                        }
 						                        
@@ -3172,7 +3259,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// SystempowerPsum
 														if(dataEntity.getSystempowerPsum() != 0.001 && dataEntity.getSystempowerPsum() >= 0){
@@ -3189,6 +3276,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelAcuvimIIR.insertModelAcuvimIIR(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3211,7 +3300,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// SystempowerPsum
 														if(dataEntity.getCumulativeEnergyDelivered() != 0.001 && dataEntity.getCumulativeEnergyDelivered() >= 0){
@@ -3228,6 +3317,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelKyPulse.insertModelKyPulseMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3250,7 +3341,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// ACPower
 														if(dataEntity.getACPower() != 0.001 && dataEntity.getACPower() >= 0){
@@ -3267,6 +3358,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSunSpec.insertModelSunSpecInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3289,7 +3382,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// ACPower
 														if(dataEntity.getPowerSum() != 0.001 && dataEntity.getPowerSum() >= 0){
@@ -3306,6 +3399,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelDent.insertModelDent48PSHDMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3327,7 +3422,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// ACPower
 														if(dataEntity.getActivePowerTotal() != 0.001 && dataEntity.getActivePowerTotal() >= 0){
@@ -3344,6 +3439,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelPM8000.insertModelPowerLogicPM8000LoadMeter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3365,7 +3462,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
 														// active power
 														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
@@ -3382,6 +3479,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelShark250.insertModelShark250(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3404,7 +3503,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// active power
 														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
@@ -3421,6 +3520,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelXGI1500.insertModelXGI1500(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3444,7 +3545,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// active power
 														if(dataEntity.getThreePhaseRealPower() != 0.001 && dataEntity.getThreePhaseRealPower() >= 0){
@@ -3461,6 +3562,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSEL651R.insertModelSEL651R(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3609,7 +3712,7 @@ public class UploadFilesController extends BaseController {
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
 														
-														this.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
 														// 
 														if(dataEntity.getTotalActivePower() != 0.001 && dataEntity.getTotalActivePower() >= 0){
@@ -3629,6 +3732,8 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSol.insertModelSolArkInverter(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
 												}
 												
@@ -3649,19 +3754,7 @@ public class UploadFilesController extends BaseController {
 											serviceD.checkLowProduction(item, dataDevice);
 										}
 										
-										try { 
-											File logFile = new File(root.resolve(fileName).toString());
-											if(logFile.delete()) {}
-											
-											Path path = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey)
-													+ "/" + "bm-" + modbusdevice  + "-" + unique + "."
-													+ timeStamp + ".log.gz");
-											File logGzFile = new File(path.toString());
-											
-											if(logGzFile.delete()) {}		
-										} catch(Exception e) {
-											e.printStackTrace();
-										}
+										uploadFilesService.deletingFile(root, fileName);
 										
 										// Save to datalogger
 										ModelDataloggerEntity dataloggerEntity = new ModelDataloggerEntity();
@@ -3765,34 +3858,6 @@ public class UploadFilesController extends BaseController {
 		}
 	}
 	
-	private <T extends ModelBaseEntity> void scalingDeviceParameters(List<DeviceEntity> scaledDeviceParameters, T entity) {
-		try {
-			if (scaledDeviceParameters.size() > 0) {
-				for (int j = 0; j < scaledDeviceParameters.size(); j++) {
-					DeviceEntity scaledDeviceParameter = scaledDeviceParameters.get(j);
-					if(scaledDeviceParameter.is_user_defined()) continue;
-					String slug = scaledDeviceParameter.getParameter_slug();
-					String scaleExpressions = scaledDeviceParameter.getParameter_scale();
-					String variableName = scaledDeviceParameter.getVariable_name();
-					PropertyDescriptor pd = new PropertyDescriptor(slug, entity.getClass());
-					Double initialValue = (Double) pd.getReadMethod().invoke(entity);
-					if (initialValue == 0.001) continue;
-					Double scaledValue = new ExpressionBuilder(scaleExpressions).variable(variableName).build().setVariable(variableName, initialValue).evaluate();
-					pd.getWriteMethod().invoke(entity, scaledValue);
-					if (scaledDeviceParameter.is_active_power()) entity.setNvmActivePower(scaledValue);
-					if (scaledDeviceParameter.is_energy()) {
-						int scaleFactor = 1;
-						if (entity.getClass().toString().equals(ModelSolarEdgeInverterEntity.class.toString()) || entity.getClass().toString().equals(ModelSolarEdgeInverterV1Entity.class.toString())) scaleFactor = 1000;
-						entity.setNvmActiveEnergy(scaledValue/scaleFactor);
-					}
-					if (scaledDeviceParameter.is_irradiance()) entity.setNvm_irradiance(scaledValue);
-					if (scaledDeviceParameter.is_temperature()) entity.setNvm_temperature(scaledValue);
-					if (scaledDeviceParameter.is_panel_temperature()) entity.setNvm_panel_temperature(scaledValue);
-				}
-			}
-		} catch (Exception e) {
-		}
-	}
 	
 	@PostMapping("/test")
 	@ResponseBody
