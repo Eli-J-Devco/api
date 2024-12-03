@@ -360,7 +360,7 @@ public static String convertByteToHex(byte[] data) {
 			
 			boolean result = service.deleteEmployee(obj);
 			if (result) {
-				if(obj.getMail_to() != null && mailCC != null) {
+				if(obj.getMail_to() != null) {
 					// send mail
 					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
 							Constants.mailFromContact);
