@@ -683,17 +683,11 @@
   	
   	<select id="getEmailCC"  resultType="string" parameterType="com.nwm.api.entities.SiteEntity">
 		SELECT
-			GROUP_CONCAT(e.email) AS mail_cc
+			GROUP_CONCAT(IF(e.email != #{mail_to}, e.email, NULL) SEPARATOR ', ') AS mail_cc
 		FROM
 			employee e 
-		WHERE e.is_delete = 0 AND e.`status` = 1
-		
-		<if test="dataEmployee != null">
-			<foreach collection="dataEmployee" item="value" open="AND `id` IN (" separator="," close=")">
-					#{value}
-			</foreach>
-		</if>
-			
+			LEFT JOIN site_employee_map sm ON e.id = sm.id_employee
+		WHERE e.is_delete = 0 AND e.`status` = 1  AND sm.id_site = #{id_site}
   	</select>
   	
   	

@@ -358,7 +358,6 @@ public static String convertByteToHex(byte[] data) {
 		try {
 			String mailCC = service.getEmailCC(obj);
 			
-			System.out.println(mailCC);
 			boolean result = service.deleteEmployee(obj);
 			if (result) {
 				if(obj.getMail_to() != null && mailCC != null) {
@@ -373,7 +372,7 @@ public static String convertByteToHex(byte[] data) {
 					String tags = "notify_add_site";
 					String fromName = "NEXT WAVE ENERGY MONITORING INC";
 					String mailToBCC = "";
-					String mailToCC = mailCC;
+					String mailToCC = !mailCC.equals(obj.getMail_to()) ? mailCC : null;
 					SendMail.SendGmailTLS(mailFromContact, fromName, mailTo, mailToCC, mailToBCC, subject, body, tags);
 					
 				}
