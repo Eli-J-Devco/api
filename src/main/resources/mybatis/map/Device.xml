@@ -791,7 +791,7 @@
 	<select id="getListScaledParameterByDeviceGroup" resultType="Map">
 		SELECT 
 			dp.id,
-			CONCAT(dp.`name`, IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
+			CONCAT(IF(gp.name IS NULL OR gp.name = '', IF(dp.standard_name IS NULL OR dp.standard_name = '', dp.name, dp.standard_name), gp.name), IF(dps.scale IS NULL, "", CONCAT(" (Scale: ", dps.scale, ")"))) AS text,
 			dp.`name` AS parameter_name,
 			dps.scale,
 			replace(dps.scale, ' ', '') AS scaleWithoutSpace
@@ -800,6 +800,7 @@
 			device_parameter_scale dps
 			LEFT JOIN device_parameters dp ON dp.id = dps.id_device_parameter
 			LEFT JOIN device d ON d.id = dps.id_device
+			LEFT JOIN generic_parameters gp ON gp.id = dp.id_generic_parameter
 		WHERE
 			d.id_device_group = #{id_device_group}
 			AND d.status = 1
