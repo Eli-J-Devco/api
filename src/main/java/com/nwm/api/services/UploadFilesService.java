@@ -88,13 +88,13 @@ public class UploadFilesService extends DB {
 			if (entity.getMeasuredProduction() < 0 || entity.getMeasuredProduction() > 500) {
 				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertItem) > 0;
 				if (isAlertExist) return;
-				alertItem.setStart_date(item.getLast_updated());
+				alertItem.setStart_date(entity.getTime());
 				insert("BatchJob.insertAlert", alertItem);
 			} else {
 				// Close alert
 				AlertEntity alertObj = (AlertEntity) queryForObject("BatchJob.getAlertDetail", alertItem);
 				if (alertObj == null || alertObj.getId() == 0) return; 
-				alertItem.setEnd_date(item.getLast_updated());
+				alertItem.setEnd_date(entity.getTime());
 				alertItem.setId(alertObj.getId());
 				update("BatchJob.updateCloseAlert", alertItem);
 			}
