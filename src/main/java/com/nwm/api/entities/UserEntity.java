@@ -59,10 +59,18 @@ public class UserEntity implements UserDetails, Authentication{
 	private double time_account_locked;
 	private int is_send_email_unblock;
 	private int id_company;
+	private String domain;
 	
 	
 	
 	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getId_company() {
 		return id_company;
 	}

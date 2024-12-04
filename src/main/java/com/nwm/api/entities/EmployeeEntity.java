@@ -45,8 +45,19 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	private String logo;
 	private int id_company;
 	private String note;
+	private String domain;
 	
 	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
 	public String getNote() {
 		return note;
 	}

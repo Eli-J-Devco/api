@@ -63,9 +63,16 @@ public class EmployeeManageEntity{
 	private int id_company;
 	private String note;
 	private String table;
+	private String domain;
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getSite_per_page() {
 		return site_per_page;
 	}
