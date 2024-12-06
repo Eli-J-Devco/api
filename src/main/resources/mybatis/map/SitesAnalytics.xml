@@ -299,6 +299,35 @@
 								</choose>
 							</when>
 							
+							<when test="param.slug == 'SolarInsolation'">
+								AVG( dv.nvm_irradiance )
+									<choose>
+										<when test="data_send_time == 8">
+											/ 60
+										</when>
+										<when test="data_send_time == 1">
+											/ 12
+										</when>
+										<when test="data_send_time == 2">
+											/ 4
+										</when>
+										<when test="data_send_time == 3">
+											* 1
+										</when>
+										<when test="data_send_time == 4">
+											* 24
+										</when>
+										<when test="data_send_time == 5">
+											* 24 *
+											IF(
+												DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value )) >= 7,
+												7,
+												1 + DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value ))
+											)
+										</when>
+									</choose> AS ${param.slug}
+							</when>
+							
 							<when test="table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_power'">
 								AVG(dv.expected_power_ac) AS expected_power
 							</when>
