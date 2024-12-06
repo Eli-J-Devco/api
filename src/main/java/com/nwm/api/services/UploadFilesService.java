@@ -85,7 +85,7 @@ public class UploadFilesService extends DB {
 			if (errorId == null) return;
 			alertItem.setId_error(errorId);
 			
-			if (entity.getMeasuredProduction() < 0 || entity.getMeasuredProduction() > 500) {
+			if (entity.getMeasuredProduction() < -10 || entity.getMeasuredProduction() > 500) {
 				boolean isAlertExist = (int) queryForObject("BatchJob.checkAlertlExist", alertItem) > 0;
 				if (isAlertExist) return;
 				alertItem.setStart_date(entity.getTime());
