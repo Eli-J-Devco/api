@@ -102,6 +102,9 @@
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN alert a ON a.id_device = d.id 
 			LEFT JOIN error e ON e.id = a.id_error
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id
+			</if>
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
@@ -111,14 +114,11 @@
 			AND e.`is_delete` = 0
 			AND d.`status` = 1
 			AND d.is_delete = 0
-			<if test="id_sites != null">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
 			AND s.enable_alert = 1
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
 			
 			<choose> 
 	       		<when test="domain == 'test.nextwavemonitoring.com'">
