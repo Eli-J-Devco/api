@@ -40,8 +40,8 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.DeviceService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.SitesDevicesService;
@@ -54,7 +54,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/sites-devices")
 public class SitesDevicesController extends BaseController {
 	
-	private static final int BUFFER_SIZE = 4096;
 	/**
 	 * @description Get detail site 
 	 * @author long.pham
@@ -86,13 +85,13 @@ public class SitesDevicesController extends BaseController {
 	@PostMapping("/get-list-device-by-id-site")
 	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
 		try {
+			(new EmployeeService()).getTableSort(obj);
 			SitesDevicesService service = new SitesDevicesService();
 			List data = service.getListDeviceByIdSite(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size(), preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -105,6 +104,7 @@ public class SitesDevicesController extends BaseController {
 	@PostMapping("/get-list-yield-by-device")
 	public Object getListYieldByDevice(@RequestBody SitesDevicesEntity obj) {
 		try {
+			(new EmployeeService()).getTableSort(obj);
 			SitesDevicesService service = new SitesDevicesService();
 			List data = service.getListYieldByDevice(obj);
 			
@@ -977,7 +977,7 @@ public class SitesDevicesController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	

@@ -4,60 +4,21 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
 
 import javax.validation.Valid;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jcraft.jsch.ChannelExec;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.Session;
 import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.AvatarEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmailTrackingEntity;
-import com.nwm.api.entities.ModelCellModemEntity;
-import com.nwm.api.entities.ModelDataloggerEntity;
-import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
-import com.nwm.api.services.AlertService;
-import com.nwm.api.services.AvatarService;
-import com.nwm.api.services.DeviceService;
-import com.nwm.api.services.ModelCellModemService;
-import com.nwm.api.services.ModelDataloggerService;
-import com.nwm.api.services.SiteService;
 import com.nwm.api.services.EmailTrackingService;
 import com.nwm.api.utils.Constants;
-import com.nwm.api.utils.Lib;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -164,10 +125,10 @@ public class EmailTrackingController extends BaseController {
 			EmailTrackingService service = new EmailTrackingService();
 			List data = service.getListAlertsEmailTracking(obj);
 			int totalRecord = service.getListAlertsEmailTrackingCount(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, null);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
     }
 	

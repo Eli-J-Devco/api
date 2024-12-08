@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
-public class SitesDevicesEntity {
+public class SitesDevicesEntity extends SortEntity {
 	private int id;
 	private int id_customer;
 	private int id_country;
@@ -37,7 +37,6 @@ public class SitesDevicesEntity {
 	private int limit;
 	private int offset;
 	private int totalRecord;
-	private String order_by;
 	private String sort_by;
 	private String address_short;
 	private String offset_timezone;
@@ -75,8 +74,6 @@ public class SitesDevicesEntity {
 	private String cf_email_subscribers;
 	private List deviceDisableAlerts;
 	private String keyword;
-	private int id_employee;
-	private String sort_column;
 	private int kiosk_view;	
 	private String read_data_all;
 	private String view_tablename;
@@ -542,18 +539,6 @@ public class SitesDevicesEntity {
 	public void setHash_site_id(String hash_site_id) {
 		this.hash_site_id = hash_site_id;
 	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
-	}
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
-	}
 	public String getKeyword() {
 		return keyword;
 	}
@@ -733,12 +718,6 @@ public class SitesDevicesEntity {
 	}
 	public void setTotalRecord(int totalRecord) {
 		this.totalRecord = totalRecord;
-	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
 	}
 	public String getSort_by() {
 		return sort_by;

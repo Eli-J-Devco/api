@@ -5,22 +5,17 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.SecretCards;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.TOTP;
 
@@ -67,42 +62,14 @@ public class SitesDevicesService extends DB {
 	
 
 	public List getListDeviceByIdSite(SitesDevicesEntity obj) {
-		List dataList, dataListNew = new ArrayList();
-		SecretCards secretCard = new SecretCards();
 		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("SiteDevices");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
+			List dataList = queryForList("SitesDevices.getListDeviceByIdSite", obj);
+			if (dataList == null) return new ArrayList();
 			
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-				if (tablePreference != null) {
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					update("TablePreference.updatePreference", tablePreference);
-				} else {
-					tablePreference = new TablePreferenceEntity();
-					tablePreference.setId_employee(obj.getId_employee());
-					tablePreference.setTable("SiteDevices");
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					insert("TablePreference.insertPreference", tablePreference);
-				}
-			} else {
-				if (tablePreference != null) {
-					obj.setOrder_by(tablePreference.getOrder_by());
-					obj.setSort_column(tablePreference.getSort_column());
-				}
-			}
-			
-			dataList = queryForList("SitesDevices.getListDeviceByIdSite", obj);
 			return dataList;
-				
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		
 	}
 	
 	/**
@@ -184,30 +151,6 @@ public class SitesDevicesService extends DB {
 		}
 		return dataListNew;
 	}
-	
-	/**
-	 * @description get user preference for table sorting column
-	 * @author Hung.Bui
-	 * @since 2023-02-27
-	 * @param id_customer, id_site
-	 */
-	public TablePreferenceEntity getPreference(SitesDevicesEntity obj) {
-		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("SiteDevices");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-			
-			if (tablePreference == null) {
-				return new TablePreferenceEntity();
-			}
-			return tablePreference;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-	
 	
 	/**
 	 * @description get list summary device by id_site

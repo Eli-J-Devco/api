@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.PortfolioEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
 import com.nwm.api.utils.Constants;
 
@@ -36,17 +36,14 @@ public class PortfolioController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
+			(new EmployeeService()).getTableSort(obj);
 			PortfolioService service = new PortfolioService();
-			TablePreferenceEntity preference = service.getPreference(obj);
 			List data = service.getList(obj);
 			
-			
-			int totalRecord = data.size();
-			
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	

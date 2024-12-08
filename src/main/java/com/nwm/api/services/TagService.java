@@ -7,13 +7,8 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.entities.TagEntity;
 
 public class TagService extends DB {

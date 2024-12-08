@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.DashboardEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.DashboardService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 
 import springfox.documentation.annotations.ApiIgnore;
@@ -35,17 +35,13 @@ public class DashboardController extends BaseController {
 	@PostMapping("/list")
     public Object getList(@RequestBody AlertEntity obj){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(200);
-			}
-			
+			(new EmployeeService()).getTableSort(obj);
 			DashboardService service = new DashboardService();
 			List data = service.getList(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
     }
 	
@@ -61,17 +57,13 @@ public class DashboardController extends BaseController {
 	@PostMapping("/list-actual-vs-expected")
     public Object getListActualvsExpected(@RequestBody DashboardEntity obj){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
-			
+			(new EmployeeService()).getTableSort(obj);
 			DashboardService service = new DashboardService();
 			List data = service.getListActualvsExpected(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
     }
 	

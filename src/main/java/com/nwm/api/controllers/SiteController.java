@@ -17,15 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
-import com.nwm.api.entities.TagEntity;
 import com.nwm.api.services.AWSService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SiteService;
-import com.nwm.api.services.TagService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
-import com.nwm.api.utils.Translator;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.servlet.http.HttpServletRequest;
@@ -287,15 +284,15 @@ public static String convertByteToHex(byte[] data) {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
+			
+			(new EmployeeService()).getTableSort(obj);
 			SiteService service = new SiteService();
-			TablePreferenceEntity preference = service.getPreference(obj);
-
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -322,7 +319,7 @@ public static String convertByteToHex(byte[] data) {
 			}
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	

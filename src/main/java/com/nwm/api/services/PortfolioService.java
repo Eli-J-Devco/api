@@ -20,7 +20,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.PortfolioEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -159,49 +158,6 @@ public class PortfolioService extends DB {
 		}
 		return dataObj;
 
-	}
-	
-	/**
-	 * @description get user preference for table sorting column
-	 * @author Hung.Bui
-	 * @since 2023-02-27
-	 * @param id_customer, id_site
-	 */
-	public TablePreferenceEntity getPreference(PortfolioEntity obj) {
-		try {
-			// get user preference for table sorting column
-			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-			tablePreference.setId_employee(obj.getId_employee());
-			tablePreference.setTable("Portfolio");
-			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-						
-			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-				if (tablePreference != null) {
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					update("TablePreference.updatePreference", tablePreference);
-				} else {
-					tablePreference = new TablePreferenceEntity();
-					tablePreference.setId_employee(obj.getId_employee());
-					tablePreference.setTable("Portfolio");
-					tablePreference.setOrder_by(obj.getOrder_by());
-					tablePreference.setSort_column(obj.getSort_column());
-					insert("TablePreference.insertPreference", tablePreference);
-				}
-			} else {
-				if (tablePreference != null) {
-					obj.setOrder_by(tablePreference.getOrder_by());
-					obj.setSort_column(tablePreference.getSort_column());
-				}
-			}
-			
-			if (tablePreference == null) {
-				return new TablePreferenceEntity();
-			}
-			return tablePreference;
-		} catch (Exception ex) {
-			return null;
-		}
 	}
 	
 	/**

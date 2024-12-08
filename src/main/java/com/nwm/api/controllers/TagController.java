@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.entities.TagEntity;
-import com.nwm.api.services.SiteService;
 import com.nwm.api.services.TagService;
 import com.nwm.api.utils.Constants;
 
@@ -69,7 +66,7 @@ public class TagController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -88,7 +85,7 @@ public class TagController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -108,7 +105,7 @@ public class TagController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	

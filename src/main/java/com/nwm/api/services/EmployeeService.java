@@ -8,15 +8,19 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.CustomerEntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.EmployeeManageEntity;
 import com.nwm.api.entities.EmployeeRoleMapEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
+import com.nwm.api.entities.SortEntity;
 import com.nwm.api.entities.UserEntity;
 
 public class EmployeeService extends DB {
@@ -318,7 +322,7 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
-	 * @description update table columns in Portfolio
+	 * @description update table columns
 	 * @author duy.phan
 	 * @since 2022-12-22
 	 * @param id
@@ -333,22 +337,43 @@ public class EmployeeService extends DB {
 	}
 	
 	/**
-	 * @description get table columns in Portfolio
+	 * @description get table columns
 	 * @author duy.phan
 	 * @since 2023-04-18
 	 * @param id
 	 */
 	public EmployeeManageEntity getTableColumn(EmployeeManageEntity obj) {
-		EmployeeManageEntity employee = new EmployeeManageEntity();
 		try {
-			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", obj);
-			if (employee == null)
-				return new EmployeeManageEntity();
+			EmployeeManageEntity employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", obj);
+			if (employee == null) return new EmployeeManageEntity();
+			return employee;
 		} catch (Exception ex) {
 			log.error("Employee.getTableColumnEmployeeById", ex);
 			return new EmployeeManageEntity();
 		}
-		return employee;
+	}
+	
+	/**
+	 * @description get table sort
+	 * @author Hung.Bui
+	 * @since 2024-12-06
+	 * @param id
+	 */
+	public <K extends SortEntity> void getTableSort(K obj) {
+		try {
+			if ((obj.getOrder_by() != null) && (obj.getOrder_by() != "") && (obj.getSort_column() != null) && (obj.getSort_column() != "")) return;
+			EmployeeManageEntity employee = new EmployeeManageEntity();
+			employee.setId(obj.getId_employee());
+			employee.setTable(obj.getTable_id());
+			employee = (EmployeeManageEntity) queryForObject("Employee.getTableColumnEmployeeById", employee);
+			if (employee == null || employee.getTable_sort() == null) return;
+			ObjectMapper mapper = new ObjectMapper();
+			SortEntity sorting = mapper.readValue(employee.getTable_sort().toString(), new TypeReference<SortEntity>(){});
+			obj.setOrder_by(sorting.getOrder_by());
+			obj.setSort_column(sorting.getSort_column());
+		} catch (Exception ex) {
+			log.error("Employee.getTableSort", ex);
+		}
 	}
 	
 	/**

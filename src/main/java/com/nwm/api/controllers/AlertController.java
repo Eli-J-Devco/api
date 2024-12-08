@@ -5,7 +5,6 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -22,13 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
-import com.nwm.api.entities.ConfigurationEntity;
-import com.nwm.api.entities.EmployeeFilterFavoritesEntity;
 import com.nwm.api.entities.SiteEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.services.AlertService;
-import com.nwm.api.services.ConfigurationService;
-import com.nwm.api.services.SitesAnalyticsService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -56,14 +51,14 @@ public class AlertController extends BaseController {
 				obj.setLimit(1000);
 			}
 			
+			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getList(obj);
 			int totalRecord = service.getListTotalCount(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
     }
 	
@@ -85,6 +80,7 @@ public class AlertController extends BaseController {
 				obj.setLimit(1000);
 			}
 			
+			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getListAlertGroupBySite(obj);
 			int totalRecord = service.getTotalGroupAlertSite(obj);

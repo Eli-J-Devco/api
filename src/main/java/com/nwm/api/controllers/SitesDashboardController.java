@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.SitesDashboardService;
 import com.nwm.api.utils.Constants;
 
@@ -55,13 +54,13 @@ public class SitesDashboardController extends BaseController {
 	@PostMapping("/get-list-device-by-id-site")
 	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
 		try {
+			(new EmployeeService()).getTableSort(obj);
 			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDeviceByIdSite(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size(), preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	

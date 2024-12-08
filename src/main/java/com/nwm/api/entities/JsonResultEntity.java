@@ -19,7 +19,6 @@ public class JsonResultEntity {
 	public void setIs_supper_admin(int is_supper_admin) {
 		this.is_supper_admin = is_supper_admin;
 	}
-	private TablePreferenceEntity preference;
 	public boolean isStatus() {
 		return status;
 	}
@@ -43,11 +42,5 @@ public class JsonResultEntity {
 	}
 	public void setTotal_row(int totalRow) {
 		this.total_row = totalRow;
-	}
-	public TablePreferenceEntity getPreference() {
-		return preference;
-	}
-	public void setPreference(TablePreferenceEntity preference) {
-		this.preference = preference;
 	}
 }

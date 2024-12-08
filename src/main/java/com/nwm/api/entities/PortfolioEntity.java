@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
-public class PortfolioEntity {
+public class PortfolioEntity extends SortEntity {
 	private int id;
 	private int id_customer;
 	private int id_country;
@@ -32,8 +32,6 @@ public class PortfolioEntity {
 	private int limit;
 	private int offset;
 	private int totalRecord;
-	private String order_by;
-	private String sort_column;
 	private double irradiance_now;
 	private String offset_timezone;
 	private String current_time;
@@ -61,7 +59,6 @@ public class PortfolioEntity {
 	private double totalPower;
 	private int column;
 	private String value_filter;
-	private int id_employee;
 	private List inverters;
 	private List meters;
 	private String note;
@@ -113,12 +110,6 @@ public class PortfolioEntity {
 	}
 	public void setMeters(List meters) {
 		this.meters = meters;
-	}
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
 	}
 	public int getId() {
 		return id;
@@ -263,18 +254,6 @@ public class PortfolioEntity {
 	}
 	public void setTotalRecord(int totalRecord) {
 		this.totalRecord = totalRecord;
-	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
 	}
 	public double getIrradiance_now() {
 		return irradiance_now;

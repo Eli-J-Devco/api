@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ScadaAlertEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
-import com.nwm.api.services.AlertService;
+import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.ScadaAlertService;
 import com.nwm.api.utils.Constants;
 
@@ -94,7 +92,7 @@ public class ScadaAlertController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0, null);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -113,11 +111,11 @@ public class ScadaAlertController extends BaseController {
 				obj.setLimit(Constants.MAXRECORD);
 			}
 			
+			(new EmployeeService()).getTableSort(obj);
 			ScadaAlertService service = new ScadaAlertService();
 			List data = service.getListAlertBySiteId(obj);
 			int totalRecord = service.getListBySiteIdTotalCount(obj);
-			TablePreferenceEntity preference = service.getPreference(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord, preference);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

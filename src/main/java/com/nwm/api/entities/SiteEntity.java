@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
-public class SiteEntity {
+public class SiteEntity extends SortEntity {
 	private int id;
 	private int id_company;
 	private int id_country;
@@ -35,7 +35,6 @@ public class SiteEntity {
 	private int limit;
 	private int offset;
 	private int totalRecord;
-	private String order_by;
 	private String sort_by;
 	private String address_short;
 	private String address;
@@ -102,10 +101,8 @@ public class SiteEntity {
 	private String offset_from;
 	private String typeView;
 	private String keyword;
-	private String sort_column;
 	private int screen_mode;
 	private int is_manage;
-	private int id_employee;
 	private List id_sites;
 	private String hash_id;
 	private String view_minute;
@@ -1288,12 +1285,6 @@ public class SiteEntity {
 	public void setTotalRecord(int totalRecord) {
 		this.totalRecord = totalRecord;
 	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
 	public String getSort_by() {
 		return sort_by;
 	}
@@ -1654,12 +1645,6 @@ public class SiteEntity {
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
 	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
-	}
 	public int getScreen_mode() {
 		return screen_mode;
 	}
@@ -1671,12 +1656,6 @@ public class SiteEntity {
 	}
 	public void setIs_manage(int is_manage) {
 		this.is_manage = is_manage;
-	}
-	public int getId_employee() {
-		return id_employee;
-	}
-	public void setId_employee(int id_employee) {
-		this.id_employee = id_employee;
 	}
 	public List getId_sites() {
 		return id_sites;

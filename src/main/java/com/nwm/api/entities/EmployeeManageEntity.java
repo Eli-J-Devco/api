@@ -7,7 +7,7 @@ package com.nwm.api.entities;
 
 import java.util.List;
 
-public class EmployeeManageEntity{
+public class EmployeeManageEntity extends SortEntity {
 	
 	private int id;
 	private String password;
@@ -27,8 +27,6 @@ public class EmployeeManageEntity{
 	private int totalRecord;
 	private String file_upload;
 	private int screen_mode;
-	private String order_by;
-	private String sort_column;
 	private String keyword;
 	private String group_roles;
 	private String skype;
@@ -47,6 +45,7 @@ public class EmployeeManageEntity{
 	private String table_column;
 	private String table_order;
 	private String table_width;
+	private String table_sort;
 	private String last_login;
 	private String offset_timezone;
 	private String page_login;
@@ -150,6 +149,12 @@ public class EmployeeManageEntity{
 	}
 	public void setTable_width(String table_width) {
 		this.table_width = table_width;
+	}
+	public String getTable_sort() {
+		return table_sort;
+	}
+	public void setTable_sort(String table_sort) {
+		this.table_sort = table_sort;
 	}
 	public String getText() {
 		return text;
@@ -276,18 +281,6 @@ public class EmployeeManageEntity{
 	}
 	public void setScreen_mode(int screen_mode) {
 		this.screen_mode = screen_mode;
-	}
-	public String getOrder_by() {
-		return order_by;
-	}
-	public void setOrder_by(String order_by) {
-		this.order_by = order_by;
-	}
-	public String getSort_column() {
-		return sort_column;
-	}
-	public void setSort_column(String sort_column) {
-		this.sort_column = sort_column;
 	}
 	public String getKeyword() {
 		return keyword;

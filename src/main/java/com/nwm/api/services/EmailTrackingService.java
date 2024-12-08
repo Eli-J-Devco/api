@@ -24,7 +24,6 @@ import com.nwm.api.entities.EmailTrackingEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
-import com.nwm.api.entities.TablePreferenceEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
@@ -208,53 +207,6 @@ public class EmailTrackingService extends DB {
 	
 	
 //	/**
-//	 * @description get list device by id_site
-//	 * @author long.pham
-//	 * @since 2021-03-12
-//	 * @param id_site
-//	 */
-//	
-//
-//	public List getListDeviceByIdSite(SitesDevicesEntity obj) {
-//		List dataList, dataListNew = new ArrayList();
-//		SecretCards secretCard = new SecretCards();
-//		try {
-//			// get user preference for table sorting column
-//			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-//			tablePreference.setId_employee(obj.getId_employee());
-//			tablePreference.setTable("SiteDevices");
-//			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-//			
-//			if ((obj.getOrder_by() != null) && (obj.getSort_column() != null)) {
-//				if (tablePreference != null) {
-//					tablePreference.setOrder_by(obj.getOrder_by());
-//					tablePreference.setSort_column(obj.getSort_column());
-//					update("TablePreference.updatePreference", tablePreference);
-//				} else {
-//					tablePreference = new TablePreferenceEntity();
-//					tablePreference.setId_employee(obj.getId_employee());
-//					tablePreference.setTable("SiteDevices");
-//					tablePreference.setOrder_by(obj.getOrder_by());
-//					tablePreference.setSort_column(obj.getSort_column());
-//					insert("TablePreference.insertPreference", tablePreference);
-//				}
-//			} else {
-//				if (tablePreference != null) {
-//					obj.setOrder_by(tablePreference.getOrder_by());
-//					obj.setSort_column(tablePreference.getSort_column());
-//				}
-//			}
-//			
-//			dataList = queryForList("SitesDevices.getListDeviceByIdSite", obj);
-//			return dataList;
-//				
-//		} catch (Exception ex) {
-//			return new ArrayList();
-//		}
-//		
-//	}
-//	
-//	/**
 //	 * @description Get device yield list
 //	 * @author Hung.Bui
 //	 * @since 2024-07-24
@@ -333,30 +285,6 @@ public class EmailTrackingService extends DB {
 //		}
 //		return dataListNew;
 //	}
-//	
-//	/**
-//	 * @description get user preference for table sorting column
-//	 * @author Hung.Bui
-//	 * @since 2023-02-27
-//	 * @param id_customer, id_site
-//	 */
-//	public TablePreferenceEntity getPreference(SitesDevicesEntity obj) {
-//		try {
-//			// get user preference for table sorting column
-//			TablePreferenceEntity tablePreference = new TablePreferenceEntity();
-//			tablePreference.setId_employee(obj.getId_employee());
-//			tablePreference.setTable("SiteDevices");
-//			tablePreference = (TablePreferenceEntity) queryForObject("TablePreference.getPreference", tablePreference);
-//			
-//			if (tablePreference == null) {
-//				return new TablePreferenceEntity();
-//			}
-//			return tablePreference;
-//		} catch (Exception ex) {
-//			return null;
-//		}
-//	}
-//	
 //	
 //	/**
 //	 * @description get list summary device by id_site
