@@ -86,6 +86,7 @@ public class AlertEntity extends SortEntity {
 	private String tabs;
 	private int is_queue;
 	private String domain;
+	private boolean isUserNW;
 	
 	
 	
@@ -550,6 +551,12 @@ public class AlertEntity extends SortEntity {
 	}
 	public void setFaultCodeLevel(int faultCodeLevel) {
 		this.faultCodeLevel = faultCodeLevel;
+	}
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
 	}
 	
 	

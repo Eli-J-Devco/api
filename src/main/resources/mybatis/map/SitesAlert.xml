@@ -351,7 +351,11 @@
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0 AND s.id = #{id_site}
+		WHERE
+			e.`status` = 1
+			AND s.enable_alert = 1
+			AND e.is_delete = 0
+			AND s.id = #{id_site}
 			AND l.is_delete = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
@@ -408,7 +412,11 @@
 				)
 			</if>
 			
-			GROUP BY l.id 
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
+			
+		GROUP BY l.id 
 			
 			<choose>
 				<when test="sort_column == 'id'">
@@ -454,7 +462,7 @@
 			    </otherwise>
 			  </choose>
   
-			LIMIT #{limit} OFFSET #{offset};
+		LIMIT #{limit} OFFSET #{offset};
 	</select>
 	
 	
@@ -469,8 +477,14 @@
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE  e.`status` = 1 AND s.enable_alert = 1 AND e.is_delete = 0  AND s.id = #{id_site}
+		
+		WHERE 
+			e.`status` = 1
+			AND s.enable_alert = 1
+			AND e.is_delete = 0
+			AND s.id = #{id_site}
 			AND l.is_delete = 0
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="date_from != null and date_to != null">
 				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
@@ -524,6 +538,9 @@
 				)
 			</if>
 			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
   	</select>
   	
   	<update id="updateStatus">
@@ -720,6 +737,9 @@
 				      AND d.show_on_domain IN(1)
 				    </otherwise>                                                  
 		        </choose>
+		        <if test="!isUserNW.booleanValue()">
+					AND e.id_error_level != 14
+				</if>
 		) AS totalError
 		
 				

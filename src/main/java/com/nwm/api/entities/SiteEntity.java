@@ -310,6 +310,7 @@ public class SiteEntity extends SortEntity {
 	private String siteElectricityRateSchedulesJSON;
 	private String mail_to;
 	private String mail_cc;
+	private boolean isUserNW;
 	
 	
 	
@@ -2010,6 +2011,12 @@ public class SiteEntity extends SortEntity {
 	}
 	public void setHave_poa(boolean have_poa) {
 		this.have_poa = have_poa;
+	}
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
 	}
 	
 	

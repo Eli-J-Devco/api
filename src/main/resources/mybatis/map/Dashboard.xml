@@ -26,7 +26,7 @@
 		
 	</resultMap>
 	
-	<select id="getList" resultType="Map" parameterType="String" >
+	<select id="getList" resultType="Map" >
 		SELECT
 			l.id,
 			l.asset,
@@ -210,7 +210,9 @@
 				FROM site_employee_map
 				GROUP BY id_site
 			) h ON h.id_site = s.id
-			WHERE e.`status` = 1 AND e.is_delete = 0
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND l.status = 1
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
@@ -244,10 +246,13 @@
 			      AND d.show_on_domain IN(1)
 			    </otherwise>                                                  
 	        </choose>
+	        
+	        <if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
+		GROUP BY l.id 
 			
-			GROUP BY l.id 
-			
-			ORDER BY
+		ORDER BY
 			<choose>  
 	            <when test="sort_column == 'id'">
 	                l.id ${order_by}

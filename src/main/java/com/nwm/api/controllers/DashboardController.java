@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,7 @@ import com.nwm.api.entities.DashboardEntity;
 import com.nwm.api.services.DashboardService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -33,8 +35,9 @@ public class DashboardController extends BaseController {
 	 */
 
 	@PostMapping("/list")
-    public Object getList(@RequestBody AlertEntity obj){
+    public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			DashboardService service = new DashboardService();
 			List data = service.getList(obj);

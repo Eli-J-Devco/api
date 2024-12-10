@@ -164,6 +164,9 @@
 					      AND d.show_on_domain IN(1)
 					    </otherwise>                                                  
 			        </choose>
+			        <if test="!isUserNW.booleanValue()">
+						AND e.id_error_level != 14
+					</if>
 					
 			)g ON g.id_site = s.id
 			

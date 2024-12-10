@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,8 +48,9 @@ public class SiteController extends BaseController {
 	 */
 
 	@PostMapping("/get-summary-total-alert")
-	public Object getSummaryTotalAlert(@RequestBody SiteEntity obj) {
+	public Object getSummaryTotalAlert(@RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			SiteService service = new SiteService();
 			SiteEntity getDetailSite = service.getSummaryTotalAlert(obj);
 			if (getDetailSite != null) {

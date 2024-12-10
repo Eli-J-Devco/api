@@ -63,8 +63,9 @@ public class SitesDevicesController extends BaseController {
 	 */
 
 	@PostMapping("/detail")
-	public Object getDetailSite(@RequestBody SitesDevicesEntity obj) {
+	public Object getDetailSite(@RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {			
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			SitesDevicesService service = new SitesDevicesService();
 			SitesDevicesEntity getDetail = service.getDetail(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
@@ -83,8 +84,9 @@ public class SitesDevicesController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-list-device-by-id-site")
-	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj) {
+	public Object getListDeviceByIdSite(@RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			SitesDevicesService service = new SitesDevicesService();
 			List data = service.getListDeviceByIdSite(obj);
@@ -102,8 +104,9 @@ public class SitesDevicesController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-list-yield-by-device")
-	public Object getListYieldByDevice(@RequestBody SitesDevicesEntity obj) {
+	public Object getListYieldByDevice(@RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			SitesDevicesService service = new SitesDevicesService();
 			List data = service.getListYieldByDevice(obj);

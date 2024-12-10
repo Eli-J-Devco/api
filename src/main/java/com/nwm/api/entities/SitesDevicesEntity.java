@@ -156,6 +156,7 @@ public class SitesDevicesEntity extends SortEntity {
 	private String advance_tech_field_start;
 	private int advance_tech_control_enable = 0;
 	private String domain;
+	private boolean isUserNW;
 
 	
 	
@@ -1018,6 +1019,12 @@ public class SitesDevicesEntity extends SortEntity {
 	}
 	public void setJava_date_format(String java_date_format) {
 		this.java_date_format = java_date_format;
+	}
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
 	}
 	
 	

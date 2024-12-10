@@ -42,8 +42,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -2947,6 +2949,39 @@ Lib {
 			}
 		} catch(IOException e) {
 			throw new RuntimeException("Failed to unzip content", e);
+		}
+	}
+	
+	private static Map<String, Object> getClaimsFromToken(String authz) {
+		try {
+			String[] authzSplit = authz.split("\\s");
+			String token = authzSplit[1];
+			String[] tokenSplit = token.split("\\.");
+			String encodedClaims = tokenSplit[1];
+			byte[] decodedClaims = java.util.Base64.getDecoder().decode(encodedClaims);
+			String claimsString = new String(decodedClaims);
+			Map<String, Object> claims = new ObjectMapper().readValue(claimsString, HashMap.class);
+			return claims;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static boolean isUserNW(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("authorities")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.anyMatch(item -> item.contains("1") || item.contains("12") || item.contains("15"));
+		} catch (Exception e) {
+			return false;
 		}
 	}
 }

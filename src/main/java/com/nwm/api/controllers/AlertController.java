@@ -15,6 +15,7 @@ import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,12 +46,12 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/list")
-    public Object getList(@RequestBody AlertEntity obj){
+    public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getLimit() == 0) {
 				obj.setLimit(1000);
 			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getList(obj);
@@ -74,12 +75,12 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/list-group-by-site")
-    public Object getListAlertGroupBySite(@RequestBody AlertEntity obj){
+    public Object getListAlertGroupBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getLimit() == 0) {
 				obj.setLimit(1000);
 			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
 			List data = service.getListAlertGroupBySite(obj);
@@ -102,12 +103,12 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/get-all-alert-by-site")
-    public Object getAllAlertBySite(@RequestBody AlertEntity obj){
+    public Object getAllAlertBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			if(obj.getLimit() == 0) {
 				obj.setLimit(1000);
 			}
-			
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			AlertService service = new AlertService();
 			List data = service.getAllAlertBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
@@ -403,8 +404,9 @@ public class AlertController extends BaseController {
 	 */
 
 	@PostMapping("/alert-summary")
-	public Object getAlertSummary(@RequestBody AlertEntity obj) {
+	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			AlertService service = new AlertService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {

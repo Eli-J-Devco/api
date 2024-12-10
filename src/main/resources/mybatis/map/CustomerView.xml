@@ -1746,6 +1746,9 @@
 				AND s.is_delete = 0
 				AND scm.id_employee = #{id_customer}
 				AND scm.is_hiding = 0
+				<if test="!isUserNW.booleanValue()">
+					AND e.id_error_level != 14
+				</if>
 		) AS totalError
 		
 				
@@ -2243,6 +2246,9 @@
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
 			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
 			
 			GROUP BY l.id 
 			
@@ -2344,6 +2350,10 @@
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
+			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
   	</select>
   	
 	
@@ -2357,6 +2367,7 @@
 			LEFT JOIN site_employee_map scm ON s.id = scm.id_site
 			LEFT JOIN device d ON d.id_site = s.id
 			LEFT JOIN alert a ON a.id_device = d.id 
+			LEFT JOIN error e ON e.id = a.id_error
 		WHERE
 			
 			s.`status` = 1 
@@ -2373,6 +2384,9 @@
 					#{item.id}
 				</foreach>
 			)
+			</if>
+			<if test="!isUserNW.booleanValue()">
+				AND e.id_error_level != 14
 			</if>
 			
   	</select>

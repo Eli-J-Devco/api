@@ -551,9 +551,15 @@
 				GROUP BY id_site
 			) h ON h.id_site = s.id
 			
-			WHERE e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			AND l.is_delete = 0
 			AND s.enable_alert = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
 			<choose> 
 	       		<when test="domain == 'test.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,2,4)
@@ -576,7 +582,6 @@
 			    </otherwise>                                                  
 	        </choose>
 		        
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
 				AND l.resolved = 0
@@ -589,6 +594,7 @@
 			<if test="date_from != null and date_to != null and view_history == 'review'">
 				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
 			</if>
+			
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -633,13 +639,15 @@
 				)
 			</if>
 			
-			
-			
 			<if test="date_from != null and date_to != null and view_history == 'filter'">
 				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
 			</if>
 			
-			    GROUP BY l.id 
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
+			
+		GROUP BY l.id 
 			
 			<choose>
 				<when test="sort_column == 'id'">
@@ -692,7 +700,7 @@
 			    </otherwise>
 			  </choose>
   
-			LIMIT #{limit} OFFSET #{offset};
+		LIMIT #{limit} OFFSET #{offset};
 	</select>
 	
 	
@@ -708,9 +716,15 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			
-			WHERE  e.`status` = 1 AND e.is_delete = 0 AND d.`status` = 1 AND d.is_delete = 0
+		WHERE
+			e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
 			AND l.is_delete = 0 
 			AND s.enable_alert = 1
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
 			<if test="view_history == 'active'">
 				AND l.`status` = 1
 				AND l.resolved = 0
@@ -745,6 +759,7 @@
 			<if test="date_from != null and date_to != null and view_history == 'review'">
 				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
 			</if>
+			
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND s.id IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -793,12 +808,13 @@
 				)
 			</if>
 			
-			
-			
 			<if test="date_from != null and date_to != null and view_history == 'filter'">
 				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
 			</if>
 			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
   	</select>
   	
   	
@@ -1744,6 +1760,9 @@
 				      AND d.show_on_domain IN(1)
 				    </otherwise>                                                  
 		        </choose>
+		        <if test="!isUserNW.booleanValue()">
+					AND e.id_error_level != 14
+				</if>
 		) AS totalError
 		
 				
@@ -1802,7 +1821,7 @@
 			IFNULL(g.alertMeter, 0) AS alertMeter,
 			IFNULL(g.alertInverter, 0) AS alertInverter,
 			IFNULL(g.totalAlert, 0) AS totalAlert,
-			al.start_date
+			g.start_date
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
@@ -1816,45 +1835,6 @@
 				FROM site_employee_map
 				GROUP BY id_site
 			) h ON h.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT
-					s.id,
-					a.start_date
-				FROM
-					alert a
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					
-					WHERE a.`status` = 1
-					AND d.`status` = 1
-					AND s.`status` = 1
-					AND s.enable_alert = 1
-					<choose> 
-			       		<when test="domain == 'test.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,2,4)
-			            </when>
-			             
-			            <when test="domain == 'staging.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,3,4)
-			            </when>
-			            
-			            <when test="domain == 'nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,5,7)
-			            </when>
-			            
-			            <when test="domain == 'buildings.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,6,7)
-			            </when>
-			            
-			            <otherwise>
-					      AND d.show_on_domain IN(1)
-					    </otherwise>                                                  
-			        </choose>
-					GROUP BY d.id_site
-					ORDER BY a.start_date DESC
-			)al ON al.id = s.id
 			
 			LEFT JOIN (
 				SELECT 
@@ -1897,6 +1877,7 @@
 			LEFT JOIN (
 				SELECT
 					s.id,
+					MAX(a.start_date) AS start_date,
 					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
 					SUM(if(d.id_device_type = 1, 1, 0)) AS alertInverter,
 					COUNT(a.id) AS totalAlert
@@ -1980,6 +1961,10 @@
 						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
 					</if>
 					
+					<if test="!isUserNW.booleanValue()">
+						AND el.id != 14
+					</if>
+					
 				GROUP BY s.id
 			)g ON g.id = s.id
 		WHERE
@@ -2052,7 +2037,7 @@
 			    
 			    
 			    <otherwise>
-			      ORDER BY al.start_date DESC
+			      ORDER BY g.start_date DESC
 			    </otherwise>
 			  </choose>
   
@@ -2153,6 +2138,10 @@
 					
 					<if test="date_from != null and date_to != null">
 						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+					</if>
+					
+					<if test="!isUserNW.booleanValue()">
+						AND el.id != 14
 					</if>
 					
 				GROUP BY s.id
@@ -2425,7 +2414,8 @@
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE e.`status` = 1 
+		WHERE
+			e.`status` = 1 
 			AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND s.enable_alert = 1
@@ -2497,8 +2487,11 @@
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
 			
+			<if test="!isUserNW.booleanValue()">
+				AND el.id != 14
+			</if>
 			
-			GROUP BY l.id 
+		GROUP BY l.id 
 			
 			<choose>
 				<when test="sort_column == 'id'">
