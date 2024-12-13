@@ -655,39 +655,31 @@
 			    </when>
 			    
 			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
+			      ORDER BY s.`name` ${order_by}, l.id DESC
 			    </when>
 			    
 			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`name` ${order_by}
+			      ORDER BY el.`name` ${order_by}, l.id DESC
 			    </when>
 			    
 			    <when test="sort_column == 'message'">
-			      ORDER BY e.`message` ${order_by}
+			      ORDER BY e.`message` ${order_by}, l.id DESC
 			    </when>
 			    
-			    <when test="sort_column == 'times_ago'">
-			      ORDER BY l.start_date ${order_by}
+			    <when test="sort_column == 'times_ago' or sort_column == 'start_date' or sort_column == 'open_period'">
+			      ORDER BY l.start_date ${order_by}, l.id ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'devicename'">
-			      ORDER BY d.`devicename` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'start_date'">
-			      ORDER BY l.`start_date` ${order_by}
+			      ORDER BY d.`devicename` ${order_by}, l.id DESC
 			    </when>
 			    
 			    <when test="sort_column == 'end_date'">
-			      ORDER BY l.`end_date` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'open_period'">
-			      ORDER BY l.start_date ${order_by}
+			      ORDER BY l.`end_date` ${order_by}, l.id ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'device_type_name'">
-			      ORDER BY dt.name ${order_by}
+			      ORDER BY dt.name ${order_by}, l.id DESC
 			    </when>
 			    
 			    <when test="sort_column == 'key_indicator'">
@@ -696,7 +688,7 @@
 			    
 			    
 			    <otherwise>
-			      ORDER BY l.start_date DESC
+			      ORDER BY l.start_date DESC, l.id DESC
 			    </otherwise>
 			  </choose>
   
