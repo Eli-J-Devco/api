@@ -58,9 +58,6 @@ public class IconsController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody IconsEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			IconsService service = new IconsService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);

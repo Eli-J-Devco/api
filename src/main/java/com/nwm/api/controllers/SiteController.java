@@ -283,10 +283,6 @@ public static String convertByteToHex(byte[] data) {
 	@PostMapping("/list")
 	public Object getList(@RequestBody SiteEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
-			
 			(new EmployeeService()).getTableSort(obj);
 			SiteService service = new SiteService();
 			List data = service.getList(obj);

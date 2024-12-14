@@ -53,9 +53,6 @@ public class ErrorLevelController extends BaseController {
 	@PostMapping("/list-manage")
 	public Object getListManage(@RequestBody ErrorLevelEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			ErrorLevelService service = new ErrorLevelService();
 			List data = service.getListManage(obj);
 			int totalRecord = service.getTotalRecordManage(obj);

@@ -34,9 +34,6 @@ public class MonitorController extends BaseController {
 	@PostMapping("/list-ssh-cell-modem-status")
 	public Object getList(@RequestBody DeviceEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			DeviceService service = new DeviceService();
 			List data = service.getListSshDataloggerCellModem(obj);
 			int totalRecord = service.getTotalSshDataloggerCellModem(obj);

@@ -50,9 +50,6 @@ public class GroupController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody GroupEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			GroupService service = new GroupService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
