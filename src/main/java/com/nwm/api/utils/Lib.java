@@ -2979,7 +2979,8 @@ Lib {
 							.replace("]", "")
 							.split(",")
 					)
-					.anyMatch(item -> item.contains("1") || item.contains("12") || item.contains("15"));
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == 1 || item == 12 || item == 15);
 		} catch (Exception e) {
 			return false;
 		}
