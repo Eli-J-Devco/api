@@ -23,26 +23,23 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm`,
 			</if>
-			<if test="InputsStatus164 != 0.001">
-				`InputsStatus164`,
+			<if test="InputsStatus132 != 0.001">
+				`InputsStatus132`,
 			</if>
-			<if test="InputsManualFlag164 != 0.001">
-				`InputsManualFlag164`,
+			<if test="InputsManualFlag132 != 0.001">
+				`InputsManualFlag132`,
 			</if>
-			<if test="ZonesStatus164 != 0.001">
-				`ZonesStatus164`,
+			<if test="ZonesStatus132 != 0.001">
+				`ZonesStatus132`,
 			</if>
-			<if test="ZonesManualFlag164 != 0.001">
-				`ZonesManualFlag164`,
+			<if test="ZonesManualFlag132 != 0.001">
+				`ZonesManualFlag132`,
 			</if>
-			<if test="ZonesFeedbackState164 != 0.001">
-				`ZonesFeedbackState164`,
+			<if test="ZonesFeedbackState132 != 0.001">
+				`ZonesFeedbackState132`,
 			</if>
-			<if test="ZonesAlarmState164 != 0.001">
-				`ZonesAlarmState164`,
-			</if>
-			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
-				`ZoneswithNonRespondingBreaker164`,
+			<if test="ZonesAlarmState132 != 0.001">
+				`ZonesAlarmState132`,
 			</if>
 			<if test="BreakersPanel0L != 0.001">
 				`BreakersPanel0L`,
@@ -62,25 +59,49 @@
 			<if test="BreakersPanel2R != 0.001">
 				`BreakersPanel2R`,
 			</if>
-			<if test="BreakerUnresponsivePanel0L != 0.001">
-				`BreakerUnresponsivePanel0L`,
+			<if test="BreakerPresentPanel0L != 0.001">
+				`BreakerPresentPanel0L`,
 			</if>
-			<if test="BreakerUnresponsivePanel0R != 0.001">
-				`BreakerUnresponsivePanel0R`,
+			<if test="BreakerPresentPanel0R != 0.001">
+				`BreakerPresentPanel0R`,
 			</if>
-			<if test="BreakerUnresponsivePanel1L != 0.001">
-				`BreakerUnresponsivePanel1L`,
+			<if test="BreakerPresentPanel1L != 0.001">
+				`BreakerPresentPanel1L`,
 			</if>
-			<if test="BreakerUnresponsivePanel1R != 0.001">
-				`BreakerUnresponsivePanel1R`,
+			<if test="BreakerPresentPanel1R != 0.001">
+				`BreakerPresentPanel1R`,
 			</if>
-			<if test="BreakerUnresponsivePanel2L != 0.001">
-				`BreakerUnresponsivePanel2L`,
+			<if test="BreakerPresentPanel2L != 0.001">
+				`BreakerPresentPanel2L`,
 			</if>
-			<if test="BreakerUnresponsivePanel2R != 0.001">
-				`BreakerUnresponsivePanel2R`,
+			<if test="BreakerPresentPanel2R != 0.001">
+				`BreakerPresentPanel2R`,
+			</if>
+			<if test="NonRespondingBreakersPanel0L != 0.001">
+				`NonRespondingBreakersPanel0L`,
 			</if>
 			
+			<if test="NonRespondingBreakersPanel0R != 0.001">
+				`NonRespondingBreakersPanel0R`,
+			</if>
+			<if test="NonRespondingBreakersPanel1L != 0.001">
+				`NonRespondingBreakersPanel1L`,
+			</if>
+			<if test="NonRespondingBreakersPanel1R != 0.001">
+				`NonRespondingBreakersPanel1R`,
+			</if>
+			<if test="NonRespondingBreakersPanel2L != 0.001">
+				`NonRespondingBreakersPanel2L`,
+			</if>
+			<if test="NonRespondingBreakersPanel2R != 0.001">
+				`NonRespondingBreakersPanel2R`,
+			</if>
+			<if test="ScheduleStatus116 != 0.001">
+				`ScheduleStatus116`,
+			</if>
+			<if test="Schedule1PeriodStatus124 != 0.001">
+				`Schedule1PeriodStatus124`,
+			</if>
 			
 		</trim>
 
@@ -100,26 +121,23 @@
 			<if test="high_alarm != 0.001">
 				#{high_alarm},
 			</if>
-			<if test="InputsStatus164 != 0.001">
-				#{InputsStatus164},
+			<if test="InputsStatus132 != 0.001">
+				#{InputsStatus132},
 			</if>
-			<if test="InputsManualFlag164 != 0.001">
-				#{InputsManualFlag164},
+			<if test="InputsManualFlag132 != 0.001">
+				#{InputsManualFlag132},
 			</if>
-			<if test="ZonesStatus164 != 0.001">
-				#{ZonesStatus164},
+			<if test="ZonesStatus132 != 0.001">
+				#{ZonesStatus132},
 			</if>
-			<if test="ZonesManualFlag164 != 0.001">
-				#{ZonesManualFlag164},
+			<if test="ZonesManualFlag132 != 0.001">
+				#{ZonesManualFlag132},
 			</if>
-			<if test="ZonesFeedbackState164 != 0.001">
-				#{ZonesFeedbackState164},
+			<if test="ZonesFeedbackState132 != 0.001">
+				#{ZonesFeedbackState132},
 			</if>
-			<if test="ZonesAlarmState164 != 0.001">
-				#{ZonesAlarmState164},
-			</if>
-			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
-				#{ZoneswithNonRespondingBreaker164},
+			<if test="ZonesAlarmState132 != 0.001">
+				#{ZonesAlarmState132},
 			</if>
 			<if test="BreakersPanel0L != 0.001">
 				#{BreakersPanel0L},
@@ -139,24 +157,50 @@
 			<if test="BreakersPanel2R != 0.001">
 				#{BreakersPanel2R},
 			</if>
-			<if test="BreakerUnresponsivePanel0L != 0.001">
-				#{BreakerUnresponsivePanel0L},
+			<if test="BreakerPresentPanel0L != 0.001">
+				#{BreakerPresentPanel0L},
 			</if>
-			<if test="BreakerUnresponsivePanel0R != 0.001">
-				#{BreakerUnresponsivePanel0R},
+			<if test="BreakerPresentPanel0R != 0.001">
+				#{BreakerPresentPanel0R},
 			</if>
-			<if test="BreakerUnresponsivePanel1L != 0.001">
-				#{BreakerUnresponsivePanel1L},
+			<if test="BreakerPresentPanel1L != 0.001">
+				#{BreakerPresentPanel1L},
 			</if>
-			<if test="BreakerUnresponsivePanel1R != 0.001">
-				#{BreakerUnresponsivePanel1R},
+			<if test="BreakerPresentPanel1R != 0.001">
+				#{BreakerPresentPanel1R},
 			</if>
-			<if test="BreakerUnresponsivePanel2L != 0.001">
-				#{BreakerUnresponsivePanel2L},
+			<if test="BreakerPresentPanel2L != 0.001">
+				#{BreakerPresentPanel2L},
 			</if>
-			<if test="BreakerUnresponsivePanel2R != 0.001">
-				#{BreakerUnresponsivePanel2R},
+			<if test="BreakerPresentPanel2R != 0.001">
+				#{BreakerPresentPanel2R},
 			</if>
+			<if test="NonRespondingBreakersPanel0L != 0.001">
+				#{NonRespondingBreakersPanel0L},
+			</if>
+			
+			<if test="NonRespondingBreakersPanel0R != 0.001">
+				#{NonRespondingBreakersPanel0R},
+			</if>
+			<if test="NonRespondingBreakersPanel1L != 0.001">
+				#{NonRespondingBreakersPanel1L},
+			</if>
+			<if test="NonRespondingBreakersPanel1R != 0.001">
+				#{NonRespondingBreakersPanel1R},
+			</if>
+			<if test="NonRespondingBreakersPanel2L != 0.001">
+				#{NonRespondingBreakersPanel2L},
+			</if>
+			<if test="NonRespondingBreakersPanel2R != 0.001">
+				#{NonRespondingBreakersPanel2R},
+			</if>
+			<if test="ScheduleStatus116 != 0.001">
+				#{ScheduleStatus116},
+			</if>
+			<if test="Schedule1PeriodStatus124 != 0.001">
+				#{Schedule1PeriodStatus124},
+			</if>
+			
 		</trim>
 
 		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
@@ -173,26 +217,23 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm` = #{high_alarm},
 			</if>
-			<if test="InputsStatus164 != 0.001">
-				`InputsStatus164` = #{InputsStatus164},
+			<if test="InputsStatus132 != 0.001">
+				`InputsStatus132` = #{InputsStatus132},
 			</if>
-			<if test="InputsManualFlag164 != 0.001">
-				`InputsManualFlag164` = #{InputsManualFlag164},
+			<if test="InputsManualFlag132 != 0.001">
+				`InputsManualFlag132` = #{InputsManualFlag132},
 			</if>
-			<if test="ZonesStatus164 != 0.001">
-				`ZonesStatus164` = #{ZonesStatus164},
+			<if test="ZonesStatus132 != 0.001">
+				`ZonesStatus132` = #{ZonesStatus132},
 			</if>
-			<if test="ZonesManualFlag164 != 0.001">
-				`ZonesManualFlag164` = #{ZonesManualFlag164},
+			<if test="ZonesManualFlag132 != 0.001">
+				`ZonesManualFlag132` = #{ZonesManualFlag132},
 			</if>
-			<if test="ZonesFeedbackState164 != 0.001">
-				`ZonesFeedbackState164` = #{ZonesFeedbackState164},
+			<if test="ZonesFeedbackState132 != 0.001">
+				`ZonesFeedbackState132` = #{ZonesFeedbackState132},
 			</if>
-			<if test="ZonesAlarmState164 != 0.001">
-				`ZonesAlarmState164` = #{ZonesAlarmState164},
-			</if>
-			<if test="ZoneswithNonRespondingBreaker164 != 0.001">
-				`ZoneswithNonRespondingBreaker164` = #{ZoneswithNonRespondingBreaker164},
+			<if test="ZonesAlarmState132 != 0.001">
+				`ZonesAlarmState132` = #{ZonesAlarmState132},
 			</if>
 			<if test="BreakersPanel0L != 0.001">
 				`BreakersPanel0L` = #{BreakersPanel0L},
@@ -212,23 +253,48 @@
 			<if test="BreakersPanel2R != 0.001">
 				`BreakersPanel2R` = #{BreakersPanel2R},
 			</if>
-			<if test="BreakerUnresponsivePanel0L != 0.001">
-				`BreakerUnresponsivePanel0L` = #{BreakerUnresponsivePanel0L},
+			<if test="BreakerPresentPanel0L != 0.001">
+				`BreakerPresentPanel0L` = #{BreakerPresentPanel0L},
 			</if>
-			<if test="BreakerUnresponsivePanel0R != 0.001">
-				`BreakerUnresponsivePanel0R` = #{BreakerUnresponsivePanel0R},
+			<if test="BreakerPresentPanel0R != 0.001">
+				`BreakerPresentPanel0R` = #{BreakerPresentPanel0R},
 			</if>
-			<if test="BreakerUnresponsivePanel1L != 0.001">
-				`BreakerUnresponsivePanel1L` = #{BreakerUnresponsivePanel1L},
+			<if test="BreakerPresentPanel1L != 0.001">
+				`BreakerPresentPanel1L` = #{BreakerPresentPanel1L},
 			</if>
-			<if test="BreakerUnresponsivePanel1R != 0.001">
-				`BreakerUnresponsivePanel1R` = #{BreakerUnresponsivePanel1R},
+			<if test="BreakerPresentPanel1R != 0.001">
+				`BreakerPresentPanel1R` = #{BreakerPresentPanel1R},
 			</if>
-			<if test="BreakerUnresponsivePanel2L != 0.001">
-				`BreakerUnresponsivePanel2L` = #{BreakerUnresponsivePanel2L},
+			<if test="BreakerPresentPanel2L != 0.001">
+				`BreakerPresentPanel2L` = #{BreakerPresentPanel2L},
 			</if>
-			<if test="BreakerUnresponsivePanel2R != 0.001">
-				`BreakerUnresponsivePanel2R` = #{BreakerUnresponsivePanel2R},
+			<if test="BreakerPresentPanel2R != 0.001">
+				`BreakerPresentPanel2R` = #{BreakerPresentPanel2R},
+			</if>
+			<if test="NonRespondingBreakersPanel0L != 0.001">
+				`NonRespondingBreakersPanel0L` = #{NonRespondingBreakersPanel0L},
+			</if>
+			
+			<if test="NonRespondingBreakersPanel0R != 0.001">
+				`NonRespondingBreakersPanel0R` = #{NonRespondingBreakersPanel0R},
+			</if>
+			<if test="NonRespondingBreakersPanel1L != 0.001">
+				`NonRespondingBreakersPanel1L` = #{NonRespondingBreakersPanel1L},
+			</if>
+			<if test="NonRespondingBreakersPanel1R != 0.001">
+				`NonRespondingBreakersPanel1R` = #{NonRespondingBreakersPanel1R},
+			</if>
+			<if test="NonRespondingBreakersPanel2L != 0.001">
+				`NonRespondingBreakersPanel2L` = #{NonRespondingBreakersPanel2L},
+			</if>
+			<if test="NonRespondingBreakersPanel2R != 0.001">
+				`NonRespondingBreakersPanel2R` = #{NonRespondingBreakersPanel2R},
+			</if>
+			<if test="ScheduleStatus116 != 0.001">
+				`ScheduleStatus116` = #{ScheduleStatus116},
+			</if>
+			<if test="Schedule1PeriodStatus124 != 0.001">
+				`Schedule1PeriodStatus124` = #{Schedule1PeriodStatus124},
 			</if>
 		</trim>
 	</insert>

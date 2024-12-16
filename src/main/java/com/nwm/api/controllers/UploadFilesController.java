@@ -3307,8 +3307,8 @@ public class UploadFilesController extends BaseController {
 															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataEntity.getCumulativeEnergyDelivered() != 0.001 ? dataEntity.getCumulativeEnergyDelivered() : null);
-														deviceUpdateE.setField_value1(dataEntity.getCumulativeEnergyDelivered() != 0.001 ? dataEntity.getCumulativeEnergyDelivered() : null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);

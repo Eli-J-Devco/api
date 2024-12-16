@@ -11,28 +11,32 @@ public class ModelG3LightControllerEntity {
 	private int error;
 	private int low_alarm;
 	private int high_alarm;
-	
-	private double InputsStatus164;
-	private double InputsManualFlag164;
-	private double ZonesStatus164;
-	private double ZonesManualFlag164;
-	private double ZonesFeedbackState164;
-	private double ZonesAlarmState164;
-	private double ZoneswithNonRespondingBreaker164;
+	private double InputsStatus132;
+	private double InputsManualFlag132;
+	private double ZonesStatus132;
+	private double ZonesManualFlag132;
+	private double ZonesFeedbackState132;
+	private double ZonesAlarmState132;
 	private double BreakersPanel0L;
 	private double BreakersPanel0R;
 	private double BreakersPanel1L;
 	private double BreakersPanel1R;
 	private double BreakersPanel2L;
 	private double BreakersPanel2R;
-	private double BreakerUnresponsivePanel0L;
-	private double BreakerUnresponsivePanel0R;
-	private double BreakerUnresponsivePanel1L;
-	private double BreakerUnresponsivePanel1R;
-	private double BreakerUnresponsivePanel2L;
-	private double BreakerUnresponsivePanel2R;
-	
-	
+	private double BreakerPresentPanel0L;
+	private double BreakerPresentPanel0R;
+	private double BreakerPresentPanel1L;
+	private double BreakerPresentPanel1R;
+	private double BreakerPresentPanel2L;
+	private double BreakerPresentPanel2R;
+	private double NonRespondingBreakersPanel0L;
+	private double NonRespondingBreakersPanel0R;
+	private double NonRespondingBreakersPanel1L;
+	private double NonRespondingBreakersPanel1R;
+	private double NonRespondingBreakersPanel2L;
+	private double NonRespondingBreakersPanel2R;
+	private double ScheduleStatus116;
+	private double Schedule1PeriodStatus124;
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
@@ -67,47 +71,41 @@ public class ModelG3LightControllerEntity {
 	public void setHigh_alarm(int high_alarm) {
 		this.high_alarm = high_alarm;
 	}
-	public double getInputsStatus164() {
-		return InputsStatus164;
+	public double getInputsStatus132() {
+		return InputsStatus132;
 	}
-	public void setInputsStatus164(double inputsStatus164) {
-		InputsStatus164 = inputsStatus164;
+	public void setInputsStatus132(double inputsStatus132) {
+		InputsStatus132 = inputsStatus132;
 	}
-	public double getInputsManualFlag164() {
-		return InputsManualFlag164;
+	public double getInputsManualFlag132() {
+		return InputsManualFlag132;
 	}
-	public void setInputsManualFlag164(double inputsManualFlag164) {
-		InputsManualFlag164 = inputsManualFlag164;
+	public void setInputsManualFlag132(double inputsManualFlag132) {
+		InputsManualFlag132 = inputsManualFlag132;
 	}
-	public double getZonesStatus164() {
-		return ZonesStatus164;
+	public double getZonesStatus132() {
+		return ZonesStatus132;
 	}
-	public void setZonesStatus164(double zonesStatus164) {
-		ZonesStatus164 = zonesStatus164;
+	public void setZonesStatus132(double zonesStatus132) {
+		ZonesStatus132 = zonesStatus132;
 	}
-	public double getZonesManualFlag164() {
-		return ZonesManualFlag164;
+	public double getZonesManualFlag132() {
+		return ZonesManualFlag132;
 	}
-	public void setZonesManualFlag164(double zonesManualFlag164) {
-		ZonesManualFlag164 = zonesManualFlag164;
+	public void setZonesManualFlag132(double zonesManualFlag132) {
+		ZonesManualFlag132 = zonesManualFlag132;
 	}
-	public double getZonesFeedbackState164() {
-		return ZonesFeedbackState164;
+	public double getZonesFeedbackState132() {
+		return ZonesFeedbackState132;
 	}
-	public void setZonesFeedbackState164(double zonesFeedbackState164) {
-		ZonesFeedbackState164 = zonesFeedbackState164;
+	public void setZonesFeedbackState132(double zonesFeedbackState132) {
+		ZonesFeedbackState132 = zonesFeedbackState132;
 	}
-	public double getZonesAlarmState164() {
-		return ZonesAlarmState164;
+	public double getZonesAlarmState132() {
+		return ZonesAlarmState132;
 	}
-	public void setZonesAlarmState164(double zonesAlarmState164) {
-		ZonesAlarmState164 = zonesAlarmState164;
-	}
-	public double getZoneswithNonRespondingBreaker164() {
-		return ZoneswithNonRespondingBreaker164;
-	}
-	public void setZoneswithNonRespondingBreaker164(double zoneswithNonRespondingBreaker164) {
-		ZoneswithNonRespondingBreaker164 = zoneswithNonRespondingBreaker164;
+	public void setZonesAlarmState132(double zonesAlarmState132) {
+		ZonesAlarmState132 = zonesAlarmState132;
 	}
 	public double getBreakersPanel0L() {
 		return BreakersPanel0L;
@@ -145,41 +143,89 @@ public class ModelG3LightControllerEntity {
 	public void setBreakersPanel2R(double breakersPanel2R) {
 		BreakersPanel2R = breakersPanel2R;
 	}
-	public double getBreakerUnresponsivePanel0L() {
-		return BreakerUnresponsivePanel0L;
+	public double getBreakerPresentPanel0L() {
+		return BreakerPresentPanel0L;
 	}
-	public void setBreakerUnresponsivePanel0L(double breakerUnresponsivePanel0L) {
-		BreakerUnresponsivePanel0L = breakerUnresponsivePanel0L;
+	public void setBreakerPresentPanel0L(double breakerPresentPanel0L) {
+		BreakerPresentPanel0L = breakerPresentPanel0L;
 	}
-	public double getBreakerUnresponsivePanel0R() {
-		return BreakerUnresponsivePanel0R;
+	public double getBreakerPresentPanel0R() {
+		return BreakerPresentPanel0R;
 	}
-	public void setBreakerUnresponsivePanel0R(double breakerUnresponsivePanel0R) {
-		BreakerUnresponsivePanel0R = breakerUnresponsivePanel0R;
+	public void setBreakerPresentPanel0R(double breakerPresentPanel0R) {
+		BreakerPresentPanel0R = breakerPresentPanel0R;
 	}
-	public double getBreakerUnresponsivePanel1L() {
-		return BreakerUnresponsivePanel1L;
+	public double getBreakerPresentPanel1L() {
+		return BreakerPresentPanel1L;
 	}
-	public void setBreakerUnresponsivePanel1L(double breakerUnresponsivePanel1L) {
-		BreakerUnresponsivePanel1L = breakerUnresponsivePanel1L;
+	public void setBreakerPresentPanel1L(double breakerPresentPanel1L) {
+		BreakerPresentPanel1L = breakerPresentPanel1L;
 	}
-	public double getBreakerUnresponsivePanel1R() {
-		return BreakerUnresponsivePanel1R;
+	public double getBreakerPresentPanel1R() {
+		return BreakerPresentPanel1R;
 	}
-	public void setBreakerUnresponsivePanel1R(double breakerUnresponsivePanel1R) {
-		BreakerUnresponsivePanel1R = breakerUnresponsivePanel1R;
+	public void setBreakerPresentPanel1R(double breakerPresentPanel1R) {
+		BreakerPresentPanel1R = breakerPresentPanel1R;
 	}
-	public double getBreakerUnresponsivePanel2L() {
-		return BreakerUnresponsivePanel2L;
+	public double getBreakerPresentPanel2L() {
+		return BreakerPresentPanel2L;
 	}
-	public void setBreakerUnresponsivePanel2L(double breakerUnresponsivePanel2L) {
-		BreakerUnresponsivePanel2L = breakerUnresponsivePanel2L;
+	public void setBreakerPresentPanel2L(double breakerPresentPanel2L) {
+		BreakerPresentPanel2L = breakerPresentPanel2L;
 	}
-	public double getBreakerUnresponsivePanel2R() {
-		return BreakerUnresponsivePanel2R;
+	public double getBreakerPresentPanel2R() {
+		return BreakerPresentPanel2R;
 	}
-	public void setBreakerUnresponsivePanel2R(double breakerUnresponsivePanel2R) {
-		BreakerUnresponsivePanel2R = breakerUnresponsivePanel2R;
+	public void setBreakerPresentPanel2R(double breakerPresentPanel2R) {
+		BreakerPresentPanel2R = breakerPresentPanel2R;
+	}
+	public double getNonRespondingBreakersPanel0L() {
+		return NonRespondingBreakersPanel0L;
+	}
+	public void setNonRespondingBreakersPanel0L(double nonRespondingBreakersPanel0L) {
+		NonRespondingBreakersPanel0L = nonRespondingBreakersPanel0L;
+	}
+	public double getNonRespondingBreakersPanel0R() {
+		return NonRespondingBreakersPanel0R;
+	}
+	public void setNonRespondingBreakersPanel0R(double nonRespondingBreakersPanel0R) {
+		NonRespondingBreakersPanel0R = nonRespondingBreakersPanel0R;
+	}
+	public double getNonRespondingBreakersPanel1L() {
+		return NonRespondingBreakersPanel1L;
+	}
+	public void setNonRespondingBreakersPanel1L(double nonRespondingBreakersPanel1L) {
+		NonRespondingBreakersPanel1L = nonRespondingBreakersPanel1L;
+	}
+	public double getNonRespondingBreakersPanel1R() {
+		return NonRespondingBreakersPanel1R;
+	}
+	public void setNonRespondingBreakersPanel1R(double nonRespondingBreakersPanel1R) {
+		NonRespondingBreakersPanel1R = nonRespondingBreakersPanel1R;
+	}
+	public double getNonRespondingBreakersPanel2L() {
+		return NonRespondingBreakersPanel2L;
+	}
+	public void setNonRespondingBreakersPanel2L(double nonRespondingBreakersPanel2L) {
+		NonRespondingBreakersPanel2L = nonRespondingBreakersPanel2L;
+	}
+	public double getNonRespondingBreakersPanel2R() {
+		return NonRespondingBreakersPanel2R;
+	}
+	public void setNonRespondingBreakersPanel2R(double nonRespondingBreakersPanel2R) {
+		NonRespondingBreakersPanel2R = nonRespondingBreakersPanel2R;
+	}
+	public double getScheduleStatus116() {
+		return ScheduleStatus116;
+	}
+	public void setScheduleStatus116(double scheduleStatus116) {
+		ScheduleStatus116 = scheduleStatus116;
+	}
+	public double getSchedule1PeriodStatus124() {
+		return Schedule1PeriodStatus124;
+	}
+	public void setSchedule1PeriodStatus124(double schedule1PeriodStatus124) {
+		Schedule1PeriodStatus124 = schedule1PeriodStatus124;
 	}
 	public String getDatatablename() {
 		return datatablename;
@@ -205,6 +251,7 @@ public class ModelG3LightControllerEntity {
 	public void setEnable_alert(int enable_alert) {
 		this.enable_alert = enable_alert;
 	}
+	
 	
 	
 	
