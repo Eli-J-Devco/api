@@ -496,28 +496,26 @@
 		</if> 	
 		    ORDER BY
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
-	            </when>  
-	                   
 	            <when test="sort_column == 'site_name'">
 	                s.name ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'name'">
-	                d.name ${order_by}
+	            <when test="sort_column == 'device_type_name'">
+	                dt.name ${order_by}
 	            </when>
 	            
-	            <when test="sort_column == 'ssh_status'">
-	                d.ssh_status ${order_by}
+	            <when test="sort_column != null and sort_column != ''">
+	                d.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      d.id_device_group DESC
+			      dt.name DESC
 			    </otherwise>                                                  
-	        </choose>  
+	        </choose> , d.id DESC
 		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
   	

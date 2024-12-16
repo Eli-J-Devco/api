@@ -57,9 +57,6 @@ public class AvatarController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody AvatarEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			AvatarService service = new AvatarService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);

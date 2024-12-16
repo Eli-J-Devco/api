@@ -103,9 +103,6 @@ public class AuditingLogsController extends BaseController {
 	@PostMapping("/list")
 	public Object getListAll(@RequestBody AuditingLogsEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			AuditingLogsService service = new AuditingLogsService();
 			List data = service.getListAll(obj);
 			int totalRecord = service.getTotalAllRecord(obj);

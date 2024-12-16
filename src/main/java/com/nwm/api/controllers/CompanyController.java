@@ -57,9 +57,6 @@ public class CompanyController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody CompanyEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			CompanyService service = new CompanyService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);

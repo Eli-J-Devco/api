@@ -330,23 +330,11 @@
 		</if> 	
 		    order by
 	        <choose>  
-	            <when test="sort_column == 'id'">
-	                e.id ${order_by}
-	            </when>         
 	            <when test="sort_column == 'first_name'">
-	                e.first_name ${order_by}
-	            </when>
-	            <when test="sort_column == 'last_name'">
-	                e.last_name ${order_by}
+	                CONCAT(e.first_name, ' ', e.last_name) ${order_by}
 	            </when>
 	            <when test="sort_column == 'roles'">
 	                t.group_roles ${order_by}
-	            </when>
-	            <when test="sort_column == 'phone'">
-	                e.phone ${order_by}
-	            </when>
-	            <when test="sort_column == 'email'">
-	                e.email ${order_by}
 	            </when>
 	            <when test="sort_column == 'status'">
 	                s.last_login ${order_by}
@@ -355,17 +343,21 @@
 	                m.manage_site_total ${order_by}
 	            </when>
 	            <when test="sort_column == 'locked'">
-	                e.status ${order_by}
+	                e.account_locked ${order_by}
 	            </when>
-	            <when test="sort_column == 'created_by'">
-	                e.created_by ${order_by}
+	            
+	            <when test="sort_column != null and sort_column != ''">
+	                e.${sort_column} ${order_by}
 	            </when>
+	            
 	            <otherwise>
 			      t.group_roles ASC
 			    </otherwise>                                                  
-	        </choose>  
+	        </choose> , e.id DESC 
 		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>		 	 
 	</select>
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.EmployeeManageEntity">
