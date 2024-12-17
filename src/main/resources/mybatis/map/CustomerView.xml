@@ -597,7 +597,7 @@
 				<otherwise>
 					CASE
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF( SUM(meterPower) > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1) )
-						ELSE IF(SUM(meterEnergy) >= 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
+						ELSE IF(SUM(meterEnergy) > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
 					END AS chart_energy_kwh,
 					ROUND(AVG(expected_power), 1) AS expected_power
 				</otherwise>
