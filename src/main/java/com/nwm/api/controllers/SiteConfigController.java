@@ -245,4 +245,26 @@ public class SiteConfigController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list email subs of each employee
+	 * @author duy.phan
+	 * @since 2024-12-18
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/list-employee-on-site-mail-map")
+	public Object getListEmployeeOnSiteMailMap(@RequestBody SitesDevicesEntity obj) {
+		try {
+			if (obj.getLimit() == 0) {
+				obj.setLimit(Constants.MAXRECORD);
+			}
+			SiteConfigService service = new SiteConfigService();
+			List data = service.getListEmployeeOnSiteMailMap(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

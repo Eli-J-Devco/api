@@ -170,4 +170,23 @@ public class SiteConfigService extends DB {
 		}
 	}
 	
+	/**
+	 * @description Get list email subs of each employee
+	 * @author duy.phan
+	 * @since 2024-12-18
+	 * @param id
+	 */
+
+	public List getListEmployeeOnSiteMailMap(SitesDevicesEntity obj) {
+		try {
+			List rs = queryForList("SiteConfig.getListEmployeeOnSiteMailMap", obj);
+			if (rs == null) {
+				return new ArrayList<>();
+			}
+			return rs;
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+	
 }

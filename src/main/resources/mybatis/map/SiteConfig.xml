@@ -305,5 +305,16 @@
 		DELETE FROM `site_mail_map`
 		WHERE `id_site` = #{id} AND `id_employee` = #{id_employee}
 	</delete>
+	
+	<select id="getListEmployeeOnSiteMailMap" resultType="Map" >
+  		SELECT
+			smm.*,
+			CONCAT_WS( " ", e.first_name, e.last_name ) AS fullname
+		FROM 
+			site_mail_map smm
+		LEFT JOIN employee e ON e.id = smm.id_employee
+		WHERE
+			smm.id_site = #{id}
+	</select>
   	
 </mapper>
