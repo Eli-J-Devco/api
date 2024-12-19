@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
+import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.AlertService;
 import com.nwm.api.services.EmployeeService;
@@ -423,12 +424,8 @@ public class AlertController extends BaseController {
 	@PostMapping("/get-data-chart")
     public Object getDataChart(@RequestBody AlertEntity obj){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(10000);
-			}
-			
 			AlertService service = new AlertService();
-			List data = service.getDataChart(obj);
+			List<ChartAlertDateEntity> data = service.getDataChart(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
 		} catch (Exception e) {
 			log.error(e);

@@ -2146,12 +2146,11 @@
 	</select>
 	
 	
-	<select id="getDataChart" resultType="Map" >
+	<select id="getDataChart" resultType="com.nwm.api.entities.ChartAlertDateEntity" >
   		SELECT
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
-			IFNULL(m.nvmActivePower, 0.001) AS power
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
+			ROUND(m.nvmActivePower, 1) AS power
 		FROM
 			${datatablename} m 
 			LEFT JOIN device d ON d.id = m.id_device
@@ -2159,9 +2158,9 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			m.id_device = #{id_device}
-			AND (CAST(CONVERT_TZ(m.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
-			GROUP BY time_group_by 
-			ORDER BY time_group_by ASC
+			AND CONVERT_TZ(m.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY
+			time_format 
 	</select>
 	
 	<update id="updateIsRead">
