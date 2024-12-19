@@ -604,7 +604,7 @@ public class CronJobAlertController extends BaseController {
 							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
 											
 							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
-							if (bccmails != null && bccmails.size() > 0) {
+							if (bccmails != null && mailToBCC != "" && bccmails.size() > 0) {
 								for (int j = 0; j < bccmails.size(); j++) {
 									String email = bccmails.get(j).toString().trim();
 									
@@ -758,7 +758,7 @@ public class CronJobAlertController extends BaseController {
 							String mailToBCC = item.get("alert_mail_bcc").toString().trim();
 											
 							List<String> bccmails = new ArrayList<String>(Arrays.asList(mailToBCC.split(",")));
-							if (bccmails != null && bccmails.size() > 0) {
+							if (bccmails != null && mailToBCC != "" && bccmails.size() > 0) {
 								for (int j = 0; j < bccmails.size(); j++) {
 									String email = bccmails.get(j).toString().trim();
 									
