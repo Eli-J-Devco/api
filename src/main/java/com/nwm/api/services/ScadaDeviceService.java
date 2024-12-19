@@ -45,31 +45,30 @@ public class ScadaDeviceService extends DB {
 	 * @return
 	 */
 	private List<ScadaDeviceChartDataEntity> fulfillData(List<ScadaDeviceChartDataEntity> dateTimeList, List<ScadaDeviceChartDataEntity> dataList) {
-		List<ScadaDeviceChartDataEntity> fulfilledDataList = new ArrayList<ScadaDeviceChartDataEntity>();
-		
 		try {
-			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					ScadaDeviceChartDataEntity dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					ScadaDeviceChartDataEntity dataItem = dataList.get(i - count);
-					if (dateTimeItem.getFull_time().equals(dataItem.getFull_time())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<ScadaDeviceChartDataEntity> fulfilledDataList = new ArrayList<ScadaDeviceChartDataEntity>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				ScadaDeviceChartDataEntity dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				ScadaDeviceChartDataEntity dataItem = dataList.get(i - count);
+				if (dateTimeItem.getFull_time().equals(dataItem.getFull_time())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
+			
+			return fulfilledDataList;
 		} catch (Exception e) {
-			// TODO: handle exception
+			return dataList;
 		}
 		
-		return fulfilledDataList;
 	}
 	
 	/**

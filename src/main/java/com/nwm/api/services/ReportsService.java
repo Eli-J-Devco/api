@@ -47,31 +47,30 @@ public class ReportsService extends DB {
 	 * @return
 	 */
 	private <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList) {
-		List<K> fulfilledDataList = new ArrayList<K>();
-		
 		try {
-			if(dataList != null && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					K dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					K dataItem = dataList.get(i - count);
-					if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<K> fulfilledDataList = new ArrayList<K>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				K dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				K dataItem = dataList.get(i - count);
+				if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
+			
+			return fulfilledDataList;
 		} catch (Exception e) {
-			// TODO: handle exception
+			return dataList;
 		}
 		
-		return fulfilledDataList;
 	}
 	
 	/**

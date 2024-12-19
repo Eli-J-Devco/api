@@ -33,31 +33,30 @@ public class CustomerViewService extends DB {
 	 * @param List<ClientMonthlyDateEntity> dataList
 	 */
 	private List<ClientMonthlyDateEntity> fulfillData(List<ClientMonthlyDateEntity> dateTimeList, List<ClientMonthlyDateEntity> dataList) {
-		List<ClientMonthlyDateEntity> fulfilledDataList = new ArrayList<ClientMonthlyDateEntity>();
-		
 		try {
-			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					ClientMonthlyDateEntity dataItem = dataList.get(i - count);
-					if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<ClientMonthlyDateEntity> fulfilledDataList = new ArrayList<ClientMonthlyDateEntity>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				ClientMonthlyDateEntity dataItem = dataList.get(i - count);
+				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
+			
+			return fulfilledDataList;
 		} catch (Exception e) {
-			// TODO: handle exception
+			return dataList;
 		}
 		
-		return fulfilledDataList;
 	}
 
 	/**

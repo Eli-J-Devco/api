@@ -46,31 +46,30 @@ public class MiniSiteService extends DB {
 	 * @param List<KioskViewTodayEntity> dataList
 	 */
 	private List<KioskViewTodayEntity> fulfillData(List<KioskViewTodayEntity> dateTimeList, List<KioskViewTodayEntity> dataList) {
-		List<KioskViewTodayEntity> fulfilledDataList = new ArrayList<KioskViewTodayEntity>();
-		
 		try {
-			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					KioskViewTodayEntity dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					KioskViewTodayEntity dataItem = dataList.get(i - count);
-					if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<KioskViewTodayEntity> fulfilledDataList = new ArrayList<KioskViewTodayEntity>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				KioskViewTodayEntity dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				KioskViewTodayEntity dataItem = dataList.get(i - count);
+				if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
+			
+			return fulfilledDataList;
 		} catch (Exception e) {
-			// TODO: handle exception
+			return dataList;
 		}
 		
-		return fulfilledDataList;
 	}
 	
 	

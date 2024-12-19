@@ -339,23 +339,21 @@ public class AlertService extends DB {
 	 */
 	private List<ChartAlertDateEntity> fulfillData(List<ChartAlertDateEntity> dateTimeList, List<ChartAlertDateEntity> dataList) {
 		try {
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
 			List<ChartAlertDateEntity> fulfilledDataList = new ArrayList<ChartAlertDateEntity>();
-			
-			if(dataList.size() > 0 && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					ChartAlertDateEntity dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					ChartAlertDateEntity dataItem = dataList.get(i - count);
-					if (dateTimeItem.getTime_format().equals(dataItem.getTime_format())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				ChartAlertDateEntity dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				ChartAlertDateEntity dataItem = dataList.get(i - count);
+				if (dateTimeItem.getTime_format().equals(dataItem.getTime_format())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
 			
