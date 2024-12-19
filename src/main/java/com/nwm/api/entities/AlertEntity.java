@@ -86,6 +86,7 @@ public class AlertEntity extends SortEntity {
 	private String tabs;
 	private int is_queue;
 	private String domain;
+	private String keyword;
 	private boolean isUserNW;
 	
 	
@@ -557,6 +558,12 @@ public class AlertEntity extends SortEntity {
 	}
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
+	}
+	public String getKeyword() {
+		return keyword;
+	}
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
 	}
 	
 	
