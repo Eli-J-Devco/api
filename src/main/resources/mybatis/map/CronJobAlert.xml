@@ -847,7 +847,11 @@
 	
 	<select id="getListEmployeeOnSiteMailMap" resultType="Map" >
   		SELECT
-			smm.*
+			smm.id_site,
+			smm.id_employee,
+			IF(smm.cf_email_subscribers IS NULL OR smm.cf_email_subscribers = "", "", smm.cf_email_subscribers) AS cf_email_subscribers,
+			IF(smm.alert_mail_cc IS NULL OR smm.alert_mail_cc = "", "", smm.alert_mail_cc) AS alert_mail_cc,
+			IF(smm.alert_mail_bcc IS NULL OR smm.alert_mail_bcc = "", "", smm.alert_mail_bcc) AS alert_mail_bcc
 		FROM 
 			site_mail_map smm
 		WHERE
