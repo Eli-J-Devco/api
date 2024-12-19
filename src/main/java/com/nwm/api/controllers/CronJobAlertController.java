@@ -608,12 +608,14 @@ public class CronJobAlertController extends BaseController {
 								for (int j = 0; j < bccmails.size(); j++) {
 									String email = bccmails.get(j).toString().trim();
 									
-									EmployeeEntity employee = new EmployeeEntity();
-									employee.setEmail(email);
-									int isNwInternal = service.checkNwInternal(employee);
-									
-									if (!mailToBCCArr.contains(email) && isNwInternal > 0) {
-										mailToBCCArr.add(email);
+									if (email != "" || email != null) {
+										EmployeeEntity employee = new EmployeeEntity();
+										employee.setEmail(email);
+										int isNwInternal = service.checkNwInternal(employee);
+										
+										if (!mailToBCCArr.contains(email) && isNwInternal > 0) {
+											mailToBCCArr.add(email);
+										}
 									}
 								}
 							}
@@ -762,13 +764,15 @@ public class CronJobAlertController extends BaseController {
 								for (int j = 0; j < bccmails.size(); j++) {
 									String email = bccmails.get(j).toString().trim();
 									
-									EmployeeEntity employee = new EmployeeEntity();
-									employee.setEmail(email);
-									int isNwInternal = service.checkNwInternal(employee);
-									
-									if (!mailToBCCArr.contains(email) && isNwInternal == 0) {
-										mailToBCCArr.add(email);
-									}
+									if (email != "" || email != null) {
+										EmployeeEntity employee = new EmployeeEntity();
+										employee.setEmail(email);
+										int isNwInternal = service.checkNwInternal(employee);
+										
+										if (!mailToBCCArr.contains(email) && isNwInternal == 0) {
+											mailToBCCArr.add(email);
+										}
+									}			
 								}
 							}
 						}
