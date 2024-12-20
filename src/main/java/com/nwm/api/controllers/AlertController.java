@@ -48,9 +48,6 @@ public class AlertController extends BaseController {
 	@PostMapping("/list")
     public Object getList(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
@@ -77,9 +74,6 @@ public class AlertController extends BaseController {
 	@PostMapping("/list-group-by-site")
     public Object getListAlertGroupBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			(new EmployeeService()).getTableSort(obj);
 			AlertService service = new AlertService();
@@ -105,13 +99,10 @@ public class AlertController extends BaseController {
 	@PostMapping("/get-all-alert-by-site")
     public Object getAllAlertBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
-			if(obj.getLimit() == 0) {
-				obj.setLimit(1000);
-			}
 			obj.setIsUserNW(Lib.isUserNW(authz));
 			AlertService service = new AlertService();
 			List data = service.getAllAlertBySite(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

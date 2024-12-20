@@ -26,6 +26,102 @@
 		
 	</resultMap>
 	
+	<sql id="domainCondition">
+		<choose> 
+       		<when test="domain == 'test.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,2,4)
+            </when>
+             
+            <when test="domain == 'staging.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,3,4)
+            </when>
+            
+            <when test="domain == 'nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,5,7)
+            </when>
+            
+            <when test="domain == 'buildings.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,6,7)
+            </when>
+            
+            <otherwise>
+		      AND d.show_on_domain IN(1)
+		    </otherwise>                                                  
+        </choose>
+	</sql>
+	
+	<sql id="viewHistoryCondition">
+		<choose>
+			<when test="view_history == 'active'">
+				AND ${alertTable}.`status` = 1
+				AND ${alertTable}.resolved = 0
+			</when>
+			
+			<when test="view_history == 'review'">
+				AND ${alertTable}.`status` = 0
+				AND CONVERT_TZ( ${alertTable}.start_date, '+00:00', t.`offset` ) BETWEEN #{date_from} AND #{date_to}
+			</when>
+			
+			<when test="view_history == 'filter'">
+				AND CONVERT_TZ( ${alertTable}.start_date, '+00:00', t.`offset` ) BETWEEN #{date_from} AND #{date_to}
+				
+				<if test="id_sites != null and !id_sites.isEmpty()">
+					AND s.id IN  (
+						<foreach item="item" index="index" collection="id_sites" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_levels != null and !id_levels.isEmpty()">
+					AND el.id IN  (
+						<foreach item="item" index="index" collection="id_levels" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_status != null and !id_status.isEmpty()">
+					AND ${alertTable}.status IN  (
+						<foreach item="item" index="index" collection="id_status" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_types != null and !id_types.isEmpty()">
+					AND e.id_error_type IN  (
+						<foreach item="item" index="index" collection="id_types" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<if test="id_device_type != null and !id_device_type.isEmpty()">
+					AND d.id_device_type IN  (
+						<foreach item="item" index="index" collection="id_device_type" separator=" , ">
+							#{item.id}
+						</foreach>
+					)
+				</if>
+				
+				<!-- return empty when all options are unchecked -->
+				<if test="
+					(id_sites == null or id_sites.isEmpty()) and
+					(id_levels == null or id_levels.isEmpty()) and
+					(id_status == null or id_status.isEmpty()) and
+					(id_types == null or id_types.isEmpty()) and
+					(id_device_type == null or id_device_type.isEmpty())
+				">
+					AND 1 = 0
+				</if>
+			</when>
+			
+			<otherwise>
+			</otherwise>
+		</choose>
+	</sql>
+	
 	<select id="getList" resultType="Map" parameterType="String" >
 		SELECT
 			l.id,
@@ -76,23 +172,23 @@
 			el.color AS color_error_level,
 			h.is_hiding,
 			
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%c/%e/%Y %h:%i %p') AS start_date,
-			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%c/%e/%Y %h:%i %p') AS end_date,
-			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%c/%e/%Y %h:%i %p') AS last_updated,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i:%s' ) AS start,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value) , '%c/%e/%Y %h:%i %p') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%c/%e/%Y %h:%i %p') AS last_updated,
 			
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			
 			CASE
@@ -558,141 +654,46 @@
 			AND d.is_delete = 0
 			AND l.is_delete = 0
 			AND s.enable_alert = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
-		        
-			<if test="view_history == 'active'">
-				AND l.`status` = 1
-				AND l.resolved = 0
-			</if>
-			
-			<if test="view_history == 'review'">
-				AND l.`status` = 0
-			</if> 
-			
-			<if test="date_from != null and date_to != null and view_history == 'review'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
-			</if>
-			
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
-			
-			<if test="id_status != null and !id_status.isEmpty()">
-				AND l.status IN  (
-					<foreach item="item" index="index" collection="id_status" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_types != null and !id_types.isEmpty()">
-				AND e.id_error_type IN  (
-					<foreach item="item" index="index" collection="id_types" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_device_type != null and !id_device_type.isEmpty()">
-				AND d.id_device_type IN  (
-					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="date_from != null and date_to != null and view_history == 'filter'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+	        <if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
 			</if>
 			
-		GROUP BY l.id 
+			<include refid="domainCondition"></include>
 			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
+			
+		GROUP BY l.id 
+		
+		ORDER BY
 			<choose>
-				<when test="sort_column == 'id'">
-			      ORDER BY l.`id` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}, l.id DESC
-			    </when>
-			    
-			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`name` ${order_by}, l.id DESC
-			    </when>
-			    
-			    <when test="sort_column == 'message'">
-			      ORDER BY e.`message` ${order_by}, l.id DESC
-			    </when>
-			    
-			    <when test="sort_column == 'times_ago' or sort_column == 'start_date' or sort_column == 'open_period'">
-			      ORDER BY l.start_date ${order_by}, l.id ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'devicename'">
-			      ORDER BY d.`devicename` ${order_by}, l.id DESC
-			    </when>
-			    
-			    <when test="sort_column == 'end_date'">
-			      ORDER BY l.`end_date` ${order_by}, l.id ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'device_type_name'">
-			      ORDER BY dt.name ${order_by}, l.id DESC
+			    <when test="sort_column == 'times_ago' or sort_column == 'start_date'">
+			    	start ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'key_indicator'">
-			      ORDER BY unit, d.field_value1 ${order_by}
+			    	unit, d.field_value1 ${order_by}
 			    </when>
 			    
+			    <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY l.start_date DESC, l.id DESC
+			    	l.start_date DESC
 			    </otherwise>
-			  </choose>
-  
-		LIMIT #{limit} OFFSET #{offset};
+			  </choose> , l.id DESC
+  		
+  		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
 	
@@ -715,97 +716,24 @@
 			AND d.is_delete = 0
 			AND l.is_delete = 0 
 			AND s.enable_alert = 1
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<if test="view_history == 'active'">
-				AND l.`status` = 1
-				AND l.resolved = 0
-			</if>
-			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
-			
-			<if test="view_history == 'review'">
-				AND l.`status` = 0
-			</if> 
-			
-			<if test="date_from != null and date_to != null and view_history == 'review'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN DATE_FORMAT( #{date_from} ,'%Y-%m-%d %H:%i')  AND DATE_FORMAT( #{date_to} ,'%Y-%m-%d %H:%i')
-			</if>
-			
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
-			
-			<if test="view_notification == 'active'">
-				AND l.is_notification = 0
-			</if>
-			
-			<if test="id_status != null and !id_status.isEmpty()">
-				AND l.status IN  (
-					<foreach item="item" index="index" collection="id_status" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_types != null and !id_types.isEmpty()">
-				AND e.id_error_type IN  (
-					<foreach item="item" index="index" collection="id_types" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_device_type != null and !id_device_type.isEmpty()">
-				AND d.id_device_type IN  (
-					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="date_from != null and date_to != null and view_history == 'filter'">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
+	        <if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
+			</if>
+			
+			<include refid="domainCondition"></include>
+			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
+			
+			<if test="view_notification == 'active'">
+				AND l.is_notification = 0
 			</if>
   	</select>
   	
@@ -1620,7 +1548,7 @@
 				AND d.`status` = 1
 				AND d.is_delete = 0
 				AND s.enable_alert = 1
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1629,27 +1557,7 @@
 					)
 				</if>
 				
-				<choose> 
-		       		<when test="domain == 'test.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,2,4)
-		            </when>
-		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,3,4)
-		            </when>
-		            
-		            <when test="domain == 'nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,5,7)
-		            </when>
-		            
-		            <when test="domain == 'buildings.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,6,7)
-		            </when>
-		            
-		            <otherwise>
-				      AND d.show_on_domain IN(1)
-				    </otherwise>                                                  
-		        </choose>
+				<include refid="domainCondition"></include>
 		        
 			GROUP BY
 				e.id_error_level
@@ -1672,7 +1580,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1681,27 +1589,8 @@
 					)
 				</if>
 				
-				<choose> 
-		       		<when test="domain == 'test.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,2,4)
-		            </when>
-		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,3,4)
-		            </when>
-		            
-		            <when test="domain == 'nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,5,7)
-		            </when>
-		            
-		            <when test="domain == 'buildings.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,6,7)
-		            </when>
-		            
-		            <otherwise>
-				      AND d.show_on_domain IN(1)
-				    </otherwise>                                                  
-		        </choose>
+				<include refid="domainCondition"></include>
+				
 			GROUP BY
 				e.id_error_level
 		) AS highPriority,
@@ -1723,7 +1612,7 @@
 				AND e.is_delete = 0
 				AND d.`status` = 1
 				AND d.is_delete = 0
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 				<if test="id_sites != null and !id_sites.isEmpty()">
 					AND d.id_site IN  (
 						<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -1731,30 +1620,13 @@
 						</foreach>
 					)
 				</if>
-				<choose> 
-		       		<when test="domain == 'test.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,2,4)
-		            </when>
-		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,3,4)
-		            </when>
-		            
-		            <when test="domain == 'nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,5,7)
-		            </when>
-		            
-		            <when test="domain == 'buildings.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,6,7)
-		            </when>
-		            
-		            <otherwise>
-				      AND d.show_on_domain IN(1)
-				    </otherwise>                                                  
-		        </choose>
+				
 		        <if test="!isUserNW.booleanValue()">
 					AND e.id_error_level != 14
 				</if>
+				
+				<include refid="domainCondition"></include>
+				
 		) AS totalError
 		
 				
@@ -1808,7 +1680,7 @@
 			SUM(if(d.id_device_type = 1, 1, 0)) AS totalInverter,
 			SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS totalMeter,
 			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0)), SUM(IF(d.id_device_type = 1, d.last_value, 0)) ) AS power,
-			l.last_updated,
+			DATE_FORMAT(CONVERT_TZ( l.last_updated, 'UTC', t.value ), '%m/%d/%Y %H:%i') AS last_updated,
 			h.is_hiding,
 			IFNULL(g.alertMeter, 0) AS alertMeter,
 			IFNULL(g.alertInverter, 0) AS alertInverter,
@@ -1831,7 +1703,7 @@
 			LEFT JOIN (
 				SELECT 
 					s.id, 
-					DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', tz.`offset` ), '%m/%d/%Y %H:%i:%s %p') AS last_updated
+					d.last_updated
 				FROM device d 
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
@@ -1841,27 +1713,8 @@
 				AND s.is_delete = 0
 				AND d.`status` = 1
 				AND d.`is_delete` = 0
-				<choose> 
-		       		<when test="domain == 'test.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,2,4)
-		            </when>
-		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,3,4)
-		            </when>
-		            
-		            <when test="domain == 'nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,5,7)
-		            </when>
-		            
-		            <when test="domain == 'buildings.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,6,7)
-		            </when>
-		            
-		            <otherwise>
-				      AND d.show_on_domain IN(1)
-				    </otherwise>                                                  
-		        </choose>
+				
+				<include refid="domainCondition"></include>
 		        
 				GROUP BY s.id
 			)l ON l.id = s.id
@@ -1884,78 +1737,16 @@
 				WHERE a.is_delete = 0
 					AND e.`status` = 1
 					AND e.`is_delete` = 0
-					<choose> 
-			       		<when test="domain == 'test.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,2,4)
-			            </when>
-			             
-			            <when test="domain == 'staging.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,3,4)
-			            </when>
-			            
-			            <when test="domain == 'nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,5,7)
-			            </when>
-			            
-			            <when test="domain == 'buildings.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,6,7)
-			            </when>
-			            
-			            <otherwise>
-					      AND d.show_on_domain IN(1)
-					    </otherwise>                                                  
-			        </choose>
-					<if test="view_history != 'filter'">
-						AND a.`status` = 1
-					</if>
-					
-					<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
-						AND a.status IN  (
-							<foreach item="item" index="index" collection="id_status" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_sites != null and !id_sites.isEmpty()">
-						AND s.id IN  (
-							<foreach item="item" index="index" collection="id_sites" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_levels != null and !id_levels.isEmpty()">
-						AND el.id IN  (
-							<foreach item="item" index="index" collection="id_levels" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_types != null and !id_types.isEmpty()">
-						AND e.id_error_type IN  (
-							<foreach item="item" index="index" collection="id_types" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_device_type != null and !id_device_type.isEmpty()">
-						AND d.id_device_type IN  (
-							<foreach item="item" index="index" collection="id_device_type" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="date_from != null and date_to != null">
-						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
-					</if>
 					
 					<if test="!isUserNW.booleanValue()">
 						AND el.id != 14
 					</if>
+					
+					<include refid="domainCondition"></include>
+					
+					<include refid="viewHistoryCondition">
+						<property name="alertTable" value="a"/>
+					</include>
 					
 				GROUP BY s.id
 			)g ON g.id = s.id
@@ -1968,72 +1759,46 @@
 			AND totalAlert > 0
 			AND sem.id_employee = #{id_employee}
 			AND sem.is_hiding = 0
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="domainCondition"></include>
 			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
 		GROUP BY s.id
-		<choose>
-			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
-			    </when>
-			    
+		
+		ORDER BY
+			<choose>
 			    <when test="sort_column == 'total_alert'">
-			      ORDER BY g.`totalAlert` ${order_by}
+			    	g.`totalAlert` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'inverter_alert'">
-			      ORDER BY g.`alertInverter` ${order_by}
+			    	g.`alertInverter` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'meter_alert'">
-			      ORDER BY g.`alertMeter` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'dc_capacity'">
-			      ORDER BY s.dc_capacity ${order_by}
+			    	g.`alertMeter` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'last_updated'">
-			      ORDER BY `power` ${order_by}
+ 			   		l.`last_updated` ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'last_updated'">
-			      ORDER BY d.`last_updated` ${order_by}
-			    </when>
-			    
+			    <when test="sort_column != null and sort_column != ''">
+	                ${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY g.start_date DESC
+			    	g.start_date DESC
 			    </otherwise>
-			  </choose>
+			  </choose> , s.id DESC
   
-			LIMIT #{limit} OFFSET #{offset};
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
 	<select id="getTotalGroupAlertSite" resultMap="AlertMap">
@@ -2062,80 +1827,16 @@
 					AND e.`is_delete` = 0
 					AND s.enable_alert = 1
 					
-					<choose> 
-			       		<when test="domain == 'test.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,2,4)
-			            </when>
-			             
-			            <when test="domain == 'staging.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,3,4)
-			            </when>
-			            
-			            <when test="domain == 'nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,5,7)
-			            </when>
-			            
-			            <when test="domain == 'buildings.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,6,7)
-			            </when>
-			            
-			            <otherwise>
-					      AND d.show_on_domain IN(1)
-					    </otherwise>                                                  
-			        </choose>
-					
-					<if test="view_history != 'filter'">
-						AND a.`status` = 1
-					</if>
-					
-					<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
-						AND a.status IN  (
-							<foreach item="item" index="index" collection="id_status" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_sites != null and !id_sites.isEmpty()">
-						AND s.id IN  (
-							<foreach item="item" index="index" collection="id_sites" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_levels != null and !id_levels.isEmpty()">
-						AND el.id IN  (
-							<foreach item="item" index="index" collection="id_levels" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_types != null and !id_types.isEmpty()">
-						AND e.id_error_type IN  (
-							<foreach item="item" index="index" collection="id_types" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="id_device_type != null and !id_device_type.isEmpty()">
-						AND d.id_device_type IN  (
-							<foreach item="item" index="index" collection="id_device_type" separator=" , ">
-								#{item.id}
-							</foreach>
-						)
-					</if>
-					
-					<if test="date_from != null and date_to != null">
-						AND CONVERT_TZ( a.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
-					</if>
-					
 					<if test="!isUserNW.booleanValue()">
 						AND el.id != 14
 					</if>
 					
+					<include refid="domainCondition"></include>
+					
+					<include refid="viewHistoryCondition">
+						<property name="alertTable" value="a"/>
+					</include>
+
 				GROUP BY s.id
 			)g ON g.id = s.id
 		WHERE
@@ -2162,7 +1863,7 @@
 			l.disable_notification,
 			l.resolved,
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`), '%Y-%m-%d %H:%i:%s' ) AS start,
+			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i' ) AS start,
 			el.`name` AS `level`,
 			e.message,
 			e.error_code,
@@ -2176,30 +1877,29 @@
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			el.level,
-			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
-			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
-			DATE_FORMAT(CONVERT_TZ( l.end_date,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS end_date,
-			DATE_FORMAT(CONVERT_TZ( d.last_updated,'+00:00', t.`offset`), '%m/%d/%Y %H:%i %p') AS last_updated,
+			DATE_FORMAT(CONVERT_TZ( l.start_date,'UTC', t.value) , '%m/%d/%Y %H:%i') AS start_date,
+			DATE_FORMAT(CONVERT_TZ( l.end_date,'UTC', t.value), '%m/%d/%Y %H:%i') AS end_date,
+			DATE_FORMAT(CONVERT_TZ( d.last_updated,'UTC', t.value), '%m/%d/%Y %H:%i') AS last_updated,
 			
 			CONCAT_WS('', 
-				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}) / (60*24)))), 'd ',
-				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`),#{current_time}) / 60)), 24)), 'h ',
-				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time})), 60)), 'm'
+				IF( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / (60*24))) <![CDATA[<]]> 0 , 0, FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time}) / (60*24)))), 'd ',
+				IF(MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / 60)), 24) <![CDATA[<]]> 0, 0, MOD(FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value),#{current_time}) / 60)), 24)), 'h ',
+				IF( MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time})), 60) <![CDATA[<]]> 0, 0, MOD((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time})), 60)), 'm'
 			) AS duration,
-			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'+00:00', t.`offset`), #{current_time}))) , 0) AS open_period,
+			IFNULL( FLOOR((TIMESTAMPDIFF(MINUTE,CONVERT_TZ( l.start_date,'UTC', t.value), #{current_time}))) , 0) AS open_period,
 			
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( l.start_date, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			CASE
 				WHEN d.last_updated IS NULL THEN "Never"
@@ -2413,116 +2113,36 @@
 			AND s.enable_alert = 1
 			AND s.id = #{id}
 			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
-			
-			<if test="id_levels != null and !id_levels.isEmpty()">
-				AND el.id IN  (
-					<foreach item="item" index="index" collection="id_levels" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="view_history != 'filter'">
-				AND l.`status` = 1
-			</if>
-			
-			<if test="id_status != null and !id_status.isEmpty() and view_history == 'filter'">
-				AND l.status IN  (
-					<foreach item="item" index="index" collection="id_status" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="id_types != null and !id_types.isEmpty()">
-				AND e.id_error_type IN  (
-					<foreach item="item" index="index" collection="id_types" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-
-			<if test="id_device_type != null and !id_device_type.isEmpty()">
-				AND d.id_device_type IN  (
-					<foreach item="item" index="index" collection="id_device_type" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-			
-			<if test="date_from != null and date_to != null">
-				AND CONVERT_TZ( l.start_date, '+00:00', t.`offset` )  BETWEEN #{date_from}  AND #{date_to}
-			</if>
-			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
-			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
 			</if>
 			
-		GROUP BY l.id 
+			<include refid="domainCondition"></include>
 			
+			<include refid="viewHistoryCondition">
+				<property name="alertTable" value="l"/>
+			</include>
+			
+		GROUP BY l.id 
+		
+		ORDER BY	
 			<choose>
-				<when test="sort_column == 'id'">
-			      ORDER BY l.`id` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'site_name'">
-			      ORDER BY s.`name` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'priority_name'">
-			      ORDER BY el.`level` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'message'">
-			      ORDER BY e.`message` ${order_by}
-			    </when>
-			    
-			    <when test="sort_column == 'devicename'">
-			      ORDER BY d.`devicename` ${order_by}
-			    </when>
-			    
 			    <when test="sort_column == 'start_date'">
-			      ORDER BY l.`start_date` ${order_by}
+			    	l.`start_date` ${order_by}
 			    </when>
 			    
 			    <when test="sort_column == 'end_date'">
-			      ORDER BY l.`end_date` ${order_by}
+			    	l.`end_date` ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'open_period'">
-			      ORDER BY `open_period` ${order_by}
-			    </when>
-			    
+			    <when test="sort_column != null and sort_column != ''">
+	            	${sort_column} ${order_by}
+	            </when>
 			    
 			    <otherwise>
-			      ORDER BY l.start_date DESC
+			    	l.start_date DESC
 			    </otherwise>
-			  </choose>
+			</choose> , l.id DESC
 	</select>
 	
 	
