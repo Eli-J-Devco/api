@@ -621,7 +621,7 @@
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
+			STRAIGHT_JOIN error e ON e.id = l.id_error
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
@@ -718,7 +718,7 @@
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
+			STRAIGHT_JOIN error e ON e.id = l.id_error
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
