@@ -11,6 +11,7 @@
 		<result property="description" column="description" />
 		<result property="icon" column="icon" />
 		<result property="is_consumption" column="is_consumption" />
+		<result property="text_color" column="text_color" />
 		<result property="offset" column="offset" />
 		<result property="status" column="status" />
 		<result property="is_delete" column="is_delete" />
@@ -31,6 +32,7 @@
 			s.is_consumption,
 			s.id_site,
 			s.description,
+			s.text_color,
 			GROUP_CONCAT(lm.id_device) AS id_devices
 		FROM
 			leviton_overview_widget s 	
@@ -117,13 +119,15 @@
 			`id_site`,
 			`description`,
 			`is_consumption`,
-			`icon`
+			`icon`,
+			`text_color`
 		)VALUES(
 			#{name},
 			#{id_site},
 			#{description},
 			#{is_consumption},
-			#{icon}
+			#{icon},
+			#{text_color}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -137,7 +141,8 @@
 			`name` = #{name},
 			`description` = #{description},
 			`is_consumption` = #{is_consumption},
-			`icon` = #{icon}
+			`icon` = #{icon},
+			`text_color` = #{text_color}
 			
 		WHERE
 			`id` = #{id}

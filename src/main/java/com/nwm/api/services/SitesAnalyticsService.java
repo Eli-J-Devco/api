@@ -64,31 +64,30 @@ public class SitesAnalyticsService extends DB {
 	 * @return
 	 */
 	private List<Map<String, Object>> fulfillData(List<Map<String, Object>> dateTimeList, List<Map<String, Object>> dataList) {
-		List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
-		
 		try {
-			if(dataList != null && dateTimeList.size() > 0) {
-				int count = 0;
-				for (int i = 0; i < dateTimeList.size(); i++) {
-					Map<String, Object> dateTimeItem = dateTimeList.get(i);
-					if (i - count > dataList.size() - 1) {
-						fulfilledDataList.add(dateTimeItem);
-						continue;
-					}
-					Map<String, Object> dataItem = dataList.get(i - count);
-					if (dateTimeItem.get("time_full").toString().equals(dataItem.get("time_full").toString())) {
-						fulfilledDataList.add(dataItem);
-					} else {
-						fulfilledDataList.add(dateTimeItem);
-						count++;
-					}
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<Map<String, Object>> fulfilledDataList = new ArrayList<Map<String, Object>>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				Map<String, Object> dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				Map<String, Object> dataItem = dataList.get(i - count);
+				if (dateTimeItem.get("time_full").toString().equals(dataItem.get("time_full").toString())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
 				}
 			}
+			
+			return fulfilledDataList;
 		} catch (Exception e) {
-			// TODO: handle exception
+			return dataList;
 		}
 		
-		return fulfilledDataList;
 	}
 	
 	/**

@@ -31,8 +31,16 @@ public class LevitonOverviewWidgetEntity{
 	private int screen_mode;
 	private String file_upload;
 	private List deviceMap;
+	private String text_color;
 	
 	
+	
+	public String getText_color() {
+		return text_color;
+	}
+	public void setText_color(String text_color) {
+		this.text_color = text_color;
+	}
 	public List getDeviceMap() {
 		return deviceMap;
 	}

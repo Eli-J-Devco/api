@@ -26,6 +26,432 @@
 		
 	</resultMap>
 	
+	<sql id="keyIndicatorField">
+		CASE
+			WHEN d.last_updated IS NULL THEN "Never"
+			
+			WHEN dg.table_name = 'model_power_measurement_ion_7650' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_meter_ion_8600v1' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600v2' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600v3' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600v4' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_aes_tx_inverter' AND d.field_value_default = 'pt33' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp30000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+		
+			WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))
+			
+			WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+		
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Degrees C" )))
+			
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "V" )))
+			
+			WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
+			WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
+			WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'RSSI4' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", ROUND(d.field_value3, 2)))
+			
+			WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
+			WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
+			
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+		
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
+			
+			WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
+			WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
+			
+			
+			WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
+			WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "W/m²" )))
+
+			WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
+	
+			WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+			
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
+			
+			
+			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
+			
+			
+			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "volts" )))
+			
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "KVA" )))
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
+			
+			WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
+			
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Amps" )))
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
+			
+			WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
+			
+			WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
+			WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
+			
+			WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
+
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "" )))
+			
+			WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
+
+			WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
+			
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
+			
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
+			
+			WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
+			
+			WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))		
+			
+			WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))
+			WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))	
+			
+			WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			
+			WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
+			
+			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2) )))
+			
+			WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
+
+			WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_leviton_s40000r_power_meter' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp24000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_shark250' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_sol_ark_inverter' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			ELSE "N/A"
+		END AS key_indicator
+	</sql>
+	
+	<sql id="unitField">
+		CASE
+			WHEN dg.table_name = 'model_power_measurement_ion_7650' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_meter_ion_8600v1' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_meter_ion_8600v2' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_aes_tx_inverter' AND d.field_value_default = 'pt33' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp30000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+		
+			WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kB"))
+			
+			WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+		
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
+			WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			
+			WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "%"))
+			WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m^2"))
+			WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+		
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kVAR"))
+			WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kVA"))
+			
+			WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+
+			WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+							
+			WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "volts"))
+			
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "KVA"))
+			WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
+			
+			WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
+			WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
+			
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Amps"))
+			WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
+			
+			WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
+			WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
+			
+			WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+				
+			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			
+			WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
+
+			WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+	
+			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "m/s"))
+			
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "A"))
+			
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'ReadPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
+			WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVCurrent' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "A"))
+			
+			WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
+			
+			WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
+			
+			WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
+			
+			WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  "W/m²"
+			
+			WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN   (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C")) 
+			
+			WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
+			
+			WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "%"))
+
+	        WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
+			ELSE "Z"
+			
+		END AS unit
+	</sql>
+	
 	<sql id="domainCondition">
 		<choose> 
        		<when test="domain == 'test.nextwavemonitoring.com'">
@@ -51,6 +477,14 @@
 	</sql>
 	
 	<sql id="viewHistoryCondition">
+		<if test="id_sites != null and !id_sites.isEmpty()">
+			AND s.id IN  (
+				<foreach item="item" index="index" collection="id_sites" separator=" , ">
+					#{item.id}
+				</foreach>
+			)
+		</if>
+				
 		<choose>
 			<when test="view_history == 'active'">
 				AND ${alertTable}.`status` = 1
@@ -59,19 +493,11 @@
 			
 			<when test="view_history == 'review'">
 				AND ${alertTable}.`status` = 0
-				AND CONVERT_TZ( ${alertTable}.start_date, '+00:00', t.`offset` ) BETWEEN #{date_from} AND #{date_to}
+				AND CONVERT_TZ(${alertTable}.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
 			</when>
 			
 			<when test="view_history == 'filter'">
-				AND CONVERT_TZ( ${alertTable}.start_date, '+00:00', t.`offset` ) BETWEEN #{date_from} AND #{date_to}
-				
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND s.id IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
+				AND CONVERT_TZ(${alertTable}.start_date, 'UTC', t.value) BETWEEN #{date_from} AND #{date_to}
 				
 				<if test="id_levels != null and !id_levels.isEmpty()">
 					AND el.id IN  (
@@ -136,15 +562,15 @@
 			l.is_read,
 			l.is_notification,
 			CASE
-			WHEN COUNT(t.id_alert) > 0 THEN 
+			WHEN COUNT(ah.id_alert) > 0 THEN 
 					CONCAT(
 					'[',
 					GROUP_CONCAT(
 						JSON_OBJECT(
 							'fullname',
-							t.fullname,
+							ah.fullname,
 							'created_date',
-							t.date_view
+							ah.date_view
 						)),
 					']' 
 				)
@@ -160,7 +586,6 @@
 			s.`name` AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
-			d.id as id_device,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			d.datatablename,
@@ -191,435 +616,12 @@
 				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			
-			CASE
-				WHEN d.last_updated IS NULL THEN "Never"
-				
-				WHEN dg.table_name = 'model_power_measurement_ion_7650' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_meter_ion_8600v1' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600v2' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600v3' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600v4' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_aes_tx_inverter' AND d.field_value_default = 'pt33' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp30000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))
-				
-				WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Degrees C" )))
-				
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'RSSI4' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", ROUND(d.field_value3, 2)))
-				
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "W/m²" )))
-
-				WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-		
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
-				
-				
-				WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				
-				
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "volts" )))
-				
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "KVA" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Amps" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
-				WHEN dg.table_name = 'model_elkor_production_meterv1' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
-
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "" )))
-				
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
-
-				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
-				
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
-				
-				WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))		
-				
-				WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))
-				WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))	
-				
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				
-				WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2) )))
-				
-				WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-
-				WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_leviton_s40000r_power_meter' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark250' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sol_ark_inverter' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-
-				
-				ELSE "N/A"
-			END AS key_indicator,
-			
-			CASE
-				WHEN dg.table_name = 'model_power_measurement_ion_7650' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600' AND d.field_value_default = 'kWTot' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_meter_ion_8600v1' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_meter_ion_8600v2' AND d.field_value_default = 'kWTot' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_aes_tx_inverter' AND d.field_value_default = 'pt33' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp62us41' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp30000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-			
-				WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kB"))
-				
-				WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-			
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "%"))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m^2"))
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-			
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kVAR"))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kVA"))
-				
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-
-				WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-								
-				WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "volts"))
-				
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "KVA"))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
-				
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
-				
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Amps"))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
-				
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Volts"))
-				
-				WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'TransientHorizontalIrradiance' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-					
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "VDC"))
-
-				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-		
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "m/s"))
-				
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "A"))
-				
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'ReadPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVVoltage' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
-				WHEN dg.table_name = 'model_xantrex_inverter' AND d.field_value_default = 'PVCurrent' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "A"))
-				
-				WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
-				
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Hz"))
-				
-				WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-				WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  "W/m²"
-				
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN   (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C")) 
-				
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
-				WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees"))
-				
-				WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "%"))
-
-		        WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-				
-				WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
-
-				ELSE "Z"
-				
-			END AS unit
-			
-			
+			<include refid="keyIndicatorField"></include>,
+			<include refid="unitField"></include>
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
+			STRAIGHT_JOIN error e ON e.id = l.id_error
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
@@ -633,8 +635,9 @@
 				DATE_FORMAT(ah.created_date, '%Y-%m-%d %H:%i:%s') AS date_view
 				FROM alert_history ah 
 				LEFT JOIN employee e ON ah.id_employee = e.id
+				WHERE e.id = #{id_employee}
 				GROUP BY ah.id_alert
-			) t ON t.id_alert = l.id
+			) ah ON ah.id_alert = l.id
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -644,8 +647,13 @@
 					id_site,
 					MAX(is_hiding) AS is_hiding
 				FROM site_employee_map
+				WHERE id_employee = #{id_employee}
 				GROUP BY id_site
 			) h ON h.id_site = s.id
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
 			
 		WHERE
 			e.`status` = 1
@@ -653,10 +661,17 @@
 			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND l.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
 			AND s.enable_alert = 1
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-	        <if test="keyword != null">
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
@@ -703,11 +718,15 @@
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
+			STRAIGHT_JOIN error e ON e.id = l.id_error
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN device d ON d.id = l.id_device
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
 			
 		WHERE
 			e.`status` = 1
@@ -715,10 +734,17 @@
 			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND l.is_delete = 0 
+			AND s.status = 1
+			AND s.is_delete = 0
 			AND s.enable_alert = 1
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-	        <if test="keyword != null">
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
 			</if>
 			
@@ -903,201 +929,7 @@
 				WHEN CONVERT_TZ( l.start_date, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			
-			CASE
-				WHEN d.last_updated IS NULL THEN "Never"
-				
-				WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))
-				
-				WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Degrees C" )))
-				
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'RSSI4' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", ROUND(d.field_value3, 2)))
-				
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-
-				WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
-				
-				
-				WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				
-				
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "volts" )))
-				
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "KVA" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Amps" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "" )))
-				
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
-
-				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
-				
-				WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))		
-				
-				WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))
-				WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))	
-				
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				
-				WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2) )))
-				
-				WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_leviton_s40000r_power_meter' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark250' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sol_ark_inverter' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				ELSE "N/A"
-			END AS key_indicator
-			
+			<include refid="keyIndicatorField"></include>
 			
 		FROM
 			`alert` l
@@ -1528,105 +1360,67 @@
 	</update>
 	
 	
+	<sql id="alertSummary">
+		SELECT
+			COUNT(*) AS ${priority}
+		FROM
+			alert a
+			LEFT JOIN device d ON d.id = a.id_device
+			LEFT JOIN error e ON a.id_error = e.id 
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
+		WHERE
+			a.`status` = 1 
+			AND e.`status` = 1
+			AND a.is_delete = 0
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.status = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="id_sites != null and !id_sites.isEmpty()">
+				AND d.id_site IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
+			<if test="!isUserNW.booleanValue()">
+				AND e.id_error_level != 14
+			</if>
+			
+			<include refid="domainCondition"></include>
+	</sql>
 	
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
-			SELECT
-				COUNT( e.id_error_level ) AS lowPriority 
-			FROM
-				alert a
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				e.id_error_level = 13
-				AND a.`status` = 1 
-				AND e.`status` = 1
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND s.enable_alert = 1
-				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-				
-				<include refid="domainCondition"></include>
-		        
-			GROUP BY
-				e.id_error_level
+			<include refid="alertSummary">
+				<property name="priority" value="lowPriority" />
+			</include>
+			AND e.id_error_level = 13
 		) AS lowPriority,
-		
 		(
-			SELECT
-				COUNT( e.id_error_level ) AS highPriority 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				e.id_error_level = 11
-				AND a.`status` = 1 
-				AND e.`status` = 1 
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-				
-				<include refid="domainCondition"></include>
-				
-			GROUP BY
-				e.id_error_level
+			<include refid="alertSummary">
+				<property name="priority" value="highPriority" />
+			</include>
+			AND e.id_error_level = 11
 		) AS highPriority,
-		
-		
 		(
-			SELECT
-				COUNT(*) AS totalError 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				a.`status` = 1 
-				AND e.`status` = 1 
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<if test="id_sites != null and !id_sites.isEmpty()">
-					AND d.id_site IN  (
-						<foreach item="item" index="index" collection="id_sites" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-				
-		        <if test="!isUserNW.booleanValue()">
-					AND e.id_error_level != 14
-				</if>
-				
-				<include refid="domainCondition"></include>
-				
+			<include refid="alertSummary">
+				<property name="priority" value="totalError" />
+			</include>
 		) AS totalError
 		
 				
@@ -1689,8 +1483,11 @@
 		FROM
 			site s
 			LEFT JOIN device d ON d.id_site = s.id
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
 			
 			LEFT JOIN (
 				SELECT
@@ -1757,9 +1554,12 @@
 			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND totalAlert > 0
-			AND sem.id_employee = #{id_employee}
-			AND sem.is_hiding = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
 			
 			<include refid="domainCondition"></include>
 			
@@ -1806,7 +1606,10 @@
 			COUNT(s.id) AS totalRecord
 		FROM
 			site s
-			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
 			
 			LEFT JOIN (
 				SELECT
@@ -1842,9 +1645,13 @@
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
-			AND sem.id_employee = #{id_employee}
-			AND sem.is_hiding = 0
 			AND totalAlert > 0
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
+			
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
@@ -1901,201 +1708,7 @@
 				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
 				WHEN CONVERT_TZ( l.start_date, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
-			CASE
-				WHEN d.last_updated IS NULL THEN "Never"
-				
-				WHEN dg.table_name = 'model_datalogger' AND d.field_value_default = 'MemFree' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kB" )))
-				
-				WHEN dg.table_name = 'model_solaredge_inverter' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_solaredge_inverter_v1' AND d.field_value_default = 'I_AC_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'ACVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_sunny_central_class9775_inverter' AND d.field_value_default = 'InteriorTemperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Degrees C" )))
-				
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'OutputKW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'LineFreq' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_satcon_powergate_225_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'CPULoad' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				WHEN dg.table_name = 'model_cell_modem' AND d.field_value_default = 'RSSI4' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", ROUND(d.field_value3, 2)))
-				
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'POACMP11' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_adam4017ws_class8110_nelis190' AND d.field_value_default = 'AmbientTemp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Degrees C" )))
-				
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter1' AND d.field_value_default = 'Meter1_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter2' AND d.field_value_default = 'Meter2_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter3' AND d.field_value_default = 'Meter3_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_campell_scientific_meter4' AND d.field_value_default = 'Meter4_ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-			
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_advanced_energy_solaron' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'watts_3ph_total' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vars_3ph_total' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kVAR" )))
-				WHEN dg.table_name = 'model_shark100v1' AND d.field_value_default = 'vas_3ph_total' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kVA" )))
-				
-				
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'AirTemperatureActual' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_lufft_class8020' AND d.field_value_default = 'IrradianceActual' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-
-				WHEN dg.table_name = 'model_sth01_temp_sensor' AND d.field_value_default = 'TEMPRATURE' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_abb_trio_class6210' AND d.field_value_default = 'Input1Voltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'TotalNetInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e51c2_power_meter' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_veris_industries_e50c2a' AND d.field_value_default = 'RealPowerPhaseB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_imtsolar_class8000' AND d.field_value_default = 'tcell' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceTcs' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m^2" )))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'SensorBodyTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value2 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value2, 0 ),2), "°C" ))
-				WHEN dg.table_name = 'model_hukseflux_sr30d1_deviceclass_v0' AND d.field_value_default = 'IrradianceUs' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "W/m^2" )))
-				
-				
-				WHEN dg.table_name = 'model_imtsolar_tmodul_class8006' AND d.field_value_default = 'ModuleTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
-				
-				
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'SunPOATempComp' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_w_kipp_zonen_rt1' AND d.field_value_default = 'PanelTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Input_kW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'Output_kw' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				WHEN dg.table_name = 'model_satcon_pvs357_inverter' AND d.field_value_default = 'DC_Input_Volts' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "volts" )))
-				
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'AC_ApparentPower' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "KVA" )))
-				WHEN dg.table_name = 'model_chint_solectria_inverter_class9725' AND d.field_value_default = 'PV1_Voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_kippzonen_rt1_class8009' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'ac_frequency' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				WHEN dg.table_name = 'model_ivt_solaron_ext' AND d.field_value_default = 'pv_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "VDC" )))
-				
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'line_kw' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_current' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Amps" )))
-				WHEN dg.table_name = 'model_pvp_inverter' AND d.field_value_default = 'dc_output_voltage' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'sensor1_data' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_rt1_class30000' AND d.field_value_default = 'panel_temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageA' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Volts" )))
-				WHEN dg.table_name = 'model_elkor_production_meter' AND d.field_value_default = 'VoltageB' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "Volts" )))
-				
-				WHEN dg.table_name = 'model_elkor_wattson_pv_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "" )))
-				
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'ACPowerOutput' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_solectria_sgi_226ivt' AND d.field_value_default = 'DCVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "VDC" )))
-
-				WHEN dg.table_name = 'model_solectria_inv_00_slc_3146' AND d.field_value_default = 'RealACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'ReadAngle' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_tti_tracker' AND d.field_value_default = 'WindSpeed' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "m/s" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'ReadPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
-				WHEN dg.table_name = 'model_xantrex_gt100_250_500' AND d.field_value_default = 'PVCurrent' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value3, 2), "A" )))
-				
-				WHEN dg.table_name = 'model_sungrow_umg604' AND d.field_value_default = 'M_AC_P' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg110cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sungrow_sg50cx' AND d.field_value_default = 'P_DC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_logger1000' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_sungrow_weather_pvmet75200' AND d.field_value_default = 'SRAD_D_H' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp1200tlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_inverter_stp24ktlus10' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))
-				
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_sma_cluster_controller' AND d.field_value_default = 'GridMs_Hz' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "Hz" )))		
-				
-				WHEN dg.table_name = 'model_poa_temp' AND d.field_value_default = 'T_AMB' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "°C" )))
-				WHEN dg.table_name = 'model_pyranometer_poa' AND d.field_value_default = 'poa' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))	
-				
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'solar_irradiation' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-				WHEN dg.table_name = 'model_eri_weather_icp_class8050' AND d.field_value_default = 'ambient_temp' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-				
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'AC_POWER' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_xantrex_gt500e' AND d.field_value_default = 'DC_POWER' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value2, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_wattsun_tcu' AND d.field_value_default = 'ANGLE_CALC' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				WHEN dg.table_name = 'model_wattsun_tracker' AND d.field_value_default = 'TRACKER_ANGLE' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees" )))
-				
-				WHEN dg.table_name = 'model_sev_sg110cx' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_elster_a1700' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_ae_refusol' AND d.field_value_default = 'ACPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dts_measurelogic_demand_meter' AND d.field_value_default = 'PowerFactor_DTS_Overall' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2) )))
-				
-				WHEN dg.table_name = 'model_leviton_70D48000' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_janitza_umg604pro' AND d.field_value_default = 'TotalPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_acu_rev_production_meter' AND d.field_value_default = 'TotalRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
-				
-        		WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-        		
-        		WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-        		
-        		WHEN dg.table_name = 'model_klea_220p' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-
-				WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_leviton_s40000r_power_meter' AND d.field_value_default = 'TotalInstantaneousRealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sma_inverter_stp24000tlus10' AND d.field_value_default = 'GridMs_TotW' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_shark250' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				WHEN dg.table_name = 'model_sol_ark_inverter' AND d.field_value_default = 'TotalActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "N/A", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
-				
-				ELSE "N/A"
-			END AS key_indicator
-			
+			<include refid="keyIndicatorField"></include>
 			
 		FROM
 			`alert` l
@@ -2106,12 +1719,21 @@
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			
+			<if test="is_supper_admin != 1">
+				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+			</if>
 		WHERE
 			e.`status` = 1 
 			AND e.is_delete = 0
 			AND l.is_delete = 0
 			AND s.enable_alert = 1
 			AND s.id = #{id}
+			
+			<if test="is_supper_admin != 1">
+				AND sem.id_employee = #{id_employee}
+				AND sem.is_hiding = 0
+			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
@@ -2146,12 +1768,11 @@
 	</select>
 	
 	
-	<select id="getDataChart" resultType="Map" >
+	<select id="getDataChart" resultType="com.nwm.api.entities.ChartAlertDateEntity" >
   		SELECT
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
-			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, '+00:00', t.`offset` ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by,
-			IFNULL(m.nvmActivePower, 0.001) AS power
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y %H:%i' ) AS time_format,
+			FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( m.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m-%d-%Y' ) AS categories_time,
+			ROUND(m.nvmActivePower, 1) AS power
 		FROM
 			${datatablename} m 
 			LEFT JOIN device d ON d.id = m.id_device
@@ -2159,9 +1780,9 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			m.id_device = #{id_device}
-			AND (CAST(CONVERT_TZ(m.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
-			GROUP BY time_group_by 
-			ORDER BY time_group_by ASC
+			AND CONVERT_TZ(m.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date}
+		GROUP BY
+			time_format 
 	</select>
 	
 	<update id="updateIsRead">
