@@ -500,11 +500,11 @@
 		FROM (
 			SELECT
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				IF(
+				GREATEST(0, IF(
 					#{have_meter},
 					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
 					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-				) AS actual,
+				)) AS actual,
 				CASE
 					WHEN MONTH(#{start_date}) = 01 then (ee.jan / DAY(LAST_DAY(#{end_date})))
 					WHEN MONTH(#{start_date}) = 02 then (ee.feb / DAY(LAST_DAY(#{end_date})))
@@ -580,7 +580,7 @@
 			DATE_FORMAT(#{end_date}, "%m/%Y") AS vintage_date,
 			0 AS is_edit,
 			CASE
-			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'UTC', t.`value`), '%m/%Y') THEN CAST((SUM(sdr.ActualGeneration) / 1000 * 0.97) AS DECIMAL(10, 2)) 
+			    WHEN DATE_FORMAT( sdr.time, '%m/%Y' ) != DATE_FORMAT(CONVERT_TZ(NOW(),'UTC', t.`value`), '%m/%Y') THEN CAST((GREATEST(0, SUM(sdr.ActualGeneration)) / 1000 * 0.97) AS DECIMAL(10, 2)) 
 			    ELSE NULL
 			END AS energy_this_month
 			
@@ -662,11 +662,11 @@
 				SELECT
 					sdr.time,
 					DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
-					IF(
+					GREATEST(0, IF(
 						#{have_meter},
 						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
 						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-					) AS actual,
+					)) AS actual,
 					CASE
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Jan" THEN ee.jan
 						WHEN DATE_FORMAT(sdr.time, '%b') = "Feb" THEN ee.feb
@@ -712,11 +712,11 @@
 			SELECT
 				s.dc_capacity,
 				DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS categories_time,
-				IF(
+				GREATEST(0, IF(
 					#{have_meter},
 					SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)),
 					SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))
-				) AS actual,
+				)) AS actual,
 				AVG(IF(d.id_device_type = 4, sdr.POAAVG * 24 / 1000, NULL)) AS POAInsolation,
 				AVG(IF(d.id_device_type = 4, sdr.TCellAVG, NULL)) AS TCellAVG,
 				AVG(IF(d.id_device_type = 1, sdr.InverterAvailability * 100, NULL)) AS inverterAvailability
@@ -754,7 +754,7 @@
 				SELECT
 					time,
 					categories_time,
-					CAST(SUM(actual) AS DECIMAL) AS actual,
+					CAST(GREATEST(0, SUM(actual)) AS DECIMAL) AS actual,
 					CAST(estimated AS DECIMAL) AS estimated,
 					SUM(inverterAvailability) / DAY(LAST_DAY(time)) AS inverterAvailability
 				FROM (
@@ -910,11 +910,11 @@
 					</otherwise>
 				</choose>
 				AS categories_time,
-				IF(
+				GREATEST(0, IF(
 					#{have_meter},
 					ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 0),
 					ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 0)
-				) AS actual
+				)) AS actual
 				
 			FROM
 				${table_data_report} sdr 
@@ -1000,11 +1000,11 @@
 						DATE_FORMAT(sdr.time, "%b-%y") AS time_full,
 						DATE_FORMAT(sdr.time, "%b") AS `month`,
 						DATE_FORMAT(sdr.time, "%Y") AS `year`,
-						IF(
+						GREATEST(0, IF(
 							#{have_meter},
 							ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
 							ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
-						) AS actualEnergy,
+						)) AS actualEnergy,
 						CASE
 							WHEN s.pv_model = 1 THEN
 								AVG(IF(d.id_device_type = 4,
@@ -1089,7 +1089,7 @@
 					LEFT JOIN (
 						SELECT
 							DATE_FORMAT(group_by_day, "%b-%y") AS time_full,
-							SUM(actualEnergy) AS actualEnergy,
+							GREATEST(0, SUM(actualEnergy)) AS actualEnergy,
 							AVG(expectedPower) * 24 * COUNT(*) AS expectedEnergy,
 							AVG(actualPOA) AS actualPOA
 						FROM (
@@ -1155,7 +1155,7 @@
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%m/%d/%Y") AS time_full,
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%b") AS `month`,
 								DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', tz.`value`), "%Y") AS `year`,
-								SUM(vir.nvmActiveEnergy) AS actualEnergy,
+								GREATEST(0, SUM(vir.nvmActiveEnergy)) AS actualEnergy,
 								AVG(vir.expected_power_ac) AS expectedPower
 							FROM
 								${table_data_virtual} vir
@@ -1177,11 +1177,11 @@
 								DATE_FORMAT(sdr.time, "%m/%d/%Y") AS time_full,
 								DATE_FORMAT(sdr.time, "%b") AS `month`,
 								DATE_FORMAT(sdr.time, "%Y") AS `year`,
-								IF(
+								GREATEST(0, IF(
 									#{have_meter},
 									ROUND(CAST(SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS DECIMAL), 1),
 									ROUND(CAST(SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS DECIMAL), 1)
-								) AS actualEnergy,
+								)) AS actualEnergy,
 								CASE
 									WHEN s.pv_model = 1 THEN
 										AVG(IF(d.id_device_type = 4,

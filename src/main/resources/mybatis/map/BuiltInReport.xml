@@ -105,12 +105,12 @@
 	<select id="getDataAnnualTrendReport" resultType="com.nwm.api.entities.WeeklyDateEntity" >
 		SELECT
 			DATE_FORMAT(group_by_day, '%b-%y') AS categories_time,
-			CAST(SUM(ActualGeneration) AS DECIMAL) AS ActualGeneration,
+			CAST(GREATEST(0, SUM(ActualGeneration)) AS DECIMAL) AS ActualGeneration,
 			CAST(AVG(ExpectedPower) * 24 * DAYOFMONTH(MAX(group_by_day)) AS DECIMAL) AS ExpectedGeneration,
 			ROUND(AVG(POA), 2) AS POA,
 			CAST(ModeledGeneration AS DECIMAL) AS ModeledGeneration,
-			ROUND(SUM(ActualGeneration) / (AVG(ExpectedPower) * 24 * DAYOFMONTH(MAX(group_by_day))) * 100, 1) AS ExpectedGenerationIndex,
-			ROUND(SUM(ActualGeneration) / ModeledGeneration * 100, 1) AS ModeledGenerationIndex
+			ROUND(GREATEST(0, SUM(ActualGeneration)) / (AVG(ExpectedPower) * 24 * DAYOFMONTH(MAX(group_by_day))) * 100, 1) AS ExpectedGenerationIndex,
+			ROUND(GREATEST(0, SUM(ActualGeneration)) / ModeledGeneration * 100, 1) AS ModeledGenerationIndex
 		FROM (
 			SELECT
 				DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%Y-%m-%d') AS group_by_day,
@@ -177,7 +177,7 @@
 	<select id="getMonthlyTrendBuitInReport" resultType="com.nwm.api.entities.MonthlyProductionTrendReportEntity" >
 			SELECT
 				t.categories_time,
-				CAST(SUM(t.monthlyProduction) AS DECIMAL) AS monthlyProduction
+				CAST(GREATEST(0, SUM(t.monthlyProduction)) AS DECIMAL) AS monthlyProduction
 			FROM
 				(
 					<foreach collection="groupDevices" item="item" index="index" separator="union all">
@@ -227,7 +227,7 @@
 		FROM (
 			SELECT
 				DATE_FORMAT(CONVERT_TZ(vir.time, 'UTC', t.`value`), '%m/%d/%Y' ) AS categories_time,
-				SUM(vir.nvmActiveEnergy) AS ActualGeneration,
+				GREATEST(0, SUM(vir.nvmActiveEnergy)) AS ActualGeneration,
 				AVG(vir.expected_power_ac) * 24 AS ExpectedGeneration,
 				AVG(vir.nvm_irradiance) AS POA,
 				CASE
