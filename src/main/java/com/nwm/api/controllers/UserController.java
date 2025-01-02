@@ -143,6 +143,14 @@ public class UserController extends BaseController {
 				if (hashArr.length == 2) {
 					String id_user = secretCard.decrypt(hashArr[0]);
 					obj.setId(Integer.parseInt(id_user));
+					
+					// check password exits
+					AccountEntity dataCurrentUser = service.getUserById((int) obj.getId());
+					String oldPassword = dataCurrentUser.getPassword();
+					if (oldPassword.equals(obj.getPassword())) {
+						return this.jsonResult(false, Constants.PASS_DIFF_PASSOLD, null, 0);
+					}
+					
 					service.resetPassword(obj);
 					return this.jsonResult(true, Constants.CHANGE_PASSWORD_SUCCESS_MSG, obj, 1);
 				} else {

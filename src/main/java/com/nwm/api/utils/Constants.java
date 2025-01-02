@@ -224,6 +224,9 @@ public class Constants {
     public static String USER_EXIST = Translator.toLocale("USER.EXIST");
     public static String PASSWORD_OLD_ERROR_MSG = Translator.toLocale("USER.PASSWORD_OLD_ERROR_MSG");
     public static String ADMIN_RESET_PASSWORD = Translator.toLocale("EMPLOYEE.ADMIN_RESET_PASSWORD");
+    
+    public static String PASS_DIFF_PASSOLD = Translator.toLocale("USER.PASS_DIFF_PASSOLD");
+    
   
     
 
