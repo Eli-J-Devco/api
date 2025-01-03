@@ -32,11 +32,27 @@
 				'value', s.id,
 				'text', s.name,
 				'label', s.name,
-				'id_site_group', s.id_site_group
+				'id_site_group', s.id_site_group,
+				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
 			)) AS sitesJSON
 		FROM
 			site_group AS sg
 			LEFT JOIN site s ON s.id_site_group = sg.id
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1
+					AND d.is_delete = 0
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
 		WHERE
 			sg.status = 1
 			AND sg.is_delete = 0 

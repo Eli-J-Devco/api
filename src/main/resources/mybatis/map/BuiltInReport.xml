@@ -48,6 +48,7 @@
 			LEFT JOIN device d ON d.id_site = s.id
 		WHERE
 			r.id = #{id}
+			AND v.enable_virtual_device > 0
 			<foreach collection="ids" item="item" open="AND s.id IN (" close=")" separator=",">#{item}</foreach>
 			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		GROUP BY
