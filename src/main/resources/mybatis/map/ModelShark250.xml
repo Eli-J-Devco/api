@@ -407,7 +407,7 @@
                 `ACCurrentNeutral` = #{ACCurrentNeutral},
           </if>
           <if test="ActivePowerA != 0.001" >
-                `ActivePowerA = `#{ActivePowerA},
+                `ActivePowerA` = #{ActivePowerA},
           </if>
           <if test="ActivePowerB != 0.001" >
                 `ActivePowerB` = #{ActivePowerB},
