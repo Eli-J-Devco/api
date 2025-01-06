@@ -616,7 +616,7 @@ public class BuiltInReportController extends BaseController {
 						
 						Cell cell55 = row5.createCell(5);
 						cell55.setCellStyle(tableRowOneDecimalPlaceCellStyle);
-						if (item.getExpectedGeneration() != null) cell55.setCellValue(item.getExpectedGenerationIndex());
+						if (item.getExpectedGenerationIndex() != null) cell55.setCellValue(item.getExpectedGenerationIndex());
 						
 						Cell cell56 = row5.createCell(6);
 						cell56.setCellStyle(tableRowOneDecimalPlaceCellStyle);
