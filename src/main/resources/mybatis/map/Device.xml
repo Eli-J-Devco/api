@@ -6151,6 +6151,37 @@
 	            </when>
 	            
 	            
+	            <when test="id_device_group == 105">
+	           		CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int DEFAULT NULL,
+						  `low_alarm` int DEFAULT NULL,
+						  `high_alarm` int DEFAULT NULL,
+						  `MODBUSID` double DEFAULT NULL,
+						  `BaudRate` double DEFAULT NULL,
+						  `ParityDataStopBits` double DEFAULT NULL,
+						  `DataOrder` double DEFAULT NULL,
+						  `CounterMode` double DEFAULT NULL,
+						  `CounterEdge` double DEFAULT NULL,
+						  `PulsesPerCubicFootOfWater` double DEFAULT NULL,
+						  `DigitalInputBinary` double DEFAULT NULL,
+						  `PulseCounter` double DEFAULT NULL,
+						  `TrueCounter` double DEFAULT NULL,
+						  `TotalWaterUsage` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            
 	            
 	                                                          
 	        </choose> 

@@ -70,6 +70,7 @@
 		<mapper resource="mybatis/map/ModelQuint4UPS.xml" />
 		<mapper resource="mybatis/map/ModelG3LightController.xml" />
 		<mapper resource="mybatis/map/ModelSolArkInverter.xml" />
+		<mapper resource="mybatis/map/ModelWaterMeterKyPulse.xml" />
 		
 		
 		
