@@ -5825,7 +5825,7 @@
 							`Fault1` double DEFAULT NULL,
 							`Fault2` double DEFAULT NULL,
 							`Fault3` double DEFAULT NULL,
-							`SerialNumberHex4Reg` varchar(200) DEFAULT NULL,
+							`SerialNumberHex4Reg` double DEFAULT NULL,
 							`CabinetTemperature` double DEFAULT NULL,
 							`InternalTemperature` double DEFAULT NULL,
 							`IMITemperature` double DEFAULT NULL,
