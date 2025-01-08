@@ -1659,6 +1659,10 @@
 			<if test="site_name != null">
 				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
 			</if>
+			
+			<if test="keyword != null">
+				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
+			</if>
   	</select>
   	
   	
