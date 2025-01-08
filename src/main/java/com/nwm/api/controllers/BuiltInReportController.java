@@ -6,6 +6,8 @@
 package com.nwm.api.controllers;
 
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -71,10 +73,10 @@ public class BuiltInReportController extends BaseController {
 			BuiltInReportService service = new BuiltInReportService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, WeeklyDateEntity.class);
-			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, summarizedList, summarizedList.size());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
 
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -102,7 +104,7 @@ public class BuiltInReportController extends BaseController {
 				
 				if (dataObj != null) {
 					List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
+					int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
 					
 					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(dataObj.getSite_name()));
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
@@ -130,9 +132,10 @@ public class BuiltInReportController extends BaseController {
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualGeneration() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getExpectedGeneration() == null), data, categoriesData, valuesData2, "Expected Generation (kWh)", XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getModeledGeneration() == null), data, categoriesData, valuesData3, "Modeled Generation (kWh)", XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}), null);
+						Supplier<Stream<WeeklyDateEntity>> filteredDataExports = () -> dataExports.stream().filter(item -> !item.getCategories_time().equals("Total"));
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getActualGeneration() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}), null);
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGeneration() == null), data, categoriesData, valuesData2, "Expected Generation (kWh)", XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}), null);
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGeneration() == null), data, categoriesData, valuesData3, "Modeled Generation (kWh)", XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}), null);
 						
 						chart.plot(data);
 						
@@ -140,9 +143,9 @@ public class BuiltInReportController extends BaseController {
 						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
 						
 						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getExpectedGenerationIndex() == null), data, categoriesData, valuesData4, "Expected Generation Index (%)", XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}), null);
+						Series lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGenerationIndex() == null), data, categoriesData, valuesData4, "Expected Generation Index (%)", XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 0, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}));
-						lineSeries = DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getModeledGenerationIndex() == null), data, categoriesData, valuesData5, "Modeled Generation Index (%)", XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}), null);
+						lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGenerationIndex() == null), data, categoriesData, valuesData5, "Modeled Generation Index (%)", XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 1, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}));
 						
 						chart.plot(data);
@@ -170,10 +173,10 @@ public class BuiltInReportController extends BaseController {
 			BuiltInReportService service = new BuiltInReportService();
 			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
 			List<ViewReportEntity> summarizedList = service.summarizeReport(dataObjList, MonthlyProductionTrendReportEntity.class);
-			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, summarizedList, summarizedList.size());
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, summarizedList, summarizedList.size());
 
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 	
@@ -445,7 +448,7 @@ public class BuiltInReportController extends BaseController {
 				
 				if (dataObj != null) {
 					List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
-					int numOfPoints = dataExports != null ? dataExports.size() : 0;
+					int numOfPoints = dataExports != null ? dataExports.size() - 1 : 0; // exclude total row
 					
 					XSSFSheet sheet = document.createSheet(WorkbookUtil.createSafeSheetName(dataObj.getSite_name()));
 					DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
@@ -473,9 +476,10 @@ public class BuiltInReportController extends BaseController {
 						XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "GENERATION (KWH)");
 						
 						XDDFChartData data = DocumentHelper.createChartData(chart, ChartTypes.BAR, bottomAxis, leftAxis);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getActualGeneration() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getExpectedGeneration() == null), data, categoriesData, valuesData2, "Expected Generation (kWh)", XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}), null);
-						DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getModeledGeneration() == null), data, categoriesData, valuesData3, "Modeled Generation (kWh)", XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}), null);
+						Supplier<Stream<WeeklyDateEntity>> filteredDataExports = () -> dataExports.stream().filter(item -> !item.getCategories_time().equals("Total"));
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getActualGeneration() == null), data, categoriesData, valuesData1, "Actual Generation (kWh)", XDDFColor.from(new byte[] {(byte) 70, (byte) 130, (byte) 180}), null);
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGeneration() == null), data, categoriesData, valuesData2, "Expected Generation (kWh)", XDDFColor.from(new byte[] {(byte) 166, (byte) 166, (byte) 166}), null);
+						DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGeneration() == null), data, categoriesData, valuesData3, "Modeled Generation (kWh)", XDDFColor.from(new byte[] {(byte) 176, (byte) 196, (byte) 222}), null);
 						
 						chart.plot(data);
 						
@@ -483,9 +487,9 @@ public class BuiltInReportController extends BaseController {
 						XDDFValueAxis rightAxis = DocumentHelper.createRightValueAxis(chart, bottomAxis, "PERFORMANCE INDEX (%)");
 						
 						data = DocumentHelper.createChartData(chart, ChartTypes.LINE, bottomAxis, rightAxis);
-						Series lineSeries = DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getExpectedGenerationIndex() == null), data, categoriesData, valuesData4, "Expected Generation Index (%)", XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}), null);
+						Series lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getExpectedGenerationIndex() == null), data, categoriesData, valuesData4, "Expected Generation Index (%)", XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 0, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 112, (byte) 173, (byte) 71}));
-						lineSeries = DocumentHelper.addSeries(dataExports.stream().allMatch(item -> item.getModeledGenerationIndex() == null), data, categoriesData, valuesData5, "Modeled Generation Index (%)", XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}), null);
+						lineSeries = DocumentHelper.addSeries(filteredDataExports.get().allMatch(item -> item.getModeledGenerationIndex() == null), data, categoriesData, valuesData5, "Modeled Generation Index (%)", XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}), null);
 						DocumentHelper.solidFillLineMarker(chart, lineSeries, 1, MarkerStyle.CIRCLE, XDDFColor.from(new byte[] {(byte) 255, (byte) 192, (byte) 0}));
 						
 						chart.plot(data);
@@ -585,82 +589,45 @@ public class BuiltInReportController extends BaseController {
 				sheet.addMergedRegion(new CellRangeAddress(5, 5, 6, 7));
 				
 				List<WeeklyDateEntity> dataExports = dataObj.getDataReports();
-				Double totalActualGeneration = null;
-				Double totalExpectedGeneration = null;
-				Double totalModeledGeneration = null;
 				
 				if(dataExports != null && dataExports.size() > 0) {
 					for (int i = 0; i < dataExports.size(); i++) {
 						WeeklyDateEntity item = dataExports.get(i);
+						boolean isTotalRow = item.getCategories_time().equals("Total");
 						
 						Row row5 = sheet.createRow(6 + i);
 						Cell cell5 = row5.createCell(0);
-						cell5.setCellStyle(tableRowCellStyle);
+						cell5.setCellStyle(isTotalRow ? tableRowBoldCellStyle : tableRowCellStyle);
 						cell5.setCellValue(item.getCategories_time());
 						
 						Cell cell51 = row5.createCell(1);
-						cell51.setCellStyle(tableRowNoDecimalCellStyle);
+						cell51.setCellStyle(isTotalRow ? tableRowNoDecimalBoldCellStyle : tableRowNoDecimalCellStyle);
 						if (item.getActualGeneration() != null) cell51.setCellValue(item.getActualGeneration());
 						
 						Cell cell52 = row5.createCell(2);
-						cell52.setCellStyle(tableRowNoDecimalCellStyle);
+						cell52.setCellStyle(isTotalRow ? tableRowNoDecimalBoldCellStyle : tableRowNoDecimalCellStyle);
 						if (item.getExpectedGeneration() != null) cell52.setCellValue(item.getExpectedGeneration());
 						
 						Cell cell53 = row5.createCell(3);
-						cell53.setCellStyle(tableRowNoDecimalCellStyle);
+						cell53.setCellStyle(isTotalRow ? tableRowNoDecimalBoldCellStyle : tableRowNoDecimalCellStyle);
 						if (item.getModeledGeneration() != null) cell53.setCellValue(item.getModeledGeneration());
 						
 						Cell cell54 = row5.createCell(4);
-						cell54.setCellStyle(tableRowTwoDecimalPlaceCellStyle);
+						cell54.setCellStyle(isTotalRow ? tableRowOneDecimalPlaceBoldCellStyle : tableRowTwoDecimalPlaceCellStyle);
 						if (item.getPoa() != null) cell54.setCellValue(item.getPoa());
 						
 						Cell cell55 = row5.createCell(5);
-						cell55.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+						cell55.setCellStyle(isTotalRow ? tableRowOneDecimalPlaceBoldCellStyle : tableRowOneDecimalPlaceCellStyle);
 						if (item.getExpectedGenerationIndex() != null) cell55.setCellValue(item.getExpectedGenerationIndex());
 						
 						Cell cell56 = row5.createCell(6);
-						cell56.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+						cell56.setCellStyle(isTotalRow ? tableRowOneDecimalPlaceBoldCellStyle : tableRowOneDecimalPlaceCellStyle);
 						if (item.getModeledGenerationIndex() != null) cell56.setCellValue(item.getModeledGenerationIndex());
 						Cell cell57 = row5.createCell(7);
-						cell57.setCellStyle(tableRowOneDecimalPlaceCellStyle);
+						cell57.setCellStyle(isTotalRow ? tableRowOneDecimalPlaceBoldCellStyle : tableRowOneDecimalPlaceCellStyle);
 						sheet.addMergedRegion(new CellRangeAddress(6 + i, 6 + i, 6, 7));
-						
-						if(item.getActualGeneration() != null) totalActualGeneration = (totalActualGeneration != null ? totalActualGeneration : 0) + item.getActualGeneration();
-						if(item.getExpectedGeneration() != null) totalExpectedGeneration = (totalExpectedGeneration != null ? totalExpectedGeneration : 0) + item.getExpectedGeneration();
-						if(item.getModeledGeneration() != null) totalModeledGeneration = (totalModeledGeneration != null ? totalModeledGeneration : 0) + item.getModeledGeneration();
 					}
 				}
-				
-				Row row6 = sheet.createRow(6 + dataExports.size());
-				Cell cell6 = row6.createCell(0);
-				cell6.setCellStyle(tableRowBoldCellStyle);
-				cell6.setCellValue("Total");
-				
-				Cell cell61 = row6.createCell(1);
-				cell61.setCellStyle(tableRowNoDecimalBoldCellStyle);
-				if (totalActualGeneration != null) cell61.setCellValue(totalActualGeneration);
-				
-				Cell cell62 = row6.createCell(2);
-				cell62.setCellStyle(tableRowNoDecimalBoldCellStyle);
-				if (totalExpectedGeneration != null) cell62.setCellValue(totalExpectedGeneration);
-				
-				Cell cell63 = row6.createCell(3);
-				cell63.setCellStyle(tableRowNoDecimalBoldCellStyle);
-				if (totalModeledGeneration != null) cell63.setCellValue(totalModeledGeneration);
-				
-				Cell cell64 = row6.createCell(4);
-				cell64.setCellStyle(tableRowOneDecimalPlaceBoldCellStyle);
-				
-				Cell cell65 = row6.createCell(5);
-				cell65.setCellStyle(tableRowOneDecimalPlaceBoldCellStyle);
-				if (totalActualGeneration > 0 && totalExpectedGeneration > 0) cell65.setCellValue(totalActualGeneration / totalExpectedGeneration * 100);
-				
-				Cell cell66 = row6.createCell(6);
-				cell66.setCellStyle(tableRowOneDecimalPlaceBoldCellStyle);
-				if (totalActualGeneration > 0 && totalModeledGeneration > 0) cell66.setCellValue(totalActualGeneration / totalModeledGeneration * 100);
-				Cell cell67 = row6.createCell(7);
-				cell67.setCellStyle(tableRowOneDecimalPlaceBoldCellStyle);
-				sheet.addMergedRegion(new CellRangeAddress(6 + dataExports.size(), 6 + dataExports.size(), 6, 7));
 				
 				// add Note
 				Font fontRowBg = sheet.getWorkbook().createFont();
