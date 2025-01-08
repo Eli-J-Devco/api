@@ -7,25 +7,22 @@ package com.nwm.api.entities;
 
 public class ModelXGI1500Entity extends ModelBaseEntity {
 	private double ACCurrentAverage;
-	private double ACCurrentA;
-	private double ACCurrentB;
+	private double 	ACCurrentA;
+	private double 	ACCurrentB;
 	private double ACCurrentC;
 	private double ACVoltageAB;
-	private double ACVoltageBC;
+	private double 	ACVoltageBC;
 	private double ACVoltageCA;
 	private double ACVoltageAN;
-	private double ACVoltageBN;
+	private double 	ACVoltageBN;
 	private double ACVoltageCN;
 	private double ActivePower;
 	private double Frequency;
 	private double ApparentPower;
 	private double ReactivePower;
 	private double PowerFactor;
-	private double ActiveEnergyGross;
 	private double ActiveEnergyRawNet;
-	private double DCCurrentTotal;
-	private double DCPowerTotal;
-	private double DCVoltageAvg;
+	private double DCVoltage;
 	private double OperatingState;
 	private double OperatingStatus;
 	private double FaultStatus;
@@ -34,24 +31,8 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	private double Fault3;
 	private double SerialNumberHex4Reg;
 	private double CabinetTemperature;
-	private double HeatSinkTemperature;
-	private double OtherTemperature;
-	private double Currentscalefactor;
-	private double VoltageScaleFactor;
-	private double ActivePowerScaleFactor;
-	private double FrequencyScaleFactor;
-	private double ApparentPowerScaleFactor;
-	private double ReactivePowerScaleFactor;
-	private double PowerFactorScaleFactor;
-	private double EnergyScaleFactor;
-	private double DCCurrentscalefactor;
-	private double DCVoltagescalefactor;
-	private double DCPowerScaleFactor;
-	private double Temperaturescalefactor;
-	private double ID;
-	private double Length;
-	private double Manufacturer;
-	private double Model;
+	private double InternalTemperature;
+	private double 	IMITemperature;
 	private double ControlDeviceOnOff;
 	private double ActivePowerSetpointPercent;
 	private double ActivePowerControlEnable;
@@ -59,7 +40,12 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	private double PowerFactorControlEnable;
 	private double ReactivePowerSetpointPercent;
 	private double ReactivePowerControlEnable;
-	
+	private double nvmActivePower;
+	private double nvmActiveEnergy;
+	private double MeasuredProduction;
+	private String datatablename;
+	private String view_tablename;
+	private String job_tablename;
 	public double getACCurrentAverage() {
 		return ACCurrentAverage;
 	}
@@ -150,35 +136,17 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	public void setPowerFactor(double powerFactor) {
 		PowerFactor = powerFactor;
 	}
-	public double getActiveEnergyGross() {
-		return ActiveEnergyGross;
-	}
-	public void setActiveEnergyGross(double activeEnergyGross) {
-		ActiveEnergyGross = activeEnergyGross;
-	}
 	public double getActiveEnergyRawNet() {
 		return ActiveEnergyRawNet;
 	}
 	public void setActiveEnergyRawNet(double activeEnergyRawNet) {
 		ActiveEnergyRawNet = activeEnergyRawNet;
 	}
-	public double getDCCurrentTotal() {
-		return DCCurrentTotal;
+	public double getDCVoltage() {
+		return DCVoltage;
 	}
-	public void setDCCurrentTotal(double dCCurrentTotal) {
-		DCCurrentTotal = dCCurrentTotal;
-	}
-	public double getDCPowerTotal() {
-		return DCPowerTotal;
-	}
-	public void setDCPowerTotal(double dCPowerTotal) {
-		DCPowerTotal = dCPowerTotal;
-	}
-	public double getDCVoltageAvg() {
-		return DCVoltageAvg;
-	}
-	public void setDCVoltageAvg(double dCVoltageAvg) {
-		DCVoltageAvg = dCVoltageAvg;
+	public void setDCVoltage(double dCVoltage) {
+		DCVoltage = dCVoltage;
 	}
 	public double getOperatingState() {
 		return OperatingState;
@@ -228,113 +196,17 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	public void setCabinetTemperature(double cabinetTemperature) {
 		CabinetTemperature = cabinetTemperature;
 	}
-	public double getHeatSinkTemperature() {
-		return HeatSinkTemperature;
+	public double getInternalTemperature() {
+		return InternalTemperature;
 	}
-	public void setHeatSinkTemperature(double heatSinkTemperature) {
-		HeatSinkTemperature = heatSinkTemperature;
+	public void setInternalTemperature(double internalTemperature) {
+		InternalTemperature = internalTemperature;
 	}
-	public double getOtherTemperature() {
-		return OtherTemperature;
+	public double getIMITemperature() {
+		return IMITemperature;
 	}
-	public void setOtherTemperature(double otherTemperature) {
-		OtherTemperature = otherTemperature;
-	}
-	public double getCurrentscalefactor() {
-		return Currentscalefactor;
-	}
-	public void setCurrentscalefactor(double currentscalefactor) {
-		Currentscalefactor = currentscalefactor;
-	}
-	public double getVoltageScaleFactor() {
-		return VoltageScaleFactor;
-	}
-	public void setVoltageScaleFactor(double voltageScaleFactor) {
-		VoltageScaleFactor = voltageScaleFactor;
-	}
-	public double getActivePowerScaleFactor() {
-		return ActivePowerScaleFactor;
-	}
-	public void setActivePowerScaleFactor(double activePowerScaleFactor) {
-		ActivePowerScaleFactor = activePowerScaleFactor;
-	}
-	public double getFrequencyScaleFactor() {
-		return FrequencyScaleFactor;
-	}
-	public void setFrequencyScaleFactor(double frequencyScaleFactor) {
-		FrequencyScaleFactor = frequencyScaleFactor;
-	}
-	public double getApparentPowerScaleFactor() {
-		return ApparentPowerScaleFactor;
-	}
-	public void setApparentPowerScaleFactor(double apparentPowerScaleFactor) {
-		ApparentPowerScaleFactor = apparentPowerScaleFactor;
-	}
-	public double getReactivePowerScaleFactor() {
-		return ReactivePowerScaleFactor;
-	}
-	public void setReactivePowerScaleFactor(double reactivePowerScaleFactor) {
-		ReactivePowerScaleFactor = reactivePowerScaleFactor;
-	}
-	public double getPowerFactorScaleFactor() {
-		return PowerFactorScaleFactor;
-	}
-	public void setPowerFactorScaleFactor(double powerFactorScaleFactor) {
-		PowerFactorScaleFactor = powerFactorScaleFactor;
-	}
-	public double getEnergyScaleFactor() {
-		return EnergyScaleFactor;
-	}
-	public void setEnergyScaleFactor(double energyScaleFactor) {
-		EnergyScaleFactor = energyScaleFactor;
-	}
-	public double getDCCurrentscalefactor() {
-		return DCCurrentscalefactor;
-	}
-	public void setDCCurrentscalefactor(double dCCurrentscalefactor) {
-		DCCurrentscalefactor = dCCurrentscalefactor;
-	}
-	public double getDCVoltagescalefactor() {
-		return DCVoltagescalefactor;
-	}
-	public void setDCVoltagescalefactor(double dCVoltagescalefactor) {
-		DCVoltagescalefactor = dCVoltagescalefactor;
-	}
-	public double getDCPowerScaleFactor() {
-		return DCPowerScaleFactor;
-	}
-	public void setDCPowerScaleFactor(double dCPowerScaleFactor) {
-		DCPowerScaleFactor = dCPowerScaleFactor;
-	}
-	public double getTemperaturescalefactor() {
-		return Temperaturescalefactor;
-	}
-	public void setTemperaturescalefactor(double temperaturescalefactor) {
-		Temperaturescalefactor = temperaturescalefactor;
-	}
-	public double getID() {
-		return ID;
-	}
-	public void setID(double iD) {
-		ID = iD;
-	}
-	public double getLength() {
-		return Length;
-	}
-	public void setLength(double length) {
-		Length = length;
-	}
-	public double getManufacturer() {
-		return Manufacturer;
-	}
-	public void setManufacturer(double manufacturer) {
-		Manufacturer = manufacturer;
-	}
-	public double getModel() {
-		return Model;
-	}
-	public void setModel(double model) {
-		Model = model;
+	public void setIMITemperature(double iMITemperature) {
+		IMITemperature = iMITemperature;
 	}
 	public double getControlDeviceOnOff() {
 		return ControlDeviceOnOff;
@@ -378,7 +250,41 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	public void setReactivePowerControlEnable(double reactivePowerControlEnable) {
 		ReactivePowerControlEnable = reactivePowerControlEnable;
 	}
-	
-	
+	public double getNvmActivePower() {
+		return nvmActivePower;
+	}
+	public void setNvmActivePower(double nvmActivePower) {
+		this.nvmActivePower = nvmActivePower;
+	}
+	public double getNvmActiveEnergy() {
+		return nvmActiveEnergy;
+	}
+	public void setNvmActiveEnergy(double nvmActiveEnergy) {
+		this.nvmActiveEnergy = nvmActiveEnergy;
+	}
+	public double getMeasuredProduction() {
+		return MeasuredProduction;
+	}
+	public void setMeasuredProduction(double measuredProduction) {
+		MeasuredProduction = measuredProduction;
+	}
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getView_tablename() {
+		return view_tablename;
+	}
+	public void setView_tablename(String view_tablename) {
+		this.view_tablename = view_tablename;
+	}
+	public String getJob_tablename() {
+		return job_tablename;
+	}
+	public void setJob_tablename(String job_tablename) {
+		this.job_tablename = job_tablename;
+	}
 	
 }

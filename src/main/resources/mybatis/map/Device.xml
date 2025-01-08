@@ -5817,48 +5817,25 @@
 							`ApparentPower` double DEFAULT NULL,
 							`ReactivePower` double DEFAULT NULL,
 							`PowerFactor` double DEFAULT NULL,
-							`ActiveEnergyGross` double DEFAULT NULL,
 							`ActiveEnergyRawNet` double DEFAULT NULL,
-							`DCCurrentTotal` double DEFAULT NULL,
-							`DCPowerTotal` double DEFAULT NULL,
-							`DCVoltageAvg` double DEFAULT NULL,
+							`DCVoltage` double DEFAULT NULL,
 							`OperatingState` double DEFAULT NULL,
 							`OperatingStatus` double DEFAULT NULL,
 							`FaultStatus` double DEFAULT NULL,
 							`Fault1` double DEFAULT NULL,
 							`Fault2` double DEFAULT NULL,
 							`Fault3` double DEFAULT NULL,
-							`SerialNumberHex4Reg` varchar(200) DEFAULT NULL,
+							`SerialNumberHex4Reg` double DEFAULT NULL,
 							`CabinetTemperature` double DEFAULT NULL,
-							`HeatSinkTemperature` double DEFAULT NULL,
-							`OtherTemperature` double DEFAULT NULL,
-							`Currentscalefactor` double DEFAULT NULL,
-							`VoltageScaleFactor` double DEFAULT NULL,
-							`ActivePowerScaleFactor` double DEFAULT NULL,
-							`FrequencyScaleFactor` double DEFAULT NULL,
-							`ApparentPowerScaleFactor` double DEFAULT NULL,
-							`ReactivePowerScaleFactor` double DEFAULT NULL,
-							`PowerFactorScaleFactor` double DEFAULT NULL,
-							`EnergyScaleFactor` double DEFAULT NULL,
-							`DCCurrentscalefactor` double DEFAULT NULL,
-							`DCVoltagescalefactor` double DEFAULT NULL,
-							
-							`DCPowerScaleFactor` double DEFAULT NULL,
-							`Temperaturescalefactor` double DEFAULT NULL,
-							`ID` double DEFAULT NULL,
-							`Length` double DEFAULT NULL,
-							`Manufacturer` double DEFAULT NULL,
-							`Model` double DEFAULT NULL,
+							`InternalTemperature` double DEFAULT NULL,
+							`IMITemperature` double DEFAULT NULL,
 							`ControlDeviceOnOff` double DEFAULT NULL,
 							`ActivePowerSetpointPercent` double DEFAULT NULL,
 							`ActivePowerControlEnable` double DEFAULT NULL,
 							`PowerFactorSetpoint` double DEFAULT NULL,
 							`PowerFactorControlEnable` double DEFAULT NULL,
-							
 							`ReactivePowerSetpointPercent` double DEFAULT NULL,
 							`ReactivePowerControlEnable` double DEFAULT NULL,
-							
-							
 							`nvmActivePower` double DEFAULT NULL,
 							`nvmActiveEnergy` double DEFAULT NULL,
 							`MeasuredProduction` double DEFAULT NULL,
@@ -6172,6 +6149,37 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            
+	            <when test="id_device_group == 105">
+	           		CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int DEFAULT NULL,
+						  `low_alarm` int DEFAULT NULL,
+						  `high_alarm` int DEFAULT NULL,
+						  `MODBUSID` double DEFAULT NULL,
+						  `BaudRate` double DEFAULT NULL,
+						  `ParityDataStopBits` double DEFAULT NULL,
+						  `DataOrder` double DEFAULT NULL,
+						  `CounterMode` double DEFAULT NULL,
+						  `CounterEdge` double DEFAULT NULL,
+						  `PulsesPerCubicFootOfWater` double DEFAULT NULL,
+						  `DigitalInputBinary` double DEFAULT NULL,
+						  `PulseCounter` double DEFAULT NULL,
+						  `TrueCounter` double DEFAULT NULL,
+						  `TotalWaterUsage` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	            
 	            
 	            

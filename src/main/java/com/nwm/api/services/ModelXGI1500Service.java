@@ -50,7 +50,6 @@ public class ModelXGI1500Service extends DB {
 				dataModelXGI1500.setACVoltageAB(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
 				dataModelXGI1500.setACVoltageBC(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModelXGI1500.setACVoltageCA(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				
 				dataModelXGI1500.setACVoltageAN(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelXGI1500.setACVoltageBN(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModelXGI1500.setACVoltageCN(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
@@ -59,51 +58,31 @@ public class ModelXGI1500Service extends DB {
 				dataModelXGI1500.setApparentPower(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelXGI1500.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelXGI1500.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
-				dataModelXGI1500.setActiveEnergyGross(energy);
+				dataModelXGI1500.setActiveEnergyRawNet(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
 				
-				dataModelXGI1500.setActiveEnergyRawNet(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
-				dataModelXGI1500.setDCCurrentTotal(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
-				dataModelXGI1500.setDCPowerTotal(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
-				dataModelXGI1500.setDCVoltageAvg(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
-				dataModelXGI1500.setOperatingState(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
-				dataModelXGI1500.setOperatingStatus(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
-				dataModelXGI1500.setFaultStatus(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
-				dataModelXGI1500.setFault1(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
-				dataModelXGI1500.setFault2(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModelXGI1500.setFault3(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModelXGI1500.setDCVoltage(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
+				dataModelXGI1500.setOperatingState(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
+				dataModelXGI1500.setOperatingStatus(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001"));
+				dataModelXGI1500.setFaultStatus(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
+				dataModelXGI1500.setFault1(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
+				dataModelXGI1500.setFault2(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
+				dataModelXGI1500.setFault3(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				
-				String hex =  !Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"; // "0x3157323334333837"; 
+				String hex =  !Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"; // "0x3157323334333837"; 
 				String dec = "0.001";
 		        if(!hex.equals("0.001")) {  dec = Integer.toString(Lib.hexToDec(hex));   }
 		        
 				dataModelXGI1500.setSerialNumberHex4Reg(Double.parseDouble(dec));
-				dataModelXGI1500.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
-				dataModelXGI1500.setHeatSinkTemperature(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
-				dataModelXGI1500.setOtherTemperature(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
-				dataModelXGI1500.setCurrentscalefactor(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
-				dataModelXGI1500.setVoltageScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
-				dataModelXGI1500.setActivePowerScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModelXGI1500.setFrequencyScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
-				dataModelXGI1500.setApparentPowerScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
-				dataModelXGI1500.setReactivePowerScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModelXGI1500.setPowerFactorScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
-				
-				dataModelXGI1500.setEnergyScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
-				dataModelXGI1500.setDCCurrentscalefactor(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModelXGI1500.setDCVoltagescalefactor(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				
-				dataModelXGI1500.setDCPowerScaleFactor(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
-				dataModelXGI1500.setID(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
-				dataModelXGI1500.setLength(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
-				dataModelXGI1500.setManufacturer(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
-				dataModelXGI1500.setModel(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
-				dataModelXGI1500.setControlDeviceOnOff(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
-				dataModelXGI1500.setActivePowerSetpointPercent(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
-				dataModelXGI1500.setActivePowerControlEnable(Double.parseDouble(!Lib.isBlank(words.get(51)) ? words.get(51) : "0.001"));
-				dataModelXGI1500.setPowerFactorSetpoint(Double.parseDouble(!Lib.isBlank(words.get(52)) ? words.get(52) : "0.001"));
-				dataModelXGI1500.setPowerFactorControlEnable(Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001"));
-				dataModelXGI1500.setReactivePowerSetpointPercent(Double.parseDouble(!Lib.isBlank(words.get(54)) ? words.get(54) : "0.001"));
-				dataModelXGI1500.setReactivePowerControlEnable(Double.parseDouble(!Lib.isBlank(words.get(55)) ? words.get(55) : "0.001"));
+				dataModelXGI1500.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
+				dataModelXGI1500.setInternalTemperature(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModelXGI1500.setIMITemperature(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModelXGI1500.setControlDeviceOnOff(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelXGI1500.setActivePowerSetpointPercent(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelXGI1500.setActivePowerControlEnable(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
+				dataModelXGI1500.setPowerFactorSetpoint(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
+				dataModelXGI1500.setPowerFactorControlEnable(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
+				dataModelXGI1500.setReactivePowerSetpointPercent(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
+				dataModelXGI1500.setReactivePowerControlEnable(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
@@ -140,7 +119,7 @@ public class ModelXGI1500Service extends DB {
 			 
 			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
 				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setActiveEnergyGross(dataObj.getNvmActiveEnergy());
+				 obj.setActiveEnergyRawNet(dataObj.getNvmActiveEnergy());
 			 }
 			 
 			 obj.setMeasuredProduction(measuredProduction);

@@ -104,6 +104,7 @@ public class EmailTrackingController extends BaseController {
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			
 		}
 	}
 	
