@@ -177,9 +177,6 @@ public class BuiltInReportService extends DB {
 					.collect(Collectors.toList());
 			
 			if (findReport.getCadence_range() == 4 || findReport.getCadence_range() == 6) {
-				List<Double> totalExpectedGeneration = new ArrayList<Double>();
-				List<Double> totalModeledGeneration = new ArrayList<Double>();
-				
 				for (int i = 0; i < summaryData.size(); i++) {
 					WeeklyDateEntity sum = (WeeklyDateEntity) summaryData.get(i);
 					List<Double> actualGeneration = new ArrayList<Double>();
@@ -203,17 +200,9 @@ public class BuiltInReportService extends DB {
 					sum.setActualGeneration(actualGeneration.stream().allMatch(Objects::isNull) ? null : actualGeneration.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).sum());
 					sum.setExpectedGeneration(expectedGeneration.stream().allMatch(Objects::isNull) ? null : expectedGeneration.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).sum());
 					sum.setModeledGeneration(modeledGeneration.stream().allMatch(Objects::isNull) ? null : modeledGeneration.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).sum());
-					
 					sum.setPoa(poa.stream().allMatch(Objects::isNull) ? null : BigDecimal.valueOf(poa.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).average().getAsDouble()).doubleValue());
-					if (sum.getCategories_time().equals("Total")) {
-						sum.setExpectedGenerationIndex(totalExpectedGeneration.stream().allMatch(Objects::isNull) ? null : BigDecimal.valueOf(totalExpectedGeneration.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).average().getAsDouble()).setScale(1, RoundingMode.HALF_UP).doubleValue());
-						sum.setModeledGenerationIndex(totalModeledGeneration.stream().allMatch(Objects::isNull) ? null : BigDecimal.valueOf(totalModeledGeneration.stream().filter(Objects::nonNull).mapToDouble(Double::doubleValue).average().getAsDouble()).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					} else {
-						sum.setExpectedGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getExpectedGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
-						sum.setModeledGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getModeledGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
-						totalExpectedGeneration.add(sum.getExpectedGenerationIndex());
-						totalModeledGeneration.add(sum.getModeledGenerationIndex());
-					}
+					sum.setExpectedGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getExpectedGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getExpectedGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
+					sum.setModeledGenerationIndex(Optional.ofNullable(sum.getActualGeneration()).orElse(0.0) > 0 && Optional.ofNullable(sum.getModeledGeneration()).orElse(0.0) > 0 ? BigDecimal.valueOf(sum.getActualGeneration() / sum.getModeledGeneration() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 				}
 			} else if (findReport.getCadence_range() == 2 && findReport.getData_intervals() == 6) {
 				for (int i = 0; i < summaryData.size(); i++) {
