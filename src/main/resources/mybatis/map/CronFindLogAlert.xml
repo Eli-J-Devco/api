@@ -470,8 +470,8 @@
 			e.message,
 			e.error_code,
 			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
-			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
-			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
 		FROM
 			alert a
 			LEFT JOIN error e ON e.id = a.id_error
@@ -516,8 +516,8 @@
 			e.message,
 			e.error_code,
 			IF(a.`status` = 0, 'Closed', 'Opened') AS `status`,
-			IF(a.start_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
-			IF(a.end_date IS NULL , "N/A", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
+			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
+			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date
 		FROM
 			alert a
 			LEFT JOIN error e ON e.id = a.id_error

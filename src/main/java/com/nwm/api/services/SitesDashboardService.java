@@ -69,20 +69,20 @@ public class SitesDashboardService extends DB {
 					String times_ago_unit = (String) device.get("times_ago_unit");
 					if (key_indicator.equals("Never")) {}
 					// Find the last value and time
-					else if (last_updated.equals("N/A") || (totalError > 0 && id_error_level == 33) || ((id_device_type == 4) && key_indicator.equals("N/A"))) {
+					else if (last_updated.equals("-") || (totalError > 0 && id_error_level == 33) || ((id_device_type == 4) && key_indicator.equals("-"))) {
 						Map<String, Object> device_site = (Map<String, Object>) queryForObject("SitesDashboard.getLastUpdated", dataList.get(i));
 						if(device_site != null) {
 							device.put("last_updated", device_site.get("time"));	
-							if((id_device_type == 1 || id_device_type == 3 || id_device_type == 4 || id_device_type == 12) && id_error_level != 33 && (device_site.get("key_indicator") != null  || times_ago_unit.equals("N/A"))) {
+							if((id_device_type == 1 || id_device_type == 3 || id_device_type == 4 || id_device_type == 12) && id_error_level != 33 && (device_site.get("key_indicator") != null  || times_ago_unit.equals("-"))) {
 								device.put("key_indicator", device_site.get("key_indicator"));
 							} else if (id_error_level == 33) {
-								device.put("key_indicator", "N/A");
+								device.put("key_indicator", "-");
 								device.put("times_ago_unit", device_site.get("times_ago_unit"));
 								device.put("times_ago", device_site.get("times_ago"));
 							}
 						} else {
-							device.put("last_updated", "N/A");
-							device.put("key_indicator", "N/A");
+							device.put("last_updated", "-");
+							device.put("key_indicator", "-");
 						}
 					}
 				}

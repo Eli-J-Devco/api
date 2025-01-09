@@ -142,7 +142,7 @@
 						WHEN d.datatablename LIKE '%model_pvmet_100' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename LIKE '%model_pvmet_200' THEN ROUND( SUM(d.last_value), 2)
 						WHEN d.datatablename LIKE '%model_sungrow_weather_pvmet75200' THEN ROUND( SUM(d.last_value), 2)					
-						ELSE "N/A"
+						ELSE "-"
 				 	END AS irradiance,
 				 	
 				 	CASE
