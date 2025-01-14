@@ -284,6 +284,12 @@
 				
 				WHEN dg.table_name = 'model_pi_camera_water_meter' AND d.field_value_default = 'reading_value' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "gal" )))
 				
+				WHEN dg.table_name = 'model_QUINT4_UPS' AND d.field_value_default = 'StateofChargeRemainingTime' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(FLOOR(d.field_value1 / 3600) >= 10 , FLOOR(d.field_value1 / 3600), CONCAT_WS("", "0", FLOOR(d.field_value1 / 3600))), 
+CONCAT_WS("", "hour", IF(FLOOR(d.field_value1 / 3600) > 1,"s","")),
+CONCAT_WS(" ", IF(FLOOR(d.field_value1 / 60) % 60 >= 10 , FLOOR(d.field_value1 / 60) % 60 , CONCAT("0", FLOOR(d.field_value1 / 60) % 60)) , CONCAT_WS("", "minute", IF((FLOOR(d.field_value1 / 60) % 60) > 1,"s",""))),
+CONCAT_WS(" ", IF(d.field_value1 % 60 >= 10 , d.field_value1 % 60 , CONCAT("0", d.field_value1 % 60)) , CONCAT_WS("", "second", IF((d.field_value1 % 60) > 1,"s","")))
+)))
+				
 				ELSE "-"
 			END AS key_indicator,
 			IFNULL(p.totalError, 0 ) AS totalError,
