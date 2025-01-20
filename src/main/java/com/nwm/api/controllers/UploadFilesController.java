@@ -3666,14 +3666,14 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.0");
+														double setAngle = Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.0");
 //														setAngle = Math.round((setAngle * 180) / 3.14);
 														
 														// State of Charge Remaining Time
-														if(!Lib.isBlank(words.get(13))) {
+														if(!Lib.isBlank(words.get(17))) {
 															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
-															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(13)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
-															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(13)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(17)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(17)) ? Double.parseDouble(String.valueOf(setAngle)) : null);
 														} else {
 															deviceUpdateE.setLast_updated(null);
 															deviceUpdateE.setLast_value(null);
