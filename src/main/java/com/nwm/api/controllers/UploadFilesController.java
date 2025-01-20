@@ -3594,8 +3594,8 @@ public class UploadFilesController extends BaseController {
 															deviceUpdateE.setLast_updated(dataEntity.getTime());
 														}
 														
-														deviceUpdateE.setLast_value(dataEntity.getThreePhaseRealPower() != 0.001 ? dataEntity.getThreePhaseRealPower() : null);
-														deviceUpdateE.setField_value1(dataEntity.getThreePhaseRealPower() != 0.001 ? dataEntity.getThreePhaseRealPower() : null);
+														deviceUpdateE.setLast_value(dataEntity.getBreakerStatus() != 0.001 ? dataEntity.getBreakerStatus() : null);
+														deviceUpdateE.setField_value1(dataEntity.getBreakerStatus() != 0.001 ? dataEntity.getBreakerStatus() : null);
 														
 														deviceUpdateE.setField_value2(null);
 														deviceUpdateE.setField_value3(null);
