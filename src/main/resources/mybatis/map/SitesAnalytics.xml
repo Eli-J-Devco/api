@@ -198,6 +198,18 @@
 							</choose>
 						</when>
 						
+						<when test="param.slug == 'SolarInsolation'">
+							<choose>
+								<when test="data_send_time == 1 or data_send_time == 2 or data_send_time == 3 or data_send_time == 4 or data_send_time == 8">
+									ROUND(AVG(SolarInsolation), ${param.rounding_decimals}) AS SolarInsolation
+								</when>
+								
+								<otherwise>
+									ROUND(SUM(SolarInsolation), ${param.rounding_decimals}) AS SolarInsolation
+								</otherwise>
+							</choose>
+						</when>
+						
 						<otherwise>
 							ROUND(${param.value_chart_tool}(${param.slug}), ${param.rounding_decimals}) AS ${param.slug}
 						</otherwise>
@@ -314,17 +326,44 @@
 										<when test="data_send_time == 3">
 											* 1
 										</when>
+										
+										<!-- [kWh/m^2/day] = [Wh/m^2/day]/1000 -->
 										<when test="data_send_time == 4">
-											* 24
+											* 24 / 1000
 										</when>
 										<when test="data_send_time == 5">
-											* 24 *
+											* 24 / 1000 /
 											IF(
-												DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value )) >= 7,
-												7,
-												1 + DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value ))
+												DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}) + 1 > FLOOR((DATEDIFF(#{end_date}, #{start_date}) + 1) / 7  ) * 7,
+												MOD(DATEDIFF(#{end_date}, #{start_date}), 7) + 1,
+												7
+											) 
+										</when>
+										
+										<!-- 1 month [kWh/m^2/day_average] = SUM([kWh/m^2/day] in that month)/(number of days in that month that contain data) -->
+										<when test="data_send_time == 6">
+											* 24 / 1000 /
+											IF(
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date} , '%b. %Y' ),
+												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
+												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
 											)
 										</when>
+										<!-- 1 year [kWh/m^2/day_average] = SUM([kWh/m^2/day_average] for each month)/(number of months that contain data) -->
+										<when test="data_send_time == 7">
+											* 24 / 1000 /
+											IF(
+												DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) = DATE_FORMAT( #{end_date}, '%b. %Y' ),
+												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value ))) - DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), #{end_date}),
+												EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )))
+											) /
+											CASE
+												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{start_date}, '%Y' ) THEN 13 - Month(IFNULL(si.time_has_data,  #{start_date}))
+												WHEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) = DATE_FORMAT( #{end_date}, '%Y' ) THEN Month(#{end_date})
+												ELSE 12
+											END
+										</when>
+										
 									</choose> AS ${param.slug}
 							</when>
 							
@@ -517,6 +556,23 @@
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				
+				<if test="(filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 7">
+				LEFT JOIN (
+					SELECT 
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_has_data,
+						dv.id_device
+					FROM
+						${datatablename} dv 
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						dv.id_device = #{id}
+						AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
+						ORDER BY dv.time ASC LIMIT 1
+				) si ON si.id_device = dv.id_device
+				</if>
 			WHERE
 				dv.id_device = #{id}
 				AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME))
