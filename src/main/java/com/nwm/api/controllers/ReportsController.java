@@ -1973,10 +1973,9 @@ public class ReportsController extends BaseController {
 				
 				/* === monthly performance === */
 				if (dataObj != null) {
-					List<AssetManagementAndOperationPerformanceDataEntity> data = (List<AssetManagementAndOperationPerformanceDataEntity>) dataObj.getMonthlyPerformanceData().get("data");
-					AssetManagementAndOperationPerformanceDataEntity total = (AssetManagementAndOperationPerformanceDataEntity) dataObj.getMonthlyPerformanceData().get("total");
+					List<AssetManagementAndOperationPerformanceDataEntity> data = dataObj.getMonthlyPerformanceData() != null ? (List<AssetManagementAndOperationPerformanceDataEntity>) dataObj.getMonthlyPerformanceData().get("data") : new ArrayList<AssetManagementAndOperationPerformanceDataEntity>();
+					AssetManagementAndOperationPerformanceDataEntity total = dataObj.getMonthlyPerformanceData() != null ? (AssetManagementAndOperationPerformanceDataEntity) dataObj.getMonthlyPerformanceData().get("total") : new AssetManagementAndOperationPerformanceDataEntity();
 					
-					if (data != null && total != null) {
 						int numOfPoints = data != null ? data.size() : 0;
 						XSSFSheet sheet = document.createSheet("Monthly Performance");
 						sheet.setColumnWidth(6, 256 * 5);
@@ -2027,7 +2026,6 @@ public class ReportsController extends BaseController {
 
 							chart.plot(chartData);
 						}
-					}
 				}
 				
 				/* === monthly asset performance === */
