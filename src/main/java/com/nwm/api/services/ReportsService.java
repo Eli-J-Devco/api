@@ -292,21 +292,25 @@ public class ReportsService extends DB {
 			List<DailyDateEntity> fulfillData = fulfillData(dateTimeList, dataPower);
 			
 			// get irradiance 
-			List dataListDeviceIrr = queryForList("Reports.getListDeviceTypeIrradiance", obj);
-			if (dataListDeviceIrr.size() > 0) {
-				obj.setGroupDevices(dataListDeviceIrr);
-				List<DailyDateEntity> dataIrradiance = queryForList("Reports.getDataIrradiance", obj);
-				List<DailyDateEntity> fulfillIrradiance = fulfillData(dateTimeList, dataIrradiance);
-				if(fulfillIrradiance.size() > 0) {
-					for (int i = 0; i < fulfillData.size(); i++) {
-						DailyDateEntity item = (DailyDateEntity) fulfillData.get(i);
-						item.setIrradiance(fulfillIrradiance.get(i).getIrradiance());
+			try {
+				List dataListDeviceIrr = queryForList("Reports.getListDeviceTypeIrradiance", obj);
+				if (dataListDeviceIrr.size() > 0) {
+					obj.setGroupDevices(dataListDeviceIrr);
+					List<DailyDateEntity> dataIrradiance = queryForList("Reports.getDataIrradiance", obj);
+					List<DailyDateEntity> fulfillIrradiance = fulfillData(dateTimeList, dataIrradiance);
+					if(fulfillIrradiance.size() > 0) {
+						for (int i = 0; i < fulfillData.size(); i++) {
+							DailyDateEntity item = (DailyDateEntity) fulfillData.get(i);
+							item.setIrradiance(fulfillIrradiance.get(i).getIrradiance());
+						}
 					}
 				}
+				
+				dataObj.setHave_poa(dataListDeviceIrr.size() > 0);
+			} catch (Exception ex) {
 			}
 			
 			dataObj.setDataReports(fulfillData);
-			dataObj.setHave_poa(dataListDeviceIrr.size() > 0);
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
