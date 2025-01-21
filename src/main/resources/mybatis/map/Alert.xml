@@ -259,7 +259,7 @@
 			
 			WHEN dg.table_name = 'model_QUINT4_UPS' AND d.field_value_default = 'BatteryModeTime' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1/3600, 2), "hrs" )))
 			
-			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "On", "Off"))))
+			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Off", "On"))))
 			
 			ELSE "-"
 		END AS key_indicator
@@ -461,7 +461,7 @@
 			
 			WHEN dg.table_name = 'model_QUINT4_UPS' AND d.field_value_default = 'BatteryModeTime' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1/3600, 2), "hrs" )))
 			
-			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Opened", "Closed"))))
+			WHEN dg.table_name = 'model_SEL651R' AND d.field_value_default = 'BreakerStatus' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", IF(d.field_value1 = 1, "Off", "On"))))
 
 			ELSE "Z"
 			
