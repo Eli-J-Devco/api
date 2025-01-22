@@ -530,10 +530,16 @@
 					COUNT(*) AS totalSites,
 					id_site_group,
 					id_site_sub_group
-				FROM site
-				GROUP BY id_site_sub_group
+				FROM
+					site
+				WHERE
+					is_delete = 0
+					AND status = 1
+					AND id_site_sub_group IS NOT NULL
+				GROUP BY
+					id_site_sub_group
 			) t ON t.id_site_group = sg.id AND t.totalSites > 0
-		   LEFT JOIN site_sub_group ssg ON ssg.id_site_group = t.id_site_group AND ssg.status = 1 AND ssg.is_delete = 0
+		   LEFT JOIN site_sub_group ssg ON ssg.id = t.id_site_sub_group AND ssg.status = 1 AND ssg.is_delete = 0
 		GROUP BY sg.id
 	    ORDER BY sg.order_id ASC
 		 	 
