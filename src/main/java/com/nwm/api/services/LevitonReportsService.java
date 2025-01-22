@@ -37,7 +37,7 @@ public class LevitonReportsService extends DB {
 			}
 			
 			DeviceEntity virtualObj = (DeviceEntity) queryForObject("LevitonReports.getVirtualDevice", obj);
-			if(virtualObj.getId() > 0) {
+			if(virtualObj != null && virtualObj.getId() > 0) {
 				List listFields = queryForList("LevitonReports.getListFieldVirtualLeviton", virtualObj);
 				if(listFields.size() > 0) {
 					obj.setDataFields(listFields);
