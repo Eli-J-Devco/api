@@ -20,6 +20,7 @@ import java.util.TimeZone;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
+import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
@@ -28,6 +29,7 @@ import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.TagEntity;
 import com.nwm.api.entities.UserEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
@@ -1114,6 +1116,23 @@ public class BatchJobService extends DB {
 		return dataList;
 	}
 	
+	/**
+	 * @description get list site by datalogger_type = 1
+	 * @author long.pham
+	 * @since 2023-06-08
+	 */
+	
+	public List getListCameraDevice(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListCameraDevice", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 	
 	/**
 	 * @description get device detail by id_site and modbusdevicenumber
@@ -1265,6 +1284,24 @@ public class BatchJobService extends DB {
 			return new ArrayList();
 		}
 		return dataList;
+	}
+	
+	/**
+	 * @description insert camera image
+	 * @author long.pham
+	 * @since 2021-01-08
+	 */
+	public CameraImageEntity insertCameraImage(CameraImageEntity obj) 
+	{
+		try {
+			insert("BatchJob.insertCameraImage", obj);
+			
+			return obj;
+		} catch (Exception ex) {
+			log.error("BatchJob.insertCameraImage", ex);
+			return null;
+		}
+			
 	}
 	
 	

@@ -1541,5 +1541,44 @@
 			AND sem.is_hiding = 1
 	</select>
 	
+	<select id="getListCameraDevice" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			d.`devicename`,
+			d.ftp_server,
+			d.ftp_user,
+			d.ftp_pass,
+			d.ftp_port,
+			d.ftp_folder
+		FROM
+			device d
+
+		WHERE
+			d.`status` = 1 
+			AND d.is_delete = 0
+			AND d.ftp_server IS NOT NULL
+			AND d.ftp_user IS NOT NULL
+			AND d.ftp_pass IS NOT NULL
+			AND d.ftp_folder IS NOT NULL
+	</select>
+	
+	<insert id="insertCameraImage" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+		INSERT INTO `camera_image`(
+			`id_site`,
+			`id_device`,
+			`created_date`,
+			`image_url`
+		)VALUES(
+			#{id_site},
+			#{id_device},
+			#{created_date},
+			#{image_url}
+		);
+		<selectKey keyProperty="id" resultType="int">
+	        SELECT 
+	        LAST_INSERT_ID() as id
+        </selectKey>
+	</insert>
   	
 </mapper>
