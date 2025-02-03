@@ -46,6 +46,7 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -58,7 +59,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.nwm.api.entities.BatchJobTableEntity;
+import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.ImportOldDataEntity;
 import com.nwm.api.entities.ModelSmaClusterControllerEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1200tlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp24000ktlus10Entity;
@@ -78,12 +81,16 @@ import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
+import com.nwm.api.services.AWSService;
 
 @RestController
 @ApiIgnore
 @RequestMapping("/upload-ftp")
 public class FTPUploadServerController extends BaseController {
-
+	
+	@Autowired
+	private AWSService awsService;
+	
 	/**
 	 * @description Get list file from FTP server
 	 * @author long.pham
@@ -1470,4 +1477,162 @@ public class FTPUploadServerController extends BaseController {
 		}
 	}
 	
+	/**
+	 * Download a whole directory from a FTP server.
+	 * 
+	 * @param ftpClient  an instance of org.apache.commons.net.ftp.FTPClient class.
+	 * @param parentDir  Path of the parent directory of the current directory being
+	 *                   downloaded.
+	 * @param currentDir Path of the current directory being downloaded.
+	 * @param saveDir    path of directory where the whole remote directory will be
+	 *                   downloaded and saved.
+	 * @throws Exception 
+	 */
+	public void downloadImageDirectory(FTPClient ftpClient, String parentDir, String currentDir, String saveDir, int id_site, int id_device)
+			throws Exception {
+		String dirToList = parentDir;
+		if (!currentDir.equals("")) {
+			dirToList += "/" + currentDir;
+		}
+
+		ftpClient.enterLocalPassiveMode();
+
+		FTPClientConfig config = new FTPClientConfig();
+		config.setUnparseableEntries(true);
+		ftpClient.configure(config);
+
+		FTPFile[] subFiles = ftpClient.listFiles(dirToList);
+
+		if (subFiles != null && subFiles.length > 0) {
+			for (FTPFile aFile : subFiles) {
+				String currentFileName = aFile.getName();
+				if (currentFileName.equals(".") || currentFileName.equals("..")) {
+					// skip parent directory and the directory itself
+					continue;
+				}
+				String filePath = parentDir + "/" + currentDir + "/" + currentFileName;
+				if (currentDir.equals("")) {
+					filePath = parentDir + "/" + currentFileName;
+				}
+
+				String newDirPath = saveDir + parentDir + File.separator + currentDir + File.separator
+						+ currentFileName;
+				if (currentDir.equals("")) {
+					newDirPath = saveDir + parentDir + File.separator + currentFileName;
+				}
+
+				if (aFile.isDirectory()) {
+					// create the directory in saveDir
+					File newDir = new File(newDirPath);
+					boolean created = newDir.mkdirs();
+
+					// download the sub directory
+					downloadImageDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site, id_device);
+				} else {
+					// download the file
+					
+					File f = new File(newDirPath);
+					// create the directory in saveDir
+					File fDir = new File(saveDir + parentDir);
+
+					if (!f.exists()) {
+						// do something
+						boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
+
+						if (success) {
+							Calendar currrentDateCalendar = aFile.getTimestamp();
+							String created_date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currrentDateCalendar.getTime());
+							
+							String filePathImage = awsService.uploadFile(newDirPath, "camera" + "/" + id_site  + parentDir + "/"+ currrentDateCalendar.get(Calendar.YEAR) + "/" + 
+									((currrentDateCalendar.get(Calendar.MONTH) + 1) < 10 ? ("0"+(currrentDateCalendar.get(Calendar.MONTH) + 1)): (currrentDateCalendar.get(Calendar.MONTH) + 1)) + "/" + currentFileName);
+							
+							if (filePathImage != null || filePathImage != "") {
+								CameraImageEntity cameraImage = new CameraImageEntity();
+								cameraImage.setId_site(id_site);
+								cameraImage.setId_device(id_device);
+								cameraImage.setCreated_date(created_date);
+								cameraImage.setImage_url(filePathImage);
+								
+								BatchJobService service = new BatchJobService();
+								CameraImageEntity image = service.insertCameraImage(cameraImage);
+								
+								if (image != null) {
+									new File(newDirPath).delete();
+								}
+							}
+							
+							ftpClient.deleteFile(filePath);
+
+						}
+					}
+
+				}
+			}
+		}
+	}
+	
+	/**
+	 * @description Get list file from FTP server
+	 * @author long.pham
+	 * @since 2023-06-16
+	 * @return {}
+	 */
+	@GetMapping("/download-image-camera-from-ftp")
+	public Object downloadImageCameraFromFTP() {
+		try {
+			BatchJobService service = new BatchJobService();
+			List<?> listDevices = service.getListCameraDevice(new DeviceEntity());
+			if (listDevices == null || listDevices.size() == 0) {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+			for (int i = 0; i < listDevices.size(); i++) {
+				DeviceEntity deviceItem = (DeviceEntity) listDevices.get(i);
+				if (deviceItem.getFtp_server() != null && deviceItem.getFtp_user() != null && deviceItem.getFtp_pass() != null && deviceItem.getFtp_folder() != null) {
+					String server = deviceItem.getFtp_server();
+					String user = deviceItem.getFtp_user();
+					String pass = deviceItem.getFtp_pass();
+					int port = Integer.parseInt(deviceItem.getFtp_port());
+					String remoteDirPath = deviceItem.getFtp_folder();
+
+					String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
+							Constants.uploadRootPathConfigKey) + "/" + deviceItem.getId_site();
+					
+					FTPClient ftpClient = new FTPClient();
+
+					try {
+						ftpClient.connect(server, port);
+						int replyCode = ftpClient.getReplyCode();
+						if (!FTPReply.isPositiveCompletion(replyCode)) {
+							return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+						}
+						boolean success = ftpClient.login(user, pass);
+						if (!success) {
+							return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+						}
+					
+						downloadImageDirectory(ftpClient, remoteDirPath, "", saveDirPath, deviceItem.getId_site(), deviceItem.getId());
+//						String filePath = awsService.uploadFile(saveDirPath + "/" + currentFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + currentFileName);
+						
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					} finally {
+						// logs out and disconnects from server
+						try {
+							if (ftpClient.isConnected()) {
+								ftpClient.logout();
+								ftpClient.disconnect();
+							}
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
+					}
+				}
+			}
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 }

@@ -39,6 +39,11 @@
 			d.advance_tech_value_restart,
 			d.advance_tech_value_stop,
 			d.advance_tech_value_start,
+			d.ftp_server,
+		    d.ftp_user,
+		    d.ftp_pass,
+		    d.ftp_folder,
+		    d.ftp_port,
 	
 			tag.tags,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
@@ -917,7 +922,17 @@
  
 	</select>
 	
+	<select id="getListCameraImage" resultType="com.nwm.api.entities.CameraImageEntity" >
+	    SELECT
+	      c.*     
+	    FROM
+	      camera_image AS c
 	
+	    WHERE
+	      c.id_site = #{id_site}
+	      AND c.id_device = #{id_device}
+	    ORDER BY c.created_date DESC
+	  </select>
   	
   	
 	

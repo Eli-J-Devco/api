@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
@@ -209,6 +210,25 @@ public class SitesDevicesService extends DB {
 			return TOTP.validateTOTP(user_name, verifyCode);
 		} catch (Exception ex) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description get list image camera
+	 * @author duy.phan
+	 * @since 2025-01-24
+	 * @param id_site
+	 */
+	
+
+	public List getListCameraImage(CameraImageEntity obj) {
+		try {
+			List dataList = queryForList("SitesDevices.getListCameraImage", obj);
+			if (dataList == null) return new ArrayList();
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
 		}
 	}
 	

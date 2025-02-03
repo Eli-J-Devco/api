@@ -25,6 +25,8 @@ import java.util.TimeZone;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -36,10 +38,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.services.BatchJobService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.ModelCellModemService;
@@ -1197,5 +1202,23 @@ public class SitesDevicesController extends BaseController {
 			return new HashMap<String, Object>();
 		}
     }
+	
+	/**
+	 * @description Get list camera image
+	 * @author duy.phan
+	 * @since 2025-01-24
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-image-camera")
+	public Object getListCameraImage(@RequestBody CameraImageEntity obj) {
+		try {
+			SitesDevicesService service = new SitesDevicesService();
+			List data = service.getListCameraImage(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 	
 }
