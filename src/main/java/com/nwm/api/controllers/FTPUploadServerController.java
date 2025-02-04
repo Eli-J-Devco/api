@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -1540,11 +1542,35 @@ public class FTPUploadServerController extends BaseController {
 						boolean success = downloadSingleFile(ftpClient, filePath, newDirPath);
 
 						if (success) {
-							Calendar currrentDateCalendar = aFile.getTimestamp();
-							String created_date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currrentDateCalendar.getTime());
+							String created_date = "";
+							String month = "";
+							String year = "";
 							
-							String filePathImage = awsService.uploadFile(newDirPath, "camera" + "/" + id_site  + parentDir + "/"+ currrentDateCalendar.get(Calendar.YEAR) + "/" + 
-									((currrentDateCalendar.get(Calendar.MONTH) + 1) < 10 ? ("0"+(currrentDateCalendar.get(Calendar.MONTH) + 1)): (currrentDateCalendar.get(Calendar.MONTH) + 1)) + "/" + currentFileName);
+							String regex = ".*(\\d{2}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2}).*";
+							Pattern pattern = Pattern.compile(regex);
+						    Matcher m = pattern.matcher(currentFileName);
+						    
+						    // date by file name
+						    if (m.find()){
+						    	String unformatDate = m.group(1);
+						    	
+						    	String yyyyMMdd = "20" + unformatDate.split("_")[0].replace("-", ":");
+						        month = yyyyMMdd.split(":", 3)[1];
+						        year = yyyyMMdd.split(":", 3)[0];
+						        String HHmmss = unformatDate.split("_")[1].replace("-", ":");
+						        created_date = yyyyMMdd + " " + HHmmss;
+						    }
+						    
+						    // if date by filename is empty ->  date by file on ftp server
+						    Calendar currrentDateCalendar = aFile.getTimestamp();	
+						    
+					    	created_date =  created_date != "" ? created_date : new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(currrentDateCalendar.getTime());
+					    	
+					    	month = month != "" ? month : ((currrentDateCalendar.get(Calendar.MONTH) + 1) < 10 ? ("0"+(currrentDateCalendar.get(Calendar.MONTH) + 1)): String.valueOf(currrentDateCalendar.get(Calendar.MONTH) + 1));
+					   
+					    	year = year != "" ? year : String.valueOf(currrentDateCalendar.get(Calendar.YEAR));
+																				
+							String filePathImage = awsService.uploadFile(newDirPath, "camera" + "/" + id_site  + parentDir + "/"+ year + "/" + month + "/" + currentFileName);
 							
 							if (filePathImage != null || filePathImage != "") {
 								CameraImageEntity cameraImage = new CameraImageEntity();

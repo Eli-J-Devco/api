@@ -924,13 +924,18 @@
 	
 	<select id="getListCameraImage" resultType="com.nwm.api.entities.CameraImageEntity" >
 	    SELECT
-	      c.*     
+	      	c.id,
+			c.id_site,
+			c.id_device,
+			DATE_FORMAT( CONVERT_TZ( c.created_date, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS created_date,
+			c.image_url  
 	    FROM
-	      camera_image AS c
-	
+	      	camera_image AS c
+			LEFT JOIN site s ON s.id = c.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 	    WHERE
-	      c.id_site = #{id_site}
-	      AND c.id_device = #{id_device}
+		      c.id_site = #{id_site}
+		      AND c.id_device = #{id_device}
 	    ORDER BY c.created_date DESC
 	  </select>
   	
