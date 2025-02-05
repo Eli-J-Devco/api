@@ -142,7 +142,7 @@ public class ModelXantrexGT500EService extends DB {
 				int totalFaultCode = 0;
 				for(int i =0; i < dataList.size(); i ++) {
 					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
-					double statusFault = (double) item.get("active_faults1");
+					double statusFault = (double) item.get("STATUS_FAULT");
 					if(Double.compare(obj.getSTATUS_FAULT(), statusFault) == 0 && obj.getSTATUS_FAULT() > 0 && statusFault > 0) { 
 						totalFaultCode++;
 					}
