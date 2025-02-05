@@ -129,6 +129,11 @@ public class DeviceEntity {
 	private String ftp_pass;
 	private String ftp_port;
 	private String ftp_folder;
+	private String device_ftp_server;
+	private String device_ftp_user;
+	private String device_ftp_pass;
+	private String device_ftp_port;
+	private String device_ftp_folder;
 	private int datalogger_type;
 	private double power_now;
 	private String table_share_data;
@@ -157,7 +162,36 @@ public class DeviceEntity {
 	private boolean is_panel_temperature;
 	
 	
-	
+	public String getDevice_ftp_server() {
+		return device_ftp_server;
+	}
+	public void setDevice_ftp_server(String device_ftp_server) {
+		this.device_ftp_server = device_ftp_server;
+	}
+	public String getDevice_ftp_user() {
+		return device_ftp_user;
+	}
+	public void setDevice_ftp_user(String device_ftp_user) {
+		this.device_ftp_user = device_ftp_user;
+	}
+	public String getDevice_ftp_pass() {
+		return device_ftp_pass;
+	}
+	public void setDevice_ftp_pass(String device_ftp_pass) {
+		this.device_ftp_pass = device_ftp_pass;
+	}
+	public String getDevice_ftp_port() {
+		return device_ftp_port;
+	}
+	public void setDevice_ftp_port(String device_ftp_port) {
+		this.device_ftp_port = device_ftp_port;
+	}
+	public String getDevice_ftp_folder() {
+		return device_ftp_folder;
+	}
+	public void setDevice_ftp_folder(String device_ftp_folder) {
+		this.device_ftp_folder = device_ftp_folder;
+	}
 	public int getShow_on_domain() {
 		return show_on_domain;
 	}

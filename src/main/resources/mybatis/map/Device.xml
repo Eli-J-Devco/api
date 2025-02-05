@@ -363,6 +363,11 @@
 			`date_time_offset`,
 			`is_excluded_meter`,
 			`mfa_control`,
+			`device_ftp_server`,
+			`device_ftp_user`,
+			`device_ftp_pass`,
+			`device_ftp_port`,
+			`device_ftp_folder`,
 			`show_on_domain`
 		)VALUES(
 			#{id_site},
@@ -401,6 +406,11 @@
 			#{date_time_offset},
 			#{is_excluded_meter},
 			#{mfa_control},
+			#{device_ftp_server},
+			#{device_ftp_user},
+			#{device_ftp_pass},
+			#{device_ftp_port},
+			#{device_ftp_folder},
 			#{show_on_domain}
 		);
 		<selectKey keyProperty="id" resultType="int">
@@ -455,6 +465,11 @@
 				date_time_offset = #{date_time_offset},
 				is_excluded_meter = #{is_excluded_meter},
 				mfa_control = #{mfa_control},
+				device_ftp_server = #{device_ftp_server},
+				device_ftp_user = #{device_ftp_user},
+				device_ftp_pass = #{device_ftp_pass},
+				device_ftp_port = #{device_ftp_port},
+				device_ftp_folder = #{device_ftp_folder},
 				show_on_domain = #{show_on_domain}
 			WHERE
 				`id` = #{id}
@@ -6201,7 +6216,18 @@
 	            </when>
 	            
 	            
-	            
+	            <when test="id_device_group == 107">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `image_url` varchar(200) DEFAULT NULL COMMENT 'Image URL',
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	            
 	                                                          
 	        </choose> 

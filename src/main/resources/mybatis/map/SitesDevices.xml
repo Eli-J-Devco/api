@@ -39,11 +39,11 @@
 			d.advance_tech_value_restart,
 			d.advance_tech_value_stop,
 			d.advance_tech_value_start,
-			d.ftp_server,
-		    d.ftp_user,
-		    d.ftp_pass,
-		    d.ftp_folder,
-		    d.ftp_port,
+			d.device_ftp_server,
+		    d.device_ftp_user,
+		    d.device_ftp_pass,
+		    d.device_ftp_folder,
+		    d.device_ftp_port,
 	
 			tag.tags,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
@@ -924,19 +924,18 @@
 	
 	<select id="getListCameraImage" resultType="com.nwm.api.entities.CameraImageEntity" >
 	    SELECT
-	      	c.id,
-			c.id_site,
 			c.id_device,
-			DATE_FORMAT( CONVERT_TZ( c.created_date, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS created_date,
+			DATE_FORMAT( CONVERT_TZ( c.time, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') as time,
 			c.image_url  
 	    FROM
-	      	camera_image AS c
-			LEFT JOIN site s ON s.id = c.id_site
+	      	${datatablename} c
+	      	LEFT JOIN device d ON d.id = c.id_device
+			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 	    WHERE
-		      c.id_site = #{id_site}
-		      AND c.id_device = #{id_device}
-	    ORDER BY c.created_date DESC
+ 			c.id_device = #{id_device}
+ 			AND c.time BETWEEN DATE_SUB(CONVERT_TZ(NOW(), '+00:00', t.`offset`), INTERVAL 1 MONTH) AND NOW()
+	    ORDER BY c.time DESC
 	  </select>
   	
   	
