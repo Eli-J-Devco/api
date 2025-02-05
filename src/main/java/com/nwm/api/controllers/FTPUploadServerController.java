@@ -1490,7 +1490,7 @@ public class FTPUploadServerController extends BaseController {
 	 *                   downloaded and saved.
 	 * @throws Exception 
 	 */
-	public void downloadImageDirectory(FTPClient ftpClient, String parentDir, String currentDir, String saveDir, int id_site, int id_device)
+	public void downloadImageDirectory(FTPClient ftpClient, String parentDir, String currentDir, String saveDir, int id_site, int id_device, String datatablename)
 			throws Exception {
 		String dirToList = parentDir;
 		if (!currentDir.equals("")) {
@@ -1529,7 +1529,7 @@ public class FTPUploadServerController extends BaseController {
 					boolean created = newDir.mkdirs();
 
 					// download the sub directory
-					downloadImageDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site, id_device);
+					downloadImageDirectory(ftpClient, dirToList, currentFileName, saveDir, id_site, id_device, datatablename);
 				} else {
 					// download the file
 					
@@ -1574,10 +1574,10 @@ public class FTPUploadServerController extends BaseController {
 							
 							if (filePathImage != null || filePathImage != "") {
 								CameraImageEntity cameraImage = new CameraImageEntity();
-								cameraImage.setId_site(id_site);
 								cameraImage.setId_device(id_device);
-								cameraImage.setCreated_date(created_date);
+								cameraImage.setTime(created_date);
 								cameraImage.setImage_url(filePathImage);
+								cameraImage.setDatatablename(datatablename);
 								
 								BatchJobService service = new BatchJobService();
 								CameraImageEntity image = service.insertCameraImage(cameraImage);
@@ -1613,12 +1613,12 @@ public class FTPUploadServerController extends BaseController {
 			}
 			for (int i = 0; i < listDevices.size(); i++) {
 				DeviceEntity deviceItem = (DeviceEntity) listDevices.get(i);
-				if (deviceItem.getFtp_server() != null && deviceItem.getFtp_user() != null && deviceItem.getFtp_pass() != null && deviceItem.getFtp_folder() != null) {
-					String server = deviceItem.getFtp_server();
-					String user = deviceItem.getFtp_user();
-					String pass = deviceItem.getFtp_pass();
-					int port = Integer.parseInt(deviceItem.getFtp_port());
-					String remoteDirPath = deviceItem.getFtp_folder();
+				if (deviceItem.getDevice_ftp_server() != null && deviceItem.getDevice_ftp_user() != null && deviceItem.getDevice_ftp_pass() != null && deviceItem.getDevice_ftp_folder() != null) {
+					String server = deviceItem.getDevice_ftp_server();
+					String user = deviceItem.getDevice_ftp_user();
+					String pass = deviceItem.getDevice_ftp_pass();
+					int port = Integer.parseInt(deviceItem.getDevice_ftp_port());
+					String remoteDirPath = deviceItem.getDevice_ftp_folder();
 
 					String saveDirPath = Lib.getReourcePropValue(Constants.appConfigFileName,
 							Constants.uploadRootPathConfigKey) + "/" + deviceItem.getId_site();
@@ -1636,7 +1636,7 @@ public class FTPUploadServerController extends BaseController {
 							return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 						}
 					
-						downloadImageDirectory(ftpClient, remoteDirPath, "", saveDirPath, deviceItem.getId_site(), deviceItem.getId());
+						downloadImageDirectory(ftpClient, remoteDirPath, "", saveDirPath, deviceItem.getId_site(), deviceItem.getId(), deviceItem.getDatatablename());
 //						String filePath = awsService.uploadFile(saveDirPath + "/" + currentFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyGallery) + "/" + currentFileName);
 						
 					} catch (IOException ex) {

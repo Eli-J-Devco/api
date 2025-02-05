@@ -5,37 +5,30 @@
 *********************************************************/
 package com.nwm.api.entities;
 
-public class CameraImageEntity {
-	private int id;
+public class CameraImageEntity {	
+	private String time;
 	private int id_device;
-	private int id_site;
-	private String created_date;
 	private String image_url;
+	private String datatablename;
 	
 	
-	public int getId() {
-		return id;
+	public String getDatatablename() {
+		return datatablename;
 	}
-	public void setId(int id) {
-		this.id = id;
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
+	public String getTime() {
+		return time;
+	}
+	public void setTime(String time) {
+		this.time = time;
 	}
 	public int getId_device() {
 		return id_device;
 	}
 	public void setId_device(int id_device) {
 		this.id_device = id_device;
-	}
-	public int getId_site() {
-		return id_site;
-	}
-	public void setId_site(int id_site) {
-		this.id_site = id_site;
-	}
-	public String getCreated_date() {
-		return created_date;
-	}
-	public void setCreated_date(String created_date) {
-		this.created_date = created_date;
 	}
 	public String getImage_url() {
 		return image_url;
