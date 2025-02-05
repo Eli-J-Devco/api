@@ -157,10 +157,24 @@ public class SitesDevicesEntity extends SortEntity {
 	private int advance_tech_control_enable = 0;
 	private String domain;
 	private boolean isUserNW;
+	private double total_area;
+	private double total_unit;
 
 	
 	
 	
+	public double getTotal_area() {
+		return total_area;
+	}
+	public void setTotal_area(double total_area) {
+		this.total_area = total_area;
+	}
+	public double getTotal_unit() {
+		return total_unit;
+	}
+	public void setTotal_unit(double total_unit) {
+		this.total_unit = total_unit;
+	}
 	public String getDomain() {
 		return domain;
 	}

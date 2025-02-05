@@ -39,6 +39,25 @@ public class SitesDashboardService extends DB {
 		}
 	}
 	
+	
+	/**
+	 * @description get list panel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListPanel(SitesDevicesEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListPanel", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
 	/**
 	 * @description get list device by id site
 	 * @author long.pham
