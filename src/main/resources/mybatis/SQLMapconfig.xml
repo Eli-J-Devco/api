@@ -161,6 +161,7 @@
 		<mapper resource="mybatis/map/ModelKyPulseMeter.xml"/>
 		<mapper resource="mybatis/map/ModelSunSpecInverter.xml"/>
 		<mapper resource="mybatis/map/ModelPowerLogicPM8000LoadMeter.xml"/>
+		<mapper resource="mybatis/map/ModelHoneywellEMON3200.xml"/>
 		<mapper resource="mybatis/map/PiCamera.xml"/>
 		
 		

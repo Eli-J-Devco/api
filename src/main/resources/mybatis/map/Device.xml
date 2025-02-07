@@ -6229,7 +6229,66 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
-	                                                          
+	            <when test="id_device_group == 108">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`AuxilaryPulseInput1` double DEFAULT NULL,
+							`AuxilaryPulseInput2` double DEFAULT NULL,
+							`EnergyDelivered` double DEFAULT NULL,
+							`EnergyReceived` double DEFAULT NULL,
+							`ReactiveEnergyDelivered` double DEFAULT NULL,
+							`ReactiveEnergyReceived` double DEFAULT NULL,
+							`RealPower` double DEFAULT NULL,
+							`ReactivePower` double DEFAULT NULL,
+							`ApparentPower` double DEFAULT NULL,
+							`PowerFactor` double DEFAULT NULL,
+							`CurrentTotal` double DEFAULT NULL,
+							`CurrentAverage` double DEFAULT NULL,
+							`VoltageLineNeutral` double DEFAULT NULL,
+							`VoltageLineLine` double DEFAULT NULL,
+							`Frequency` double DEFAULT NULL,
+							`PhaseAngle` double DEFAULT NULL,
+							`RealPowerPhaseA` double DEFAULT NULL,
+							`RealPowerPhaseB` double DEFAULT NULL,
+							`RealPowerPhaseC` double DEFAULT NULL,
+							`ReactivePowerPhaseA` double DEFAULT NULL,
+							`ReactivePowerPhaseB` double DEFAULT NULL,
+							`ReactivePowerPhaseC` double DEFAULT NULL,
+							`ApparentPowerPhaseA` double DEFAULT NULL,
+							`ApparentPowerPhaseB` double DEFAULT NULL,
+							`ApparentPowerPhaseC` double DEFAULT NULL,
+							`PowerFactorPhaseA` double DEFAULT NULL,
+							`PowerFactorPhaseB` double DEFAULT NULL,
+							`PowerFactorPhaseC` double DEFAULT NULL,
+							`CurrentPhaseA` double DEFAULT NULL,
+							`CurrentPhaseB` double DEFAULT NULL,
+							`CurrentPhaseC` double DEFAULT NULL,
+							`VoltagePhaseAN` double DEFAULT NULL,
+							`VoltagePhaseBN` double DEFAULT NULL,
+							`VoltagePhaseCN` double DEFAULT NULL,
+							`VoltagePhaseAB` double DEFAULT NULL,
+							`VoltagePhaseBC` double DEFAULT NULL,
+							`VoltagePhaseCA` double DEFAULT NULL,
+							`PhaseAngleA` double DEFAULT NULL,
+							`PhaseAngleB` double DEFAULT NULL,
+							`PhaseAngleC` double DEFAULT NULL,
+
+							`nvmActivePower` double DEFAULT NULL,
+							`nvmActiveEnergy` double DEFAULT NULL,
+							`MeasuredProduction` double DEFAULT NULL,
+							
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>                                              
 	        </choose> 
 	        
 		
@@ -7083,6 +7142,19 @@
 					)
 					SELECT
 		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActiveEnergyDelivered`, `ActiveEnergyReceived`, `ActiveEnergyDeliveredPlusReceived`, `ActiveEnergyDeliveredMinusReceived`, `ReactiveEnergyDelivered`, `ReactiveEnergyReceived`, `ReactiveEnergyDeliveredPlusReceived`, `ReactiveEnergyDeliveredMinusReceived`, `ApparentEnergyDelivered`, `ApparentEnergyReceived`, `ApparentEnergyDeliveredPlusReceived`, `ApparentEnergyDeliveredMinusReceived`, `ActiveEnergyinQuadrantI`, `ActiveEnergyinQuadrantII`, `ActiveEnergyinQuadrantIII`, `ActiveEnergyinQuadrantIV`, `ReactiveEnergyinQuadrantI`, `ReactiveEnergyinQuadrantII`, `ReactiveEnergyinQuadrantIII`, `ReactiveEnergyinQuadrantIV`, `ApparentEnergyinQuadrantI`, `ApparentEnergyinQuadrantII`, `ApparentEnergyinQuadrantIII`, `ApparentEnergyinQuadrantIV`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `CurrentNeutralLine`, `CurrentGroundLine`, `CurrentAverage`, `CurrentUnbalanceWorst`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseCA`, `VoltageLLAverage`, `VoltageAN`, `VoltageBN`, `VoltageCN`, `VoltageLNAverage`, `VoltageUnbalanceLNWorst`, `ActivePowerPhaseA`, `ActivePowerPhaseB`, `ActivePowerPhaseC`, `ActivePowerTotal`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ReactivePowerTotal`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `ApparentPowerTotal`, `Frequency`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `PowerFactorTotal`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+				<when test="id_device_group == 108">
+	            	<!-- model_honeywell_emon_3200 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AuxilaryPulseInput1`, `AuxilaryPulseInput2`, `EnergyDelivered`, `EnergyReceived`, `ReactiveEnergyDelivered`, `ReactiveEnergyReceived`, `RealPower`, `ReactivePower`, `ApparentPower`, `PowerFactor`, `CurrentTotal`, `CurrentAverage`, `VoltageLineNeutral`, `VoltageLineLine`, `Frequency`, `PhaseAngle`, `RealPowerPhaseA`, `RealPowerPhaseB`, `RealPowerPhaseC`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `VoltagePhaseAN`, `VoltagePhaseBN`, `VoltagePhaseCN`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseCA`, `PhaseAngleA`, `PhaseAngleB`, `PhaseAngleC`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `AuxilaryPulseInput1`, `AuxilaryPulseInput2`, `EnergyDelivered`, `EnergyReceived`, `ReactiveEnergyDelivered`, `ReactiveEnergyReceived`, `RealPower`, `ReactivePower`, `ApparentPower`, `PowerFactor`, `CurrentTotal`, `CurrentAverage`, `VoltageLineNeutral`, `VoltageLineLine`, `Frequency`, `PhaseAngle`, `RealPowerPhaseA`, `RealPowerPhaseB`, `RealPowerPhaseC`, `ReactivePowerPhaseA`, `ReactivePowerPhaseB`, `ReactivePowerPhaseC`, `ApparentPowerPhaseA`, `ApparentPowerPhaseB`, `ApparentPowerPhaseC`, `PowerFactorPhaseA`, `PowerFactorPhaseB`, `PowerFactorPhaseC`, `CurrentPhaseA`, `CurrentPhaseB`, `CurrentPhaseC`, `VoltagePhaseAN`, `VoltagePhaseBN`, `VoltagePhaseCN`, `VoltagePhaseAB`, `VoltagePhaseBC`, `VoltagePhaseCA`, `PhaseAngleA`, `PhaseAngleB`, `PhaseAngleC`, `nvmActivePower`, `nvmActiveEnergy`, `MeasuredProduction`
 					FROM 
 					    ${device_group_table}
 					WHERE
