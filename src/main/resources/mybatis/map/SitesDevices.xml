@@ -934,7 +934,7 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 	    WHERE
  			c.id_device = #{id_device}
- 			AND c.time BETWEEN DATE_SUB(CONVERT_TZ(NOW(), '+00:00', t.`offset`), INTERVAL 1 MONTH) AND NOW()
+ 			AND c.time BETWEEN #{start_date} AND #{end_date}
 	    ORDER BY c.time DESC
 	  </select>
   	
