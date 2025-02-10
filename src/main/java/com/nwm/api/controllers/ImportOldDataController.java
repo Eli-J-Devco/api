@@ -486,6 +486,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelPowerLogicPM8000LoadMeter(rowItem, r);
 											break;
 											
+										case "model_honeywell_emon_3200":
+											service.setModelHoneywellEMON3200(rowItem, r);
+											break;
+											
 										}
 										
 		
