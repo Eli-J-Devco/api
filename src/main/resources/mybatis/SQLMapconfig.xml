@@ -162,6 +162,8 @@
 		<mapper resource="mybatis/map/ModelSunSpecInverter.xml"/>
 		<mapper resource="mybatis/map/ModelPowerLogicPM8000LoadMeter.xml"/>
 		<mapper resource="mybatis/map/PiCamera.xml"/>
+		<mapper resource="mybatis/map/EnergyUsage.xml"/>
+		
 		
 		
 		

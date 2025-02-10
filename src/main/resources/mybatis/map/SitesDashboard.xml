@@ -241,11 +241,38 @@
 		SELECT
 			m.*,
 			m.name AS text,
-			m.name AS label
+			m.name AS label,
+			d.BreakersPanel0L,
+			d.BreakersPanel0R,
+			d.BreakersPanel1L,
+			d.BreakersPanel1R,
+			d.BreakersPanel2L,
+			d.BreakersPanel2R,
+			d.BreakerPresentPanel0L,
+			d.BreakerPresentPanel0R,
+			d.BreakerPresentPanel1L,
+			d.BreakerPresentPanel1R,
+			d.BreakerPresentPanel2L,
+			d.BreakerPresentPanel2R,
+			d.NonRespondingBreakersPanel0L,
+			d.NonRespondingBreakersPanel0R,
+			d.NonRespondingBreakersPanel1L,
+			d.NonRespondingBreakersPanel1R,
+			d.NonRespondingBreakersPanel2L,
+			d.NonRespondingBreakersPanel2R
 		FROM
 			device_panel m
+			LEFT JOIN (
+				SELECT * FROM ${datatablename} d WHERE d.id_device = #{id} ORDER BY d.time DESC LIMIT 1
+			) d ON d.id_device = m.id_device
 		WHERE
 			m.id_device = #{id} GROUP BY m.id
+	</select>
+	
+	
+	
+	<select id="getListDataBitMap" resultType="Map">
+		SELECT * FROM device_panel_map dp WHERE dp.id_panel = #{id_panel} GROUP BY id;
 	</select>
 	
 	

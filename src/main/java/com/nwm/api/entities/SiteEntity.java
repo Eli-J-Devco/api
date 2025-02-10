@@ -311,9 +311,16 @@ public class SiteEntity extends SortEntity {
 	private String mail_to;
 	private String mail_cc;
 	private boolean isUserNW;
+	private int meter_type;
 	
 	
 	
+	public int getMeter_type() {
+		return meter_type;
+	}
+	public void setMeter_type(int meter_type) {
+		this.meter_type = meter_type;
+	}
 	public String getMail_to() {
 		return mail_to;
 	}

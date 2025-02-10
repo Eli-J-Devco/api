@@ -21,13 +21,19 @@ public class ClientMonthlyDateEntity{
 	private Double expected_energy;
 	private Double nvmActivePower;
 	private Double nvmActiveEnergy;
-	
 	private Double energy_output;
 	private Double energy_usage;
 	private Double energy;
+	private Double avgEnergy;
 	
 	
 	
+	public Double getAvgEnergy() {
+		return avgEnergy;
+	}
+	public void setAvgEnergy(Double avgEnergy) {
+		this.avgEnergy = avgEnergy;
+	}
 	public Double getEnergy_output() {
 		return energy_output;
 	}

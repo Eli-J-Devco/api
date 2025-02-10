@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.utils.SecretCards;
@@ -57,6 +58,27 @@ public class SitesDashboardService extends DB {
 			return new ArrayList();
 		}
 	}
+	
+	
+	
+	/**
+	 * @description get list bit map by id_panel
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListDataBitMap(DevicePanelEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListDataBitMap", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
 	
 	/**
 	 * @description get list device by id site

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.EmployeeService;
@@ -82,6 +83,27 @@ public class SitesDashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-bit-map")
+	public Object getListDataBitMap(@RequestBody DevicePanelEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataBitMap(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	
 	/**
