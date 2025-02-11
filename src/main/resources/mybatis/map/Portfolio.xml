@@ -234,7 +234,7 @@
 			        </choose>
 				GROUP BY
 					s.id
-			)m ON m.id_site = s.id 
+			) ivt ON ivt.id_site = s.id 
 			
 			LEFT JOIN(
 				SELECT
@@ -273,7 +273,7 @@
 			        </choose>
 				GROUP BY
 					s.id
-			)ivt ON ivt.id_site = s.id
+			) m ON m.id_site = s.id
 			
 			
 			LEFT JOIN (
