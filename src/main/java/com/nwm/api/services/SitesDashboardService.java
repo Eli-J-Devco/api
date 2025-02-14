@@ -89,6 +89,27 @@ public class SitesDashboardService extends DB {
 	}
 	
 	
+	
+	
+	/**
+	 * @description get zones alert
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param {}
+	 * @return Object
+	 */
+	
+	public List getListZonesAlerts(SitesDevicesEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListZonesAlerts", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
 	/**
 	 * @description get list panel by id_device
 	 * @author long.pham

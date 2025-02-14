@@ -352,7 +352,7 @@
 		LEFT JOIN device d ON d.id = dv.id_device
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME)) LIMIT 70
+		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME))
 	</select>
 	
 	
@@ -384,6 +384,26 @@
 			ORDER BY dv.time DESC LIMIT 1)
 		</foreach>
 	</select>
+	
+	
+	
+	<select id="getListZonesAlerts" resultType="Map">
+		<foreach collection="list_device" item="item" index="index" separator="union all" >
+			(
+				SELECT
+					m.*,
+					d.ZonesAlarmState132
+				FROM
+					device_zone m
+					LEFT JOIN (
+						SELECT * FROM ${item.datatablename} d ORDER BY d.time DESC LIMIT 1
+					) d ON d.id_device = m.id_device
+				WHERE
+					m.id_device = #{item.id_device} GROUP BY m.id
+			)
+		</foreach>
+	</select>
+	
 	
 	
 	
