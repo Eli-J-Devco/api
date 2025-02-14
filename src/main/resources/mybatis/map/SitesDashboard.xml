@@ -271,8 +271,125 @@
 	
 	
 	
+	<select id="getListZones" resultType="Map">
+		SELECT
+			m.*,
+			m.name AS text,
+			m.name AS label,
+			d.BreakersPanel0L,
+			d.BreakersPanel0R,
+			d.BreakersPanel1L,
+			d.BreakersPanel1R,
+			d.BreakersPanel2L,
+			d.BreakersPanel2R,
+			d.BreakerPresentPanel0L,
+			d.BreakerPresentPanel0R,
+			d.BreakerPresentPanel1L,
+			d.BreakerPresentPanel1R,
+			d.BreakerPresentPanel2L,
+			d.BreakerPresentPanel2R,
+			d.NonRespondingBreakersPanel0L,
+			d.NonRespondingBreakersPanel0R,
+			d.NonRespondingBreakersPanel1L,
+			d.NonRespondingBreakersPanel1R,
+			d.NonRespondingBreakersPanel2L,
+			d.NonRespondingBreakersPanel2R,
+			d.ZonesStatus132
+		FROM
+			device_zone m
+			LEFT JOIN (
+				SELECT * FROM ${datatablename} d WHERE d.id_device = #{id} ORDER BY d.time DESC LIMIT 1
+			) d ON d.id_device = m.id_device
+		WHERE
+			m.id_device = #{id} GROUP BY m.id;
+	</select>
+	
+	
+	
 	<select id="getListDataBitMap" resultType="Map">
 		SELECT * FROM device_panel_map dp WHERE dp.id_panel = #{id_panel} GROUP BY id;
+	</select>
+	
+	
+	<select id="getListDataZoneBitMap" resultType="Map">
+		SELECT dp.*,
+			dz.id_device,
+			dz.field_0L,
+			dz.field_0R,
+			d.BreakerPresentPanel0L,
+			d.BreakerPresentPanel0R,
+			d.BreakerPresentPanel1L,
+			d.BreakerPresentPanel1R,
+			d.BreakerPresentPanel2L,
+			d.BreakerPresentPanel2R
+			
+			FROM device_zone_map dp 
+			LEFT JOIN device_zone dz ON dz.id = dp.id_zone
+			
+			LEFT JOIN (
+				SELECT * FROM ${datatablename} d ORDER BY d.time DESC LIMIT 1
+			) d ON d.id_device = dz.id_device 
+			WHERE dp.id_zone = #{id_zone} GROUP BY dp.id;
+	</select>
+	
+	
+	<select id="getListDataLightingGraph" resultType="com.nwm.api.entities.ZoneGraphDateEntity">
+		SELECT
+		dv.ZonesStatus132 AS ZonesStatus132,
+		dv.BreakersPanel0L AS BreakersPanel0L,
+		<choose>
+			<when test="data_send_time == 1">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%H:%i %p') AS categories_time
+			</when>
+			<when test="data_send_time == 2">
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%H:%i %p') AS categories_time
+			</when>
+		</choose>
+							
+		FROM ${datatablename} dv 
+		LEFT JOIN device d ON d.id = dv.id_device
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME)) LIMIT 70
+	</select>
+	
+	
+	<select id="getListBreakerAlerts" resultType="Map">
+		<foreach collection="list_device" item="item" index="index" separator="union all" >
+			(SELECT
+				dv.time,
+				dv.id_device,
+				IFNULL(dv.NonRespondingBreakersPanel0L,0) AS NonRespondingBreakersPanel0L,
+				IFNULL(dv.NonRespondingBreakersPanel0R,0) AS NonRespondingBreakersPanel0R,
+				IFNULL(dv.NonRespondingBreakersPanel1L,0) AS NonRespondingBreakersPanel1L,
+				IFNULL(dv.NonRespondingBreakersPanel1R,0) AS NonRespondingBreakersPanel1R,
+				IFNULL(dv.NonRespondingBreakersPanel2L,0) AS NonRespondingBreakersPanel2L,
+				IFNULL(dv.NonRespondingBreakersPanel2R,0) AS NonRespondingBreakersPanel2R,
+				IFNULL(dv.BreakerPresentPanel0L,0) AS BreakerPresentPanel0L,
+				IFNULL(dv.BreakerPresentPanel0R,0) AS BreakerPresentPanel0R,
+				IFNULL(dv.BreakerPresentPanel1L,0) AS BreakerPresentPanel1L,
+				IFNULL(dv.BreakerPresentPanel1R,0) AS BreakerPresentPanel1R,
+				IFNULL(dv.BreakerPresentPanel2L,0) AS BreakerPresentPanel2L,
+				IFNULL(dv.BreakerPresentPanel2R,0) AS BreakerPresentPanel2R,
+				DATE_FORMAT(CONVERT_TZ( dv.time,'+00:00', t.`offset`), '%m/%d/%Y %h:%i %p') AS last_updated
+			FROM
+				${item.datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			<!--WHERE
+				(CAST(CONVERT_TZ( dv.time, '+00:00', t.`offset` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(#{end_date} AS DATETIME)) --> 
+			ORDER BY dv.time DESC LIMIT 1)
+		</foreach>
+	</select>
+	
+	
+	
+	
+	<select id="getZoneDeviceLastRow" resultType="Map">
+		SELECT * FROM ${datatablename} d ORDER BY d.time DESC LIMIT 1
 	</select>
 	
 	

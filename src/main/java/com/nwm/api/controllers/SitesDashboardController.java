@@ -5,6 +5,10 @@
 *********************************************************/
 package com.nwm.api.controllers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
+import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.EmployeeService;
@@ -85,6 +91,82 @@ public class SitesDashboardController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-zones")
+	public Object getListZones(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListZones(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-zones-graph")
+	public Object getListZonesGraph(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListZonesGraph(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-lighting-graph")
+	public Object getListDataLightingGraph(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataLightingGraph(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description Get list zones by id_site
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-breaker-alerts")
+	public Object getListBreakerAlerts(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListBreakerAlerts(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description Get list pannel by id_device
@@ -97,6 +179,25 @@ public class SitesDashboardController extends BaseController {
 		try {
 			SitesDashboardService service = new SitesDashboardService();
 			List data = service.getListDataBitMap(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-data-zone-bit-map")
+	public Object getListDataZoneBitMap(@RequestBody DeviceZoneEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListDataZoneBitMap(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);

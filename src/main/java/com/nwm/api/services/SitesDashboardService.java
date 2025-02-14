@@ -5,15 +5,23 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicePanelEntity;
+import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
+import com.nwm.api.entities.ZoneGraphDateEntity;
 import com.nwm.api.utils.SecretCards;
 
 public class SitesDashboardService extends DB {
@@ -61,6 +69,154 @@ public class SitesDashboardService extends DB {
 	
 	
 	
+	
+	/**
+	 * @description get list panel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListBreakerAlerts(SitesDevicesEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListBreakerAlerts", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
+	 * @description get list panel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListZones(SitesDevicesEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListZones", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	
+	/**
+	 * @description get list zone graph by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListZonesGraph(SitesDevicesEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListZones", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
+	 * @description get list data lighting graph by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListDataLightingGraph(SitesDevicesEntity obj) {
+		try {
+			List<ZoneGraphDateEntity> dataList = new ArrayList<>();
+			
+			dataList = queryForList("SitesDashboard.getListDataLightingGraph", obj);
+			// ----- Create DateTime List ----- Begin
+			int interval = 0;
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+			ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		
+			switch (obj.getData_send_time()) {
+				case 1: // 5 minutes
+					interval = 5;
+					timeUnit = ChronoUnit.MINUTES;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+					break;
+					
+				case 2: // 15 minutes
+					interval = 15;
+					timeUnit = ChronoUnit.MINUTES;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+					break;
+			}
+			
+			List<ZoneGraphDateEntity> dateTimeList = new ArrayList<>();
+			while (!start.isAfter(end)) {
+				ZoneGraphDateEntity dateTime = new ZoneGraphDateEntity();
+				dateTime.setTime_full(start.format(timeFullFormat));
+				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+			
+			List<ZoneGraphDateEntity> fulfilledData = fulfillData(dateTimeList, dataList);
+			return fulfilledData;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-03-20
+	 * @param List<ZoneGraphDateEntity> dateTimeList
+	 * @param List<ZoneGraphDateEntity> dataList
+	 */
+	private List<ZoneGraphDateEntity> fulfillData(List<ZoneGraphDateEntity> dateTimeList, List<ZoneGraphDateEntity> dataList) {
+		try {
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			List<ZoneGraphDateEntity> fulfilledDataList = new ArrayList<ZoneGraphDateEntity>();
+			int count = 0;
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				ZoneGraphDateEntity dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				ZoneGraphDateEntity dataItem = dataList.get(i - count);
+				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
+				}
+			}
+			
+			return fulfilledDataList;
+		} catch (Exception e) {
+			return dataList;
+		}
+		
+	}
+	
 	/**
 	 * @description get list bit map by id_panel
 	 * @author long.pham
@@ -79,6 +235,25 @@ public class SitesDashboardService extends DB {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description get list bit map by id_panel
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListDataZoneBitMap(DeviceZoneEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListDataZoneBitMap", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
 	
 	/**
 	 * @description get list device by id site
