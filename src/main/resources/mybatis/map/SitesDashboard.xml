@@ -337,6 +337,7 @@
 		SELECT
 		dv.ZonesStatus132 AS ZonesStatus132,
 		dv.BreakersPanel0L AS BreakersPanel0L,
+		1 AS on_time,
 		<choose>
 			<when test="data_send_time == 1">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,

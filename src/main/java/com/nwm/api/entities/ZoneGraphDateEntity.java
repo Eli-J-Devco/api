@@ -14,8 +14,15 @@ public class ZoneGraphDateEntity{
 	private String categories_time;
 	private double ZonesStatus132;
 	private double BreakersPanel0L;
+	private int on_time;
 	
 
+	public int getOn_time() {
+		return on_time;
+	}
+	public void setOn_time(int on_time) {
+		this.on_time = on_time;
+	}
 	public double getBreakersPanel0L() {
 		return BreakersPanel0L;
 	}
