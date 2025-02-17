@@ -340,11 +340,11 @@
 		<choose>
 			<when test="data_send_time == 1">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%H:%i %p') AS categories_time
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%h:%i %p') AS categories_time
 			</when>
 			<when test="data_send_time == 2">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%H:%i %p') AS categories_time
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%h:%i %p') AS categories_time
 			</when>
 		</choose>
 							
@@ -353,6 +353,7 @@
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME))
+		ORDER BY dv.time ASC
 	</select>
 	
 	
