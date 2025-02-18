@@ -15,6 +15,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ScadaDeviceAlarmEntity;
 import com.nwm.api.entities.ScadaDeviceChartDataEntity;
 import com.nwm.api.entities.ScadaDeviceEntity;
+import com.nwm.api.utils.Lib;
 
 public class ScadaDeviceService extends DB {
 
@@ -34,41 +35,6 @@ public class ScadaDeviceService extends DB {
 			return new ArrayList<ScadaDeviceEntity>();
 		}
 		return dataList;
-	}
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-04-05
-	 * @param dateTimeList
-	 * @param dataList
-	 * @return
-	 */
-	private List<ScadaDeviceChartDataEntity> fulfillData(List<ScadaDeviceChartDataEntity> dateTimeList, List<ScadaDeviceChartDataEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ScadaDeviceChartDataEntity> fulfilledDataList = new ArrayList<ScadaDeviceChartDataEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ScadaDeviceChartDataEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ScadaDeviceChartDataEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getFull_time().equals(dataItem.getFull_time())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
 	}
 	
 	/**
@@ -278,7 +244,7 @@ public class ScadaDeviceService extends DB {
 			
 			dataList = queryForList("ScadaDevice.getChartData", obj);
 			if (dataList == null) return new ArrayList<ScadaDeviceChartDataEntity>();
-			return fulfillData(getDateTimeList(obj, start, end), dataList);
+			return Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "full_time");
 		} catch (Exception ex) {
 			return new ArrayList<ScadaDeviceChartDataEntity>();
 		}

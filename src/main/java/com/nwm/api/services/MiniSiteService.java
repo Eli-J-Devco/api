@@ -14,6 +14,7 @@ import java.util.List;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.KioskViewTodayEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 
 public class MiniSiteService extends DB {
 
@@ -37,41 +38,6 @@ public class MiniSiteService extends DB {
 		}
 		return dataObj;
 	}
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<KioskViewTodayEntity> dateTimeList
-	 * @param List<KioskViewTodayEntity> dataList
-	 */
-	private List<KioskViewTodayEntity> fulfillData(List<KioskViewTodayEntity> dateTimeList, List<KioskViewTodayEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<KioskViewTodayEntity> fulfilledDataList = new ArrayList<KioskViewTodayEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				KioskViewTodayEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				KioskViewTodayEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
-	}
-	
 	
 	/**
 	 * @description get monthly report
@@ -139,7 +105,7 @@ public class MiniSiteService extends DB {
 			}
 			
 			List<KioskViewTodayEntity> dataEnergy = obj.getEnable_virtual_device() == 1 ? queryForList("MiniSite.getDataVirtualDevice", obj) : queryForList("MiniSite.getDataEnergy", obj);
-			List<KioskViewTodayEntity> fulfilledData = fulfillData(categories, dataEnergy);
+			List<KioskViewTodayEntity> fulfilledData = Lib.fulfillData(categories, dataEnergy, "categories_time");
 			if (fulfilledData.size() > 0) obj.setEnergy(fulfilledData);
 			
 			return obj;

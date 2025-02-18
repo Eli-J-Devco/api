@@ -22,42 +22,9 @@ import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.MonthlyProductionTrendReportEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeeklyDateEntity;
+import com.nwm.api.utils.Lib;
 
 public class BuiltInReportService extends DB {
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-05-03
-	 * @param dateTimeList
-	 * @param dataList
-	 * @return
-	 */
-	private <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<K> fulfilledDataList = new ArrayList<K>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				K dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				K dataItem = dataList.get(i - count);
-				if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-	}
 	
 	/**
 	 * @description create date time list
@@ -245,7 +212,7 @@ public class BuiltInReportService extends DB {
 	public Object getAnnuallyBuitInReport(ViewReportEntity obj) {
 		try {
 			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataAnnualTrendReport", obj);
-			List<WeeklyDateEntity> fulfillData = fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data);
+			List<WeeklyDateEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data, "categories_time");
 			if (fulfillData.size() > 0) {
 				WeeklyDateEntity totalRow = new WeeklyDateEntity();
 				totalRow.setCategories_time("Total");
@@ -280,7 +247,7 @@ public class BuiltInReportService extends DB {
 			if (powerDeviceList.size() > 0) {
 				obj.setGroupDevices(powerDeviceList);
 				List<MonthlyProductionTrendReportEntity> data = queryForList("BuiltInReport.getMonthlyTrendBuitInReport", obj);
-				obj.setDataReports(fulfillData(getDateTimeList(obj, MonthlyProductionTrendReportEntity.class), data));
+				obj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyProductionTrendReportEntity.class), data, "categories_time"));
 			}
 			
 			return obj;
@@ -299,7 +266,7 @@ public class BuiltInReportService extends DB {
 	public ViewReportEntity getWeeklyBuiltInReport(ViewReportEntity obj) {
 		try {
 			List<WeeklyDateEntity> data = queryForList("BuiltInReport.getDataWeeklyTrendReport", obj);
-			List<WeeklyDateEntity> fulfillData = fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data);
+			List<WeeklyDateEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, WeeklyDateEntity.class), data, "categories_time");
 			if (fulfillData.size() > 0) {
 				WeeklyDateEntity totalRow = new WeeklyDateEntity();
 				totalRow.setCategories_time("Total");

@@ -9,19 +9,17 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
-import com.nwm.api.entities.ClientMonthlyDateEntity;
-import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.entities.ZoneGraphDateEntity;
+import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
 public class SitesDashboardService extends DB {
@@ -195,47 +193,12 @@ public class SitesDashboardService extends DB {
 				start = start.plus(interval, timeUnit);
 			}
 			
-			List<ZoneGraphDateEntity> fulfilledData = fulfillData(dateTimeList, dataList);
+			List<ZoneGraphDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataList, "time_full");
 			return fulfilledData;
 				
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-	}
-	
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<ZoneGraphDateEntity> dateTimeList
-	 * @param List<ZoneGraphDateEntity> dataList
-	 */
-	private List<ZoneGraphDateEntity> fulfillData(List<ZoneGraphDateEntity> dateTimeList, List<ZoneGraphDateEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ZoneGraphDateEntity> fulfilledDataList = new ArrayList<ZoneGraphDateEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ZoneGraphDateEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ZoneGraphDateEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
 	}
 	
 	/**

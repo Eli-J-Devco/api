@@ -20,43 +20,11 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.ScadaOverviewEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 
 
 
 public class ScadaOverviewService extends DB {
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<ClientMonthlyDateEntity> dateTimeList
-	 * @param List<ClientMonthlyDateEntity> dataList
-	 */
-	private List<ClientMonthlyDateEntity> fulfillData(List<ClientMonthlyDateEntity> dateTimeList, List<ClientMonthlyDateEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ClientMonthlyDateEntity> fulfilledDataList = new ArrayList<ClientMonthlyDateEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ClientMonthlyDateEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-	}
 	
 	/**
 	 * @description get list device by id site
@@ -312,7 +280,7 @@ public class ScadaOverviewService extends DB {
 											dataPower = queryForList("ScadaOverview.getDataEnergyThisWeekEachMeter", device);
 											break;
 									}
-									List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+									List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 									if (dataNew.size() > 0) {
 										Map<String, Object> deviceItem = new HashMap<>();
 										deviceItem.put("data_energy", dataNew);
@@ -345,7 +313,7 @@ public class ScadaOverviewService extends DB {
 									dataList = queryForList("ScadaOverview.getDataVirtualDeviceThisWeek", obj);
 									break;
 							}
-							List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataList);
+							List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataList, "time_full");
 							if (fulfilledData.size() > 0) {
 								boolean isPower = obj.getFilterBy().equals("today") || obj.getFilterBy().equals("3_day");
 								List<ClientMonthlyDateEntity> powerList = new ArrayList<>();
@@ -428,7 +396,7 @@ public class ScadaOverviewService extends DB {
 												dataPower = queryForList("ScadaOverview.getDataEnergyThisWeekEachMeter", device);
 												break;
 										}
-										List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+										List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 										if (dataNew.size() > 0) {
 											Map<String, Object> deviceItem = new HashMap<>();
 											deviceItem.put("data_energy", dataNew);
@@ -456,7 +424,7 @@ public class ScadaOverviewService extends DB {
 										dataPower = queryForList("ScadaOverview.getDataEnergyThisWeek", obj);
 										break;
 								}
-								List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPower);
+								List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 								if (fulfilledData.size() > 0) {
 									Map<String, Object> deviceItem = new HashMap<>();
 									deviceItem.put("data_energy", fulfilledData);
@@ -493,7 +461,7 @@ public class ScadaOverviewService extends DB {
 											dataIrradianceDevice = queryForList("ScadaOverview.getDataIrradiance3Day", obj);
 											break;
 									}
-									List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataIrradianceDevice);
+									List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataIrradianceDevice, "time_full");
 									if(fulfilledData.size() > 0 ) {
 										// Get Expected Power
 										if (i == 0) {
@@ -543,7 +511,7 @@ public class ScadaOverviewService extends DB {
 					} else {
 						 dataPowerM = forCountYTD + 1 <= 5 ? queryForList("ScadaOverview.getDataPowerCustomAtMost5Days", obj) : queryForList("ScadaOverview.getDataPowerCustom", obj);
 					}
-					List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPowerM);
+					List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerM, "time_full");
 					if (fulfilledData.size() > 0) {
 						Map<String, Object> deviceItem = new HashMap<>();
 						deviceItem.put("data_energy", fulfilledData);
@@ -567,7 +535,7 @@ public class ScadaOverviewService extends DB {
 							device.put("data_send_time", obj.getData_send_time());
 							device.put("table_data_report", obj.getTable_data_report());
 							List<ClientMonthlyDateEntity> dataPower = forCountYTD + 1 <= 5 ? queryForList("ScadaOverview.getDataPowerCustomAtMost5DaysEachMeter", device) : queryForList("ScadaOverview.getDataPowerThisMonthEachMeter", device);
-							List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+							List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 							
 							if (dataNew.size() > 0) {
 								Map<String, Object> deviceItem = new HashMap<>();
@@ -596,7 +564,7 @@ public class ScadaOverviewService extends DB {
 					} else {
 						dataPowerMYTD = queryForList("ScadaOverview.getDataPowerYear", obj);
 					}
-					List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPowerMYTD);
+					List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerMYTD, "time_full");
 					
 					if (fulfilledData.size() > 0) {
 						Map<String, Object> deviceItem = new HashMap<>();
@@ -620,7 +588,7 @@ public class ScadaOverviewService extends DB {
 							device.put("data_send_time", obj.getData_send_time());
 							device.put("table_data_report", obj.getTable_data_report());
 							List<ClientMonthlyDateEntity> dataPower = queryForList("ScadaOverview.getDataPowerThisMonthEachMeter", device);
-							List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+							List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 							
 							if (dataNew.size() > 0) {
 								Map<String, Object> deviceItem = new HashMap<>();
@@ -649,7 +617,7 @@ public class ScadaOverviewService extends DB {
 					} else {
 						dataPowerM12MonthDay = queryForList("ScadaOverview.getDataPowerYear", obj);
 					}
-					List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPowerM12MonthDay);
+					List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerM12MonthDay, "time_full");
 					
 					if (fulfilledData.size() > 0) {
 						Map<String, Object> deviceItem = new HashMap<>();
@@ -673,7 +641,7 @@ public class ScadaOverviewService extends DB {
 							device.put("data_send_time", obj.getData_send_time());
 							device.put("table_data_report", obj.getTable_data_report());
 							List<ClientMonthlyDateEntity> dataPower = queryForList("ScadaOverview.getDataPowerThisMonthEachMeter", device);
-							List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+							List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 							
 							if (dataNew.size() > 0) {
 								Map<String, Object> deviceItem = new HashMap<>();
@@ -703,7 +671,7 @@ public class ScadaOverviewService extends DB {
 						dataPowerMLT = queryForList("ScadaOverview.getDataPowerYear", obj);
 					}
 					
-					List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPowerMLT);
+					List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerMLT, "time_full");
 					if (fulfilledData.size() > 0) {
 						Map<String, Object> deviceItem = new HashMap<>();
 						deviceItem.put("data_energy", fulfilledData);
@@ -726,7 +694,7 @@ public class ScadaOverviewService extends DB {
 							device.put("data_send_time", obj.getData_send_time());
 							device.put("table_data_report", obj.getTable_data_report());
 							List<ClientMonthlyDateEntity> dataPower = queryForList("ScadaOverview.getDataPowerThisMonthEachMeter", device);
-							List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataPower);
+							List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 							
 							if (dataNew.size() > 0) {
 								Map<String, Object> deviceItem = new HashMap<>();
