@@ -35,43 +35,9 @@ import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 public class ReportsService extends DB {
-	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-05-03
-	 * @param dateTimeList
-	 * @param dataList
-	 * @return
-	 */
-	private <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<K> fulfilledDataList = new ArrayList<K>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				K dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				K dataItem = dataList.get(i - count);
-				if (dateTimeItem.getCategories_time().equals(dataItem.getCategories_time())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
-	}
 	
 	/**
 	 * @description create date time list
@@ -289,7 +255,7 @@ public class ReportsService extends DB {
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
 			List<DailyDateEntity> dateTimeList = getDateTimeList(obj, DailyDateEntity.class);
-			List<DailyDateEntity> fulfillData = fulfillData(dateTimeList, dataPower);
+			List<DailyDateEntity> fulfillData = Lib.fulfillData(dateTimeList, dataPower, "categories_time");
 			
 			// get irradiance 
 			try {
@@ -297,7 +263,7 @@ public class ReportsService extends DB {
 				if (dataListDeviceIrr.size() > 0) {
 					obj.setGroupDevices(dataListDeviceIrr);
 					List<DailyDateEntity> dataIrradiance = queryForList("Reports.getDataIrradiance", obj);
-					List<DailyDateEntity> fulfillIrradiance = fulfillData(dateTimeList, dataIrradiance);
+					List<DailyDateEntity> fulfillIrradiance = Lib.fulfillData(dateTimeList, dataIrradiance, "categories_time");
 					if(fulfillIrradiance.size() > 0) {
 						for (int i = 0; i < fulfillData.size(); i++) {
 							DailyDateEntity item = (DailyDateEntity) fulfillData.get(i);
@@ -334,7 +300,7 @@ public class ReportsService extends DB {
 			obj.setHave_meter(dataObj.isHave_meter());
 			obj.setHave_inverter(dataObj.isHave_inverter());
 			List<QuarterlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyAnnuallyReport", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -360,7 +326,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -755,7 +721,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
-			dataObj.setDataReports(fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy));
+			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
 		} catch (Exception ex) {
@@ -780,7 +746,7 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
-			List<CustomReportDataEntity> fulfillData = fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower);
+			List<CustomReportDataEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower, "categories_time");
 			if (fulfillData.size() > 0) {
 				CustomReportDataEntity totalRow = new CustomReportDataEntity();
 				totalRow.setCategories_time("Total");

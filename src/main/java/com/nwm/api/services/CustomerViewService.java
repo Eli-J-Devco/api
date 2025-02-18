@@ -21,44 +21,11 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
 public class CustomerViewService extends DB {
 	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<ClientMonthlyDateEntity> dateTimeList
-	 * @param List<ClientMonthlyDateEntity> dataList
-	 */
-	private List<ClientMonthlyDateEntity> fulfillData(List<ClientMonthlyDateEntity> dateTimeList, List<ClientMonthlyDateEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ClientMonthlyDateEntity> fulfilledDataList = new ArrayList<ClientMonthlyDateEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ClientMonthlyDateEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
-	}
-
 	/**
 	 * @description get chart data energy
 	 * @author long.pham
@@ -261,7 +228,7 @@ public class CustomerViewService extends DB {
 							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
 								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
 								List<ClientMonthlyDateEntity> dataItem = dataPower.stream().filter(item -> item.getId() == Integer.parseInt(device.get("id").toString())).collect(Collectors.toList());
-								List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataItem);
+								List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataItem, "time_full");
 								if (dataNew.size() > 0) {
 									Map<String, Object> deviceItem = new HashMap<>();
 									deviceItem.put("data_energy", dataNew);
@@ -290,7 +257,7 @@ public class CustomerViewService extends DB {
 									dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
 									break;
 							}
-							List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataList);
+							List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataList, "time_full");
 							if (fulfilledData.size() > 0) {
 								List<ClientMonthlyDateEntity> powerList = new ArrayList<>();
 								List<ClientMonthlyDateEntity> expectedPowerList = new ArrayList<>();
@@ -361,7 +328,7 @@ public class CustomerViewService extends DB {
 										dataPower = queryForList("CustomerView.getDataEnergyThisWeek", obj);
 										break;
 								}
-								List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPower);
+								List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPower, "time_full");
 								if (fulfilledData.size() > 0) {
 									Map<String, Object> deviceItem = new HashMap<>();
 									deviceItem.put("data_energy", fulfilledData);
@@ -392,7 +359,7 @@ public class CustomerViewService extends DB {
 											dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
 											break;
 									}
-									List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataIrradianceDevice);
+									List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataIrradianceDevice, "time_full");
 									if(fulfilledData.size() > 0 ) {
 										// Get Expected Power
 										if (i == 0) {
@@ -432,7 +399,7 @@ public class CustomerViewService extends DB {
 							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
 								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
 								List<ClientMonthlyDateEntity> dataItem = dataPower.stream().filter(item -> item.getId() == Integer.parseInt(device.get("id").toString())).collect(Collectors.toList());
-								List<ClientMonthlyDateEntity> dataNew = fulfillData(dateTimeList, dataItem);
+								List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataItem, "time_full");
 								if (dataNew.size() > 0) {
 									Map<String, Object> deviceItem = new HashMap<>();
 									deviceItem.put("data_energy", dataNew);
@@ -447,7 +414,7 @@ public class CustomerViewService extends DB {
 						obj.setIs_show_each_meter(0);
 						obj.setDatatablename(obj.getEnable_virtual_device() == 1 ? obj.getTable_data_virtual() : obj.getDatatablename());
 						List<ClientMonthlyDateEntity> dataPowerM = obj.getEnable_virtual_device() == 1 ? queryForList("CustomerView.getDataVirtualDeviceCustom", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
-						List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataPowerM);
+						List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerM, "time_full");
 						if (fulfilledData.size() > 0) {
 							Map<String, Object> deviceItem = new HashMap<>();
 							deviceItem.put("data_energy", fulfilledData);

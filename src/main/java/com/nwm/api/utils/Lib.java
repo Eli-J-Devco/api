@@ -20,6 +20,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryUsage;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -66,6 +67,7 @@ import javax.xml.bind.DatatypeConverter;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.google.gson.Gson;
+import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 
 /**
@@ -2949,6 +2951,46 @@ Lib {
 			}
 		} catch(IOException e) {
 			throw new RuntimeException("Failed to unzip content", e);
+		}
+	}
+	
+	/**
+	 * @description fulfill data in specific range of time
+	 * @author Hung.Bui
+	 * @since 2024-05-03
+	 * @param dateTimeList
+	 * @param dataList
+	 * @param comparisionFieldString field to compare
+	 * @return
+	 */
+	public static <K extends DateTimeReportDataEntity> List<K> fulfillData(List<K> dateTimeList, List<K> dataList, String comparisionFieldString) {
+		try {
+			if (dataList == null || dateTimeList.size() == 0) return dataList;
+			Field comparisionField = DateTimeReportDataEntity.class.getDeclaredField(comparisionFieldString);
+			comparisionField.setAccessible(true);
+			
+			List<K> fulfilledDataList = new ArrayList<K>();
+			int count = 0;
+			
+			for (int i = 0; i < dateTimeList.size(); i++) {
+				K dateTimeItem = dateTimeList.get(i);
+				if (i - count > dataList.size() - 1) {
+					fulfilledDataList.add(dateTimeItem);
+					continue;
+				}
+				
+				K dataItem = dataList.get(i - count);
+				if (comparisionField.get(dateTimeItem).equals(comparisionField.get(dataItem))) {
+					fulfilledDataList.add(dataItem);
+				} else {
+					fulfilledDataList.add(dateTimeItem);
+					count++;
+				}
+			}
+			
+			return fulfilledDataList;
+		} catch (Exception e) {
+			return dataList;
 		}
 	}
 	

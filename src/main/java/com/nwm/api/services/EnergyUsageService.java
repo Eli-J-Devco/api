@@ -18,43 +18,10 @@ import java.util.Map;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 
 public class EnergyUsageService extends DB {
 	
-	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<ClientMonthlyDateEntity> dateTimeList
-	 * @param List<ClientMonthlyDateEntity> dataList
-	 */
-	private List<ClientMonthlyDateEntity> fulfillData(List<ClientMonthlyDateEntity> dateTimeList, List<ClientMonthlyDateEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ClientMonthlyDateEntity> fulfilledDataList = new ArrayList<ClientMonthlyDateEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ClientMonthlyDateEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ClientMonthlyDateEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getTime_full().equals(dataItem.getTime_full())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-		
-	}
-
 	/**
 	 * @description get chart data energy
 	 * @author long.pham
@@ -129,7 +96,7 @@ public class EnergyUsageService extends DB {
 				}
 				
 				
-				List<ClientMonthlyDateEntity> fulfilledData = fulfillData(dateTimeList, dataEnergyUsage);
+				List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
 				if (fulfilledData.size() > 0) {
 					Map<String, Object> deviceItem = new HashMap<>();
 					deviceItem.put("data_energy", fulfilledData);

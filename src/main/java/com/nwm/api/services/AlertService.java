@@ -19,6 +19,7 @@ import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
 import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.utils.Lib;
 
 public class AlertService extends DB {
 	/**
@@ -331,39 +332,6 @@ public class AlertService extends DB {
 	}
 	
 	/**
-	 * @description fulfill data in specific range of time
-	 * @author Hung.Bui
-	 * @since 2024-03-20
-	 * @param List<ChartAlertDateEntity> dateTimeList
-	 * @param List<ChartAlertDateEntity> dataList
-	 */
-	private List<ChartAlertDateEntity> fulfillData(List<ChartAlertDateEntity> dateTimeList, List<ChartAlertDateEntity> dataList) {
-		try {
-			if (dataList == null || dateTimeList.size() == 0) return dataList;
-			List<ChartAlertDateEntity> fulfilledDataList = new ArrayList<ChartAlertDateEntity>();
-			int count = 0;
-			for (int i = 0; i < dateTimeList.size(); i++) {
-				ChartAlertDateEntity dateTimeItem = dateTimeList.get(i);
-				if (i - count > dataList.size() - 1) {
-					fulfilledDataList.add(dateTimeItem);
-					continue;
-				}
-				ChartAlertDateEntity dataItem = dataList.get(i - count);
-				if (dateTimeItem.getTime_format().equals(dataItem.getTime_format())) {
-					fulfilledDataList.add(dataItem);
-				} else {
-					fulfilledDataList.add(dateTimeItem);
-					count++;
-				}
-			}
-			
-			return fulfilledDataList;
-		} catch (Exception e) {
-			return dataList;
-		}
-	}
-
-	/**
 	 * @description get list site by id_sites
 	 * @author long.pham
 	 * @since 2021-02-02
@@ -391,7 +359,7 @@ public class AlertService extends DB {
 						
 			List<ChartAlertDateEntity> dataPower = queryForList("Alert.getDataChart", obj);
 			
-			return fulfillData(categories, dataPower);
+			return Lib.fulfillData(categories, dataPower, "time_format");
 		} catch (Exception ex) {
 			return null;
 		}
