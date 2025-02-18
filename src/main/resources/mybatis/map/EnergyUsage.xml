@@ -64,11 +64,11 @@
 				<when test="filterBy == 'today'">
 					ROUND( SUM( t.nvmActiveEnergy ) / 4, 1 ) AS avgEnergy,
 				</when>
-				<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week' or filterBy == 'last_12_months'">
+				<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 					ROUND( SUM( t.nvmActiveEnergy ) / 24, 1 ) AS avgEnergy,
 				</when>
 				
-				<when test="filterBy == 'lifetime'">
+				<when test="filterBy == 'lifetime' or filterBy == 'last_12_months'">
 					ROUND( SUM( t.nvmActiveEnergy ) / DAYOFMONTH(LAST_DAY(t.dateofmonth)), 1 ) AS avgEnergy,
 				</when>
 			</choose>
@@ -87,10 +87,16 @@
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
 							</when>
-							<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week' or filterBy == 'last_12_months'">
+							<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
+							</when>
+							
+							<when test="filterBy == 'last_12_months'">
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%Y' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
 							</when>
 							
 							<when test="filterBy == 'lifetime'">

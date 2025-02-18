@@ -68,11 +68,17 @@ public class EnergyUsageService extends DB {
 					case "last_week":
 					case "this_month":
 					case "last_month":
-					case "last_12_months":
 						interval = 1;
 						timeUnit = ChronoUnit.DAYS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+						break;
+						
+					case "last_12_months":
+						interval = 1;
+						timeUnit = ChronoUnit.MONTHS;
+						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 						break;
 						
 					case "lifetime": // 1 month
