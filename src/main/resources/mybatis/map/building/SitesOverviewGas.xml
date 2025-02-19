@@ -47,14 +47,14 @@
 		SELECT
 			time_full,
 			categories_time,
-			SUM(value) AS value
+			SUM(`value`) AS `value`
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
 					time_format,
 					time_full,
 					categories_time,
-					LEAD(minValue) OVER (ORDER BY time_format) - minValue AS value
+					IFNULL(LEAD(`minValue`) OVER (ORDER BY time_format), `maxValue`) - `minValue` AS `value`
 				FROM (
 					SELECT
 						<choose>
@@ -73,13 +73,19 @@
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
 							</when>
+							<when test="id_filter == 'summary'">
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-01') AS time_format,
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%Y') AS time_full,
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%Y') AS categories_time,
+							</when>
 							<otherwise>
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
 							</otherwise>
 						</choose>
-						MIN(dv.ReadingValue) AS minValue
+						MIN(dv.ReadingValue) AS `minValue`,
+						MAX(dv.ReadingValue) AS `maxValue`
 					FROM
 						${item.datatablename} dv
 					WHERE
@@ -95,6 +101,9 @@
 							</when>
 							<when test="id_filter == 'lifetime'">
 								dv.time BETWEEN CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
+							</when>
+							<when test="id_filter == 'summary'">
+								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL 2 MONTH), '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
 							</when>
 							<otherwise>
 								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 00:59:59'), #{timezone_value}, 'UTC')
@@ -115,6 +124,9 @@
 				</when>
 				<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
+				</when>
+				<when test="id_filter == 'summary'">
+					time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value})), '%Y-%m-%d 23:59:59')
 				</when>
 				<otherwise>
 					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')

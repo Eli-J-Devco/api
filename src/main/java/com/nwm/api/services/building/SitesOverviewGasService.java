@@ -8,11 +8,15 @@ package com.nwm.api.services.building;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalDouble;
 
 import com.nwm.api.DBManagers.DB;
@@ -20,6 +24,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEntity;
+import com.nwm.api.entities.building.SitesOverviewGasSummaryEntity;
 import com.nwm.api.utils.Lib;
 
 public class SitesOverviewGasService extends DB {
@@ -70,6 +75,13 @@ public class SitesOverviewGasService extends DB {
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					timeUnit = ChronoUnit.DAYS;
 					break;
+				case "summary":
+					start = LocalDateTime.parse(obj.getEnd_date(), formatter).minusMonths(2).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
+					end = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+					timefullFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
+					timeUnit = ChronoUnit.MONTHS;
+					break;
 			}
 			
 			while (!start.isAfter(end)) {
@@ -90,8 +102,8 @@ public class SitesOverviewGasService extends DB {
 	 * @description Get consumption
 	 * @author Hung.Bui
 	 * @since 2025-02-17
-	 * @param id_site
-	 * @return List
+	 * @param SitesOverviewGasEntity
+	 * @return SitesOverviewGasConsumptionEntity
 	 */
 	public SitesOverviewGasConsumptionEntity getConsumption(SitesOverviewGasEntity obj) {
 		SitesOverviewGasConsumptionEntity entity = new SitesOverviewGasConsumptionEntity();
@@ -119,8 +131,8 @@ public class SitesOverviewGasService extends DB {
 	 * @description Get gas meters
 	 * @author Hung.Bui
 	 * @since 2025-02-17
-	 * @param id_site
-	 * @return List
+	 * @param SitesOverviewGasEntity
+	 * @return List<DeviceEntity>
 	 */
 	public List<DeviceEntity> getGasMeters(SitesOverviewGasEntity obj) {
 		try {
@@ -130,6 +142,35 @@ public class SitesOverviewGasService extends DB {
 			log.error("SitesOverviewGas.getGasMeters", ex);
 		}
 		return new ArrayList<DeviceEntity>();
+	}
+	
+	/**
+	 * @description Get summary
+	 * @author Hung.Bui
+	 * @since 2025-02-19
+	 * @param SitesOverviewGasEntity
+	 * @return List
+	 */
+	public Map<String, SitesOverviewGasSummaryEntity> getSummary(SitesOverviewGasEntity obj) {
+		Map<String, SitesOverviewGasSummaryEntity> map = new HashMap<String, SitesOverviewGasSummaryEntity>();
+		
+		try {
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			obj.setEnd_date(ZonedDateTime.now(ZoneId.of(obj.getTimezone_value())).format(formatter));
+			SitesOverviewGasConsumptionEntity consumption = getConsumption(obj);
+			List<ChartConsumptionEntity> data = consumption.getData();
+			if (data.size() == 0) return map;
+			
+			Double monthBeforeLastMonthValue = data.get(0).getValue();
+			Double lastMonthValue = data.get(1).getValue();
+			Double currentMonthVallue = data.get(2).getValue();
+			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonthValue, "Therms", monthBeforeLastMonthValue != null && lastMonthValue != null ? new BigDecimal((lastMonthValue - monthBeforeLastMonthValue) / monthBeforeLastMonthValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonthVallue, "Therms", lastMonthValue != null && currentMonthVallue != null ? new BigDecimal((currentMonthVallue - lastMonthValue) / lastMonthValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+		} catch (Exception ex) {
+			log.error("SitesOverviewGas.getSummary", ex);
+		}
+		
+		return map;
 	}
 	
 }
