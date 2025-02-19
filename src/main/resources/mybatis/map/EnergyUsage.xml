@@ -107,6 +107,12 @@
 						</choose>
 						d.id,
 						
+						<!-- SUM(IF(
+							(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
+							0,
+							dv.MeasuredProduction
+						)) AS nvmActiveEnergy -->
+						
 					 	MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy) AS nvmActiveEnergy
 					FROM
 						${item.datatablename} dv
@@ -118,7 +124,7 @@
 					WHERE
 						s.id = #{item.id_site}
 						AND d.id = #{item.id}
-						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND DATE_FORMAT( DATE_ADD(#{end_date},INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"))
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY

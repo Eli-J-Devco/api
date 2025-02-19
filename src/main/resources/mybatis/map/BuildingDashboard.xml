@@ -9,8 +9,11 @@
 			d.datatablename,
 			d.devicename,
 			IFNULL(d.energy_today, 0) AS energy_today,
+			IFNULL(d.energy_yesterday, 0) AS energy_yesterday,
 			IFNULL(d.energy_this_week, 0) AS energy_this_week,
+			IFNULL(d.energy_last_week, 0) AS energy_last_week,
 			IFNULL(d.energy_this_month, 0) AS energy_this_month,
+			IFNULL(d.energy_last_month, 0) AS energy_last_month,
 			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
 			IFNULL(d.energy_this_year, 0) AS energy_this_year,
 			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
@@ -18,7 +21,7 @@
 		FROM
 			device d 
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7)
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2)
 	</select>
 	
 	
