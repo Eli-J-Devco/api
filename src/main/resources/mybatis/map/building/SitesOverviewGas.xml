@@ -19,7 +19,7 @@
 			AND d.id_device_type = 18
 			AND s.status = 1
 			AND s.is_delete = 0
-			AND (CONVERT_TZ(NOW(), 'UTC', #{timezone_value}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<choose> 
 	       		<when test="domain == 'test.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,2,4)
@@ -134,6 +134,53 @@
 			</choose>
 		GROUP BY
 			time_format
+	</select>
+	
+	<select id="getEvents" resultType="com.nwm.api.entities.building.SitesOverviewGasEventEntity">
+		SELECT
+			l.id,
+			CONCAT(d.devicename, " ", e.message) AS event,
+			i.icon AS icon_url,
+			DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', #{timezone_value}), '%d %b, %Y : %h:%i %p') AS trigger_date,
+			IF(
+				TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()) > 0,
+				CONCAT(TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()), " year", IF(TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
+				IF(
+			   		TIMESTAMPDIFF(MONTH, l.start_date, UTC_TIMESTAMP()) > 0,
+					CONCAT(TIMESTAMPDIFF(MONTH, l.start_date, UTC_TIMESTAMP()), " month", IF(TIMESTAMPDIFF(MONTH, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
+					IF(
+				   		TIMESTAMPDIFF(DAY, l.start_date, UTC_TIMESTAMP()) > 0,
+						CONCAT(TIMESTAMPDIFF(DAY, l.start_date, UTC_TIMESTAMP()), " day", IF(TIMESTAMPDIFF(DAY, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
+						IF(
+					   		TIMESTAMPDIFF(HOUR, l.start_date, UTC_TIMESTAMP()) > 0,
+							CONCAT(TIMESTAMPDIFF(HOUR, l.start_date, UTC_TIMESTAMP()), " hour", IF(TIMESTAMPDIFF(HOUR, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
+							IF(
+						   		TIMESTAMPDIFF(MINUTE, l.start_date, UTC_TIMESTAMP()) > 0,
+								CONCAT(TIMESTAMPDIFF(MINUTE, l.start_date, UTC_TIMESTAMP()), " minute", IF(TIMESTAMPDIFF(MINUTE, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
+								CONCAT(TIMESTAMPDIFF(SECOND, l.start_date, UTC_TIMESTAMP()), " second", IF(TIMESTAMPDIFF(SECOND, l.start_date, UTC_TIMESTAMP()) > 1, "s", ""))
+							)
+						)
+					)
+				)	
+			) AS opened_period
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN icon i ON i.id = el.id_icon
+			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			e.status = 1
+			AND e.is_delete = 0
+			AND l.status = 1
+			AND l.is_delete = 0
+			AND s.enable_alert = 1
+			<foreach collection="devices" item="item" open="AND d.id IN (" close=")" separator=",">
+				#{item.id}
+			</foreach>
+		ORDER BY
+			id DESC
 	</select>
 	
 </mapper>

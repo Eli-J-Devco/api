@@ -3027,4 +3027,43 @@ Lib {
 			return false;
 		}
 	}
+	
+	public static boolean isSuperAdmin(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("authorities")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == 1);
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
+	public static boolean isSiteManagedByUser(String authz, int id) {
+		if (isSuperAdmin(authz)) return true;
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return false;
+		try {
+			return Arrays
+					.stream(claims
+							.get("id_sites")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+					)
+					.mapToInt(Integer::parseInt)
+					.anyMatch(item -> item == id);
+		} catch (Exception e) {
+			return false;
+		}
+	}
 }

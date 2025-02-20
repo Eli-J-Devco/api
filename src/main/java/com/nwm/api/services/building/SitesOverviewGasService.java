@@ -24,6 +24,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEntity;
+import com.nwm.api.entities.building.SitesOverviewGasEventEntity;
 import com.nwm.api.entities.building.SitesOverviewGasSummaryEntity;
 import com.nwm.api.utils.Lib;
 
@@ -171,6 +172,29 @@ public class SitesOverviewGasService extends DB {
 		}
 		
 		return map;
+	}
+	
+	/**
+	 * @description Get alerts
+	 * @author Hung.Bui
+	 * @since 2025-02-20
+	 * @param List<SitesOverviewGasEventEntity>
+	 * @return List
+	 */
+	public List<SitesOverviewGasEventEntity> getEvents(SitesOverviewGasEntity obj) {
+		List<SitesOverviewGasEventEntity> dataList = new ArrayList<SitesOverviewGasEventEntity>();
+		
+		try {
+			List<DeviceEntity> devices = this.getGasMeters(obj);
+			if (devices.size() == 0) return dataList;
+			obj.setDevices(devices);
+			
+			dataList = queryForList("SitesOverviewGas.getEvents", obj);
+		} catch (Exception ex) {
+			log.error("SitesOverviewGas.getEvents", ex);
+		}
+		
+		return dataList;
 	}
 	
 }
