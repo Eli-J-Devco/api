@@ -1221,4 +1221,23 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description Get list camera image
+	 * @author duy.phan
+	 * @since 2025-01-24
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-first-time-image-camera")
+	public Object getFirstTimeImageCamera(@RequestBody CameraImageEntity obj) {
+		try {
+			SitesDevicesService service = new SitesDevicesService();
+			CameraImageEntity data = service.getFirstTimeImageCamera(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

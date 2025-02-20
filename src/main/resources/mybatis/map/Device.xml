@@ -217,7 +217,12 @@
 			s.date_time_offset,
 			s.is_excluded_meter,
 			s.mfa_control,
-			s.show_on_domain
+			s.show_on_domain,
+			s.device_ftp_server,
+			s.device_ftp_user,
+			s.device_ftp_pass,
+			s.device_ftp_port,
+			s.device_ftp_folder
 		FROM
 			device s
 			LEFT JOIN device_type dt ON dt.id = s.id_device_type

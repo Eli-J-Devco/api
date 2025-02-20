@@ -222,6 +222,7 @@ public class SitesDevicesService extends DB {
 	
 
 	public List getListCameraImage(CameraImageEntity obj) {
+
 		try {
 			List dataList = queryForList("SitesDevices.getListCameraImage", obj);
 			if (dataList == null) return new ArrayList();
@@ -229,6 +230,27 @@ public class SitesDevicesService extends DB {
 			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
+		}
+	}
+	
+	/**
+	 * @description get first  image camera by id_device
+	 * @author duy.phan 
+	 * @since 2025-01-24
+	 * @param id_site
+	 */
+	
+	public CameraImageEntity getFirstTimeImageCamera(CameraImageEntity obj) {
+		CameraImageEntity rowItem = new CameraImageEntity();
+		try {
+			rowItem = (CameraImageEntity) queryForObject("SitesDevices.getFirstTimeImageCamera", obj);
+			if (rowItem == null) {
+				return new CameraImageEntity();
+			}
+			
+			return rowItem;
+		} catch (Exception ex) {
+			return new CameraImageEntity();
 		}
 	}
 	
