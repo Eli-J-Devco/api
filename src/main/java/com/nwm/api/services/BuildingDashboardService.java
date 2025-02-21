@@ -29,6 +29,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
+import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Constants;
 
@@ -384,4 +385,24 @@ public class BuildingDashboardService extends DB {
 	}
 	
 	
+	
+	/**
+	 * @description get list site building floor
+	 * @author Long.Pham
+	 * @since 2025-02-20
+	 * @param obj
+	 */
+	
+	
+	public ElectricInformationEntity getElectricInformation(ElectricInformationEntity obj) {
+		ElectricInformationEntity dataObj = null;
+		try {
+			 dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getElectricInformation", obj);
+			if (dataObj == null)
+				return new ElectricInformationEntity();
+		} catch (Exception ex) {
+			return new ElectricInformationEntity();
+		}
+		return dataObj;
+	}
 }

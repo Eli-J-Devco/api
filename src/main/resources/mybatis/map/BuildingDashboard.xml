@@ -14,6 +14,7 @@
 			IFNULL(d.energy_last_week, 0) AS energy_last_week,
 			IFNULL(d.energy_this_month, 0) AS energy_this_month,
 			IFNULL(d.energy_last_month, 0) AS energy_last_month,
+			IFNULL(d.energy_compare_last_month, 0) AS energy_compare_last_month,
 			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
 			IFNULL(d.energy_this_year, 0) AS energy_this_year,
 			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
@@ -708,6 +709,64 @@
 		
 		GROUP BY
 			t.time_format
+	</select>
+	
+	
+	<select id="getElectricInformation" resultType="com.nwm.api.entities.ElectricInformationEntity">
+		SELECT ( 
+			SELECT ROUND(AVG(g.nvmActiveEnergy),1)  AS avg_this_month FROM (
+				SELECT SUM(t.nvmActiveEnergy) AS nvmActiveEnergy, t.id FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT 
+								d.id,
+								dv.time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
+								MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy) AS nvmActiveEnergy
+							FROM ${item.datatablename}  dv
+							LEFT JOIN device d ON d.id = dv.id_device
+							LEFT JOIN site s ON s.id = d.id_site 
+							LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE 
+								s.id = #{id}
+								AND d.id = #{item.id}
+								AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN '2025-02-01 00:00:00' AND NOW())
+								AND s.`status` = 1 
+								AND d.`status` = 1 
+								GROUP BY
+								d.id,
+								time_format
+					</foreach>
+				)t GROUP BY t.time_format
+			)g
+		) AS avg_this_month,
+		
+		(
+			SELECT ROUND(AVG(g.nvmActiveEnergy),1)  AS avg_this_month FROM (
+				SELECT SUM(t.nvmActiveEnergy) AS nvmActiveEnergy, t.id FROM (
+					<foreach collection="devices" item="item" index="index" separator="union all">
+						SELECT 
+							d.id,
+							dv.time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
+							MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy) AS nvmActiveEnergy
+						FROM ${item.datatablename}  dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE 
+							s.id = #{id}
+							AND d.id = #{item.id}
+							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN ADDDATE(LAST_DAY(SUBDATE( NOW(), INTERVAL 2 MONTH)), 1) AND LAST_DAY(ADDDATE(LAST_DAY(SUBDATE( NOW(), INTERVAL 2 MONTH)), 1)))
+							AND s.`status` = 1 
+							AND d.`status` = 1 
+							GROUP BY
+							d.id,
+							time_format
+					</foreach>
+				)t GROUP BY t.time_format
+			)g
+		) AS avg_last_month
+		
 	</select>
 	
 </mapper>

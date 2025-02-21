@@ -138,6 +138,88 @@
 			</if>
 			t.time_format
 	</select>
+	
+	
+	
+	
+	<select id="getDataEnergyUsageByDevice" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+		SELECT
+			t.time_format,
+			t.categories_time,
+			ROUND( SUM( t.nvmActiveEnergy ), 1 ) AS chart_energy_kwh,
+			<choose>
+				<when test="filterBy == 'today'">
+					ROUND( SUM( t.nvmActiveEnergy ) / 4, 1 ) AS avgEnergy,
+				</when>
+				<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+					ROUND( SUM( t.nvmActiveEnergy ) / 24, 1 ) AS avgEnergy,
+				</when>
+				
+				<when test="filterBy == 'lifetime' or filterBy == 'last_12_months'">
+					ROUND( SUM( t.nvmActiveEnergy ) / DAYOFMONTH(LAST_DAY(t.dateofmonth)), 1 ) AS avgEnergy,
+				</when>
+			</choose>
+			
+			t.time_full,
+			t.id
+		FROM
+			(
+				SELECT
+						dv.time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:%i' ) AS dateofmonth,
+						<choose>
+							<when test="filterBy == 'today'">
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
+							</when>
+							<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
+							</when>
+							
+							<when test="filterBy == 'last_12_months'">
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%Y' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
+							</when>
+							
+							<when test="filterBy == 'lifetime'">
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%Y' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%Y' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
+							</when>
+						</choose>
+						d.id,
+						
+						<!-- SUM(IF(
+							(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
+							0,
+							dv.MeasuredProduction
+						)) AS nvmActiveEnergy -->
+						
+					 	MAX(nvmActiveEnergy) - MIN(nvmActiveEnergy) AS nvmActiveEnergy
+					FROM
+						${datatablename} dv
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
+						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
+					WHERE
+						d.id = #{id}
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND DATE_FORMAT( DATE_ADD(#{end_date},INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"))
+						AND s.`status` = 1 
+						AND d.`status` = 1 
+					GROUP BY
+						d.id,
+						time_format
+			) t 
+		GROUP BY
+			t.time_format
+	</select>
+	
 
 	
 </mapper>

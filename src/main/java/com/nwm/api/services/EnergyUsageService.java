@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 
@@ -110,6 +111,101 @@ public class EnergyUsageService extends DB {
 					deviceItem.put("devicename", "Consumption");
 					dataEnergy.add(deviceItem);
 				}
+			}
+			
+			return dataEnergy;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+
+	}
+	
+	
+	
+	/**
+	 * @description get chart data energy by device id
+	 * @author long.pham
+	 * @since 2020-12-04
+	 * @param id_device
+	 */
+
+	public List getChartDataEnergyByDevice(DeviceEntity obj) {
+		try {
+			List dataEnergy = new ArrayList<>();
+			
+			// if data is in 3 latest months then data is fetch from view, else it's from table
+			Date dt = new Date();
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(dt); 
+			c.add(Calendar.MONTH, -3);
+			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+			Date d1 = dateFor.parse(obj.getStart_date());
+			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
+			
+			int interval = 0;
+			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+			ChronoUnit timeUnit = ChronoUnit.MINUTES;
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			// get Energy usage 
+			List<ClientMonthlyDateEntity> dataEnergyUsage = new ArrayList<>();
+			dataEnergyUsage = queryForList("EnergyUsage.getDataEnergyUsageByDevice", obj);
+			switch (obj.getFilterBy()) {
+				case "today": // 1 hour
+					interval = 1;
+					timeUnit = ChronoUnit.HOURS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
+					break;
+					
+				case "this_week": // 1 day
+				case "last_week":
+				case "this_month":
+				case "last_month":
+					interval = 1;
+					timeUnit = ChronoUnit.DAYS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+					break;
+					
+				case "last_12_months":
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					break;
+					
+				case "lifetime": // 1 month
+					interval = 1;
+					timeUnit = ChronoUnit.MONTHS;
+					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+					
+					break;
+					
+					
+			}
+			
+			List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
+			while (!start.isAfter(end)) {
+				ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
+				dateTime.setTime_full(start.format(timeFullFormat));
+				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				dateTimeList.add(dateTime);
+				start = start.plus(interval, timeUnit);
+			}
+			
+			
+			List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataEnergyUsage, "time_full");
+			if (fulfilledData.size() > 0) {
+				Map<String, Object> deviceItem = new HashMap<>();
+				deviceItem.put("data_energy", fulfilledData);
+				deviceItem.put("type", "consumption");
+				deviceItem.put("devicename", "Consumption");
+				dataEnergy.add(deviceItem);
 			}
 			
 			return dataEnergy;
