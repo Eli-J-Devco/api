@@ -24,7 +24,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id IN (3,7,9)
+			dt.id IN (3,7,9, 17, 18)
 			AND d.id_site = #{id_site}
 			AND d.meter_type = #{meter_type}
 			AND d.`status` = 1 
