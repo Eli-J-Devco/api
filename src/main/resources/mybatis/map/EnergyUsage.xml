@@ -62,7 +62,7 @@
 			ROUND( SUM( t.nvmActiveEnergy ), 1 ) AS chart_energy_kwh,
 			<choose>
 				<when test="filterBy == 'today'">
-					ROUND( SUM( t.nvmActiveEnergy ) / (IF(t.data_send_time = 1, 4, 12)), 1 ) AS avgEnergy,
+					ROUND( SUM( t.nvmActiveEnergy ) / (IF(t.data_send_time = 1, 12, 4)), 1 ) AS avgEnergy,
 				</when>
 				<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 					ROUND( SUM( t.nvmActiveEnergy ) / 24, 1 ) AS avgEnergy,
@@ -149,7 +149,7 @@
 			ROUND( SUM( t.nvmActiveEnergy ), 1 ) AS chart_energy_kwh,
 			<choose>
 				<when test="filterBy == 'today'">
-					ROUND( SUM( t.nvmActiveEnergy ) / (IF(t.data_send_time = 1, 4, 12)), 1 ) AS avgEnergy,
+					ROUND( SUM( t.nvmActiveEnergy ) / (IF(t.data_send_time = 1, 12, 4)), 1 ) AS avgEnergy,
 				</when>
 				<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 					ROUND( SUM( t.nvmActiveEnergy ) / 24, 1 ) AS avgEnergy,
