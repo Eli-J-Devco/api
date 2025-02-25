@@ -22,7 +22,7 @@
 		FROM
 			device d 
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2)
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,4,1)
 	</select>
 	
 	
@@ -729,7 +729,14 @@
 							WHERE 
 								s.id = #{id}
 								AND d.id = #{item.id}
-								AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN (LAST_DAY(NOW() - INTERVAL 1 MONTH) + INTERVAL 1 DAY) AND NOW())
+								AND (
+								CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
+								
+								DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -7 DAY) , '%Y-%m-%d 23:59:59' )
+								
+								AND DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', t.value ), '%Y-%m-%d 23:59:59' )
+								
+								)
 								AND s.`status` = 1 
 								AND d.`status` = 1 
 								GROUP BY
@@ -756,7 +763,14 @@
 						WHERE 
 							s.id = #{id}
 							AND d.id = #{item.id}
-							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN ADDDATE(LAST_DAY(SUBDATE( NOW(), INTERVAL 2 MONTH)), 1) AND LAST_DAY(ADDDATE(LAST_DAY(SUBDATE( NOW(), INTERVAL 2 MONTH)), 1)))
+							AND (
+							CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
+							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -14 DAY) , '%Y-%m-%d 00:00:00' )
+							AND 
+							
+							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -7 DAY) , '%Y-%m-%d 23:59:59' )
+							
+							)
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 							GROUP BY
@@ -786,9 +800,9 @@
 							s.id = #{id}
 							AND d.id = #{item.id}
 							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
-							DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', '-08:00' ), '%Y-%m-%d 00:00:00' )
+							DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', t.value  ), '%Y-%m-%d 00:00:00' )
 							AND 
-							DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', '-08:00' ), '%Y-%m-%d 23:59:59' )
+							DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', t.value  ), '%Y-%m-%d 23:59:59' )
 							)
 							AND s.`status` = 1 
 							AND d.`status` = 1 
@@ -818,9 +832,9 @@
 							s.id = #{id}
 							AND d.id = #{item.id}
 							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
-							DATE_FORMAT(DATE_ADD(CONVERT_TZ( NOW(), 'UTC', '-08:00' ), INTERVAL -1 DAY), '%Y-%m-%d 00:00:00' )
+							DATE_FORMAT(DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value  ), INTERVAL -1 DAY), '%Y-%m-%d 00:00:00' )
 							AND 
-							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', '-08:00' ), INTERVAL -1 DAY) , '%Y-%m-%d 23:59:59' )
+							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value  ), INTERVAL -1 DAY) , '%Y-%m-%d 23:59:59' )
 							)
 							AND s.`status` = 1 
 							AND d.`status` = 1 
