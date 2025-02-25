@@ -397,7 +397,10 @@ public class BuildingDashboardService extends DB {
 	public ElectricInformationEntity getElectricInformation(ElectricInformationEntity obj) {
 		ElectricInformationEntity dataObj = null;
 		try {
-			 dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getElectricInformation", obj);
+			List deviceMainLoad = queryForList("BuildingDashboard.getDeviceMainLoad", obj);
+			obj.setDevices(deviceMainLoad);
+			
+			dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getElectricInformation", obj);
 			if (dataObj == null)
 				return new ElectricInformationEntity();
 		} catch (Exception ex) {
