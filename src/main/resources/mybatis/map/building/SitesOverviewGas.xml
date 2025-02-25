@@ -16,7 +16,9 @@
 			d.id_site = #{id}
 			AND d.status = 1
 			AND d.is_delete = 0
-			AND d.id_device_type = 18
+			<foreach collection="id_device_type" item="id" open="AND d.id_device_type IN (" close=")" separator=",">
+				#{id}
+			</foreach>
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
@@ -140,6 +142,7 @@
 		SELECT
 			l.id,
 			CONCAT(d.devicename, " ", e.message) AS event,
+			d.devicename AS hardware,
 			i.icon AS icon_url,
 			DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', #{timezone_value}), '%d %b, %Y : %h:%i %p') AS trigger_date,
 			IF(

@@ -10,6 +10,7 @@ public class SitesOverviewGasEventEntity {
 	private String trigger_date;
 	private String opened_period;
 	private String icon_url;
+	private String hardware;
 	
 	public String getEvent() {
 		return event;
@@ -34,6 +35,12 @@ public class SitesOverviewGasEventEntity {
 	}
 	public void setIcon_url(String icon_url) {
 		this.icon_url = icon_url;
+	}
+	public String getHardware() {
+		return hardware;
+	}
+	public void setHardware(String hardware) {
+		this.hardware = hardware;
 	}
 	
 }
