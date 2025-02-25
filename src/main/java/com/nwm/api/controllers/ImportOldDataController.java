@@ -253,6 +253,11 @@ public class ImportOldDataController extends BaseController {
 										
 										switch (dataFile.getDevice_group_table()) {
 										
+										
+										case "model_xgi150":
+											service.setModelXGI150(rowItem, r);
+											break;
+										
 										case "model_ae_refusol":
 											service.setModelAeRefusol(rowItem, r);
 											break;
