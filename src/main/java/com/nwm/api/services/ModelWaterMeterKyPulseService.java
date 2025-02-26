@@ -96,6 +96,7 @@ public class ModelWaterMeterKyPulseService extends DB {
 			 }
 			 
 			 obj.setMeasuredProduction(measuredProduction);
+			 obj.setNvmActivePower(measuredProduction);
 			 
 			 Object insertId = insert("ModelWaterMeterKyPulse.insertModelWaterMeterKyPulse", obj);
 		        if(insertId == null ) {

@@ -112,6 +112,31 @@ public class BuildingDashboardController extends BaseController {
 	}
 	
 	
+	
+	/**
+	 * @description Get electric information
+	 * @author long.pham
+	 * @since 2025-02-20
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-monthly-energy-usage-by-component")
+	public Object getMonthlyEnergyUsageByComponent(@RequestBody ElectricInformationEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			ElectricInformationEntity data = service.getMonthlyEnergyUsageByComponent(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
 	/**
 	 * @description Get site detail
 	 * @author Duy.Phan

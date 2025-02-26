@@ -123,6 +123,8 @@ public class SitesAnalyticsService extends DB {
 	                	case "last_week":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
+	                	case "this_month":
+	                	case "last_month":
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -142,6 +144,8 @@ public class SitesAnalyticsService extends DB {
 	                	case "last_week":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
 	                		break;
+	                	case "this_month":
+	                	case "last_month":
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -163,15 +167,13 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case "this_month":
 	                	case "last_month":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                	case "12_month":
 	                	case "year":
 	                	case "lifetime":
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
-	                	case "custom":
-	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                }
 					break;
@@ -344,6 +346,8 @@ public class SitesAnalyticsService extends DB {
                 	case "last_month":
                 		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
                 		switch (obj.getData_send_time()) {
+	                		case 8: // 1 minute
+							case 1: // 5 minutes
 							case 2: // 15 minutes
 							case 3: // 1 hour
 		        				data.put("time_full", LocalDateTime.parse(data.get("time_full").toString(), fullTimeFormat).format(dateTimeFormat));

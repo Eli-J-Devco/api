@@ -18,6 +18,7 @@ public class SitesOverviewGasEntity {
 	private String end_date;
 	private String commissioning;
 	private List<DeviceEntity> devices;
+	private int[] id_device_type;
 	
 	public int getId() {
 		return id;
@@ -66,5 +67,11 @@ public class SitesOverviewGasEntity {
 	}
 	public void setDevices(List<DeviceEntity> devices) {
 		this.devices = devices;
+	}
+	public int[] getId_device_type() {
+		return id_device_type;
+	}
+	public void setId_device_type(int[] id_device_type) {
+		this.id_device_type = id_device_type;
 	}
 }
