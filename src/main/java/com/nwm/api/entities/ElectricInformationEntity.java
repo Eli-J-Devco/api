@@ -31,7 +31,45 @@ public class ElectricInformationEntity extends SortEntity {
 	private int meter_type;
 	private double avg_this_month;
 	private double avg_last_month;
+	private double monthly_lighting;
+	private double monthly_hvac;
+	private double monthly_solar;
+	private double monthly_electricity;
+	private double monthly_gas;
 	
+	
+	
+	public double getMonthly_electricity() {
+		return monthly_electricity;
+	}
+	public void setMonthly_electricity(double monthly_electricity) {
+		this.monthly_electricity = monthly_electricity;
+	}
+	public double getMonthly_solar() {
+		return monthly_solar;
+	}
+	public void setMonthly_solar(double monthly_solar) {
+		this.monthly_solar = monthly_solar;
+	}
+	
+	public double getMonthly_gas() {
+		return monthly_gas;
+	}
+	public void setMonthly_gas(double monthly_gas) {
+		this.monthly_gas = monthly_gas;
+	}
+	public double getMonthly_lighting() {
+		return monthly_lighting;
+	}
+	public void setMonthly_lighting(double monthly_lighting) {
+		this.monthly_lighting = monthly_lighting;
+	}
+	public double getMonthly_hvac() {
+		return monthly_hvac;
+	}
+	public void setMonthly_hvac(double monthly_hvac) {
+		this.monthly_hvac = monthly_hvac;
+	}
 	public double getAvg_this_month() {
 		return avg_this_month;
 	}

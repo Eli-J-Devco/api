@@ -408,4 +408,27 @@ public class BuildingDashboardService extends DB {
 		}
 		return dataObj;
 	}
+	
+	
+	
+	/**
+	 * @description get list site building floor
+	 * @author Long.Pham
+	 * @since 2025-02-20
+	 * @param obj
+	 */
+	
+	
+	public ElectricInformationEntity getMonthlyEnergyUsageByComponent(ElectricInformationEntity obj) {
+		ElectricInformationEntity dataObj = null;
+		try {
+			dataObj = (ElectricInformationEntity) queryForObject("BuildingDashboard.getMonthlyEnergyUsageByComponent", obj);
+			if (dataObj == null)
+				return new ElectricInformationEntity();
+		} catch (Exception ex) {
+			return new ElectricInformationEntity();
+		}
+		return dataObj;
+	}
+	
 }

@@ -22,7 +22,7 @@
 		FROM
 			device d 
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,4,1)
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,4,1,6)
 	</select>
 	
 	
@@ -937,5 +937,76 @@
 		SELECT dv.* FROM device dv 
 		WHERE dv.id_site = #{id} AND dv.meter_type IN(4);
   	</select>
+  	
+  	
+  	<select id="getMonthlyEnergyUsageByComponent" resultType="com.nwm.api.entities.ElectricInformationEntity">
+		SELECT
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_lighting
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (1)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_lighting,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_hvac
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (6)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_hvac,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_electricity
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (4)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_electricity,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_electricity
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (4)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_electricity,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_gas
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (7)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_gas,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_solar
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (3)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_solar
+		
+	</select>
 	
 </mapper>
