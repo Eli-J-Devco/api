@@ -9,6 +9,7 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,6 +73,60 @@ public class ThirdPartyAPIController extends BaseController {
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 
+		} catch (Exception e) {
+			return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * @description get device data for 3rd party, each site must have 3rd party key and access domain origin
+	 * @author Hung.Bui
+	 * @since 2025-02-20
+	 * @param params { start_date, end_date, device_id, data_type, interval }
+	 * @return data (status, message, array, total_row)
+	 */
+	@GetMapping("/device-data")
+	public Object getDeviceData(
+			@RequestHeader(name = "X-NWM-API-KEY", required = false) String key,
+			ThirdPartyAPIEntity params,
+			HttpServletRequest request
+	) {
+		try {
+			if(key == null || key == "") return this.thirdPartyJsonResult(false, "Key is required.", null, 0);
+			
+			/**
+			 *  input validation
+			 */
+			try {
+				if (params.getStart_date() == null || params.getEnd_date() == null || params.getDevice_id() == null || params.getData_type() == null || params.getInterval() == null)
+					throw new IllegalArgumentException("Start date/end date/device id/data type/interval are required.");
+			} catch (IllegalArgumentException e) {
+				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
+			}
+			
+			try {
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				LocalDate startLocalDateTime = LocalDate.parse(params.getStart_date(), dateTimeFormatter);
+				LocalDate endLocalDateTime = LocalDate.parse(params.getEnd_date(), dateTimeFormatter);
+				if (endLocalDateTime.isBefore(startLocalDateTime)) throw new DateTimeException("End date must be same or after start date.");
+			} catch (DateTimeParseException e) {
+				return this.thirdPartyJsonResult(false, "Invalid start/end date. It's must be in format of YYYY-MM-DD (Ex: 2020-12-31).", null, 0);
+			} catch (DateTimeException e) {
+				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
+			}
+			
+			try {
+				Arrays.stream(params.getDevice_id().split(",")).mapToInt(Integer::parseInt);
+			} catch (NumberFormatException e) {
+				return this.thirdPartyJsonResult(false, "Invalid device id.", null, 0);
+			}
+			/**
+			 * 
+			 */
+			
+			List dataList = service.getDeviceData(key, request.getRemoteHost(), params);
+			
+			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
 			return this.thirdPartyJsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
