@@ -732,7 +732,7 @@
 								AND (
 								CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
 								
-								DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -7 DAY) , '%Y-%m-%d 00:00:00' )
+								DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -6 DAY) , '%Y-%m-%d 00:00:00' )
 								
 								AND DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', t.value ), '%Y-%m-%d 23:59:59' )
 								
@@ -765,7 +765,7 @@
 							AND d.id = #{item.id}
 							AND (
 							CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN 
-							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -14 DAY) , '%Y-%m-%d 00:00:00' )
+							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -13 DAY) , '%Y-%m-%d 00:00:00' )
 							AND 
 							
 							DATE_FORMAT( DATE_ADD(CONVERT_TZ( NOW(), 'UTC', t.value ),INTERVAL -7 DAY) , '%Y-%m-%d 23:59:59' )
