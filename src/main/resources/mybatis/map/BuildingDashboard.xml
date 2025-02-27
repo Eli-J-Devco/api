@@ -976,14 +976,15 @@
 			
 			(
 				SELECT
-				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_electricity
+				ROUND(IFNULL(SUM(d.energy_last_month), 0),1) AS last_month_electricity
 			FROM
 				device d 
 			WHERE
 				d.id_site = #{id} 
 				AND d.meter_type IN (4)
 				AND d.is_delete = 0 AND d.`status` = 1
-			) AS monthly_electricity,
+			) AS last_month_electricity,
+			
 			
 			(
 				SELECT
@@ -996,6 +997,18 @@
 				AND d.is_delete = 0 AND d.`status` = 1
 			) AS monthly_gas,
 			
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_last_month), 0),1) AS last_month_gas
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (7)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS last_month_gas,
+			
 			(
 				SELECT
 				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_solar
@@ -1005,7 +1018,86 @@
 				d.id_site = #{id} 
 				AND d.meter_type IN (3)
 				AND d.is_delete = 0 AND d.`status` = 1
-			) AS monthly_solar
+			) AS monthly_solar,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_last_month), 0),1) AS energy_last_month
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (3)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS energy_last_month,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_today), 0),1) AS energy_today
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (3)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS energy_today,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_yesterday), 0),1) AS energy_yesterday
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (3)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS energy_yesterday,
+			
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_today), 0),1) AS gas_today
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (7)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS gas_today,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_yesterday), 0),1) AS gas_yesterday
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (7)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS gas_yesterday,
+			
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_today), 0),1) AS water_today
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (5)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS water_today,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_yesterday), 0),1) AS water_yesterday
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (5)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS water_yesterday
 		
 	</select>
 	
