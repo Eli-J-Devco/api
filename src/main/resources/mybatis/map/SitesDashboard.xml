@@ -791,7 +791,6 @@
 					AND d.`status` = 1
 					AND s.enable_alert = 1
 					AND d.is_delete = 0
-					AND (e.id_error_level = 32 || e.id_error_level = 33)
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
 			) p ON p.id_device = d.id
