@@ -1088,7 +1088,8 @@
 			d.`status`,
 			d.icon,
 			d.is_consumption,
-			d.text_color
+			d.text_color,
+			d.unit
 		FROM
 			leviton_overview_widget d
 		WHERE
