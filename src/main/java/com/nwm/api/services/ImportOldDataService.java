@@ -493,7 +493,7 @@ public class ImportOldDataService extends DB {
 				break;
 				
 			case "model_gas_meter":
-				obj.setId_device_type(3);
+				obj.setId_device_type(20);
 				for (int i = 0; i < dataList.size(); i++) {
 					session.insert("ModelGasMeter.insertModelGasMeter", dataList.get(i));         
 				}
@@ -3447,7 +3447,12 @@ public class ImportOldDataService extends DB {
 	
 	
 	public Object setModelGasMeter(HashMap<String, String> rowItem, Row r) {
-		rowItem.put("ReadingValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("ProcessedValue", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Digit1", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Digit2", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Digit3", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Digit4", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		
 		rowItem.put("nvmActivePower", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
 		rowItem.put("nvmActiveEnergy", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");

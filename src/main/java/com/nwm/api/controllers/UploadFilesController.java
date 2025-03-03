@@ -52,6 +52,7 @@ import com.nwm.api.entities.ModelElkorProductionMeterv1Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
 import com.nwm.api.entities.ModelElsterA1700Entity;
 import com.nwm.api.entities.ModelG3LightControllerEntity;
+import com.nwm.api.entities.ModelGasMeterEntity;
 import com.nwm.api.entities.ModelHoneywellEMON3200Entity;
 import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
 import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
@@ -137,6 +138,7 @@ import com.nwm.api.services.ModelElkorProductionMeterv1Service;
 import com.nwm.api.services.ModelElkorWattsonPVMeterService;
 import com.nwm.api.services.ModelElsterA1700Service;
 import com.nwm.api.services.ModelG3LightControllerService;
+import com.nwm.api.services.ModelGasMeterService;
 import com.nwm.api.services.ModelHoneywellEMON3200Service;
 import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
 import com.nwm.api.services.ModelIMTSolarClass8000Service;
@@ -3814,6 +3816,46 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelModelHoneywellEMON3200.insertData(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+												
+											case "model_gas_meter":
+												ModelGasMeterService serviceModelModelGasMeter = new ModelGasMeterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGasMeterEntity dataEntity = serviceModelModelGasMeter.setModelGasMeter(line, item.getOffset_data_old());
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														if(dataEntity.getProcessedValue() != 0.001 && dataEntity.getProcessedValue() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getProcessedValue() != 0.001 ? dataEntity.getProcessedValue() : null);
+														deviceUpdateE.setField_value1(dataEntity.getProcessedValue() != 0.001 ? dataEntity.getProcessedValue() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelModelGasMeter.insertModelGasMeter(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}

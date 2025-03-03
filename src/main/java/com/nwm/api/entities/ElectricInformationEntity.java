@@ -36,9 +36,60 @@ public class ElectricInformationEntity extends SortEntity {
 	private double monthly_solar;
 	private double monthly_electricity;
 	private double monthly_gas;
+	private double gas_today;
+	private double water_today;
+	private double gas_yesterday;
+	private double solar_yesterday;
+	private double last_month_gas;
+	private double last_month_water;
+	private double last_month_electricity;
 	
 	
 	
+	
+	
+	public double getGas_yesterday() {
+		return gas_yesterday;
+	}
+	public void setGas_yesterday(double gas_yesterday) {
+		this.gas_yesterday = gas_yesterday;
+	}
+	public double getSolar_yesterday() {
+		return solar_yesterday;
+	}
+	public void setSolar_yesterday(double solar_yesterday) {
+		this.solar_yesterday = solar_yesterday;
+	}
+	public double getLast_month_gas() {
+		return last_month_gas;
+	}
+	public void setLast_month_gas(double last_month_gas) {
+		this.last_month_gas = last_month_gas;
+	}
+	public double getLast_month_water() {
+		return last_month_water;
+	}
+	public void setLast_month_water(double last_month_water) {
+		this.last_month_water = last_month_water;
+	}
+	public double getLast_month_electricity() {
+		return last_month_electricity;
+	}
+	public void setLast_month_electricity(double last_month_electricity) {
+		this.last_month_electricity = last_month_electricity;
+	}
+	public double getGas_today() {
+		return gas_today;
+	}
+	public void setGas_today(double gas_today) {
+		this.gas_today = gas_today;
+	}
+	public double getWater_today() {
+		return water_today;
+	}
+	public void setWater_today(double water_today) {
+		this.water_today = water_today;
+	}
 	public double getMonthly_electricity() {
 		return monthly_electricity;
 	}

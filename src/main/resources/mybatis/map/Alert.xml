@@ -479,7 +479,7 @@
             </when>
              
             <when test="domain == 'staging.nextwavemonitoring.com'">
-                AND d.show_on_domain IN(1,3,4)
+                AND d.show_on_domain IN(1,3,4,7,5)
             </when>
             
             <when test="domain == 'nextwavemonitoring.com'">
@@ -969,7 +969,7 @@
 	            </when>
 	             
 	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
+	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
 	            <when test="domain == 'nextwavemonitoring.com'">
@@ -1132,7 +1132,7 @@
 	            </when>
 	             
 	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
+	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
 	            <when test="domain == 'nextwavemonitoring.com'">
@@ -1218,7 +1218,7 @@
 	            </when>
 	             
 	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
+	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
 	            <when test="domain == 'nextwavemonitoring.com'">

@@ -151,7 +151,7 @@
 			            </when>
 			             
 			            <when test="domain == 'staging.nextwavemonitoring.com'">
-			                AND d.show_on_domain IN(1,3,4)
+			                AND d.show_on_domain IN(1,3,4,7,5)
 			            </when>
 			            
 			            <when test="domain == 'nextwavemonitoring.com'">
@@ -186,7 +186,7 @@
 		            </when>
 		             
 		            <when test="domain == 'staging.nextwavemonitoring.com'">
-		                AND d.show_on_domain IN(1,3,4)
+		                AND d.show_on_domain IN(1,3,4,7,5)
 		            </when>
 		            
 		            <when test="domain == 'nextwavemonitoring.com'">
@@ -791,7 +791,6 @@
 					AND d.`status` = 1
 					AND s.enable_alert = 1
 					AND d.is_delete = 0
-					AND (e.id_error_level = 32 || e.id_error_level = 33)
 					AND d.id_site = #{id_site}
 				GROUP BY d.id
 			) p ON p.id_device = d.id
@@ -832,7 +831,7 @@
 	            </when>
 	             
 	            <when test="domain == 'staging.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4)
+	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
 	            <when test="domain == 'nextwavemonitoring.com'">
@@ -1088,7 +1087,8 @@
 			d.`status`,
 			d.icon,
 			d.is_consumption,
-			d.text_color
+			d.text_color,
+			d.unit
 		FROM
 			leviton_overview_widget d
 		WHERE

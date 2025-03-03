@@ -18,6 +18,7 @@
 		<result property="created_date" column="created_date" />
 		<result property="created_by" column="created_by" />
 		<result property="updated_date" column="updated_by" />
+		<result property="unit" column="unit" />
 	</resultMap>
 	
 
@@ -33,6 +34,7 @@
 			s.id_site,
 			s.description,
 			s.text_color,
+			s.unit,
 			GROUP_CONCAT(lm.id_device) AS id_devices
 		FROM
 			leviton_overview_widget s 	
@@ -120,14 +122,16 @@
 			`description`,
 			`is_consumption`,
 			`icon`,
-			`text_color`
+			`text_color`,
+			`unit`
 		)VALUES(
 			#{name},
 			#{id_site},
 			#{description},
 			#{is_consumption},
 			#{icon},
-			#{text_color}
+			#{text_color},
+			#{unit}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -142,7 +146,8 @@
 			`description` = #{description},
 			`is_consumption` = #{is_consumption},
 			`icon` = #{icon},
-			`text_color` = #{text_color}
+			`text_color` = #{text_color},
+			`unit` = #{unit}
 			
 		WHERE
 			`id` = #{id}
