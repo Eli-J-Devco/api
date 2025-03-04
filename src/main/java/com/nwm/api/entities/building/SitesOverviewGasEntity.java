@@ -19,6 +19,7 @@ public class SitesOverviewGasEntity {
 	private String commissioning;
 	private List<DeviceEntity> devices;
 	private int[] id_device_type;
+	private String reading_field;
 	
 	public int getId() {
 		return id;
@@ -73,5 +74,11 @@ public class SitesOverviewGasEntity {
 	}
 	public void setId_device_type(int[] id_device_type) {
 		this.id_device_type = id_device_type;
+	}
+	public String getReading_field() {
+		return reading_field;
+	}
+	public void setReading_field(String reading_field) {
+		this.reading_field = reading_field;
 	}
 }

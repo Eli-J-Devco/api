@@ -52,11 +52,11 @@
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
-					ma.ProcessedValue - mi.ProcessedValue AS `value`
+					ma.${reading_field} - mi.${reading_field} AS `value`
 				FROM 
 					(
 						SELECT
-							dv.ProcessedValue,
+							dv.${reading_field},
 							dv.time
 						FROM
 							${item.datatablename} dv
@@ -71,7 +71,7 @@
 					) mi
 					CROSS JOIN (
 						SELECT
-							dv.ProcessedValue,
+							dv.${reading_field},
 							dv.time
 						FROM
 							${item.datatablename} dv
@@ -169,14 +169,14 @@
 		SELECT
 			time_full,
 			categories_time,
-			SUM(`value`) AS `value`
+			CAST(SUM(`value`) AS DECIMAL) AS `value`
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
 					time_format,
 					time_full,
 					categories_time,
-					LEAD(ProcessedValue) OVER (ORDER BY time_format) - ProcessedValue AS `value`
+					LEAD(${reading_field}) OVER (ORDER BY time_format) - ${reading_field} AS `value`
 				FROM (
 					SELECT
 						<choose>
@@ -202,7 +202,7 @@
 							</otherwise>
 						</choose>
 						MIN(dv.time),
-						dv.ProcessedValue
+						dv.${reading_field}
 					FROM
 						${item.datatablename} dv
 					WHERE
