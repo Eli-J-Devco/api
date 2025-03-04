@@ -24,7 +24,7 @@
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id IN (3,7,9)
+			dt.id IN (3,7,9,17,20)
 			AND d.id_site = #{id_site}
 			AND d.meter_type = #{meter_type}
 			AND d.`status` = 1 
@@ -85,7 +85,7 @@
 							<when test="filterBy == 'today'">
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00 %p') AS categories_time,
 							</when>
 							<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
@@ -171,7 +171,7 @@
 							<when test="filterBy == 'today'">
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00 %p') AS categories_time,
 							</when>
 							<when test="filterBy == 'this_month' or filterBy == 'last_month' or filterBy == 'this_week' or filterBy == 'last_week'">
 								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
