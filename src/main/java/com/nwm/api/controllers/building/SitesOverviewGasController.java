@@ -41,7 +41,7 @@ public class SitesOverviewGasController extends BaseController {
 		try {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			SitesOverviewGasService service = new SitesOverviewGasService();
-			obj.setId_device_type(new int[] {18});
+			obj.setId_device_type(new int[] {20});
 			SitesOverviewGasConsumptionEntity data = service.getConsumption(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
 		} catch (Exception e) {
@@ -61,7 +61,7 @@ public class SitesOverviewGasController extends BaseController {
 		try {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			SitesOverviewGasService service = new SitesOverviewGasService();
-			obj.setId_device_type(new int[] {18});
+			obj.setId_device_type(new int[] {20});
 			Map<String, SitesOverviewGasSummaryEntity> data = service.getSummary(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
 		} catch (Exception e) {
@@ -81,7 +81,7 @@ public class SitesOverviewGasController extends BaseController {
 		try {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			SitesOverviewGasService service = new SitesOverviewGasService();
-			obj.setId_device_type(new int[] {18});
+			obj.setId_device_type(new int[] {20});
 			List<SitesOverviewGasEventEntity> data = service.getEvents(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {

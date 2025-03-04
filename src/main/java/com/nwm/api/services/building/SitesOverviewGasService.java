@@ -8,8 +8,6 @@ package com.nwm.api.services.building;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -156,17 +154,23 @@ public class SitesOverviewGasService extends DB {
 		Map<String, SitesOverviewGasSummaryEntity> map = new HashMap<String, SitesOverviewGasSummaryEntity>();
 		
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-			obj.setEnd_date(ZonedDateTime.now(ZoneId.of(obj.getTimezone_value())).format(formatter));
-			SitesOverviewGasConsumptionEntity consumption = getConsumption(obj);
-			List<ChartConsumptionEntity> data = consumption.getData();
-			if (data.size() == 0) return map;
+			List<DeviceEntity> devices = this.getGasMeters(obj);
+			if (devices.size() == 0) return map;
+			obj.setDevices(devices);
 			
-			Double monthBeforeLastMonthValue = data.get(0).getValue();
-			Double lastMonthValue = data.get(1).getValue();
-			Double currentMonthVallue = data.get(2).getValue();
-			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonthValue, "Therms", monthBeforeLastMonthValue != null && lastMonthValue != null ? new BigDecimal((lastMonthValue - monthBeforeLastMonthValue) / monthBeforeLastMonthValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
-			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonthVallue, "Therms", lastMonthValue != null && currentMonthVallue != null ? new BigDecimal((currentMonthVallue - lastMonthValue) / lastMonthValue * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+			List<ChartConsumptionEntity> dataList = queryForList("SitesOverviewGas.getSummary", obj);
+			
+			Double currentMonth = dataList.get(0).getValue();
+			Double lastMonth = dataList.get(1).getValue();
+			Double monthBeforeLastMonth = dataList.get(2).getValue();
+			Double currentDay = dataList.get(3).getValue();
+			Double lastDay = dataList.get(4).getValue();
+			Double currentYear = dataList.get(5).getValue();
+			Double lastYear = dataList.get(6).getValue();
+			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonth, "Therms", currentMonth != null && lastMonth != null ? new BigDecimal((currentMonth - lastMonth) / lastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonth, "Therms", lastMonth != null && monthBeforeLastMonth != null ? new BigDecimal((lastMonth - monthBeforeLastMonth) / monthBeforeLastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+			map.put("daily_usage", new SitesOverviewGasSummaryEntity(currentDay, "Therms", currentDay != null && lastDay != null ? new BigDecimal((currentDay - lastDay) / lastDay * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
+			map.put("yearly_usage", new SitesOverviewGasSummaryEntity(currentYear, "Therms", currentYear != null && lastYear != null ? new BigDecimal((currentYear - lastYear) / lastYear * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null));
 		} catch (Exception ex) {
 			log.error("SitesOverviewGas.getSummary", ex);
 		}
