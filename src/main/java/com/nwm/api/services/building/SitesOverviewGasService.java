@@ -167,10 +167,12 @@ public class SitesOverviewGasService extends DB {
 			Double lastDay = dataList.get(4).getValue();
 			Double currentYear = dataList.get(5).getValue();
 			Double lastYear = dataList.get(6).getValue();
-			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonth, "Therms", lastMonth == 0 ? (currentMonth == 0 ? 0 : 100) : new BigDecimal((currentMonth - lastMonth) / lastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
-			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonth, "Therms", monthBeforeLastMonth == 0 ? (lastMonth == 0 ? 0 : 100) : new BigDecimal((lastMonth - monthBeforeLastMonth) / monthBeforeLastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
-			map.put("daily_usage", new SitesOverviewGasSummaryEntity(currentDay, "Therms", lastDay == 0 ? (currentDay == 0 ? 0 : 100) : new BigDecimal((currentDay - lastDay) / lastDay * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
-			map.put("yearly_usage", new SitesOverviewGasSummaryEntity(currentYear, "Therms", lastYear == 0 ? (currentYear == 0 ? 0 : 100) : new BigDecimal((currentYear - lastYear) / lastYear * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			Double life_time = dataList.get(7).getValue();
+			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonth, lastMonth == 0 ? (currentMonth == 0 ? 0 : 100) : new BigDecimal((currentMonth - lastMonth) / lastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonth, monthBeforeLastMonth == 0 ? (lastMonth == 0 ? 0 : 100) : new BigDecimal((lastMonth - monthBeforeLastMonth) / monthBeforeLastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			map.put("daily_usage", new SitesOverviewGasSummaryEntity(currentDay, lastDay == 0 ? (currentDay == 0 ? 0 : 100) : new BigDecimal((currentDay - lastDay) / lastDay * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			map.put("yearly_usage", new SitesOverviewGasSummaryEntity(currentYear, lastYear == 0 ? (currentYear == 0 ? 0 : 100) : new BigDecimal((currentYear - lastYear) / lastYear * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			map.put("lifetime", new SitesOverviewGasSummaryEntity(life_time, 0.0));
 		} catch (Exception ex) {
 			log.error("SitesOverviewGas.getSummary", ex);
 		}

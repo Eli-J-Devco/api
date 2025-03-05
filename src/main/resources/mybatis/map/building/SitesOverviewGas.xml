@@ -16,6 +16,7 @@
 			d.id_site = #{id}
 			AND d.status = 1
 			AND d.is_delete = 0
+			AND d.is_excluded_meter = 0
 			<foreach collection="id_device_type" item="id" open="AND d.id_device_type IN (" close=")" separator=",">
 				#{id}
 			</foreach>
@@ -163,6 +164,50 @@
 			<property name="beforeDateTimeValue" value="1"/>
 			<property name="afterDateTimeValue" value="0"/>
 		</include>
+		
+		UNION ALL
+		
+		SELECT
+			'life_time' AS categories_time,
+			IFNULL(SUM(`value`), 0) AS `value`
+		FROM (
+			<foreach collection="devices" item="item" separator="UNION ALL">
+				SELECT
+					ma.${reading_field} - mi.${reading_field} AS `value`
+				FROM 
+					(
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								MIN(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+							<where>
+								<if test="commissioning != null">
+									dv.time >= CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC')
+								</if>
+							</where>
+						)
+					) mi
+					CROSS JOIN (
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								MAX(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+						)
+					) ma
+			</foreach>
+		) t
 	</select>
 	
 	<select id="getConsumption" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
