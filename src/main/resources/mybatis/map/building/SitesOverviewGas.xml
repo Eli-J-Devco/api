@@ -48,7 +48,7 @@
 	<sql id="summarySection">
 		SELECT
 			'${interval}' AS categories_time,
-			SUM(`value`) AS `value`
+			IFNULL(SUM(`value`), 0) AS `value`
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
