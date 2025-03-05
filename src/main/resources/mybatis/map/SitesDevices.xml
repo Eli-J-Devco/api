@@ -340,7 +340,7 @@
 			                AND d.show_on_domain IN(1,2,4)
 			            </when>
 			             
-			            <when test="domain == 'staging.nextwavemonitoring.com'">
+			            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 			                AND d.show_on_domain IN(1,3,4,7,5)
 			            </when>
 			            
@@ -408,7 +408,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -648,7 +648,7 @@
 					                AND d.show_on_domain IN(1,2,4)
 					            </when>
 					             
-					            <when test="domain == 'staging.nextwavemonitoring.com'">
+					            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					                AND d.show_on_domain IN(1,3,4,7,5)
 					            </when>
 					            
@@ -708,7 +708,15 @@
 			dt.`name` AS device_type_name,
 			dt.image,
 			dg.group_name,
-			s.name AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
+	        
 			d.ip_address,
 			d.serialnumber AS serial_number,
 			s.ac_capacity,

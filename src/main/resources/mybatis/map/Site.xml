@@ -125,7 +125,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -153,9 +153,19 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			s.`name`,
-			s.`name` AS text,
-			s.`name` AS label,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	                CONCAT_WS("", s.city, " #",s.id) AS `text`,
+	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			      s.`name` AS text,
+				  s.`name` AS label,
+			    </otherwise>                                                  
+	        </choose>
+			
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
@@ -396,7 +406,7 @@
 					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain == 'staging.nextwavemonitoring.com')">
+				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(1,3,4)
 				</when>
 				
@@ -424,9 +434,18 @@
 	<select id="getSiteByEmployeeREC" resultType="Map">
 		SELECT
 			s.id,
-			s.`name`,
-			s.`name` AS text,
-			s.`name` AS label,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	                CONCAT_WS("", s.city, " #",s.id) AS `text`,
+	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			      s.`name` AS text,
+				  s.`name` AS label,
+			    </otherwise>                                                  
+	        </choose>
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
@@ -447,7 +466,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -482,7 +501,7 @@
 	                AND s.site_domain_type IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND s.site_domain_type IN(1,3,4,7,5)
 	            </when>
 	            
@@ -599,7 +618,14 @@
 			s.id,
 			SHA1(s.id) AS hash_id,
 			scm.id_employee,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			    </otherwise>                                                  
+	        </choose>
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
 			s.street,
@@ -678,7 +704,7 @@
 					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain == 'staging.nextwavemonitoring.com')">
+				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(1,3,4)
 				</when>
 				
@@ -752,7 +778,7 @@
 					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain == 'staging.nextwavemonitoring.com')">
+				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(1,3,4)
 				</when>
 				
@@ -1135,7 +1161,14 @@
 			SHA1(s.id) AS hash_id,
 			s.id AS id_site,
 			s.id_company,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			    </otherwise>                                                  
+	        </choose>
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
 			DATE_FORMAT(s.expiration,'%m/%d/%Y') AS expiration,
@@ -1330,7 +1363,7 @@
 					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain == 'staging.nextwavemonitoring.com')">
+				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(1,3,4)
 				</when>
 				
@@ -1431,7 +1464,7 @@
 					AND s.site_domain_type IN(6,7,1)
 				</when>
 				
-				<when test="(domain == 'staging.nextwavemonitoring.com')">
+				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 					AND s.site_domain_type IN(1,3,4)
 				</when>
 				
@@ -1473,7 +1506,14 @@
 			s.id_company,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			    </otherwise>                                                  
+	        </choose>
 			s.street,
 			IF(s.lat = 0, NULL, s.lat) AS lat,
 			IF(s.lng = 0, NULL, s.lng) AS lng,
@@ -1543,8 +1583,16 @@
 			s.id_company,
 			s.id AS value,
 			s.id_country,
-			s.`name`,
-			s.`name` AS label,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+				  s.`name` AS label,
+			    </otherwise>                                                  
+	        </choose>
 			s.street,
 			IF(s.lat = 0, NULL, s.lat) AS lat,
 			IF(s.lng = 0, NULL, s.lng) AS lng,
@@ -1616,7 +1664,14 @@
 			s.id_customer,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			    </otherwise>                                                  
+	        </choose>
 			s.street,
 			s.lat,
 			s.lng,
@@ -1836,7 +1891,14 @@
 			s.id,
 			s.id_country,
 			s.id_time_zone,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name`,
+			    </otherwise>                                                  
+	        </choose>
 			s.lat,
 			s.lng,
 			s.old_data,

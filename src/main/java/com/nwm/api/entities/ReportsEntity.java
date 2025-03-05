@@ -49,9 +49,16 @@ public class ReportsEntity {
 	private String table_data_report;
 	private Integer reporting_region;
 	private Integer recVersion;
+	private String domain;
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getIs_supper_admin() {
 		return is_supper_admin;
 	}

@@ -71,9 +71,16 @@ public class ViewReportEntity {
 	private boolean transposed;
 	private boolean showTotal;
 	private int sort_by;
+	private String domain;
 	
 	
 
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public List<Map<String, Object>> getDataFields() {
 		return dataFields;
 	}

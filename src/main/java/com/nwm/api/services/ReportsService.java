@@ -205,6 +205,7 @@ public class ReportsService extends DB {
 					siteObj.setCadence_range(reportObj.getCadence_range());
 					siteObj.setStart_date(reportObj.getStart_date());
 					siteObj.setEnd_date(reportObj.getEnd_date());
+					siteObj.setDomain(reportObj.getDomain());
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {

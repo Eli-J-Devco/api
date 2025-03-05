@@ -27,7 +27,20 @@
 			sg.id AS value,
 			sg.name AS text,
 			sg.name AS label,
-			JSON_ARRAYAGG(JSON_OBJECT(
+			
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                JSON_ARRAYAGG(JSON_OBJECT(
+						'id', s.id,
+						'value', s.id,
+						'text', CONCAT_WS("", s.city, " #",s.id),
+						'label', CONCAT_WS("", s.city, " #",s.id),
+						'id_site_group', s.id_site_group,
+						'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
+					)) AS sitesJSON
+	            </when>
+	            <otherwise>
+			      JSON_ARRAYAGG(JSON_OBJECT(
 				'id', s.id,
 				'value', s.id,
 				'text', s.name,
@@ -35,6 +48,8 @@
 				'id_site_group', s.id_site_group,
 				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
 			)) AS sitesJSON
+			    </otherwise>                                                  
+	        </choose>
 		FROM
 			site_group AS sg
 			LEFT JOIN site s ON s.id_site_group = sg.id
@@ -72,7 +87,14 @@
 	<select id="getListSiteByIdEmployee" resultType="Map">
 		SELECT
 			s.id,
-			s.`name`
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`
+	            </when>
+	            <otherwise>
+			      s.`name` AS name
+			    </otherwise>                                                  
+	        </choose>
 		FROM
 			site_employee_map sem
 			LEFT JOIN site s ON s.id = sem.id_site
@@ -110,7 +132,14 @@
 	<select id="getListSiteBySubGroup" resultType="Map" >
 		SELECT
 			s.id,
-			s.`name`
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`
+	            </when>
+	            <otherwise>
+			      s.`name` AS name
+			    </otherwise>                                                  
+	        </choose>
 		FROM
 			site s
 			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
@@ -128,7 +157,14 @@
 	<select id="getListSelectedSiteByIdSite" resultType="Map" >
 		SELECT
 			s.id,
-			s.`name`
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`
+	            </when>
+	            <otherwise>
+			      s.`name` AS name
+			    </otherwise>                                                  
+	        </choose>
 		FROM
 			site s
 		WHERE 
@@ -288,13 +324,28 @@
 					sem.id_employee,
 					"Entire Portfolio" AS sites_name,
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', s.name,
-						'label', s.name,
-						'id_site_group', s.id_site_group
-					)) AS sitesListJSON
+					
+					<choose> 
+			            <when test="domain =='demo.nextwavemonitoring.com'">
+			                JSON_ARRAYAGG(JSON_OBJECT(
+								'id', s.id,
+								'value', s.id,
+								'text', CONCAT_WS("", s.city, " #",s.id),
+								'label', CONCAT_WS("", s.city, " #",s.id),
+								'id_site_group', s.id_site_group
+							)) AS sitesListJSON
+			            </when>
+			            <otherwise>
+					      JSON_ARRAYAGG(JSON_OBJECT(
+							'id', s.id,
+							'value', s.id,
+							'text', s.name,
+							'label', s.name,
+							'id_site_group', s.id_site_group
+						)) AS sitesListJSON
+					    </otherwise>                                                  
+			        </choose>
+					
 				FROM
 					site_employee_map sem 
 					LEFT JOIN site s ON s.id = sem.id_site
@@ -307,15 +358,32 @@
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
-					GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', s.name,
-						'label', s.name,
-						'id_site_group', s.id_site_group
-					)) AS sitesListJSON
+					
+					<choose> 
+			            <when test="domain =='demo.nextwavemonitoring.com'">
+			                GROUP_CONCAT(CONCAT_WS("", s.city, " #",s.id) SEPARATOR ' - ') AS sites_name,
+			                JSON_ARRAYAGG(JSON_OBJECT(
+								'id', s.id,
+								'value', s.id,
+								'text', CONCAT_WS("", s.city, " #",s.id),
+								'label', CONCAT_WS("", s.city, " #",s.id),
+								'id_site_group', s.id_site_group
+							)) AS sitesListJSON
+			            </when>
+			            <otherwise>
+			              GROUP_CONCAT(s.name SEPARATOR ' - ') AS sites_name,
+					      JSON_ARRAYAGG(JSON_OBJECT(
+							'id', s.id,
+							'value', s.id,
+							'text', s.name,
+							'label', s.name,
+							'id_site_group', s.id_site_group
+						)) AS sitesListJSON
+					    </otherwise>                                                  
+			        </choose>
+	        
+					
 				FROM
 					report_site_map rsm
 					LEFT JOIN site s ON s.id = rsm.id_site
@@ -330,13 +398,29 @@
 					s.id_site_sub_group,
 					ssg.name AS sites_name,
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', s.name,
-						'label', s.name,
-						'id_site_group', s.id_site_group
-					)) AS sitesListJSON
+					
+					<choose> 
+			            <when test="domain =='demo.nextwavemonitoring.com'">
+			                JSON_ARRAYAGG(JSON_OBJECT(
+								'id', s.id,
+								'value', s.id,
+								'text', CONCAT_WS("", s.city, " #",s.id),
+								'label', CONCAT_WS("", s.city, " #",s.id),
+								'id_site_group', s.id_site_group
+							)) AS sitesListJSON
+			            </when>
+			            <otherwise>
+					      JSON_ARRAYAGG(JSON_OBJECT(
+							'id', s.id,
+							'value', s.id,
+							'text', s.name,
+							'label', s.name,
+							'id_site_group', s.id_site_group
+						)) AS sitesListJSON
+					    </otherwise>                                                  
+			        </choose>
+	        
+					
 				FROM
 					site s
 					LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
@@ -398,7 +482,15 @@
 		SELECT
 			s.id,
 			s.id AS id_site,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
+	        
 			DATE_FORMAT(NOW(), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -414,7 +506,14 @@
 		SELECT
 			r.id,
 			s.id AS id_site,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			s.table_data_report,
 			s.table_data_virtual,
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,
@@ -474,7 +573,14 @@
 			d.id_site,
 			s.cost,
 			s.cost_unit,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS name,
+			    </otherwise>                                                  
+	        </choose>
 			dt.`name` AS device_type
 		FROM
 			device d
@@ -556,7 +662,14 @@
 	<select id="getListSiteREC" resultType="Map" >
 		SELECT
 			s.id,
-			s.name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS name,
+			    </otherwise>                                                  
+	        </choose>
 			s.id AS id_site,
 			IF(s.rec_id IS NULL || s.rec_id = '', CONCAT_WS("-", "NWM", s.id), s.rec_id) AS rec_id,
 			IF(s.gu_id IS NULL || s.gu_id = '', CONCAT_WS("-", "NWM", s.id), s.gu_id) AS gu_id,
@@ -587,7 +700,15 @@
 		<foreach item="item" index="index" collection="id_sites" separator="UNION">
 		SELECT
 			d.id,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS name,
+			    </otherwise>                                                  
+	        </choose>
+	        
 			d.devicename,
 			IF(d.ru_id IS NULL || d.ru_id = '', CONCAT_WS("-", "NWM", d.id), d.ru_id) AS ru_id,
 			IF(d.gu_id IS NULL || d.gu_id = '', CONCAT_WS("-", "NWM", d.id), d.gu_id) AS gu_id,

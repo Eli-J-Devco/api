@@ -159,10 +159,20 @@ public class SitesDevicesEntity extends SortEntity {
 	private boolean isUserNW;
 	private double total_area;
 	private double total_unit;
+	private int meter_type;
 
 	
 	
 	
+	public int getMeter_type() {
+		return meter_type;
+	}
+	public void setMeter_type(int meter_type) {
+		this.meter_type = meter_type;
+	}
+	public void setUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
 	public double getTotal_area() {
 		return total_area;
 	}

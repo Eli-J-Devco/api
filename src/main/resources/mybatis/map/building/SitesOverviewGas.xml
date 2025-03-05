@@ -16,6 +16,7 @@
 			d.id_site = #{id}
 			AND d.status = 1
 			AND d.is_delete = 0
+			AND d.is_excluded_meter = 0
 			<foreach collection="id_device_type" item="id" open="AND d.id_device_type IN (" close=")" separator=",">
 				#{id}
 			</foreach>
@@ -27,7 +28,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -45,18 +46,182 @@
 	        </choose>
 	</select>
 	
+	<sql id="summarySection">
+		SELECT
+			'${interval}' AS categories_time,
+			IFNULL(SUM(`value`), 0) AS `value`
+		FROM (
+			<foreach collection="devices" item="item" separator="UNION ALL">
+				SELECT
+					ma.${reading_field} - mi.${reading_field} AS `value`
+				FROM 
+					(
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								MIN(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+							WHERE
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '${dateTimeFormat}') = DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL ${beforeDateTimeValue} ${dateTimeUnit}), '${dateTimeFormat}')
+						)
+					) mi
+					CROSS JOIN (
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								${aggregate_function}(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+							WHERE
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '${dateTimeFormat}') = DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL ${afterDateTimeValue} ${dateTimeUnit}), '${dateTimeFormat}')
+						)
+					) ma
+			</foreach>
+		) t
+	</sql>
+	
+	<select id="getSummary" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
+		<include refid="summarySection">
+			<property name="interval" value="current_month"/>
+			<property name="dateTimeFormat" value="%Y-%m"/>
+			<property name="aggregate_function" value="MAX"/>
+			<property name="dateTimeUnit" value="MONTH"/>
+			<property name="beforeDateTimeValue" value="0"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="last_month"/>
+			<property name="dateTimeFormat" value="%Y-%m"/>
+			<property name="aggregate_function" value="MIN"/>
+			<property name="dateTimeUnit" value="MONTH"/>
+			<property name="beforeDateTimeValue" value="1"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="month_before_last_month"/>
+			<property name="dateTimeFormat" value="%Y-%m"/>
+			<property name="aggregate_function" value="MIN"/>
+			<property name="dateTimeUnit" value="MONTH"/>
+			<property name="beforeDateTimeValue" value="2"/>
+			<property name="afterDateTimeValue" value="1"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="current_day"/>
+			<property name="dateTimeFormat" value="%Y-%m-%d"/>
+			<property name="aggregate_function" value="MAX"/>
+			<property name="dateTimeUnit" value="DAY"/>
+			<property name="beforeDateTimeValue" value="0"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="last_day"/>
+			<property name="dateTimeFormat" value="%Y-%m-%d"/>
+			<property name="aggregate_function" value="MIN"/>
+			<property name="dateTimeUnit" value="DAY"/>
+			<property name="beforeDateTimeValue" value="1"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="current_year"/>
+			<property name="dateTimeFormat" value="%Y"/>
+			<property name="aggregate_function" value="MAX"/>
+			<property name="dateTimeUnit" value="YEAR"/>
+			<property name="beforeDateTimeValue" value="0"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		<include refid="summarySection">
+			<property name="interval" value="last_year"/>
+			<property name="dateTimeFormat" value="%Y"/>
+			<property name="aggregate_function" value="MIN"/>
+			<property name="dateTimeUnit" value="YEAR"/>
+			<property name="beforeDateTimeValue" value="1"/>
+			<property name="afterDateTimeValue" value="0"/>
+		</include>
+		
+		UNION ALL
+		
+		SELECT
+			'life_time' AS categories_time,
+			IFNULL(SUM(`value`), 0) AS `value`
+		FROM (
+			<foreach collection="devices" item="item" separator="UNION ALL">
+				SELECT
+					ma.${reading_field} - mi.${reading_field} AS `value`
+				FROM 
+					(
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								MIN(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+							<where>
+								<if test="commissioning != null">
+									dv.time >= CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC')
+								</if>
+							</where>
+						)
+					) mi
+					CROSS JOIN (
+						SELECT
+							dv.${reading_field},
+							dv.time
+						FROM
+							${item.datatablename} dv
+						WHERE dv.time = (
+							SELECT
+								MAX(dv.time) AS time
+							FROM
+								${item.datatablename} dv
+						)
+					) ma
+			</foreach>
+		) t
+	</select>
+	
 	<select id="getConsumption" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
 		SELECT
 			time_full,
 			categories_time,
-			SUM(`value`) AS `value`
+			CAST(SUM(`value`) AS DECIMAL) AS `value`
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
 					time_format,
 					time_full,
 					categories_time,
-					IFNULL(LEAD(`minValue`) OVER (ORDER BY time_format), `maxValue`) - `minValue` AS `value`
+					LEAD(${reading_field}) OVER (ORDER BY time_format) - ${reading_field} AS `value`
 				FROM (
 					SELECT
 						<choose>
@@ -75,19 +240,14 @@
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
 							</when>
-							<when test="id_filter == 'summary'">
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-01') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%Y') AS time_full,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%Y') AS categories_time,
-							</when>
 							<otherwise>
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
 							</otherwise>
 						</choose>
-						MIN(dv.ReadingValue) AS `minValue`,
-						MAX(dv.ReadingValue) AS `maxValue`
+						MIN(dv.time),
+						dv.${reading_field}
 					FROM
 						${item.datatablename} dv
 					WHERE
@@ -103,9 +263,6 @@
 							</when>
 							<when test="id_filter == 'lifetime'">
 								dv.time BETWEEN CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
-							</when>
-							<when test="id_filter == 'summary'">
-								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL 2 MONTH), '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}), INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
 							</when>
 							<otherwise>
 								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 00:59:59'), #{timezone_value}, 'UTC')
@@ -126,9 +283,6 @@
 				</when>
 				<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
-				</when>
-				<when test="id_filter == 'summary'">
-					time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value})), '%Y-%m-%d 23:59:59')
 				</when>
 				<otherwise>
 					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
