@@ -57,7 +57,14 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
@@ -378,7 +385,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -505,7 +512,7 @@
 	                AND d.show_on_domain IN(1,2,4)
 	            </when>
 	             
-	            <when test="domain == 'staging.nextwavemonitoring.com'">
+	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 	                AND d.show_on_domain IN(1,3,4,7,5)
 	            </when>
 	            
@@ -641,7 +648,7 @@
 		                AND d.show_on_domain IN(1,2,4)
 		            </when>
 		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 		                AND d.show_on_domain IN(1,3,4,7,5)
 		            </when>
 		            
@@ -686,7 +693,7 @@
 		                AND d.show_on_domain IN(1,2,4)
 		            </when>
 		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 		                AND d.show_on_domain IN(1,3,4,7,5)
 		            </when>
 		            
@@ -731,7 +738,7 @@
 		                AND d.show_on_domain IN(1,2,4)
 		            </when>
 		             
-		            <when test="domain == 'staging.nextwavemonitoring.com'">
+		            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
 		                AND d.show_on_domain IN(1,3,4,7,5)
 		            </when>
 		            
@@ -758,7 +765,14 @@
   	<select id="getDetailSendMail" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT
 			a.id,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			d.devicename,
 			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
 			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date,

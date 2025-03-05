@@ -59,7 +59,14 @@
 	<select id="getMiniSiteInfo" resultType="Map" >
 		SELECT
 			s.id,
-			s.`name`,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS name,
+			    </otherwise>                                                  
+	        </choose>
 			DATE_FORMAT(s.built_since, '%m/%d/%Y %H:%i:%s') AS built_since, 
 			DATE_FORMAT(s.commissioning, '%m/%d/%Y %H:%i:%s') AS commissioning, 
 			s.ac_capacity,

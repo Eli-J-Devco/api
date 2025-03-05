@@ -8,7 +8,14 @@
 		SELECT
 			r.id,
 			s.id AS id_site,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			s.table_data_report,
 			s.table_data_virtual,
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,

@@ -32,7 +32,7 @@
                 AND d.show_on_domain IN(1,2,4)
             </when>
              
-            <when test="domain == 'staging.nextwavemonitoring.com'">
+            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
                 AND d.show_on_domain IN(1,3,4,7,5)
             </when>
             
@@ -65,7 +65,14 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			s.`name` AS site_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			d.id as id_device,
@@ -300,8 +307,15 @@
 	
 	<select id="getListActualvsExpected" resultType="Map" parameterType="String" >
 		SELECT
-			s.`name` AS site_name,
 			s.id AS id_site,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			SHA1(s.id) AS hash_id,
 			s.dc_capacity,
 			meter.power_today_meter,

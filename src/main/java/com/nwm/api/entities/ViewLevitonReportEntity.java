@@ -61,9 +61,16 @@ public class ViewLevitonReportEntity {
 	private List<Map<String, Object>> dataSite;
 	private String table_data_report;
 	private String table_data_virtual;
+	private String domain;
 	
 	
 
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public int getIs_supper_admin() {
 		return is_supper_admin;
 	}
