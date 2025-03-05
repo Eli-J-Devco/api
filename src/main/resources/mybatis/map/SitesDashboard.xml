@@ -497,6 +497,7 @@
 			p.totalError,
 			p.id_error_level,
 			d.hidden,
+			IFNULL(d.meter_type, 0 ) AS meter_type,
 			CASE
 				WHEN d.last_updated IS NULL THEN "Never"
 			

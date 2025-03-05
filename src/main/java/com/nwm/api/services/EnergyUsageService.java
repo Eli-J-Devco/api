@@ -35,14 +35,14 @@ public class EnergyUsageService extends DB {
 			List dataEnergy = new ArrayList<>();
 			
 			// if data is in 3 latest months then data is fetch from view, else it's from table
-			Date dt = new Date();
-			Calendar c = Calendar.getInstance(); 
-			c.setTime(dt); 
-			c.add(Calendar.MONTH, -3);
-			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-			Date d1 = dateFor.parse(obj.getStart_date());
-			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
+//			Date dt = new Date();
+//			Calendar c = Calendar.getInstance(); 
+//			c.setTime(dt); 
+//			c.add(Calendar.MONTH, -3);
+//			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
+//			Date d1 = dateFor.parse(obj.getStart_date());
+//			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
+//			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
 			
 			List dataListDeviceMeter = queryForList("EnergyUsage.getListDeviceTypeMeter", obj);
 			if(dataListDeviceMeter.size() > 0 ) {
@@ -80,6 +80,7 @@ public class EnergyUsageService extends DB {
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+						start = start.withDayOfMonth(1);
 						break;
 						
 					case "lifetime": // 1 month
@@ -87,7 +88,7 @@ public class EnergyUsageService extends DB {
 						timeUnit = ChronoUnit.MONTHS;
 						timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 						categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
-						
+						start = start.withDayOfMonth(1);
 						break;
 						
 						
@@ -132,17 +133,6 @@ public class EnergyUsageService extends DB {
 	public List getChartDataEnergyByDevice(DeviceEntity obj) {
 		try {
 			List dataEnergy = new ArrayList<>();
-			
-			// if data is in 3 latest months then data is fetch from view, else it's from table
-//			Date dt = new Date();
-//			Calendar c = Calendar.getInstance(); 
-//			c.setTime(dt); 
-//			c.add(Calendar.MONTH, -3);
-//			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-//			Date d1 = dateFor.parse(obj.getStart_date());
-//			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-//			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
-			
 			int interval = 0;
 			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
@@ -176,6 +166,7 @@ public class EnergyUsageService extends DB {
 					timeUnit = ChronoUnit.MONTHS;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+					start = start.withDayOfMonth(1);
 					break;
 					
 				case "lifetime": // 1 month
@@ -183,7 +174,7 @@ public class EnergyUsageService extends DB {
 					timeUnit = ChronoUnit.MONTHS;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
-					
+					start = start.withDayOfMonth(1);
 					break;
 					
 					

@@ -124,7 +124,7 @@
 					WHERE
 						s.id = #{item.id_site}
 						AND d.id = #{item.id}
-						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND DATE_FORMAT( DATE_ADD(#{end_date},INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"))
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
@@ -209,7 +209,7 @@
 						LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
 					WHERE
 						d.id = #{id}
-						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND DATE_FORMAT( DATE_ADD(#{end_date},INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"))
+						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1 
 					GROUP BY
