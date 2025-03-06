@@ -63,22 +63,15 @@ public class SitesOverviewGasService extends DB {
 				case "12_month":
 					start = LocalDateTime.parse(obj.getEnd_date(), formatter).minusMonths(12).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
 					end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
-					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-					timeUnit = ChronoUnit.DAYS;
+					timeUnit = ChronoUnit.MONTHS;
 					break;
 				case "lifetime":
 					start = LocalDateTime.parse(obj.getCommissioning(), formatter).withHour(0).withMinute(0).withSecond(0);
 					end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
-					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-					timeUnit = ChronoUnit.DAYS;
-					break;
-				case "summary":
-					start = LocalDateTime.parse(obj.getEnd_date(), formatter).minusMonths(2).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-					end = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
-					timefullFormat = DateTimeFormatter.ofPattern("MM/yyyy");
-					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyyy");
 					timeUnit = ChronoUnit.MONTHS;
 					break;
 			}

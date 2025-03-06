@@ -236,8 +236,8 @@
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
 							</when>
 							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m') AS time_format,
+								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS time_full,
 								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
 							</when>
 							<otherwise>
@@ -282,7 +282,7 @@
 					time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
 				</when>
 				<when test="id_filter == '12_month' or id_filter == 'lifetime'">
-					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
+					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m')
 				</when>
 				<otherwise>
 					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
