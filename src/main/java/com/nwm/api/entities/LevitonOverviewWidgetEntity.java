@@ -33,9 +33,23 @@ public class LevitonOverviewWidgetEntity{
 	private List deviceMap;
 	private String text_color;
 	private String unit;
+	private int energy_flow_enable;
+	private int menu_order;
 	
 	
 	
+	public int getMenu_order() {
+		return menu_order;
+	}
+	public void setMenu_order(int menu_order) {
+		this.menu_order = menu_order;
+	}
+	public int getEnergy_flow_enable() {
+		return energy_flow_enable;
+	}
+	public void setEnergy_flow_enable(int energy_flow_enable) {
+		this.energy_flow_enable = energy_flow_enable;
+	}
 	public String getUnit() {
 		return unit;
 	}

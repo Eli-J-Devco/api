@@ -382,6 +382,7 @@ public class SitesDashboardService extends DB {
 					if(listWidget.size() > 0) {
 						Map<String, Object> dataToday = (Map<String, Object>) queryForObject("SitesDashboard.getDataToday", itemWidget);
 						itemWidget.put("today", dataToday.get("today"));
+						itemWidget.put("today_power", dataToday.get("today_power"));
 						itemWidget.put("thirtydays", dataToday.get("energy"));
 					} else {
 						itemWidget.put("today", 0);

@@ -19,6 +19,8 @@
 		<result property="created_by" column="created_by" />
 		<result property="updated_date" column="updated_by" />
 		<result property="unit" column="unit" />
+		<result property="energy_flow_enable" column="energy_flow_enable" />
+		
 	</resultMap>
 	
 
@@ -35,6 +37,8 @@
 			s.description,
 			s.text_color,
 			s.unit,
+			s.energy_flow_enable,
+			s.menu_order,
 			GROUP_CONCAT(lm.id_device) AS id_devices
 		FROM
 			leviton_overview_widget s 	
@@ -85,14 +89,6 @@
 	</update>
 	
 	
-	<update id="updateIsConsumption">
-		UPDATE `leviton_overview_widget`
-		SET
-			`is_consumption` = 0
-		WHERE
-			`id_site` = #{id_site}
-	</update>
-	
 	<update id="delete">
 		DELETE from `leviton_overview_widget` WHERE id = #{id};
 	</update>
@@ -123,7 +119,9 @@
 			`is_consumption`,
 			`icon`,
 			`text_color`,
-			`unit`
+			`unit`,
+			`energy_flow_enable`,
+			`menu_order`
 		)VALUES(
 			#{name},
 			#{id_site},
@@ -131,7 +129,8 @@
 			#{is_consumption},
 			#{icon},
 			#{text_color},
-			#{unit}
+			#{unit},
+			#{energy_flow_enable}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -147,7 +146,9 @@
 			`is_consumption` = #{is_consumption},
 			`icon` = #{icon},
 			`text_color` = #{text_color},
-			`unit` = #{unit}
+			`unit` = #{unit},
+			`energy_flow_enable` = #{energy_flow_enable},
+			`menu_order` = #{menu_order}
 			
 		WHERE
 			`id` = #{id}
