@@ -69,7 +69,7 @@ public class SitesOverviewGasService extends DB {
 					break;
 				case "lifetime":
 					start = LocalDateTime.parse(obj.getCommissioning(), formatter).withHour(0).withMinute(0).withSecond(0);
-					end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
+					end = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
 					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					timeUnit = ChronoUnit.MONTHS;

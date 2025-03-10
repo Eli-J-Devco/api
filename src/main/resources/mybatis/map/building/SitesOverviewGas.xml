@@ -210,6 +210,67 @@
 		) t
 	</select>
 	
+	<sql id="consumptionTable">
+		SELECT
+			t.time_format,
+			t.time_full,
+			t.categories_time,
+			dv.${reading_field}
+		FROM
+			${item.datatablename} dv
+			JOIN (
+				SELECT
+					<choose>
+						<when test="id_filter == 'today'">
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
+						</when>
+						<when test="id_filter == 'this_month' or id_filter == 'last_month'">
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
+						</when>
+						<when test="id_filter == '12_month' or id_filter == 'lifetime'">
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m') AS time_format,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS time_full,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
+						</when>
+						<otherwise>
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
+							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
+						</otherwise>
+					</choose>
+					${aggregate_function}(dv.time) AS time
+				FROM
+					${item.datatablename} dv
+				WHERE
+					<choose>
+						<when test="id_filter == 'today'">
+							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+						</when>
+						<when test="id_filter == 'this_month'">
+							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+						</when>
+						<when test="id_filter == 'last_month'">
+							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), #{timezone_value}, 'UTC')
+						</when>
+						<when test="id_filter == '12_month'">
+							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+						</when>
+						<when test="id_filter == 'lifetime'">
+							dv.time BETWEEN CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+						</when>
+						<otherwise>
+							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+						</otherwise>
+					</choose>
+				GROUP BY
+					time_format
+			) t ON t.time = dv.time
+	</sql>
+	
 	<select id="getConsumption" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
 		SELECT
 			time_full,
@@ -218,76 +279,29 @@
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
-					time_format,
-					time_full,
-					categories_time,
-					LEAD(${reading_field}) OVER (ORDER BY time_format) - ${reading_field} AS `value`
-				FROM (
-					SELECT
-						<choose>
-							<when test="id_filter == 'today'">
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
-							</when>
-							<when test="id_filter == 'this_month' or id_filter == 'last_month'">
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y') AS time_full,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%d. %b') AS categories_time,
-							</when>
-							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS time_full,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%b. %Y') AS categories_time,
-							</when>
-							<otherwise>
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_format,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%m/%d/%Y %H:00') AS time_full,
-								DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
-							</otherwise>
-						</choose>
-						MIN(dv.time),
-						dv.${reading_field}
-					FROM
-						${item.datatablename} dv
-					WHERE
-						<choose>
-							<when test="id_filter == 'today'">
-								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 00:59:59'), #{timezone_value}, 'UTC')
-							</when>
-							<when test="id_filter == 'this_month' or id_filter == 'last_month'">
-								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), #{timezone_value}, 'UTC')
-							</when>
-							<when test="id_filter == '12_month'">
-								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
-							</when>
-							<when test="id_filter == 'lifetime'">
-								dv.time BETWEEN CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 23:59:59'), #{timezone_value}, 'UTC')
-							</when>
-							<otherwise>
-								dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), '%Y-%m-%d 00:59:59'), #{timezone_value}, 'UTC')
-							</otherwise>
-						</choose>
-					GROUP BY
-						time_format
-				) t
+					mi.time_format,
+					mi.time_full,
+					mi.categories_time,
+					IFNULL(LEAD(mi.${reading_field}) OVER (ORDER BY mi.time_format), ma.${reading_field}) - mi.${reading_field} AS `value`
+				FROM
+					(
+						<include refid="consumptionTable">
+							<property name="aggregate_function" value="MIN"/>
+						</include>
+					) mi
+					LEFT JOIN (
+						<include refid="consumptionTable">
+								<property name="aggregate_function" value="MAX"/>
+						</include>
+					) ma ON ma.time_full = mi.time_full
 			</foreach>
 		) t
-		WHERE
-			<choose>
-				<when test="id_filter == 'today'">
-					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
-				</when>
-				<when test="id_filter == 'this_month' or id_filter == 'last_month'">
-					time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
-				</when>
-				<when test="id_filter == '12_month' or id_filter == 'lifetime'">
-					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m')
-				</when>
-				<otherwise>
-					time_format <![CDATA[<=]]> DATE_FORMAT(#{end_date}, '%Y-%m-%d 23:59:59')
-				</otherwise>
-			</choose>
+		
+		<if test="id_filter == 'last_month'">
+			WHERE
+				time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
+		</if>
+		
 		GROUP BY
 			time_format
 	</select>
