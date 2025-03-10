@@ -312,6 +312,9 @@ public class SiteEntity extends SortEntity {
 	private String mail_cc;
 	private boolean isUserNW;
 	private int meter_type;
+	private String date_format;
+	private int time_format;
+	private String locale;
 	
 	
 	
@@ -2024,6 +2027,24 @@ public class SiteEntity extends SortEntity {
 	}
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
+	}
+	public String getDate_format() {
+		return date_format;
+	}
+	public void setDate_format(String date_format) {
+		this.date_format = date_format;
+	}
+	public int getTime_format() {
+		return time_format;
+	}
+	public void setTime_format(int time_format) {
+		this.time_format = time_format;
+	}
+	public String getLocale() {
+		return locale;
+	}
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 	
 	

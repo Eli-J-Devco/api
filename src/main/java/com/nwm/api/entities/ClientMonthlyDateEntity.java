@@ -5,6 +5,9 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -23,7 +26,25 @@ public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
 	private Double energy;
 	private Double avgEnergy;
 	
+	public static Map<String, Object> convertDateTimeToMap(ClientMonthlyDateEntity obj) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		if (obj == null) return map;
+		
+		map.put("time_full", obj.getTime_full());
+		map.put("categories_time", obj.getCategories_time());
+		
+		return map;
+	}
 	
+	public static ClientMonthlyDateEntity convertDateTimeToEntity(Map<String, Object> map) {
+		ClientMonthlyDateEntity entity = new ClientMonthlyDateEntity();
+		if (map == null) return entity;
+		
+		entity.setTime_full((String) map.get("time_full"));
+		entity.setCategories_time((String) map.get("categories_time"));
+		
+		return entity;
+	}
 	
 	public Double getAvgEnergy() {
 		return avgEnergy;

@@ -99,7 +99,7 @@ public class SitesAnalyticsService extends DB {
 	 * @param end end date time
 	 * @return
 	 */
-	private List<Map<String, Object>> getDateTimeList(DeviceEntity obj, LocalDateTime start, LocalDateTime end) {
+	public List<Map<String, Object>> getDateTimeList(DeviceEntity obj, LocalDateTime start, LocalDateTime end) {
 		List<Map<String, Object>> dateTimeList = new ArrayList<>();
 		
 		try {
@@ -167,13 +167,11 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case "this_month":
 	                	case "last_month":
-	                	case "custom":
-	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
 	                	case "12_month":
 	                	case "year":
 	                	case "lifetime":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                	case "custom":
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                }
 					break;
@@ -193,13 +191,9 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case "this_month":
 	                	case "last_month":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-	                		break;
 	                	case "12_month":
 	                	case "year":
 	                	case "lifetime":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -221,13 +215,9 @@ public class SitesAnalyticsService extends DB {
 	                		break;
 	                	case "this_month":
 	                	case "last_month":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-	                		break;
 	                	case "12_month":
 	                	case "year":
 	                	case "lifetime":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-	                		break;
 	                	case "custom":
 	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
@@ -241,13 +231,11 @@ public class SitesAnalyticsService extends DB {
 	                switch (obj.getFilterBy()) {
 	                	case "this_month":
 	                	case "last_month":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd");
-	                		break;
 	                	case "12_month":
 	                	case "year":
 	                	case "lifetime":
 	                	case "custom":
-	                		categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+	                		categoryTimeFormat = isDiffLessThan45Days ? DateTimeFormatter.ofPattern("MM/dd") : DateTimeFormatter.ofPattern("LLL. yyyy");
 	                		break;
 	                }
 					break;
@@ -288,7 +276,7 @@ public class SitesAnalyticsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2024-11-11
 	 */
-	private  List<Map<String, Object>> convertDateTimeFormat(DeviceEntity obj, List<Map<String, Object>> dataList, LocalDateTime start, LocalDateTime end) {
+	public List<Map<String, Object>> convertDateTimeFormat(DeviceEntity obj, List<Map<String, Object>> dataList, LocalDateTime start, LocalDateTime end) {
 		try {
 			if (obj.getDate_format() == null || obj.getTime_format() == 0 || obj.getLocale() == null) return dataList;
 			Locale locale = new Locale(obj.getLocale());

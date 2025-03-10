@@ -4,103 +4,50 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="CustomerView">
 	
+	<sql id="domainCondition">
+		<choose> 
+       		<when test="domain == 'test.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,2,4)
+            </when>
+             
+            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,3,4,7,5)
+            </when>
+            
+            <when test="domain == 'nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,5,7)
+            </when>
+            
+            <when test="domain == 'buildings.nextwavemonitoring.com'">
+                AND d.show_on_domain IN(1,6,7)
+            </when>
+            
+            <otherwise>
+		      AND d.show_on_domain IN(1)
+		    </otherwise>                                                  
+        </choose>
+	</sql>
 	
-	<select id="getListDeviceTypeMeter" resultType="Map">
+	<select id="getDevicesBySite" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
 			d.devicename,
-			d.devicename AS export_devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
+			d.datatablename,
+			d.id_site,
+			d.is_excluded_meter,
+			d.reverse_poa,
+			dt.id AS id_device_type
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			dt.id IN (3,7,9)
-			AND d.is_excluded_meter = 0
-			AND d.id_site = #{id_site}
+			d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
-	</select>
-	
-	
-	<select id="getListDeviceTypeInverter" resultType="Map">
-		SELECT
-			d.id,
-			d.devicename,
-			d.devicename AS export_devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			dt.id = 1
-			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="domainCondition"/>
 	</select>
 	
 	<select id="getHiddenDataListByDevice" resultType="Map">
@@ -134,329 +81,75 @@
 			AND hd.is_delete = 0
 	</select>
 	
-	
-	
-	<select id="getDataPowerToday" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			t.time_format,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.categories_time,
-			t.id
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-						SELECT
-							<choose>
-								<when test="data_send_time == 8">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
-								</when>
-								<when test="data_send_time == 4">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-								</when>
-							</choose>
-							d.id,
-							AVG(IF(
-								(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
-								NULL,
-								dv.nvmActivePower
-							)) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-						WHERE
-							d.id = #{item.id}
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-							<foreach item="hidden" index="index" collection="hidden_data_list">
-								AND
-									CASE
-										WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
-										ELSE TRUE
-									END
-						    </foreach>
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id,
-							time_format
-				</foreach>
-			) t 
-		GROUP BY
-			<if test="is_show_each_meter == 1">
-				t.id,
-			</if>
-			t.time_format
-	</select>
-	
-	<select id="getDataVirtualDeviceToday" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
+	<sql id="categories_time_format">
+		TRIM(
 			<choose>
-				<when test="data_send_time == 8">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%H:%i') AS categories_time,
+				<when test="filterBy == 'today'">
+					<choose>
+						<when test="data_send_time == 8 or data_send_time == 1 or data_send_time == 2 or data_send_time == 3">
+							'${time_format}'
+						</when>
+						<otherwise>
+							'%d. %b'
+						</otherwise>
+					</choose>
 				</when>
-				<when test="data_send_time == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%H:%i') AS categories_time,
+				<when test="filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
+					'%d. %b ${time_format}'
 				</when>
-				<when test="data_send_time == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
-				</when>
-				<when test="data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-				</when>
-			</choose>
-			ROUND(AVG(IF(
-				(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
-				NULL,
-				dv.nvmActivePower
-			)), 1) AS nvmActivePower,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
-			ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power
-		FROM
-			${datatablename} dv
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site 
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-		WHERE
-			s.id = #{id_site}
-			AND d.id_device_type = 12
-			AND DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-			<foreach item="item" index="index" collection="hidden_data_list">
-				AND
+				<otherwise>
 					CASE
-						WHEN d.id = #{item.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
-						ELSE TRUE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 45 THEN '%m/%d'
+						ELSE '%b. %Y'
 					END
-			</foreach>
-			AND s.`status` = 1 
-			AND d.`status` = 1 
-		GROUP BY
-			time_format
-	</select>
-	
-	
-	<select id="getDataPower3Day" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActivePower ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.id
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-						SELECT
-							<choose>
-								<when test="data_send_time == 8">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%d. %b %H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 1">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%d. %b %H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 2">
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%d. %b %H:%i') AS categories_time,
-								</when>
-								<when test="data_send_time == 3">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-								</when>
-								<when test="data_send_time == 4">
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-								</when>
-							</choose>
-							d.id,
-							AVG(IF(
-								(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
-								NULL,
-								dv.nvmActivePower
-							)) AS nvmActivePower
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-							LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-							LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-						WHERE
-							d.id = #{item.id}
-							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
-							<foreach item="hidden" index="index" collection="hidden_data_list">
-								AND
-									CASE
-										WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
-										ELSE TRUE
-									END
-						    </foreach>
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id,
-							time_format
-				</foreach>
-			) t 
-		GROUP BY
-			<if test="is_show_each_meter == 1">
-				t.id,
-			</if>
-			t.time_format
-	</select>
-	
-	<select id="getDataVirtualDevice3Day" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			<choose>
-				<when test="data_send_time == 8">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%d. %b %H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%d. %b %H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%d. %b %H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-				</when>
-				<when test="data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-				</when>
+				</otherwise>
 			</choose>
-			ROUND(AVG(IF(
-				(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
-				NULL,
-				dv.nvmActivePower
-			)), 1) AS nvmActivePower,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
-      		ROUND(AVG( dv.expected_power_ac ), 1 ) AS expected_power
-		FROM
-			${datatablename} dv
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site 
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_active_power = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-		WHERE
-			s.id = #{id_site}
-			AND d.id_device_type = 12
-			AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
-			<foreach item="item" index="index" collection="hidden_data_list">
-				AND
-					CASE
-						WHEN d.id = #{item.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
-						ELSE TRUE
-					END
-			</foreach>
-			AND s.`status` = 1 
-			AND d.`status` = 1 
-		GROUP BY
-			time_format
-	</select>
+		)
+	</sql>
 	
-	<select id="getDataEnergyThisWeek" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+	<select id="getDataEnergy" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			t.time_format,
 			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
 			t.time_full,
+			ROUND(( SUM( t.`value` ) ), 1 ) AS chart_energy_kwh,
 			t.id
 		FROM
 			(
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
 					SELECT
-						dv.time,
+						d.id,
 						<choose>
 							<when test="data_send_time == 8">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%d. %b %H:%i') AS categories_time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 							</when>
 							<when test="data_send_time == 1">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%d. %b %H:%i' ) AS categories_time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i' ) AS time_full,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 							</when>
 							<when test="data_send_time == 2">
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_full,
-								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%d. %b %H:%i' ) AS categories_time,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i' ) AS time_full,
+								FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 							</when>
 							<when test="data_send_time == 3">
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-							</when>
-							<when test="data_send_time == 4">
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-							</when>
-							<when test="data_send_time == 5">
-								DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_format,
-								DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
-								DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%d. %b' ) AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
 							</when>
 						</choose>
-						d.id,
-						SUM(IF(
-							(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
-							0,
-							dv.MeasuredProduction
-						)) AS nvmActiveEnergy
+						CASE
+							WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN
+								AVG(IF(
+									(dpf.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf.max_value),
+									NULL,
+									dv.nvmActivePower
+								))
+							ELSE
+								SUM(IF(
+									(dpf.min_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.MeasuredProduction <![CDATA[ > ]]> dpf.max_value),
+									0,
+									dv.MeasuredProduction
+								))
+						END AS `value`
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -479,111 +172,19 @@
 						AND d.`status` = 1 
 					GROUP BY
 						d.id,
-						time_format
+						time_full
 				</foreach>
 			) t 
 		GROUP BY
 			<if test="is_show_each_meter == 1">
 				t.id,
 			</if>
-			t.time_format
+			t.time_full
 	</select>
 	
-	<select id="getDataVirtualDeviceThisWeek" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			<choose>
-				<when test="data_send_time == 8">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%d. %b %H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i' ) AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%d. %b %H:%i' ) AS categories_time,
-				</when>
-				<when test="data_send_time == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i' ) AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%d. %b %H:%i' ) AS categories_time,
-				</when>
-				<when test="data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-				</when>
-				<when test="data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-				</when>
-				<when test="data_send_time == 5">
-					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_format,
-					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
-					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%d. %b' ) AS categories_time,
-				</when>
-			</choose>
-			ROUND(SUM(IF(
-				(dpf.min_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ < ]]> dpf.min_value) OR (dpf.max_value IS NOT NULL AND dv.nvmActiveEnergy <![CDATA[ > ]]> dpf.max_value),
-				0,
-				dv.nvmActiveEnergy
-			)), 1) AS nvmActiveEnergy,
-			ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance,
-			ROUND(AVG( dv.expected_power_ac )
-				<choose>
-					<when test="data_send_time == 8">
-						/ 60
-					</when>
-					<when test="data_send_time == 1">
-						/ 12
-					</when>
-					<when test="data_send_time == 2">
-						/ 4
-					</when>
-					<when test="data_send_time == 3">
-						* 1
-					</when>
-					<when test="data_send_time == 4">
-						* 24
-					</when>
-					<when test="data_send_time == 5">
-						* 24 *
-						IF(
-							DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value )) >= 7,
-							7,
-							1 + DATEDIFF(LAST_DAY(CONVERT_TZ( dv.time, 'UTC', t.value )), CONVERT_TZ( dv.time, 'UTC', t.value ))
-						)
-					</when>
-				</choose>, 1) AS expected_energy
-
-		FROM
-			${datatablename} dv
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site 
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			LEFT JOIN device_parameters dp ON dp.id_device_group = d.id_device_group AND dp.is_user_defined = 1 AND dp.is_energy = 1 AND ${filterEnabled} = true
-			LEFT JOIN device_parameter_filter dpf ON dp.id = dpf.id_device_parameter AND d.id = dpf.id_device AND (dpf.min_value IS NOT NULL OR dpf.max_value IS NOT NULL)
-		WHERE
-			s.id = #{id_site}
-			AND d.id_device_type = 12
-			AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
-			<foreach item="item" index="index" collection="hidden_data_list">
-				AND
-					CASE
-						WHEN d.id = #{item.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{item.date_from} AND #{item.date_to}
-						ELSE TRUE
-					END
-			</foreach>
-			AND s.`status` = 1 
-			AND d.`status` = 1 
-		GROUP BY
-			time_format
-	</select>
-
-	<select id="getDataPowerCustom" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+	<select id="getDataSiteDataReport" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
 			id,
-			time_format,
 			time_full,
 			categories_time,
 			ROUND(AVG(nvm_irradiance), 1) AS nvm_irradiance,
@@ -599,7 +200,8 @@
 						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF( SUM(meterPower) > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1) )
 						ELSE IF(SUM(meterEnergy) > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
 					END AS chart_energy_kwh,
-					ROUND(AVG(expected_power), 1) AS expected_power
+					ROUND(AVG(expected_power), 1) AS expected_power,
+					ROUND(SUM(expected_energy), 1) AS expected_energy
 				</otherwise>
 			</choose>
 		FROM
@@ -609,30 +211,24 @@
 					d.id_device_type,
 					<choose>
 						<when test="data_send_time == 4">
-							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( sdr.time, '%m-%d-%Y' ) AS categories_time,
+							DATE_FORMAT( sdr.time, '%Y-%m-%d' ) AS time_full,
+							DATE_FORMAT( sdr.time, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 						</when>
 						<when test="data_send_time == 5">
-							DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y') AS time_format,
-							DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%m-%d-%Y') AS time_full,
-							DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
+							DATE_FORMAT(DATE_SUB(sdr.time, INTERVAL (MOD(DATEDIFF(sdr.time, #{start_date}), 7 )) DAY), '%Y-%m-%d') AS time_full,
+							DATE_FORMAT( sdr.time, <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 						</when>
 						<when test="data_send_time == 6">
-							DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
 							DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%b. %Y' ) AS categories_time,
 						</when>
 						<when test="data_send_time == 7">
-							DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
 							DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 						</when>
 					</choose>
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN AVG(expected_power)
-						ELSE AVG(expected_power) * 24 * COUNT(*)
-					END AS expected_power,
+					AVG(expected_power) AS expected_power,
+					AVG(expected_power) * 24 * COUNT(*) AS expected_energy,
 					AVG(IF(d.id_device_type = 4, sdr.POAAVG, NULL)) AS nvm_irradiance,
 					AVG(IF(
 						(dpf1.min_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND sdr.PowerTodayAVG <![CDATA[ > ]]> dpf1.max_value),
@@ -721,18 +317,17 @@
 					LEFT JOIN device_parameter_filter dpf2 ON dp2.id = dpf2.id_device_parameter AND d.id = dpf2.id_device AND (dpf2.min_value IS NOT NULL OR dpf2.max_value IS NOT NULL)
 				GROUP BY
 					d.id,
-					time_format
+					time_full
 			) mt
 		GROUP BY
 			<if test="is_show_each_meter == 1">
 				id,
 			</if>
-			time_format
+			time_full
 	</select>
 	
-	<select id="getDataVirtualDeviceCustom" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+	<select id="getDataVirtualDevice" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			time_format,
 			time_full,
 			categories_time,
 			ROUND(nvm_irradiance, 1) AS nvm_irradiance,
@@ -740,46 +335,88 @@
 				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
 				ELSE CAST(nvmActiveEnergy AS DECIMAL)
 			END AS chart_energy_kwh,
-			ROUND(expected_power, 1) AS expected_power
+			ROUND(expected_power, 1) AS expected_power,
+			ROUND(expected_energy, 1) AS expected_energy
 		FROM
 			(
 				SELECT
-					<choose>
-						<when test="data_send_time == 4">
-							DATE_FORMAT(group_by_time, '%m-%d-%Y')
-						</when>
-						<when test="data_send_time == 5">
-							DATE_FORMAT(DATE_SUB(group_by_time, INTERVAL (MOD(DATEDIFF(group_by_time, #{start_date}), 7 )) DAY), '%m-%d-%Y')
-						</when>
-						<when test="data_send_time == 6">
-							DATE_FORMAT(group_by_time, '%m/%Y')
-						</when>
-						<when test="data_send_time == 7">
-							DATE_FORMAT(group_by_time, '%Y')
-						</when>
-					</choose> AS time_format,
 					time_full,
 					categories_time,
 					AVG(nvmActivePower) AS nvmActivePower,
 					SUM(nvmActiveEnergy) AS nvmActiveEnergy,
 					AVG(nvm_irradiance) AS nvm_irradiance,
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN AVG(expected_power)
-						ELSE AVG(expected_power) * 24 * COUNT(*)
-					END AS expected_power
+					AVG(expected_power) AS expected_power,
+					<choose>
+						<when test="data_send_time == 8">
+							AVG(expected_power) / 60 AS expected_energy
+						</when>
+						<when test="data_send_time == 1">
+							AVG(expected_power) / 12 AS expected_energy
+						</when>
+						<when test="data_send_time == 2">
+							AVG(expected_power) / 4 AS expected_energy
+						</when>
+						<when test="data_send_time == 3">
+							AVG(expected_power) AS expected_energy
+						</when>
+						<otherwise>
+							AVG(expected_power) * 24 * COUNT(*) AS expected_energy
+						</otherwise>
+					</choose>
 				FROM
 					(
 						SELECT
 							<choose>
+								<when test="data_send_time == 8">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS group_by_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
+									<choose>
+										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
+											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+										</when>
+										<otherwise>
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
+										</otherwise>
+									</choose>
+								</when>
+								<when test="data_send_time == 1">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS group_by_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
+									<choose>
+										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
+											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+										</when>
+										<otherwise>
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
+										</otherwise>
+									</choose>
+								</when>
+								<when test="data_send_time == 2">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS group_by_time,
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
+									<choose>
+										<when test="filterBy == 'today' or filterBy == '3_day' or filterBy == 'this_week' or filterBy == 'last_week'">
+											FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
+										</when>
+										<otherwise>
+											DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
+										</otherwise>
+									</choose>
+								</when>
+								<when test="data_send_time == 3">
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS group_by_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
+								</when>
 								<when test="data_send_time == 4">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 								</when>
 								<when test="data_send_time == 5">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
-									DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
+									DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%Y-%m-%d' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="" /></include> ) AS categories_time,
 								</when>
 								<when test="data_send_time == 6">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
@@ -828,174 +465,33 @@
 										ELSE TRUE
 									END
 							</foreach>
-						GROUP BY group_by_time
+						GROUP BY
+							group_by_time
 					) t
 				GROUP BY
-					time_format
+					time_full
 			) t
 	</select>
 		
-	<select id="getListDeviceTypeIrradiance" resultType="Map">
+	<select id="getDataIrradiance" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
 		SELECT
-			d.id,
-			d.devicename,
-			<choose>    
-		      <when test="read_data_all == 'all_data'">      
-		          d.datatablename AS datatablename, 
-		      </when>       
-		      <otherwise>      
-		          d.view_tablename AS datatablename,
-	          </otherwise>  
-          </choose>
-			d.id_site
-		FROM
-			device d
-			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
-		WHERE
-			dt.id IN(4)
-			AND d.id_site = #{id_site}
-			AND d.`status` = 1 
-			AND d.is_delete = 0
-			AND d.reverse_poa = 0
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7,5)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
-	</select>
-	
-	<select id="getDataIrradianceToday" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			<choose>
-				<when test="data_send_time == 8">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 1">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 2">
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-					FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%H:%i') AS categories_time,
-				</when>
-				<when test="data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00') AS categories_time,
-				</when>
-				<when test="data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-				</when>
-			</choose>
-			
-			<choose>
-				<when test="pv_model == 1">
-					ROUND(
-						AVG(IF(
-							IFNULL(s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-							s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-							s.ac_capacity
-						)),
-						1
-					) AS expected_power,
-				</when>
-				<when test="pv_model == 2">
-					ROUND(
-						AVG(IFNULL( s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(dv.nvm_panel_temperature <![CDATA[>]]> 0, dv.nvm_panel_temperature, dv.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)),
-						1
-					) AS expected_power,
-				</when>
-				<otherwise>
-					ROUND(
-						AVG(IF(
-							s.t_avg IS NULL OR NOT ((dv.nvm_irradiance) >= s.min_irradiance_limit),
-							NULL,
-							s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - ((dv.nvm_temperature) + (dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
-						)),
-						1
-					) AS expected_power,
-				</otherwise>
-			</choose>
-			ROUND(AVG(dv.nvm_irradiance), 1) AS nvm_irradiance
-		FROM
-			${datatablename} dv
-			LEFT JOIN device d ON d.id = dv.id_device
-			LEFT JOIN site s ON s.id = d.id_site 
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE
-			s.id = #{id_site}
-			AND d.id_device_type IN(4)
-			AND DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') = DATE_FORMAT( #{end_date}, '%Y-%m-%d')
-			<foreach item="hidden" index="index" collection="hidden_data_list">
-				AND
-					CASE
-						WHEN d.id = #{hidden.id_device} THEN CONVERT_TZ( dv.time, 'UTC', t.value ) NOT BETWEEN #{hidden.date_from} AND #{hidden.date_to}
-						ELSE TRUE
-					END
-		    </foreach>
-			AND s.`status` = 1 
-			AND d.`status` = 1
-			AND d.id = #{id_device} 
-		GROUP BY
-			d.id, time_format
-	</select>
-	
-	
-	<select id="getDataIrradiance3Day" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
-		SELECT
-			t.time_format,
 			t.categories_time,
-			ROUND( t.nvm_irradiance, 1 ) AS chart_energy_kwh,
+			ROUND( t.nvm_irradiance, 1 ) AS nvm_irradiance,
 			ROUND( t.expected_power, 1 ) AS expected_power,
 			<choose>
 				<when test="data_send_time == 8">
-					ROUND( t.expected_power / 60, 1 )
+					ROUND( t.expected_power / 60, 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 1">
-					ROUND( t.expected_power * 5 / 60, 1 )
+					ROUND( t.expected_power * 12, 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 2">
-					ROUND( t.expected_power / 4 , 1 )
+					ROUND( t.expected_power / 4 , 1 ) AS expected_energy,
 				</when>
 				<when test="data_send_time == 3">
-					ROUND( t.expected_power , 1 )
+					ROUND( t.expected_power 	, 1 ) AS expected_energy,
 				</when>
-				<when test="data_send_time == 4">
-					ROUND( t.expected_power * 24, 1 )
-				</when>
-				<when test="data_send_time == 5">
-					ROUND(( AVG( t.expected_power ) * 24 *
-						IF(
-							DATEDIFF(LAST_DAY(STR_TO_DATE(t.time_format, '%m-%d-%Y')), STR_TO_DATE(t.time_format, '%m-%d-%Y')) >= 7,
-							7,
-							1 + DATEDIFF(LAST_DAY(STR_TO_DATE(t.time_format, '%m-%d-%Y')), STR_TO_DATE(t.time_format, '%m-%d-%Y'))
-						)),
-						1
-					)
-				</when>
-			</choose> AS expected_energy,
+			</choose>
 			t.time_full
 			
 		FROM
@@ -1003,34 +499,20 @@
 				SELECT
 					<choose>
 						<when test="data_send_time == 8">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%m-%d-%Y %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%d. %b %H:%i') AS categories_time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), '%Y-%m-%d %H:%i') AS time_full,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 60)*60), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 						</when>
 						<when test="data_send_time == 1">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%d. %b %H:%i') AS categories_time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%Y-%m-%d %H:%i') AS time_full,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 						</when>
 						<when test="data_send_time == 2">
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_format,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
-							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%d. %b %H:%i') AS categories_time,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
+							FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), <include refid="categories_time_format"><property name="time_format" value="%H:%i" /></include>) AS categories_time,
 						</when>
 						<when test="data_send_time == 3">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y %H:00' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b %H:00' ) AS categories_time,
-						</when>
-						<when test="data_send_time == 4">
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%d. %b' ) AS categories_time,
-						</when>
-						<when test="data_send_time == 5">
-							DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_format,
-							DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%d. %b' ) AS categories_time,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), <include refid="categories_time_format"><property name="time_format" value="%H:00" /></include> ) AS categories_time,
 						</when>
 					</choose>
 					
@@ -1074,226 +556,12 @@
 					AND d.`status` = 1
 					AND d.id = #{id_device} 
 				GROUP BY
-					d.id, time_format
+					d.id,
+					time_full
 			) t
 	</select>
 	
-	<select id="getDataIrradianceThisMonth" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataIrradianceYear" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataIrradiance12Month" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						IFNULL(SUM(m.nvm_irradiance), 0) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS categories_time,
-							ROUND(AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	<select id="getDataIrradianceLifetime" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvm_irradiance ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvm_irradiance) AS nvm_irradiance
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
-							ROUND( AVG( dv.nvm_irradiance ), 1 ) AS nvm_irradiance
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type IN(4)
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	
-	
-	<select id="getCustomerViewInfoMeter" resultType="Map" >
+	<select id="getCustomerViewInfo" resultType="Map" >
 		SELECT
 			s.id,
 			s.kiosk_view,
@@ -1335,10 +603,19 @@
 					device d
 					LEFT JOIN site s ON s.id = d.id_site
 				WHERE 
-					s.`status` = 1
+					s.id = #{id_site}
+					AND s.`status` = 1 
+					AND s.is_delete = 0
 					AND d.`status` = 1
-					AND d.id_device_type IN (3,7,9)
-					AND d.is_excluded_meter = 0
+					<choose>
+						<when test="meter_type == 1">
+							AND d.id_device_type IN (3,7,9)
+							AND d.is_excluded_meter = 0
+						</when>
+						<otherwise>
+							AND d.id_device_type IN (1)
+						</otherwise>
+					</choose>
 				GROUP BY d.id_site
 			) e ON e.id_site = s.id
 
@@ -1346,306 +623,10 @@
 			s.id = #{id_site}
 			AND s.`status` = 1 
 			AND s.is_delete = 0
-			GROUP BY s.id;
+		GROUP BY
+			s.id;
 		
 	</select>
-	
-	
-	<select id="getCustomerViewInfoInverter" resultType="Map" >
-			SELECT
-			s.id,
-			s.kiosk_view,
-			SHA1(s.id) AS hash_id,
-			scm.id_employee,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS name,
-			    </otherwise>                                                  
-	        </choose>
-			s.dc_capacity,
-			s.ac_capacity,
-			s.lat,
-			s.lng,
-			s.data_send_time,
-			t.`offset`,
-			IFNULL(today.energy_today, 0) AS energy_today,
-			IFNULL(ptoday.peak_power_today, 0) AS peak_power_today,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND(lifetime.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
-			IF(lifetime.energy_lifetime, FORMAT(ROUND((lifetime.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			IFNULL(lifetime.energy_lifetime, 0) AS energy_lifetime
-			
-			
-		FROM
-			site s
-			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone 
-			LEFT JOIN country c ON c.id = s.id_country
-			LEFT JOIN(
-				SELECT
-					d.id_site,
-					ROUND(SUM(d.energy_today), 1) AS energy_today
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 1
-				GROUP BY d.id_site
-			)today ON today.id_site = s.id
-			
-			LEFT JOIN (
-				SELECT
-				d.id_site,
-				SUM( d.last_value ) AS peak_power_today 
-			FROM
-				site s
-				LEFT JOIN device d ON s.id = d.id_site 
-			WHERE
-				s.`status` = 1 
-				AND d.`status` = 1 
-				AND d.id_device_type = 1
-				AND s.id = #{id_site}
-			) ptoday ON ptoday.id_site = s.id	
-			
-			LEFT JOIN(
-				SELECT
-					d.id_site,
-					ROUND(SUM(d.energy_lifetime), 0) AS energy_lifetime
-				FROM
-					device d
-					LEFT JOIN site s ON s.id = d.id_site
-					WHERE s.`status` = 1 AND d.`status` = 1 AND d.id_device_type = 1
-				GROUP BY d.id_site
-			)lifetime ON lifetime.id_site = s.id
-
-		WHERE
-			s.id = #{id_site}
-			AND s.`status` = 1 
-			AND s.is_delete = 0
-			GROUP BY s.id;
-		
-	</select>
-	
-	
-	
-	
-	<!-- Get data from inverter -->
-	<select id="getDataEnergyInverterThisMonth" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%d' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND DATE_FORMAT(CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m') = DATE_FORMAT( #{end_date}, '%Y-%m')
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterYear" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b. %Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverter12Month" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m/%Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							AND (CONVERT_TZ( dv.time, '+00:00', t.`offset` ) BETWEEN #{start_date} AND #{end_date})
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
-	
-	<select id="getDataEnergyInverterLifetime" resultType="Map" >
-		SELECT
-			t.time,
-			t.time_format,
-			t.categories_time,
-			ROUND(( SUM( t.nvmActiveEnergy ) ), 1 ) AS chart_energy_kwh,
-			t.time_full,
-			t.download_time
-			
-		FROM
-			(
-				<foreach collection="groupMeter" item="item" index="index" separator="union all">
-				<![CDATA[
-					SELECT
-						m.time,
-						m.time_format,
-						m.time_full,
-						m.categories_time,
-						m.download_time,
-						SUM(m.nvmActiveEnergy) AS nvmActiveEnergy
-					FROM
-						(
-						SELECT
-							dv.time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS download_time,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_format,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS time_full,
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y' ) AS categories_time,
-							ROUND(( MAX( dv.nvmActiveEnergy ) - MIN( dv.nvmActiveEnergy ) ), 1 ) AS nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							LEFT JOIN device d ON d.id = dv.id_device
-							LEFT JOIN site s ON s.id = d.id_site 
-							LEFT JOIN time_zone t ON t.id = s.id_time_zone
-						WHERE
-							s.id = #{item.id_site}
-							AND d.id_device_type = 1
-							AND dv.nvmActiveEnergy > 0
-							
-							AND s.`status` = 1 
-							AND d.`status` = 1 
-						GROUP BY
-							d.id, time_format
-						) m 
-					GROUP BY
-						m.time_format
-					]]>
-		      </foreach>
-			) t 
-		GROUP BY
-			t.time_format
-	</select>
-	
 	
 	<select id="getList" resultType="Map">
 		SELECT
@@ -1670,7 +651,7 @@
 			s.postal_code,
 			s.city,
 			s.state,
-			commissioning,
+			DATE_FORMAT(s.commissioning, '%m/%d/%Y') AS commissioning,
 			s.emergency_contact,
 			s.ac_capacity,
 			s.dc_capacity,
@@ -1683,28 +664,27 @@
 			s.gallery,
 			s.site_default,
 			s.data_send_time,
-			CONCAT_WS(', ',s.street, s.city, s.state, c.`name`, s.postal_code) AS address_full,
-			scm.id_employee
+			s.table_data_report,
+			s.table_data_virtual,
+			TIME_FORMAT(CONVERT_TZ(s.sunrise, 'UTC', tz.`value`), '%H:%i:%s') AS sunrise,
+			TIME_FORMAT(CONVERT_TZ(s.sunset, 'UTC', tz.`value`), '%H:%i:%s') AS sunset,
+			tz.`value` AS timezone_value,
+			CONCAT_WS(', ',s.street, s.city, s.state, c.`name`, s.postal_code) AS address_full
 		FROM
 			site AS s
 			LEFT JOIN country c ON c.id = s.id_country
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 		WHERE
-			 s.is_delete = 0 AND s.status = 1 
+			 s.is_delete = 0
+			 AND s.status = 1 
 			 <if test="is_supper_admin != 1">
-			 AND scm.id_employee= #{id_employee}
+				 AND scm.id_employee= #{id_employee}
 			 </if>
-			 
-			<if test="id_sites != null and !id_sites.isEmpty() and is_supper_admin != 1">
-			AND s.id IN  (
-				<foreach item="item" index="index" collection="id_sites" separator=" , ">
-					#{item.id}
-				</foreach>
-			)
-			</if>
-
-			GROUP BY s.id
-			ORDER BY s.`name` ASC
+		GROUP BY
+			s.id
+		ORDER BY
+			s.`name` ASC
 	</select>
 	
 	

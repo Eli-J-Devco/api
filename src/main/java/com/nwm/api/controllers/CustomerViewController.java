@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.CustomerViewService;
-import com.nwm.api.services.SitesAlertService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -65,8 +64,7 @@ public class CustomerViewController extends BaseController {
 		try {
 			CustomerViewService service = new CustomerViewService();
 			List dataEnergy = service.getChartDataPerformance(obj);
-			obj.setEnergy(dataEnergy);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataEnergy, dataEnergy.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
