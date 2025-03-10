@@ -12,6 +12,7 @@
 			SHA1(d.id_site) AS hash_site_id,
 			d.id_device_group,
 			d.devicename,
+			d.devicename AS text,
 			d.datatablename,
 			d.ssh_host,
 			d.ssh_user,
