@@ -1127,9 +1127,9 @@
 	<select id="getDataToday" resultType="Map">
 		SELECT 
 			t.id_device,
-			ROUND(SUM(t.energy),2) AS energy,
-			ROUND(SUM(t.today), 2) AS today,
-			ROUND(SUM(t.today_power), 2) AS today_power
+			ROUND(IFNULL(SUM(t.energy), 0),2) AS energy,
+			ROUND(IFNULL(SUM(t.today), 0), 2) AS today,
+			ROUND(IFNULL(SUM(t.today_power), 0), 2) AS today_power
 		FROM (
 		<foreach collection="devices" item="item" index="index" separator="union all" >
 		<![CDATA[
