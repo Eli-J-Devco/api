@@ -40,10 +40,17 @@ public class CustomerSupportEntity{
 	private String issue_name;
 	private String site_name;
 	private String we_support;
+	private String domain;
 	
 	
 	
 	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public String getWe_support() {
 		return we_support;
 	}

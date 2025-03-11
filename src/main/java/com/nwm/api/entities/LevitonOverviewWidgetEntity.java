@@ -35,9 +35,23 @@ public class LevitonOverviewWidgetEntity{
 	private String unit;
 	private int energy_flow_enable;
 	private int menu_order;
+	private int energy_usage_enable;
+	private int widget_type;
 	
 	
 	
+	public int getWidget_type() {
+		return widget_type;
+	}
+	public void setWidget_type(int widget_type) {
+		this.widget_type = widget_type;
+	}
+	public int getEnergy_usage_enable() {
+		return energy_usage_enable;
+	}
+	public void setEnergy_usage_enable(int energy_usage_enable) {
+		this.energy_usage_enable = energy_usage_enable;
+	}
 	public int getMenu_order() {
 		return menu_order;
 	}

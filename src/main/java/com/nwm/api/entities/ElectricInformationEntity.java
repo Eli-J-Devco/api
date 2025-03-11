@@ -43,11 +43,18 @@ public class ElectricInformationEntity extends SortEntity {
 	private double last_month_gas;
 	private double last_month_water;
 	private double last_month_electricity;
+	private double monthly_water;
 	
 	
 	
 	
 	
+	public double getMonthly_water() {
+		return monthly_water;
+	}
+	public void setMonthly_water(double monthly_water) {
+		this.monthly_water = monthly_water;
+	}
 	public double getGas_yesterday() {
 		return gas_yesterday;
 	}

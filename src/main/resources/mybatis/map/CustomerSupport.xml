@@ -88,7 +88,15 @@
 		SELECT
 			s.id,
 			s.id_site,
-			ss.name AS site_name,
+			
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", ss.city, " #",ss.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      ss.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			s.contact_person,
 			s.account_name,
 			s.phone,

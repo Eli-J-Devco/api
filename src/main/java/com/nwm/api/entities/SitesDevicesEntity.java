@@ -160,10 +160,58 @@ public class SitesDevicesEntity extends SortEntity {
 	private double total_area;
 	private double total_unit;
 	private int meter_type;
-
+	private double weather_indoor_temp;
+	private double weater_outdoor_temp;
+	private String weather_time;
+	private double weather_humidity;
+	private String weather_description;
+	private String weather_icon;
+	private String weather_time_string;
 	
 	
 	
+	public String getWeather_description() {
+		return weather_description;
+	}
+	public void setWeather_description(String weather_description) {
+		this.weather_description = weather_description;
+	}
+	public String getWeather_icon() {
+		return weather_icon;
+	}
+	public void setWeather_icon(String weather_icon) {
+		this.weather_icon = weather_icon;
+	}
+	public String getWeather_time_string() {
+		return weather_time_string;
+	}
+	public void setWeather_time_string(String weather_time_string) {
+		this.weather_time_string = weather_time_string;
+	}
+	public double getWeather_indoor_temp() {
+		return weather_indoor_temp;
+	}
+	public void setWeather_indoor_temp(double weather_indoor_temp) {
+		this.weather_indoor_temp = weather_indoor_temp;
+	}
+	public double getWeater_outdoor_temp() {
+		return weater_outdoor_temp;
+	}
+	public void setWeater_outdoor_temp(double weater_outdoor_temp) {
+		this.weater_outdoor_temp = weater_outdoor_temp;
+	}
+	public String getWeather_time() {
+		return weather_time;
+	}
+	public void setWeather_time(String weather_time) {
+		this.weather_time = weather_time;
+	}
+	public double getWeather_humidity() {
+		return weather_humidity;
+	}
+	public void setWeather_humidity(double weather_humidity) {
+		this.weather_humidity = weather_humidity;
+	}
 	public int getMeter_type() {
 		return meter_type;
 	}

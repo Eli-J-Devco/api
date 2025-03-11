@@ -111,7 +111,16 @@
 			s.advance_tech_control_enable,
 			s.serial_number,
 			s.total_area,
-			s.total_unit
+			s.total_unit,
+			s.weather_indoor_temp,
+			s.weater_outdoor_temp,
+			DATE_FORMAT(s.weather_time, '%H:%i %p') AS weather_time,
+			s.weather_humidity,
+			s.weather_description,
+			s.weather_icon,
+			
+			DATE_FORMAT(s.weather_time, '%W, %d %M %Y') AS weather_time_string
+			
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -1098,7 +1107,9 @@
 			d.text_color,
 			d.unit,
 			d.menu_order,
-			d.energy_flow_enable
+			d.energy_flow_enable,
+			d.energy_usage_enable,
+			d.widget_type
 		FROM
 			leviton_overview_widget d
 		WHERE
@@ -1107,6 +1118,29 @@
 			GROUP BY d.id;
 	</select>
 	
+	
+	
+	<select id="getListWidgetEnergyUsage" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.`name`,
+			d.`status`,
+			d.icon,
+			d.is_consumption,
+			d.text_color,
+			d.unit,
+			d.menu_order,
+			d.energy_flow_enable,
+			d.energy_usage_enable,
+			d.widget_type
+		FROM
+			leviton_overview_widget d
+		WHERE
+			d.id_site = #{id_site} AND energy_usage_enable = 1
+			AND d.`status` = 1 
+			GROUP BY d.id;
+	</select>
 	
 	
 	<select id="getListDeviceInWidget" resultType="Map">
@@ -1166,6 +1200,8 @@
 		</foreach>
 		)t
 	</select>
+	
+	
 	
 	
 	

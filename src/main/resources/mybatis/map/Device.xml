@@ -486,8 +486,15 @@
 	
 	<select id="getListSshDataloggerCellModem" resultType="Map" >
 		SELECT
-			s.`name` AS site_name,
 			dt.`name` AS device_type_name,
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com'">
+	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
+	            </when>
+	            <otherwise>
+			      s.`name` AS site_name,
+			    </otherwise>                                                  
+	        </choose>
 			d.id,
 			d.devicename,
 			d.ssh_host,

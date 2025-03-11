@@ -863,7 +863,7 @@
 						WHERE 
 							s.id = #{id}
 							AND d.id = #{item.id}
-							AND (DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ) ,'%Y-%m') = DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', '-08:00' ), '%Y-%m' ))
+							AND (DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ) ,'%Y-%m') = DATE_FORMAT(CONVERT_TZ( NOW(), 'UTC', t.value ), '%Y-%m' ))
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 							GROUP BY
@@ -996,6 +996,30 @@
 				AND d.meter_type IN (7)
 				AND d.is_delete = 0 AND d.`status` = 1
 			) AS monthly_gas,
+			
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_this_month), 0),1) AS monthly_water
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (5)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS monthly_water,
+			
+			(
+				SELECT
+				ROUND(IFNULL(SUM(d.energy_last_month), 0),1) AS last_month_water
+			FROM
+				device d 
+			WHERE
+				d.id_site = #{id} 
+				AND d.meter_type IN (5)
+				AND d.is_delete = 0 AND d.`status` = 1
+			) AS last_month_water,
+			
 			
 			
 			(
@@ -1157,6 +1181,25 @@
 			) t 
 		GROUP BY
 			t.time_format
+	</select>
+	
+	
+	<select id="getData30Days" resultType="Map">
+		SELECT
+				dv.id_device,
+				MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS energy,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
+				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format
+			FROM
+				 ${datatablename} dv 
+				LEFT JOIN device d ON d.id = dv.id_device
+				LEFT JOIN site s ON s.id = d.id_site
+				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE
+			(DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ) ,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(CONVERT_TZ(DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 MONTH), "%Y-%m-%d" ), "UTC", t.value), "%Y-%m-%d"))
+			GROUP BY
+				time_format
 	</select>
 	
 	

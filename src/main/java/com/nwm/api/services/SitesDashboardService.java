@@ -384,11 +384,11 @@ public class SitesDashboardService extends DB {
 						itemWidget.put("today", dataToday.get("today"));
 						itemWidget.put("today_power", dataToday.get("today_power"));
 						itemWidget.put("thirtydays", dataToday.get("energy"));
+						
 					} else {
 						itemWidget.put("today", 0);
 						itemWidget.put("thirtydays", 0);
-					}
-					
+					}					
 					
 					dataList.add(itemWidget);
 					
@@ -414,7 +414,7 @@ public class SitesDashboardService extends DB {
 	public List getListDataChartingForLeviton(SitesDevicesEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			List listWidgetOverview = queryForList("SitesDashboard.getListWidgetOverviewLeviton", obj);
+			List listWidgetOverview = queryForList("SitesDashboard.getListWidgetEnergyUsage", obj);
 			if (listWidgetOverview.size() > 0) {
 				for (int i = 0; i < listWidgetOverview.size(); i++) {
 					// get data device in widget 

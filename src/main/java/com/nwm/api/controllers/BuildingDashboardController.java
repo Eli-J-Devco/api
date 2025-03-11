@@ -17,6 +17,7 @@ import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.BuildingDashboardService;
 import com.nwm.api.services.CustomerViewService;
 import com.nwm.api.services.DeviceGroupService;
+import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 
@@ -159,6 +160,27 @@ public class BuildingDashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	/**
+	 * @description Get list device filter parameter
+	 * @author Hung.Bui
+	 * @since 2024-03-06
+	 * @param id_device
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/get-data-30days-by-device")
+	public Object getData30DaysByDevice(@RequestBody DeviceEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			List data = service.getData30DaysByDevice(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	
 }

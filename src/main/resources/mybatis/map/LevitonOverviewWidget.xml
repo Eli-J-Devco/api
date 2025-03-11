@@ -20,6 +20,9 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="unit" column="unit" />
 		<result property="energy_flow_enable" column="energy_flow_enable" />
+		<result property="energy_usage_enable" column="energy_usage_enable" />
+		<result property="widget_type" column="widget_type" />
+		
 		
 	</resultMap>
 	
@@ -38,6 +41,8 @@
 			s.text_color,
 			s.unit,
 			s.energy_flow_enable,
+			s.energy_usage_enable,
+			s.widget_type,
 			s.menu_order,
 			GROUP_CONCAT(lm.id_device) AS id_devices
 		FROM
@@ -121,7 +126,9 @@
 			`text_color`,
 			`unit`,
 			`energy_flow_enable`,
-			`menu_order`
+			`menu_order`,
+			`energy_usage_enable`,
+			`widget_type`
 		)VALUES(
 			#{name},
 			#{id_site},
@@ -130,7 +137,9 @@
 			#{icon},
 			#{text_color},
 			#{unit},
-			#{energy_flow_enable}
+			#{energy_flow_enable},
+			#{energy_usage_enable},
+			#{widget_type}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -148,8 +157,9 @@
 			`text_color` = #{text_color},
 			`unit` = #{unit},
 			`energy_flow_enable` = #{energy_flow_enable},
-			`menu_order` = #{menu_order}
-			
+			`menu_order` = #{menu_order},
+			`energy_usage_enable` = #{energy_usage_enable},
+			`widget_type` = #{widget_type}
 		WHERE
 			`id` = #{id}
 	</update>
