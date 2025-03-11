@@ -89,9 +89,18 @@ public class AlertEntity extends SortEntity {
 	private String keyword;
 	private boolean isUserNW;
 	private boolean is_supper_admin;
+	private String domain_role;
 	
 	
-	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
+	public void setUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
 	public String getDomain() {
 		return domain;
 	}

@@ -167,6 +167,15 @@ public class SitesDevicesEntity extends SortEntity {
 	private String weather_description;
 	private String weather_icon;
 	private String weather_time_string;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	

@@ -66,6 +66,15 @@ public class PortfolioEntity extends SortEntity {
 	private String hash_id_site_sub_group;
 	private int is_supper_admin;
 	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	

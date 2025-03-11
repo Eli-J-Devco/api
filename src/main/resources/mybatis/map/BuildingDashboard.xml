@@ -1187,7 +1187,7 @@
 	<select id="getData30Days" resultType="Map">
 		SELECT
 				dv.id_device,
-				MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS energy,
+				ROUND(MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy), 1) AS energy,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS categories_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
 				DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format

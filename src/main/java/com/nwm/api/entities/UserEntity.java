@@ -60,6 +60,15 @@ public class UserEntity implements UserDetails, Authentication{
 	private int is_send_email_unblock;
 	private int id_company;
 	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	

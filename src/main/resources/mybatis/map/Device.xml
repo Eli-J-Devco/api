@@ -488,7 +488,7 @@
 		SELECT
 			dt.`name` AS device_type_name,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
 	            </when>
 	            <otherwise>

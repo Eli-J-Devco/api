@@ -160,6 +160,15 @@ public class DeviceEntity {
 	private boolean is_irradiance;
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	public String getDevice_ftp_server() {

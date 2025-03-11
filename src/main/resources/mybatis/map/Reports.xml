@@ -29,7 +29,7 @@
 			sg.name AS label,
 			
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                JSON_ARRAYAGG(JSON_OBJECT(
 						'id', s.id,
 						'value', s.id,
@@ -88,7 +88,7 @@
 		SELECT
 			s.id,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`
 	            </when>
 	            <otherwise>
@@ -133,7 +133,7 @@
 		SELECT
 			s.id,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`
 	            </when>
 	            <otherwise>
@@ -158,7 +158,7 @@
 		SELECT
 			s.id,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`
 	            </when>
 	            <otherwise>
@@ -326,7 +326,7 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					
 					<choose> 
-			            <when test="domain =='demo.nextwavemonitoring.com'">
+			            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 			                JSON_ARRAYAGG(JSON_OBJECT(
 								'id', s.id,
 								'value', s.id,
@@ -361,7 +361,7 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					
 					<choose> 
-			            <when test="domain =='demo.nextwavemonitoring.com'">
+			            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 			                GROUP_CONCAT(CONCAT_WS("", s.city, " #",s.id) SEPARATOR ' - ') AS sites_name,
 			                JSON_ARRAYAGG(JSON_OBJECT(
 								'id', s.id,
@@ -400,7 +400,7 @@
 					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					
 					<choose> 
-			            <when test="domain =='demo.nextwavemonitoring.com'">
+			            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 			                JSON_ARRAYAGG(JSON_OBJECT(
 								'id', s.id,
 								'value', s.id,
@@ -483,7 +483,7 @@
 			s.id,
 			s.id AS id_site,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
 	            </when>
 	            <otherwise>
@@ -507,7 +507,7 @@
 			r.id,
 			s.id AS id_site,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
 	            </when>
 	            <otherwise>
@@ -574,7 +574,7 @@
 			s.cost,
 			s.cost_unit,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
 	            </when>
 	            <otherwise>
@@ -663,7 +663,7 @@
 		SELECT
 			s.id,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
 	            </when>
 	            <otherwise>
@@ -701,7 +701,7 @@
 		SELECT
 			d.id,
 			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com'">
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
 	            </when>
 	            <otherwise>

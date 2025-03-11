@@ -63,6 +63,15 @@ public class EmployeeManageEntity extends SortEntity {
 	private String note;
 	private String table;
 	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	

@@ -50,6 +50,15 @@ public class ReportsEntity {
 	private Integer reporting_region;
 	private Integer recVersion;
 	private String domain;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	

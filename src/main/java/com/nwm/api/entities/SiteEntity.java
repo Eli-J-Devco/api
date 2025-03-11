@@ -315,6 +315,15 @@ public class SiteEntity extends SortEntity {
 	private String date_format;
 	private int time_format;
 	private String locale;
+private String domain_role;
+	
+	
+	public String getDomain_role() {
+		return domain_role;
+	}
+	public void setDomain_role(String domain_role) {
+		this.domain_role = domain_role;
+	}
 	
 	
 	
