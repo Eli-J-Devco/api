@@ -478,43 +478,35 @@
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_group_by
 				</if>
 	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 2">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%m/%d' ) AS categories_time,
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 2">
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+					END AS categories_time,
 					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
 				</if>
 	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' ) AS categories_time,
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 3">
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+					END AS categories_time,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
 				</if>
 	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' ) AS categories_time,
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 4">
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+					END AS categories_time,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
 				</if>
 	
-				<if test="(filterBy == 'this_month' or filterBy == 'last_month') and data_send_time == 5">
-					DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
-				</if>
-	
-				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 2">
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%b. %Y' ) AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 3">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime') and data_send_time == 4">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_group_by
-				</if>
-				
-				<if test="(filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' ) AS categories_time,
+				<if test="(filterBy == 'this_month' or filterBy == 'last_month' or filterBy == '12_month' or filterBy == 'year' or filterBy == 'lifetime' or filterBy == 'custom') and data_send_time == 5">
+					CASE
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( dv.time, 'UTC', t.value ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( dv.time, 'UTC', t.value ), #{start_date}), 7 )) DAY), '%m/%d' )
+						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
+					END AS categories_time,
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
 				</if>
 				
@@ -528,30 +520,6 @@
 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_group_by
 				</if>
 				
-				<if test="filterBy == 'custom' and data_send_time == 2">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( dv.time, 'UTC', t.value ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_group_by
-				</if>
-	
-				<if test="filterBy == 'custom' and data_send_time == 3">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_group_by
-				</if>
-				
-				<if test="filterBy == 'custom' and data_send_time == 4">
-					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%m/%d' )
-						ELSE DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b. %Y' )
-					END AS categories_time,
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_group_by
-				</if>
-			
 			FROM
 				${datatablename} dv 
 				LEFT JOIN device d ON d.id = dv.id_device

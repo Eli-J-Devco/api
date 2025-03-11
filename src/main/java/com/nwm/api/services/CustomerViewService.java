@@ -5,13 +5,11 @@
 *********************************************************/
 package com.nwm.api.services;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +18,61 @@ import java.util.stream.Collectors;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
 
 public class CustomerViewService extends DB {
+	
+	SitesAnalyticsService sitesAnalyticsService = new SitesAnalyticsService();
+	
+	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity obj, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
+		try {
+			DeviceEntity chartParams = new DeviceEntity();
+			chartParams.setData_send_time(obj.getData_send_time());
+			chartParams.setFilterBy(obj.getFilterBy());
+			chartParams.setDate_format(obj.getDate_format());
+			chartParams.setTime_format(obj.getTime_format());
+			chartParams.setLocale(obj.getLocale());
+			
+			List<Map<String, Object>> data = dataList
+					.stream()
+					.map(item -> ClientMonthlyDateEntity.convertDateTimeToMap(item))
+					.collect(Collectors.toList());
+			
+			List<ClientMonthlyDateEntity> convertedDateTimeList = sitesAnalyticsService.convertDateTimeFormat(chartParams, data, start, end)
+					.stream()
+					.map(item -> ClientMonthlyDateEntity.convertDateTimeToEntity(item))
+					.collect(Collectors.toList());
+			
+			for (int i = 0; i < dataList.size(); i++) {
+				ClientMonthlyDateEntity item = dataList.get(i);
+				ClientMonthlyDateEntity convertedItem = convertedDateTimeList.get(i);
+				item.setTime_full(convertedItem.getTime_full());
+				item.setCategories_time(convertedItem.getCategories_time());
+			}
+		} catch (Exception e) {
+		}
+		
+		return dataList;
+	}
+	
+	private List<ClientMonthlyDateEntity> getDateTimeList(SiteEntity obj, LocalDateTime start, LocalDateTime end) {
+		try {
+			DeviceEntity chartParams = new DeviceEntity();
+			chartParams.setData_send_time(obj.getData_send_time());
+			chartParams.setFilterBy(obj.getFilterBy());
+			
+			return sitesAnalyticsService
+					.getDateTimeList(chartParams, start, end)
+					.stream()
+					.map(item -> ClientMonthlyDateEntity.convertDateTimeToEntity(item))
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<ClientMonthlyDateEntity>();
+		}
+	}
 	
 	/**
 	 * @description get chart data energy
@@ -33,407 +81,163 @@ public class CustomerViewService extends DB {
 	 * @param id_site, id_customer
 	 */
 
-	public List getChartDataPerformance(SiteEntity obj) {
+	public List<Map<String, Object>> getChartDataPerformance(SiteEntity obj) {
 		try {
-			List dataEnergy = new ArrayList<>();
+			List<Map<String, Object>> dataEnergy = new ArrayList<>();
 			
-			// if data is in 3 latest months then data is fetch from view, else it's from table
-			Date dt = new Date();
-			Calendar c = Calendar.getInstance(); 
-			c.setTime(dt); 
-			c.add(Calendar.MONTH, -3);
-			SimpleDateFormat dateFor = new SimpleDateFormat("yyyy-MM-dd");
-			Date d1 = dateFor.parse(obj.getStart_date());
-			Date d2 = dateFor.parse(dateFor.format(c.getTime()));
-			if(d1.compareTo(d2) < 0) obj.setRead_data_all("all_data");
+			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
+			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
+			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
+			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+			if (powerDevices.size() == 0) return new ArrayList<Map<String, Object>>();
 			
-			List dataListDeviceMeter = queryForList("CustomerView.getListDeviceTypeMeter", obj);
-			List dataListDevicePower = dataListDeviceMeter.size() > 0 ? dataListDeviceMeter : queryForList("CustomerView.getListDeviceTypeInverter", obj);
-			if (dataListDevicePower.size() > 0) {
-				List dataListDeviceIrr = queryForList("CustomerView.getListDeviceTypeIrradiance", obj);
-				
-				// ----- Create DateTime List ----- Begin
-				int interval = 0;
-				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-				ChronoUnit timeUnit = ChronoUnit.MINUTES;
-				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			// get date time list
+			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			
-				switch (obj.getData_send_time()) {
-					case 8: // 1 minute
-						interval = 1;
-						timeUnit = ChronoUnit.MINUTES;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-		                switch (obj.getFilterBy()) {
-		                	case "today":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-		                		break;
-		                	case "3_day":
-		                	case "this_week":
-		                	case "last_week":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-		                		break;
-		                }
-						break;
-						
-					case 1: // 5 minutes
-						interval = 5;
-						timeUnit = ChronoUnit.MINUTES;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-		                switch (obj.getFilterBy()) {
-		                	case "today":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-		                		break;
-		                	case "3_day":
-		                	case "this_week":
-		                	case "last_week":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-		                		break;
-		                }
-						break;
-						
-					case 2: // 15 minutes
-						interval = 15;
-						timeUnit = ChronoUnit.MINUTES;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-		                switch (obj.getFilterBy()) {
-		                	case "today":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-		                		break;
-		                	case "3_day":
-		                	case "this_week":
-		                	case "last_week":
-		                	case "this_month":
-		                	case "last_month":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-		                		break;
-		                }
-						break;
-						
-					case 3: // 1 hour
-						interval = 1;
-						timeUnit = ChronoUnit.HOURS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
-		                switch (obj.getFilterBy()) {
-		                	case "today":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
-		                		break;
-		                	case "3_day":
-		                	case "this_week":
-		                	case "last_week":
-		                	case "this_month":
-		                	case "last_month":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL HH:mm");
-		                		break;
-		                }
-						break;
-						
-					case 4: // 1 day
-						interval = 1;
-						timeUnit = ChronoUnit.DAYS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-						switch (obj.getFilterBy()) {
-		                	case "today":
-		                	case "3_day":
-		                	case "this_week":
-		                	case "last_week":
-		                	case "this_month":
-		                	case "last_month":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-		                		break;
-		                	case "12_month":
-		                	case "year":
-		                	case "custom":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-						}
-						break;
-						
-					case 5: // 7 days
-						interval = 7;
-						timeUnit = ChronoUnit.DAYS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-		                switch (obj.getFilterBy()) {
-		                	case "this_month":
-		                	case "last_month":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
-		                		break;
-		                	case "12_month":
-		                	case "year":
-		                	case "custom":
-		                		categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-		                		break;
-		                }
-						break;
-						
-					case 6: // 1 month
-						interval = 1;
-						timeUnit = ChronoUnit.MONTHS;
-						timeFullFormat = DateTimeFormatter.ofPattern("MM/yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-						start = start.withDayOfMonth(1);
-						break;
-						
-					case 7: // 1 year
-						interval = 1;
-						timeUnit = ChronoUnit.YEARS;
-						timeFullFormat = DateTimeFormatter.ofPattern("yyyy");
-						categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy");
-						start = start.withDayOfYear(1);
-						break;
-				}
+			// get list of time to exclude data from
+			List<Map<String, Object>> hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
+			obj.setHidden_data_list(hiddenDataList);
+			
+			boolean isPower = ChronoUnit.DAYS.between(start, end) < 5;
+			boolean isGranularityLessThan1Day = Arrays.asList(new Integer[] {8,1,2,3}).stream().anyMatch(item -> item == obj.getData_send_time());
+			
+			// Show each meter
+			if (meterDevices.size() > 1 && obj.getIs_show_each_meter() == 1) {
+				obj.setGroupMeter(meterDevices);
+				List<ClientMonthlyDateEntity> dataList = isGranularityLessThan1Day ? queryForList("CustomerView.getDataEnergy", obj) : queryForList("CustomerView.getDataSiteDataReport", obj);
 				
-				List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
-				while (!start.isAfter(end)) {
-					ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
-					dateTime.setTime_full(start.format(timeFullFormat));
-					dateTime.setCategories_time(start.format(categoriesTimeFormat));
-					dateTimeList.add(dateTime);
-					start = start.plus(interval, timeUnit);
-				}
-				// ----- Create DateTime List ----- End
-				
-				switch (obj.getFilterBy()) {
-					case "today":
-					case "3_day":
-					case "this_week":
-					case "last_week":
-					case "this_month":
-					case "last_month": {
-						// get list of time to exclude data from
-						List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
-						obj.setHidden_data_list(hiddenDataList);
-						boolean isPower = obj.getFilterBy().equals("today") || obj.getFilterBy().equals("3_day");
-						
-						// Show each meter
-						if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
-							obj.setGroupMeter(dataListDeviceMeter);
-							
-							List<ClientMonthlyDateEntity> dataPower = new ArrayList<>();
-							switch (obj.getFilterBy()) {
-								case "today":
-									dataPower = queryForList("CustomerView.getDataPowerToday", obj);
-									break;
-								case "3_day":
-									dataPower = queryForList("CustomerView.getDataPower3Day", obj);
-									break;
-								case "this_week":
-								case "last_week":
-								case "this_month":
-								case "last_month":
-									dataPower = queryForList("CustomerView.getDataEnergyThisWeek", obj);
-									break;
-							}
-							
-							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
-								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
-								List<ClientMonthlyDateEntity> dataItem = dataPower.stream().filter(item -> item.getId() == Integer.parseInt(device.get("id").toString())).collect(Collectors.toList());
-								List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataItem, "time_full");
-								if (dataNew.size() > 0) {
-									Map<String, Object> deviceItem = new HashMap<>();
-									deviceItem.put("data_energy", dataNew);
-									deviceItem.put("type", "energy");
-									deviceItem.put("devicename", device.get("devicename"));
-									deviceItem.put("deviceType", "meter");
-									dataEnergy.add(deviceItem);
-								}
-							}
-						}
-						
-						if (obj.getEnable_virtual_device() == 1) {
-							obj.setDatatablename(obj.getTable_data_virtual());
-							List<ClientMonthlyDateEntity> dataList = new ArrayList<>();
-							switch (obj.getFilterBy()) {
-								case "today":
-									dataList = queryForList("CustomerView.getDataVirtualDeviceToday", obj);
-									break;
-								case "3_day":
-									dataList = queryForList("CustomerView.getDataVirtualDevice3Day", obj);
-									break;
-								case "this_week":
-								case "last_week":
-								case "this_month":
-			                	case "last_month":
-									dataList = queryForList("CustomerView.getDataVirtualDeviceThisWeek", obj);
-									break;
-							}
-							List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataList, "time_full");
-							if (fulfilledData.size() > 0) {
-								List<ClientMonthlyDateEntity> powerList = new ArrayList<>();
-								List<ClientMonthlyDateEntity> expectedPowerList = new ArrayList<>();
-								List<ClientMonthlyDateEntity> irradianceList = new ArrayList<>();
-								
-								for (ClientMonthlyDateEntity dataListItem: fulfilledData) {
-									ClientMonthlyDateEntity powerListItem = new ClientMonthlyDateEntity();
-									ClientMonthlyDateEntity expectedPowerListItem = new ClientMonthlyDateEntity();
-									ClientMonthlyDateEntity irradianceListItem = new ClientMonthlyDateEntity();
-									
-									powerListItem.setTime_format(dataListItem.getTime_format());
-									powerListItem.setTime_full(dataListItem.getTime_full());
-									powerListItem.setCategories_time(dataListItem.getCategories_time());
-									powerListItem.setChart_energy_kwh(isPower ? dataListItem.getNvmActivePower() : dataListItem.getNvmActiveEnergy());
-									powerList.add(powerListItem);
-
-									expectedPowerListItem.setTime_format(dataListItem.getTime_format());
-									expectedPowerListItem.setTime_full(dataListItem.getTime_full());
-									expectedPowerListItem.setCategories_time(dataListItem.getCategories_time());
-									if (isPower) expectedPowerListItem.setExpected_power(dataListItem.getExpected_power());
-									else expectedPowerListItem.setExpected_energy(dataListItem.getExpected_energy());
-									expectedPowerList.add(expectedPowerListItem);
-
-									irradianceListItem.setTime_format(dataListItem.getTime_format());
-									irradianceListItem.setTime_full(dataListItem.getTime_full());
-									irradianceListItem.setCategories_time(dataListItem.getCategories_time());
-									irradianceListItem.setChart_energy_kwh(dataListItem.getNvm_irradiance());
-									irradianceList.add(irradianceListItem);
-								}
-								
-								Map<String, Object> powerItem = new HashMap<>();
-								powerItem.put("data_energy", powerList);
-								powerItem.put("type", "energy");
-								powerItem.put("devicename", isPower ? "Power" : "Energy Output");
-								powerItem.put("deviceType", dataListDeviceMeter.size() > 0 ? "meter" : "inverter");
-								dataEnergy.add(powerItem);
-								
-								if (dataListDeviceIrr.size() > 0) {
-									Map<String, Object> expectedPowerItem = new HashMap<>();
-									expectedPowerItem.put("data_energy", expectedPowerList);
-									expectedPowerItem.put("type", isPower ? "expected_power" : "expected_energy");
-									expectedPowerItem.put("devicename", isPower ? "Expected Power" : "Expected Energy");
-									dataEnergy.add(expectedPowerItem);
-									
-									Map<String, Object> irradianceItem = new HashMap<>();
-									irradianceItem.put("data_energy", irradianceList);
-									irradianceItem.put("type", "irradiance");
-									irradianceItem.put("devicename", "Irradiance");
-									dataEnergy.add(irradianceItem);
-								}
-							}
-						} else {
-							if (dataListDevicePower.size() > 0) {
-								obj.setIs_show_each_meter(0);
-								obj.setGroupMeter(dataListDevicePower);
-								List<ClientMonthlyDateEntity> dataPower = new ArrayList<>();
-								switch (obj.getFilterBy()) {
-									case "today":
-										dataPower = queryForList("CustomerView.getDataPowerToday", obj);
-										break;
-									case "3_day":
-										dataPower = queryForList("CustomerView.getDataPower3Day", obj);
-										break;
-									case "this_week":
-									case "last_week":
-									case "this_month":
-				                	case "last_month":
-										dataPower = queryForList("CustomerView.getDataEnergyThisWeek", obj);
-										break;
-								}
-								List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPower, "time_full");
-								if (fulfilledData.size() > 0) {
-									Map<String, Object> deviceItem = new HashMap<>();
-									deviceItem.put("data_energy", fulfilledData);
-									deviceItem.put("type", "energy");
-									deviceItem.put("devicename", isPower ? "Power" : "Energy Output");
-									deviceItem.put("deviceType", dataListDeviceMeter.size() > 0 ? "meter" : "inverter");
-									dataEnergy.add(deviceItem);
-								}
-							}
-							
-							// Get Irradiance
-							if (dataListDeviceIrr.size() > 0) {
-								for(int i = 0; i < dataListDeviceIrr.size(); i++) {
-									Map<String, Object> item = (Map<String, Object>) dataListDeviceIrr.get(i);
-									obj.setDatatablename(item.get("datatablename").toString());
-									obj.setId_device(Integer.parseInt(item.get("id").toString()));
-									
-									List<ClientMonthlyDateEntity> dataIrradianceDevice = new ArrayList<>();
-									switch (obj.getFilterBy()) {
-										case "today":
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradianceToday", obj);
-											break;
-										case "3_day":
-										case "this_week":
-										case "last_week":
-										case "this_month":
-					                	case "last_month":
-											dataIrradianceDevice = queryForList("CustomerView.getDataIrradiance3Day", obj);
-											break;
-									}
-									List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataIrradianceDevice, "time_full");
-									if(fulfilledData.size() > 0 ) {
-										// Get Expected Power
-										if (i == 0) {
-											Map<String, Object> deviceExpectedPowerItem = new HashMap<>();
-											deviceExpectedPowerItem.put("data_energy", fulfilledData);
-											deviceExpectedPowerItem.put("type", isPower ? "expected_power" : "expected_energy");
-											deviceExpectedPowerItem.put("devicename", isPower ? "Expected Power" : "Expected Energy");
-											dataEnergy.add(deviceExpectedPowerItem);
-										}
-										
-										// Get Irradiance
-										Map<String, Object> deviceItem = new HashMap<>();
-										deviceItem.put("data_energy", fulfilledData);
-										deviceItem.put("type", "irradiance");
-										deviceItem.put("devicename", dataListDeviceIrr.get(i));
-										dataEnergy.add(deviceItem);
-									}
-								}
-							}
-						}
-						
-						break;
+				for (int i = 0; i < meterDevices.size(); i++) {
+					DeviceEntity device = meterDevices.get(i);
+					List<ClientMonthlyDateEntity> dataItem = dataList.stream().filter(item -> item.getId() == device.getId()).collect(Collectors.toList());
+					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full"), start, end);
+					
+					if (fulfilledData.size() > 0) {
+						Map<String, Object> deviceItem = new HashMap<>();
+						deviceItem.put("data_energy", fulfilledData);
+						deviceItem.put("type", "chart_energy_kwh");
+						deviceItem.put("unit", isPower ? "kW" : "kWh");
+						deviceItem.put("devicename", device.getDevicename());
+						deviceItem.put("isShowEachMeter", true);
+						dataEnergy.add(deviceItem);
 					}
-				
-					case "custom":
-					case "year":
-					case "12_month":
-					case "lifetime": {
-						// get list of time to exclude data from
-						List hiddenDataList = queryForList("CustomerView.getHiddenDataListBySite", obj);
-						obj.setHidden_data_list(hiddenDataList);
+				}
+			}
+			
+			obj.setIs_show_each_meter(0);
+			if (obj.getEnable_virtual_device() == 1) {
+				obj.setDatatablename(obj.getTable_data_virtual());
+				List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
+				List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+				if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, meterDevices, irradianceDevices, isPower);
+			} else {
+				if (isGranularityLessThan1Day) {
+					if (powerDevices.size() > 0) {
+						obj.setGroupMeter(powerDevices);
+						List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataEnergy", obj);
+						List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 						
-						// Show each meter
-						if (dataListDeviceMeter.size() > 1 && obj.getIs_show_each_meter() == 1) {
-							List<ClientMonthlyDateEntity> dataPower = queryForList("CustomerView.getDataPowerCustom", obj);
-							
-							for (int i = 0; i < dataListDeviceMeter.size(); i++) {
-								Map<String, Object> device = (Map<String, Object>) dataListDeviceMeter.get(i);
-								List<ClientMonthlyDateEntity> dataItem = dataPower.stream().filter(item -> item.getId() == Integer.parseInt(device.get("id").toString())).collect(Collectors.toList());
-								List<ClientMonthlyDateEntity> dataNew = Lib.fulfillData(dateTimeList, dataItem, "time_full");
-								if (dataNew.size() > 0) {
-									Map<String, Object> deviceItem = new HashMap<>();
-									deviceItem.put("data_energy", dataNew);
-									deviceItem.put("type", "energy");
-									deviceItem.put("devicename", device.get("devicename"));
-									deviceItem.put("deviceType", "meter");
-									dataEnergy.add(deviceItem);
-								}
-							}
-						}
-						
-						obj.setIs_show_each_meter(0);
-						obj.setDatatablename(obj.getEnable_virtual_device() == 1 ? obj.getTable_data_virtual() : obj.getDatatablename());
-						List<ClientMonthlyDateEntity> dataPowerM = obj.getEnable_virtual_device() == 1 ? queryForList("CustomerView.getDataVirtualDeviceCustom", obj) : queryForList("CustomerView.getDataPowerCustom", obj);
-						List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, dataPowerM, "time_full");
 						if (fulfilledData.size() > 0) {
-							Map<String, Object> deviceItem = new HashMap<>();
-							deviceItem.put("data_energy", fulfilledData);
-							deviceItem.put("type", "energy");
-							deviceItem.put("devicename", "Energy Output");
-							deviceItem.put("deviceType", dataListDeviceMeter.size() > 0 ? "meter" : "inverter");
-							dataEnergy.add(deviceItem);
+							Map<String, Object> energyData = new HashMap<>();
+							energyData.put("data_energy", fulfilledData);
+							energyData.put("type", "chart_energy_kwh");
+							energyData.put("unit", isPower ? "kW" : "kWh");
+							energyData.put("devicename", isPower ? "Power" : "Energy Output");
+							dataEnergy.add(energyData);
 						}
-										
-						break;
 					}
+					
+					if (irradianceDevices.size() > 0) {
+						for(int i = 0; i < irradianceDevices.size(); i++) {
+							DeviceEntity item = irradianceDevices.get(i);
+							obj.setDatatablename(item.getDatatablename());
+							obj.setId_device(item.getId());
+							
+							List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataIrradiance", obj);
+							List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+							
+							if(fulfilledData.size() > 0 ) {
+								if (i == 0) {
+									Map<String, Object> expectedData = new HashMap<>();
+									expectedData.put("data_energy", fulfilledData);
+									expectedData.put("type", isPower ? "expected_power" : "expected_energy");
+									expectedData.put("unit", isPower ? "kW" : "kWh");
+									expectedData.put("devicename", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+									dataEnergy.add(expectedData);
+								}
+								
+								Map<String, Object> irradianceData = new HashMap<>();
+								irradianceData.put("data_energy", fulfilledData);
+								irradianceData.put("type", "nvm_irradiance");
+								irradianceData.put("unit", "W/m²");
+								irradianceData.put("devicename", irradianceDevices.size() > 1 ? irradianceDevices.get(i) : "Irradiance");
+								dataEnergy.add(irradianceData);
+							}
+						}
+					}
+				} else {
+					List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
+					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
+					if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, meterDevices, irradianceDevices, isPower);
 				}
 			}
 
 			return dataEnergy;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<Map<String, Object>>();
 		}
 
+	}
+	
+	private void separateDataByType(List<Map<String, Object>> dataEnergy, SiteEntity obj, List<ClientMonthlyDateEntity> data ,List<DeviceEntity> meterDevices, List<DeviceEntity> irradianceDevices, boolean isPower) {
+		List<ClientMonthlyDateEntity> energy = new ArrayList<>();
+		List<ClientMonthlyDateEntity> expected = new ArrayList<>();
+		List<ClientMonthlyDateEntity> irradiance = new ArrayList<>();
+		
+		for (ClientMonthlyDateEntity item : data) {
+			ClientMonthlyDateEntity energyItem = new ClientMonthlyDateEntity();
+			energyItem.setTime_full(item.getTime_full());
+			energyItem.setCategories_time(item.getCategories_time());
+			energyItem.setChart_energy_kwh(item.getChart_energy_kwh());
+			energy.add(energyItem);
+			
+			ClientMonthlyDateEntity expectedItem = new ClientMonthlyDateEntity();
+			expectedItem.setTime_full(item.getTime_full());
+			expectedItem.setCategories_time(item.getCategories_time());
+			expectedItem.setExpected_power(item.getExpected_power());
+			expectedItem.setExpected_energy(item.getExpected_energy());
+			expected.add(expectedItem);
+			
+			ClientMonthlyDateEntity irradianceItem = new ClientMonthlyDateEntity();
+			irradianceItem.setTime_full(item.getTime_full());
+			irradianceItem.setCategories_time(item.getCategories_time());
+			irradianceItem.setNvm_irradiance(item.getNvm_irradiance());
+			irradiance.add(irradianceItem);
+		}
+		
+		Map<String, Object> energyData = new HashMap<>();
+		energyData.put("data_energy", energy);
+		energyData.put("type", "chart_energy_kwh");
+		energyData.put("unit", isPower ? "kW" : "kWh");
+		energyData.put("devicename", isPower ? "Power" : "Energy Output");
+		dataEnergy.add(energyData);
+		
+		if (irradianceDevices.size() > 0) {
+			Map<String, Object> expectedData = new HashMap<>();
+			expectedData.put("data_energy", expected);
+			expectedData.put("type", isPower ? "expected_power" : "expected_energy");
+			expectedData.put("unit", isPower ? "kW" : "kWh");
+			expectedData.put("devicename", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+			dataEnergy.add(expectedData);
+			
+			Map<String, Object> irradianceData = new HashMap<>();
+			irradianceData.put("data_energy", irradiance);
+			irradianceData.put("type", "nvm_irradiance");
+			irradianceData.put("unit", "W/m²");
+			irradianceData.put("devicename", "Irradiance");
+			dataEnergy.add(irradianceData);
+		}
 	}
 	
 	/**
@@ -445,23 +249,12 @@ public class CustomerViewService extends DB {
 	 */
 
 	public Object getCustomerViewInfo(SiteEntity obj) {
-		Object dataObj = null;
-		List dataListDeviceMeter = new ArrayList<>();
 		try {
-			dataListDeviceMeter = queryForList("CustomerView.getListDeviceTypeMeter", obj);
-			if (dataListDeviceMeter.size() > 0) {
-				obj.setGroupMeter(dataListDeviceMeter);
-				// Get data by meter
-				dataObj = queryForObject("CustomerView.getCustomerViewInfoMeter", obj);
-			} else {
-				// Get data by inverter
-				List dataListDeviceInverter = queryForList("CustomerView.getListDeviceTypeInverter", obj);
-				if (dataListDeviceInverter.size() > 0) {
-					obj.setGroupMeter(dataListDeviceInverter);
-					dataObj = queryForObject("CustomerView.getCustomerViewInfoInverter", obj);
-				}
-			}
-			return dataObj;
+			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
+			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
+			obj.setMeter_type(meterDevices.size() > 0 ? 1 : 0);
+			
+			return queryForObject("CustomerView.getCustomerViewInfo", obj);
 		} catch (Exception ex) {
 			return null;
 		}
