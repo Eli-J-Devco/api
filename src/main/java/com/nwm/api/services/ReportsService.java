@@ -206,6 +206,7 @@ public class ReportsService extends DB {
 					siteObj.setStart_date(reportObj.getStart_date());
 					siteObj.setEnd_date(reportObj.getEnd_date());
 					siteObj.setDomain(reportObj.getDomain());
+					siteObj.setDomain_role(reportObj.getDomain_role());
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
