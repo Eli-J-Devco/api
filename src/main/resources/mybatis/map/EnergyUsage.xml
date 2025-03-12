@@ -123,7 +123,7 @@
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 				 						</when>
 				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{commissioning}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 										</when>
 										<otherwise>
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
@@ -186,7 +186,7 @@
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 				 						</when>
 				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{commissioning}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 										</when>
 										<otherwise>
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
@@ -244,7 +244,7 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
 				 						</when>
 				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
 				 						</when>
@@ -277,7 +277,7 @@
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 				 						</when>
 				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{commissioning}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 										</when>
 										<otherwise>
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
@@ -309,7 +309,7 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d. %b') AS categories_time,
 				 						</when>
 				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS time_format,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b. %Y') AS categories_time,
 				 						</when>
@@ -340,7 +340,7 @@
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 				 						</when>
 				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{commissioning}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 										</when>
 										<otherwise>
 				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')

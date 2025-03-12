@@ -1232,7 +1232,7 @@
 							JOIN (
 								SELECT
 									<choose>
-			 							<when test="filterBy == '12_month' or filterBy == 'lifetime'">
+			 							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS categories_time,
@@ -1270,7 +1270,7 @@
 							JOIN (
 								SELECT
 				 					<choose>
-				 						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
+				 						<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS categories_time,
@@ -1299,7 +1299,7 @@
 			</foreach>
 		) t
 		
-		<if test="filterBy == 'last_month'">
+		<if test="id_filter == 'last_month'">
 			WHERE
 				time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
 		</if>
