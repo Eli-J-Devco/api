@@ -7,6 +7,7 @@ package com.nwm.api.services.building;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -16,9 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalDouble;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.building.ActualVsPredictedConsumptionEntity;
 import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEntity;
@@ -40,8 +44,8 @@ public class SitesOverviewGasService extends DB {
 	private List<ChartConsumptionEntity> getDateTimeList(SitesOverviewGasEntity obj) {
 		List<ChartConsumptionEntity> dateTimeList = new ArrayList<ChartConsumptionEntity>();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-		LocalDateTime start = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(0).withMinute(0).withSecond(0);
-		LocalDateTime end = start.withHour(23).withMinute(59).withSecond(59);
+		LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter).withHour(0).withMinute(0).withSecond(0);
+		LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
 		
 		try {
 			DateTimeFormatter timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:00");
@@ -52,24 +56,23 @@ public class SitesOverviewGasService extends DB {
 				case "today":
 				default:
 					break;
-				case "this_month":
-				case "last_month":
-					start = LocalDateTime.parse(obj.getEnd_date(), formatter).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-					end = start.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+				case "this_week":
+					end = end.with(DayOfWeek.SUNDAY);
 					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case "12_month":
-					start = LocalDateTime.parse(obj.getEnd_date(), formatter).minusMonths(12).withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
-					end = LocalDateTime.parse(obj.getEnd_date(), formatter).withHour(23).withMinute(59).withSecond(59);
-					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
-					timeUnit = ChronoUnit.MONTHS;
+				case "this_month":
+				case "last_month":
+					end = end.with(TemporalAdjusters.lastDayOfMonth());
+					timefullFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+					categoryTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+					timeUnit = ChronoUnit.DAYS;
 					break;
+				case "this_year":
+				case "12_month":
 				case "lifetime":
-					start = LocalDateTime.parse(obj.getCommissioning(), formatter).withHour(0).withMinute(0).withSecond(0);
-					end = LocalDateTime.parse(obj.getEnd_date(), formatter).with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59);
+					end = end.with(TemporalAdjusters.lastDayOfMonth());
 					timefullFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					categoryTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
 					timeUnit = ChronoUnit.MONTHS;
@@ -196,4 +199,64 @@ public class SitesOverviewGasService extends DB {
 		return dataList;
 	}
 	
+	/**
+	 * @description Get actual vs predicted consumption
+	 * @author Hung.Bui
+	 * @since 2025-03-12
+	 * @param List<ActualVsPredictedConsumptionEntity>
+	 * @return List
+	 */
+	public List<ActualVsPredictedConsumptionEntity> getActualVsPredicted(SitesOverviewGasEntity obj) {
+		try {
+			List<DeviceEntity> devices = this.getGasMeters(obj);
+			if (devices.size() == 0) return new ArrayList<ActualVsPredictedConsumptionEntity>();
+			List<CompletableFuture<ActualVsPredictedConsumptionEntity>> futureList = new ArrayList<CompletableFuture<ActualVsPredictedConsumptionEntity>>();
+			
+			String[] labels = new String[] {"actual", "predicted"};
+			for (String label : labels) {
+				CompletableFuture<ActualVsPredictedConsumptionEntity> future = CompletableFuture.supplyAsync(() -> {
+					ActualVsPredictedConsumptionEntity entity = new ActualVsPredictedConsumptionEntity();
+					
+					try {
+						SitesOverviewGasEntity params = new SitesOverviewGasEntity();
+						params.setId_filter(obj.getId_filter());
+						params.setStart_date(obj.getStart_date());
+						params.setEnd_date(obj.getEnd_date());
+						params.setTimezone_value(obj.getTimezone_value());
+						params.setReading_field(obj.getReading_field());
+						params.setDevices(devices);
+						
+						if (label.equals("predicted")) {
+							DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+							LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), formatter);
+							LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), formatter);
+							
+							params.setStart_date(obj.getId_filter().equals("this_year") ? start.minusYears(1).format(formatter) : start.minusMonths(1).format(formatter));
+							params.setEnd_date(obj.getId_filter().equals("this_year") ? end.minusYears(1).with(TemporalAdjusters.lastDayOfYear()).format(formatter) : end.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).format(formatter));
+						}
+						
+						entity.setId(label);
+						List<ChartConsumptionEntity> dataList = queryForList("SitesOverviewGas.getConsumption", params);
+						entity.setData(Lib.fulfillData(getDateTimeList(params), dataList, "time_full"));
+					} catch (Exception ex) {
+						log.error("SitesOverviewGas.getActualVsPredicted", ex);
+					}
+					
+					return entity;
+				});
+				
+				futureList.add(future);
+			}
+
+			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
+			List<ActualVsPredictedConsumptionEntity> dataList = combinedFutures.thenApply(__ -> futureList.stream().map(future -> future.join()).collect(Collectors.toList())).get();
+			dataList.sort((s1, s2) -> s1.getId().equals("actual") ? -1 : 1);
+			
+			return dataList;
+		} catch (Exception ex) {
+			log.error("SitesOverviewGas.getActualVsPredicted", ex);
+		}
+		
+		return new ArrayList<ActualVsPredictedConsumptionEntity>();
+	}
 }

@@ -16,12 +16,10 @@ public class SitesOverviewGasEntity {
 	private String timezone_value;
 	private String start_date;
 	private String end_date;
-	private String commissioning;
 	private List<DeviceEntity> devices;
 	private int[] id_device_type;
 	private String reading_field;
-private String domain_role;
-	
+	private String domain_role;
 	
 	public String getDomain_role() {
 		return domain_role;
@@ -64,12 +62,6 @@ private String domain_role;
 	}
 	public void setEnd_date(String end_date) {
 		this.end_date = end_date;
-	}
-	public String getCommissioning() {
-		return commissioning;
-	}
-	public void setCommissioning(String commissioning) {
-		this.commissioning = commissioning;
 	}
 	public List<DeviceEntity> getDevices() {
 		return devices;

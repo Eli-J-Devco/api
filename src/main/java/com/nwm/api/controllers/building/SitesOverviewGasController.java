@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.controllers.BaseController;
+import com.nwm.api.entities.building.ActualVsPredictedConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasConsumptionEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEntity;
 import com.nwm.api.entities.building.SitesOverviewGasEventEntity;
@@ -80,6 +81,25 @@ public class SitesOverviewGasController extends BaseController {
 			if (!Lib.isSiteManagedByUser(authz, obj.getId())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 			SitesOverviewGasService service = new SitesOverviewGasService();
 			List<SitesOverviewGasEventEntity> data = service.getEvents(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * @description Get actual vs predicted consumption
+	 * @author Hung.Bui
+	 * @since 2025-03-12
+	 * @return data (status, message, obj)
+	 */
+	@PostMapping("/actual-vs-predicted")
+	public Object getActualVsPredicted(@RequestBody SitesOverviewGasEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			if (!Lib.isSiteManagedByUser(authz, obj.getId())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+			SitesOverviewGasService service = new SitesOverviewGasService();
+			List<ActualVsPredictedConsumptionEntity> data = service.getActualVsPredicted(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
