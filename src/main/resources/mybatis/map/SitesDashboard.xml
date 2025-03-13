@@ -1205,18 +1205,17 @@
 	
 	
 	
-	<select id="getDataChartingForLeviton" resultType="Map">
+	<select id="getDataChartingForLeviton" resultType="com.nwm.api.entities.ClientMonthlyDateEntity">
 		SELECT
 			time_full,
+			time_format,
 			categories_time,
-			tooltip_time,
 			CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy`
 		FROM (
 			<foreach collection="devices" item="item" index="index" separator="union all">
 				SELECT
 					mi.time_format,
 					mi.time_full,
-					mi.tooltip_time,
 					mi.categories_time,
 					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
 				FROM
@@ -1225,7 +1224,6 @@
 							t.time_format,
 							t.time_full,
 							t.categories_time,
-							t.tooltip_time,
 							dv.nvmActiveEnergy
 						FROM
 							${item.datatablename} dv
@@ -1234,15 +1232,13 @@
 									<choose>
 			 							<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS categories_time,
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b, %Y' ) AS tooltip_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
 				 						</when>
 				 						<otherwise>
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00') AS categories_time,
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
 				 						</otherwise>
 				 					</choose>	
 	
@@ -1263,7 +1259,6 @@
 							t.time_format,
 							t.time_full,
 							t.categories_time,
-							t.tooltip_time,
 							dv.nvmActiveEnergy
 						FROM
 							${item.datatablename} dv
@@ -1272,15 +1267,13 @@
 				 					<choose>
 				 						<when test="id_filter == '12_month' or id_filter == 'lifetime'">
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS categories_time,
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b, %Y' ) AS tooltip_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
 				 						</when>
 				 						<otherwise>
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%H:00') AS categories_time,
-				 							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
 				 						</otherwise>
 				 					</choose>	
 									MAX(dv.time) AS time

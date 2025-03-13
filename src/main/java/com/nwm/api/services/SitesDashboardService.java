@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
 import com.nwm.api.entities.SiteDashboardGenerationEntity;
@@ -426,8 +427,68 @@ public class SitesDashboardService extends DB {
 					itemWidget.put("id_filter", obj.getId_filter());
 					
 					if(listWidget.size() > 0) {
-						List data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);	
-						itemWidget.put("data", data);
+						
+						int interval = 0;
+						DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+						DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+						ChronoUnit timeUnit = ChronoUnit.MINUTES;
+						LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+						// get Energy usage 
+						List<ClientMonthlyDateEntity> data = new ArrayList<>();
+						
+						switch (obj.getId_filter()) {
+							case "today": // 1 hour
+								interval = 1;
+								timeUnit = ChronoUnit.HOURS;
+								timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+								break;
+								
+							case "this_week": // 1 day
+							case "last_week":
+							case "this_month":
+							case "last_month":
+								interval = 1;
+								timeUnit = ChronoUnit.DAYS;
+								timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+								break;
+								
+							case "12_month":
+								interval = 1;
+								timeUnit = ChronoUnit.MONTHS;
+								timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+								start = start.withDayOfMonth(1);
+								break;
+								
+							case "lifetime": // 1 month
+								interval = 1;
+								timeUnit = ChronoUnit.MONTHS;
+								timeFullFormat = DateTimeFormatter.ofPattern("MM-yyyy");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM. yyyy");
+								start = start.withDayOfMonth(1);
+								break;
+								
+								
+						}
+						
+						List<ClientMonthlyDateEntity> dateTimeList = new ArrayList<>();
+						while (!start.isAfter(end)) {
+							ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
+							dateTime.setTime_full(start.format(timeFullFormat));
+							dateTime.setCategories_time(start.format(categoriesTimeFormat));
+							dateTimeList.add(dateTime);
+							start = start.plus(interval, timeUnit);
+						}
+						
+						data = queryForList("SitesDashboard.getDataChartingForLeviton", itemWidget);
+						
+						List<ClientMonthlyDateEntity> fulfilledData = Lib.fulfillData(dateTimeList, data, "time_full");
+						
+						
+						itemWidget.put("data", fulfilledData);
 					} else {
 						itemWidget.put("data", new ArrayList());
 					}
