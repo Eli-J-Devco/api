@@ -55,28 +55,7 @@
 			AND dp.is_delete = 0
 			AND dp.is_filter = 1
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	        
 		GROUP BY
 			d.id
