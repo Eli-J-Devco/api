@@ -452,8 +452,10 @@
 			      r.id DESC
 			    </otherwise>                                                  
 	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+
+		<if test="limit > 0">
+			LIMIT ${limit} OFFSET ${offset};
+		</if>
 	</select>
 	
   	

@@ -2305,9 +2305,6 @@ public class ReportsController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody ReportsEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
 			ReportsService service = new ReportsService();
 			List data = service.getList(obj);
 			int totalRecord = service.getTotalRecord(obj);
