@@ -11,11 +11,13 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.ContactInfoCompanyEntity;
 import com.nwm.api.entities.ContactInfoCompanyPhoneEntity;
-import com.nwm.api.entities.LevitonOverviewWidgetMapEntity;
 import com.nwm.api.utils.Lib;
 
 public class CompanyService extends DB {
@@ -47,37 +49,23 @@ public class CompanyService extends DB {
 	 */
 	
 	
-	public List getList(CompanyEntity obj) {
-		List dataList = new ArrayList();
+	public List<Map<String, Object>> getList(CompanyEntity obj) {
 		try {
-			List data = queryForList("Company.getList", obj);
-			if (data == null)
-				return new ArrayList();
-			
-			for(int i = 0; i < data.size(); i++) {
-				Map<String, Object> item = (Map<String, Object>) data.get(i);
-				List contactInformation = queryForList("Company.getListContactInformation", item);
-				
-				List dataContact = new ArrayList();
-				if(contactInformation.size() > 0) {
-					for(int j = 0; j < contactInformation.size(); j++) {
-						Map<String, Object> itemContact = (Map<String, Object>) contactInformation.get(j);
-						List getDataPhones = queryForList("Company.getListDataPhones", itemContact);
-						
-						itemContact.put("dataPhones", getDataPhones);
-						dataContact.add(itemContact);
-					}
+			List<Map<String, Object>> dataList = queryForList("Company.getList", obj);
+			if (dataList == null) return new ArrayList<Map<String, Object>>();
+			ObjectMapper mapper = new ObjectMapper();
+			dataList.forEach(item -> {
+				try {
+					List<Map<String, Object>> contact = mapper.readValue(item.get("contactInformation").toString(), new TypeReference<List<Map<String, Object>>>(){});
+					item.put("contactInformation", contact);
+				} catch (JsonProcessingException e) {
+					item.put("contactInformation", new ArrayList<Map<String, Object>>());
 				}
-				
-				item.put("contactInformation", dataContact);
-				
-				dataList.add(item);
-			}
-			
+			});
+			return dataList;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<Map<String, Object>>();
 		}
-		return dataList;
 	}
 	
 	public int getTotalRecord(CompanyEntity obj) {
