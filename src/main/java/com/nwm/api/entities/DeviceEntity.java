@@ -160,7 +160,8 @@ public class DeviceEntity {
 	private boolean is_irradiance;
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
-private String domain_role;
+	private String domain_role;
+	private String commissioning;
 	
 	
 	public String getDomain_role() {
@@ -1060,6 +1061,12 @@ private String domain_role;
 	}
 	public void setIs_panel_temperature(boolean is_panel_temperature) {
 		this.is_panel_temperature = is_panel_temperature;
+	}
+	public String getCommissioning() {
+		return commissioning;
+	}
+	public void setCommissioning(String commissioning) {
+		this.commissioning = commissioning;
 	}
 	
 }

@@ -8,7 +8,8 @@
 	<select id="getGasMeters" resultType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			d.id,
-			d.datatablename
+			d.datatablename,
+			s.commissioning
 		FROM
 			device d
 			LEFT JOIN site s ON s.id = d.id_site
@@ -186,11 +187,8 @@
 								MIN(dv.time) AS time
 							FROM
 								${item.datatablename} dv
-							<where>
-								<if test="commissioning != null">
-									dv.time >= CONVERT_TZ(#{commissioning}, #{timezone_value}, 'UTC')
-								</if>
-							</where>
+							WHERE
+								dv.time >= CONVERT_TZ(#{item.commissioning}, #{timezone_value}, 'UTC')
 						)
 					) mi
 					CROSS JOIN (
