@@ -32,6 +32,8 @@
 		</environment>
 	</environments>
 	<mappers>
+		<mapper resource="mybatis/map/common/Common.xml" />
+		
 		<mapper resource="mybatis/map/BaseInfo.xml" />
 		<mapper resource="mybatis/map/Demo.xml" />
 		<mapper resource="mybatis/map/A8810.xml" />

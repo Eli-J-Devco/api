@@ -36,24 +36,66 @@
 	
 	<select id="getList" resultType="Map" >
 		SELECT
-			s.*
+			s.*,
+			IF(
+				COUNT(c.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', c.id,
+					'id_company', c.id_company,
+					'first_name', c.first_name,
+					'last_name', c.last_name,
+					'email', c.email,
+					'title_position', c.title_position,
+					'primary_contact', c.primary_contact,
+					'dataPhones', c.dataPhones
+				))
+			) AS contactInformation
 		FROM
 			company s 
-		WHERE s.is_delete = 0
-		<if test="keyword != null">
-			AND s.name LIKE CONCAT("%",#{keyword}, "%")
-		</if> 	
-		    order by
+			LEFT JOIN (
+				SELECT
+					c.id,
+					c.id_company,
+					c.first_name,
+					c.last_name,
+					c.email,
+					c.title_position,
+					c.primary_contact,
+					IF(
+						COUNT(p.id) = 0,
+						JSON_ARRAY(),
+						JSON_ARRAYAGG(JSON_OBJECT(
+							'id', p.id,
+							'id_conact_info_company', p.id_conact_info_company,
+							'phone_type', p.phone_type,
+							'phone_number', p.phone_number,
+							'phone_ext', p.phone_ext
+						))
+					) AS dataPhones
+				FROM
+					contact_info_company c
+					LEFT JOIN contact_info_company_phone p ON p.id_conact_info_company = c.id
+				GROUP BY
+					c.id
+			) c ON c.id_company = s.id
+		WHERE 
+			s.is_delete = 0
+			<if test="keyword != null">
+				AND s.name LIKE CONCAT("%",#{keyword}, "%")
+			</if> 	
+		GROUP BY
+			s.id
+	    ORDER BY
 	        <choose>  
 	            <when test="sort_column != null and sort_column != ''">
-	                s.${sort_column} ${order_by}
+					s.${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      s.id DESC
+					s.id DESC
 			    </otherwise>                                                  
 	        </choose>  
-		 	 
 		<if test="limit > 0">
 			LIMIT ${limit} OFFSET ${offset};
 		</if>
@@ -68,29 +110,6 @@
 			AND s.name LIKE CONCAT("%",#{keyword}, "%")
 		</if> 
   	</select>
-  	
-  	
-  	
-  	<select id="getListContactInformation" resultType="Map" >
-		SELECT
-			s.*
-		FROM
-			contact_info_company s 
-		WHERE s.id_company = #{id}
-		
-	</select>
-	
-	
-	<select id="getListDataPhones" resultType="Map" >
-		SELECT
-			s.*
-		FROM
-			contact_info_company_phone s 
-		WHERE s.id_conact_info_company = #{id}
-		
-	</select>
-	
-  	
   	
   	<update id="updateStatus">
 		UPDATE `company`

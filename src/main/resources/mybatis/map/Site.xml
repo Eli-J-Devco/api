@@ -120,27 +120,7 @@
 				AND sem.is_hiding = 0
 			</if>
 			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	        
 	        <if test="!isUserNW.booleanValue()">
 				AND e.id_error_level != 14
@@ -387,41 +367,7 @@
 			</if>
 			
 			
-			<choose>
-			
-			<!-- 1: all, 
-			2: test server, 
-			3: staging server, 
-			4: Test and staging server, 
-			5: only solar domain, 
-			6: only building domain, 
-			7: solar and building -->
-			
-			
-				<when test="(domain == 'nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,5,7)
-				</when>
-				
-				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(6,7,1)
-				</when>
-				
-				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(1,3,4)
-				</when>
-				
-				<when test="(domain == 'test.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,4)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,4,7)
-				</when>
-				
-				<otherwise>
-					AND s.site_domain_type IN(1)
-				</otherwise>
-			</choose>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 				
 	      	
 	      	
@@ -461,27 +407,7 @@
 		FROM
 			site AS s
 			LEFT JOIN device d ON d.id_site = s.id AND d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND d.show_on_domain IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND d.show_on_domain IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			<if test="is_supper_admin != 1">
 				LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			</if>
@@ -496,27 +422,7 @@
 				AND sem.is_hiding = 0
 			</if>
 			
-			<choose> 
-	       		<when test="domain == 'test.nextwavemonitoring.com'">
-	                AND s.site_domain_type IN(1,2,4)
-	            </when>
-	             
-	            <when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-	                AND s.site_domain_type IN(1,3,4,7,5)
-	            </when>
-	            
-	            <when test="domain == 'nextwavemonitoring.com'">
-	                AND s.site_domain_type IN(1,5,7)
-	            </when>
-	            
-	            <when test="domain == 'buildings.nextwavemonitoring.com'">
-	                AND s.site_domain_type IN(1,6,7)
-	            </when>
-	            
-	            <otherwise>
-			      AND s.site_domain_type IN(1)
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 		GROUP BY
 			s.id
 			 
@@ -687,39 +593,7 @@
 			AND s.id_company = #{id_company}
 		</if>
 		
-		<!-- 1: all, 
-			2: test server, 
-			3: staging server, 
-			4: Test and staging server, 
-			5: only solar domain, 
-			6: only building domain, 
-			7: solar and building -->
-			<choose>
-			
-				<when test="(domain == 'nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,5,7)
-				</when>
-				
-				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(6,7,1)
-				</when>
-				
-				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(1,3,4)
-				</when>
-				
-				<when test="(domain == 'test.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,4)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,4,7)
-				</when>
-				
-				<otherwise>
-					AND s.site_domain_type IN(1)
-				</otherwise>
-			</choose>
+		<include refid="com.nwm.common.siteByDomainCondition"/>
 		
 		
 		<if test="keyword != null">
@@ -761,39 +635,7 @@
 			<if test="keyword != null">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
 			</if>
-			<!-- 1: all, 
-			2: test server, 
-			3: staging server, 
-			4: Test and staging server, 
-			5: only solar domain, 
-			6: only building domain, 
-			7: solar and building -->
-			<choose>
-			
-				<when test="(domain == 'nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,5,7)
-				</when>
-				
-				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(6,7,1)
-				</when>
-				
-				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(1,3,4)
-				</when>
-				
-				<when test="(domain == 'test.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,4)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,4,7)
-				</when>
-				
-				<otherwise>
-					AND s.site_domain_type IN(1)
-				</otherwise>
-			</choose>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
   	</select>
   	
   	
@@ -1346,39 +1188,7 @@
 			AND s.id_company = #{id_company}
 		</if>
 		
-		<!-- 1: all, 
-			2: test server, 
-			3: staging server, 
-			4: Test and staging server, 
-			5: only solar domain, 
-			6: only building domain, 
-			7: solar and building -->
-			<choose>
-			
-				<when test="(domain == 'nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,5,7)
-				</when>
-				
-				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(6,7,1)
-				</when>
-				
-				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(1,3,4)
-				</when>
-				
-				<when test="(domain == 'test.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,4)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,4,7)
-				</when>
-				
-				<otherwise>
-					AND s.site_domain_type IN(1)
-				</otherwise>
-			</choose>
+		<include refid="com.nwm.common.siteByDomainCondition"/>
 		
 		
 		GROUP BY s.id 
@@ -1447,39 +1257,7 @@
 			AND s.id_company = #{id_company}
 		</if>
 		
-		<!-- 1: all, 
-			2: test server, 
-			3: staging server, 
-			4: Test and staging server, 
-			5: only solar domain, 
-			6: only building domain, 
-			7: solar and building -->
-			<choose>
-			
-				<when test="(domain == 'nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,5,7)
-				</when>
-				
-				<when test="domain == 'buildings.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(6,7,1)
-				</when>
-				
-				<when test="domain == 'staging.nextwavemonitoring.com' || domain =='demo.nextwavemonitoring.com'">
-					AND s.site_domain_type IN(1,3,4)
-				</when>
-				
-				<when test="(domain == 'test.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,2,4)
-				</when>
-				
-				<when test="(domain == 'demo.nextwavemonitoring.com')">
-					AND s.site_domain_type IN(1,4,7)
-				</when>
-				
-				<otherwise>
-					AND s.site_domain_type IN(1)
-				</otherwise>
-			</choose>
+		<include refid="com.nwm.common.siteByDomainCondition"/>
 		
   	</select>
   	
