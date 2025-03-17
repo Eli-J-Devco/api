@@ -324,16 +324,11 @@ public class BatchJob {
 						
 						JSONArray sunriseArr = (JSONArray) daily.get("sunrise");
 						JSONArray sunsetArr = (JSONArray) daily.get("sunset");
-						System.out.println( sunriseArr.get(0));
-						
-//						String sunrise = daily.get("sunrise");
-//						String sunset = (String) jsonobj.get("sunset");
-						
 						int weather_code = Integer.parseInt(current.get("weather_code").toString());
 						String weather_icon = "";
 						String weather_description = "";
-						String sunrise = "";
-						String sunset = "";
+						String sunrise = sunriseArr.get(0).toString();
+						String sunset = sunsetArr.get(0).toString();
 						double weather_indoor_temp = 0;
 						String weather_indoor_temp_unit = "";
 						double weater_outdoor_temp = 0;
