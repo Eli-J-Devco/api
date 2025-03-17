@@ -149,10 +149,10 @@ public class BatchJob {
 				JSONArray jsonarr_1 = (JSONArray) jobj.get("weather");
 				for (int k = 0; k < jsonarr_1.size(); k++) {
 					JSONObject jsonobj_1 = (JSONObject) jsonarr_1.get(k);
-					String weatherIcon = (String) jsonobj_1.get("icon");
-					String weatherDescription = (String) jsonobj_1.get("description");
-//					item.setWeather_icon(weatherIcon);
-//					item.setWeather_description(weatherDescription);
+					String weather_icon = (String) jsonobj_1.get("icon");
+					String weather_description = (String) jsonobj_1.get("description");
+//					item.setWeather_icon(weather_icon);
+//					item.setWeather_description(weather_description);
 				}
 			}
 			return item;
@@ -185,10 +185,10 @@ public class BatchJob {
 				JSONArray jsonarr_1 = (JSONArray) jobj.get("weather");
 				for (int k = 0; k < jsonarr_1.size(); k++) {
 					JSONObject jsonobj_1 = (JSONObject) jsonarr_1.get(k);
-					String weatherIcon = (String) jsonobj_1.get("icon");
-					String weatherDescription = (String) jsonobj_1.get("description");
-					item.setWeather_icon(weatherIcon);
-					item.setWeather_description(weatherDescription);
+					String weather_icon = (String) jsonobj_1.get("icon");
+					String weather_description = (String) jsonobj_1.get("description");
+					item.setWeather_icon(weather_icon);
+					item.setWeather_description(weather_description);
 				}
 			}
 			return item;
@@ -277,6 +277,182 @@ public class BatchJob {
 				}
 			}
 
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
+	
+	
+	public void startBatchJobMeteo() {
+		try {
+			BatchJobService service = new BatchJobService();
+			// Get list site
+			List listSite = service.getListSite(new SiteEntity());
+			if (listSite == null || listSite.size() == 0) { return; }
+			
+			for (int i = 0; i < listSite.size(); i++) {
+				SiteEntity siteItem = (SiteEntity) listSite.get(i);
+				// Get sunrise sunset API
+				double latitude = (double) siteItem.getLat();
+				double longitude = (double) siteItem.getLng();
+				if(latitude != 0L && longitude != 0L) {
+					String inline = "";
+					SiteEntity item = new SiteEntity();
+					item.setId_site(siteItem.getId_site());
+					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=sunrise,sunset&current=temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
+							
+					URL url = new URL(APIURL);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setRequestMethod("GET");
+					conn.connect();
+					int responsecode = conn.getResponseCode();
+					if (responsecode == 200) {
+						Scanner sc = new Scanner(url.openStream());
+						while (sc.hasNext()) {
+							inline += sc.nextLine();
+						}
+						sc.close();
+						JSONParser parse = new JSONParser();
+						
+						JSONObject jobj = (JSONObject) parse.parse(inline);
+						JSONObject current = (JSONObject) jobj.get("current");
+						JSONObject currentUnits = (JSONObject) jobj.get("current_units");
+						JSONObject daily = (JSONObject) jobj.get("daily");
+						
+						
+						
+						JSONArray sunriseArr = (JSONArray) daily.get("sunrise");
+						JSONArray sunsetArr = (JSONArray) daily.get("sunset");
+						System.out.println( sunriseArr.get(0));
+						
+//						String sunrise = daily.get("sunrise");
+//						String sunset = (String) jsonobj.get("sunset");
+						
+						int weather_code = Integer.parseInt(current.get("weather_code").toString());
+						String weather_icon = "";
+						String weather_description = "";
+						String sunrise = "";
+						String sunset = "";
+						double weather_indoor_temp = 0;
+						String weather_indoor_temp_unit = "";
+						double weater_outdoor_temp = 0;
+						String weather_outdoor_temp_unit = "";
+						String weather_time = "";
+						double weather_humidity = 0;
+						String weather_humidity_unit = "";
+						double weather_wind = 0;
+						String weather_wind_unit = "";
+						double weather_rain = 0;
+						String weather_rain_unit = "";
+						int is_day = Integer.parseInt(current.get("is_day").toString());
+						switch(weather_code){
+							case 0: 
+								weather_description = "Clear sky";
+								weather_icon = is_day == 0 ? "01d": "01n";
+								break;
+							case 1:
+							case 2:
+							case 3:
+								weather_description = "Mainly clear, partly cloudy, and overcast";
+								weather_icon = is_day == 0 ? "02d" : "02n";
+								break;
+							case 45:
+							case 48:
+								weather_description = "Fog and depositing rime fog";
+								weather_icon = is_day == 0 ? "50d" : "50n";
+								break;
+							case 51:
+							case 53:
+							case 55:
+								weather_description = "Drizzle: Light, moderate, and dense intensity";
+								weather_icon = is_day == 0 ? "09d" : "09n";
+								break;
+							case 56:
+							case 57:
+								weather_description = "Freezing Drizzle: Light and dense intensity";
+								weather_icon = is_day == 0 ? "09d" : "09n";
+								break;
+							case 61:
+							case 63:
+							case 65:
+								weather_description = "Rain: Slight, moderate and heavy intensity";
+								weather_icon = is_day == 0 ? "10d" : "10n";
+								break;
+							case 66:
+							case 67:
+								weather_description = "Freezing Rain: Light and heavy intensity";
+								weather_icon = is_day == 0 ? "11d" : "11n";
+								break;
+							case 71:
+							case 73:
+							case 75:
+								weather_description = "Snow fall: Slight, moderate, and heavy intensity";
+								weather_icon = is_day == 0 ? "10d" : "10n";
+								break;
+							case 77: 
+								weather_description = "Snow grains";
+								weather_icon = is_day == 0 ? "13d" : "13n";
+								break;
+							case 80:
+							case 81:
+							case 82:
+								weather_description = "Rain showers: Slight, moderate, and violent";
+								weather_icon = is_day == 0 ? "13d" : "13n";
+								break;
+							case 85:
+							case 86:
+								weather_description = "Snow showers slight and heavy";
+								weather_icon = is_day == 0 ? "13d" : "13n";
+								break;
+							case 95: 
+								weather_description = "Thunderstorm: Slight or moderate";
+								weather_icon = is_day == 0 ? "13d" : "13n";
+								break;
+							case 96:
+							case 99:
+								weather_description = "Thunderstorm with slight and heavy hail";
+								weather_icon = is_day == 0 ? "13d" : "13n";
+								break;
+							default:
+								weather_description = "Could not calculate";
+								weather_icon ="";
+						}
+						
+						weather_wind = Double.parseDouble( current.get("wind_speed_10m").toString());
+						weater_outdoor_temp = Double.parseDouble( current.get("temperature_2m").toString());
+						weather_indoor_temp = Double.parseDouble(current.get("apparent_temperature").toString());
+						weather_rain =  Double.parseDouble(current.get("rain").toString());
+						weather_humidity =  Double.parseDouble(current.get("relative_humidity_2m").toString());
+						
+					    weather_outdoor_temp_unit = (String) currentUnits.get("temperature_2m");
+						weather_indoor_temp_unit = (String) currentUnits.get("apparent_temperature");
+						weather_humidity_unit = (String) currentUnits.get("relative_humidity_2m");
+						weather_wind_unit = (String) currentUnits.get("wind_speed_10m");
+						weather_rain_unit = (String) currentUnits.get("rain");
+						weather_time = (String) current.get("time");
+						
+						WeatherEntity weather = new WeatherEntity();
+						weather.setId_site(siteItem.getId());
+						weather.setWeather_description(weather_description);
+						weather.setWeather_icon(weather_icon);
+						weather.setSunrise(sunrise);
+						weather.setSunset(sunset);
+						weather.setWeather_indoor_temp(weather_indoor_temp);
+						weather.setWeather_indoor_temp_unit(weather_indoor_temp_unit);
+						weather.setWeather_outdoor_temp(weater_outdoor_temp);
+						weather.setWeather_outdoor_temp_unit(weather_outdoor_temp_unit);
+						weather.setWeather_time(weather_time);
+						weather.setWeather_humidity(weather_humidity);
+						weather.setWeather_humidity_unit(weather_humidity_unit);
+						weather.setWeather_wind(weather_wind);
+						weather.setWeather_wind_unit(weather_wind_unit);
+						weather.setWeather_rain(weather_rain);
+						weather.setWeather_rain_unit(weather_rain_unit);
+						service.updateWeather(weather);
+					}
+				}
+			}
 		} catch (Exception e) {
 			log.error(e);
 		}

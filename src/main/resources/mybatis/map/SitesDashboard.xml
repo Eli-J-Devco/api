@@ -379,6 +379,12 @@
 			(SELECT
 				dv.time,
 				dv.id_device,
+				IFNULL(dv.BreakersPanel0L,0) AS BreakersPanel0L,
+				IFNULL(dv.BreakersPanel0R,0) AS BreakersPanel0R,
+				IFNULL(dv.BreakersPanel1L,0) AS BreakersPanel1L,
+				IFNULL(dv.BreakersPanel1R,0) AS BreakersPanel1R,
+				IFNULL(dv.BreakersPanel2L,0) AS BreakersPanel2L,
+				IFNULL(dv.BreakersPanel2R,0) AS BreakersPanel2R,
 				IFNULL(dv.NonRespondingBreakersPanel0L,0) AS NonRespondingBreakersPanel0L,
 				IFNULL(dv.NonRespondingBreakersPanel0R,0) AS NonRespondingBreakersPanel0R,
 				IFNULL(dv.NonRespondingBreakersPanel1L,0) AS NonRespondingBreakersPanel1L,
