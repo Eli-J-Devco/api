@@ -161,15 +161,22 @@ public class SitesDevicesEntity extends SortEntity {
 	private double total_unit;
 	private int meter_type;
 	private double weather_indoor_temp;
-	private double weater_outdoor_temp;
+	private double weather_outdoor_temp;
 	private String weather_time;
 	private double weather_humidity;
 	private String weather_description;
 	private String weather_icon;
 	private String weather_time_string;
-private String domain_role;
+	private String domain_role;
 	
 	
+	
+	public double getWeather_outdoor_temp() {
+		return weather_outdoor_temp;
+	}
+	public void setWeather_outdoor_temp(double weather_outdoor_temp) {
+		this.weather_outdoor_temp = weather_outdoor_temp;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}
@@ -203,12 +210,7 @@ private String domain_role;
 	public void setWeather_indoor_temp(double weather_indoor_temp) {
 		this.weather_indoor_temp = weather_indoor_temp;
 	}
-	public double getWeater_outdoor_temp() {
-		return weater_outdoor_temp;
-	}
-	public void setWeater_outdoor_temp(double weater_outdoor_temp) {
-		this.weater_outdoor_temp = weater_outdoor_temp;
-	}
+
 	public String getWeather_time() {
 		return weather_time;
 	}

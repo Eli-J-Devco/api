@@ -113,7 +113,7 @@
 			s.total_area,
 			s.total_unit,
 			s.weather_indoor_temp,
-			s.weater_outdoor_temp,
+			s.weather_outdoor_temp,
 			DATE_FORMAT(s.weather_time, '%H:%i %p') AS weather_time,
 			s.weather_humidity,
 			s.weather_description,
