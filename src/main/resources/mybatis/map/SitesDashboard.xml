@@ -292,12 +292,22 @@
 			dz.id_device,
 			dz.field_0L,
 			dz.field_0R,
-			d.BreakerPresentPanel0L,
-			d.BreakerPresentPanel0R,
-			d.BreakerPresentPanel1L,
-			d.BreakerPresentPanel1R,
-			d.BreakerPresentPanel2L,
-			d.BreakerPresentPanel2R
+			dz.field_0L_verify,
+			dz.field_0R_verify,
+			IFNULL(d.BreakerPresentPanel0L, 0) AS BreakerPresentPanel0L,
+			IFNULL(d.BreakerPresentPanel0R, 0) AS BreakerPresentPanel0R,
+			IFNULL(d.BreakerPresentPanel1L, 0) AS BreakerPresentPanel1L,
+			IFNULL(d.BreakerPresentPanel1R, 0) AS BreakerPresentPanel1R,
+			IFNULL(d.BreakerPresentPanel2L, 0) AS BreakerPresentPanel2L,
+			IFNULL(d.BreakerPresentPanel2R, 0) AS BreakerPresentPanel2R,
+			
+			IFNULL(d.BreakersPanel0L, 0) AS BreakersPanel0L,
+			IFNULL(d.BreakersPanel0R, 0) AS BreakersPanel0R,
+			IFNULL(d.BreakersPanel1L, 0) AS BreakersPanel1L,
+			IFNULL(d.BreakersPanel1R, 0) AS BreakersPanel1R,
+			IFNULL(d.BreakersPanel2L, 0) AS BreakersPanel2L,
+			IFNULL(d.BreakersPanel2R, 0) AS BreakersPanel2R
+			
 			
 			FROM device_zone_map dp 
 			LEFT JOIN device_zone dz ON dz.id = dp.id_zone
