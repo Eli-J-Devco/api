@@ -344,70 +344,70 @@ public class BatchJob {
 						switch(weather_code){
 							case 0: 
 								weather_description = "Clear sky";
-								weather_icon = is_day == 0 ? "01d": "01n";
+								weather_icon = is_day == 1 ? "01d": "01n";
 								break;
 							case 1:
 							case 2:
 							case 3:
 								weather_description = "Mainly clear, partly cloudy, and overcast";
-								weather_icon = is_day == 0 ? "02d" : "02n";
+								weather_icon = is_day == 1 ? "02d" : "02n";
 								break;
 							case 45:
 							case 48:
 								weather_description = "Fog and depositing rime fog";
-								weather_icon = is_day == 0 ? "50d" : "50n";
+								weather_icon = is_day == 1 ? "50d" : "50n";
 								break;
 							case 51:
 							case 53:
 							case 55:
 								weather_description = "Drizzle: Light, moderate, and dense intensity";
-								weather_icon = is_day == 0 ? "09d" : "09n";
+								weather_icon = is_day == 1 ? "09d" : "09n";
 								break;
 							case 56:
 							case 57:
 								weather_description = "Freezing Drizzle: Light and dense intensity";
-								weather_icon = is_day == 0 ? "09d" : "09n";
+								weather_icon = is_day == 1 ? "09d" : "09n";
 								break;
 							case 61:
 							case 63:
 							case 65:
 								weather_description = "Rain: Slight, moderate and heavy intensity";
-								weather_icon = is_day == 0 ? "10d" : "10n";
+								weather_icon = is_day == 1 ? "10d" : "10n";
 								break;
 							case 66:
 							case 67:
 								weather_description = "Freezing Rain: Light and heavy intensity";
-								weather_icon = is_day == 0 ? "11d" : "11n";
+								weather_icon = is_day == 1 ? "11d" : "11n";
 								break;
 							case 71:
 							case 73:
 							case 75:
 								weather_description = "Snow fall: Slight, moderate, and heavy intensity";
-								weather_icon = is_day == 0 ? "10d" : "10n";
+								weather_icon = is_day == 1 ? "10d" : "10n";
 								break;
 							case 77: 
 								weather_description = "Snow grains";
-								weather_icon = is_day == 0 ? "13d" : "13n";
+								weather_icon = is_day == 1 ? "13d" : "13n";
 								break;
 							case 80:
 							case 81:
 							case 82:
 								weather_description = "Rain showers: Slight, moderate, and violent";
-								weather_icon = is_day == 0 ? "13d" : "13n";
+								weather_icon = is_day == 1 ? "13d" : "13n";
 								break;
 							case 85:
 							case 86:
 								weather_description = "Snow showers slight and heavy";
-								weather_icon = is_day == 0 ? "13d" : "13n";
+								weather_icon = is_day == 1 ? "13d" : "13n";
 								break;
 							case 95: 
 								weather_description = "Thunderstorm: Slight or moderate";
-								weather_icon = is_day == 0 ? "13d" : "13n";
+								weather_icon = is_day == 1 ? "13d" : "13n";
 								break;
 							case 96:
 							case 99:
 								weather_description = "Thunderstorm with slight and heavy hail";
-								weather_icon = is_day == 0 ? "13d" : "13n";
+								weather_icon = is_day == 1 ? "13d" : "13n";
 								break;
 							default:
 								weather_description = "Could not calculate";
