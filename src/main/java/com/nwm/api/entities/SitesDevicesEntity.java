@@ -161,9 +161,12 @@ public class SitesDevicesEntity extends SortEntity {
 	private double total_unit;
 	private int meter_type;
 	private double weather_indoor_temp;
+	private String weather_indoor_temp_unit;
 	private double weather_outdoor_temp;
+	private String weather_outdoor_temp_unit;
 	private String weather_time;
 	private double weather_humidity;
+	private String weather_humidity_unit;
 	private String weather_description;
 	private String weather_icon;
 	private String weather_time_string;
@@ -171,6 +174,24 @@ public class SitesDevicesEntity extends SortEntity {
 	
 	
 	
+	public String getWeather_indoor_temp_unit() {
+		return weather_indoor_temp_unit;
+	}
+	public void setWeather_indoor_temp_unit(String weather_indoor_temp_unit) {
+		this.weather_indoor_temp_unit = weather_indoor_temp_unit;
+	}
+	public String getWeather_outdoor_temp_unit() {
+		return weather_outdoor_temp_unit;
+	}
+	public void setWeather_outdoor_temp_unit(String weather_outdoor_temp_unit) {
+		this.weather_outdoor_temp_unit = weather_outdoor_temp_unit;
+	}
+	public String getWeather_humidity_unit() {
+		return weather_humidity_unit;
+	}
+	public void setWeather_humidity_unit(String weather_humidity_unit) {
+		this.weather_humidity_unit = weather_humidity_unit;
+	}
 	public double getWeather_outdoor_temp() {
 		return weather_outdoor_temp;
 	}
