@@ -622,7 +622,20 @@
 		UPDATE `site`
 		SET
 			weather_icon = #{weather_icon},
-			weather_description = #{weather_description}
+			weather_description = #{weather_description},
+			weather_indoor_temp = #{weather_indoor_temp},
+			weather_indoor_temp_unit = #{weather_indoor_temp_unit},
+			weather_outdoor_temp = #{weather_outdoor_temp},
+			weather_outdoor_temp_unit = #{weather_outdoor_temp_unit},
+			weather_time = #{weather_time},
+			weather_humidity = #{weather_humidity},
+			weather_humidity_unit = #{weather_humidity_unit},
+			weather_wind = #{weather_wind},
+			weather_wind_unit = #{weather_wind_unit},
+			weather_rain = #{weather_rain},
+			weather_rain_unit = #{weather_rain_unit},
+			sunrise = #{sunrise},
+			sunset = #{sunset}
 		WHERE
 			`id` = #{id_site}
 	</update>

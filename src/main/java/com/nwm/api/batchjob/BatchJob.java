@@ -327,8 +327,8 @@ public class BatchJob {
 						int weather_code = Integer.parseInt(current.get("weather_code").toString());
 						String weather_icon = "";
 						String weather_description = "";
-						String sunrise = sunriseArr.get(0).toString();
-						String sunset = sunsetArr.get(0).toString();
+						String sunrise = sunriseArr.get(0).toString() + ":00+00:00";
+						String sunset = sunsetArr.get(0).toString()+ ":00+00:00";
 						double weather_indoor_temp = 0;
 						String weather_indoor_temp_unit = "";
 						double weater_outdoor_temp = 0;

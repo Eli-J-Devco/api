@@ -88,17 +88,17 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 * */60 * * *")
-	public void startBatchJobGetWeather() throws Exception {
-		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
-		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (env.equals("staging")) {
-			BatchJob job =new BatchJob(); 
-			job.runCronJobGetWeather();
-		}
-		
-	}
-	
+//	@Scheduled(cron = "0 * */60 * * *")
+//	public void startBatchJobGetWeather() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+//			job.runCronJobGetWeather();
+//		}
+//		
+//	}
+//	
 	
 	/**
 	 * @description batch job get sunset, sunrise
@@ -107,16 +107,36 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 * */60 * * *")
-	public void startBatchJobGetSunriseSunset() throws Exception {
+//	@Scheduled(cron = "0 * */60 * * *")
+//	public void startBatchJobGetSunriseSunset() throws Exception {
+//		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+//		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+//		if (env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+//			job.runCronJobGeSunriseSunsetJava();
+//		}
+//		
+//	}
+//	
+	
+	/**
+	 * @description batch job get data meteo
+	 * @author long.pham
+	 * @since 2025-02-15
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 * */10 * * *")
+	public void startBatchJobMeteo() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
 			BatchJob job =new BatchJob(); 
-			job.runCronJobGeSunriseSunsetJava();
+			job.startBatchJobMeteo();
 		}
 		
 	}
+	 
 	
 	/**
 	 * @description batch job get alert for all device No Communication
@@ -217,14 +237,14 @@ public class BatchConfig {
 	 */
 //	@Scheduled(cron = "* * * * * *")
 //	@Scheduled(cron = "0 */1 * * * *")
-	@Scheduled(cron = "0 */60 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void startBatchJobGenerateDataReport() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-		if (env.equals("staging")) {
+//		if (env.equals("staging")) {
 			BatchJob job =new BatchJob(); 
 			job.runCronJobGenerateDataReport();
-		}
+//		}
 	}
 	
 	
