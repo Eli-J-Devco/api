@@ -280,7 +280,7 @@
 				SELECT * FROM ${datatablename} d WHERE d.id_device = #{id} ORDER BY d.time DESC LIMIT 1
 			) d ON d.id_device = m.id_device
 		WHERE
-			m.id_device = #{id} GROUP BY m.id;
+			m.id_device = #{id} GROUP BY m.id ORDER BY menu_order ASC;
 	</select>
 	
 	
