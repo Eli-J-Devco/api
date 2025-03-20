@@ -383,7 +383,8 @@
 	
 	<select id="LevitonGetParameterByDeviceGroup" resultType="Map">
 		SELECT
-			dp.id,
+			dp.id AS id_parameter,
+			dp.slug AS id,
 			dp.id_device_group,
 			dp.`name` AS text,
 			dp.`name` AS parameter_name,

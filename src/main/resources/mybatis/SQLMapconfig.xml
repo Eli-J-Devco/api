@@ -166,7 +166,7 @@
 		<mapper resource="mybatis/map/ModelHoneywellEMON3200.xml"/>
 		<mapper resource="mybatis/map/PiCamera.xml"/>
 		<mapper resource="mybatis/map/EnergyUsage.xml"/>
-		
+		<mapper resource="mybatis/map/BreakerPanel.xml"/>
 		
 		
 		

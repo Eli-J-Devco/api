@@ -88,27 +88,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-								
-				 					<choose>
-				 						<when test="filterBy == 'today'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'this_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'last_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == '12_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-										</when>
-										<otherwise>
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</otherwise>
-				 					</choose>
+								dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -152,38 +132,14 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					<choose>
-				 						<when test="filterBy == 'today'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'this_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'last_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == '12_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-										</when>
-										<otherwise>
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</otherwise>
-				 					</choose>
-								GROUP BY
+									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+								GROUP BY 
 									time_format
 							) t ON t.time = dv.time
 					) ma ON ma.time_full = mi.time_full
 
 			</foreach>
 		) t
-		
-		<if test="filterBy == 'last_month'">
-			WHERE
-				time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
-		</if>
 		
 		GROUP BY
 			time_format
@@ -242,27 +198,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-								
-				 					<choose>
-				 						<when test="filterBy == 'today'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'this_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'last_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == '12_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-										</when>
-										<otherwise>
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</otherwise>
-				 					</choose>
+									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -306,37 +242,13 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					<choose>
-				 						<when test="filterBy == 'today'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'this_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'last_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{end_date}, '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 MONTH), '%Y-%m-01 23:59:59'), t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == '12_month'">
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(#{end_date}, INTERVAL 12 MONTH), '%Y-%m-01 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</when>
-				 						<when test="filterBy == 'lifetime'">
-				 							dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-										</when>
-										<otherwise>
-				 							dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{start_date}, '%Y-%m-%d 00:00:00'), t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
-				 						</otherwise>
-				 					</choose>
+									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
 					) ma ON ma.time_full = mi.time_full
 
 		) t
-		
-		<if test="filterBy == 'last_month'">
-			WHERE
-				time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
-		</if>
 		
 		GROUP BY
 			time_format
