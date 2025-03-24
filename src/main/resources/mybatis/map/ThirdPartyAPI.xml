@@ -137,5 +137,10 @@
 				time_group_by
 		) t
 	</select>
+	
+	<insert id="insertDomain" parameterType="String">
+		INSERT INTO third_party_domain_log (domain)
+		VALUES (#{param})
+	</insert>
 
 </mapper>

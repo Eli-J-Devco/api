@@ -92,6 +92,8 @@ public class ThirdPartyAPIService extends DB {
 		List dataList = new ArrayList();
 		
 		try {
+			insert("ThirdPartyAPI.insertDomain", domain);
+			
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key);
 			map.put("domain", domain);
