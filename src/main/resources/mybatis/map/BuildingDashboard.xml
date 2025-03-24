@@ -1189,7 +1189,8 @@
 			time_full,
 			categories_time,
 			tooltip_time,
-			CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy`
+			<!-- CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy` -->
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
 		FROM (
 				SELECT
 					mi.time_format,
