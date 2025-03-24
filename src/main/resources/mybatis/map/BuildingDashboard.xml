@@ -1209,10 +1209,10 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
 									MIN(dv.time) AS time
 								FROM
 									${datatablename} dv
@@ -1220,7 +1220,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ) ,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(CONVERT_TZ(DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 MONTH), "%Y-%m-%d" ), "UTC", t.value), "%Y-%m-%d"))
+				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -1236,10 +1236,10 @@
 							${datatablename} dv
 							JOIN (
 								SELECT
-				 					DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%b %d, %Y' ) AS tooltip_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%Y-%m-%d' ) AS time_full,
+				 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS tooltip_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
 									MAX(dv.time) AS time
 								FROM
 									${datatablename} dv
@@ -1247,7 +1247,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(DATE_FORMAT(CONVERT_TZ( dv.time, 'UTC', t.value ) ,'%Y-%m-%d') <![CDATA[ >= ]]> DATE_FORMAT(CONVERT_TZ(DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -1 MONTH), "%Y-%m-%d" ), "UTC", t.value), "%Y-%m-%d"))
+				 					(CONVERT_TZ( dv.time, "UTC", t.`value` ) <![CDATA[ >= ]]> DATE_FORMAT(DATE_ADD( CONVERT_TZ(NOW(),"UTC", t.`value`), INTERVAL -29 DAY ), "%Y-%m-%d 00:00:00"))
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
