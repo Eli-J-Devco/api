@@ -35,10 +35,23 @@ public class BreakerPanelEntity{
 	private int menu_order = 0;
 	private int id_site;
 	private String devicename;
+	private int id_device;
+	private int id_device_group;
 	
 	
 	
-	
+	public int getId_device_group() {
+		return id_device_group;
+	}
+	public void setId_device_group(int id_device_group) {
+		this.id_device_group = id_device_group;
+	}
+	public int getId_device() {
+		return id_device;
+	}
+	public void setId_device(int id_device) {
+		this.id_device = id_device;
+	}
 	public String getDevicename() {
 		return devicename;
 	}

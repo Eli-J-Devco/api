@@ -21,6 +21,7 @@
 		<result property="menu_order" column="menu_order" />
 		<result property="devicename" column="devicename" />
 		<result property="id_site" column="id_site" />
+		<result property="id_device" column="id_device" />
 		
 		
 	</resultMap>
@@ -39,7 +40,8 @@
 			s.menu_order,
 			s.`status`,
 			s.is_delete,
-			d.devicename
+			d.devicename,
+			d.id_device_group
 		FROM
 			device_panel s 
 			LEFT JOIN device d ON d.id = s.id_device
@@ -86,17 +88,17 @@
 	</select>
   	
   	
-	<update id="delete">
-		UPDATE `device_panel`
-		SET
-			`is_delete` = #{is_delete}
-		WHERE
-			`id` = #{id}
-	</update>
+	
+	<delete id="delete">
+		DELETE FROM `device_panel`
+		WHERE id = #{id}
+	</delete>
+	
 	
 	
 	<insert id="insertBreakerPanel" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `device_panel`(
+			`id_device`,
 			`name`,
 			`field_0L`,
 			`field_0R`,
@@ -106,6 +108,7 @@
 			`status`,
 			`is_delete`
 		)VALUES(
+			#{id_device},
 			#{name},
 			#{field_0L},
 			#{field_0R},
@@ -124,6 +127,7 @@
 	<update id="updateBreakerPanel">
 		UPDATE `device_panel`
 		SET
+			`id_device` = #{id_device},
 			`name` = #{name},
 			`field_0L` = #{field_0L},
 			`field_0R` = #{field_0R},
@@ -135,5 +139,30 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	<insert id="insertBreakerPanelMap">
+    INSERT INTO device_panel_map (
+    id_panel,
+    name,
+    bit_map,
+    bit_position,
+    panel_position,
+    monitor_status)
+    VALUES
+    <foreach collection="listDataMaps" item="element" index="index" open="(" separator="),("  close=")">
+        #{id},
+        #{element.name},
+        #{element.bit_map},
+        #{element.bit_position},
+        #{element.panel_position},
+        #{element.monitor_status}
+    </foreach>
+</insert>
+
+
+	<delete id="deleteBreakerPanelMap">
+		DELETE FROM `device_panel_map`
+		WHERE id_panel = #{id}
+	</delete>
 	
 </mapper>

@@ -7,9 +7,13 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.BreakerPanelEntity;
+import com.nwm.api.entities.EmployeeSiteMapEntity;
 
 public class BreakerPanelService extends DB {
 
@@ -67,9 +71,9 @@ public class BreakerPanelService extends DB {
 	}
 	
 	
-	/** @description delete error level
+	/** @description delete breaker
 	 * @author long.pham
-	 * @since 2021-02-26
+	 * @since 2025-03-24
 	 * @param id
 	 */
 	public boolean delete(BreakerPanelEntity obj) {
@@ -86,40 +90,54 @@ public class BreakerPanelService extends DB {
 	/**
 	 * @description insert breaker
 	 * @author long.pham
-	 * @since 2021-02-26
+	 * @since 2025-02-24
 	 */
 	public BreakerPanelEntity insertBreakerPanel(BreakerPanelEntity obj) 
 	{
-		try
-	    {
-	       Object insertId = insert("BreakerPanel.insertBreakerPanel", obj);
-	       if(insertId != null && insertId instanceof Integer) {
-	    	   return obj;
-	       }else {
-	    	   return null;
-	       }
-	    }
-	    catch(Exception ex)
-	    {
-	        log.error("insert", ex);
-	        return null;
-	    }	
+		SqlSession session = this.beginTransaction();
+		try {
+			session.insert("BreakerPanel.insertBreakerPanel", obj);
+			if (obj.getId() > 0) {
+				session.insert("BreakerPanel.insertBreakerPanelMap", obj);
+			} else {
+				return null;
+			}
+
+			session.commit();
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Site.insertSite", ex);
+			return null;
+		} finally {
+			session.close();
+		}
 	}
 	
 	
 	/**
 	 * @description update breaker
 	 * @author long.pham
-	 * @since 2025-03-20
+	 * @since 2025-03-24
 	 * @param id
 	 */
 	public boolean updateBreakerPanel(BreakerPanelEntity obj){
-		try{
-			return update("BreakerPanel.updateBreakerPanel", obj)>0;
-		}catch (Exception ex) {
-			log.error("BreakerPanel.updateSite", ex);
+		SqlSession session = this.beginTransaction();
+		try {
+			
+			session.update("BreakerPanel.updateBreakerPanel", obj);
+			session.delete("BreakerPanel.deleteBreakerPanelMap", obj);
+			session.insert("BreakerPanel.insertBreakerPanelMap", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("BreakerPanel.updateBreakerPanel", ex);
 			return false;
+		} finally {
+			session.close();
 		}
+		
 	}
 	
 	
