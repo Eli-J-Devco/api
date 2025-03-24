@@ -88,7 +88,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-								dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"), t.`value`, 'UTC')
+								DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i") BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), "%Y-%m-%d 00:00"), t.`value`, 'UTC')
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -129,10 +129,10 @@
 								FROM
 									${item.datatablename} dv
 									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), "%Y-%m-%d 00:00:00"), t.`value`, 'UTC')
+									DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i") BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(DATE_FORMAT(DATE_ADD(#{end_date}, INTERVAL 1 DAY), "%Y-%m-%d 00:00"), t.`value`, 'UTC')
 								GROUP BY 
 									time_format
 							) t ON t.time = dv.time
