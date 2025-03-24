@@ -121,9 +121,10 @@
 			s.weather_humidity_unit,
 			s.weather_description,
 			s.weather_icon,
-			
-			DATE_FORMAT(s.weather_time, '%W, %d %M %Y') AS weather_time_string
-			
+			DATE_FORMAT(s.weather_time, '%W, %d %M %Y') AS weather_time_string,
+			hg.id_gateway AS hvac_gateway,
+			hl.path AS hvac_layout,
+			hl.id AS id_hvac_layout
 		FROM
 			site s 
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -131,6 +132,8 @@
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN date_format d ON d.id = s.display_date_format
 			LEFT JOIN site_mail_map smm ON smm.id_site = s.id AND smm.id_employee = #{id_employee}
+			LEFT JOIN hvac_gateway hg ON hg.id_site = s.id
+			LEFT JOIN hvac_layout hl ON hl.id = hg.id_hvac_layout
 			
 			LEFT JOIN (
 				SELECT

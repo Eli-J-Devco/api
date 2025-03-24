@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="SitesOverviewHVAC">
+	
+	<delete id="deleteMappingPoints">
+		DELETE FROM hvac_layout_mapping_point
+		WHERE id_hvac_layout = #{id_hvac_layout}
+	</delete>
+	
+	<insert id="insertMappingPoints">
+		INSERT INTO hvac_layout_mapping_point (
+			id,
+			name,
+			xPosition,
+			yPosition,
+			children,
+			id_hvac_layout
+		) VALUES
+		<foreach collection="points" item="item" separator=",">
+			(
+				#{item.itemId},
+				#{item.itemName},
+				#{item.xPosition},
+				#{item.yPosition},
+				#{item.children},
+				#{id_hvac_layout}
+			)
+		</foreach>
+	</insert>
+	
+	<select id="getMappingPoints" resultType="com.nwm.api.entities.building.HVACMappingPointEntity">
+		SELECT
+			id AS itemId,
+			id AS value,
+			name AS itemName,
+			name AS label,
+			xPosition,
+			yPosition,
+			children
+		FROM
+			hvac_layout_mapping_point
+		WHERE
+			id_hvac_layout = #{id_hvac_layout}
+	</select>
+	
+</mapper>
