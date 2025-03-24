@@ -172,6 +172,9 @@ public class SitesDevicesEntity extends SortEntity {
 	private String weather_time_string;
 	private String domain_role;
 	
+	private String hvac_gateway;
+	private String hvac_layout;
+	private int id_hvac_layout;
 	
 	
 	public String getWeather_indoor_temp_unit() {
@@ -1129,6 +1132,24 @@ public class SitesDevicesEntity extends SortEntity {
 	}
 	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
+	}
+	public String getHvac_gateway() {
+		return hvac_gateway;
+	}
+	public void setHvac_gateway(String hvac_gateway) {
+		this.hvac_gateway = hvac_gateway;
+	}
+	public String getHvac_layout() {
+		return hvac_layout;
+	}
+	public void setHvac_layout(String hvac_layout) {
+		this.hvac_layout = hvac_layout;
+	}
+	public int getId_hvac_layout() {
+		return id_hvac_layout;
+	}
+	public void setId_hvac_layout(int id_hvac_layout) {
+		this.id_hvac_layout = id_hvac_layout;
 	}
 	
 	
