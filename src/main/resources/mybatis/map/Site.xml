@@ -1037,7 +1037,18 @@
 			s.end_date_time,
 			s.config_sunset_sunrise,
 			s.note,
-			t.customer_name,
+			
+			<choose> 
+	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+	                CONCAT_WS("#", "#customer", s.id) AS `customer_name`,
+	                CONCAT_WS("#", "#company",s.id) AS `company`,
+	            </when>
+	            <otherwise>
+			      t.customer_name,
+			      c.name AS company,
+			    </otherwise>                                                  
+	        </choose>
+	        
 			t.ids_employee,
 			s.is_rec_report,
 			s.reporting_region,
@@ -1050,7 +1061,6 @@
 			s.timezone_datalogger,
 			s.unit_type_temp,
 			s.unit_wind_speed,
-			c.name AS company,
 			sg.name AS site_group,
 			tz.name AS time_zone,
 			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), "-") AS last_modified,
