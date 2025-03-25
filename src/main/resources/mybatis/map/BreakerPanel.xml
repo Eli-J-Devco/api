@@ -141,23 +141,23 @@
 	</update>
 	
 	<insert id="insertBreakerPanelMap">
-    INSERT INTO device_panel_map (
-    id_panel,
-    name,
-    bit_map,
-    bit_position,
-    panel_position,
-    monitor_status)
-    VALUES
-    <foreach collection="listDataMaps" item="element" index="index" open="(" separator="),("  close=")">
-        #{id},
-        #{element.name},
-        #{element.bit_map},
-        #{element.bit_position},
-        #{element.panel_position},
-        #{element.monitor_status}
-    </foreach>
-</insert>
+	    INSERT INTO device_panel_map (
+	    id_panel,
+	    name,
+	    bit_map,
+	    bit_position,
+	    panel_position,
+	    monitor_status)
+	    VALUES
+	    <foreach collection="listDataMaps" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.bit_map},
+	        #{element.bit_position},
+	        #{element.panel_position},
+	        #{element.monitor_status}
+	    </foreach>
+	</insert>
 
 
 	<delete id="deleteBreakerPanelMap">

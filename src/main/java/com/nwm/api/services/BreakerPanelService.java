@@ -7,13 +7,9 @@ package com.nwm.api.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.ibatis.session.SqlSession;
-
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.BreakerPanelEntity;
-import com.nwm.api.entities.EmployeeSiteMapEntity;
 
 public class BreakerPanelService extends DB {
 
