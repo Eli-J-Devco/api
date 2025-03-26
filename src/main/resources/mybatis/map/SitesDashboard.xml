@@ -116,12 +116,15 @@
 			s.weather_indoor_temp_unit,
 			s.weather_outdoor_temp,
 			s.weather_outdoor_temp_unit,
-			DATE_FORMAT(s.weather_time, '%H:%i %p') AS weather_time,
+			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%H:%i %p') AS weather_time,
+			
+			
+			
 			s.weather_humidity,
 			s.weather_humidity_unit,
 			s.weather_description,
 			s.weather_icon,
-			DATE_FORMAT(s.weather_time, '%W, %d %M %Y') AS weather_time_string,
+			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,
 			hg.id_gateway AS hvac_gateway,
 			hl.path AS hvac_layout,
 			hl.id AS id_hvac_layout
