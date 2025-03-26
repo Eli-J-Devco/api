@@ -52,7 +52,7 @@
 		    order by
 	        <choose>  
 	            <when test="sort_column != null and sort_column != ''">
-	                s.${sort_column} ${order_by}
+	                ${sort_column} ${order_by}
 	            </when>
 	            
 	            <otherwise>
