@@ -71,6 +71,38 @@
 		   <result property="ExportedVARhQ4B" column="ExportedVARhQ4B" />
 		   <result property="ExportedVARhQ4C" column="ExportedVARhQ4C" />
 		   <result property="WattDemandElement" column="WattDemandElement" />
+		   
+		   <result property="DisplacementPFSum" column="DisplacementPFSum" />
+		   <result property="DisplacementPFCH1A" column="DisplacementPFCH1A" />
+		   <result property="DisplacementPFCH2B" column="DisplacementPFCH2B" />
+		   <result property="DisplacementPFCH3C" column="DisplacementPFCH3C" />
+		   <result property="THDSum" column="THDSum" />
+		   <result property="THDCH1A" column="THDCH1A" />
+		   <result property="THDCH2B" column="THDCH2B" />
+		   <result property="THDCH3C" column="THDCH3C" />
+		   <result property="VADemandElement" column="VADemandElement" />
+		   <result property="EnergyNetSum" column="EnergyNetSum" />
+		   <result property="EnergyNetCH1" column="EnergyNetCH1" />
+		   <result property="EnergyNetCH2" column="EnergyNetCH2" />
+		   <result property="EnergyNetCH3" column="EnergyNetCH3" />
+		   <result property="ApparentEnergyNetSum" column="ApparentEnergyNetSum" />
+		   <result property="ApparentEnergyNetCH1" column="ApparentEnergyNetCH1" />
+		   <result property="ApparentEnergyNetCH2" column="ApparentEnergyNetCH2" />
+		   <result property="ApparentEnergyNetCH3" column="ApparentEnergyNetCH3" />
+		   <result property="VARhNetSum" column="VARhNetSum" />
+		   <result property="VARhNetCH1" column="VARhNetCH1" />
+		   <result property="VARhNetCH2" column="VARhNetCH2" />
+		   <result property="VARhNetCH3" column="VARhNetCH3" />
+		   <result property="ThetaCH1Angle" column="ThetaCH1Angle" />
+		   <result property="ThetaCH2Angle" column="ThetaCH2Angle" />
+		   <result property="ThetaCH3Angle" column="ThetaCH3Angle" />
+		   <result property="RoCoilPGAGainCh1" column="RoCoilPGAGainCh1" />
+		   <result property="RoCoilPGAGainCh2" column="RoCoilPGAGainCh2" />
+		   <result property="RoCoilPGAGainCh3" column="RoCoilPGAGainCh3" />
+		   
+		   
+		   
+		   
 		   <result property="nvmActivePower" column="nvmActivePower" />
 		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		   <result property="MeasuredProduction" column="MeasuredProduction" />
@@ -290,6 +322,91 @@
           <if test="WattDemandElement != 0.001" >
                 `WattDemandElement`,
           </if>
+
+          
+          <if test="DisplacementPFSum != 0.001" >
+                `DisplacementPFSum`,
+          </if>
+          <if test="DisplacementPFCH1A != 0.001" >
+                `DisplacementPFCH1A`,
+          </if>
+          <if test="DisplacementPFCH2B != 0.001" >
+                `DisplacementPFCH2B`,
+          </if>
+          <if test="DisplacementPFCH3C != 0.001" >
+                `DisplacementPFCH3C`,
+          </if>
+          <if test="THDSum != 0.001" >
+                `THDSum`,
+          </if>
+          <if test="THDCH1A != 0.001" >
+                `THDCH1A`,
+          </if>
+          <if test="THDCH2B != 0.001" >
+                `THDCH2B`,
+          </if>
+          <if test="THDCH3C != 0.001" >
+                `THDCH3C`,
+          </if>
+          <if test="VADemandElement != 0.001" >
+                `VADemandElement`,
+          </if>
+          <if test="EnergyNetSum != 0.001" >
+                `EnergyNetSum`,
+          </if>
+          <if test="EnergyNetCH1 != 0.001" >
+                `EnergyNetCH1`,
+          </if>
+          <if test="EnergyNetCH2 != 0.001" >
+                `EnergyNetCH2`,
+          </if>
+          <if test="EnergyNetCH3 != 0.001" >
+                `EnergyNetCH3`,
+          </if>
+          <if test="ApparentEnergyNetSum != 0.001" >
+                `ApparentEnergyNetSum`,
+          </if>
+          <if test="ApparentEnergyNetCH1 != 0.001" >
+                `ApparentEnergyNetCH1`,
+          </if>
+          <if test="ApparentEnergyNetCH2 != 0.001" >
+                `ApparentEnergyNetCH2`,
+          </if>
+          <if test="ApparentEnergyNetCH3 != 0.001" >
+                `ApparentEnergyNetCH3`,
+          </if>
+          <if test="VARhNetSum != 0.001" >
+                `VARhNetSum`,
+          </if>
+          <if test="VARhNetCH1 != 0.001" >
+                `VARhNetCH1`,
+          </if>
+          <if test="VARhNetCH2 != 0.001" >
+                `VARhNetCH2`,
+          </if>
+          <if test="VARhNetCH3 != 0.001" >
+                `VARhNetCH3`,
+          </if>
+          <if test="ThetaCH1Angle != 0.001" >
+                `ThetaCH1Angle`,
+          </if>
+          <if test="ThetaCH2Angle != 0.001" >
+                `ThetaCH2Angle`,
+          </if>
+          <if test="ThetaCH3Angle != 0.001" >
+                `ThetaCH3Angle`,
+          </if>
+          <if test="RoCoilPGAGainCh1 != 0.001" >
+                `RoCoilPGAGainCh1`,
+          </if>
+          <if test="RoCoilPGAGainCh2 != 0.001" >
+                `RoCoilPGAGainCh2`,
+          </if>
+          <if test="RoCoilPGAGainCh3 != 0.001" >
+                `RoCoilPGAGainCh3`,
+          </if>
+          
+
           
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
@@ -510,6 +627,89 @@
 	                #{WattDemandElement},
 	          </if>
 	          
+	          
+	          <if test="DisplacementPFSum != 0.001" >
+                #{DisplacementPFSum},
+	          </if>
+	          <if test="DisplacementPFCH1A != 0.001" >
+	                #{DisplacementPFCH1A},
+	          </if>
+	          <if test="DisplacementPFCH2B != 0.001" >
+	                #{DisplacementPFCH2B},
+	          </if>
+	          <if test="DisplacementPFCH3C != 0.001" >
+	                #{DisplacementPFCH3C},
+	          </if>
+	          <if test="THDSum != 0.001" >
+	                #{THDSum},
+	          </if>
+	          <if test="THDCH1A != 0.001" >
+	                #{THDCH1A},
+	          </if>
+	          <if test="THDCH2B != 0.001" >
+	                #{THDCH2B},
+	          </if>
+	          <if test="THDCH3C != 0.001" >
+	                #{THDCH3C},
+	          </if>
+	          <if test="VADemandElement != 0.001" >
+	                #{VADemandElement},
+	          </if>
+	          <if test="EnergyNetSum != 0.001" >
+	                #{EnergyNetSum},
+	          </if>
+	          <if test="EnergyNetCH1 != 0.001" >
+	                #{EnergyNetCH1},
+	          </if>
+	          <if test="EnergyNetCH2 != 0.001" >
+	                #{EnergyNetCH2},
+	          </if>
+	          <if test="EnergyNetCH3 != 0.001" >
+	                #{EnergyNetCH3},
+	          </if>
+	          <if test="ApparentEnergyNetSum != 0.001" >
+	                #{ApparentEnergyNetSum},
+	          </if>
+	          <if test="ApparentEnergyNetCH1 != 0.001" >
+	                #{ApparentEnergyNetCH1},
+	          </if>
+	          <if test="ApparentEnergyNetCH2 != 0.001" >
+	                #{ApparentEnergyNetCH2},
+	          </if>
+	          <if test="ApparentEnergyNetCH3 != 0.001" >
+	                #{ApparentEnergyNetCH3},
+	          </if>
+	          <if test="VARhNetSum != 0.001" >
+	                #{VARhNetSum},
+	          </if>
+	          <if test="VARhNetCH1 != 0.001" >
+	                #{VARhNetCH1},
+	          </if>
+	          <if test="VARhNetCH2 != 0.001" >
+	                #{VARhNetCH2},
+	          </if>
+	          <if test="VARhNetCH3 != 0.001" >
+	                #{VARhNetCH3},
+	          </if>
+	          <if test="ThetaCH1Angle != 0.001" >
+	                #{ThetaCH1Angle},
+	          </if>
+	          <if test="ThetaCH2Angle != 0.001" >
+	                #{ThetaCH2Angle},
+	          </if>
+	          <if test="ThetaCH3Angle != 0.001" >
+	                #{ThetaCH3Angle},
+	          </if>
+	          <if test="RoCoilPGAGainCh1 != 0.001" >
+	                #{RoCoilPGAGainCh1},
+	          </if>
+	          <if test="RoCoilPGAGainCh2 != 0.001" >
+	                #{RoCoilPGAGainCh2},
+	          </if>
+	          <if test="RoCoilPGAGainCh3 != 0.001" >
+	                #{RoCoilPGAGainCh3},
+	          </if>
+	          
 			  <if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			  </if>
@@ -725,6 +925,94 @@
 	          <if test="WattDemandElement != 0.001" >
 	                `WattDemandElement` = #{WattDemandElement},
 	          </if>
+	          
+	          
+	          
+	          
+	          <if test="DisplacementPFSum != 0.001" >
+                `DisplacementPFSum` = #{DisplacementPFSum},
+          </if>
+          <if test="DisplacementPFCH1A != 0.001" >
+                `DisplacementPFCH1A` = #{DisplacementPFCH1A},
+          </if>
+          <if test="DisplacementPFCH2B != 0.001" >
+                `DisplacementPFCH2B` = #{DisplacementPFCH2B},
+          </if>
+          <if test="DisplacementPFCH3C != 0.001" >
+                `DisplacementPFCH3C` = #{DisplacementPFCH3C},
+          </if>
+          <if test="THDSum != 0.001" >
+                `THDSum` = #{THDSum},
+          </if>
+          <if test="THDCH1A != 0.001" >
+                `THDCH1A` = #{THDCH1A},
+          </if>
+          <if test="THDCH2B != 0.001" >
+                `THDCH2B` = #{THDCH2B},
+          </if>
+          <if test="THDCH3C != 0.001" >
+                `THDCH3C` = #{THDCH3C},
+          </if>
+          <if test="VADemandElement != 0.001" >
+                `VADemandElement` = #{VADemandElement},
+          </if>
+          <if test="EnergyNetSum != 0.001" >
+                `EnergyNetSum` = #{EnergyNetSum},
+          </if>
+          <if test="EnergyNetCH1 != 0.001" >
+                `EnergyNetCH1` = #{EnergyNetCH1},
+          </if>
+          <if test="EnergyNetCH2 != 0.001" >
+                `EnergyNetCH2` = #{EnergyNetCH2},
+          </if>
+          <if test="EnergyNetCH3 != 0.001" >
+                `EnergyNetCH3` = #{EnergyNetCH3},
+          </if>
+          <if test="ApparentEnergyNetSum != 0.001" >
+                `ApparentEnergyNetSum` = #{ApparentEnergyNetSum},
+          </if>
+          <if test="ApparentEnergyNetCH1 != 0.001" >
+                `ApparentEnergyNetCH1` = #{ApparentEnergyNetCH1},
+          </if>
+          <if test="ApparentEnergyNetCH2 != 0.001" >
+                `ApparentEnergyNetCH2` = #{ApparentEnergyNetCH2},
+          </if>
+          <if test="ApparentEnergyNetCH3 != 0.001" >
+                `ApparentEnergyNetCH3` = #{ApparentEnergyNetCH3},
+          </if>
+          <if test="VARhNetSum != 0.001" >
+                `VARhNetSum` = #{VARhNetSum},
+          </if>
+          <if test="VARhNetCH1 != 0.001" >
+                `VARhNetCH1` = #{VARhNetCH1},
+          </if>
+          <if test="VARhNetCH2 != 0.001" >
+                `VARhNetCH2` = #{VARhNetCH2},
+          </if>
+          <if test="VARhNetCH3 != 0.001" >
+                `VARhNetCH3` = #{VARhNetCH3},
+          </if>
+          <if test="ThetaCH1Angle != 0.001" >
+                `ThetaCH1Angle` = #{ThetaCH1Angle},
+          </if>
+          <if test="ThetaCH2Angle != 0.001" >
+                `ThetaCH2Angle` = #{ThetaCH2Angle},
+          </if>
+          <if test="ThetaCH3Angle != 0.001" >
+                `ThetaCH3Angle` = #{ThetaCH3Angle},
+          </if>
+          <if test="RoCoilPGAGainCh1 != 0.001" >
+                `RoCoilPGAGainCh1` = #{RoCoilPGAGainCh1},
+          </if>
+          <if test="RoCoilPGAGainCh2 != 0.001" >
+                `RoCoilPGAGainCh2` = #{RoCoilPGAGainCh2},
+          </if>
+          <if test="RoCoilPGAGainCh3 != 0.001" >
+                `RoCoilPGAGainCh3` = #{RoCoilPGAGainCh3},
+          </if>
+          
+          
+          
 	          
 			  <if test="nvmActivePower != 0.001" >
 			  	`nvmActivePower` = #{nvmActivePower},
