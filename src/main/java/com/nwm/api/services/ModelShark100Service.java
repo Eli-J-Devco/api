@@ -30,14 +30,13 @@ public class ModelShark100Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(22) : "0.001");
-				if(energy < 0 && offset_data_old > 0) {
+				if(energy < 0) {
 					energy = energy * -1;
-					energy = (energy + offset_data_old) * -1;
-				} else if(offset_data_old > 0 && energy > 0) {
-					energy = energy + offset_data_old;
 				}
 				
-				
+				if(offset_data_old != 0) {
+					energy = energy + offset_data_old;
+				}
 				
 				dataModelShark100.setTime(words.get(0).replace("'", ""));
 				dataModelShark100.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
