@@ -12,9 +12,30 @@ public class CameraImageEntity {
 	private String datatablename;
 	private String start_date;
 	private String end_date;
+	private String times_ago;
+	private String times_ago_unit;
+	private String last_updated;
 	
 	
 	
+	public String getTimes_ago() {
+		return times_ago;
+	}
+	public void setTimes_ago(String times_ago) {
+		this.times_ago = times_ago;
+	}
+	public String getTimes_ago_unit() {
+		return times_ago_unit;
+	}
+	public void setTimes_ago_unit(String times_ago_unit) {
+		this.times_ago_unit = times_ago_unit;
+	}
+	public String getLast_updated() {
+		return last_updated;
+	}
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
+	}
 	public String getStart_date() {
 		return start_date;
 	}
