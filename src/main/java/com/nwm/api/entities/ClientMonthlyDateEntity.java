@@ -26,6 +26,7 @@ public class ClientMonthlyDateEntity extends DateTimeReportDataEntity {
 	private Double energy;
 	private Double avgEnergy;
 	
+	
 	public static Map<String, Object> convertDateTimeToMap(ClientMonthlyDateEntity obj) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		if (obj == null) return map;

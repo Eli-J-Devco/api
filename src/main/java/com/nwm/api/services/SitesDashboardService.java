@@ -452,7 +452,7 @@ public class SitesDashboardService extends DB {
 								interval = 1;
 								timeUnit = ChronoUnit.DAYS;
 								timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
-								categoriesTimeFormat = DateTimeFormatter.ofPattern("dd. LLL");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("dd");
 								break;
 								
 							case "12_month":

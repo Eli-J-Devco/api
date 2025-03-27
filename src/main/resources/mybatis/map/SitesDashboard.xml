@@ -924,6 +924,7 @@
 			time_full,
 			time_format,
 			categories_time,
+			download_time,
 			CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `energy`
 		FROM (
 			<foreach collection="devices" item="item" index="index" separator="union all">
@@ -931,12 +932,14 @@
 					mi.time_format,
 					mi.time_full,
 					mi.categories_time,
+					mi.download_time,
 					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
 				FROM
 					(
 						SELECT
 							t.time_format,
 							t.time_full,
+							t.download_time,
 							t.categories_time,
 							dv.nvmActiveEnergy
 						FROM
@@ -948,11 +951,13 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
 				 						</when>
 				 						<otherwise>
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS download_time,
 				 						</otherwise>
 				 					</choose>	
 	
@@ -973,6 +978,7 @@
 							t.time_format,
 							t.time_full,
 							t.categories_time,
+							t.download_time,
 							dv.nvmActiveEnergy
 						FROM
 							${item.datatablename} dv
@@ -983,11 +989,13 @@
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%Y') AS time_full,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%b, %Y') AS download_time,
 				 						</when>
 				 						<otherwise>
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%Y-%m-%d') AS time_format,
 				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS time_full,
-				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%d') AS categories_time,
+				 							DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC',  t.`value`), '%m-%d-%Y') AS download_time,
 				 						</otherwise>
 				 					</choose>	
 									MAX(dv.time) AS time
@@ -1005,11 +1013,6 @@
 
 			</foreach>
 		) t
-		
-		<if test="id_filter == 'last_month'">
-			WHERE
-				time_format <![CDATA[<=]]> DATE_FORMAT(LAST_DAY(#{end_date}), '%Y-%m-%d 23:59:59')
-		</if>
 		
 		GROUP BY
 			time_format
