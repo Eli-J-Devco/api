@@ -31,10 +31,11 @@ public class ModelGasMeterService extends DB {
 				ModelGasMeterEntity dataModel = new ModelGasMeterEntity();
 				
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(energy < 0 && offset_data_old > 0) {
+				if(energy < 0) {
 					energy = energy * -1;
-					energy = (energy + offset_data_old) * -1;
-				} else if(offset_data_old > 0 && energy > 0) {
+				}
+				
+				if(offset_data_old != 0) {
 					energy = energy + offset_data_old;
 				}
 				dataModel.setTime(words.get(0).replace("'", ""));

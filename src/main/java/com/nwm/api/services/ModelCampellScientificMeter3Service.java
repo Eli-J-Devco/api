@@ -29,10 +29,11 @@ public class ModelCampellScientificMeter3Service extends DB {
 				ModelCampellScientificMeter3Entity dataModelCSM3 = new ModelCampellScientificMeter3Entity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				if(energy < 0 && offset_data_old > 0) {
+				if(energy < 0) {
 					energy = energy * -1;
-					energy = (energy + offset_data_old) * -1;
-				} else if(offset_data_old > 0 && energy > 0) {
+				}
+				
+				if(offset_data_old != 0) {
 					energy = energy + offset_data_old;
 				}
 				
