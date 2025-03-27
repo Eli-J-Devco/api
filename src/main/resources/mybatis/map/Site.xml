@@ -444,7 +444,7 @@
 					'id_site_group', ssg.id_site_group,
 					'name', ssg.name,
 					'order_id', ssg.order_id,
-					'is_expand', 1
+					'is_expand', 0
 				))
 			) AS sub_group_list
 		FROM
