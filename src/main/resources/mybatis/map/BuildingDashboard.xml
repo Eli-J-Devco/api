@@ -18,11 +18,12 @@
 			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
 			IFNULL(d.energy_this_year, 0) AS energy_this_year,
 			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
-			d.id_device_group
+			d.id_device_group,
+			d.meter_type
 		FROM
 			device d 
 		WHERE
-			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,1,6)
+			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.id_device_type IN(7) AND d.meter_type IN(2,1,6, 4)
 	</select>
 	
 	
