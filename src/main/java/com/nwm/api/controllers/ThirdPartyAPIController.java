@@ -88,6 +88,7 @@ public class ThirdPartyAPIController extends BaseController {
 	@GetMapping("/device-data")
 	public Object getDeviceData(
 			@RequestHeader(name = "X-NWM-API-KEY", required = false) String key,
+			@RequestHeader(name = "X-Forwarded-For", required = false) String clientIP,
 			ThirdPartyAPIEntity params,
 			HttpServletRequest request
 	) {
@@ -124,7 +125,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
-			List dataList = service.getDeviceData(key, request.getRemoteHost(), params);
+			List dataList = service.getDeviceData(key, clientIP != null && clientIP != "" ? clientIP : request.getRemoteHost(), params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
 		} catch (Exception e) {
