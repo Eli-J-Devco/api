@@ -367,35 +367,9 @@ public class SitesDashboardService extends DB {
 	 */
 	
 	public List getListDataDeviceForLeviton(SitesDevicesEntity obj) {
-		List dataList = new ArrayList();
 		try {
 			List listWidgetOverview = queryForList("SitesDashboard.getListWidgetOverviewLeviton", obj);
-			
-			if (listWidgetOverview.size() > 0) {
-				for (int i = 0; i < listWidgetOverview.size(); i++) {
-					// get data device in widget 
-					Map<String, Object> itemWidget = (Map<String, Object>) listWidgetOverview.get(i);
-					List listWidget = queryForList("SitesDashboard.getListDeviceInWidget", itemWidget);
-					
-					itemWidget.put("devices", listWidget);
-					
-					// get data today
-					if(listWidget.size() > 0) {
-						Map<String, Object> dataToday = (Map<String, Object>) queryForObject("SitesDashboard.getDataToday", itemWidget);
-						itemWidget.put("today", dataToday.get("today"));
-						itemWidget.put("today_power", dataToday.get("today_power"));
-						itemWidget.put("thirtydays", dataToday.get("energy"));
-						
-					} else {
-						itemWidget.put("today", 0);
-						itemWidget.put("thirtydays", 0);
-					}					
-					
-					dataList.add(itemWidget);
-					
-				}
-			}
-			return dataList;
+			return listWidgetOverview;
 				
 		} catch (Exception ex) {
 			return new ArrayList();

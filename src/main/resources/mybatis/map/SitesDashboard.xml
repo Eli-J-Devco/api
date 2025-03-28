@@ -812,24 +812,29 @@
 	
 	<select id="getListWidgetOverviewLeviton" resultType="Map">
 		SELECT
-			d.id,
-			d.id_site,
-			d.`name`,
-			d.`status`,
-			d.icon,
-			d.is_consumption,
-			d.text_color,
-			d.unit,
-			d.menu_order,
-			d.energy_flow_enable,
-			d.energy_usage_enable,
-			d.widget_type
+			dw.id,
+			dw.id_site,
+			dw.`name`,
+			dw.`status`,
+			dw.icon,
+			dw.is_consumption,
+			dw.text_color,
+			dw.unit,
+			dw.menu_order,
+			dw.energy_flow_enable,
+			dw.energy_usage_enable,
+			dw.widget_type,
+			IFNULL(SUM(d.energy_today),0) AS today,
+			IFNULL(SUM(d.field_value1),0) AS today_power,
+			IFNULL(SUM(d.energy_last30_days),0) AS thirtydays
 		FROM
-			leviton_overview_widget d
+			leviton_overview_widget dw
+			LEFT JOIN leviton_overview_widget_map dm ON dm.id_leviton_overview_widget = dw.id
+			LEFT JOIN device d ON d.id = dm.id_device
 		WHERE
-			d.id_site = #{id_site}
-			AND d.`status` = 1 
-			GROUP BY d.id;
+			dw.id_site = #{id_site}
+			AND dw.`status` = 1 
+			GROUP BY dw.id;
 	</select>
 	
 	
@@ -872,7 +877,7 @@
 	
 	
 	
-	<select id="getDataToday" resultType="Map">
+	<!-- <select id="getDataToday" resultType="Map">
 		SELECT 
 			t.id_device,
 			ROUND(IFNULL(SUM(t.energy), 0),2) AS energy,
@@ -890,7 +895,7 @@
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE 
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) = DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ), '%Y-%m-%d' )
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) = DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ), '%Y-%m-%d' )
 				) AS today,
 				
 				(
@@ -899,7 +904,7 @@
 					LEFT JOIN site s ON s.id = d.id_site
 					LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE 
-					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( CONVERT_TZ( DATE_ADD(NOW(),INTERVAL -1 HOUR), '+00:00', t.`offset` ), '%Y-%m-%d %H:%i' )
+					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:%i' ) >= DATE_FORMAT( CONVERT_TZ( DATE_ADD(NOW(),INTERVAL -1 HOUR), 'UTC', t.`value` ), '%Y-%m-%d %H:%i' )
 					ORDER BY time DESC LIMIT 1
 				) AS today_power
 				
@@ -913,7 +918,7 @@
 		]]>
 		</foreach>
 		)t
-	</select>
+	</select> --> 
 	
 	
 	
