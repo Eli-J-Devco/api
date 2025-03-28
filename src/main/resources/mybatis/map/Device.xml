@@ -5676,7 +5676,7 @@
 						  `ExportedVARhQ4C` double DEFAULT NULL COMMENT '',
 						  `WattDemandElement` double DEFAULT NULL COMMENT '',
 						  
-						  `DisplacementPFSum` double DEFAULT NULL COMMENT '',
+						 <!--  `DisplacementPFSum` double DEFAULT NULL COMMENT '',
 						  `DisplacementPFCH1A` double DEFAULT NULL COMMENT '',
 						  `DisplacementPFCH2B` double DEFAULT NULL COMMENT '',
 						  `DisplacementPFCH3C` double DEFAULT NULL COMMENT '',
@@ -5702,7 +5702,7 @@
 						  `ThetaCH3Angle` double DEFAULT NULL COMMENT '',
 						  `RoCoilPGAGainCh1` double DEFAULT NULL COMMENT '',
 						  `RoCoilPGAGainCh2` double DEFAULT NULL COMMENT '',
-						  `RoCoilPGAGainCh3` double DEFAULT NULL COMMENT '',
+						  `RoCoilPGAGainCh3` double DEFAULT NULL COMMENT '', -->
 						  
 						  
 						  `nvmActivePower` double DEFAULT NULL,

@@ -72,7 +72,7 @@
 		   <result property="ExportedVARhQ4C" column="ExportedVARhQ4C" />
 		   <result property="WattDemandElement" column="WattDemandElement" />
 		   
-		   <result property="DisplacementPFSum" column="DisplacementPFSum" />
+		   <!-- <result property="DisplacementPFSum" column="DisplacementPFSum" />
 		   <result property="DisplacementPFCH1A" column="DisplacementPFCH1A" />
 		   <result property="DisplacementPFCH2B" column="DisplacementPFCH2B" />
 		   <result property="DisplacementPFCH3C" column="DisplacementPFCH3C" />
@@ -98,7 +98,7 @@
 		   <result property="ThetaCH3Angle" column="ThetaCH3Angle" />
 		   <result property="RoCoilPGAGainCh1" column="RoCoilPGAGainCh1" />
 		   <result property="RoCoilPGAGainCh2" column="RoCoilPGAGainCh2" />
-		   <result property="RoCoilPGAGainCh3" column="RoCoilPGAGainCh3" />
+		   <result property="RoCoilPGAGainCh3" column="RoCoilPGAGainCh3" /> -->
 		   
 		   
 		   
@@ -324,7 +324,7 @@
           </if>
 
           
-          <if test="DisplacementPFSum != 0.001" >
+          <!-- <if test="DisplacementPFSum != 0.001" >
                 `DisplacementPFSum`,
           </if>
           <if test="DisplacementPFCH1A != 0.001" >
@@ -404,7 +404,7 @@
           </if>
           <if test="RoCoilPGAGainCh3 != 0.001" >
                 `RoCoilPGAGainCh3`,
-          </if>
+          </if> -->
           
 
           
@@ -628,7 +628,7 @@
 	          </if>
 	          
 	          
-	          <if test="DisplacementPFSum != 0.001" >
+	          <!-- <if test="DisplacementPFSum != 0.001" >
                 #{DisplacementPFSum},
 	          </if>
 	          <if test="DisplacementPFCH1A != 0.001" >
@@ -708,7 +708,8 @@
 	          </if>
 	          <if test="RoCoilPGAGainCh3 != 0.001" >
 	                #{RoCoilPGAGainCh3},
-	          </if>
+	          </if> -->
+	          
 	          
 			  <if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
@@ -929,7 +930,7 @@
 	          
 	          
 	          
-	          <if test="DisplacementPFSum != 0.001" >
+	          <!-- <if test="DisplacementPFSum != 0.001" >
                 `DisplacementPFSum` = #{DisplacementPFSum},
           </if>
           <if test="DisplacementPFCH1A != 0.001" >
@@ -1009,7 +1010,7 @@
           </if>
           <if test="RoCoilPGAGainCh3 != 0.001" >
                 `RoCoilPGAGainCh3` = #{RoCoilPGAGainCh3},
-          </if>
+          </if> -->
           
           
           
