@@ -32,17 +32,16 @@ public class ThirdPartyAPIService extends DB {
 	 * @param startDate
 	 * @param endDate
 	 */
-	public List getEnergyGeneration(String key, String domain, String startDate, String endDate) {
+	public List getEnergyGeneration(String key, ThirdPartyAPIEntity params) {
 		try {
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key);
-			map.put("domain", domain);
 			map.put("id_device_type", new int[] {1,3});
 			List devicesList = getDevices(map);
 			if (devicesList.size() == 0) return new ArrayList();
 			
-			map.put("startDateTime", startDate);
-			map.put("endDateTime", endDate);
+			map.put("startDateTime", params.getStart_date());
+			map.put("endDateTime", params.getEnd_date());
 			map.put("devicesList", devicesList);
 			List<SiteEnergyThirdPartyAPIEntity> dataList = queryForList("ThirdPartyAPI.getEnergyGeneration", map);
 			if (dataList == null) return new ArrayList();
@@ -85,18 +84,14 @@ public class ThirdPartyAPIService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-02-20
 	 * @param key
-	 * @param domain
 	 * @param params
 	 */
-	public List getDeviceData(String key, String domain, ThirdPartyAPIEntity params) {
+	public List getDeviceData(String key, ThirdPartyAPIEntity params) {
 		List dataList = new ArrayList();
 		
 		try {
-			insert("ThirdPartyAPI.insertDomain", domain);
-			
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key);
-			map.put("domain", domain);
 			map.put("id_device", params.getDevice_id());
 			List devicesList = getDevices(map);
 			if (devicesList.size() == 0) return dataList;
@@ -118,19 +113,24 @@ public class ThirdPartyAPIService extends DB {
 						ObjectMapper mapper = new ObjectMapper();
 						List<Map<String, String>> parameters = mapper.readValue(device.get("parameters").toString(), new TypeReference<List<Map<String, String>>>(){});
 						maps.put("data_type_list", parameters.stream().map(item -> item.get("name")));
-						Map<String, String> parameter = parameters.stream().filter(item -> item.get("name").equals(params.getData_type())).findFirst().orElse(null);
-						if (parameter == null) return maps;
+						
+						List<Map<String, String>> data_types = new ArrayList<Map<String, String>>();
+						String[] data_type = params.getData_type().split(",");
+						for(int j = 0; j < data_type.length; j++) {
+							String name = data_type[j];
+							Map<String, String> parameter = parameters.stream().filter(item -> item.get("name").equals(name)).findFirst().orElse(null);
+							if (parameter == null) continue;
+							data_types.add(parameter);
+						}
+						if (data_types.size() == 0) return maps;
 						
 						device.put("startDateTime", params.getStart_date());
 						device.put("endDateTime", params.getEnd_date());
 						device.put("interval", params.getInterval());
-						device.put("data_type", params.getData_type());
-						device.put("aggregate_function", parameter.get("aggregate_function"));
+						device.put("data_types", data_types);
 						
 						List<Map<String, Object>> data = queryForList("ThirdPartyAPI.getDeviceData", device);
 						
-						maps.put("data_type", parameter.get("name"));
-						maps.put("unit", parameter.get("unit"));
 						maps.put("data", data);
 					} catch (Exception ex) {
 						log.error("ThirdPartyAPI.getDeviceData", ex);

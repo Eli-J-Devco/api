@@ -28,7 +28,6 @@
 			LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id
 		WHERE
 			s.third_party_key = #{key}
-			AND s.third_party_domain = #{domain}
 			AND s.status = 1 
 			AND s.is_delete = 0
 			AND d.status = 1
@@ -101,11 +100,15 @@
 	
 	<select id="getDeviceData" resultType="Map">
 		SELECT
-			value,
+			<foreach collection="data_types" item="item">
+				${item.name},
+			</foreach>
 			time_group_by AS time
 		FROM (
 			SELECT
-				${aggregate_function}(dv.${data_type}) AS `value`,
+				<foreach collection="data_types" item="item">
+					${item.aggregate_function}(dv.${item.name}) AS ${item.name},
+				</foreach>
 				<choose>
 					<when test="interval == '15min'">
 						FROM_UNIXTIME((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', t.value)) DIV 900) * 900, '%Y-%m-%d %H:%i')
@@ -137,10 +140,5 @@
 				time_group_by
 		) t
 	</select>
-	
-	<insert id="insertDomain" parameterType="String">
-		INSERT INTO third_party_domain_log (domain)
-		VALUES (#{param})
-	</insert>
 
 </mapper>
