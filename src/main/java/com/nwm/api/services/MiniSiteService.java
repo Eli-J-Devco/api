@@ -31,6 +31,7 @@ public class MiniSiteService extends DB {
 		Object dataObj = null;
 		try {
 			dataObj = queryForObject("MiniSite.getMiniSiteInfo", obj);
+			
 			if (dataObj == null)
 				return new SiteEntity();
 		} catch (Exception ex) {

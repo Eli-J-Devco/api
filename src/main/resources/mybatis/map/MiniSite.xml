@@ -78,13 +78,27 @@
 			s.lat,
 			s.lng,
 			s.table_data_report,
-			IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime) AS energy_lifetime,
-			IF(m.ac_power > 0 ,m.ac_power,t.ac_power) AS ac_power,
-			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)), FORMAT(ROUND((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)) * 0.0117, 0), 0) , 0) AS total_tree,
-			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)), FORMAT(ROUND(((IF(m.energy_lifetime > 0 ,m.energy_lifetime, t.energy_lifetime)) * 392), 0), 0) , 0) AS total_co2,
+			IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime) AS energy_lifetime,
+			IF(m.ac_power <![CDATA[ >= ]]> 0 ,m.ac_power,n.ac_power) AS ac_power,
+			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)), FORMAT(ROUND((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)) * 0.0117, 0), 0) , 0) AS total_tree,
+			IF((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)), FORMAT(ROUND(((IF(m.energy_lifetime > 0 ,m.energy_lifetime, n.energy_lifetime)) * 392), 0), 0) , 0) AS total_co2,
 			t.`value` AS timezone_value,
 			IF(v.enable_virtual_device > 0 ,1,0) AS enable_virtual_device,
-			s.table_data_virtual
+			s.table_data_virtual,
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN IF(s.weather_indoor_temp_unit = '°C', s.weather_indoor_temp, ROUND(s.weather_indoor_temp * 1.8 + 32,1) )
+			    WHEN s.unit_type_temp = 2 THEN IF(s.weather_indoor_temp_unit = '°C', ROUND(s.weather_indoor_temp * 1.8 + 32,1), ROUND((s.weather_indoor_temp) - 32 * 5/9,1))
+			    ELSE "-"
+			END AS temperature,
+			
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN "°C"
+			    WHEN s.unit_type_temp = 2 THEN "°F"
+			    ELSE "N/A"
+			END AS temperature_unit,
+			
+			s.weather_humidity AS humidity
+			
 		FROM
 			site s 
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -99,7 +113,7 @@
 				AND d.is_delete = 0
 				AND d.id_device_type IN (3,7,9)
 				AND d.is_excluded_meter = 0
-			)m ON m.id_site = s.id
+			)n ON n.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT 
@@ -110,8 +124,8 @@
 				WHERE SHA1(d.id_site) = #{hash_id}
 				AND d.`status` = 1
 				AND d.is_delete = 0
-				AND d.id_device_type = 1
-			)t ON t.id_site = s.id
+				AND d.id_device_type IN (1)
+			)m ON m.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT COUNT(*) AS enable_virtual_device, d.id_site FROM device d 
