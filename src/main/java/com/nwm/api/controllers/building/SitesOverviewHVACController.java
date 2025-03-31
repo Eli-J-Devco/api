@@ -66,4 +66,44 @@ public class SitesOverviewHVACController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Save config points
+	 * @author Hung.Bui
+	 * @since 2025-03-31
+	 * @param obj { config_points }
+	 * @return data (status, message, obj)
+	 */
+
+	@PostMapping("/save-config-points")
+	public Object saveConfigPoints(@Valid @RequestBody SitesOverviewHVACLayoutMapEntity obj) {
+		try {
+			SitesOverviewHVACService service = new SitesOverviewHVACService();
+			boolean isSucceed = service.saveConfigPoints(obj);
+			return isSucceed ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
+		}
+	}
+
+	
+	/**
+	 * @description Get config points
+	 * @author Hung.Bui
+	 * @since 2025-03-31
+	 * @param obj { id_gateway }
+	 * @return data (status, message, obj)
+	 */
+	@PostMapping("/config-points")
+	public Object getConfigPoints(@RequestBody SitesOverviewHVACLayoutMapEntity obj) {
+		try {
+			SitesOverviewHVACService service = new SitesOverviewHVACService();
+			List<String> data = service.getConfigPoints(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
 }
