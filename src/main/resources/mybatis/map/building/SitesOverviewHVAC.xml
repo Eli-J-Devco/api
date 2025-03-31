@@ -46,4 +46,33 @@
 			id_hvac_layout = #{id_hvac_layout}
 	</select>
 	
+	<delete id="deleteConfigPoints">
+		DELETE FROM hvac_config_points
+		WHERE id_gateway = #{id_gateway}
+	</delete>
+	
+	<insert id="insertConfigPoints">
+		INSERT INTO hvac_config_points (
+			id,
+			config,
+			id_gateway
+		) VALUES
+		<foreach collection="config_points" item="item" separator=",">
+			(
+				#{item.id},
+				#{item.config},
+				#{item.id_gateway}
+			)
+		</foreach>
+	</insert>
+	
+	<select id="getConfigPoints" resultType="String">
+		SELECT
+			config
+		FROM
+			hvac_config_points
+		WHERE
+			id_gateway = #{id_gateway}
+	</select>
+	
 </mapper>

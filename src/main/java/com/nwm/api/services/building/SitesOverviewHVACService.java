@@ -38,7 +38,7 @@ public class SitesOverviewHVACService extends DB {
 	}
 	
 	/**
-	 * @description Get gas meters
+	 * @description Get mapping points
 	 * @author Hung.Bui
 	 * @since 2025-03-22
 	 * @param SitesOverviewHVACLayoutMapEntity
@@ -52,6 +52,44 @@ public class SitesOverviewHVACService extends DB {
 			log.error("SitesOverviewHVAC.getMappingPoints", ex);
 		}
 		return new ArrayList<HVACMappingPointEntity>();
+	}
+	
+	/**
+	 * @description Save config points
+	 * @author Hung.Bui
+	 * @since 2025-03-31
+	 */
+	public boolean saveConfigPoints(SitesOverviewHVACLayoutMapEntity obj) {
+		SqlSession session = this.beginTransaction();
+		try {
+			session.delete("SitesOverviewHVAC.deleteConfigPoints", obj);
+			session.insert("SitesOverviewHVAC.insertConfigPoints", obj);
+			session.commit();
+			return true;
+	    } catch(Exception ex) {
+	    	session.rollback();
+	        log.error("SitesOverviewHVAC.saveConfigPoints", ex);
+	        return false;
+	    } finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * @description Get config points
+	 * @author Hung.Bui
+	 * @since 2025-03-31
+	 * @param SitesOverviewHVACLayoutMapEntity
+	 * @return List<HVACConfigPointEntity>
+	 */
+	public List<String> getConfigPoints(SitesOverviewHVACLayoutMapEntity obj) {
+		try {
+			List<String> dataList = queryForList("SitesOverviewHVAC.getConfigPoints", obj);
+			if (dataList != null && dataList.size() > 0) return dataList;
+		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.getConfigPoints", ex);
+		}
+		return new ArrayList<String>();
 	}
 	
 }
