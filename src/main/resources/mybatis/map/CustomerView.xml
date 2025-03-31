@@ -23,6 +23,7 @@
 			AND d.`status` = 1 
 			AND d.is_delete = 0
 			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	</select>
 	
@@ -276,6 +277,7 @@
 							AND d.id_site = #{id_site}
 							AND s.is_delete = 0
 							AND d.is_delete = 0
+							AND (d.meter_type = 3 OR d.meter_type IS NULL)
 							AND sdr.time BETWEEN #{start_date} AND #{end_date}
 							<foreach item="item" index="index" collection="hidden_data_list">
 								AND
@@ -433,6 +435,7 @@
 							AND d.id_device_type = 12
 							AND s.is_delete = 0
 							AND d.is_delete = 0
+							AND (d.meter_type = 3 OR d.meter_type IS NULL)
 							AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 							<foreach item="item" index="index" collection="hidden_data_list">
 								AND

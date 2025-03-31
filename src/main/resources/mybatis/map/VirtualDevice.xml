@@ -86,6 +86,7 @@
 			d.id_site = #{id_site}
 			AND d.`status` = 1 
 			AND d.is_delete = 0
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
 			
 			<if test="virtual_device_type == 'inverter'">
 				AND d.id_device_type = 1
