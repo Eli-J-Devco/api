@@ -315,9 +315,32 @@ public class SiteEntity extends SortEntity {
 	private String date_format;
 	private int time_format;
 	private String locale;
-private String domain_role;
+	private String domain_role;
+	private double temperature;
+	private String temperature_unit;
+	private double humidity;
 	
 	
+	
+	
+	public double getHumidity() {
+		return humidity;
+	}
+	public void setHumidity(double humidity) {
+		this.humidity = humidity;
+	}
+	public double getTemperature() {
+		return temperature;
+	}
+	public void setTemperature(double temperature) {
+		this.temperature = temperature;
+	}
+	public String getTemperature_unit() {
+		return temperature_unit;
+	}
+	public void setTemperature_unit(String temperature_unit) {
+		this.temperature_unit = temperature_unit;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}

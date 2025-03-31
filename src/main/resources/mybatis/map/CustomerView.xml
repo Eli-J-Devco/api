@@ -562,7 +562,21 @@
 			IFNULL(e.peak_power_today, 0) AS peak_power_today,
 			IF(e.energy_lifetime, FORMAT(ROUND(e.energy_lifetime * 0.0117, 0), 0) , 0) AS total_tree,
 			IF(e.energy_lifetime, FORMAT(ROUND((e.energy_lifetime * 392), 0), 0) , 0) AS total_co2,
-			IFNULL(e.energy_lifetime, 0) AS energy_lifetime
+			IFNULL(e.energy_lifetime, 0) AS energy_lifetime,
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN IF(s.weather_indoor_temp_unit = '°C', s.weather_indoor_temp, ROUND(s.weather_indoor_temp * 1.8 + 32,1) )
+			    WHEN s.unit_type_temp = 2 THEN IF(s.weather_indoor_temp_unit = '°C', ROUND(s.weather_indoor_temp * 1.8 + 32,1), ROUND((s.weather_indoor_temp) - 32 * 5/9,1))
+			    ELSE "-"
+			END AS temperature,
+			
+			CASE
+			    WHEN s.unit_type_temp = 1 THEN "°C"
+			    WHEN s.unit_type_temp = 2 THEN "°F"
+			    ELSE "N/A"
+			END AS temperature_unit,
+			
+			s.weather_humidity AS humidity
+			
 			
 		FROM
 			site s
