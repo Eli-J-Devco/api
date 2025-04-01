@@ -234,6 +234,27 @@ public class SitesDevicesService extends DB {
 	}
 	
 	/**
+	 * @description get list image camera
+	 * @author duy.phan
+	 * @since 2025-01-24
+	 * @param id_site
+	 */
+	
+
+	public List getListCameraDevices(SitesDevicesEntity obj) {
+
+		try {
+			List dataList = queryForList("SitesDevices.getListCameraDevices", obj);
+			if (dataList == null) return new ArrayList();
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
 	 * @description get first  image camera by id_device
 	 * @author duy.phan 
 	 * @since 2025-01-24

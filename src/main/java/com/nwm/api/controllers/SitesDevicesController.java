@@ -1221,6 +1221,24 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
+	/**
+	 * @description Get list camera image
+	 * @author duy.phan
+	 * @since 2025-01-24
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-camera-devices")
+	public Object getListCameraDevices(@RequestBody SitesDevicesEntity obj) {
+		try {
+			SitesDevicesService service = new SitesDevicesService();
+			List data = service.getListCameraDevices(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	/**
 	 * @description Get list camera image
