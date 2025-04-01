@@ -18,6 +18,7 @@ public class SitesOverviewGasEntity {
 	private String end_date;
 	private List<DeviceEntity> devices;
 	private int[] id_device_type;
+	private int[] meter_type;
 	private String reading_field;
 	private String domain_role;
 	
@@ -74,6 +75,12 @@ public class SitesOverviewGasEntity {
 	}
 	public void setId_device_type(int[] id_device_type) {
 		this.id_device_type = id_device_type;
+	}
+	public int[] getMeter_type() {
+		return meter_type;
+	}
+	public void setMeter_type(int[] meter_type) {
+		this.meter_type = meter_type;
 	}
 	public String getReading_field() {
 		return reading_field;
