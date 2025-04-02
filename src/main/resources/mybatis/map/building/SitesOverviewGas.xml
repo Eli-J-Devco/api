@@ -204,6 +204,7 @@
 	
 	<sql id="consumptionTable">
 		SELECT
+			dv.time,
 			t.time_format,
 			t.time_full,
 			t.categories_time,
@@ -238,7 +239,7 @@
 				FROM
 					${item.datatablename} dv
 				WHERE
-					dv.time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+					dv.time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(DATE_ADD(#{end_date}, INTERVAL 1 DAY), #{timezone_value}, 'UTC')
 				GROUP BY
 					time_format
 			) t ON t.time = dv.time
@@ -252,6 +253,7 @@
 		FROM (
 			<foreach collection="devices" item="item" separator="UNION ALL">
 				SELECT
+					mi.time,
 					mi.time_format,
 					mi.time_full,
 					mi.categories_time,
@@ -269,6 +271,8 @@
 					) ma ON ma.time_full = mi.time_full
 			</foreach>
 		) t
+		WHERE
+			time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
 		GROUP BY
 			time_format
 	</select>
