@@ -17,10 +17,24 @@
 			d.id_site = #{id}
 			AND d.status = 1
 			AND d.is_delete = 0
-			AND d.is_excluded_meter = 0
-			<foreach collection="id_device_type" item="id" open="AND d.id_device_type IN (" close=")" separator=",">
-				#{id}
-			</foreach>
+			<choose>
+				<when test="id_device_type != null and id_device_type.length > 0">
+					AND d.is_excluded_meter = 0
+					<foreach collection="id_device_type" item="id" open="AND d.id_device_type IN (" close=")" separator=",">
+						#{id}
+					</foreach>
+				</when>
+				
+				<when test="meter_type != null and meter_type.length > 0">
+					<foreach collection="meter_type" item="id" open="AND d.meter_type IN (" close=")" separator=",">
+						#{id}
+					</foreach>
+				</when>
+				
+				<otherwise>
+					AND FALSE
+				</otherwise>
+			</choose>
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', #{timezone_value}) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
