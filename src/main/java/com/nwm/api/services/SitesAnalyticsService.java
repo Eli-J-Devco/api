@@ -422,7 +422,6 @@ public class SitesAnalyticsService extends DB {
 
 	public List getChartParameterDevice(DeviceEntity obj) {
 		try {
-			List dataList = new ArrayList();
 			List dataDevice = obj.getDataDevice();
 			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 			DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -476,16 +475,11 @@ public class SitesAnalyticsService extends DB {
 					list.add(future);
 				}
 				
-				CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
-				List<Map<String, Object>> deviceDataList = combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
-			    deviceDataList.forEach(data -> dataList.add(data));
+				return list.stream().map(future -> future.join()).collect(Collectors.toList());
 			}
-			return dataList;
-				
 		} catch (Exception ex) {
-			return new ArrayList();
 		}
-		
+		return new ArrayList();
 	}
 	
 	/**

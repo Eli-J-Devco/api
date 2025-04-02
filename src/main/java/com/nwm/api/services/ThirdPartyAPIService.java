@@ -87,14 +87,12 @@ public class ThirdPartyAPIService extends DB {
 	 * @param params
 	 */
 	public List getDeviceData(String key, ThirdPartyAPIEntity params) {
-		List dataList = new ArrayList();
-		
 		try {
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key);
 			map.put("id_device", params.getDevice_id());
 			List devicesList = getDevices(map);
-			if (devicesList.size() == 0) return dataList;
+			if (devicesList.size() == 0) return new ArrayList();
 			
 			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
 			
@@ -142,11 +140,7 @@ public class ThirdPartyAPIService extends DB {
 				list.add(future);
 			}
 			
-			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(list.toArray(new CompletableFuture[list.size()]));
-			List<Map<String, Object>> deviceDataList = combinedFutures.thenApply(__ -> list.stream().map(future -> future.join()).collect(Collectors.toList())).get();
-		    deviceDataList.forEach(data -> dataList.add(data));
-			
-			return dataList;
+			return list.stream().map(future -> future.join()).collect(Collectors.toList());
 		} catch (Exception ex) {
 			return new ArrayList();
 		}

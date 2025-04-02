@@ -252,8 +252,7 @@ public class SitesOverviewGasService extends DB {
 				futureList.add(future);
 			}
 
-			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
-			List<ActualVsPredictedConsumptionEntity> dataList = combinedFutures.thenApply(__ -> futureList.stream().map(future -> future.join()).collect(Collectors.toList())).get();
+			List<ActualVsPredictedConsumptionEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
 			dataList.sort((s1, s2) -> s1.getId().equals("actual") ? -1 : 1);
 			
 			return dataList;
