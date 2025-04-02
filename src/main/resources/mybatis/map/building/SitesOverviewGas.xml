@@ -119,28 +119,6 @@
 		UNION ALL
 		
 		<include refid="summarySection">
-			<property name="interval" value="current_day"/>
-			<property name="dateTimeFormat" value="%Y-%m-%d"/>
-			<property name="aggregate_function" value="MAX"/>
-			<property name="dateTimeUnit" value="DAY"/>
-			<property name="beforeDateTimeValue" value="0"/>
-			<property name="afterDateTimeValue" value="0"/>
-		</include>
-		
-		UNION ALL
-		
-		<include refid="summarySection">
-			<property name="interval" value="last_day"/>
-			<property name="dateTimeFormat" value="%Y-%m-%d"/>
-			<property name="aggregate_function" value="MIN"/>
-			<property name="dateTimeUnit" value="DAY"/>
-			<property name="beforeDateTimeValue" value="1"/>
-			<property name="afterDateTimeValue" value="0"/>
-		</include>
-		
-		UNION ALL
-		
-		<include refid="summarySection">
 			<property name="interval" value="current_year"/>
 			<property name="dateTimeFormat" value="%Y"/>
 			<property name="aggregate_function" value="MAX"/>
