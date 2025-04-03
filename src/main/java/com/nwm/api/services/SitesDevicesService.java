@@ -6,14 +6,19 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
+import com.nwm.api.entities.DeviceYieldEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -80,15 +85,74 @@ public class SitesDevicesService extends DB {
 	 * @param list_device
 	 */
 	
-	public List getListYieldByDevice(SitesDevicesEntity obj) {
+	public List<DeviceYieldEntity> getListYieldByDevice(SitesDevicesEntity obj) {
 		try {
 			if (obj.getList_device() == null || obj.getList_device().size() == 0) return new ArrayList();
-			List dataList = queryForList("SitesDevices.getListYieldByDevice", obj);
-			if (dataList == null) return new ArrayList();
+			List<CompletableFuture<DeviceYieldEntity>> futureList = new ArrayList<CompletableFuture<DeviceYieldEntity>>();
+			
+			for (int i = 0; i < obj.getList_device().size(); i++) {
+				Map<String, Object> item = (Map<String, Object>) obj.getList_device().get(i);
+				item.put("isUserNW", obj.isUserNW());
+				
+				CompletableFuture<DeviceYieldEntity> future = CompletableFuture.supplyAsync(() -> {
+					try {
+						DeviceYieldEntity device = (DeviceYieldEntity) queryForObject("SitesDevices.getDeviceStatus", item);
+						if (device == null) return new DeviceYieldEntity();
+						if (!Arrays.asList(1,3,7,9).contains(device.getId_device_type())) return device;
+						
+						DeviceYieldEntity yield = (DeviceYieldEntity) queryForObject("SitesDevices.getYieldByDevice", item);
+						if (yield != null) {
+							device.setYieldToday(yield.getYieldToday());
+							device.setYieldYesterday(yield.getYieldYesterday());
+							device.setYieldLast7Days(yield.getYieldLast7Days());
+							device.setYieldYTD(yield.getYieldYTD());
+						}
+						
+						return device;
+					} catch (Exception ex) {
+						log.error("SitesDevices.getListYieldByDevice", ex);
+						return new DeviceYieldEntity();
+					}
+				});
+				
+				futureList.add(future);
+			}
+
+			List<DeviceYieldEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			
+			if (obj.getSort_column() != null && !obj.getSort_column().equals("") && obj.getOrder_by() != null && !obj.getOrder_by().equals("")) {
+				Comparator<DeviceYieldEntity> comparator = null;
+				
+				switch (obj.getSort_column()) {
+				case "devicename":
+					comparator = Comparator.comparing(DeviceYieldEntity::getDevicename, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "upTime":
+					comparator = Comparator.comparing(DeviceYieldEntity::getUpTime, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "currentPower":
+					comparator = Comparator.comparing(DeviceYieldEntity::getCurrentPower, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "yieldToday":
+					comparator = Comparator.comparing(DeviceYieldEntity::getYieldToday, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "yieldYesterday":
+					comparator = Comparator.comparing(DeviceYieldEntity::getYieldYesterday, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "yieldLast7Days":
+					comparator = Comparator.comparing(DeviceYieldEntity::getYieldLast7Days, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				case "yieldYTD":
+					comparator = Comparator.comparing(DeviceYieldEntity::getYieldYTD, Comparator.nullsFirst(Comparator.naturalOrder()));
+					break;
+				}
+				
+				dataList.sort(obj.getOrder_by().equals("desc") ? comparator.reversed() : comparator);
+			}
 			
 			return dataList;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<DeviceYieldEntity>();
 		}
 	}
 	

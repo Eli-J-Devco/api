@@ -47,21 +47,21 @@
 		    d.device_ftp_port,
 	
 			tag.tags,
-			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+			DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			<include refid="com.nwm.common.keyIndicatorField"/>,
 			IFNULL(p.totalError, 0 ) AS totalError,
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			d.field_value_default
 			
@@ -129,7 +129,7 @@
 			
 		WHERE
 			d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0
-			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(NOW(), 'UTC', t.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'tag_device'">
 				AND td.name = #{keyword}
@@ -192,191 +192,172 @@
 		 
 	</select>
 	
-	<select id="getListYieldByDevice" resultType="Map" parameterType="com.nwm.api.entities.SitesDevicesEntity">
-		<foreach collection="list_device" item="item" separator="UNION ALL">
+	<select id="getDeviceStatus" resultType="com.nwm.api.entities.DeviceYieldEntity">
+		SELECT
+			d.id,
+			SHA1(d.id) AS hash_id,
+			d.id_device_type,
+			d.rating_ac_power,
+			d.devicename,
+			dt.image,
+			e.totalError,
+			IF(e.noComm > 0, NULL, u.upTime) AS upTime,
+			<choose>
+				<when test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">
+					IFNULL(ROUND(d.last_value, 1), 0) AS currentPower
+				</when>
+				<otherwise>
+					NULL AS currentPower
+				</otherwise>
+			</choose>
+		FROM
+			device d
+			LEFT JOIN device_type dt ON dt.id = d.id_device_type
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					a.id_device,
+					COUNT(a.id) AS totalError,
+					SUM(IF(e.error_code = '1001', 1, 0)) AS noComm
+				FROM
+					alert a
+					LEFT JOIN error e ON e.id = a.id_error
+				WHERE
+					a.`status` = 1
+					AND a.is_delete = 0
+					AND e.`status` = 1
+					AND e.is_delete = 0
+					AND a.id_device = #{id}
+					<if test="!isUserNW.booleanValue()">
+						AND e.id_error_level != 14
+					</if>
+				GROUP BY
+					a.id_device
+			) e ON e.id_device = d.id
+			LEFT JOIN (
+				SELECT
+					dv.id_device,
+					DATEDIFF(UTC_TIMESTAMP(), IF(a.upTime IS NOT NULL, a.upTime, dv.time)) AS upTime
+				FROM
+					(
+						<choose>
+							<when test="id_device_type == 5">
+								SELECT
+									d.id AS id_device,
+									s.commissioning AS time
+								FROM
+									site s
+									LEFT JOIN device d ON d.id_site = s.id
+								WHERE
+									d.id = #{id}
+							</when>
+							<otherwise>
+								SELECT
+									id_device,
+									time
+								FROM
+									${datatablename} dv
+								WHERE
+									id_device = #{id}
+								ORDER BY time ASC
+								LIMIT 1
+							</otherwise>
+						</choose>
+					) dv
+					LEFT JOIN (
+						SELECT
+							a.id_device,
+							MAX(a.end_date) AS upTime
+						FROM
+							alert a
+							LEFT JOIN error e ON e.id = a.id_error
+						WHERE
+							a.`status` = 0
+							AND a.is_delete = 0
+							AND e.`status` = 1
+							AND e.is_delete = 0
+							AND a.id_device = #{id}
+							AND e.error_code = '1001'
+						GROUP BY
+							a.id_device
+					) a ON a.id_device = dv.id_device
+			) u ON u.id_device = d.id
+		WHERE
+			d.id = #{id}
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+	</select>
+	
+	<select id="getYieldByDevice" resultType="com.nwm.api.entities.DeviceYieldEntity">
+		SELECT
+			ROUND(MAX(yieldToday), 1) AS yieldToday,
+			ROUND(MAX(yieldYesterday), 1) AS yieldYesterday,
+			ROUND(MAX(yieldLast7Days), 1) AS yieldLast7Days,
+			ROUND(MAX(yieldYTD), 1) AS yieldYTD
+		FROM (
 			SELECT
 				id,
-				SHA1(id) AS hash_id,
-				devicename,
-				id_device_type,
-				rating_ac_power,
-				image,
-				totalError,
-				upTime,
-				IFNULL(ROUND(currentPower, 1), 0) AS currentPower,
-				ROUND(MAX(yieldToday), 1) AS yieldToday,
-				ROUND(MAX(yieldYesterday), 1) AS yieldYesterday,
-				ROUND(MAX(yieldLast7Days), 1) AS yieldLast7Days,
-				ROUND(MAX(yieldYTD), 1) AS yieldYTD
+				time_full,
+				CASE time_full
+					WHEN todayFormat THEN energy
+					ELSE NULL
+				END AS yieldToday,
+				CASE time_full
+					WHEN yesterdayFormat THEN energy
+					ELSE NULL
+				END AS yieldYesterday,
+				CASE time_full
+					WHEN last7DaysFormat THEN cummulativeEnergy
+					ELSE NULL
+				END AS yieldLast7Days,
+				CASE time_full
+					WHEN ytdFormat THEN cummulativeEnergy
+					ELSE NULL
+				END AS yieldYTD
 			FROM (
 				SELECT
 					id,
-					id_device_type,
-					rating_ac_power,
-					devicename,
-					image,
-					totalError,
-					upTime,
 					time_full,
-					currentPower,
-					CASE time_full
-						WHEN todayFormat THEN energy
-						ELSE NULL
-					END AS yieldToday,
-					CASE time_full
-						WHEN yesterdayFormat THEN energy
-						ELSE NULL
-					END AS yieldYesterday,
-					CASE time_full
-						WHEN last7DaysFormat THEN cummulativeEnergy
-						ELSE NULL
-					END AS yieldLast7Days,
-					CASE time_full
-						WHEN ytdFormat THEN cummulativeEnergy
-						ELSE NULL
-					END AS yieldYTD
+					DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', `value`), '%Y-%m-%d') AS todayFormat,
+					DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', `value`), INTERVAL 1 DAY), '%Y-%m-%d') AS yesterdayFormat,
+					DATE_FORMAT(IF(time_full > DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', `value`), INTERVAL 6 DAY), time_full, DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', `value`), INTERVAL 6 DAY)), '%Y-%m-%d') AS last7DaysFormat,
+					DATE_FORMAT(MIN(time_full) OVER (ORDER BY time_full ASC), '%Y-%m-%d') AS ytdFormat,
+					MeasuredProduction AS energy,
+					SUM(MeasuredProduction) OVER (ORDER BY time_full DESC) AS cummulativeEnergy
 				FROM (
 					SELECT
-						id,
-						id_device_type,
-						rating_ac_power,
-						devicename,
-						image,
-						`offset`,
-						totalError,
-						upTime,
-						time_full,
-						DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), '%Y-%m-%d') AS todayFormat,
-						DATE_FORMAT(DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 1 DAY), '%Y-%m-%d') AS yesterdayFormat,
-						DATE_FORMAT(IF(time_full > DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 6 DAY), time_full, DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', `offset`), INTERVAL 6 DAY)), '%Y-%m-%d') AS last7DaysFormat,
-						DATE_FORMAT(MIN(time_full) OVER (ORDER BY time_full ASC), '%Y-%m-%d') AS ytdFormat,
-						currentPower,
-						MeasuredProduction AS energy,
-						SUM(MeasuredProduction) OVER (ORDER BY time_full DESC) AS cummulativeEnergy
-					FROM (
-						SELECT
-							d.id,
-							d.id_device_type,
-							d.rating_ac_power,
-							d.devicename,
-							dt.image,
-							tz.`offset`,
-							e.totalError,
-							IF(e.noComm > 0, '-', CONCAT(u.upTime, ' ', IF(u.upTime > 1, 'days', 'day'))) AS upTime,
-							DATE_FORMAT(CONVERT_TZ(dv.time, '+00:00', tz.`offset`), '%Y-%m-%d') AS time_full,
-							<choose>
-								<when test="item.id_device_type == 1 or item.id_device_type == 3 or item.id_device_type == 7 or item.id_device_type == 9">
-									d.last_value AS currentPower,
-									SUM(dv.MeasuredProduction) AS MeasuredProduction
-								</when>
-								<otherwise>
-									NULL AS currentPower,
-									NULL AS MeasuredProduction
-								</otherwise>
-							</choose>
-						FROM
-							device d
-							LEFT JOIN ${item.datatablename} dv ON dv.id_device = d.id
-							LEFT JOIN device_type dt ON dt.id = d.id_device_type
-							LEFT JOIN site s ON s.id = d.id_site
-							LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-							LEFT JOIN (
-								SELECT
-									a.id_device,
-									COUNT(a.id) AS totalError,
-									SUM(IF(e.error_code = '1001', 1, 0)) AS noComm
-								FROM
-									alert a
-									LEFT JOIN error e ON e.id = a.id_error
-								WHERE
-									a.`status` = 1
-									AND a.is_delete = 0
-									AND e.`status` = 1
-									AND e.is_delete = 0
-									AND a.id_device = #{item.id}
-									<if test="!isUserNW.booleanValue()">
-										AND e.id_error_level != 14
-									</if>
-								GROUP BY
-									a.id_device
-							) e ON e.id_device = d.id
-							LEFT JOIN (
-								SELECT
-									dv.id_device,
-									DATEDIFF(UTC_TIMESTAMP(), IF(a.upTime IS NOT NULL, a.upTime, dv.time)) AS upTime
-								FROM
-									(
-										<choose>
-											<when test="item.id_device_type == 5">
-												SELECT
-													d.id AS id_device,
-													s.commissioning AS time
-												FROM
-													site s
-													LEFT JOIN device d ON d.id_site = s.id
-												WHERE
-													d.id = #{item.id}
-											</when>
-											<otherwise>
-												SELECT
-													id_device,
-													time
-												FROM
-													${item.datatablename} dv
-												WHERE
-													id_device = #{item.id}
-												ORDER BY time ASC
-												LIMIT 1
-											</otherwise>
-										</choose>
-									) dv
-									LEFT JOIN (
-										SELECT
-											a.id_device,
-											MAX(a.end_date) AS upTime
-										FROM
-											alert a
-											LEFT JOIN error e ON e.id = a.id_error
-										WHERE
-											a.`status` = 0
-											AND a.is_delete = 0
-											AND e.`status` = 1
-											AND e.is_delete = 0
-											AND a.id_device = #{item.id}
-											AND e.error_code = '1001'
-										GROUP BY
-											a.id_device
-									) a ON a.id_device = dv.id_device
-							) u ON u.id_device = d.id
-						WHERE
-							((
-								dv.id_device = #{item.id}
-								AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), '+00:00', tz.`offset`), '%Y-01-01 00:00:00'), tz.`offset`, '+00:00') AND UTC_TIMESTAMP()
-							) 
-							OR <!-- case: include device that have no data -->
-							(
-								dv.id_device IS NULL
-								AND d.id = #{item.id}
-							))
-							<include refid="com.nwm.common.deviceByDomainCondition"/>
-						GROUP BY
-							DAYOFYEAR(time_full)
-					) t
+						d.id,
+						tz.`value`,
+						DATE_FORMAT(CONVERT_TZ(dv.time, 'UTC', tz.`value`), '%Y-%m-%d') AS time_full,
+						<choose>
+							<when test="id_device_type == 1 or id_device_type == 3 or id_device_type == 7 or id_device_type == 9">
+								SUM(dv.MeasuredProduction) AS MeasuredProduction
+							</when>
+							<otherwise>
+								NULL AS MeasuredProduction
+							</otherwise>
+						</choose>
+					FROM
+						device d
+						LEFT JOIN ${datatablename} dv ON dv.id_device = d.id
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+					WHERE
+						dv.id_device = #{id}
+						AND dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.`value`), '%Y-01-01 00:00:00'), tz.`value`, 'UTC') AND UTC_TIMESTAMP()
+						<include refid="com.nwm.common.deviceByDomainCondition"/>
+					GROUP BY
+						DAYOFYEAR(time_full)
 				) t
-				WHERE
-					time_full = todayFormat
-					OR time_full = yesterdayFormat
-					OR time_full = last7DaysFormat
-					OR time_full = ytdFormat
-					OR time_full IS NULL <!-- case: include device that have no data -->
 			) t
-			GROUP BY
-				id
-		</foreach>
-		
-		<if test="sort_column != null and sort_column != '' and order_by != null and order_by != ''">
-			ORDER BY ${sort_column} ${order_by}
-		</if>
+			WHERE
+				time_full = todayFormat
+				OR time_full = yesterdayFormat
+				OR time_full = last7DaysFormat
+				OR time_full = ytdFormat
+		) t
+		GROUP BY
+			id
 	</select>
 	
 	<select id="getDeviceDetail" resultType="com.nwm.api.entities.DeviceEntity" parameterType="com.nwm.api.entities.DeviceEntity">
@@ -416,7 +397,7 @@
 			d.serialnumber AS serial_number,
 			s.ac_capacity,
 			s.dc_capacity,
-			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication,
+			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication,
 			t.abbreviation_std,
 			t.`value` AS timezone,
 			g.total_error,
@@ -468,7 +449,7 @@
 	<select id="getModelLastRowItem" resultType="Map" parameterType="com.nwm.api.entities.DeviceEntity">
 		SELECT
 			u.*,
-			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( u.time, '+00:00', t.`offset` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication
+			CONCAT_WS(" ", DATE_FORMAT( CONVERT_TZ( u.time, 'UTC', t.`value` ), '%m/%d/%Y %H:%i:%s %p' ), t.abbreviation_std) AS last_communication
 		FROM
 			${datatablename} u 
 			LEFT JOIN device d ON u.id_device = d.id
@@ -564,10 +545,10 @@
 			IFNULL(IF(noc.totalNoProuduction > 0 OR com.totalNoCom > 0, 0, low.totalLowProduction), 0) AS totalLowProduction,
 			dt.id as id_device_type,
 			d.is_excluded_meter,
-			DATE_FORMAT(CONVERT_TZ( noc.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoProuduction,
-			DATE_FORMAT(CONVERT_TZ( com.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedNoCom,
-			DATE_FORMAT(CONVERT_TZ( low.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedLowProduction,
-			DATE_FORMAT(CONVERT_TZ( hth.dateChanged, '+00:00', tz.`offset` ), '%m/%d/%Y') AS dateChangedHealthy
+			DATE_FORMAT(CONVERT_TZ( noc.dateChanged, 'UTC', tz.`value` ), '%m/%d/%Y') AS dateChangedNoProuduction,
+			DATE_FORMAT(CONVERT_TZ( com.dateChanged, 'UTC', tz.`value` ), '%m/%d/%Y') AS dateChangedNoCom,
+			DATE_FORMAT(CONVERT_TZ( low.dateChanged, 'UTC', tz.`value` ), '%m/%d/%Y') AS dateChangedLowProduction,
+			DATE_FORMAT(CONVERT_TZ( hth.dateChanged, 'UTC', tz.`value` ), '%m/%d/%Y') AS dateChangedHealthy
 		
 			FROM
 				device d 
@@ -621,7 +602,7 @@
 			WHERE
 				d.id_site = #{id_site} AND d.`status` = 1 AND d.is_delete = 0 AND d.hidden = 0
 				AND (d.id_device_type IN (1,2,4) OR (d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0))
-				AND (CONVERT_TZ(NOW(), '+00:00', tz.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+				AND (CONVERT_TZ(NOW(), 'UTC', tz.`value`) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 		)t
 		 GROUP BY t.id_device_group ORDER BY t.id_device_type ASC;
  
@@ -646,20 +627,20 @@
   	<select id="getFirstTimeImageCamera" resultType="com.nwm.api.entities.CameraImageEntity" >
 	    SELECT
 			c.id_device,
-			DATE_FORMAT( CONVERT_TZ( c.time, 'UTC', t.value  ) , '%m/%d/%Y %h:%i %p') as time,
-			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+			DATE_FORMAT( CONVERT_TZ( c.time, 'UTC', t.`value`  ) , '%m/%d/%Y %h:%i %p') as time,
+			DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			c.image_url  
 	    FROM
@@ -716,19 +697,19 @@
 		    d.device_ftp_folder,
 		    d.device_ftp_port,
 		    t.value AS timezone_value,
-			DATE_FORMAT( CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+			DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') )
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, 'UTC', t.`value` ), DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i') ) 
 				ELSE 0
 			END AS times_ago,
 
 	
 			CASE
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-				WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+				WHEN CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), 'UTC', t.`value` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 			END AS times_ago_unit,
 			d.field_value_default
 			
