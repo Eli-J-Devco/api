@@ -9,6 +9,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -159,14 +161,16 @@ public class SitesOverviewGasService extends DB {
 			Double currentMonth = dataList.get(0).getValue();
 			Double lastMonth = dataList.get(1).getValue();
 			Double monthBeforeLastMonth = dataList.get(2).getValue();
-			Double currentDay = dataList.get(3).getValue();
-			Double lastDay = dataList.get(4).getValue();
-			Double currentYear = dataList.get(5).getValue();
-			Double lastYear = dataList.get(6).getValue();
-			Double life_time = dataList.get(7).getValue();
+			Double currentYear = dataList.get(3).getValue();
+			Double lastYear = dataList.get(4).getValue();
+			Double life_time = dataList.get(5).getValue();
+			
+			ZonedDateTime now = ZonedDateTime.now(ZoneId.of(obj.getTimezone_value()));
+			Double dailyUsage = currentMonth / now.getDayOfMonth();
+			Double lastDailyUsage = lastMonth / now.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth()).getDayOfMonth();
 			map.put("current_month", new SitesOverviewGasSummaryEntity(currentMonth, lastMonth == 0 ? (currentMonth == 0 ? 0 : 100) : new BigDecimal((currentMonth - lastMonth) / lastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 			map.put("last_month", new SitesOverviewGasSummaryEntity(lastMonth, monthBeforeLastMonth == 0 ? (lastMonth == 0 ? 0 : 100) : new BigDecimal((lastMonth - monthBeforeLastMonth) / monthBeforeLastMonth * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
-			map.put("daily_usage", new SitesOverviewGasSummaryEntity(currentDay, lastDay == 0 ? (currentDay == 0 ? 0 : 100) : new BigDecimal((currentDay - lastDay) / lastDay * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
+			map.put("daily_usage", new SitesOverviewGasSummaryEntity(dailyUsage, lastDailyUsage == 0 ? (dailyUsage == 0 ? 0 : 100) : new BigDecimal((dailyUsage - lastDailyUsage) / lastDailyUsage * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 			map.put("yearly_usage", new SitesOverviewGasSummaryEntity(currentYear, lastYear == 0 ? (currentYear == 0 ? 0 : 100) : new BigDecimal((currentYear - lastYear) / lastYear * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()));
 			map.put("lifetime", new SitesOverviewGasSummaryEntity(life_time, 0.0));
 		} catch (Exception ex) {
@@ -248,8 +252,7 @@ public class SitesOverviewGasService extends DB {
 				futureList.add(future);
 			}
 
-			CompletableFuture<Void> combinedFutures = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[futureList.size()]));
-			List<ActualVsPredictedConsumptionEntity> dataList = combinedFutures.thenApply(__ -> futureList.stream().map(future -> future.join()).collect(Collectors.toList())).get();
+			List<ActualVsPredictedConsumptionEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
 			dataList.sort((s1, s2) -> s1.getId().equals("actual") ? -1 : 1);
 			
 			return dataList;
