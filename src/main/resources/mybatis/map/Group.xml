@@ -57,7 +57,9 @@
 					'id_company', c1.id,
 					'company_name', c1.name,
 					'order_id', ssg.order_id,
-					'description', ssg.description
+					'description', ssg.description,
+					'is_delete', ssg.is_delete,
+					'status', ssg.status
 				))
 			) AS sub_group_list
 		FROM
