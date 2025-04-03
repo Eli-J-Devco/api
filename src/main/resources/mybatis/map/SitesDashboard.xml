@@ -258,6 +258,45 @@
 	
 	<select id="getListZones" resultType="Map">
 		SELECT
+			dz.id,
+			dz.`name`,
+			dm.id_zone_virtual,
+			dm.bit_map,
+			dm.bit_position,
+			dm.monitor_status,
+			dm.zone_position,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', dm.`id`,
+				'name', dm.`name`,
+				'bit_map', dm.bit_map,
+				'bit_position', dm.bit_position,
+				'zone_position', dm.zone_position,
+				'field_0L', dv.field_0L,
+				'field_0R', dv.field_0R,
+				'field_0L_verify', dv.field_0L_verify,
+				'field_0R_verify', dv.field_0R_verify,
+				'BreakersPanel0L', t.BreakersPanel0L,
+				'BreakersPanel0R', t.BreakersPanel0R,
+				'BreakersPanel1L', t.BreakersPanel1L,
+				'BreakersPanel1R', t.BreakersPanel1R,
+				'BreakersPanel2L', t.BreakersPanel2L,
+				'BreakersPanel2R', t.BreakersPanel2R,
+				'BreakerPresentPanel0L', t.BreakerPresentPanel0L,
+				'BreakerPresentPanel0R', t.BreakerPresentPanel0R,
+				'BreakerPresentPanel1L', t.BreakerPresentPanel1L,
+				'BreakerPresentPanel1R', t.BreakerPresentPanel1R,
+				'BreakerPresentPanel2L', t.BreakerPresentPanel2L,
+				'BreakerPresentPanel2R', t.BreakerPresentPanel2R
+		)) AS virtual_map
+		FROM device_zone_virtual_map dm 
+		LEFT JOIN device_zone_virtual dv ON dv.id = dm.id_zone_virtual
+		LEFT JOIN device_zone dz ON dz.id = dv.id_zone
+		LEFT JOIN (
+						SELECT * FROM ${datatablename} dv WHERE dv.id_device = #{id} AND dv.time >= DATE_ADD(NOW(),INTERVAL -1 HOUR) ORDER BY dv.time DESC LIMIT 1
+					) t ON t.id_device = dz.id_device
+		WHERE dz.id_device = #{id} AND dm.`name` IS NOT NULL GROUP BY dz.id ORDER BY menu_order ASC;
+
+		<!-- SELECT
 			m.*,
 			m.name AS text,
 			m.name AS label,
@@ -286,7 +325,7 @@
 				SELECT * FROM ${datatablename} d WHERE d.id_device = #{id} ORDER BY d.time DESC LIMIT 1
 			) d ON d.id_device = m.id_device
 		WHERE
-			m.id_device = #{id} GROUP BY m.id ORDER BY menu_order ASC;
+			m.id_device = #{id} GROUP BY m.id ORDER BY menu_order ASC; -->
 	</select>
 	
 	
@@ -297,34 +336,54 @@
 	
 	
 	<select id="getListDataZoneBitMap" resultType="Map">
-		SELECT dp.*,
-			dz.id_device,
-			dz.field_0L,
-			dz.field_0R,
-			dz.field_0L_verify,
-			dz.field_0R_verify,
+		SELECT 
+			dv.*,
 			IFNULL(d.BreakerPresentPanel0L, 0) AS BreakerPresentPanel0L,
 			IFNULL(d.BreakerPresentPanel0R, 0) AS BreakerPresentPanel0R,
 			IFNULL(d.BreakerPresentPanel1L, 0) AS BreakerPresentPanel1L,
 			IFNULL(d.BreakerPresentPanel1R, 0) AS BreakerPresentPanel1R,
 			IFNULL(d.BreakerPresentPanel2L, 0) AS BreakerPresentPanel2L,
 			IFNULL(d.BreakerPresentPanel2R, 0) AS BreakerPresentPanel2R,
-			
 			IFNULL(d.BreakersPanel0L, 0) AS BreakersPanel0L,
 			IFNULL(d.BreakersPanel0R, 0) AS BreakersPanel0R,
 			IFNULL(d.BreakersPanel1L, 0) AS BreakersPanel1L,
 			IFNULL(d.BreakersPanel1R, 0) AS BreakersPanel1R,
 			IFNULL(d.BreakersPanel2L, 0) AS BreakersPanel2L,
-			IFNULL(d.BreakersPanel2R, 0) AS BreakersPanel2R
-			
-			
-			FROM device_zone_map dp 
-			LEFT JOIN device_zone dz ON dz.id = dp.id_zone
-			
+			IFNULL(d.BreakersPanel2R, 0) AS BreakersPanel2R,
+			t.virtual_map
+			FROM device_zone_virtual dv 
+			LEFT JOIN device_zone dz ON dz.id = dv.id_zone
+		
 			LEFT JOIN (
 				SELECT * FROM ${datatablename} d ORDER BY d.time DESC LIMIT 1
 			) d ON d.id_device = dz.id_device 
-			WHERE dp.id_zone = #{id_zone} GROUP BY dp.id;
+		
+			LEFT JOIN (
+				SELECT 
+					dv.id,
+					dv.title0l,
+					dv.title0r,
+					dv.field_0L,
+					dv.field_0R,
+					dv.field_0L_verify,
+					dv.field_0R_verify,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'id', dm.id,
+						'id_zone_virtual', dm.id_zone_virtual,
+						'name', dm.`name`,
+						'bit_map', dm.bit_map,
+						'bit_position', dm.bit_position,
+						'monitor_status', dm.monitor_status,
+						'zone_position', dm.zone_position
+					)) AS virtual_map
+									
+		
+					FROM device_zone_virtual dv 
+						LEFT JOIN device_zone_virtual_map dm ON dm.id_zone_virtual = dv.id
+						WHERE dv.id_zone = #{id_zone}
+						GROUP BY dv.id
+			)t ON t.id = dv.id
+			WHERE dv.id_zone = #{id_zone}
 	</select>
 	
 	
