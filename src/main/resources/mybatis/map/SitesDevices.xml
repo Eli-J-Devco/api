@@ -199,6 +199,7 @@
 			d.id_device_type,
 			d.rating_ac_power,
 			d.devicename,
+			d.ip_address,
 			dt.image,
 			e.totalError,
 			IF(e.noComm > 0, NULL, u.upTime) AS upTime,

@@ -9,6 +9,7 @@ public class DeviceYieldEntity {
 	private int id;
 	private String hash_id;
 	private String devicename;
+	private String ip_address;
 	private int id_device_type;
 	private Double rating_ac_power;
 	private String image;
@@ -37,6 +38,12 @@ public class DeviceYieldEntity {
 	}
 	public void setDevicename(String devicename) {
 		this.devicename = devicename;
+	}
+	public String getIp_address() {
+		return ip_address;
+	}
+	public void setIp_address(String ip_address) {
+		this.ip_address = ip_address;
 	}
 	public int getId_device_type() {
 		return id_device_type;
