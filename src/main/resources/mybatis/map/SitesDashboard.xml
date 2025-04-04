@@ -271,6 +271,7 @@
 				'bit_map', dm.bit_map,
 				'bit_position', dm.bit_position,
 				'zone_position', dm.zone_position,
+				'monitor_status', dm.monitor_status,
 				'field_0L', dv.field_0L,
 				'field_0R', dv.field_0R,
 				'field_0L_verify', dv.field_0L_verify,
@@ -390,7 +391,25 @@
 	<select id="getListDataLightingGraph" resultType="com.nwm.api.entities.ZoneGraphDateEntity">
 		SELECT
 		dv.ZonesStatus132 AS ZonesStatus132,
-		dv.BreakersPanel0L AS BreakersPanel0L,
+		IFNULL(dv.BreakersPanel0L,0) AS BreakersPanel0L,
+		IFNULL(dv.BreakersPanel0R,0) AS BreakersPanel0R,
+		IFNULL(dv.BreakersPanel1L,0) AS BreakersPanel1L,
+		IFNULL(dv.BreakersPanel1R,0) AS BreakersPanel1R,
+		IFNULL(dv.BreakersPanel2L,0) AS BreakersPanel2L,
+		IFNULL(dv.BreakersPanel2R,0) AS BreakersPanel2R,
+		IFNULL(dv.NonRespondingBreakersPanel0L,0) AS NonRespondingBreakersPanel0L,
+		IFNULL(dv.NonRespondingBreakersPanel0R,0) AS NonRespondingBreakersPanel0R,
+		IFNULL(dv.NonRespondingBreakersPanel1L,0) AS NonRespondingBreakersPanel1L,
+		IFNULL(dv.NonRespondingBreakersPanel1R,0) AS NonRespondingBreakersPanel1R,
+		IFNULL(dv.NonRespondingBreakersPanel2L,0) AS NonRespondingBreakersPanel2L,
+		IFNULL(dv.NonRespondingBreakersPanel2R,0) AS NonRespondingBreakersPanel2R,
+		IFNULL(dv.BreakerPresentPanel0L,0) AS BreakerPresentPanel0L,
+		IFNULL(dv.BreakerPresentPanel0R,0) AS BreakerPresentPanel0R,
+		IFNULL(dv.BreakerPresentPanel1L,0) AS BreakerPresentPanel1L,
+		IFNULL(dv.BreakerPresentPanel1R,0) AS BreakerPresentPanel1R,
+		IFNULL(dv.BreakerPresentPanel2L,0) AS BreakerPresentPanel2L,
+		IFNULL(dv.BreakerPresentPanel2R,0) AS BreakerPresentPanel2R,
+		
 		1 AS on_time,
 		<choose>
 			<when test="data_send_time == 1">
