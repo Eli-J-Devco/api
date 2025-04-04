@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
@@ -35,6 +37,53 @@ import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.WeatherEntity;
 
 public class BatchJobService extends DB {
+	
+	
+	
+	/**
+	 * @description get device datalogger
+	 * @author long.pham
+	 * @since 2022-08-11
+	 * @param id_site
+	 * @return Object
+	 */
+
+	public List getListDeviceEnergyToday(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceEnergyToday", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
+	/**
+	 * @description update device
+	 * @author long.pham
+	 * @since 2021-01-12
+	 */
+	public boolean updateEnergyToday(DeviceEntity obj){
+		SqlSession session = this.beginTransaction();
+		try {
+			session.update("BatchJob.updateEnergyToday", obj);
+			session.commit();
+			return true;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Device.updateEnergyToday", ex);
+			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	
+	
 	
 	
 	/**

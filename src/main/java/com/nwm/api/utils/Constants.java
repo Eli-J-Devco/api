@@ -210,6 +210,26 @@ public class Constants {
     public static String UPDATE_SUCCESS_MSG = Translator.toLocale("UPDATE.SUCCESS");
     public static String UPDATE_ERROR_MSG = Translator.toLocale("UPDATE.ERROR");
     public static String DELETE_SUCCESS_MSG = Translator.toLocale("DELETE.SUCCESS");
+    
+    public static String UPDATE_BREAKER_ERROR_MSG = Translator.toLocale("UPDATE.BREAKER_ERROR");
+    public static String UPDATE_BREAKER_SUCCESS_MSG = Translator.toLocale("UPDATE.BREAKER_SUCCESS");
+    public static String DELETE_BREAKER_SUCCESS_MSG = Translator.toLocale("DELETE.BREAKER_SUCCESS");
+    public static String INSERT_BREAKER_SUCCESS_MSG = Translator.toLocale("INSERT.BREAKER_SUCCESS");
+    public static String INSERT_BREAKER_ERROR_MSG = Translator.toLocale("INSERT.BREAKER_ERROR");
+    public static String DELETE_BREAKER_ERROR_MSG = Translator.toLocale("DELETE.BREAKER_ERROR");
+    public static String SAVE_BREAKER_ERROR_MSG = Translator.toLocale("SAVE.BREAKER_ERROR");
+    public static String SAVE_BREAKER_SUCCESS_MSG = Translator.toLocale("SAVE.BREAKER_SUCCESS");
+    
+    
+    public static String UPDATE_ZONE_ERROR_MSG = Translator.toLocale("UPDATE.ZONE_ERROR");
+    public static String UPDATE_ZONE_SUCCESS_MSG = Translator.toLocale("UPDATE.ZONE_SUCCESS");
+    public static String DELETE_ZONE_SUCCESS_MSG = Translator.toLocale("DELETE.ZONE_SUCCESS");
+    public static String INSERT_ZONE_SUCCESS_MSG = Translator.toLocale("INSERT.ZONE_SUCCESS");
+    public static String INSERT_ZONE_ERROR_MSG = Translator.toLocale("INSERT.ZONE_ERROR");
+    public static String DELETE_ZONE_ERROR_MSG = Translator.toLocale("DELETE.ZONE_ERROR");
+    public static String SAVE_ZONE_ERROR_MSG = Translator.toLocale("SAVE.ZONE_ERROR");
+    public static String SAVE_ZONE_SUCCESS_MSG = Translator.toLocale("SAVE.ZONE_SUCCESS");
+    
     public static String RESTORE_SUCCESS_MSG = Translator.toLocale("RESTORE.SUCCESS");
     public static String DELETE_ERROR_MSG = Translator.toLocale("DELETE.ERROR");
     public static String GET_SUCCESS_MSG = Translator.toLocale("GET.SUCCESS");

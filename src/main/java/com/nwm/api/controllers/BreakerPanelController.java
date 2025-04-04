@@ -94,14 +94,11 @@ public class BreakerPanelController extends BaseController {
 		try {
 			boolean result = service.delete(obj);
 			if (result) {
-				if (obj.getIs_delete() == 0) {
-					return this.jsonResult(true, Constants.RESTORE_SUCCESS_MSG, obj, 1);
-				}
-				return this.jsonResult(true, Constants.DELETE_SUCCESS_MSG, obj, 1);
+				return this.jsonResult(true, Constants.DELETE_BREAKER_SUCCESS_MSG, obj, 1);
 			}
-			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, null, 0);
+			return this.jsonResult(false, Constants.DELETE_BREAKER_ERROR_MSG, null, 0);
 		} catch (Exception e) {
-			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.DELETE_BREAKER_ERROR_MSG, e, 0);
 		}
 	}
 	
@@ -121,25 +118,25 @@ public class BreakerPanelController extends BaseController {
 			if (obj.getScreen_mode() == 1) {
 				BreakerPanelEntity data = service.insertBreakerPanel(obj);
 				if (data != null) {
-					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
+					return this.jsonResult(true, Constants.SAVE_BREAKER_SUCCESS_MSG, data, 1);
 				} else {
-					return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
+					return this.jsonResult(false, Constants.SAVE_BREAKER_ERROR_MSG, null, 0);
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
 					boolean insert = service.updateBreakerPanel(obj);
 					if (insert == true) {
-						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+						return this.jsonResult(true, Constants.UPDATE_BREAKER_SUCCESS_MSG, obj, 1);
 					} else {
-						return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+						return this.jsonResult(false, Constants.UPDATE_BREAKER_ERROR_MSG, null, 0);
 					}
 				} else {
-					return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+					return this.jsonResult(false, Constants.UPDATE_BREAKER_ERROR_MSG, null, 0);
 				}
 			}
 		} catch (Exception e) {
 			// log error
-			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.SAVE_BREAKER_ERROR_MSG, e, 0);
 		}
 	}
 }
