@@ -214,6 +214,26 @@ public class SitesDashboardController extends BaseController {
 	 * @since 2025-02-05
 	 * @return data (status, message, array, total_row
 	 */
+	@PostMapping("/get-list-breaker-unresponsive")
+	public Object getListBreakerUnresponsive(@RequestBody DevicePanelEntity obj) {
+		try {
+			SitesDashboardService service = new SitesDashboardService();
+			List data = service.getListBreakerUnresponsive(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+
+	/**
+	 * @description Get list pannel by id_device
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @return data (status, message, array, total_row
+	 */
 	@PostMapping("/get-list-data-zone-bit-map")
 	public Object getListDataZoneBitMap(@RequestBody DeviceZoneEntity obj) {
 		try {
