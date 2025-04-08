@@ -196,9 +196,9 @@
 			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
 			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
 
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'POA_Irradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'Ambient_Air_Temperature' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value2, 2), "°C" )))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'BOM_Temp_1' THEN  (IF(d.field_value3 = -1 or d.field_value3 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value3, 2), "°C" )))
 			
 			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value2 = -1 or d.field_value2 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value2, 2), "V" )))
@@ -268,6 +268,8 @@
 			WHEN dg.table_name = 'model_phoenix_contact_quint_ups' AND d.field_value_default = 'StateofHealth' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "%" )))
 
 			WHEN dg.table_name = 'model_sma_inverter_12_15_20_24_30tlus10' AND d.field_value_default = 'Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+
+			WHEN dg.table_name = 'model_sma_stp_25_50_us_50' AND d.field_value_default = 'Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_abb_uno_dm_1250tp_plus' AND d.field_value_default = 'ACActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
@@ -418,9 +420,9 @@
 			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'AmbientTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
 			WHEN dg.table_name = 'model_pvmet_100' AND d.field_value_default = 'Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
 
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_Irradiance_Plane_Of_Array_1' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BaseMet_Air_Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
-			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'E_BOM_Temp_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'POA_Irradiance' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "W/m²"))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'Ambient_Air_Temperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			WHEN dg.table_name = 'model_pvmet_200' AND d.field_value_default = 'BOM_Temp_1' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
 				
 			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'OutputGeneration' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			WHEN dg.table_name = 'model_pv_powered_35_50_260_500kw_inverter' AND d.field_value_default = 'DCInputVoltage' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "V"))
@@ -492,6 +494,8 @@
 
 			WHEN dg.table_name = 'model_meter_ion_6200' AND d.field_value_default = 'kWtotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
+			WHEN dg.table_name = 'model_sma_stp_25_50_us_50' AND d.field_value_default = 'Active_Power' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+
 			WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_power_logic_pm8000_load_meter' AND d.field_value_default = 'ActivePowerTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))

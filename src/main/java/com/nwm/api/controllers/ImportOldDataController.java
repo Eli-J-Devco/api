@@ -443,6 +443,10 @@ public class ImportOldDataController extends BaseController {
 											service.setModelSmaInverterStp1215202430Tlus10(rowItem, r);
 											break;
 											
+										case "model_sma_stp_25_50_us_50":
+											service.setModelSmaStp2550us50(rowItem, r);
+											break;
+											
 										case "model_meter_ion_6200":
 											service.setModelMeterIon6200(rowItem, r);
 											break;

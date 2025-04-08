@@ -93,6 +93,7 @@ import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelShark100v1Entity;
 import com.nwm.api.entities.ModelShark250Entity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
+import com.nwm.api.entities.ModelSmaStp2550us50Entity;
 import com.nwm.api.entities.ModelSolArkInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
 import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
@@ -179,6 +180,7 @@ import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelShark100v1Service;
 import com.nwm.api.services.ModelShark250Service;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
+import com.nwm.api.services.ModelSmaStp2550us50Service;
 import com.nwm.api.services.ModelSolArkInverterService;
 import com.nwm.api.services.ModelSolarEdgeInverterService;
 import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
@@ -847,18 +849,18 @@ public class UploadFilesController extends BaseController {
 													
 													// Irradiance
 													
-													if(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 && dataEntity.getE_Irradiance_Plane_Of_Array_1() >= 0){
+													if(dataEntity.getPOA_Irradiance() != 0.001 && dataEntity.getPOA_Irradiance() >= 0){
 														deviceUpdateE.setLast_updated(dataEntity.getTime());
 													}
 													
-													deviceUpdateE.setLast_value(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataEntity.getE_Irradiance_Plane_Of_Array_1() : null);
-													deviceUpdateE.setField_value1(dataEntity.getE_Irradiance_Plane_Of_Array_1() != 0.001 ? dataEntity.getE_Irradiance_Plane_Of_Array_1() : null);
+													deviceUpdateE.setLast_value(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
+													deviceUpdateE.setField_value1(dataEntity.getPOA_Irradiance() != 0.001 ? dataEntity.getPOA_Irradiance() : null);
 													
 													// Ambient Temperature
-													deviceUpdateE.setField_value2(dataEntity.getE_BaseMet_Air_Temperature() != 0.001 ? dataEntity.getE_BaseMet_Air_Temperature() : null);
+													deviceUpdateE.setField_value2(dataEntity.getAmbient_Air_Temperature() != 0.001 ? dataEntity.getAmbient_Air_Temperature() : null);
 													
 													// PV Temperature Module
-													deviceUpdateE.setField_value3(dataEntity.getE_BOM_Temp_1() != 0.001 ? dataEntity.getE_BOM_Temp_1() : null);
+													deviceUpdateE.setField_value3(dataEntity.getBOM_Temp_1() != 0.001 ? dataEntity.getBOM_Temp_1() : null);
 													
 													deviceUpdateE.setId(item.getId());
 													serviceD.updateLastUpdated(deviceUpdateE);
@@ -3043,7 +3045,46 @@ public class UploadFilesController extends BaseController {
 						                        }
 						                        
 						                        break;	
+						                    
+											case "model_sma_stp_25_50_us_50":
+												ModelSmaStp2550us50Service serviceModelSmaStp2550us50 = new ModelSmaStp2550us50Service();
+						                        // Check insert database status
+						                        while ((line = br.readLine()) != null) {
+						                          sb.append(line); // appends line to string buffer
+						                          sb.append("\n"); // line feed
+						                          // Convert string to array
+						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+						                          if (words.size() > 0) {
+						                            
+						                        	ModelSmaStp2550us50Entity dataEntity = serviceModelSmaStp2550us50.setModelSmaStp2550us50(line, item.getOffset_data_old());
+						                            dataEntity.setId_device(item.getId());
+						                            dataEntity.setDatatablename(item.getDatatablename());
+						                            dataEntity.setView_tablename(item.getView_tablename());
+						                            dataEntity.setJob_tablename(item.getJob_tablename());
+						                            
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // Active_Power
+						                            if(dataEntity.getActive_Power() != 0.001 && dataEntity.getActive_Power() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
+						                            }
+						                            
+						                            deviceUpdateE.setLast_value(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getActive_Power() != 0.001 ? dataEntity.getActive_Power() : null);
+						                            
+						                            deviceUpdateE.setField_value2(null);
+						                            deviceUpdateE.setField_value3(null);
+						                            
+						                            deviceUpdateE.setId(item.getId());
+						                            serviceD.updateLastUpdated(deviceUpdateE);
+						                            
+						                            serviceModelSmaStp2550us50.insertModelSmaStp2550us50(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                          }
+						                        }
 						                        
+						                        break;
 						                        
 											case "model_abb_uno_dm_1250tp_plus":
 												ModelAbbUnoDm1250tpPlusService serviceModelSma1250Tlus = new ModelAbbUnoDm1250tpPlusService();
