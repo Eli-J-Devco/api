@@ -3000,7 +3000,7 @@ Lib {
 			String token = authzSplit[1];
 			String[] tokenSplit = token.split("\\.");
 			String encodedClaims = tokenSplit[1];
-			byte[] decodedClaims = java.util.Base64.getDecoder().decode(encodedClaims);
+			byte[] decodedClaims = java.util.Base64.getUrlDecoder().decode(encodedClaims);
 			String claimsString = new String(decodedClaims);
 			Map<String, Object> claims = new ObjectMapper().readValue(claimsString, HashMap.class);
 			return claims;
