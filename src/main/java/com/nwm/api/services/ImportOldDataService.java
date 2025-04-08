@@ -429,6 +429,13 @@ public class ImportOldDataService extends DB {
 		        }       
 		        break;
 		        
+			case "model_sma_stp_25_50_us_50":
+		        obj.setId_device_type(1);
+		        for (int i = 0; i < dataList.size(); i++) {
+		          session.insert("ModelSmaStp2550us50.insertModelSmaStp2550us50", dataList.get(i));         
+		        }       
+		        break;
+		        
 			case "model_meter_ion_6200":
 				obj.setId_device_type(3);
 				for (int i = 0; i < dataList.size(); i++) {
@@ -3022,6 +3029,47 @@ public class ImportOldDataService extends DB {
 		rowItem.put("nvmActivePower", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
 		rowItem.put("nvmActiveEnergy", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
 		rowItem.put("MeasuredProduction", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		return rowItem;
+	}
+	
+	public Object setModelSmaStp2550us50(HashMap<String, String> rowItem, Row r) {		
+		rowItem.put("Grid_Frequency", !r.getCellText(6).toString().equals("") ? r.getCellText(6).toString() : "0.001");
+		rowItem.put("Apparent_Power", !r.getCellText(7).toString().equals("") ? r.getCellText(7).toString() : "0.001");
+		rowItem.put("Reactive_Power", !r.getCellText(8).toString().equals("") ? r.getCellText(8).toString() : "0.001");
+		rowItem.put("Active_Power", !r.getCellText(9).toString().equals("") ? r.getCellText(9).toString() : "0.001");
+		rowItem.put("Power_Factor", !r.getCellText(10).toString().equals("") ? r.getCellText(10).toString() : "0.001");
+		rowItem.put("Grid_Current", !r.getCellText(11).toString().equals("") ? r.getCellText(11).toString() : "0.001");
+		rowItem.put("Current_Phase_1", !r.getCellText(12).toString().equals("") ? r.getCellText(12).toString() : "0.001");
+		rowItem.put("Current_Phase_2", !r.getCellText(13).toString().equals("") ? r.getCellText(13).toString() : "0.001");
+		rowItem.put("Current_Phase_3", !r.getCellText(14).toString().equals("") ? r.getCellText(14).toString() : "0.001");
+		rowItem.put("Active_Power_Phase_1", !r.getCellText(15).toString().equals("") ? r.getCellText(15).toString() : "0.001");
+		rowItem.put("Active_Power_Phase_2", !r.getCellText(16).toString().equals("") ? r.getCellText(16).toString() : "0.001");
+		rowItem.put("Active_Power_Phase_3", !r.getCellText(17).toString().equals("") ? r.getCellText(17).toString() : "0.001");
+		rowItem.put("Reactive_Power_Phase_1", !r.getCellText(18).toString().equals("") ? r.getCellText(18).toString() : "0.001");
+		rowItem.put("Reactive_Power_Phase_2", !r.getCellText(19).toString().equals("") ? r.getCellText(19).toString() : "0.001");
+		rowItem.put("Reactive_Power_Phase_3", !r.getCellText(20).toString().equals("") ? r.getCellText(20).toString() : "0.001");
+		rowItem.put("Apparent_Power_Phase_1", !r.getCellText(21).toString().equals("") ? r.getCellText(21).toString() : "0.001");
+		rowItem.put("Apparent_Power_Phase_2", !r.getCellText(22).toString().equals("") ? r.getCellText(22).toString() : "0.001");
+		rowItem.put("Apparent_Power_Phase_3", !r.getCellText(23).toString().equals("") ? r.getCellText(23).toString() : "0.001");
+		rowItem.put("Voltage_Phase_1", !r.getCellText(24).toString().equals("") ? r.getCellText(24).toString() : "0.001");
+		rowItem.put("Voltage_Phase_2", !r.getCellText(25).toString().equals("") ? r.getCellText(25).toString() : "0.001");
+		rowItem.put("Voltage_Phase_3", !r.getCellText(26).toString().equals("") ? r.getCellText(26).toString() : "0.001");
+		rowItem.put("Voltage_Phase_1_2", !r.getCellText(27).toString().equals("") ? r.getCellText(27).toString() : "0.001");
+		rowItem.put("Voltage_Phase_2_3", !r.getCellText(28).toString().equals("") ? r.getCellText(28).toString() : "0.001");
+		rowItem.put("Voltage_Phase_3_1", !r.getCellText(29).toString().equals("") ? r.getCellText(29).toString() : "0.001");
+		rowItem.put("Residual_DC_Current", !r.getCellText(30).toString().equals("") ? r.getCellText(30).toString() : "0.001");
+		rowItem.put("Insulation_Resistance", !r.getCellText(31).toString().equals("") ? r.getCellText(31).toString() : "0.001");
+		rowItem.put("Feed_In_Time", !r.getCellText(32).toString().equals("") ? r.getCellText(32).toString() : "0.001");
+		rowItem.put("Operating_Time", !r.getCellText(33).toString().equals("") ? r.getCellText(33).toString() : "0.001");
+		rowItem.put("Total_Yield", !r.getCellText(34).toString().equals("") ? r.getCellText(34).toString() : "0.001");
+		rowItem.put("Internal_Temperature", !r.getCellText(35).toString().equals("") ? r.getCellText(35).toString() : "0.001");
+		rowItem.put("DC_Current_Input_1", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
+		rowItem.put("DC_Current_Input_2", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
+		rowItem.put("DC_Current_Input_3", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
+		rowItem.put("DC_Current_Input_4", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
+		rowItem.put("nvmActivePower", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
 		return rowItem;
 	}
 	

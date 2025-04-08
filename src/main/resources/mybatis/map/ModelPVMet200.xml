@@ -10,14 +10,25 @@
 		<result property="error" column="error" />
 		<result property="low_alarm" column="low_alarm" />
 		<result property="high_alarm" column="high_alarm" />
-		<result property="C_SunSpec_ID" column="C_SunSpec_ID" />
-		<result property="E_BaseMet_Air_Temperature" column="E_BaseMet_Air_Temperature" />
-		<result property="E_Irradiance_Plane_Of_Array_1" column="E_Irradiance_Plane_Of_Array_1" />
-		<result property="E_BOM_Temp_1" column="E_BOM_Temp_1" />
-		<result property="E_BOM_Temp_2" column="E_BOM_Temp_2" />
-		<result property="E_BaseMet_Wind_Speed" column="E_BaseMet_Wind_Speed" />
-		<result property="E_BaseMet_Wind_Direction" column="E_BaseMet_Wind_Direction" />
-		<result property="E_Irradiance_Global_Horizontal_1" column="E_Irradiance_Global_Horizontal_1" />
+		<result property="Ambient_Air_Temperature" column="Ambient_Air_Temperature" />
+		<result property="Relative_Humidity" column="Relative_Humidity" />
+		<result property="Barometric_Pressure" column="Barometric_Pressure" />
+		<result property="Wind_Speed" column="Wind_Speed" />
+		<result property="Wind_Direction" column="Wind_Direction" />
+		<result property="Rainfall" column="Rainfall" />
+		<result property="Snowfall" column="Snowfall" />
+		<result property="Precipitation_Type" column="Precipitation_Type" />		
+		<result property="Electric_Field" column="Electric_Field" />
+		<result property="Surface_Wetness" column="Surface_Wetness" />
+		<result property="Soil_Moisture" column="Soil_Moisture" />
+		<result property="Global_Horizontal_Irradiance" column="Global_Horizontal_Irradiance" />
+		<result property="POA_Irradiance" column="POA_Irradiance" />
+		<result property="Diffuse_Irradiance" column="Diffuse_Irradiance" />		
+		<result property="Direct_Irradiance" column="Direct_Irradiance" />
+		<result property="Other_Irradiance" column="Other_Irradiance" />
+		<result property="BOM_Temp_1" column="BOM_Temp_1" />
+		<result property="BOM_Temp_2" column="BOM_Temp_2" />
+		<result property="BOM_Temp_3" column="BOM_Temp_3" />
 
 		<result property="nvm_irradiance" column="nvm_irradiance" />
 		<result property="nvm_temperature" column="nvm_temperature" />
@@ -48,30 +59,63 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm`,
 			</if>
-			<if test="C_SunSpec_ID != 0.001">
-				`C_SunSpec_ID`,
+			<if test="Ambient_Air_Temperature != 0.001">
+				`Ambient_Air_Temperature`,
 			</if>
-			<if test="E_BaseMet_Air_Temperature != 0.001">
-				`E_BaseMet_Air_Temperature`,
+			<if test="Relative_Humidity != 0.001">
+				`Relative_Humidity`,
 			</if>
-			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
-				`E_Irradiance_Plane_Of_Array_1`,
+			<if test="Barometric_Pressure != 0.001">
+				`Barometric_Pressure`,
 			</if>
-			<if test="E_BOM_Temp_1 != 0.001">
-				`E_BOM_Temp_1`,
+			<if test="Wind_Speed != 0.001">
+				`Wind_Speed`,
 			</if>
-			<if test="E_BOM_Temp_2 != 0.001">
-				`E_BOM_Temp_2`,
+			<if test="Wind_Direction != 0.001">
+				`Wind_Direction`,
 			</if>
-			<if test="E_BaseMet_Wind_Speed != 0.001">
-				`E_BaseMet_Wind_Speed`,
+			<if test="Rainfall != 0.001">
+				`Rainfall`,
 			</if>
-			<if test="E_BaseMet_Wind_Direction != 0.001">
-				`E_BaseMet_Wind_Direction`,
+			<if test="Snowfall != 0.001">
+				`Snowfall`,
 			</if>
-			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
-				`E_Irradiance_Global_Horizontal_1`,
+			<if test="Precipitation_Type != 0.001">
+				`Precipitation_Type`,
+			</if>	
+			<if test="Electric_Field != 0.001">
+				`Electric_Field`,
 			</if>
+			<if test="Surface_Wetness != 0.001">
+				`Surface_Wetness`,
+			</if>
+			<if test="Soil_Moisture != 0.001">
+				`Soil_Moisture`,
+			</if>
+			<if test="Global_Horizontal_Irradiance != 0.001">
+				`Global_Horizontal_Irradiance`,
+			</if>		
+			<if test="POA_Irradiance != 0.001">
+				`POA_Irradiance`,
+			</if>
+			<if test="Diffuse_Irradiance != 0.001">
+				`Diffuse_Irradiance`,
+			</if>
+			<if test="Direct_Irradiance != 0.001">
+				`Direct_Irradiance`,
+			</if>	
+			<if test="Other_Irradiance != 0.001">
+				`Other_Irradiance`,
+			</if>
+			<if test="BOM_Temp_1 != 0.001">
+				`BOM_Temp_1`,
+			</if>
+			<if test="BOM_Temp_2 != 0.001">
+				`BOM_Temp_2`,
+			</if>
+			<if test="BOM_Temp_3 != 0.001">
+				`BOM_Temp_3`,
+			</if>	
 			<if test="nvm_irradiance != 0.001">
 				`nvm_irradiance`,
 			</if>
@@ -98,29 +142,62 @@
 			<if test="high_alarm != 0.001">
 				#{high_alarm},
 			</if>
-			<if test="C_SunSpec_ID != 0.001">
-				#{C_SunSpec_ID},
+			<if test="Ambient_Air_Temperature != 0.001">
+				#{Ambient_Air_Temperature},
 			</if>
-			<if test="E_BaseMet_Air_Temperature != 0.001">
-				#{E_BaseMet_Air_Temperature},
+			<if test="Relative_Humidity != 0.001">
+				#{Relative_Humidity},
 			</if>
-			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
-				#{E_Irradiance_Plane_Of_Array_1},
+			<if test="Barometric_Pressure != 0.001">
+				#{Barometric_Pressure},
 			</if>
-			<if test="E_BOM_Temp_1 != 0.001">
-				#{E_BOM_Temp_1},
+			<if test="Wind_Speed != 0.001">
+				#{Wind_Speed},
 			</if>
-			<if test="E_BOM_Temp_2 != 0.001">
-				#{E_BOM_Temp_2},
+			<if test="Wind_Direction != 0.001">
+				#{Wind_Direction},
 			</if>
-			<if test="E_BaseMet_Wind_Speed != 0.001">
-				#{E_BaseMet_Wind_Speed},
+			<if test="Rainfall != 0.001">
+				#{Rainfall},
 			</if>
-			<if test="E_BaseMet_Wind_Direction != 0.001">
-				#{E_BaseMet_Wind_Direction},
+			<if test="Snowfall != 0.001">
+				#{Snowfall},
 			</if>
-			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
-				#{E_Irradiance_Global_Horizontal_1},
+			<if test="Precipitation_Type != 0.001">
+				#{Precipitation_Type},
+			</if>		
+			<if test="Electric_Field != 0.001">
+				#{Electric_Field},
+			</if>
+			<if test="Surface_Wetness != 0.001">
+				#{Surface_Wetness},
+			</if>
+			<if test="Soil_Moisture != 0.001">
+				#{Soil_Moisture},
+			</if>
+			<if test="Global_Horizontal_Irradiance != 0.001">
+				#{Global_Horizontal_Irradiance},
+			</if>
+			<if test="POA_Irradiance != 0.001">
+				#{POA_Irradiance},
+			</if>
+			<if test="Diffuse_Irradiance != 0.001">
+				#{Diffuse_Irradiance},
+			</if>
+			<if test="Direct_Irradiance != 0.001">
+				#{Direct_Irradiance},
+			</if>
+			<if test="Other_Irradiance != 0.001">
+				#{Other_Irradiance},
+			</if>	
+			<if test="BOM_Temp_1 != 0.001">
+				#{BOM_Temp_1},
+			</if>
+			<if test="BOM_Temp_2 != 0.001">
+				#{BOM_Temp_2},
+			</if>
+			<if test="BOM_Temp_3 != 0.001">
+				#{BOM_Temp_3},
 			</if>
 			<if test="nvm_irradiance != 0.001">
 				#{nvm_irradiance},
@@ -147,30 +224,64 @@
 			<if test="high_alarm != 0.001">
 				`high_alarm` = #{high_alarm},
 			</if>
-			<if test="C_SunSpec_ID != 0.001">
-				`C_SunSpec_ID` = #{C_SunSpec_ID},
+			<if test="Ambient_Air_Temperature != 0.001">
+				`Ambient_Air_Temperature` = #{Ambient_Air_Temperature},
 			</if>
-			<if test="E_BaseMet_Air_Temperature != 0.001">
-				`E_BaseMet_Air_Temperature` = #{E_BaseMet_Air_Temperature},
+			<if test="Relative_Humidity != 0.001">
+				`Relative_Humidity` = #{Relative_Humidity},
 			</if>
-			<if test="E_Irradiance_Plane_Of_Array_1 != 0.001">
-				`E_Irradiance_Plane_Of_Array_1` = #{E_Irradiance_Plane_Of_Array_1},
+			<if test="Barometric_Pressure != 0.001">
+				`Barometric_Pressure` = #{Barometric_Pressure},
 			</if>
-			<if test="E_BOM_Temp_1 != 0.001">
-				`E_BOM_Temp_1` = #{E_BOM_Temp_1},
+			<if test="Wind_Speed != 0.001">
+				`Wind_Speed` = #{Wind_Speed},
 			</if>
-			<if test="E_BOM_Temp_2 != 0.001">
-				`E_BOM_Temp_2` = #{E_BOM_Temp_2},
+			<if test="Wind_Direction != 0.001">
+				`Wind_Direction` = #{Wind_Direction},
 			</if>
-			<if test="E_BaseMet_Wind_Speed != 0.001">
-				`E_BaseMet_Wind_Speed` = #{E_BaseMet_Wind_Speed},
+			<if test="Rainfall != 0.001">
+				`Rainfall` = #{Rainfall},
 			</if>
-			<if test="E_BaseMet_Wind_Direction != 0.001">
-				`E_BaseMet_Wind_Direction` = #{E_BaseMet_Wind_Direction},
+			<if test="Snowfall != 0.001">
+				`Snowfall` = #{Snowfall},
 			</if>
-			<if test="E_Irradiance_Global_Horizontal_1 != 0.001">
-				`E_Irradiance_Global_Horizontal_1` = #{E_Irradiance_Global_Horizontal_1},
+			<if test="Precipitation_Type != 0.001">
+				`Precipitation_Type` = #{Precipitation_Type},
 			</if>
+			
+			<if test="Electric_Field != 0.001">
+				`Electric_Field` = #{Electric_Field},
+			</if>
+			<if test="Surface_Wetness != 0.001">
+				`Surface_Wetness` = #{Surface_Wetness},
+			</if>
+			<if test="Soil_Moisture != 0.001">
+				`Soil_Moisture` = #{Soil_Moisture},
+			</if>
+			<if test="Global_Horizontal_Irradiance != 0.001">
+				`Global_Horizontal_Irradiance` = #{Global_Horizontal_Irradiance},
+			</if>
+			<if test="POA_Irradiance != 0.001">
+				`POA_Irradiance` = #{POA_Irradiance},
+			</if>
+			<if test="Diffuse_Irradiance != 0.001">
+				`Diffuse_Irradiance` = #{Diffuse_Irradiance},
+			</if>
+			<if test="Direct_Irradiance != 0.001">
+				`Direct_Irradiance` = #{Direct_Irradiance},
+			</if>
+			<if test="Other_Irradiance != 0.001">
+				`Other_Irradiance` = #{Other_Irradiance},
+			</if>
+			<if test="BOM_Temp_1 != 0.001">
+				`BOM_Temp_1` = #{BOM_Temp_1},
+			</if>
+			<if test="BOM_Temp_2 != 0.001">
+				`BOM_Temp_2` = #{BOM_Temp_2},
+			</if>
+			<if test="BOM_Temp_3 != 0.001">
+				`BOM_Temp_3` = #{BOM_Temp_3},
+			</if>		
 			<if test="nvm_irradiance != 0.001">
 				`nvm_irradiance` = #{nvm_irradiance},
 			</if>
