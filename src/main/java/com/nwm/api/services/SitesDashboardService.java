@@ -223,6 +223,26 @@ public class SitesDashboardService extends DB {
 	
 	
 	/**
+	 * @description get list breaker unresponsive
+	 * @author long.pham
+	 * @since 2025-02-05
+	 * @param id_device
+	 * @return Object
+	 */
+	
+	public List getListBreakerUnresponsive(DevicePanelEntity obj) {
+		try {
+			List dataList = queryForList("SitesDashboard.getListBreakerUnresponsive", obj);
+			return dataList;
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	
+	/**
 	 * @description get list bit map by id_panel
 	 * @author long.pham
 	 * @since 2025-02-05

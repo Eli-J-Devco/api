@@ -5,11 +5,22 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class DevicePanelEntity extends SortEntity {
 	private int id;
 	private int id_device;
 	private int id_panel;
 	private String name;
+	private List list_devices;
+	
+	
+	public List getList_devices() {
+		return list_devices;
+	}
+	public void setList_devices(List list_devices) {
+		this.list_devices = list_devices;
+	}
 	public int getId() {
 		return id;
 	}

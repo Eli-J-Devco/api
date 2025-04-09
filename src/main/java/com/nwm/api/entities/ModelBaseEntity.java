@@ -24,7 +24,16 @@ public abstract class ModelBaseEntity {
 	private double nvm_irradiance;
 	private double nvm_temperature;
 	private double nvm_panel_temperature;
+	private double offset_data_old = 0;
 	
+	
+	
+	public double getOffset_data_old() {
+		return offset_data_old;
+	}
+	public void setOffset_data_old(double offset_data_old) {
+		this.offset_data_old = offset_data_old;
+	}
 	public String getTime() {
 		return time;
 	}

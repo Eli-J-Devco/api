@@ -1060,12 +1060,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorWattsonPVMeterEntity dataEntity = serviceModelElkor.setModelElkorWattsonPVMeter(line, item.getOffset_data_old());
+													ModelElkorWattsonPVMeterEntity dataEntity = serviceModelElkor.setModelElkorWattsonPVMeter(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
-													
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
 													// TotalRealPower
