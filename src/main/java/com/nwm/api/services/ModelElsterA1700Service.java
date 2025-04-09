@@ -22,7 +22,7 @@ public class ModelElsterA1700Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelElsterA1700Entity setModelElsterA1700(String line, double offset_data_old) {
+	public ModelElsterA1700Entity setModelElsterA1700(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,14 +30,6 @@ public class ModelElsterA1700Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
 				
 				dataModelElsterA1700.setTime(words.get(0).replace("'", ""));
 				dataModelElsterA1700.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -110,6 +102,13 @@ public class ModelElsterA1700Service extends DB {
 	
 	public boolean insertModelElsterA1700(ModelElsterA1700Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotalForwardActiveEnergy(energy);
+			}
+			
 			ModelElsterA1700Entity dataObj = (ModelElsterA1700Entity) queryForObject("ModelElsterA1700.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

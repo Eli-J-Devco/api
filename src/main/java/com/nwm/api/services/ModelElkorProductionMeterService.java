@@ -24,7 +24,7 @@ public class ModelElkorProductionMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelElkorProductionMeterEntity setModelElkorProductionMeter(String line, double offset_data_old) {
+	public ModelElkorProductionMeterEntity setModelElkorProductionMeter(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -32,13 +32,6 @@ public class ModelElkorProductionMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				
 				dataModelElkorP.setTime(words.get(0).replace("'", ""));
@@ -156,6 +149,13 @@ public class ModelElkorProductionMeterService extends DB {
 	
 	public boolean insertModelElkorProductionMeter(ModelElkorProductionMeterEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotalImportEnergy(energy);
+			}
+			
 			ModelElkorProductionMeterEntity dataObj = (ModelElkorProductionMeterEntity) queryForObject("ModelElkorProductionMeter.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

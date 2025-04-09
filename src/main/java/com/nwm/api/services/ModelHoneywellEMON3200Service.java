@@ -20,7 +20,7 @@ public class ModelHoneywellEMON3200Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelHoneywellEMON3200Entity setData(String line, double offset_data_old) {
+	public ModelHoneywellEMON3200Entity setData(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -28,13 +28,6 @@ public class ModelHoneywellEMON3200Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				data.setTime(words.get(0).replace("'", ""));
 				data.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -104,6 +97,13 @@ public class ModelHoneywellEMON3200Service extends DB {
 	
 	public boolean insertData(ModelHoneywellEMON3200Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setEnergyDelivered(energy);
+			}
+			
 			 ModelHoneywellEMON3200Entity dataObj = (ModelHoneywellEMON3200Entity) queryForObject("ModelHoneywellEMON3200.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

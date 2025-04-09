@@ -22,20 +22,13 @@ public class ModelCampellScientificMeter3Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelCampellScientificMeter3Entity setModelCampellScientificMeter3(String line, double offset_data_old) {
+	public ModelCampellScientificMeter3Entity setModelCampellScientificMeter3(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelCampellScientificMeter3Entity dataModelCSM3 = new ModelCampellScientificMeter3Entity();
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				dataModelCSM3.setTime(words.get(0).replace("'", ""));
 				dataModelCSM3.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -69,6 +62,13 @@ public class ModelCampellScientificMeter3Service extends DB {
 
 	public boolean insertModelCampellScientificMeter3(ModelCampellScientificMeter3Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotal_Energy(energy);
+			}
+			
 			ModelCampellScientificMeter3Entity dataObj = (ModelCampellScientificMeter3Entity) queryForObject("ModelCampellScientificMeter3.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

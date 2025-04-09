@@ -22,7 +22,7 @@ public class ModelAcuvimIIRService extends DB {
 	 * @param data
 	 */
 	
-	public ModelAcuvimIIREntity setModelAcuvimIIR(String line, double offset_data_old) {
+	public ModelAcuvimIIREntity setModelAcuvimIIR(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,13 +30,6 @@ public class ModelAcuvimIIRService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(86)) ? words.get(86) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				dataModelAcuvimIIR.setTime(words.get(0).replace("'", ""));
 				dataModelAcuvimIIR.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -157,6 +150,13 @@ public class ModelAcuvimIIRService extends DB {
 	
 	public boolean insertModelAcuvimIIR(ModelAcuvimIIREntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setEnergyTotal(energy);
+			}
+			
 			ModelAcuvimIIREntity dataObj = (ModelAcuvimIIREntity) queryForObject("ModelAcuvimIIR.getLastRow", obj);
 			double measuredProduction = 0;
 			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

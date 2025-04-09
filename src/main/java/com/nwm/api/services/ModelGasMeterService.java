@@ -24,20 +24,14 @@ public class ModelGasMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelGasMeterEntity setModelGasMeter(String line,  double offset_data_old) {
+	public ModelGasMeterEntity setModelGasMeter(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelGasMeterEntity dataModel = new ModelGasMeterEntity();
 				
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
 				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
 				dataModel.setLow_alarm(Integer.parseInt(!Lib.isBlank(words.get(2)) ? words.get(2) : "0"));
@@ -74,6 +68,13 @@ public class ModelGasMeterService extends DB {
 	
 	public boolean insertModelGasMeter(ModelGasMeterEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setProcessedValue(energy);
+			}
+			
 			ModelGasMeterEntity dataObj = (ModelGasMeterEntity) queryForObject("ModelGasMeter.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

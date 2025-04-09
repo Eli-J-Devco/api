@@ -23,7 +23,7 @@ public class ModelSmaStp2550us50Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelSmaStp2550us50Entity setModelSmaStp2550us50(String line, double offset_data_old) {
+	public ModelSmaStp2550us50Entity setModelSmaStp2550us50(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -31,14 +31,6 @@ public class ModelSmaStp2550us50Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
 				
 				dataModelSmaStp2550us50.setTime(words.get(0).replace("'", ""));
 				dataModelSmaStp2550us50.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -109,6 +101,13 @@ public class ModelSmaStp2550us50Service extends DB {
 	
 	public boolean insertModelSmaStp2550us50(ModelSmaStp2550us50Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotal_Yield(energy);
+			}
+			
 			ModelSmaStp2550us50Entity dataObj = (ModelSmaStp2550us50Entity) queryForObject("ModelSmaStp2550us50.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

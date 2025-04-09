@@ -22,22 +22,14 @@ public class ModelMeterIon8600Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelMeterIon8600Entity setModelMeterIon8600(String line, double offset_data_old) {
+	public ModelMeterIon8600Entity setModelMeterIon8600(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
 				ModelMeterIon8600Entity dataModelIon = new ModelMeterIon8600Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(53)) ? words.get(53) : "0.001");				
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
 				dataModelIon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -142,6 +134,13 @@ public class ModelMeterIon8600Service extends DB {
 	
 	public boolean insertModelMeterIon8600(ModelMeterIon8600Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setKWhRec(energy);
+			}
+			
 			ModelMeterIon8600Entity dataObj = (ModelMeterIon8600Entity) queryForObject("ModelMeterIon8600.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

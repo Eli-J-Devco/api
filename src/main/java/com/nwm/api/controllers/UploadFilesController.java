@@ -412,11 +412,12 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100Entity dataEntity = serviceModelShark100.setModelShark100(line, item.getOffset_data_old());
+													ModelShark100Entity dataEntity = serviceModelShark100.setModelShark100(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -456,11 +457,12 @@ public class UploadFilesController extends BaseController {
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
 													
-													ModelShark100v1Entity dataEntity = serviceModelShark100v1.setModelShark100v1(line, item.getOffset_data_old());
+													ModelShark100v1Entity dataEntity = serviceModelShark100v1.setModelShark100v1(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -752,11 +754,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelAdvancedEnergySolaronEntity dataEntity = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line, item.getOffset_data_old());
+													ModelAdvancedEnergySolaronEntity dataEntity = serviceModelAdvancedEnergySolaron.setModelAdvancedEnergySolaron(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -970,11 +973,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelVerisIndustriesE51c2PowerMeterEntity dataEntity = serviceModelVeris.setModelChintSolectriaInverterClass9725(line, item.getOffset_data_old());
+													ModelVerisIndustriesE51c2PowerMeterEntity dataEntity = serviceModelVeris.setModelChintSolectriaInverterClass9725(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -1147,11 +1151,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorProductionMeterEntity dataEntity = serviceModelElkorP.setModelElkorProductionMeter(line, item.getOffset_data_old());
+													ModelElkorProductionMeterEntity dataEntity = serviceModelElkorP.setModelElkorProductionMeter(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -1191,11 +1196,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelElkorProductionMeterv1Entity dataEntity = serviceModelElkorPv1.setModelElkorProductionMeterv1(line, item.getOffset_data_old());
+													ModelElkorProductionMeterv1Entity dataEntity = serviceModelElkorPv1.setModelElkorProductionMeterv1(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -1720,11 +1726,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter1Entity dataEntity = serviceModelCSM1.setModelCampellScientificMeter1(line, item.getOffset_data_old());
+													ModelCampellScientificMeter1Entity dataEntity = serviceModelCSM1.setModelCampellScientificMeter1(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -1763,11 +1770,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter2Entity dataEntity = serviceModelCSM2.setModelCampellScientificMeter2(line, item.getOffset_data_old());
+													ModelCampellScientificMeter2Entity dataEntity = serviceModelCSM2.setModelCampellScientificMeter2(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -1805,11 +1813,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter3Entity dataEntity = serviceModelCSM3.setModelCampellScientificMeter3(line, item.getOffset_data_old());
+													ModelCampellScientificMeter3Entity dataEntity = serviceModelCSM3.setModelCampellScientificMeter3(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -1848,11 +1857,12 @@ public class UploadFilesController extends BaseController {
 												// Convert string to array
 												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 												if (words.size() > 0) {
-													ModelCampellScientificMeter4Entity dataEntity = serviceModelCSM4.setModelCampellScientificMeter4(line, item.getOffset_data_old());
+													ModelCampellScientificMeter4Entity dataEntity = serviceModelCSM4.setModelCampellScientificMeter4(line);
 													dataEntity.setId_device(item.getId());
 													dataEntity.setDatatablename(item.getDatatablename());
 													dataEntity.setView_tablename(item.getView_tablename());
 													dataEntity.setJob_tablename(item.getJob_tablename());
+													dataEntity.setOffset_data_old(item.getOffset_data_old());
 													
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 													
@@ -1979,11 +1989,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelVerisIndustriesE50c2aEntity dataEntity = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line, item.getOffset_data_old());
+														ModelVerisIndustriesE50c2aEntity dataEntity = serviceModelVeris50c2a.setModelVerisIndustriesE50c2a(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2108,11 +2119,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600Entity dataEntity = serviceModelIon.setModelMeterIon8600(line, item.getOffset_data_old());
+														ModelMeterIon8600Entity dataEntity = serviceModelIon.setModelMeterIon8600(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2148,11 +2160,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V1Entity dataEntity = serviceModelIonV1.setModelMeterIon8600V1(line, item.getOffset_data_old());
+														ModelMeterIon8600V1Entity dataEntity = serviceModelIonV1.setModelMeterIon8600V1(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -2188,11 +2201,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V2Entity dataEntity = serviceModelIonV2.setModelMeterIon8600V2(line, item.getOffset_data_old());
+														ModelMeterIon8600V2Entity dataEntity = serviceModelIonV2.setModelMeterIon8600V2(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2228,11 +2242,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V3Entity dataEntity = serviceModelIonV3.setModelMeterIon8600V3(line, item.getOffset_data_old());
+														ModelMeterIon8600V3Entity dataEntity = serviceModelIonV3.setModelMeterIon8600V3(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2268,11 +2283,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelMeterIon8600V4Entity dataEntity = serviceModelIonV4.setModelMeterIon8600V4(line, item.getOffset_data_old());
+														ModelMeterIon8600V4Entity dataEntity = serviceModelIonV4.setModelMeterIon8600V4(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2308,11 +2324,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelPowerMeasurementIon7650Entity dataEntity = serviceModelPM7650.setModelPowerMeasurementIon7650(line, item.getOffset_data_old());
+														ModelPowerMeasurementIon7650Entity dataEntity = serviceModelPM7650.setModelPowerMeasurementIon7650(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2691,11 +2708,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelElsterA1700Entity dataEntity = serviceModelElsterA1700.setModelElsterA1700(line, item.getOffset_data_old());
+														ModelElsterA1700Entity dataEntity = serviceModelElsterA1700.setModelElsterA1700(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -2815,11 +2833,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelDTSMeasurelogicDemandMeterEntity dataEntity = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line, item.getOffset_data_old());
+														ModelDTSMeasurelogicDemandMeterEntity dataEntity = serviceModelDTSMeter.setModelDTSMeasurelogicDemandMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -2857,11 +2876,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelJanitzaUmg604proEntity dataEntity = serviceModelJan.setModelJanitzaUmg604pro(line, item.getOffset_data_old());
+														ModelJanitzaUmg604proEntity dataEntity = serviceModelJan.setModelJanitzaUmg604pro(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -2898,11 +2918,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelLeviton70D48000Entity dataEntity = serviceModel70D.setModelLeviton70D48000(line, item.getOffset_data_old());
+														ModelLeviton70D48000Entity dataEntity = serviceModel70D.setModelLeviton70D48000(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -2939,11 +2960,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuRevProductionMeterEntity dataEntity = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line, item.getOffset_data_old());
+														ModelAcuRevProductionMeterEntity dataEntity = serviceModelAcuRevMeter.setModelAcuRevProductionMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3056,11 +3078,12 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                            
-						                        	ModelSmaStp2550us50Entity dataEntity = serviceModelSmaStp2550us50.setModelSmaStp2550us50(line, item.getOffset_data_old());
+						                        	ModelSmaStp2550us50Entity dataEntity = serviceModelSmaStp2550us50.setModelSmaStp2550us50(line);
 						                            dataEntity.setId_device(item.getId());
 						                            dataEntity.setDatatablename(item.getDatatablename());
 						                            dataEntity.setView_tablename(item.getView_tablename());
 						                            dataEntity.setJob_tablename(item.getJob_tablename());
+						                            dataEntity.setOffset_data_old(item.getOffset_data_old());
 						                            
 													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3137,11 +3160,12 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelKlea220pEntity dataEntity = serviceModelKlea.setModelKlea220p(line, item.getOffset_data_old());
+						                        	  ModelKlea220pEntity dataEntity = serviceModelKlea.setModelKlea220p(line);
 						                        	  dataEntity.setId_device(item.getId());
 						                        	  dataEntity.setDatatablename(item.getDatatablename());
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
+						                        	  dataEntity.setOffset_data_old(item.getOffset_data_old());
 						                            
 						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3177,11 +3201,12 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelMeterIon6200Entity dataEntity = serviceModelMeterIon6200.setModelMeterIon6200(line, item.getOffset_data_old());
+						                        	  ModelMeterIon6200Entity dataEntity = serviceModelMeterIon6200.setModelMeterIon6200(line);
 						                        	  dataEntity.setId_device(item.getId());
 						                        	  dataEntity.setDatatablename(item.getDatatablename());
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
+						                        	  dataEntity.setOffset_data_old(item.getOffset_data_old());
 						                            
 						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3218,11 +3243,12 @@ public class UploadFilesController extends BaseController {
 						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 						                          if (words.size() > 0) {
 						                        	  
-						                        	  ModelLevitonS40000rPowerMeterEntity dataEntity = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line, item.getOffset_data_old());
+						                        	  ModelLevitonS40000rPowerMeterEntity dataEntity = serviceModelMeterS40000.setModelLevitonS40000rPowerMeter(line);
 						                        	  dataEntity.setId_device(item.getId());
 						                        	  dataEntity.setDatatablename(item.getDatatablename());
 						                        	  dataEntity.setView_tablename(item.getView_tablename());
 						                        	  dataEntity.setJob_tablename(item.getJob_tablename());
+						                        	  dataEntity.setOffset_data_old(item.getOffset_data_old());
 						                        	  
 						                        	uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 						                            
@@ -3300,11 +3326,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelAcuvimIIREntity dataEntity = serviceModelAcuvimIIR.setModelAcuvimIIR(line, item.getOffset_data_old());
+														ModelAcuvimIIREntity dataEntity = serviceModelAcuvimIIR.setModelAcuvimIIR(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3341,11 +3368,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelKyPulseMeterEntity dataEntity = serviceModelKyPulse.setModelKyPulseMeter(line, item.getOffset_data_old());
+														ModelKyPulseMeterEntity dataEntity = serviceModelKyPulse.setModelKyPulseMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3381,11 +3409,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelWaterMeterKyPulseEntity dataEntity = serviceModelKP.setModelWaterMeterKyPulse(line, item.getOffset_data_old());
+														ModelWaterMeterKyPulseEntity dataEntity = serviceModelKP.setModelWaterMeterKyPulse(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3422,11 +3451,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSunSpecInverterEntity dataEntity = serviceModelSunSpec.setModelSunSpecInverter(line, item.getOffset_data_old());
+														ModelSunSpecInverterEntity dataEntity = serviceModelSunSpec.setModelSunSpecInverter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3463,11 +3493,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelDent48PSHDMeterEntity dataEntity = serviceModelDent.setModelDent48PSHDMeter(line, item.getOffset_data_old());
+														ModelDent48PSHDMeterEntity dataEntity = serviceModelDent.setModelDent48PSHDMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3503,11 +3534,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelPowerLogicPM8000LoadMeterEntity dataEntity = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line, item.getOffset_data_old());
+														ModelPowerLogicPM8000LoadMeterEntity dataEntity = serviceModelPM8000.setModelPowerLogicPM8000LoadMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3543,11 +3575,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelShark250Entity dataEntity = serviceModelShark250.setModelShark250(line, item.getOffset_data_old());
+														ModelShark250Entity dataEntity = serviceModelShark250.setModelShark250(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 
@@ -3584,11 +3617,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelXGI1500Entity dataEntity = serviceModelXGI1500.setModelXGI1500(line, item.getOffset_data_old());
+														ModelXGI1500Entity dataEntity = serviceModelXGI1500.setModelXGI1500(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3626,11 +3660,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSEL651REntity dataEntity = serviceModelSEL651R.setModelSEL651R(line, item.getOffset_data_old());
+														ModelSEL651REntity dataEntity = serviceModelSEL651R.setModelSEL651R(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3792,11 +3827,12 @@ public class UploadFilesController extends BaseController {
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
 														
-														ModelSolArkInverterEntity dataEntity = serviceModelSol.setModelSolArkInverter(line, item.getOffset_data_old());
+														ModelSolArkInverterEntity dataEntity = serviceModelSol.setModelSolArkInverter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3834,11 +3870,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelHoneywellEMON3200Entity dataEntity = serviceModelModelHoneywellEMON3200.setData(line, item.getOffset_data_old());
+														ModelHoneywellEMON3200Entity dataEntity = serviceModelModelHoneywellEMON3200.setData(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														
@@ -3874,11 +3911,12 @@ public class UploadFilesController extends BaseController {
 													// Convert string to array
 													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 													if (words.size() > 0) {
-														ModelGasMeterEntity dataEntity = serviceModelModelGasMeter.setModelGasMeter(line, item.getOffset_data_old());
+														ModelGasMeterEntity dataEntity = serviceModelModelGasMeter.setModelGasMeter(line);
 														dataEntity.setId_device(item.getId());
 														dataEntity.setDatatablename(item.getDatatablename());
 														dataEntity.setView_tablename(item.getView_tablename());
 														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
 														
 														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
 														

@@ -23,7 +23,7 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelVerisIndustriesE51c2PowerMeterEntity setModelChintSolectriaInverterClass9725(String line, double offset_data_old) {
+	public ModelVerisIndustriesE51c2PowerMeterEntity setModelChintSolectriaInverterClass9725(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -31,13 +31,6 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				dataModelVeris.setTime(words.get(0).replace("'", ""));
 				dataModelVeris.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -143,6 +136,13 @@ public class ModelVerisIndustriesE51c2PowerMeterService extends DB {
 	
 	public boolean insertModelVerisIndustriesE51c2PowerMeter(ModelVerisIndustriesE51c2PowerMeterEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setAccumulatedRealEnergyNet(energy);
+			}
+			
 			ModelVerisIndustriesE51c2PowerMeterEntity dataObj = (ModelVerisIndustriesE51c2PowerMeterEntity) queryForObject("ModelVerisIndustriesE51c2PowerMeter.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

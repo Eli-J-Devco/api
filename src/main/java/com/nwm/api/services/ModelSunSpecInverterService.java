@@ -21,7 +21,7 @@ public class ModelSunSpecInverterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelSunSpecInverterEntity setModelSunSpecInverter(String line, double offset_data_old) {
+	public ModelSunSpecInverterEntity setModelSunSpecInverter(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -98,6 +98,13 @@ public class ModelSunSpecInverterService extends DB {
 	
 	public boolean insertModelSunSpecInverter(ModelSunSpecInverterEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setACEnergy(energy);
+			}
+			
 			ModelSunSpecInverterEntity dataObj = (ModelSunSpecInverterEntity) queryForObject("ModelSunSpecInverter.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

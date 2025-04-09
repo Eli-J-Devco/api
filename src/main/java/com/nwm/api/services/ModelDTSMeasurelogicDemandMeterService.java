@@ -22,7 +22,7 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 	 * @param data
 	 */
 	
-	public ModelDTSMeasurelogicDemandMeterEntity setModelDTSMeasurelogicDemandMeter(String line, double offset_data_old) {
+	public ModelDTSMeasurelogicDemandMeterEntity setModelDTSMeasurelogicDemandMeter(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,13 +30,6 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
 				
 				dataModelDTSMeter.setTime(words.get(0).replace("'", ""));
 				dataModelDTSMeter.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -91,6 +84,13 @@ public class ModelDTSMeasurelogicDemandMeterService extends DB {
 	
 	public boolean insertModelDTSMeasurelogicDemandMeter(ModelDTSMeasurelogicDemandMeterEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setEnergyP_Total(energy);
+			}
+			
 			ModelDTSMeasurelogicDemandMeterEntity dataObj = (ModelDTSMeasurelogicDemandMeterEntity) queryForObject("ModelDTSMeasurelogicDemandMeter.getLastRow", obj);
 			double measuredProduction = 0;
 			if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

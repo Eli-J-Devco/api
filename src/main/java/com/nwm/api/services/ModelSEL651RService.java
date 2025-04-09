@@ -22,7 +22,7 @@ public class ModelSEL651RService extends DB {
 	 * @param data
 	 */
 	
-	public ModelSEL651REntity setModelSEL651R(String line, double offset_data_old) {
+	public ModelSEL651REntity setModelSEL651R(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,15 +30,6 @@ public class ModelSEL651RService extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
-				
 				
 				dataModelSEL651R.setTime(words.get(0).replace("'", ""));
 				dataModelSEL651R.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -121,6 +112,13 @@ public class ModelSEL651RService extends DB {
 	
 	public boolean insertModelSEL651R(ModelSEL651REntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setThreePhaseRealEnergyOut(energy);
+			}
+			
 			 ModelSEL651REntity dataObj = (ModelSEL651REntity) queryForObject("ModelSEL651R.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

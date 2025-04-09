@@ -22,7 +22,7 @@ public class ModelXGI1500Service extends DB {
 	 * @param data
 	 */
 	
-	public ModelXGI1500Entity setModelXGI1500(String line, double offset_data_old) {
+	public ModelXGI1500Entity setModelXGI1500(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,15 +30,6 @@ public class ModelXGI1500Service extends DB {
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
-				
 				
 				dataModelXGI1500.setTime(words.get(0).replace("'", ""));
 				dataModelXGI1500.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -112,6 +103,13 @@ public class ModelXGI1500Service extends DB {
 	
 	public boolean insertModelXGI1500(ModelXGI1500Entity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setActiveEnergyRawNet(energy);
+			}
+			
 			 ModelXGI1500Entity dataObj = (ModelXGI1500Entity) queryForObject("ModelXGI1500.getLastRow", obj);
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {

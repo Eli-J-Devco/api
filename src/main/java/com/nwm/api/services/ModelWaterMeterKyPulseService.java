@@ -22,7 +22,7 @@ public class ModelWaterMeterKyPulseService extends DB {
 	 * @param data
 	 */
 	
-	public ModelWaterMeterKyPulseEntity setModelWaterMeterKyPulse(String line, double offset_data_old) {
+	public ModelWaterMeterKyPulseEntity setModelWaterMeterKyPulse(String line) {
 		try {
 			List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
 			if (words.size() > 0) {
@@ -30,14 +30,6 @@ public class ModelWaterMeterKyPulseService extends DB {
 				
 				Double power =  0.001; // Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
-				if(energy < 0) {
-					energy = energy * -1;
-				}
-				
-				if(offset_data_old != 0) {
-					energy = energy + offset_data_old;
-				}
-				
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
 				dataModelIon.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
@@ -85,6 +77,13 @@ public class ModelWaterMeterKyPulseService extends DB {
 	
 	public boolean insertModelWaterMeterKyPulse(ModelWaterMeterKyPulseEntity obj) {
 		try {
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotalWaterUsage(energy);
+			}
+			
 			ModelWaterMeterKyPulseEntity dataObj = (ModelWaterMeterKyPulseEntity) queryForObject("ModelWaterMeterKyPulse.getLastRow", obj);
 			double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
