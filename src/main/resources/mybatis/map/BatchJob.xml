@@ -1131,7 +1131,7 @@
 	
 	<select id="getDataIrradianceYesterday" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
-			t.time_format,
+			t.date_format,
 			ROUND(( AVG( t.nvm_irradiance ) ), 1 ) AS nvm_irradiance,
 			ROUND(( AVG( t.nvm_temperature ) ), 1 ) AS nvm_temperature
 			
@@ -1140,13 +1140,13 @@
 				<foreach collection="weatherStation" item="item" index="index" separator="union all">
 				<![CDATA[
 					SELECT
-						m.time_format,
+						m.date_format,
 						AVG(m.nvm_irradiance) AS nvm_irradiance,
 						AVG(m.nvm_temperature) AS nvm_temperature
 					FROM
 						(
 						SELECT
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS date_format,
 							AVG( IFNULL(dv.nvm_irradiance, 0) ) AS nvm_irradiance,
 							 
 							AVG( IFNULL(dv.nvm_temperature, 0) ) AS nvm_temperature
@@ -1163,21 +1163,21 @@
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 						GROUP BY
-							d.id, time_format
+							d.id, date_format
 						) m 
 					GROUP BY
-						m.time_format
+						m.date_format
 					]]>
 		      </foreach>
 			) t 
 		GROUP BY
-			t.time_format
+			t.date_format
 	</select>
 	
 	
 	<select id="getDataPowerMeterYesterday" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
-			t.time_format,
+			t.date_format,
 			ROUND(( AVG( t.actualPower ) ), 1 ) AS actualPower
 			
 		FROM
@@ -1185,12 +1185,12 @@
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
 				<![CDATA[
 					SELECT
-						m.time_format,
+						m.date_format,
 						SUM(m.actualPower) AS actualPower
 					FROM
 						(
 						SELECT
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS date_format,
 							AVG( IFNULL(dv.nvmActivePower, 0) ) AS actualPower
 						FROM
 							${item.datatablename} dv
@@ -1204,15 +1204,15 @@
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 						GROUP BY
-							d.id, time_format
+							d.id, date_format
 						) m 
 					GROUP BY
-						m.time_format
+						m.date_format
 					]]>
 		      </foreach>
 			) t 
 		GROUP BY
-			t.time_format
+			t.date_format
 	</select>
 	
 	
