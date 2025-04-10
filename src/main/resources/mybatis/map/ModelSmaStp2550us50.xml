@@ -43,8 +43,16 @@
 			<result property="DC_Current_Input_1" column="DC_Current_Input_1" />
 			<result property="DC_Current_Input_2" column="DC_Current_Input_2" />
 			<result property="DC_Current_Input_3" column="DC_Current_Input_3" />
-			<result property="DC_Current_Input_4" column="DC_Current_Input_4" />
-
+			<result property="DC_Current_Input_4" column="DC_Current_Input_4" />			
+			<result property="DC_Voltage_Input_1" column="DC_Voltage_Input_1" />
+			<result property="DC_Voltage_Input_2" column="DC_Voltage_Input_2" />
+			<result property="DC_Voltage_Input_3" column="DC_Voltage_Input_3" />
+			<result property="DC_Voltage_Input_4" column="DC_Voltage_Input_4" />
+			<result property="DC_Power_Input_1" column="DC_Power_Input_1" />
+			<result property="DC_Power_Input_2" column="DC_Power_Input_2" />
+			<result property="DC_Power_Input_3" column="DC_Power_Input_3" />
+			<result property="DC_Power_Input_4" column="DC_Power_Input_4" />
+			
 		    <result property="nvmActivePower" column="nvmActivePower" />
 		    <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
 		    <result property="MeasuredProduction" column="MeasuredProduction" />
@@ -172,7 +180,31 @@
 			</if>
 			<if test="DC_Current_Input_4 != 0.001" >
 				`DC_Current_Input_4`,
+			</if>			
+			<if test="DC_Voltage_Input_1 != 0.001" >
+				`DC_Voltage_Input_1`,
 			</if>
+			<if test="DC_Voltage_Input_2 != 0.001" >
+				`DC_Voltage_Input_2`,
+			</if>
+			<if test="DC_Voltage_Input_3 != 0.001" >
+				`DC_Voltage_Input_3`,
+			</if>
+			<if test="DC_Voltage_Input_4 != 0.001" >
+				`DC_Voltage_Input_4`,
+			</if>
+			<if test="DC_Power_Input_1 != 0.001" >
+				`DC_Power_Input_1`,
+			</if>
+			<if test="DC_Power_Input_2 != 0.001" >
+				`DC_Power_Input_2`,
+			</if>
+			<if test="DC_Power_Input_3 != 0.001" >
+				`DC_Power_Input_3`,
+			</if>
+			<if test="DC_Power_Input_4 != 0.001" >
+				`DC_Power_Input_4`,
+			</if>	
 			<if test="nvmActivePower != 0.001" >
 			  	`nvmActivePower`,
 			</if>
@@ -301,7 +333,31 @@
 			</if>
 			<if test="DC_Current_Input_4 != 0.001" >
 				#{DC_Current_Input_4},
+			</if>			
+			<if test="DC_Voltage_Input_1 != 0.001" >
+				#{DC_Voltage_Input_1},
 			</if>
+			<if test="DC_Voltage_Input_2 != 0.001" >
+				#{DC_Voltage_Input_2},
+			</if>
+			<if test="DC_Voltage_Input_3 != 0.001" >
+				#{DC_Voltage_Input_3},
+			</if>
+			<if test="DC_Voltage_Input_4 != 0.001" >
+				#{DC_Voltage_Input_4},
+			</if>
+			<if test="DC_Power_Input_1 != 0.001" >
+				#{DC_Power_Input_1},
+			</if>
+			<if test="DC_Power_Input_2 != 0.001" >
+				#{DC_Power_Input_2},
+			</if>
+			<if test="DC_Power_Input_3 != 0.001" >
+				#{DC_Power_Input_3},
+			</if>
+			<if test="DC_Power_Input_4 != 0.001" >
+				#{DC_Power_Input_4},
+			</if>		
 			<if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			</if>
@@ -428,7 +484,31 @@
 			</if>
 			<if test="DC_Current_Input_4 != 0.001" >
 				`DC_Current_Input_4` = #{DC_Current_Input_4},
+			</if>	
+			<if test="DC_Voltage_Input_1 != 0.001" >
+				`DC_Voltage_Input_1` = #{DC_Voltage_Input_1},
 			</if>
+			<if test="DC_Voltage_Input_2 != 0.001" >
+				`DC_Voltage_Input_2` = #{DC_Voltage_Input_2},
+			</if>
+			<if test="DC_Voltage_Input_3 != 0.001" >
+				`DC_Voltage_Input_3` = #{DC_Voltage_Input_3},
+			</if>
+			<if test="DC_Voltage_Input_4 != 0.001" >
+				`DC_Voltage_Input_4` = #{DC_Voltage_Input_4},
+			</if>
+			<if test="DC_Power_Input_1 != 0.001" >
+				`DC_Power_Input_1` = #{DC_Power_Input_1},
+			</if>
+			<if test="DC_Power_Input_2 != 0.001" >
+				`DC_Power_Input_2` = #{DC_Power_Input_2},
+			</if>
+			<if test="DC_Power_Input_3 != 0.001" >
+				`DC_Power_Input_3` = #{DC_Power_Input_3},
+			</if>
+			<if test="DC_Power_Input_4 != 0.001" >
+				`DC_Power_Input_4` = #{DC_Power_Input_4},
+			</if>		
 			<if test="nvmActivePower != 0.001" >
 			 	`nvmActivePower` = #{nvmActivePower},
 			</if>

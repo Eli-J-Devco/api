@@ -43,8 +43,7 @@ public class ModelSmaStp2550us50Service extends DB {
 				dataModelSmaStp2550us50.setActive_Power(power);
 				dataModelSmaStp2550us50.setPower_Factor(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
 				dataModelSmaStp2550us50.setGrid_Current(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
-				dataModelSmaStp2550us50.setCurrent_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
-				
+				dataModelSmaStp2550us50.setCurrent_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));			
 				dataModelSmaStp2550us50.setCurrent_Phase_2(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModelSmaStp2550us50.setCurrent_Phase_3(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				dataModelSmaStp2550us50.setActive_Power_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
@@ -53,8 +52,7 @@ public class ModelSmaStp2550us50Service extends DB {
 				dataModelSmaStp2550us50.setReactive_Power_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelSmaStp2550us50.setReactive_Power_Phase_2(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
 				dataModelSmaStp2550us50.setReactive_Power_Phase_3(Double.parseDouble(!Lib.isBlank(words.get(18)) ? words.get(18) : "0.001"));
-				dataModelSmaStp2550us50.setApparent_Power_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));
-				
+				dataModelSmaStp2550us50.setApparent_Power_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(19)) ? words.get(19) : "0.001"));			
 				dataModelSmaStp2550us50.setApparent_Power_Phase_2(Double.parseDouble(!Lib.isBlank(words.get(20)) ? words.get(20) : "0.001"));
 				dataModelSmaStp2550us50.setApparent_Power_Phase_3(Double.parseDouble(!Lib.isBlank(words.get(21)) ? words.get(21) : "0.001"));
 				dataModelSmaStp2550us50.setVoltage_Phase_1(Double.parseDouble(!Lib.isBlank(words.get(22)) ? words.get(23) : "0.001"));
@@ -65,16 +63,22 @@ public class ModelSmaStp2550us50Service extends DB {
 				dataModelSmaStp2550us50.setVoltage_Phase_3_1(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModelSmaStp2550us50.setResidual_DC_Current(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModelSmaStp2550us50.setInsulation_Resistance(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
-				dataModelSmaStp2550us50.setFeed_In_Time(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
-				
+				dataModelSmaStp2550us50.setFeed_In_Time(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));				
 				dataModelSmaStp2550us50.setOperating_Time(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
 				dataModelSmaStp2550us50.setTotal_Yield(energy);
 				dataModelSmaStp2550us50.setInternal_Temperature(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
 				dataModelSmaStp2550us50.setDC_Current_Input_1(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModelSmaStp2550us50.setDC_Current_Input_2(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
 				dataModelSmaStp2550us50.setDC_Current_Input_3(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModelSmaStp2550us50.setDC_Current_Input_4(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
-
+				dataModelSmaStp2550us50.setDC_Current_Input_4(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));				
+				dataModelSmaStp2550us50.setDC_Voltage_Input_1(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Voltage_Input_2(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Voltage_Input_3(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Voltage_Input_4(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Power_Input_1(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Power_Input_2(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Power_Input_3(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModelSmaStp2550us50.setDC_Power_Input_4(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSmaStp2550us50.setNvmActivePower(power);

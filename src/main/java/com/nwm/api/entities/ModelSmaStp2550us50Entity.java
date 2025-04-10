@@ -40,8 +40,65 @@ public class ModelSmaStp2550us50Entity extends ModelBaseEntity {
 	private double DC_Current_Input_2;
 	private double DC_Current_Input_3;
 	private double DC_Current_Input_4;
+	private double DC_Voltage_Input_1;
+	private double DC_Voltage_Input_2;
+	private double DC_Voltage_Input_3;
+	private double DC_Voltage_Input_4;
+	private double DC_Power_Input_1;
+	private double DC_Power_Input_2;
+	private double DC_Power_Input_3;
+	private double DC_Power_Input_4;
 	
 	
+	
+	public double getDC_Voltage_Input_1() {
+		return DC_Voltage_Input_1;
+	}
+	public void setDC_Voltage_Input_1(double dC_Voltage_Input_1) {
+		DC_Voltage_Input_1 = dC_Voltage_Input_1;
+	}
+	public double getDC_Voltage_Input_2() {
+		return DC_Voltage_Input_2;
+	}
+	public void setDC_Voltage_Input_2(double dC_Voltage_Input_2) {
+		DC_Voltage_Input_2 = dC_Voltage_Input_2;
+	}
+	public double getDC_Voltage_Input_3() {
+		return DC_Voltage_Input_3;
+	}
+	public void setDC_Voltage_Input_3(double dC_Voltage_Input_3) {
+		DC_Voltage_Input_3 = dC_Voltage_Input_3;
+	}
+	public double getDC_Voltage_Input_4() {
+		return DC_Voltage_Input_4;
+	}
+	public void setDC_Voltage_Input_4(double dC_Voltage_Input_4) {
+		DC_Voltage_Input_4 = dC_Voltage_Input_4;
+	}
+	public double getDC_Power_Input_1() {
+		return DC_Power_Input_1;
+	}
+	public void setDC_Power_Input_1(double dC_Power_Input_1) {
+		DC_Power_Input_1 = dC_Power_Input_1;
+	}
+	public double getDC_Power_Input_2() {
+		return DC_Power_Input_2;
+	}
+	public void setDC_Power_Input_2(double dC_Power_Input_2) {
+		DC_Power_Input_2 = dC_Power_Input_2;
+	}
+	public double getDC_Power_Input_3() {
+		return DC_Power_Input_3;
+	}
+	public void setDC_Power_Input_3(double dC_Power_Input_3) {
+		DC_Power_Input_3 = dC_Power_Input_3;
+	}
+	public double getDC_Power_Input_4() {
+		return DC_Power_Input_4;
+	}
+	public void setDC_Power_Input_4(double dC_Power_Input_4) {
+		DC_Power_Input_4 = dC_Power_Input_4;
+	}
 	public double getGrid_Frequency() {
 		return Grid_Frequency;
 	}

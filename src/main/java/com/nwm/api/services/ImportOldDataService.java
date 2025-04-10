@@ -3066,10 +3066,19 @@ public class ImportOldDataService extends DB {
 		rowItem.put("DC_Current_Input_1", !r.getCellText(36).toString().equals("") ? r.getCellText(36).toString() : "0.001");
 		rowItem.put("DC_Current_Input_2", !r.getCellText(37).toString().equals("") ? r.getCellText(37).toString() : "0.001");
 		rowItem.put("DC_Current_Input_3", !r.getCellText(38).toString().equals("") ? r.getCellText(38).toString() : "0.001");
-		rowItem.put("DC_Current_Input_4", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");
-		rowItem.put("nvmActivePower", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
-		rowItem.put("nvmActiveEnergy", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
-		rowItem.put("MeasuredProduction", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("DC_Current_Input_4", !r.getCellText(39).toString().equals("") ? r.getCellText(39).toString() : "0.001");		
+		rowItem.put("DC_Voltage_Input_1", !r.getCellText(40).toString().equals("") ? r.getCellText(40).toString() : "0.001");
+		rowItem.put("DC_Voltage_Input_2", !r.getCellText(41).toString().equals("") ? r.getCellText(41).toString() : "0.001");
+		rowItem.put("DC_Voltage_Input_3", !r.getCellText(42).toString().equals("") ? r.getCellText(42).toString() : "0.001");
+		rowItem.put("DC_Voltage_Input_4", !r.getCellText(43).toString().equals("") ? r.getCellText(43).toString() : "0.001");
+		rowItem.put("DC_Power_Input_1", !r.getCellText(44).toString().equals("") ? r.getCellText(44).toString() : "0.001");
+		rowItem.put("DC_Power_Input_2", !r.getCellText(45).toString().equals("") ? r.getCellText(45).toString() : "0.001");
+		rowItem.put("DC_Power_Input_3", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
+		rowItem.put("DC_Power_Input_4", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
+				
+		rowItem.put("nvmActivePower", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
+		rowItem.put("nvmActiveEnergy", !r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
+		rowItem.put("MeasuredProduction", !r.getCellText(50).toString().equals("") ? r.getCellText(50).toString() : "0.001");
 		return rowItem;
 	}
 	
