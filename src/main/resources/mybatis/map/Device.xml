@@ -6390,8 +6390,16 @@
 						  `DC_Current_Input_1` double DEFAULT NULL,
 						  `DC_Current_Input_2` double DEFAULT NULL,
 						  `DC_Current_Input_3` double DEFAULT NULL,
-						  `DC_Current_Input_4` double DEFAULT NULL,
-						  
+						  `DC_Current_Input_4` double DEFAULT NULL,						  
+						  `DC_Voltage_Input_1` double DEFAULT NULL,
+						  `DC_Voltage_Input_2` double DEFAULT NULL,
+						  `DC_Voltage_Input_3` double DEFAULT NULL,
+						  `DC_Voltage_Input_4` double DEFAULT NULL,
+						  `DC_Power_Input_1` double DEFAULT NULL,
+						  `DC_Power_Input_2` double DEFAULT NULL,
+						  `DC_Power_Input_3` double DEFAULT NULL,
+						  `DC_Power_Input_4` double DEFAULT NULL,
+						  						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
