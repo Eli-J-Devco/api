@@ -5,15 +5,29 @@
 *********************************************************/
 package com.nwm.api.services.building;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
 
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
+import org.springframework.messaging.Message;
+import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.building.HVACMappingPointEntity;
 import com.nwm.api.entities.building.SitesOverviewHVACLayoutMapEntity;
 
+@Service
 public class SitesOverviewHVACService extends DB {
 	
 	/**
@@ -90,6 +104,93 @@ public class SitesOverviewHVACService extends DB {
 			log.error("SitesOverviewHVAC.getConfigPoints", ex);
 		}
 		return new ArrayList<String>();
+	}
+	
+	/**
+	 * Get gateway list.
+	 * @author Hung.Bui
+	 * @since 2025-04-08
+	 * @return list of gateway
+	 */
+	private List<String> getGatewayList() {
+		try {
+			List<String> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
+			if (dataList != null && dataList.size() > 0) return dataList;
+		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.getGatewayList", ex);
+		}
+		return new ArrayList<String>();
+	}
+	
+	@Autowired
+	MqttPahoMessageDrivenChannelAdapter mqttAdapter;
+	private static Map<String, Map<String, String>> fieldCache = new HashMap<String, Map<String, String>>();
+	private static List<Map<String, String>> updatingFieldList = new ArrayList<Map<String, String>>();
+	
+	/**
+	 * Subscribe to MQTT gateway.
+	 * @author Hung.Bui
+	 * @since 2025-04-08
+	 */
+	@PostConstruct
+	private void subscribeToGateway() {
+		try {
+			List<String> gatewayList = this.getGatewayList();
+			if (gatewayList.size() == 0) return;
+			
+			for (String gateway : gatewayList) {
+				mqttAdapter.addTopic("t/".concat(gateway).concat("/NextWave123/telemetry"));
+			}
+		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.subscribeToGateway", ex);
+		}
+	}
+	
+	/**
+	 * Save field data (cache data for 5 minutes then saving to database).
+	 * @author Hung.Bui
+	 * @since 2025-04-08
+	 * @param message MQTT message
+	 */
+	public void saveFieldData(Message<?> message) {
+		try {
+			int maxBatchSize = 500;
+			int minutesToCache = 5; 
+			ObjectMapper mapper = new ObjectMapper();
+			List<Map<String, Object>> payload = mapper.readValue(message.getPayload().toString(), new TypeReference<List<Map<String, Object>>>(){});
+			if (payload == null || payload.size() == 0) return;
+			String id_gateway = message.getHeaders().get("mqtt_receivedTopic").toString().split("/")[1];
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			
+			for (Map<String, Object> item : payload) {
+				String id = item.get("itemId").toString();
+				List<Map<String, Object>> telemetry = (List<Map<String, Object>>) item.get("telemetry");
+				if (telemetry == null || telemetry.size() == 0) continue;
+				List<Map<String, String>> values = (List<Map<String, String>>) telemetry.get(0).get("values");
+				if (values == null || values.size() == 0) continue;
+				
+				Map<String, String> value = (Map<String, String>) values.get(0);
+				LocalDateTime updatedDateTime = LocalDateTime.parse(value.get("ts").toString(), DateTimeFormatter.ISO_DATE_TIME);
+				value.put("id", id);
+				value.put("id_gateway", id_gateway);
+				value.put("ts", updatedDateTime.format(formatter));
+				
+				if (fieldCache.get(id) != null) {
+					LocalDateTime lastDateTime = LocalDateTime.parse(((Map<String, String>) fieldCache.get(id)).get("ts").toString(), formatter);
+					if (ChronoUnit.MINUTES.between(lastDateTime, updatedDateTime) < minutesToCache) continue;
+				}
+				
+				fieldCache.put(id, value);
+				updatingFieldList.add(value);
+			}
+			
+			if (updatingFieldList.size() > maxBatchSize) {
+				int rows = (int) insert("SitesOverviewHVAC.insertFieldData", updatingFieldList);
+				if (rows > 0) updatingFieldList.clear();
+			}
+		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.saveFieldData", ex);
+		}
 	}
 	
 }
