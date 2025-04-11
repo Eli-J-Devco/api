@@ -75,4 +75,49 @@
 			id_gateway = #{id_gateway}
 	</select>
 	
+	<select id="getGatewayList" resultType="String">
+		SELECT
+			id_gateway
+		FROM
+			hvac_gateway
+	</select>
+	
+	<insert id="insertFieldData">
+		INSERT INTO hvac_field_data (
+			id,
+			id_gateway,
+			value,
+			ts
+		)
+		SELECT
+			t1.id,
+			t1.id_gateway,
+			t1.value,
+			t1.ts
+		FROM 
+			(
+				VALUES
+				<foreach collection="list" item="item" separator=",">
+					ROW (
+						#{item.id},
+						#{item.id_gateway},
+						#{item.value},
+						#{item.ts}
+					)
+				</foreach>
+			) t1 (id, id_gateway, value, ts)
+			JOIN (
+				SELECT
+					id,
+					id_gateway,
+					MAX(ts) AS ts
+				FROM
+					hvac_field_data
+				WHERE
+					<foreach collection="list" item="item" open="id IN (" close=")" separator=",">#{item.id}</foreach>
+				GROUP BY
+					id
+			) t2 ON t2.id = t1.id AND TIMESTAMPDIFF(MINUTE, t2.ts, t1.ts) >= 5
+	</insert>
+	
 </mapper>
