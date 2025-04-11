@@ -24,8 +24,13 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.HVACMappingPointEntity;
+import com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity;
 import com.nwm.api.entities.building.SitesOverviewHVACLayoutMapEntity;
+import com.nwm.api.services.SitesAnalyticsService;
+import com.nwm.api.utils.Lib;
 
 @Service
 public class SitesOverviewHVACService extends DB {
@@ -104,6 +109,45 @@ public class SitesOverviewHVACService extends DB {
 			log.error("SitesOverviewHVAC.getConfigPoints", ex);
 		}
 		return new ArrayList<String>();
+	}
+	
+	/**
+	 * Get field chart
+	 * @author Hung.Bui
+	 * @since 2025-04-11
+	 * @param obj
+	 * @return List<ChartConsumptionEntity>
+	 */
+	public List<ChartConsumptionEntity> getFieldChart(SitesOverviewHVACFieldChartEntity obj) {
+		try {
+			SitesAnalyticsService sitesAnalyticsService = new SitesAnalyticsService();
+			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+			DateTimeFormatter isoDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startDate = LocalDateTime.parse(obj.getStart_date(), inputDateFormat).withHour(0).withMinute(0).withSecond(0);
+			LocalDateTime endDate = LocalDateTime.parse(obj.getEnd_date(), inputDateFormat).withHour(23).withMinute(59).withSecond(59);
+			
+			obj.setStart_date(startDate.format(isoDateFormat));
+			obj.setEnd_date(endDate.format(isoDateFormat));
+			List<ChartConsumptionEntity> dataList = queryForList("SitesOverviewHVAC.getFieldChart", obj);
+			
+			DeviceEntity device = new DeviceEntity();
+			device.setData_send_time(obj.getData_send_time());
+			device.setFilterBy(obj.getId_filter());
+			List<Map<String, Object>> dateTimeList = sitesAnalyticsService.getDateTimeList(device, startDate, endDate);
+			List<ChartConsumptionEntity> convertedDateTimeList = new ArrayList<ChartConsumptionEntity>();
+			for (Map<String, Object> map : dateTimeList) {
+				ChartConsumptionEntity item = new ChartConsumptionEntity();
+				item.setTime_full(map.get("time_full").toString());
+				item.setCategories_time(map.get("categories_time").toString());
+				item.setValue((Double)map.get("value"));
+				convertedDateTimeList.add(item);
+			}
+			
+			return Lib.fulfillData(convertedDateTimeList, dataList, "time_full");
+		} catch (Exception ex) {
+			log.error("SitesOverviewHVAC.getFieldChart", ex);
+		}
+		return new ArrayList<ChartConsumptionEntity>();
 	}
 	
 	/**
