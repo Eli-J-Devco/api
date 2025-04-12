@@ -122,6 +122,13 @@
 			
 			s.weather_humidity,
 			s.weather_humidity_unit,
+			s.weather_snow,
+			s.weather_snow_unit,
+			s.weather_rain,
+			s.weather_rain_unit,
+			s.weather_wind,
+			s.weather_wind_unit,
+			
 			s.weather_description,
 			s.weather_icon,
 			DATE_FORMAT(CONVERT_TZ(s.weather_time,"UTC", t.`value`), '%W, %d %M %Y') AS weather_time_string,

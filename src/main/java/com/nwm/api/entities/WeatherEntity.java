@@ -25,6 +25,22 @@ public class WeatherEntity {
 	private String weather_wind_unit;
 	private double weather_rain;
 	private String weather_rain_unit;
+	private double weather_snow;
+	private String weather_snow_unit;
+	
+	
+	public double getWeather_snow() {
+		return weather_snow;
+	}
+	public void setWeather_snow(double weather_snow) {
+		this.weather_snow = weather_snow;
+	}
+	public String getWeather_snow_unit() {
+		return weather_snow_unit;
+	}
+	public void setWeather_snow_unit(String weather_snow_unit) {
+		this.weather_snow_unit = weather_snow_unit;
+	}
 	public int getId_site() {
 		return id_site;
 	}

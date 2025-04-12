@@ -634,6 +634,8 @@
 			weather_wind_unit = #{weather_wind_unit},
 			weather_rain = #{weather_rain},
 			weather_rain_unit = #{weather_rain_unit},
+			weather_snow = #{weather_snow},
+			weather_snow_unit = #{weather_snow_unit},
 			sunrise = #{sunrise},
 			sunset = #{sunset}
 		WHERE
