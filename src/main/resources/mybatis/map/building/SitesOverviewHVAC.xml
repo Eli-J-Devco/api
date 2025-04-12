@@ -120,4 +120,148 @@
 			) t2 ON t2.id = t1.id AND TIMESTAMPDIFF(MINUTE, t2.ts, t1.ts) >= 5
 	</insert>
 	
+	<select id="getFieldChart" parameterType="com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity" resultType="com.nwm.api.entities.building.ChartConsumptionEntity">
+		SELECT
+			value,
+			<if test="(id_filter == 'today') and data_send_time == 8">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+			
+			<if test="(id_filter == 'today') and data_send_time == 1">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'today') and data_send_time == 2">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'today') and data_send_time == 3">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%H:00' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d %H:00' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'today') and data_send_time == 4">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d') AS time_full
+			</if>
+			<if test="(id_filter == '3_day') and data_send_time == 8">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == '3_day') and data_send_time == 1">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == '3_day') and data_send_time == 2">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == '3_day') and data_send_time == 3">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%d. %b %H:00' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d %H:00' ) AS time_full
+			</if>
+
+			<if test="(id_filter == '3_day') and data_send_time == 4">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%d. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d') AS time_full
+			</if>
+			
+			<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 8">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 1">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 2">
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%d. %b %H:%i' ) AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 3">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%d. %b %H:%i' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d %H:00' ) AS time_full
+			</if>
+			
+			<if test="(id_filter == 'this_week' or id_filter == 'last_week') and data_send_time == 4">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%d. %b' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d') AS time_full
+			</if>
+			
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == 'custom') and data_send_time == 8">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 60  )* 60, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+			
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == 'custom') and data_send_time == 1">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 300  )* 300, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 2">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				FROM_UNIXTIME(( UNIX_TIMESTAMP( CONVERT_TZ( ts, 'UTC', #{timezone_value} ) ) DIV 900  )* 900, '%Y-%m-%d %H:%i' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 3">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d %H:00' ) AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 4">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y-%m-%d') AS time_full
+			</if>
+
+			<if test="(id_filter == 'this_month' or id_filter == 'last_month' or id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 5">
+				CASE
+					WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[<=]]> 44 THEN DATE_FORMAT( DATE_SUB(CONVERT_TZ( ts, 'UTC', #{timezone_value} ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( ts, 'UTC', #{timezone_value} ), #{start_date}), 7 )) DAY), '%m/%d' )
+					ELSE DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' )
+				END AS categories_time,
+				DATE_FORMAT(DATE_SUB(CONVERT_TZ( ts, 'UTC', #{timezone_value} ), INTERVAL (MOD(DATEDIFF(CONVERT_TZ( ts, 'UTC', #{timezone_value} ), #{start_date}), 7 )) DAY), '%Y-%m-%d') AS time_full
+			</if>
+			
+			<if test="(id_filter == '12_month' or id_filter == 'year' or id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 6">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%b. %Y' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%m/%Y') AS time_full
+			</if>
+
+			<if test="(id_filter == 'lifetime' or id_filter == 'custom') and data_send_time == 7">
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y' ) AS categories_time,
+				DATE_FORMAT( CONVERT_TZ( ts, 'UTC', #{timezone_value} ), '%Y') AS time_full
+			</if>
+		FROM
+			hvac_field_data
+		WHERE
+			id = #{id}
+			AND id_gateway = #{id_gateway}
+			AND ts BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+		GROUP BY
+			time_full
+	</select>
+	
 </mapper>
