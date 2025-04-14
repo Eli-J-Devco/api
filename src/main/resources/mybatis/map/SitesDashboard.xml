@@ -302,7 +302,7 @@
 		LEFT JOIN (
 						SELECT * FROM ${datatablename} dv WHERE dv.id_device = #{id} AND dv.time >= DATE_ADD(NOW(),INTERVAL -1 HOUR) ORDER BY dv.time DESC LIMIT 1
 					) t ON t.id_device = dz.id_device
-		WHERE dz.id_device = #{id} AND dm.`name` IS NOT NULL GROUP BY dz.id ORDER BY menu_order ASC;
+		WHERE dz.id_device = #{id} AND dz.id = 92 AND dm.monitor_status IN(0,1) GROUP BY dz.id ORDER BY menu_order ASC;
 
 		<!-- SELECT
 			m.*,
