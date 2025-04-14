@@ -170,6 +170,14 @@ public class SitesDevicesEntity extends SortEntity {
 	private String weather_description;
 	private String weather_icon;
 	private String weather_time_string;
+	
+	private double weather_snow;
+	private String weather_snow_unit;
+	private double weather_rain;
+	private String weather_rain_unit;
+	private double weather_wind;
+	private String weather_wind_unit;
+	
 	private String domain_role;
 	
 	private String hvac_gateway;
@@ -177,6 +185,43 @@ public class SitesDevicesEntity extends SortEntity {
 	private int id_hvac_layout;
 	
 	
+	
+	public double getWeather_snow() {
+		return weather_snow;
+	}
+	public void setWeather_snow(double weather_snow) {
+		this.weather_snow = weather_snow;
+	}
+	public String getWeather_snow_unit() {
+		return weather_snow_unit;
+	}
+	public void setWeather_snow_unit(String weather_snow_unit) {
+		this.weather_snow_unit = weather_snow_unit;
+	}
+	public double getWeather_rain() {
+		return weather_rain;
+	}
+	public void setWeather_rain(double weather_rain) {
+		this.weather_rain = weather_rain;
+	}
+	public String getWeather_rain_unit() {
+		return weather_rain_unit;
+	}
+	public void setWeather_rain_unit(String weather_rain_unit) {
+		this.weather_rain_unit = weather_rain_unit;
+	}
+	public double getWeather_wind() {
+		return weather_wind;
+	}
+	public void setWeather_wind(double weather_wind) {
+		this.weather_wind = weather_wind;
+	}
+	public String getWeather_wind_unit() {
+		return weather_wind_unit;
+	}
+	public void setWeather_wind_unit(String weather_wind_unit) {
+		this.weather_wind_unit = weather_wind_unit;
+	}
 	public String getWeather_indoor_temp_unit() {
 		return weather_indoor_temp_unit;
 	}

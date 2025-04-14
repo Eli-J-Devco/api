@@ -300,7 +300,7 @@ public class BatchJob {
 					String inline = "";
 					SiteEntity item = new SiteEntity();
 					item.setId_site(siteItem.getId_site());
-					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=sunrise,sunset&current=temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
+					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=sunrise,sunset&current=temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain,snowfall&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
 							
 					URL url = new URL(APIURL);
 					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -340,6 +340,12 @@ public class BatchJob {
 						String weather_wind_unit = "";
 						double weather_rain = 0;
 						String weather_rain_unit = "";
+						
+						double weather_snow = 0;
+						String weather_snow_unit = "";
+						
+						
+						
 						int is_day = Integer.parseInt(current.get("is_day").toString());
 						switch(weather_code){
 							case 0: 
@@ -419,6 +425,8 @@ public class BatchJob {
 						weather_indoor_temp = Double.parseDouble(current.get("apparent_temperature").toString());
 						weather_rain =  Double.parseDouble(current.get("rain").toString());
 						weather_humidity =  Double.parseDouble(current.get("relative_humidity_2m").toString());
+						weather_snow =  Double.parseDouble(current.get("snowfall").toString());
+						
 						
 					    weather_outdoor_temp_unit = (String) currentUnits.get("temperature_2m");
 						weather_indoor_temp_unit = (String) currentUnits.get("apparent_temperature");
@@ -426,6 +434,7 @@ public class BatchJob {
 						weather_wind_unit = (String) currentUnits.get("wind_speed_10m");
 						weather_rain_unit = (String) currentUnits.get("rain");
 						weather_time = (String) current.get("time");
+						weather_snow_unit = (String) currentUnits.get("snowfall");
 						
 						WeatherEntity weather = new WeatherEntity();
 						weather.setId_site(siteItem.getId());
@@ -444,6 +453,9 @@ public class BatchJob {
 						weather.setWeather_wind_unit(weather_wind_unit);
 						weather.setWeather_rain(weather_rain);
 						weather.setWeather_rain_unit(weather_rain_unit);
+						weather.setWeather_snow(weather_snow);
+						weather.setWeather_snow_unit(weather_snow_unit);
+						
 						service.updateWeather(weather);
 					}
 				}

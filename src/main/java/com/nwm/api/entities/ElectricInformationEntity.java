@@ -44,11 +44,25 @@ public class ElectricInformationEntity extends SortEntity {
 	private double last_month_water;
 	private double last_month_electricity;
 	private double monthly_water;
+	private double avg_daily_7days;
+	private double avg_daily_last_7days;
 	
 	
 	
 	
 	
+	public double getAvg_daily_7days() {
+		return avg_daily_7days;
+	}
+	public void setAvg_daily_7days(double avg_daily_7days) {
+		this.avg_daily_7days = avg_daily_7days;
+	}
+	public double getAvg_daily_last_7days() {
+		return avg_daily_last_7days;
+	}
+	public void setAvg_daily_last_7days(double avg_daily_last_7days) {
+		this.avg_daily_last_7days = avg_daily_last_7days;
+	}
 	public double getMonthly_water() {
 		return monthly_water;
 	}

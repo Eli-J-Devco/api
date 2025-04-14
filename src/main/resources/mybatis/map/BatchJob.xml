@@ -634,6 +634,8 @@
 			weather_wind_unit = #{weather_wind_unit},
 			weather_rain = #{weather_rain},
 			weather_rain_unit = #{weather_rain_unit},
+			weather_snow = #{weather_snow},
+			weather_snow_unit = #{weather_snow_unit},
 			sunrise = #{sunrise},
 			sunset = #{sunset}
 		WHERE
@@ -1220,7 +1222,7 @@
 	
 	<select id="getDataPowerInverterYesterday" resultType="com.nwm.api.entities.SiteEntity" >
 		SELECT
-			t.time_format,
+			t.date_format,
 			ROUND(( SUM( t.actualPower ) ), 1 ) AS actualPower
 			
 		FROM
@@ -1228,12 +1230,12 @@
 				<foreach collection="groupMeter" item="item" index="index" separator="union all">
 				<![CDATA[
 					SELECT
-						m.time_format,
+						m.date_format,
 						SUM(m.actualPower) AS actualPower
 					FROM
 						(
 						SELECT
-							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS time_format,
+							DATE_FORMAT( CONVERT_TZ( dv.time, '+00:00', t.`offset` ), '%m-%d-%Y' ) AS date_format,
 							AVG( IFNULL(dv.nvmActivePower, 0) ) AS actualPower
 						FROM
 							${item.datatablename} dv
@@ -1247,15 +1249,15 @@
 							AND s.`status` = 1 
 							AND d.`status` = 1 
 						GROUP BY
-							d.id, time_format
+							d.id, date_format
 						) m 
 					GROUP BY
-						m.time_format
+						m.date_format
 					]]>
 		      </foreach>
 			) t 
 		GROUP BY
-			t.time_format
+			t.date_format
 	</select>
   	
   	

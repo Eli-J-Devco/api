@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.controllers.BaseController;
+import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.HVACMappingPointEntity;
+import com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity;
 import com.nwm.api.entities.building.SitesOverviewHVACLayoutMapEntity;
 import com.nwm.api.services.building.SitesOverviewHVACService;
 import com.nwm.api.utils.Constants;
@@ -99,6 +101,25 @@ public class SitesOverviewHVACController extends BaseController {
 		try {
 			SitesOverviewHVACService service = new SitesOverviewHVACService();
 			List<String> data = service.getConfigPoints(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * Get field chart
+	 * @author Hung.Bui
+	 * @since 2025-04-11
+	 * @param obj { id_gateway, field_list }
+	 * @return data (status, message, obj)
+	 */
+	@PostMapping("/field-chart")
+	public Object getFieldChart(@RequestBody SitesOverviewHVACFieldChartEntity obj) {
+		try {
+			SitesOverviewHVACService service = new SitesOverviewHVACService();
+			List<ChartConsumptionEntity> data = service.getFieldChart(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
