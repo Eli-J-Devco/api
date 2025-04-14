@@ -5,16 +5,21 @@
 *********************************************************/
 package com.nwm.api.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.batchjob.BatchJob;
+import com.nwm.api.config.MQTTClientConfig.HVACGateway;
 import com.nwm.api.utils.Constants;
 @Configuration
 @EnableBatchProcessing
@@ -284,6 +289,29 @@ public class BatchConfig {
         return taskScheduler;
     }
 	
+	@Autowired HVACGateway hvacGateway;
+	
+	/**
+	 * @description publish MQTT to HVAC gateway on schedule
+	 * @author Hung.Bui
+	 * @since 2025-04-14
+	 */
+	@Scheduled(cron = "0 0 0/1 * * *")
+	public void mqttPublishToHVACScheduler() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> message = new HashMap<String, Object>();
+			
+			message.put("online", false);
+			message.put("ts", "2025-01-09T15:10:12.167Z");
+			hvacGateway.topicPublish(objectMapper.writeValueAsString(message));
+			
+			message.put("online", true);
+			hvacGateway.topicPublish(objectMapper.writeValueAsString(message));
+		}
+	}
 	
 	/**
 	 * @description read folder from FTP account

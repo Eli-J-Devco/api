@@ -6,11 +6,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
+import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -33,8 +35,10 @@ public class MQTTClientConfig {
 	@Value("${mqtt.hvac.timeout}")
 	private int timeout;
 	
+	private String cliendId = UUID.randomUUID().toString();
+	
 	@Bean
-	MqttConnectOptions mqttConnectOptions() {
+	MqttPahoClientFactory mqttClientFactory() {
 		MqttConnectOptions options = new MqttConnectOptions();
 		options.setServerURIs(new String[] { protocol.concat("://").concat(url).concat(":").concat(port) });
 		options.setUserName(username);
@@ -43,11 +47,6 @@ public class MQTTClientConfig {
 		options.setAutomaticReconnect(true);
 		options.setConnectionTimeout(timeout);
 		
-		return options;
-	}
-	
-	@Bean
-	MqttPahoClientFactory mqttClientFactory(MqttConnectOptions options) {
 		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 		factory.setConnectionOptions(options);
 		
@@ -61,7 +60,7 @@ public class MQTTClientConfig {
 	
 	@Bean
 	MqttPahoMessageDrivenChannelAdapter inbound() {
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(UUID.randomUUID().toString(), mqttClientFactory(mqttConnectOptions()));
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(cliendId, mqttClientFactory());
 		adapter.setConverter(new DefaultPahoMessageConverter());
 		adapter.setOutputChannel(mqttInputChannel());
 		
@@ -81,4 +80,23 @@ public class MQTTClientConfig {
 			}
 		};
 	}
+	
+	@Bean
+    MessageChannel mqttOutboundChannel() {
+        return new DirectChannel();
+    }
+	
+	@Bean
+    @ServiceActivator(inputChannel = "mqttOutboundChannel")
+    MessageHandler mqttOutbound() {
+        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(cliendId, mqttClientFactory());
+        messageHandler.setAsync(true);
+        messageHandler.setDefaultTopic("t/NextWave123/status/client");
+        return messageHandler;
+    }
+
+    @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")
+    public interface HVACGateway {
+        void topicPublish(String data);
+    }
 }
