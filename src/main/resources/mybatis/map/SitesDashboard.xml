@@ -433,7 +433,7 @@
 		LEFT JOIN device d ON d.id = dv.id_device
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME))
+		WHERE (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST( #{start_date} AS DATETIME) AND CAST( #{end_date} AS DATETIME)) AND dv.error = 0
 		ORDER BY dv.time ASC
 	</select>
 	
