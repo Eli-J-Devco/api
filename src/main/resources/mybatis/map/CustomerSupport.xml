@@ -86,32 +86,24 @@
 	
 	<select id="getList" resultType="Map" >
 		SELECT
-			s.id,
-			s.id_site,
-			
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", ss.city, " #",ss.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      ss.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
-			s.contact_person,
-			s.account_name,
-			s.phone,
-			s.email,
-			s.note,
-			s.parent,
-			s.id_support_type,
-			s.`status`,
-			s.issue_type,
-			s.subject,
-			DATE_FORMAT( CONVERT_TZ( s.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
+			sp.id,
+			sp.id_site,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
+			sp.contact_person,
+			sp.account_name,
+			sp.phone,
+			sp.email,
+			sp.note,
+			sp.parent,
+			sp.id_support_type,
+			sp.`status`,
+			sp.issue_type,
+			sp.subject,
+			DATE_FORMAT( CONVERT_TZ( sp.created_date, '+00:00', t.`offset` ), '%Y-%m-%d %H:%i:%s' ) AS created_date,
 			JSON_ARRAYAGG(obj_support_file) AS support_file
 			
 		FROM
-			support s
+			support sp
 			LEFT JOIN (
 				SELECT
 						u.id_support,
@@ -124,41 +116,41 @@
 						) AS obj_support_file 
 					FROM
 						support_file u
-			) t ON t.id_support = s.id
-			LEFT JOIN site ss ON ss.id = s.id_site
-			LEFT JOIN time_zone t ON t.id = ss.id_time_zone
+			) t ON t.id_support = sp.id
+			LEFT JOIN site s ON s.id = sp.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			s.id_site is not null
+			sp.id_site is not null
 			<if test="inactive_support_tickets == 1">
-				AND s.`status` = 0
+				AND sp.`status` = 0
 			</if>
-			GROUP BY s.id
+			GROUP BY sp.id
 		    order by
 	        <choose>  
 	            <when test="sort_column == 'id'">
-	                s.id ${order_by}
+	                sp.id ${order_by}
 	            </when>         
 	            <when test="sort_column == 'site_name'">
-	                ss.name ${order_by}
+	                s.name ${order_by}
 	            </when>            
 	            <when test="sort_column == 'account_name'">
-	                s.account_name ${order_by}
+	                sp.account_name ${order_by}
 	            </when>
 	            <when test="sort_column == 'contact_person'">
-	                s.contact_person ${order_by}
+	                sp.contact_person ${order_by}
 	            </when>
 	            <when test="sort_column == 'email'">
-	                s.email ${order_by}
+	                sp.email ${order_by}
 	            </when>
 	            <when test="sort_column == 'phone'">
-	                s.phone ${order_by}
+	                sp.phone ${order_by}
 	            </when>
 	            <when test="sort_column == 'status'">
-	                s.status ${order_by}
+	                sp.status ${order_by}
 	            </when>
 	            
 	            <otherwise>
-			      s.id DESC
+			      sp.id DESC
 			    </otherwise>                                                  
 	        </choose>  
 		 	 

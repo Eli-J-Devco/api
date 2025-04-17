@@ -59,14 +59,7 @@
 	<select id="getMiniSiteInfo" resultType="Map" >
 		SELECT
 			s.id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.built_since, '%m/%d/%Y %H:%i:%s') AS built_since, 
 			DATE_FORMAT(s.commissioning, '%m/%d/%Y %H:%i:%s') AS commissioning, 
 			s.ac_capacity,
