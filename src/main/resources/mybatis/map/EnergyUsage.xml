@@ -89,10 +89,10 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-								CONVERT_TZ(dv.time,"UTC",t.`value`)
-									BETWEEN CONVERT_TZ(#{start_date}, 'UTC', t.`value`) 
+								DATE_FORMAT(CONVERT_TZ(dv.time,"UTC",t.`value`), "%Y-%m-%d %H:%i:%s")
+									BETWEEN DATE_FORMAT( #{start_date} ,"%Y-%m-%d 00:00:00")
 									AND 
-									CONVERT_TZ( DATE_ADD(#{end_date}, INTERVAL 1 DAY) , 'UTC', t.`value`)
+									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -136,10 +136,10 @@
 									LEFT JOIN site s ON s.id = d.id_site
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									CONVERT_TZ(dv.time,"UTC",t.`value`)
-									BETWEEN CONVERT_TZ(#{start_date}, 'UTC', t.`value`) 
+									DATE_FORMAT(CONVERT_TZ(dv.time,"UTC",t.`value`), "%Y-%m-%d %H:%i:%s")
+									BETWEEN DATE_FORMAT(#{start_date}, "%Y-%m-%d 00:00:00")
 									AND 
-									CONVERT_TZ( DATE_ADD(#{end_date}, INTERVAL 1 DAY) , 'UTC', t.`value`)
+									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
 								GROUP BY 
 									time_format
 							) t ON t.time = dv.time
@@ -205,7 +205,10 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+									DATE_FORMAT(CONVERT_TZ(dv.time,"UTC",t.`value`), "%Y-%m-%d %H:%i:%s")
+									BETWEEN DATE_FORMAT( #{start_date} ,"%Y-%m-%d 00:00:00")
+									AND 
+									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
@@ -249,7 +252,10 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-									dv.time BETWEEN CONVERT_TZ(#{start_date}, t.`value`, 'UTC') AND CONVERT_TZ(#{end_date}, t.`value`, 'UTC')
+									DATE_FORMAT(CONVERT_TZ(dv.time,"UTC",t.`value`), "%Y-%m-%d %H:%i:%s")
+									BETWEEN DATE_FORMAT( #{start_date} ,"%Y-%m-%d 00:00:00")
+									AND 
+									DATE_FORMAT( DATE_ADD(#{end_date}, INTERVAL 1 DAY) ,"%Y-%m-%d 00:00:00")
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
