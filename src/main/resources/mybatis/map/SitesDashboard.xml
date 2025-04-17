@@ -1117,7 +1117,7 @@
 									LEFT JOIN site s ON s.id = d.id_site 
 									LEFT JOIN time_zone t ON t.id = s.id_time_zone
 								WHERE
-				 					(CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(DATE_FORMAT(DATE_ADD('2025-04-14 23:59:59',INTERVAL 5 MINUTE) , '%Y-%m-%d 00:00:00')AS DATETIME))
+				 					(CAST(CONVERT_TZ( dv.time, 'UTC', t.`value` ) AS DATETIME) BETWEEN CAST(#{start_date} AS DATETIME) AND CAST(DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 5 MINUTE) , '%Y-%m-%d 00:00:00')AS DATETIME))
 								GROUP BY
 									time_format
 							) t ON t.time = dv.time
