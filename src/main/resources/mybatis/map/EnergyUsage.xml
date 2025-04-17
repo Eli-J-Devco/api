@@ -157,7 +157,7 @@
 		SELECT
 			time_full,
 			categories_time,
-			CAST(SUM(`nvmActiveEnergy`) AS DECIMAL) AS `chart_energy_kwh`
+			SUM(`nvmActiveEnergy`) AS `chart_energy_kwh`
 		FROM (
 				SELECT
 					mi.time_format,
