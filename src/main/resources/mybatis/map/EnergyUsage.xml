@@ -157,7 +157,7 @@
 		SELECT
 			time_full,
 			categories_time,
-			SUM(`nvmActiveEnergy`) AS `chart_energy_kwh`
+			ROUND(SUM(`nvmActiveEnergy`), 1) AS `chart_energy_kwh`
 		FROM (
 				SELECT
 					mi.time_format,
