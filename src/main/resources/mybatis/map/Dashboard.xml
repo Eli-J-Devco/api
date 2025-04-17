@@ -65,14 +65,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			d.id as id_device,
@@ -183,14 +176,7 @@
 	<select id="getListActualvsExpected" resultType="Map" parameterType="String" >
 		SELECT
 			s.id AS id_site,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			SHA1(s.id) AS hash_id,
 			s.dc_capacity,
 			meter.power_today_meter,

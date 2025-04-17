@@ -133,15 +133,7 @@
 			e.description,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
-	        
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			i.icon AS icon_alert,
@@ -338,14 +330,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			'kW' AS capacity_unit,
@@ -410,17 +395,8 @@
   	<select id="getListIdSites" resultType="Map" >
   		SELECT
 			s.id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `text`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS name,
-			      s.`name` AS text,
-			    </otherwise>                                                  
-	        </choose>
-	        
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
 			s.id_site_group,
 			s.id_site_sub_group,
 			sg.name AS site_group_name,
@@ -458,14 +434,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
@@ -700,14 +669,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,
@@ -959,14 +921,7 @@
   	<select id="getDetailSendMail" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT
 			a.id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			d.devicename,
 			IF(a.start_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.start_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS start_date,
 			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date,
@@ -1004,14 +959,7 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.dc_capacity,
 			s.ac_capacity,
 			SUM(if(d.id_device_type = 1, 1, 0)) AS totalInverter,
@@ -1222,14 +1170,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			SHA1(s.id) AS hash_id,
 			d.id as id_device,

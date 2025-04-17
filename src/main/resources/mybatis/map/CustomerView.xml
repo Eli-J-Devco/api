@@ -546,15 +546,7 @@
 			s.kiosk_view,
 			SHA1(s.id) AS hash_id,
 			scm.id_employee,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS name,
-			    </otherwise>                                                  
-	        </choose>
-	        
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.dc_capacity,
 			s.ac_capacity,
 			s.lat,
@@ -627,14 +619,7 @@
 			SHA1(s.id)  hash_id,
 			s.id_country,
 			s.id_time_zone,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS name,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			s.lat,
 			s.lng,
@@ -765,15 +750,7 @@
 			e.message,
 			e.error_code,
 			d.devicename,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `site_name`,
-	            </when>
-	            <otherwise>
-			      s.`name` AS site_name,
-			    </otherwise>                                                  
-	        </choose>
-	        
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
 			i.icon AS icon_alert,

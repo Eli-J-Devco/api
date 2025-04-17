@@ -133,19 +133,9 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `text`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			      s.`name` AS text,
-				  s.`name` AS label,
-			    </otherwise>                                                  
-	        </choose>
-			
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
@@ -380,18 +370,9 @@
 	<select id="getSiteByEmployeeREC" resultType="Map">
 		SELECT
 			s.id,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `text`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			      s.`name` AS text,
-				  s.`name` AS label,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
 			s.id AS value,
 			s.is_rec_report,
 			s.datalogger_ip,
@@ -524,14 +505,7 @@
 			s.id,
 			SHA1(s.id) AS hash_id,
 			scm.id_employee,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
 			s.street,
@@ -1003,14 +977,7 @@
 			SHA1(s.id) AS hash_id,
 			s.id AS id_site,
 			s.id_company,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
 			DATE_FORMAT(s.commissioning,'%m/%d/%Y') AS commissioning,
 			DATE_FORMAT(s.expiration,'%m/%d/%Y') AS expiration,
@@ -1294,14 +1261,7 @@
 			s.id_company,
 			s.id_country,
 			s.id_time_zone,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			IF(s.lat = 0, NULL, s.lat) AS lat,
 			IF(s.lng = 0, NULL, s.lng) AS lng,
@@ -1371,16 +1331,8 @@
 			s.id_company,
 			s.id AS value,
 			s.id_country,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	                CONCAT_WS("", s.city, " #",s.id) AS `label`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-				  s.`name` AS label,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
 			s.street,
 			IF(s.lat = 0, NULL, s.lat) AS lat,
 			IF(s.lng = 0, NULL, s.lng) AS lng,
@@ -1452,14 +1404,7 @@
 			s.id_customer,
 			s.id_country,
 			s.id_time_zone,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.street,
 			s.lat,
 			s.lng,
@@ -1679,14 +1624,7 @@
 			s.id,
 			s.id_country,
 			s.id_time_zone,
-			<choose> 
-	            <when test="domain =='demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-	                CONCAT_WS("", s.city, " #",s.id) AS `name`,
-	            </when>
-	            <otherwise>
-			      s.`name`,
-			    </otherwise>                                                  
-	        </choose>
+			<include refid="com.nwm.common.siteName"/> AS `name`,
 			s.lat,
 			s.lng,
 			s.old_data,
