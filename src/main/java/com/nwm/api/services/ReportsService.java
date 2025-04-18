@@ -560,12 +560,10 @@ public class ReportsService extends DB {
 				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
 				
 				try {
-					item.put("options", mapper.readValue(item.get("sitesJSON").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+					item.put("options", mapper.readValue(item.get("options").toString(), new TypeReference<List<Map<String, Object>>>(){}));
 				} catch (JsonProcessingException e) {
 					item.put("options", new ArrayList<Map<String, Object>>());
 				}
-				
-				item.put("sitesJSON", null);
 			}
 			return dataList;
 		} catch (Exception ex) {

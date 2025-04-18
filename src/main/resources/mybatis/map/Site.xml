@@ -379,12 +379,12 @@
 			s.table_data_report,
 			CAST(s.reporting_region AS UNSIGNED) AS reporting_region,
 			JSON_ARRAYAGG(JSON_OBJECT(
-				'id_site', s.id,
+				'id_group', s.id,
 				'value', d.id,
 				'label', d.devicename,
 				'table_data_report', s.table_data_report,
 				'reporting_region', CAST(s.reporting_region AS UNSIGNED)
-			)) AS devicesJSON
+			)) AS options
 		FROM
 			site AS s
 			LEFT JOIN device d ON d.id_site = s.id AND d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0
@@ -1324,67 +1324,36 @@
 			</if>
 	</select>
 	
-	<select id="getAllSite" resultMap="SiteMap" parameterType="String">
+	<select id="getAllSite" resultType="Map">
 		SELECT
-			s.id,
-			SHA1(s.id) AS hash_id,
-			s.id_company,
-			s.id AS value,
-			s.id_country,
-			<include refid="com.nwm.common.siteName"/> AS `name`,
-			<include refid="com.nwm.common.siteName"/> AS `label`,
-			s.street,
-			IF(s.lat = 0, NULL, s.lat) AS lat,
-			IF(s.lng = 0, NULL, s.lng) AS lng,
-			IF(s.lat = 0, NULL, s.lat) AS view_lat,
-			IF(s.lng = 0, NULL, s.lng) AS view_lng,
-			built_since,
-			s.old_data,
-			s.number,
-			s.postal_code,
-			s.city,
-			s.state,
-			commissioning,
-			s.emergency_contact,
-			s.ac_capacity,
-			s.dc_capacity,
-			s.status,
-			s.is_delete,
-			s.created_date,
-			s.created_by,
-			s.updated_date,
-			s.updated_by,
-			s.gallery,
-			s.note,
-			s.is_rec_report,
-			s.datalogger_ip,
-			s.about,
-			s.kiosk_view,
-			s.site_logo,
-			s.id_site_group,
-			s.timezone_datalogger,
-			s.unit_type_temp,
-			s.unit_wind_speed,
-			s.ftp_server,
-			s.ftp_user,
-			s.ftp_pass,
-			s.ftp_port,
-			s.ftp_folder,
-			s.datalogger_type,
-			s.enable_alert,
-			s.serial_number,
-			s.mqtt_host,
-			s.mqtt_port,
-			s.mqtt_protocol,
-			s.mqtt_username,
-			s.mqtt_password
+			ssg.id,
+			ssg.id AS value,
+			ssg.name AS text,
+			ssg.name AS label,
+			sg.name AS parent,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'id_group', ssg.id
+			)) AS options
 		FROM
-			site AS s
-		WHERE s.is_delete = 0
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			AND s.id_company = #{id_company}
-		</if>
-		;
+			site_sub_group ssg
+			JOIN site s ON s.id_site_sub_group = ssg.id
+			JOIN site_group sg ON sg.id = ssg.id_site_group
+		WHERE
+			ssg.status = 1
+			AND ssg.is_delete = 0
+			AND sg.status = 1
+			AND sg.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND s.id_company = #{id_company}
+			</if>
+		GROUP BY
+			ssg.id
 	</select>
 	
 	<select id="getAllSiteGroup" resultType="Map">
