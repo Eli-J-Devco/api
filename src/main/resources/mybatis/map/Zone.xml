@@ -23,6 +23,7 @@
 		<result property="bit_position" column="bit_position" />
 		<result property="bit_map" column="bit_map" />
 		<result property="zone_field" column="zone_field" />
+		<result property="datatablename" column="datatablename" />
 		
 		
 		
@@ -35,7 +36,8 @@
 		SELECT
 			s.*,
 			d.devicename,
-			d.id_device_group
+			d.id_device_group,
+			d.datatablename
 		FROM
 			device_zone s 
 			LEFT JOIN device d ON d.id = s.id_device

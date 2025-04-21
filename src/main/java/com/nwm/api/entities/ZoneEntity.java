@@ -41,9 +41,16 @@ public class ZoneEntity{
 	private int bit_position;
 	private int bit_map;
 	private List dataZoneVirtual;
+	private String datatablename;
 	
 	
 	
+	public String getDatatablename() {
+		return datatablename;
+	}
+	public void setDatatablename(String datatablename) {
+		this.datatablename = datatablename;
+	}
 	public List getDataZoneVirtual() {
 		return dataZoneVirtual;
 	}
