@@ -29,7 +29,7 @@ public class EnergyUsageController extends BaseController {
 	 * @param {}
 	 * @return data (status, message, array, total_row
 	 */
-	@PostMapping("//get-chart-data")
+	@PostMapping("/get-chart-data")
 	public Object getChartDataEnergyUsage(@RequestBody SiteEntity obj) {
 		try {
 			EnergyUsageService service = new EnergyUsageService();
@@ -50,7 +50,7 @@ public class EnergyUsageController extends BaseController {
 	 * @param {}
 	 * @return data (status, message, array, total_row
 	 */
-	@PostMapping("//get-chart-data-by-device")
+	@PostMapping("/get-chart-data-by-device")
 	public Object getChartDataEnergyByDevice(@RequestBody DeviceEntity obj) {
 		try {
 			EnergyUsageService service = new EnergyUsageService();
