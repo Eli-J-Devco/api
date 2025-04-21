@@ -100,7 +100,7 @@
 								IF(
 									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
 									0,
-									LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec)) - LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev))
+									LEAST(COALESCE(kWhDelPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhDelPrev), COALESCE(kWhDelRecPrev, kWhDelPrev, kWhDel_RecPrev)) - LEAST(COALESCE(kWhDel, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhDel), COALESCE(kWhDelRec, kWhDel, kWhDel_Rec))
 								) AS MeasuredProduction
 							FROM
 								(
@@ -108,11 +108,11 @@
 										time,
 										nvmActivePower,
 										kWhDel,
-										LAG(kWhDel, 1) OVER (ORDER BY time) AS kWhDelPrev,
+										LEAD(kWhDel, 1) OVER (ORDER BY time) AS kWhDelPrev,
 										kWhDel_Rec,
-										LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										LEAD(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
 										kWhDelRec,
-										LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+										LEAD(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
 									FROM 
 										${datatablename}
 									WHERE
@@ -128,7 +128,7 @@
 								IF(
 									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) IS NULL OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) IS NULL OR LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) <![CDATA[ <= ]]> 0 OR LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) <![CDATA[ <= ]]> 0,
 									0,
-									LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec)) - LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev))
+									LEAST(COALESCE(kWhRecPrev, kWhDel_RecPrev, kWhDelRecPrev), COALESCE(kWhDel_RecPrev, kWhDelRecPrev, kWhRecPrev), COALESCE(kWhDelRecPrev, kWhRecPrev, kWhDel_RecPrev)) - LEAST(COALESCE(kWhRec, kWhDel_Rec, kWhDelRec), COALESCE(kWhDel_Rec, kWhDelRec, kWhRec), COALESCE(kWhDelRec, kWhRec, kWhDel_Rec))
 								) AS MeasuredProduction
 							FROM
 								(
@@ -136,11 +136,11 @@
 										time,
 										nvmActivePower,
 										kWhRec,
-										LAG(kWhRec, 1) OVER (ORDER BY time) AS kWhRecPrev,
+										LEAD(kWhRec, 1) OVER (ORDER BY time) AS kWhRecPrev,
 										kWhDel_Rec,
-										LAG(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
+										LEAD(kWhDel_Rec, 1) OVER (ORDER BY time) AS kWhDel_RecPrev,
 										kWhDelRec,
-										LAG(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
+										LEAD(kWhDelRec, 1) OVER (ORDER BY time) AS kWhDelRecPrev
 									FROM 
 										${datatablename}
 									WHERE
@@ -154,9 +154,9 @@
 								time,
 								nvmActivePower,
 								IF(
-									nvmActiveEnergy IS NULL OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LAG(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0,
+									nvmActiveEnergy IS NULL OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) IS NULL OR nvmActiveEnergy <![CDATA[<=]]> 0 OR (LEAD(nvmActiveEnergy, 1) OVER (ORDER BY time)) <![CDATA[<=]]> 0,
 									0,
-									CAST(nvmActiveEnergy AS DECIMAL(32, 8)) - (LAG(CAST(nvmActiveEnergy AS DECIMAL(32, 8)), 1) OVER (ORDER BY time))
+									(LEAD(CAST(nvmActiveEnergy AS DECIMAL(32, 8)), 1) OVER (ORDER BY time)) - CAST(nvmActiveEnergy AS DECIMAL(32, 8))
 								) AS MeasuredProduction
 							FROM
 								${datatablename}
