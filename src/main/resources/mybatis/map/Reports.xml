@@ -21,54 +21,6 @@
 		<result property="updated_by" column="updated_by" />
 	</resultMap>
 	
-	<select id="getListSiteByEmployee" resultType="Map">
-		SELECT
-			sg.id,
-			sg.id AS value,
-			sg.name AS text,
-			sg.name AS label,
-            JSON_ARRAYAGG(JSON_OBJECT(
-				'id', s.id,
-				'value', s.id,
-				'text', <include refid="com.nwm.common.siteName"/>,
-				'label', <include refid="com.nwm.common.siteName"/>,
-				'id_site_group', s.id_site_group,
-				'enable_virtual_device', IF(v.enable_virtual_device > 0, 1, 0)
-			)) AS sitesJSON
-		FROM
-			site_group AS sg
-			LEFT JOIN site s ON s.id_site_group = sg.id
-			LEFT JOIN (
-				SELECT
-					COUNT(*) AS enable_virtual_device,
-					d.id_site
-				FROM
-					device d 
-				WHERE
-					d.`status` = 1
-					AND d.is_delete = 0
-					AND d.hidden = 0
-					AND d.virtual_device_type IS NOT NULL
-					AND d.virtual_device_type != ''
-				GROUP BY
-					d.id_site
-			) v ON v.id_site = s.id
-		WHERE
-			sg.status = 1
-			AND sg.is_delete = 0 
-			AND s.`status` = 1 
-			AND s.is_delete = 0
-			<if test="is_supper_admin != 1 and id_sites != null">
-				AND s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item.id}
-					</foreach>
-				)
-			</if>
-		GROUP BY
-			sg.id
-	</select>
-	
 	<select id="getListSiteByIdEmployee" resultType="Map">
 		SELECT
 			s.id,
