@@ -50,7 +50,8 @@ public class ReportsEntity {
 	private Integer reporting_region;
 	private Integer recVersion;
 	private String domain;
-private String domain_role;
+	private String domain_role;
+	private int id_company;
 	
 	
 	public String getDomain_role() {
@@ -313,6 +314,12 @@ private String domain_role;
 	}
 	public void setRecVersion(Integer recVersion) {
 		this.recVersion = recVersion;
+	}
+	public int getId_company() {
+		return id_company;
+	}
+	public void setId_company(int id_company) {
+		this.id_company = id_company;
 	}
 	
 	

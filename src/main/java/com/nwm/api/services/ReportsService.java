@@ -553,19 +553,17 @@ public class ReportsService extends DB {
 
 	public List getListSiteByEmployee(ReportsEntity obj) {
 		try {
-			List dataList = (List<Map<String, Object>>) queryForList("Reports.getListSiteByEmployee", obj);
+			List dataList = (List<Map<String, Object>>) queryForList("Site.getAllSite", obj);
 			if (dataList == null) return new ArrayList();
 			ObjectMapper mapper = new ObjectMapper();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
 				
 				try {
-					item.put("options", mapper.readValue(item.get("sitesJSON").toString(), new TypeReference<List<Map<String, Object>>>(){}));
+					item.put("options", mapper.readValue(item.get("options").toString(), new TypeReference<List<Map<String, Object>>>(){}));
 				} catch (JsonProcessingException e) {
 					item.put("options", new ArrayList<Map<String, Object>>());
 				}
-				
-				item.put("sitesJSON", null);
 			}
 			return dataList;
 		} catch (Exception ex) {
