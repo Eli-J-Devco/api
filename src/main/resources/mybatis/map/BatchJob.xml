@@ -1512,12 +1512,13 @@
 			d.serial_number,
 			d.modbusdevicenumber,
 			d.devicename,
-			d.datatablename,
-			d.view_tablename,
-			d.job_tablename,
+			IF(d.id_device_type = 12, s.table_data_virtual, d.datatablename) AS datatablename,
+			IF(d.id_device_type = 12, s.table_data_virtual, d.view_tablename) AS view_tablename,
+			IF(d.id_device_type = 12, s.table_data_virtual, d.job_tablename) AS job_tablename,
 			d.id_device_group
 		FROM
 			device AS d
+			LEFT JOIN site s ON s.id = d.id_site
 		WHERE
 			d.`status` = 1 
 			AND d.is_delete = 0
