@@ -118,15 +118,15 @@ public class ModelLevitonS40000rPowerMeterService extends DB {
 			}
 			
 			ModelLevitonS40000rPowerMeterEntity dataObj = (ModelLevitonS40000rPowerMeterEntity) queryForObject("ModelLevitonS40000rPowerMeter.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
+			}
+						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-				 if(measuredProduction < 0 ) { measuredProduction = 0;}
-				 
-				 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-					 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-					 obj.setRealEnergyConsumption(dataObj.getNvmActiveEnergy());
-				 }
 			 }
 
 			 obj.setMeasuredProduction(measuredProduction);

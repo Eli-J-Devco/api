@@ -60,10 +60,17 @@ public class ModelWaterMeterService extends DB {
 	public boolean insertModelWaterMeter(ModelWaterMeterEntity obj) {
 		try {
 			ModelWaterMeterEntity dataObj = (ModelWaterMeterEntity) queryForObject("ModelGasMeter.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setReadingValue(dataObj.getNvmActiveEnergy());
+			}
+						
 			double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getReadingValue() > 0 && obj.getReadingValue() > 0 && obj.getReadingValue() != 0.001 ) {
 				 measuredProduction = obj.getReadingValue() - dataObj.getReadingValue();
 			 }
+			 obj.setMeasuredProduction(measuredProduction);
 			 Object insertId = insert("ModelWaterMeter.insertModelWaterMeter", obj);
 		        if(insertId == null ) {
 		        	return false;

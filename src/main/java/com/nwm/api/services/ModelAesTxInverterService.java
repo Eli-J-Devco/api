@@ -116,14 +116,15 @@ public class ModelAesTxInverterService extends DB {
 	public boolean insertModelAesTxInverter(ModelAesTxInverterEntity obj) {
 		try {
 			ModelAesTxInverterEntity dataObj = (ModelAesTxInverterEntity) queryForObject("ModelAesTxInverter.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setPt34(dataObj.getNvmActiveEnergy());
+			}
+						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setPt34(dataObj.getNvmActiveEnergy());
 			 }
 
 			 obj.setMeasuredProduction(measuredProduction);

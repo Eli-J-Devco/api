@@ -210,13 +210,14 @@ public class ModelSatconPvs357InverterService extends DB {
 	public boolean insertModelSatconPvs357Inverter(ModelSatconPvs357InverterEntity obj) {
 		try {
 			ModelSatconPvs357InverterEntity dataObj = (ModelSatconPvs357InverterEntity) queryForObject("ModelSatconPvs357Inverter.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+			}
+						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 			 }
 
 			 obj.setMeasuredProduction(measuredProduction);

@@ -158,6 +158,12 @@ public class ModelMeterIon8600V3Service extends DB {
 			}
 			
 			ModelMeterIon8600V3Entity dataObj = (ModelMeterIon8600V3Entity) queryForObject("ModelMeterIon8600V3.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setKWhDel(dataObj.getNvmActiveEnergy());
+			}
+						
 			 double measuredProduction = 0, measuredProduction0 = 0,measuredProduction1 = 0, measuredProduction2 = 0;
 			 
 			 List<Double> listMeasuredProduction = new ArrayList<>();
@@ -195,10 +201,6 @@ public class ModelMeterIon8600V3Service extends DB {
 				 }
 			 }
 			 
-			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setKWhDel(dataObj.getNvmActiveEnergy());
-			 }
 			 
 			 
 			 obj.setMeasuredProduction(measuredProduction);

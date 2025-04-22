@@ -114,15 +114,17 @@ public class ModelShark250Service extends DB {
 			}
 			
 			 ModelShark250Entity dataObj = (ModelShark250Entity) queryForObject("ModelShark250.getLastRow", obj);
+			// filter data 
+				if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+					obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+					obj.setReactiveEnergyNet(dataObj.getNvmActiveEnergy());
+				}
+				
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
 			 }
 			 
-			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setReactiveEnergyNet(dataObj.getNvmActiveEnergy());
-			 }
 			 
 			 obj.setMeasuredProduction(measuredProduction);
 			 

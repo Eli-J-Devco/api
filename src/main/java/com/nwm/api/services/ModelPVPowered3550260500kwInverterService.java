@@ -120,14 +120,15 @@ public class ModelPVPowered3550260500kwInverterService extends DB {
 	public boolean insertModelPVPowered3550260KWInverter(ModelPVPowered3550260500kwInverterEntity obj) {
 		try {
 			ModelPVPowered3550260500kwInverterEntity dataObj = (ModelPVPowered3550260500kwInverterEntity) queryForObject("ModelPVPowered3550260500kwInverter.getLastRow", obj);
+			// filter data 
+			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
+				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
+				obj.setTotalEnergyGeneration(dataObj.getNvmActiveEnergy());
+			}
+						
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
 				 measuredProduction = obj.getNvmActiveEnergy() - dataObj.getNvmActiveEnergy();
-			 }
-			 
-			 if(obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) {
-				 obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
-				 obj.setTotalEnergyGeneration(dataObj.getNvmActiveEnergy());
 			 }
 
 			 obj.setMeasuredProduction(measuredProduction);
