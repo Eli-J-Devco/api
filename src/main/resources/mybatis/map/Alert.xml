@@ -1097,7 +1097,7 @@
 			COUNT(s.id) AS totalRecord
 		FROM
 			site s
-			
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			<if test="is_supper_admin != 1">
 				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
 			</if>
@@ -1137,6 +1137,7 @@
 			s.`status` = 1 
 			AND s.is_delete = 0 
 			AND totalAlert > 0
+			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="is_supper_admin != 1">
 				AND sem.id_employee = #{id_employee}
