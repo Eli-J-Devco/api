@@ -224,6 +224,11 @@
 		          GROUP BY id_site
 		      ) td ON td.id_site = s.id
  			</if>
+ 			
+			
+			<if test="(keyword != null and keyword != '' and sort_column == 'site_sub_group' ) ">			
+				LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+			</if>
 		WHERE
 			s.is_delete = 0	
 			AND s.`status` = 1 
@@ -232,6 +237,13 @@
 				AND sem.is_hiding = 0
 			</if>
 			
+			<if test="keyword != null and keyword != '' and sort_column == 'site_group'">
+				AND sg.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
+			
+			<if test="keyword != null and keyword != '' and sort_column == 'site_sub_group'">
+				AND ssg.name LIKE CONCAT("%",#{keyword}, "%")
+			</if>
 			
 			<if test="keyword != null and keyword != '' and sort_column == 'name'">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
