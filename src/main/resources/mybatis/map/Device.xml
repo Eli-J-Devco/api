@@ -5500,6 +5500,9 @@
 						  `Digit2` double DEFAULT NULL COMMENT 'Digit2',
 						  `Digit3` double DEFAULT NULL COMMENT 'Digit3',
 						  `Digit4` double DEFAULT NULL COMMENT 'Digit4',
+						  `Digit5` double DEFAULT NULL COMMENT 'Digit5',
+						  `Digit6` double DEFAULT NULL COMMENT 'Digit6',
+						  `Digit7` double DEFAULT NULL COMMENT 'Digit7',
 						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,

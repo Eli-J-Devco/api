@@ -16,6 +16,9 @@
 		<result property="Digit2" column="Digit2" />
 		<result property="Digit3" column="Digit3" />
 		<result property="Digit4" column="Digit4" />
+		<result property="Digit5" column="Digit5" />
+		<result property="Digit6" column="Digit6" />
+		<result property="Digit7" column="Digit7" />
 		
 		<result property="nvmActivePower" column="nvmActivePower" />
 		<result property="nvmActiveEnergy" column="nvmActiveEnergy" />
@@ -61,6 +64,16 @@
 			</if>
 			<if test="Digit4 != 0.001">
 				`Digit4`,
+			</if>
+			
+			<if test="Digit5 != 0.001">
+				`Digit5`,
+			</if>
+			<if test="Digit6 != 0.001">
+				`Digit6`,
+			</if>
+			<if test="Digit7 != 0.001">
+				`Digit7`,
 			</if>
 			
 			
@@ -111,6 +124,16 @@
 				#{Digit4},
 			</if>
 			
+			<if test="Digit5 != 0.001">
+				#{Digit5},
+			</if>
+			<if test="Digit6 != 0.001">
+				#{Digit6},
+			</if>
+			<if test="Digit7 != 0.001">
+				#{Digit7},
+			</if>
+			
 			<if test="nvmActivePower != 0.001">
 				#{nvmActivePower},
 			</if>
@@ -152,6 +175,16 @@
 			</if>
 			<if test="Digit4 != 0.001">
 				`Digit4` = #{Digit4},
+			</if>
+			
+			<if test="Digit5 != 0.001">
+				`Digit5` = #{Digit5},
+			</if>
+			<if test="Digit6 != 0.001">
+				`Digit6` = #{Digit6},
+			</if>
+			<if test="Digit7 != 0.001">
+				`Digit7` = #{Digit7},
 			</if>
 			
 			<if test="nvmActivePower != 0.001">

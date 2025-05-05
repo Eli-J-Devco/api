@@ -16,12 +16,36 @@ public class ModelGasMeterEntity extends ModelBaseEntity {
 	private double Digit2;
 	private double Digit3;
 	private double Digit4;
+	private double Digit5;
+	private double Digit6;
+	private double Digit7;
 	private double nvmActivePower;
 	private double nvmActiveEnergy;
 	private double MeasuredProduction;
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+	
+	
+	
+	public double getDigit7() {
+		return Digit7;
+	}
+	public void setDigit7(double digit7) {
+		Digit7 = digit7;
+	}
+	public double getDigit5() {
+		return Digit5;
+	}
+	public void setDigit5(double digit5) {
+		Digit5 = digit5;
+	}
+	public double getDigit6() {
+		return Digit6;
+	}
+	public void setDigit6(double digit6) {
+		Digit6 = digit6;
+	}
 	public String getTime() {
 		return time;
 	}
