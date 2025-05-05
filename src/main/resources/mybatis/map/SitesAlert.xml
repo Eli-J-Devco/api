@@ -123,6 +123,7 @@
 			e.`status` = 1
 			AND s.enable_alert = 1
 			AND e.is_delete = 0
+			AND d.is_delete = 0
 			AND s.id = #{id_site}
 			AND l.is_delete = 0
 			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)

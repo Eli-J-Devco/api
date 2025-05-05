@@ -417,10 +417,26 @@
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN(
-				SELECT COUNT(a.id) AS total_error, d.id_site 
-				FROM device d 
-					LEFT JOIN alert a ON a.id_device = d.id
-				WHERE SHA1(d.id_site) = #{hash_id_site} AND d.`status` = 1 AND a.`status` = 1
+				SELECT
+					COUNT( a.id ) AS total_error,
+					d.id_site 
+				FROM
+					device d
+					LEFT JOIN alert a ON a.id_device = d.id 
+					LEFT JOIN error e ON e.id = a.id_error
+					LEFT JOIN site s ON s.id = d.id_site
+				WHERE
+					SHA1(d.id_site) = #{hash_id_site}
+					AND d.`status` = 1 
+					AND d.is_delete = 0
+					AND a.`status` = 1
+					AND e.`status` = 1 
+					AND e.is_delete = 0
+					AND s.enable_alert = 1
+					<include refid="com.nwm.common.deviceByDomainCondition"/>
+			        <if test="!isUserNW.booleanValue()">
+						AND e.id_error_level != 14
+					</if>
 			)g ON g.id_site = d.id_site
 			LEFT JOIN (
 				SELECT

@@ -169,6 +169,7 @@
 					AND a.`status` = 1
 					AND e.`status` = 1 
 					AND e.is_delete = 0
+					AND d.is_delete = 0
 					AND s.enable_alert = 1
 					<include refid="com.nwm.common.deviceByDomainCondition"/>
 			        <if test="!isUserNW.booleanValue()">
@@ -195,7 +196,8 @@
 				AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			AND s.`status` = 1 
-			AND s.is_delete = 0 GROUP BY s.id
+			AND s.is_delete = 0
+		GROUP BY s.id
 	</select>
 	
 	<select id="getListDeviceIsDisableAlert" resultType="Map">

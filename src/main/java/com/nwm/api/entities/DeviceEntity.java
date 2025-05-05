@@ -162,6 +162,7 @@ public class DeviceEntity {
 	private boolean is_panel_temperature;
 	private String domain_role;
 	private String commissioning;
+	private boolean isUserNW;
 	
 	
 	public String getDomain_role() {
@@ -1067,6 +1068,12 @@ public class DeviceEntity {
 	}
 	public void setCommissioning(String commissioning) {
 		this.commissioning = commissioning;
+	}
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setIsUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
 	}
 	
 }
