@@ -640,107 +640,131 @@
 			AND sem.is_hiding = 1
 	</select>
 	
-	<select id="getListSiteEERLastMonth" resultType="com.nwm.api.entities.SiteEntity" >
+	<select id="getAllSites" resultType="com.nwm.api.entities.SiteEntity" >
   		SELECT 
-			id,
-			table_data_report
-		FROM site s
+  			s.id,
+			s.table_data_report,
+			s.table_data_virtual,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
+		FROM
+			site s
+			JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
 		WHERE
 			s.`status` = 1
 			AND s.is_delete = 0
 	</select>
 	
-	<update id="updateSiteEERLastMonth">
-		UPDATE `site` s
-		LEFT JOIN (
-			SELECT
-				s.id,
-				SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
-				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
-				CASE
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )))
-				END as EstimatedGeneration
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`) - INTERVAL 1 MONTH) )
-			GROUP BY s.id
-		) eermonth ON eermonth.id = s.id
-		SET
-			s.`eer_last_month` = IFNULL(ROUND((eermonth.ActualGeneration / eermonth.EstimatedGeneration)*100 , 1 ), 0)
+	<select id="getMonthGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
+		SELECT
+			d.id_site AS id,
+			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+			CASE
+				 WHEN MONTH(t.current) = '01' then ROUND(ee.jan)
+				 WHEN MONTH(t.current) = '02' then ROUND(ee.feb)
+				 WHEN MONTH(t.current) = '03' then ROUND(ee.mar)
+				 WHEN MONTH(t.current) = '04' then ROUND(ee.apr)
+				 WHEN MONTH(t.current) = '05' then ROUND(ee.may)
+				 WHEN MONTH(t.current) = '06' then ROUND(ee.jun)
+				 WHEN MONTH(t.current) = '07' then ROUND(ee.jul)
+				 WHEN MONTH(t.current) = '08' then ROUND(ee.aug)
+				 WHEN MONTH(t.current) = '09' then ROUND(ee.sep)
+				 WHEN MONTH(t.current) = '10' then ROUND(ee.oct)
+				 WHEN MONTH(t.current) = '11' then ROUND(ee.nov)
+				 WHEN MONTH(t.current) = '12' then ROUND(ee.dec)
+			END AS EstimatedGeneration
+		FROM
+			${table_data_report} sdr
+			JOIN device d ON d.id = sdr.id_device
+			JOIN (
+				SELECT
+					s.id,
+					<choose>
+						<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
+						<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
+						<otherwise>CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</otherwise>
+					</choose> AS current
+				FROM
+					site s
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.id = #{id}
+			) t ON t.id = d.id_site
+			JOIN energy_expectations ee ON ee.id_site = d.id_site AND ee.year = YEAR(t.current)
 		WHERE
-			s.`id` = #{id}
-	</update>
-	
-	<select id="getListSiteEERThisMonth" resultType="com.nwm.api.entities.SiteEntity" >
-  		SELECT 
-  			id,
-			table_data_report
-		FROM site s
-		WHERE
-			s.`status` = 1
-			AND s.is_delete = 0
+			d.`status` = 1
+			AND d.is_delete = 0
+			AND sdr.time BETWEEN DATE_FORMAT(DATE_SUB(DATE_ADD(LAST_DAY(t.current), INTERVAL 1 DAY), INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(LAST_DAY(t.current), '%Y-%m-%d 23:59:59')
+		GROUP BY
+			d.id_site
 	</select>
 	
-	<update id="updateSiteEERThisMonth">
-		UPDATE `site` s
-		LEFT JOIN (
-			SELECT
-				s.id,
-				SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS ActualGenerationMeter,
-				SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS ActualGenerationInverter,
-				IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
-				
-				CASE
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '01' then ROUND((SELECT en.jan FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '02' then ROUND((SELECT en.feb FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '03' then ROUND((SELECT en.mar FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '04' then ROUND((SELECT en.apr FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '05' then ROUND((SELECT en.may FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '06' then ROUND((SELECT en.jun FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '07' then ROUND((SELECT en.jul FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '08' then ROUND((SELECT en.aug FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '09' then ROUND((SELECT en.sep FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-					 when MONTH(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) ) = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site= s.id AND `year`= YEAR(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )))
-				END as EstimatedGeneration
-			FROM
-				${table_data_report} sdr 
-				LEFT JOIN device d ON d.id = sdr.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				s.`status` = 1
-				AND d.`status` = 1
-				AND s.is_delete = 0
-				AND d.is_delete = 0
-				AND (sdr.time BETWEEN date_add(date_add(LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)),interval 1 DAY),interval -1 MONTH) AND LAST_DAY(CONVERT_TZ ( NOW(), '+00:00', t.`offset`)) )
-			GROUP BY s.id
-		) eerthismonth ON eerthismonth.id = s.id
-		SET
-			s.`eer_this_month` = ROUND((eerthismonth.ActualGeneration / eerthismonth.EstimatedGeneration)*100 , 1 )
+	<select id="getVirtualMonthGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
+		SELECT
+			d.id_site AS id,
+			SUM(vir.nvmActiveEnergy) AS ActualGeneration,
+			CASE t.data_send_time
+				WHEN 1 THEN SUM(vir.expected_power_ac / 12)
+				WHEN 2 THEN SUM(vir.expected_power_ac / 04)
+				ELSE 		SUM(vir.expected_power_ac / 60)
+			END AS EstimatedGeneration
+		FROM
+			${table_data_virtual} vir
+			JOIN device d ON d.id = vir.id_device
+			JOIN (
+				SELECT
+					s.id,
+					t.value,
+					s.data_send_time,
+					<choose>
+						<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
+						<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
+						<otherwise>CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</otherwise>
+					</choose> AS current
+				FROM
+					site s
+					JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					s.id = #{id}
+			) t ON t.id = d.id_site
 		WHERE
-			s.`id` = #{id}
+			d.id_site = #{id}
+			AND d.id_device_type = 12
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND (d.meter_type = 3 OR d.meter_type IS NULL)
+			AND vir.time BETWEEN CONVERT_TZ(DATE_FORMAT(DATE_SUB(DATE_ADD(LAST_DAY(t.current), INTERVAL 1 DAY), INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(t.current), '%Y-%m-%d 23:59:59'), t.value, 'UTC')
+		GROUP BY
+			d.id_site
+	</select>
+	
+	<update id="updateEERAllSites">
+		UPDATE site s,
+			(
+				<foreach collection="data" item="item" separator="UNION ALL">
+					SELECT
+						#{item.id} AS id,
+						#{item.ActualGeneration} AS ActualGeneration,
+						#{item.EstimatedGeneration} AS EstimatedGeneration
+				</foreach>
+			) t
+		SET
+			s.${column} = IF(t.ActualGeneration IS NULL OR t.EstimatedGeneration IS NULL OR t.EstimatedGeneration <![CDATA[<=]]> 0, NULL, ROUND(t.ActualGeneration / t.EstimatedGeneration * 100 , 1))
+		WHERE
+			s.id = t.id
 	</update>
 	
 	<select id="getListSiteLowProduction" resultType="com.nwm.api.entities.SiteEntity" >

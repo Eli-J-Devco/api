@@ -6,12 +6,17 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.BatchJobTableEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.EEREntity;
 import com.nwm.api.entities.EmployeeEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -598,54 +603,32 @@ public class CronJobAlertService extends DB {
 	}
 	
 	/**
-	 * @description get list site (id, eer_last_month)
-	 * @author duy.phan
-	 * @since 2023-10-13
-	 */
-	
-	public List getListSiteEERLastMonth(SiteEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("CronJobAlert.getListSiteEERLastMonth", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
-	}
-	
-	/**
-	 * @description update err last month
-	 * @author duy.phan
-	 * @since 2023-10-13
-	 */
-	
-	public List updateSiteEERLastMonth(SiteEntity obj) {
-		try {
-			update("CronJobAlert.updateSiteEERLastMonth", obj);			
-			return null;
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-	
-	/**
 	 * @description get list site (id, eer_this_month)
 	 * @author duy.phan
 	 * @since 2023-10-13
 	 */
 	
-	public List getListSiteEERThisMonth(SiteEntity obj) {
-		List dataList = new ArrayList();
+	public List<SiteEntity> getAllSites() {
 		try {
-			dataList = queryForList("CronJobAlert.getListSiteEERThisMonth", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List<SiteEntity> dataList = queryForList("CronJobAlert.getAllSites", null);
+			if (dataList == null) return new ArrayList<SiteEntity>();
+			return dataList;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<SiteEntity>();
 		}
-		return dataList;
+	}
+	
+	public EEREntity getMonthGenerationBySite(SiteEntity obj) {
+		try {
+			EEREntity device = obj.getEnable_virtual_device() == 1 ?
+					(EEREntity) queryForObject("CronJobAlert.getVirtualMonthGenerationBySite", obj)
+					: (EEREntity) queryForObject("CronJobAlert.getMonthGenerationBySite", obj);
+			if (device == null) return new EEREntity();
+			
+			return device;
+		} catch (Exception ex) {
+			return new EEREntity();
+		}
 	}
 	
 	/**
@@ -654,12 +637,34 @@ public class CronJobAlertService extends DB {
 	 * @since 2023-10-13
 	 */
 	
-	public List updateSiteEERThisMonth(SiteEntity obj) {
+	public void updateEERAllSites(String filterBy) {
 		try {
-			update("CronJobAlert.updateSiteEERThisMonth", obj);			
-			return null;
+			List<SiteEntity> sites = getAllSites();
+			if (sites.size() == 0) return;
+			
+			List<CompletableFuture<EEREntity>> futureList = new ArrayList<CompletableFuture<EEREntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity item = sites.get(i);
+				item.setFilterBy(filterBy);
+				
+				CompletableFuture<EEREntity> future = CompletableFuture.supplyAsync(() -> {
+					EEREntity data = getMonthGenerationBySite(item);
+					if (data.getId() > 0) return data;
+					
+					data.setId(item.getId());
+					return data;
+				});
+				futureList.add(future);
+			}
+			
+			List<EEREntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("column", "eer_".concat(filterBy));
+			map.put("data", dataList);
+			
+			update("CronJobAlert.updateEERAllSites", map);
 		} catch (Exception ex) {
-			return null;
 		}
 	}
 

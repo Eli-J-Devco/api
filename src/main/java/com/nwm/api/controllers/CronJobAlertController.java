@@ -837,17 +837,7 @@ public class CronJobAlertController extends BaseController {
 			}		
 			
 			CronJobAlertService service = new CronJobAlertService();
-			SiteEntity entitySite = new SiteEntity();
-			
-			// Get list site of id and eer_last_month
-			List<?> listSites = service.getListSiteEERLastMonth(entitySite);
-			if (listSites.size() > 0) {
-				for (int s = 0; s < listSites.size(); s++) {
-					SiteEntity siteObj = (SiteEntity) listSites.get(s);
-
-					service.updateSiteEERLastMonth(siteObj);
-				}
-			}
+			service.updateEERAllSites("last_month");
 		
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
@@ -873,17 +863,7 @@ public class CronJobAlertController extends BaseController {
 			}		
 			
 			CronJobAlertService service = new CronJobAlertService();
-			SiteEntity entitySite = new SiteEntity();
-			
-			// Get list site of id and eer_last_month
-			List<?> listSites = service.getListSiteEERThisMonth(entitySite);
-			if (listSites.size() > 0) {
-				for (int s = 0; s < listSites.size(); s++) {
-					SiteEntity siteObj = (SiteEntity) listSites.get(s);
-
-					service.updateSiteEERThisMonth(siteObj);
-				}
-			}
+			service.updateEERAllSites("this_month");
 		
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, null, 0);
 		} catch (Exception e) {
