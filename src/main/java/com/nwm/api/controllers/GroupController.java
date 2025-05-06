@@ -4,15 +4,21 @@
 * 
 *********************************************************/
 package com.nwm.api.controllers;
+import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
+
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.GroupEntity;
+import com.nwm.api.services.AWSService;
 import com.nwm.api.services.GroupService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
@@ -21,7 +27,8 @@ import javax.validation.Valid;
 @ApiIgnore
 @RequestMapping("/group")
 public class GroupController extends BaseController {
-
+	@Autowired
+	private AWSService awsService;
 	/**
 	 * @description Get list error level
 	 * @author long.pham
@@ -120,8 +127,18 @@ public class GroupController extends BaseController {
 	public Object save(@Valid @RequestBody GroupEntity obj) {
 		try {
 			GroupService service = new GroupService();
-			
+			String fileName = "";
+			String saveDir = "";
 			if (obj.getScreen_mode() == 1) {
+				
+				if(!Lib.isBlank(obj.getFile_upload())) {
+					saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar);
+					fileName = randomAlphabetic(16);
+					String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
+					String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+					obj.setIcon(filePath);
+				}
+				
 				GroupEntity data = obj.isSubGroup() ? service.insertSubGroup(obj) : service.insertGroup(obj);
 				if (data != null) {
 					return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1);
@@ -130,6 +147,14 @@ public class GroupController extends BaseController {
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
+					if(!Lib.isBlank(obj.getFile_upload())) {
+						saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar);
+						fileName = randomAlphabetic(16);
+						String saveFileName = Lib.uploadFromBase64(obj.getFile_upload(), fileName, saveDir);
+						String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyAvatar) + "/" + saveFileName);
+						obj.setIcon(filePath);
+					}
+					
 					boolean insert = obj.isSubGroup() ? service.updateSubGroup(obj) : service.updateGroup(obj);
 					if (insert == true) {
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);

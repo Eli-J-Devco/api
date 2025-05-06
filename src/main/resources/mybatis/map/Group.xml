@@ -17,6 +17,7 @@
 		<result property="updated_date" column="updated_by" />
 		<result property="active" column="active" />
 		<result property="description" column="description" />
+		<result property="icon" column="icon" />
 	</resultMap>
 	
 
@@ -45,6 +46,7 @@
 			s.`status`,
 			s.is_delete,
 			s.order_id,
+			s.icon,
 			0 AS is_expand,
 			s.id_company,
 			c.name AS company_name,
@@ -58,6 +60,7 @@
 					'company_name', c1.name,
 					'order_id', ssg.order_id,
 					'description', ssg.description,
+					'icon', ssg.icon,
 					'is_delete', ssg.is_delete,
 					'status', ssg.status
 				))
@@ -110,7 +113,8 @@
 			ssg.`status`,
 			ssg.is_delete,
 			ssg.order_id,
-			ssg.id_company
+			ssg.id_company,
+			ssg.icon
 		FROM
 			site_sub_group ssg
 			LEFT JOIN site_group sg ON sg.id = ssg.id_site_group
@@ -187,12 +191,14 @@
 			`name`,
 			`description`,
 			`order_id`,
-			`id_company`
+			`id_company`,
+			`icon`
 		)VALUES(
 			#{name},
 			#{description},
 			#{order_id},
-			#{id_company}
+			#{id_company},
+			#{icon}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -206,14 +212,16 @@
 			`id_site_group`,
 			`description`,
 			`order_id`,
-			`id_company`
+			`id_company`,
+			`icon`
 			
 		)VALUES(
 			#{name},
 			#{id},
 			#{description},
 			#{order_id},
-			#{id_company}
+			#{id_company},
+			#{icon}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -227,7 +235,8 @@
 			`name` = #{name},
 			`description` = #{description},
 			`order_id` = #{order_id},
-			`id_company` = #{id_company}
+			`id_company` = #{id_company},
+			`icon` = #{icon}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -238,7 +247,8 @@
 			`name` = #{name},
 			`description` = #{description},
 			`order_id` = #{order_id},
-			`id_company` = #{id_company}
+			`id_company` = #{id_company},
+			`con` = #{icon}
 		WHERE
 			`id` = #{id}
 	</update>
