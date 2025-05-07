@@ -32,10 +32,6 @@ public class PortfolioController extends BaseController {
 	@PostMapping("/list")
 	public Object getList(@RequestBody PortfolioEntity obj) {
 		try {
-			if (obj.getLimit() == 0) {
-				obj.setLimit(Constants.MAXRECORD);
-			}
-			
 			(new EmployeeService()).getTableSort(obj);
 			PortfolioService service = new PortfolioService();
 			List data = service.getList(obj);

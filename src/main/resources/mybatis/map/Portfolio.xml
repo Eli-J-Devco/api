@@ -66,7 +66,7 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			IF(eer.total_error, eer.total_error, 0) AS total_error,
+			IFNULL(er.total_error, 0) AS total_error,
 			IFNULL(er.alerts, JSON_ARRAY()) AS alerts,
 			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.expiration, '%m/%d/%Y') AS expiration,
@@ -219,49 +219,38 @@
 			LEFT JOIN (
 				SELECT
 					t.id_site,
+					SUM(t.total_error) AS total_error,
 					JSON_ARRAYAGG(obj_alert) AS alerts
 				FROM (
 					SELECT
 						s.id AS id_site,
+						COUNT( a.id ) AS total_error,
 						JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
 					FROM
-						site_employee_map sem 
-						LEFT JOIN site s ON s.id = sem.id_site
+						site s
 						LEFT JOIN device d ON d.id_site = s.id
-						RIGHT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
-						LEFT JOIN error er ON a.id_error = er.id 
-						LEFT JOIN error_level el ON el.id = er.id_error_level
+						LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
+						LEFT JOIN error e ON a.id_error = e.id 
+						LEFT JOIN error_level el ON el.id = e.id_error_level
 						LEFT JOIN icon i ON i.id = el.id_icon
-					WHERE sem.id_employee = #{id_employee} 
-					AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-		        
-						GROUP BY s.id, el.id
-						) t
-						GROUP BY t.id_site
-				) er ON er.id_site = s.id
-				
-			LEFT JOIN (
-				SELECT
-					s.id AS id_site,
-					COUNT( a.id ) AS total_error 
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id
-					RIGHT JOIN alert a ON a.id_device = d.id 
-					LEFT JOIN error e ON e.id = a.id_error
-				WHERE
-					s.`status` = 1 
-					AND s.is_delete = 0 
-					AND a.`status` = 1
-					AND a.`is_delete` = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
-					AND d.`status` = 1
-					AND d.`is_delete` = 0
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-				GROUP BY s.id 
-				) eer ON eer.id_site = s.id
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						s.`status` = 1
+						AND s.is_delete = 0
+						AND s.enable_alert = 1
+						AND a.`status` = 1
+						AND e.`status` = 1
+						AND e.`is_delete` = 0
+						AND d.`status` = 1
+						AND d.`is_delete` = 0
+						AND el.`status` = 1
+						AND el.`is_delete` = 0
+						AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+						<include refid="com.nwm.common.deviceByDomainCondition"/>
+					GROUP BY s.id, el.id
+				) t
+				GROUP BY t.id_site
+			) er ON er.id_site = s.id
 				
 			LEFT JOIN (
 				SELECT
@@ -532,7 +521,6 @@
 			      s.`name`, s.id_company ASC
 			    </otherwise>                                                  
 	        </choose>  
-       LIMIT ${limit} OFFSET ${offset};
 	</select>
 	
 	<select id="getListAlertBySite" resultType="Map" >
