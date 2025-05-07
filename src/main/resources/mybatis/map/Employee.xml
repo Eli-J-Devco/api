@@ -111,7 +111,7 @@
 			u.`email` AS user_name,
 			concat( u.first_name, ', ', u.last_name ) AS `name`,
 			u.avatar,
-			t.roles,
+			k.roles,
 			k.id_sites,
 			u.table_column,
 			u.alert_filter,
@@ -127,18 +127,29 @@
 		FROM
 			`employee` u
 			LEFT JOIN (
-				SELECT id_employee, GROUP_CONCAT(er.id_role) AS roles FROM employee_role_map er GROUP BY er.id_employee
-			)t ON t.id_employee = u.id
-			
-			LEFT JOIN (
 				SELECT 
-					si.id_employee, 
-					GROUP_CONCAT(si.id_site) AS id_sites 
-				FROM site_employee_map si 
-				LEFT JOIN employee em ON em.id = si.id_employee  
+					em.id AS id_employee,
+					r.roles,
+					GROUP_CONCAT(s.id) AS id_sites
+				FROM
+					employee em
+					JOIN (
+						SELECT
+							em.id,
+							GROUP_CONCAT(er.id_role) AS roles,
+							MIN(er.id_role) = 1 AS isSuperAdmin
+						FROM
+							employee em
+							JOIN employee_role_map er ON er.id_employee = em.id
+						WHERE
+							em.email = #{value}
+						GROUP BY em.id
+					) r ON r.id = em.id
+					JOIN site s ON s.`status` = 1 AND s.is_delete = 0
+					LEFT JOIN site_employee_map si ON si.id_employee = em.id AND si.id_site = s.id
 				WHERE
 					em.email = #{value}
-					AND si.is_hiding = 0
+					AND (r.isSuperAdmin OR si.is_hiding = 0)
 				GROUP BY em.id
 			)k ON k.id_employee = u.id
 		WHERE email = #{value} AND u.status = 1 AND u.is_delete = 0 GROUP BY u.id;
