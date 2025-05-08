@@ -535,6 +535,8 @@
 			SUM(er.noProd) AS noProdAlerts,
 			SUM(er.noComm) AS noCommAlerts,
 			SUM(er.other) AS otherAlerts,
+			COUNT(er.id_site) AS totalInAlertsSites,
+			SUM(IF(er.criticalIssues > 0, 1, 0)) AS criticalIssuesSites,
 			SUM(IF(er.noProd > 0, 1, 0)) AS noProdSites,
 			SUM(IF(er.noComm > 0, 1, 0)) AS noCommSites,
 			SUM(IF(er.other  > 0, 1, 0)) AS otherAlertsSites,
@@ -550,6 +552,7 @@
 			LEFT JOIN (
 				SELECT
 					t.id_site,
+					SUM(IF(t.id_error_level = 11, t.total_error, 0)) AS criticalIssues,
 					SUM(IF(t.id_error_level = 32, t.total_error, 0)) AS noProd,
 					SUM(IF(t.id_error_level = 33, t.total_error, 0)) AS noComm,
 					SUM(IF(t.id_error_level NOT IN (32, 33), t.total_error, 0)) AS other

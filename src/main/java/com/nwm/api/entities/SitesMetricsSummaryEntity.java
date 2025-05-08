@@ -10,6 +10,8 @@ public class SitesMetricsSummaryEntity {
 	private int noProdAlerts;
 	private int noCommAlerts;
 	private int otherAlerts;
+	private int totalInAlertsSites;
+	private int criticalIssuesSites;
 	private int noProdSites;
 	private int noCommSites;
 	private int otherAlertsSites;
@@ -39,6 +41,18 @@ public class SitesMetricsSummaryEntity {
 	}
 	public void setOtherAlerts(int otherAlerts) {
 		this.otherAlerts = otherAlerts;
+	}
+	public int getTotalInAlertsSites() {
+		return totalInAlertsSites;
+	}
+	public void setTotalInAlertsSites(int totalInAlertsSites) {
+		this.totalInAlertsSites = totalInAlertsSites;
+	}
+	public int getCriticalIssuesSites() {
+		return criticalIssuesSites;
+	}
+	public void setCriticalIssuesSites(int criticalIssuesSites) {
+		this.criticalIssuesSites = criticalIssuesSites;
 	}
 	public int getNoProdSites() {
 		return noProdSites;
