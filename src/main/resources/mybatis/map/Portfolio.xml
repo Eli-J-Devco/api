@@ -538,8 +538,8 @@
 			SUM(IF(er.noProd > 0, 1, 0)) AS noProdSites,
 			SUM(IF(er.noComm > 0, 1, 0)) AS noCommSites,
 			SUM(IF(er.other  > 0, 1, 0)) AS otherAlertsSites,
-			ROUND(SUM(s.ac_capacity), 1) AS capacity,
-			ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))), 1) AS activePower
+			ROUND(SUM(s.ac_capacity) / 1000, 0) AS capacity,
+			ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))) / 1000, 0) AS activePower
 		FROM
 			site s
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
