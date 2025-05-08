@@ -61,12 +61,147 @@
 		
 	</resultMap>
 	
+	<sql id="activeAndExpectedPowerByVirtualDeviceSubquery">
+		SELECT 
+			d.id_site,
+			IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual,
+			IF(d.last_value > 0, d.last_value, NULL) AS activePower
+		FROM
+			device d
+		WHERE
+			d.id_device_type = 12
+	</sql>
+	
+	<sql id="activeAndExpectedPowerByWSSubquery">
+		SELECT
+			s.id AS id_site,
+			d.id_device_type,
+			CASE
+				WHEN d.datatablename LIKE '%model_adam4017ws_class8110_nelis190'  THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_lufft_class8020' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_lufft_ws501_umb_weather' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_imtsolar_class8000' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_hukseflux_sr30d1_deviceclass_v0' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_imtsolar_tmodul_class8006' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_w_kipp_zonen_rt1' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_kippzonen_rt1_class8009' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_rt1_class30000' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_poa_temp' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_pyranometer_poa' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_pvmet_100' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_pvmet_200' THEN ROUND( SUM(d.last_value), 2)
+				WHEN d.datatablename LIKE '%model_sungrow_weather_pvmet75200' THEN ROUND( SUM(d.last_value), 2)					
+				ELSE "-"
+		 	END AS irradiance,
+		 	
+		 	CASE
+		 		WHEN s.pv_model = 1 THEN
+					IF(
+						IFNULL(s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+						s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+						s.ac_capacity
+					)
+				WHEN s.pv_model = 2 THEN
+					
+					IF(
+						IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
+						IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
+						s.ac_capacity
+					)
+				ELSE
+					IF(
+						s.t_avg IS NULL OR NOT (AVG(d.last_value) >= s.min_irradiance_limit),
+						NULL,
+						s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(d.field_value2) + AVG(d.last_value)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+					)
+			END AS expected_power
+		FROM
+			site s
+			LEFT JOIN device d ON d.id_site = s.id
+		WHERE
+			d.id_device_type = 4 
+			AND s.`status` = 1 
+			AND d.`status` = 1 
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY
+			s.id
+	</sql>
+	
+	<sql id="activePowerByInverterSubquery">
+		SELECT
+			s.id AS id_site,
+			SUM( d.last_value ) AS activePower 
+		FROM
+			site s
+			LEFT JOIN device d ON d.id_site = s.id 
+		WHERE
+			d.id_device_type = 1
+			AND s.`status` = 1
+			AND s.is_delete = 0
+			AND d.is_delete = 0 
+			AND d.`status` = 1 
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY
+			s.id
+	</sql>
+	
+	<sql id="activePowerByMeterSubquery">
+		SELECT
+			s.id AS id_site,
+			SUM( d.last_value ) AS activePower 
+		FROM
+			site s
+			LEFT JOIN device d ON d.id_site = s.id 
+		WHERE
+			d.id_device_type IN (3,7,9)
+			AND d.is_excluded_meter = 0
+			AND d.is_delete = 0
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+			AND d.`status` = 1 
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY
+			s.id
+	</sql>
+	
+	<sql id="alertsBySiteAndErrorLevelSubquery">
+		SELECT
+			s.id AS id_site,
+			el.id AS id_error_level,
+			COUNT( a.id ) AS total_error,
+			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
+		FROM
+			site s
+			LEFT JOIN device d ON d.id_site = s.id
+			LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
+			LEFT JOIN error e ON a.id_error = e.id 
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN icon i ON i.id = el.id_icon
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			s.`status` = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND a.`status` = 1
+			AND e.`status` = 1
+			AND e.`is_delete` = 0
+			AND d.`status` = 1
+			AND d.`is_delete` = 0
+			AND el.`status` = 1
+			AND el.`is_delete` = 0
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+		GROUP BY
+			s.id, el.id
+	</sql>
 	
 	<select id="getList" resultType="Map" >
 		SELECT
 			s.id,
 			SHA1(s.id) AS hash_id,
-			IF(eer.total_error, eer.total_error, 0) AS total_error,
+			IFNULL(er.total_error, 0) AS total_error,
 			IFNULL(er.alerts, JSON_ARRAY()) AS alerts,
 			<include refid="com.nwm.common.siteName"/> AS `name`,
 			DATE_FORMAT(s.expiration, '%m/%d/%Y') AS expiration,
@@ -85,14 +220,14 @@
 			s.note,
 			h.is_hiding,
 			tag.tags,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)), 1), NULL) AS activePower,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.expected_power_virtual, t.expected_power), 1), NULL) AS expected_power,
-			IF(CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_this_month, 0), NULL) AS EERThisMonth,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(s.PerformanceRatioYesterday, 1), NULL) AS PerformanceRatioYesterday,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)), 1), NULL) AS activePower,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, ROUND(IFNULL(v.expected_power_virtual, t.expected_power), 1), NULL) AS expected_power,
+			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, im.devices_list, NULL) AS devices_list
 			
 				
 		FROM
@@ -109,159 +244,19 @@
 				GROUP BY id_site
 			) h ON h.id_site = s.id
 			
-			LEFT JOIN (
-				SELECT 
-					d.id_site,
-					IF(d.field_value2 > 0, d.field_value2, NULL) AS expected_power_virtual,
-					IF(d.last_value > 0, d.last_value, NULL) AS activePower
-				FROM
-					device d
-				WHERE
-					d.id_device_type = 12
-			)v ON v.id_site = s.id
-			
-			
-			LEFT JOIN (
-				SELECT
-					s.id AS id_site,
-					d.id_device_type,
-					CASE
-						WHEN d.datatablename LIKE '%model_adam4017ws_class8110_nelis190'  THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_lufft_class8020' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_lufft_ws501_umb_weather' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_imtsolar_class8000' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_hukseflux_sr30d1_deviceclass_v0' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_imtsolar_tmodul_class8006' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_w_kipp_zonen_rt1' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_kippzonen_rt1_class8009' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_rt1_class30000' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_poa_temp' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_pyranometer_poa' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_pvmet_100' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_pvmet_200' THEN ROUND( SUM(d.last_value), 2)
-						WHEN d.datatablename LIKE '%model_sungrow_weather_pvmet75200' THEN ROUND( SUM(d.last_value), 2)					
-						ELSE "-"
-				 	END AS irradiance,
-				 	
-				 	CASE
-				 		WHEN s.pv_model = 1 THEN
-							IF(
-								IFNULL(s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
-								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - AVG(d.field_value2))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
-								s.ac_capacity
-							)
-						WHEN s.pv_model = 2 THEN
-							
-							IF(
-								IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0) <![CDATA[<]]> s.ac_capacity,
-								IFNULL( s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((AVG(d.field_value2) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since))) * 100 / 100) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0),
-								s.ac_capacity
-							)
-						ELSE
-							IF(
-								s.t_avg IS NULL OR NOT (AVG(d.last_value) >= s.min_irradiance_limit),
-								NULL,
-								s.dc_capacity * (AVG(d.last_value) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (AVG(d.field_value2) + AVG(d.last_value)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
-							)
-					END AS expected_power
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id
-				WHERE
-					d.id_device_type = 4 
-					AND s.`status` = 1 
-					AND d.`status` = 1 
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-				GROUP BY
-					s.id
-			)t ON t.id_site = s.id
-			
-			LEFT JOIN(
-				SELECT
-					s.id AS id_site,
-					SUM( d.last_value ) AS activePower 
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id 
-				WHERE
-					d.id_device_type = 1
-					AND s.`status` = 1
-					AND s.is_delete = 0
-					AND d.is_delete = 0 
-					AND d.`status` = 1 
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-				GROUP BY
-					s.id
-			) ivt ON ivt.id_site = s.id 
-			
-			LEFT JOIN(
-				SELECT
-					s.id AS id_site,
-					SUM( d.last_value ) AS activePower 
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id 
-				WHERE
-					d.id_device_type IN (3,7,9)
-					AND d.is_excluded_meter = 0
-					AND d.is_delete = 0
-					AND s.`status` = 1 
-					AND s.is_delete = 0
-					AND d.`status` = 1 
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-				GROUP BY
-					s.id
-			) m ON m.id_site = s.id
-			
+			LEFT JOIN (<include refid="activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+			LEFT JOIN (<include refid="activeAndExpectedPowerByWSSubquery"/>) t ON t.id_site = s.id
+			LEFT JOIN (<include refid="activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id 
+			LEFT JOIN (<include refid="activePowerByMeterSubquery"/>) m ON m.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT
 					t.id_site,
+					SUM(t.total_error) AS total_error,
 					JSON_ARRAYAGG(obj_alert) AS alerts
-				FROM (
-					SELECT
-						s.id AS id_site,
-						JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
-					FROM
-						site_employee_map sem 
-						LEFT JOIN site s ON s.id = sem.id_site
-						LEFT JOIN device d ON d.id_site = s.id
-						RIGHT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
-						LEFT JOIN error er ON a.id_error = er.id 
-						LEFT JOIN error_level el ON el.id = er.id_error_level
-						LEFT JOIN icon i ON i.id = el.id_icon
-					WHERE sem.id_employee = #{id_employee} 
-					AND a.`status` = 1 AND er.`status` = 1 AND s.`status` = 1 AND el.`status` = 1
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-		        
-						GROUP BY s.id, el.id
-						) t
-						GROUP BY t.id_site
-				) er ON er.id_site = s.id
-				
-			LEFT JOIN (
-				SELECT
-					s.id AS id_site,
-					COUNT( a.id ) AS total_error 
-				FROM
-					site s
-					LEFT JOIN device d ON d.id_site = s.id
-					RIGHT JOIN alert a ON a.id_device = d.id 
-					LEFT JOIN error e ON e.id = a.id_error
-				WHERE
-					s.`status` = 1 
-					AND s.is_delete = 0 
-					AND a.`status` = 1
-					AND a.`is_delete` = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
-					AND d.`status` = 1
-					AND d.`is_delete` = 0
-					<include refid="com.nwm.common.deviceByDomainCondition"/>
-				GROUP BY s.id 
-				) eer ON eer.id_site = s.id
+				FROM (<include refid="alertsBySiteAndErrorLevelSubquery"/>) t
+				GROUP BY t.id_site
+			) er ON er.id_site = s.id
 				
 			LEFT JOIN (
 				SELECT
@@ -350,20 +345,20 @@
 			LEFT JOIN (
 			 SELECT
 					d.id_site,
-					DATE_FORMAT(CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), '%m/%d/%Y %h:%i:%s %p' ) AS last_updated,
+					DATE_FORMAT(CONVERT_TZ( d.last_updated, 'UTC', t.value ), '%m/%d/%Y %h:%i:%s %p' ) AS last_updated,
 					UNIX_TIMESTAMP(d.last_updated)  AS unix_time,
 					
 					CASE
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') )
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ), DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i') ) 
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 DAY ) THEN TIMESTAMPDIFF( DAY, CONVERT_TZ( d.last_updated, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') )
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 HOUR ) THEN TIMESTAMPDIFF( HOUR, CONVERT_TZ( d.last_updated, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL -1 MINUTE ) THEN TIMESTAMPDIFF( MINUTE, CONVERT_TZ( d.last_updated, 'UTC', t.value ), DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i') ) 
 								ELSE 0
 							END AS times_ago,
 
 							CASE
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
-								WHEN CONVERT_TZ( d.last_updated, '+00:00', t.`offset` ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( NOW(), '+00:00', t.`offset` ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 DAY ) THEN 'day'
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 HOUR ) THEN 'hour'
+								WHEN CONVERT_TZ( d.last_updated, 'UTC', t.value ) <![CDATA[<]]> DATE_ADD( DATE_FORMAT( CONVERT_TZ( UTC_TIMESTAMP(), 'UTC', t.value ) , '%Y-%m-%d %H:%i'), INTERVAL - 1 MINUTE ) THEN 'minute' ELSE 'now'
 							END AS times_ago_unit
 							
 				FROM
@@ -532,7 +527,53 @@
 			      s.`name`, s.id_company ASC
 			    </otherwise>                                                  
 	        </choose>  
-       LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getSitesMetricsSummary" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
+		SELECT
+			COUNT(s.id) AS sites,
+			SUM(er.noProd) AS noProdAlerts,
+			SUM(er.noComm) AS noCommAlerts,
+			SUM(er.other) AS otherAlerts,
+			COUNT(er.id_site) AS totalInAlertsSites,
+			SUM(IF(er.criticalIssues > 0, 1, 0)) AS criticalIssuesSites,
+			SUM(IF(er.noProd > 0, 1, 0)) AS noProdSites,
+			SUM(IF(er.noComm > 0, 1, 0)) AS noCommSites,
+			SUM(IF(er.other  > 0, 1, 0)) AS otherAlertsSites,
+			ROUND(SUM(s.ac_capacity) / 1000, 0) AS capacity,
+			ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))) / 1000, 0) AS activePower
+		FROM
+			site s
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (<include refid="activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+			LEFT JOIN (<include refid="activeAndExpectedPowerByWSSubquery"/>) t ON t.id_site = s.id
+			LEFT JOIN (<include refid="activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id 
+			LEFT JOIN (<include refid="activePowerByMeterSubquery"/>) m ON m.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					t.id_site,
+					SUM(IF(t.id_error_level = 11, t.total_error, 0)) AS criticalIssues,
+					SUM(IF(t.id_error_level = 32, t.total_error, 0)) AS noProd,
+					SUM(IF(t.id_error_level = 33, t.total_error, 0)) AS noComm,
+					SUM(IF(t.id_error_level NOT IN (32, 33), t.total_error, 0)) AS other
+				FROM (<include refid="alertsBySiteAndErrorLevelSubquery"/>) t
+				GROUP BY
+					t.id_site
+			) er ON er.id_site = s.id
+		WHERE
+			s.id IN (
+				<foreach item="item" collection="id_sites" separator=",">
+					#{item}
+				</foreach>
+			)
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<if test="hash_id_site_group != null">	
+	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+			</if>
+			<if test="hash_id_site_sub_group != null">	
+	 			AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 	</select>
 	
 	<select id="getListAlertBySite" resultType="Map" >

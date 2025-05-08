@@ -425,6 +425,7 @@
 		SELECT
 			sg.id,
 			sg.name,
+			sg.icon AS icon,
 			sg.order_id,
 			sg.hash_id,
 			0 AS is_expand,
@@ -436,6 +437,7 @@
 					'hash_id', SHA2(ssg.id, 512),
 					'id_site_group', ssg.id_site_group,
 					'name', ssg.name,
+					'icon', ssg.icon,
 					'order_id', ssg.order_id,
 					'is_expand', 0
 				))
@@ -446,6 +448,7 @@
 					sg.id,
 					sg.`name`,
 					sg.order_id,
+					sg.icon,
 					SHA2(sg.id, 256) AS hash_id
 				FROM
 					site s

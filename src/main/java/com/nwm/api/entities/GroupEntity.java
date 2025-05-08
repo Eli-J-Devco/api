@@ -36,8 +36,22 @@ public class GroupEntity{
 	private boolean isSubGroup;
 	private List sub_group_list;
 	private int id_company;
+	private String file_upload;
+	private String icon;
 	
 	
+	public String getFile_upload() {
+		return file_upload;
+	}
+	public void setFile_upload(String file_upload) {
+		this.file_upload = file_upload;
+	}
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 	public int getId_company() {
 		return id_company;
 	}

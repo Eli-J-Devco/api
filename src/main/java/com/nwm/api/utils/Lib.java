@@ -3066,4 +3066,24 @@ Lib {
 			return false;
 		}
 	}
+	
+	public static List<Integer> sitesManagedByUser(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		if (claims == null) return new ArrayList<>();
+		try {
+			return Arrays
+					.stream(claims
+							.get("id_sites")
+							.toString()
+							.replace("[", "")
+							.replace("]", "")
+							.split(",")
+							)
+					.mapToInt(Integer::parseInt)
+					.boxed()
+					.collect(Collectors.toList());
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
 }
