@@ -5,12 +5,14 @@
 *********************************************************/
 package com.nwm.api.controllers;
 import java.util.List;
+import java.util.Map;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.PortfolioEntity;
+// import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
 import com.nwm.api.utils.Constants;
@@ -127,6 +129,31 @@ public class PortfolioController extends BaseController {
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-availability-vs-performance")
+	public Object getAvailabilityVsPerformance(@RequestBody PortfolioEntity obj) {
+		try {
+			PortfolioService service = new PortfolioService();
+			List data = service.getAvailabilityVsPerformance(obj);
+			// for (int i = 0; i < data.size(); i = i + 1) {
+			// 	Map<String, Object> item = (Map<String, Object>) data.get(i);
+				
+			// }
+			// List energyData = service.getEnergyBySite(191);
+			// System.out.println("energyData: " + energyData);
+			System.out.println("obj: " + obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}

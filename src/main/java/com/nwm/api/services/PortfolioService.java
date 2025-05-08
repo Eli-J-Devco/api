@@ -6,6 +6,7 @@
 package com.nwm.api.services;
 
 import java.io.FileNotFoundException;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -19,6 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
+// import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
@@ -216,5 +218,39 @@ public class PortfolioService extends DB {
 			
 		
 	}
-	
+
+	/**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 */
+
+	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	 /**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 */
+	 
+	 public List getEnergyBySite(int id_site) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Portfolio.getEnergyBySite", id_site);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
 }

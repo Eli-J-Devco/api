@@ -694,5 +694,31 @@
 		WHERE
 			`id` = #{id_device}
 	</update>
+
+	<select id="getAvailabilityVsPerformance" resultType="Map" >
+		SELECT id_site,
+			s.name,
+			COUNT(CASE WHEN el.id != 32 AND el.id != 33 THEN 1 END) * 100 / COUNT(*) AS availability,
+			COUNT(CASE WHEN el.id != 32 AND el.id != 33 THEN 1 END) AS available_inverters,
+			COUNT(*) AS total_inverters
+		FROM device d
+		LEFT JOIN site s ON s.id = d.id_site
+		LEFT JOIN alert a ON a.id_device = d.id
+		LEFT JOIN error e ON e.id = a.id_error
+		LEFT JOIN error_level el ON el.id = e.id_error_level
+		WHERE id_device_type = 1 # PV System Inverter
+		AND d.`status` = 1 # Active Device
+		AND d.is_delete = 0 # Not Delete Device
+		GROUP BY id_site
+		ORDER BY id_site
+	</select>
+
+	<select id="getEnergyBySite" resultType="Mxap" parameterType="int" >
+		SELECT 
+			AVG(expected_power_ac) AS expected_performance,
+			SUM(expected_power_ac) AS expected_performance,
+		FROM model#{id_site}_virtual_meter_or_inverter
+		GROUP BY id_device
+	</select>
 	
 </mapper>

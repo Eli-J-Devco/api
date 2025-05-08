@@ -66,7 +66,7 @@ public class PortfolioEntity extends SortEntity {
 	private String hash_id_site_sub_group;
 	private int is_supper_admin;
 	private String domain;
-private String domain_role;
+	private String domain_role;
 	
 	
 	public String getDomain_role() {
@@ -426,8 +426,4 @@ private String domain_role;
 	public void setValue_filter(String value_filter) {
 		this.value_filter = value_filter;
 	}
-	
-	
-	
-	
 }
