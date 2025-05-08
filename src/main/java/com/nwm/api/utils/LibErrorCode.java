@@ -4512,4 +4512,86 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/**
+	 * get error code from table model_xgi_1500
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelXGI1500(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 0: errorCode = 1572; break; // 0
+			case 1: errorCode = 1573; break; // 1
+			case 2: errorCode = 1574; break; // 2
+			case 4: errorCode = 1575; break; // 4
+			case 6: errorCode = 1576; break; // 6
+			case 7: errorCode = 1577; break; // 7
+			case 8: errorCode = 1578; break; // 8
+			case 9: errorCode = 1579; break; // 9
+			case 10: errorCode = 1580; break; // 10
+			case 11: errorCode = 1581; break; // 11
+			case 14: errorCode = 1582; break; // 14
+			case 15: errorCode = 1583; break; // 15
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
+			case 0: errorCode = 1584; break; // 0
+			case 1: errorCode = 1585; break; // 1
+			case 2: errorCode = 1586; break; // 2
+			case 3: errorCode = 1587; break; // 3
+			case 4: errorCode = 1588; break; // 4
+			case 5: errorCode = 1589; break; // 5
+			case 6: errorCode = 1590; break; // 6
+			case 7: errorCode = 1591; break; // 7
+			case 8: errorCode = 1592; break; // 8
+			case 9: errorCode = 1593; break; // 9
+			case 10: errorCode = 1594; break; // 10
+			case 11: errorCode = 1595; break; // 11
+
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1596; break; // 0
+			case 1: errorCode = 1597; break; // 1
+			case 2: errorCode = 1598; break; // 2
+			case 3: errorCode = 1599; break; // 3
+			case 4: errorCode = 1600; break; // 4
+			case 5: errorCode = 1601; break; // 5
+			case 6: errorCode = 1602; break; // 6
+			case 7: errorCode = 1603; break; // 7
+			case 8: errorCode = 1604; break; // 8
+			case 9: errorCode = 1605; break; // 9
+			case 10: errorCode = 1606; break; // 10
+			case 11: errorCode = 1607; break; // 11
+			case 12: errorCode = 1608; break; // 12
+			case 23: errorCode = 1621; break; // 23
+			case 24: errorCode = 1609; break; // 24
+			case 25: errorCode = 1610; break; // 25
+			case 26: errorCode = 1611; break; // 26
+			case 27: errorCode = 1612; break; // 27
+			case 28: errorCode = 1613; break; // 28
+			case 29: errorCode = 1614; break; // 29
+			case 30: errorCode = 1615; break; // 30
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 1616; break; // 0
+			case 1: errorCode = 1617; break; // 1
+			case 2: errorCode = 1618; break; // 2
+			case 3: errorCode = 1619; break; // 3
+			case 4: errorCode = 1620; break; // 4
+			}
+			break;	
+		
+		}
+
+		return errorCode;
+	}
+	
 }
