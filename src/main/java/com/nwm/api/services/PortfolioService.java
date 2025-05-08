@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -215,6 +216,23 @@ public class PortfolioService extends DB {
 			}
 			
 		
+	}
+	
+	/**
+	 * @description Get sites metrics summary by employee
+	 * @author Hung.Bui
+	 * @since 2025-05-07
+	 * @param obj
+	 */
+	public SitesMetricsSummaryEntity getSitesMetricsSummary(PortfolioEntity obj) {
+		try {
+			SitesMetricsSummaryEntity data = (SitesMetricsSummaryEntity) queryForObject("Portfolio.getSitesMetricsSummary", obj);
+			if (data == null) return new SitesMetricsSummaryEntity();
+			
+			return data;
+		} catch (Exception ex) {
+			return new SitesMetricsSummaryEntity();
+		}
 	}
 	
 }
