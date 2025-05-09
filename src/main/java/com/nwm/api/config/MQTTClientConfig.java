@@ -40,12 +40,12 @@ public class MQTTClientConfig {
 	@Bean
 	MqttPahoClientFactory mqttClientFactory() {
 		MqttConnectOptions options = new MqttConnectOptions();
-		options.setServerURIs(new String[] { protocol.concat("://").concat(url).concat(":").concat(port) });
-		options.setUserName(username);
-		options.setPassword(password.toCharArray());
-		options.setCleanSession(false);
-		options.setAutomaticReconnect(true);
-		options.setConnectionTimeout(timeout);
+//		options.setServerURIs(new String[] { protocol.concat("://").concat(url).concat(":").concat(port) });
+//		options.setUserName(username);
+//		options.setPassword(password.toCharArray());
+//		options.setCleanSession(false);
+//		options.setAutomaticReconnect(true);
+//		options.setConnectionTimeout(timeout);
 		
 		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 		factory.setConnectionOptions(options);

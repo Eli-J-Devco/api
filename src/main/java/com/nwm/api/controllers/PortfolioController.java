@@ -6,6 +6,10 @@
 package com.nwm.api.controllers;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.PortfolioEntity;
-// import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
+import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
@@ -139,19 +143,36 @@ public class PortfolioController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-availability-vs-performance")
-	public Object getAvailabilityVsPerformance(@RequestBody PortfolioEntity obj) {
+	public Object getAvailabilityVsPerformance(@RequestBody PortfolioAvailabilityVsPerformanceEntity obj) {
 		try {
 			PortfolioService service = new PortfolioService();
-			List data = service.getAvailabilityVsPerformance(obj);
-			// for (int i = 0; i < data.size(); i = i + 1) {
-			// 	Map<String, Object> item = (Map<String, Object>) data.get(i);
-				
-			// }
-			// List energyData = service.getEnergyBySite(191);
-			// System.out.println("energyData: " + energyData);
-			System.out.println("obj: " + obj);
+			List data = service.getAvailabilityVsPerformance();
+			
+			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
+			for (int i = 0; i < data.size(); i = i + 1) {
+				int k = i;
+				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+					HashMap<String, Object> item = (HashMap<String, Object>) data.get(k);
+					HashMap energyData = service.getEnergyBySite(
+						(int) item.get("id_site"), 
+						obj.getStart_date(), 
+						obj.getEnd_date()
+					);
+					return energyData;
+				});
+				list.add(future);
+			}
+			List energyList = list.stream().map(future -> future.join()).collect(Collectors.toList());
+			for (int i = 0; i < data.size(); i = i + 1) {
+					HashMap<String, Object> item = (HashMap<String, Object>) data.get(i);
+					item.putAll((HashMap<String, Object>) energyList.get(i));
+			}
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
-	
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
 			
 	/**
 	 * @description Get sites metrics summary by employee

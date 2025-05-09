@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import org.apache.ibatis.session.SqlSession;
@@ -20,7 +21,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
-// import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
+import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
@@ -226,10 +227,10 @@ public class PortfolioService extends DB {
 	 * @since 2025-05-07
 	 */
 
-	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
+	public List getAvailabilityVsPerformance() {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", obj);
+			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", null);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {
@@ -243,16 +244,20 @@ public class PortfolioService extends DB {
 	 * @since 2025-05-07
 	 */
 	 
-	 public List getEnergyBySite(int id_site) {
-		List dataList = new ArrayList();
+	 public HashMap getEnergyBySite(int site_id, String start_date, String end_date) {
+		HashMap data = new HashMap();
 		try {
-			dataList = queryForList("Portfolio.getEnergyBySite", id_site);
-			if (dataList == null)
-				return new ArrayList();
+			HashMap<String, Object> params = new HashMap<String, Object>();
+			params.put("site_id", site_id);
+			params.put("start_date", start_date);
+			params.put("end_date", end_date);
+			data = (HashMap) queryForObject("Portfolio.getEnergyBySite", params);
+			if (data == null)
+				return new HashMap();
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new HashMap();
 		}
-		return dataList;
+		return data;
 	}
 	
 	/**
