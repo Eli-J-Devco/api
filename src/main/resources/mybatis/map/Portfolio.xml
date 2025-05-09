@@ -764,4 +764,35 @@
 		GROUP BY id_device
 	</select>
 	
+	<select id="getSites" resultType="com.nwm.api.entities.SiteEntity">
+		SELECT
+			s.id,
+			s.table_data_virtual
+		FROM
+			site s
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<foreach collection="id_sites" item="item" open="AND s.id IN (" close=")" separator=",">
+				#{item}
+			</foreach>
+			<if test="hash_id_site_group != null">	
+	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+			</if>
+			<if test="hash_id_site_sub_group != null">	
+	 			AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+	</select>
+	
+	<select id="getSitesMetricsLossPast24h" resultType="com.nwm.api.entities.EnergyEntity">
+		SELECT
+			SUM(nvmActiveEnergy) AS actual,
+			AVG(expected_power_ac) * 24 AS expected
+		FROM
+			${table_data_virtual}
+		WHERE
+			time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
+	</select>
+	
 </mapper>
