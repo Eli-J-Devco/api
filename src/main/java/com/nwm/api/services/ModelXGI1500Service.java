@@ -217,10 +217,10 @@ public class ModelXGI1500Service extends DB {
 
 	public void checkTriggerAlertModelXGI1500(ModelXGI1500Entity obj) {
 		// Check device alert by fault code
-		int fault1 = (obj.getFault1() > 0 && obj.getFault1() != 0.001) ? (int) obj.getFault1() : 0;
-		int fault2 = (obj.getFault2() > 0 && obj.getFault2() != 0.001) ? (int) obj.getFault2() : 0;
+		long fault1 = (obj.getFault1() > 0 && obj.getFault1() != 0.001) ? (long) obj.getFault1() : 0;
+		long fault2 = (obj.getFault2() > 0 && obj.getFault2() != 0.001) ? (long) obj.getFault2() : 0;
 		int fault3 = (obj.getFault3() > 0 && obj.getFault3() != 0.001) ? (int) obj.getFault3() : 0;
-		int faultStatus = (obj.getFaultStatus() > 0 && obj.getFaultStatus() != 0.001) ? (int) obj.getFaultStatus() : 0;
+		long faultStatus = (obj.getFaultStatus() > 0 && obj.getFaultStatus() != 0.001) ? (long) obj.getFaultStatus() : 0;
 		
 		
 		ModelXGI1500Entity rowItem = (ModelXGI1500Entity) checkAlertWriteCode(obj);
@@ -229,7 +229,7 @@ public class ModelXGI1500Service extends DB {
 		// check faultStatus
 		if (faultStatus > 0  && rowItem.getTotalFaultStatus() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(faultStatus);
+				String toBinary = Long.toBinaryString(faultStatus);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -290,7 +290,7 @@ public class ModelXGI1500Service extends DB {
 		// check fault code 1
 		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(fault1);
+				String toBinary = Long.toBinaryString(fault1);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
@@ -352,7 +352,7 @@ public class ModelXGI1500Service extends DB {
 		// check fault code 2
 		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
 			try {
-				String toBinary = Integer.toBinaryString(fault2);
+				String toBinary = Long.toBinaryString(fault2);
 				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
 				int v = 0;
 				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
