@@ -7,19 +7,26 @@ package com.nwm.api.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
@@ -232,6 +239,65 @@ public class PortfolioService extends DB {
 			return data;
 		} catch (Exception ex) {
 			return new SitesMetricsSummaryEntity();
+		}
+	}
+	
+	/**
+	 * @description Get site detail list
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 */
+	public List<SiteEntity> getSites(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> dataList = queryForList("Portfolio.getSites", obj);
+			if (dataList == null) return new ArrayList<>();
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics loss past 24h
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 */
+	public EnergyEntity getSitesMetricsLossPast24h(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.size() == 0) return new EnergyEntity();
+			
+			List<CompletableFuture<EnergyEntity>> futureList = new ArrayList<CompletableFuture<EnergyEntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity site = sites.get(i);
+				
+				CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
+					try {
+						EnergyEntity data = (EnergyEntity) queryForObject("Portfolio.getSitesMetricsLossPast24h", site);
+						if (Objects.isNull(data)) return new EnergyEntity();
+						return data;
+					} catch (Exception e) {
+						return new EnergyEntity();
+					}
+				});
+				futureList.add(future);
+			}
+			
+			List<EnergyEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			Double actual = dataList.stream().anyMatch(item -> Objects.nonNull(item.getActual())) ?
+					BigDecimal.valueOf(dataList.stream().filter(item -> Objects.nonNull(item.getActual())).mapToDouble(EnergyEntity::getActual).sum()).setScale(0, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			Double expected = dataList.stream().anyMatch(item -> Objects.nonNull(item.getExpected())) ?
+					BigDecimal.valueOf(dataList.stream().filter(item -> Objects.nonNull(item.getExpected())).mapToDouble(EnergyEntity::getExpected).sum()).setScale(0, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			Double loss = Objects.nonNull(actual) && Objects.nonNull(expected) && expected > 0 ?
+					BigDecimal.valueOf((expected - actual) / expected * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			return new EnergyEntity(actual, expected, loss);
+		} catch (Exception ex) {
+			return new EnergyEntity();
 		}
 	}
 	

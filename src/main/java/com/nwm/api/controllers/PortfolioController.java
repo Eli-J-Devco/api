@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.services.EmployeeService;
@@ -131,7 +132,7 @@ public class PortfolioController extends BaseController {
 	}
 	
 	/**
-	 * @description Get sites metrics summary by employee
+	 * @description Get sites metrics summary
 	 * @author Hung.Bui
 	 * @since 2025-05-07
 	 * @param obj
@@ -144,6 +145,28 @@ public class PortfolioController extends BaseController {
 			if (sites.size() > 0) obj.setId_sites(sites);
 			PortfolioService service = new PortfolioService();
 			SitesMetricsSummaryEntity data = service.getSitesMetricsSummary(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics loss past 24h
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/loss-past-24h")
+	public Object getSitesMetricsLossPast24h(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			EnergyEntity data = service.getSitesMetricsLossPast24h(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
 		} catch (Exception e) {
