@@ -474,7 +474,13 @@
 		<foreach collection="list_devices" item="item" index="index" separator="union all" >
 			(
 			SELECT 
-				pm.*,
+				pm.id,
+				pm.id_panel,
+				pm.`name`,
+				pm.bit_map,
+				pm.bit_position + 1 AS bit_position,
+				pm.panel_position,
+				pm.monitor_status,
 				dp.`name` AS breaker_name,
 				d.devicename 
 			FROM device_panel_map pm 
