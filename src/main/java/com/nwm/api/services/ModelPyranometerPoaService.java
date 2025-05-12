@@ -44,8 +44,8 @@ public class ModelPyranometerPoaService extends DB {
 				
 				// set custom field nvm_irradiance
 				dataModelPyranometer.setNvm_irradiance(irradiance);
-				dataModelPyranometer.setNvm_temperature(0.001);
-				dataModelPyranometer.setNvm_panel_temperature(0.001);
+				dataModelPyranometer.setNvm_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
+				dataModelPyranometer.setNvm_panel_temperature(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
 				return dataModelPyranometer;
 				
 			} else {
