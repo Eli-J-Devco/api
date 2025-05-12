@@ -67,6 +67,9 @@ public class PortfolioEntity extends SortEntity {
 	private int is_supper_admin;
 	private String domain;
 	private String domain_role;
+	private String start_date;
+	private String end_date;
+	private String id_filter;
 	
 	
 	public String getDomain_role() {
@@ -425,5 +428,23 @@ public class PortfolioEntity extends SortEntity {
 	}
 	public void setValue_filter(String value_filter) {
 		this.value_filter = value_filter;
+	}
+	public String getStart_date() {
+		return start_date;
+	}
+	public void setStart_date(String start_date) {
+		this.start_date = start_date;
+	}
+	public String getEnd_date() {
+		return end_date;
+	}
+	public void setEnd_date(String end_date) {
+		this.end_date = end_date;
+	}
+	public String getId_filter() {
+		return id_filter;
+	}
+	public void setId_filter(String id_filter) {
+		this.id_filter = id_filter;
 	}
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEnergyEntity;
 import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.services.EmployeeService;
@@ -193,6 +194,28 @@ public class PortfolioController extends BaseController {
 			EnergyEntity data = service.getSitesMetricsLossPast24h(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics actual vs expected
+	 * @author Hung.Bui
+	 * @since 2025-05-12
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/actual-vs-expected")
+	public Object getSitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			List<SiteEnergyEntity> data = service.getSitesMetricsActualVsExpected(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
