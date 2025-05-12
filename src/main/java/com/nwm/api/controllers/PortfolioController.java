@@ -147,27 +147,7 @@ public class PortfolioController extends BaseController {
 	public Object getAvailabilityVsPerformance(@RequestBody PortfolioAvailabilityVsPerformanceEntity obj) {
 		try {
 			PortfolioService service = new PortfolioService();
-			List data = service.getAvailabilityVsPerformance();
-			
-			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
-			for (int i = 0; i < data.size(); i = i + 1) {
-				int k = i;
-				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
-					HashMap<String, Object> item = (HashMap<String, Object>) data.get(k);
-					HashMap energyData = service.getEnergyBySite(
-						(int) item.get("id_site"), 
-						obj.getStart_date(), 
-						obj.getEnd_date()
-					);
-					return energyData;
-				});
-				list.add(future);
-			}
-			List energyList = list.stream().map(future -> future.join()).collect(Collectors.toList());
-			for (int i = 0; i < data.size(); i = i + 1) {
-					HashMap<String, Object> item = (HashMap<String, Object>) data.get(i);
-					item.putAll((HashMap<String, Object>) energyList.get(i));
-			}
+			List data = service.getAvailabilityVsPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
 		} catch (Exception e) {
 			log.error(e);

@@ -756,9 +756,9 @@
 
 	<select id="getEnergyBySite" resultType="Map" >
 		SELECT 
-			AVG(expected_power_ac) * 24 * DATEDIFF("2025-05-09 06:59:59", "2025-05-08 07:00:00") AS expected_energy,
+			AVG(expected_power_ac) * 24 * DATEDIFF(#{end_date}, #{start_date}) AS expected_energy,
 			SUM(nvmActiveEnergy) AS actual_energy,
-			(SUM(nvmActiveEnergy) / (AVG(expected_power_ac) * 24 * DATEDIFF("2025-05-09 06:59:59", "2025-05-08 07:00:00"))) * 100 AS performance
+			(SUM(nvmActiveEnergy) / (AVG(expected_power_ac) * 24 * DATEDIFF(#{end_date}, #{start_date}))) * 100 AS performance
 		FROM model#{site_id}_virtual_meter_or_inverter
 		WHERE time BETWEEN #{start_date} AND #{end_date}
 		GROUP BY id_device

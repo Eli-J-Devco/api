@@ -27,6 +27,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.EnergyEntity;
+import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
@@ -233,12 +234,31 @@ public class PortfolioService extends DB {
 	 * @since 2025-05-07
 	 */
 
-	public List getAvailabilityVsPerformance() {
+	public List getAvailabilityVsPerformance(PortfolioAvailabilityVsPerformanceEntity obj) {
 		List dataList = new ArrayList();
 		try {
 			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", null);
 			if (dataList == null)
 				return new ArrayList();
+			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
+			for (int i = 0; i < dataList.size(); i = i + 1) {
+				int k = i;
+				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(k);
+				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+					HashMap energyData = getEnergyBySite(
+						(int) item.get("id_site"), 
+						obj.getStart_date(), 
+						obj.getEnd_date()
+					);
+					return energyData;
+				});
+				list.add(future);
+			}
+			List energyList = list.stream().map(future -> future.join()).collect(Collectors.toList());
+			for (int i = 0; i < dataList.size(); i = i + 1) {
+					HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(i);
+					item.putAll((HashMap<String, Object>) energyList.get(i));
+			}
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
