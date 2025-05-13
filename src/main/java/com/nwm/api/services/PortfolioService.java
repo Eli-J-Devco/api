@@ -26,9 +26,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEnergyEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
@@ -362,6 +365,59 @@ public class PortfolioService extends DB {
 			return new EnergyEntity(actual, expected, loss);
 		} catch (Exception ex) {
 			return new EnergyEntity();
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics actual vs expected
+	 * @author Hung.Bui
+	 * @since 2025-05-12
+	 * @param obj
+	 */
+	public List<SiteEnergyEntity> getSitesMetricsActualVsExpected(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.size() == 0) return new ArrayList<>();
+			
+			CustomerViewService customerViewService = new CustomerViewService();
+			List<CompletableFuture<SiteEnergyEntity>> futureList = new ArrayList<CompletableFuture<SiteEnergyEntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity site = sites.get(i);
+				site.setStart_date(obj.getStart_date());
+				site.setEnd_date(obj.getEnd_date());
+				site.setFilterBy(obj.getId_filter());
+				
+				CompletableFuture<SiteEnergyEntity> future = CompletableFuture.supplyAsync(() -> {
+					List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
+					
+					SiteEnergyEntity item = new SiteEnergyEntity();
+					item.setName(site.getName());
+					
+					for (PerformanceDataChartItemEntity entity : data) {
+						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
+						
+						if (entity.getType().equals("chart_energy_kwh")) {
+							item.setActualPower(siteEnergyData.getNvmActivePower());
+							item.setActualEnergy(siteEnergyData.getNvmActiveEnergy());
+						} else if (entity.getType().equals("expected_power") || entity.getType().equals("expected_energy")) {
+							item.setExpectedPower(siteEnergyData.getExpected_power());
+							item.setExpectedEnergy(siteEnergyData.getExpected_energy());
+						}
+					}
+					
+					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
+						item.setVariance(BigDecimal.valueOf((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy() * 100).setScale(2, RoundingMode.HALF_UP).doubleValue());
+					}
+					
+					return item;
+				});
+				futureList.add(future);
+			}
+			
+			List<SiteEnergyEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
 		}
 	}
 	

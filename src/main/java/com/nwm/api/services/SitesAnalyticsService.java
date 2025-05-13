@@ -255,6 +255,10 @@ public class SitesAnalyticsService extends DB {
 					categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
 					start = start.withDayOfYear(1);
 					break;
+					
+				default:
+					return dateTimeList;
+					
 			}
 			
 			while (!start.isAfter(end)) {

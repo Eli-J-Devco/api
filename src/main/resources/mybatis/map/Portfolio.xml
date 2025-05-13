@@ -776,11 +776,30 @@
 	
 	<select id="getSites" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
-			s.id,
-			s.table_data_virtual
+			s.id AS id_site,
+			<include refid="com.nwm.common.siteName"/> AS name,
+			s.table_data_report,
+			s.table_data_virtual,
+			s.pv_model,
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN (
+				SELECT
+					COUNT(*) AS enable_virtual_device,
+					d.id_site
+				FROM
+					device d 
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.virtual_device_type IS NOT NULL
+					AND d.virtual_device_type != ''
+				GROUP BY
+					d.id_site
+			) v ON v.id_site = s.id
 		WHERE
 			(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<foreach collection="id_sites" item="item" open="AND s.id IN (" close=")" separator=",">

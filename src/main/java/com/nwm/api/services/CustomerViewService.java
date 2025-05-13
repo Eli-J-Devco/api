@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,6 +18,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SecretCards;
@@ -81,16 +81,16 @@ public class CustomerViewService extends DB {
 	 * @param id_site, id_customer
 	 */
 
-	public List<Map<String, Object>> getChartDataPerformance(SiteEntity obj) {
+	public List<PerformanceDataChartItemEntity> getChartDataPerformance(SiteEntity obj) {
 		try {
-			List<Map<String, Object>> dataEnergy = new ArrayList<>();
+			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
 			
 			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
 			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
 			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
 			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
-			if (powerDevices.size() == 0) return new ArrayList<Map<String, Object>>();
+			if (powerDevices.size() == 0) return new ArrayList<>();
 			
 			// get date time list
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -114,12 +114,7 @@ public class CustomerViewService extends DB {
 					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataItem, "time_full"), start, end);
 					
 					if (fulfilledData.size() > 0) {
-						Map<String, Object> deviceItem = new HashMap<>();
-						deviceItem.put("data_energy", fulfilledData);
-						deviceItem.put("type", "chart_energy_kwh");
-						deviceItem.put("unit", isPower ? "kW" : "kWh");
-						deviceItem.put("devicename", device.getDevicename());
-						deviceItem.put("isShowEachMeter", true);
+						PerformanceDataChartItemEntity deviceItem = new PerformanceDataChartItemEntity(fulfilledData, "chart_energy_kwh", isPower ? "kW" : "kWh", device.getDevicename(), true);
 						dataEnergy.add(deviceItem);
 					}
 				}
@@ -130,7 +125,7 @@ public class CustomerViewService extends DB {
 				obj.setDatatablename(obj.getTable_data_virtual());
 				List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataVirtualDevice", obj);
 				List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-				if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, meterDevices, irradianceDevices, isPower);
+				if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, irradianceDevices, isPower);
 			} else {
 				if (isGranularityLessThan1Day) {
 					if (powerDevices.size() > 0) {
@@ -139,11 +134,7 @@ public class CustomerViewService extends DB {
 						List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
 						
 						if (fulfilledData.size() > 0) {
-							Map<String, Object> energyData = new HashMap<>();
-							energyData.put("data_energy", fulfilledData);
-							energyData.put("type", "chart_energy_kwh");
-							energyData.put("unit", isPower ? "kW" : "kWh");
-							energyData.put("devicename", isPower ? "Power" : "Energy Output");
+							PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(fulfilledData, "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
 							dataEnergy.add(energyData);
 						}
 					}
@@ -159,38 +150,31 @@ public class CustomerViewService extends DB {
 							
 							if(fulfilledData.size() > 0 ) {
 								if (i == 0) {
-									Map<String, Object> expectedData = new HashMap<>();
-									expectedData.put("data_energy", fulfilledData);
-									expectedData.put("type", isPower ? "expected_power" : "expected_energy");
-									expectedData.put("unit", isPower ? "kW" : "kWh");
-									expectedData.put("devicename", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+									PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(fulfilledData, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
 									dataEnergy.add(expectedData);
 								}
 								
-								Map<String, Object> irradianceData = new HashMap<>();
-								irradianceData.put("data_energy", fulfilledData);
-								irradianceData.put("type", "nvm_irradiance");
-								irradianceData.put("unit", "W/m²");
-								irradianceData.put("devicename", irradianceDevices.size() > 1 ? irradianceDevices.get(i) : "Irradiance");
+								PerformanceDataChartItemEntity irradianceData = new PerformanceDataChartItemEntity(fulfilledData, "nvm_irradiance", "W/m²", irradianceDevices.size() > 1 ? irradianceDevices.get(i).getDevicename() : "Irradiance");
 								dataEnergy.add(irradianceData);
 							}
 						}
 					}
 				} else {
+					obj.setTotalMeter(meterDevices.size());
 					List<ClientMonthlyDateEntity> dataList = queryForList("CustomerView.getDataSiteDataReport", obj);
 					List<ClientMonthlyDateEntity> fulfilledData = convertDateTimeFormat(obj, Lib.fulfillData(getDateTimeList(obj, start, end), dataList, "time_full"), start, end);
-					if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, meterDevices, irradianceDevices, isPower);
+					if (fulfilledData.size() > 0) separateDataByType(dataEnergy, obj, fulfilledData, irradianceDevices, isPower);
 				}
 			}
 
 			return dataEnergy;
 		} catch (Exception ex) {
-			return new ArrayList<Map<String, Object>>();
+			return new ArrayList<>();
 		}
 
 	}
 	
-	private void separateDataByType(List<Map<String, Object>> dataEnergy, SiteEntity obj, List<ClientMonthlyDateEntity> data ,List<DeviceEntity> meterDevices, List<DeviceEntity> irradianceDevices, boolean isPower) {
+	private void separateDataByType(List<PerformanceDataChartItemEntity> dataEnergy, SiteEntity obj, List<ClientMonthlyDateEntity> data , List<DeviceEntity> irradianceDevices, boolean isPower) {
 		List<ClientMonthlyDateEntity> energy = new ArrayList<>();
 		List<ClientMonthlyDateEntity> expected = new ArrayList<>();
 		List<ClientMonthlyDateEntity> irradiance = new ArrayList<>();
@@ -200,6 +184,8 @@ public class CustomerViewService extends DB {
 			energyItem.setTime_full(item.getTime_full());
 			energyItem.setCategories_time(item.getCategories_time());
 			energyItem.setChart_energy_kwh(item.getChart_energy_kwh());
+			energyItem.setNvmActivePower(item.getNvmActivePower());
+			energyItem.setNvmActiveEnergy(item.getNvmActiveEnergy());
 			energy.add(energyItem);
 			
 			ClientMonthlyDateEntity expectedItem = new ClientMonthlyDateEntity();
@@ -216,26 +202,14 @@ public class CustomerViewService extends DB {
 			irradiance.add(irradianceItem);
 		}
 		
-		Map<String, Object> energyData = new HashMap<>();
-		energyData.put("data_energy", energy);
-		energyData.put("type", "chart_energy_kwh");
-		energyData.put("unit", isPower ? "kW" : "kWh");
-		energyData.put("devicename", isPower ? "Power" : "Energy Output");
+		PerformanceDataChartItemEntity energyData = new PerformanceDataChartItemEntity(energy, "chart_energy_kwh", isPower ? "kW" : "kWh", isPower ? "Power" : "Energy Output");
 		dataEnergy.add(energyData);
 		
 		if (irradianceDevices.size() > 0) {
-			Map<String, Object> expectedData = new HashMap<>();
-			expectedData.put("data_energy", expected);
-			expectedData.put("type", isPower ? "expected_power" : "expected_energy");
-			expectedData.put("unit", isPower ? "kW" : "kWh");
-			expectedData.put("devicename", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
+			PerformanceDataChartItemEntity expectedData = new PerformanceDataChartItemEntity(expected, isPower ? "expected_power" : "expected_energy", isPower ? "kW" : "kWh", (isPower ? "Expected Power" : "Expected Energy") + (obj.getPv_model() == 3 ? " NREL 8760" : ""));
 			dataEnergy.add(expectedData);
 			
-			Map<String, Object> irradianceData = new HashMap<>();
-			irradianceData.put("data_energy", irradiance);
-			irradianceData.put("type", "nvm_irradiance");
-			irradianceData.put("unit", "W/m²");
-			irradianceData.put("devicename", "Irradiance");
+			PerformanceDataChartItemEntity irradianceData = new PerformanceDataChartItemEntity(irradiance, "nvm_irradiance", "W/m²", "Irradiance");
 			dataEnergy.add(irradianceData);
 		}
 	}
