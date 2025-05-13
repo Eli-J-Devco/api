@@ -17,7 +17,7 @@
 		<result property="alert_filter" column="alert_filter" />
 		<result property="hash_id_user" column="hash_id_user" />
 		<result property="id_company" column="id_company" />
-		
+		<result property="portfolio_metrics_enable" column="portfolio_metrics_enable" />
 	</resultMap>
 	
 	
@@ -58,6 +58,7 @@
 		<result property="lock_time" column="lock_time" />
 		<result property="id_company" column="id_company" />
 		<result property="note" column="note" />
+		<result property="portfolio_metrics_enable" column="portfolio_metrics_enable" />
 		
 	</resultMap>
 	
@@ -121,6 +122,7 @@
 			u.failed_attempt,
 			u.is_send_email_unblock,
 			u.id_company,
+			u.portfolio_metrics_enable,
 			( SELECT `value` FROM system_setup WHERE type = 'max_failed_attempt' ) AS max_failed_attempt,
 			( SELECT `value` FROM system_setup WHERE type = 'time_account_locked' ) AS time_account_locked
 			
@@ -234,7 +236,8 @@
 			e.created_by,
 			SHA2(e.`id`, 256) AS hash_id_user,
 			e.id_company,
-			e.note
+			e.note,
+			e.portfolio_metrics_enable
 		FROM
 			`employee` e	
 			
@@ -501,7 +504,8 @@
 			created_by,
 			created_date,
 			id_company,
-			note
+			note,
+			portfolio_metrics_enable
 		)VALUES(
 			#{first_name},
 			#{last_name},
@@ -515,7 +519,8 @@
 			#{created_by},
 			NOW(),
 			#{id_company},
-			#{note}
+			#{note},
+			#{portfolio_metrics_enable}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -565,7 +570,8 @@
 			`updated_by` = #{created_by},
 			`updated_date` = NOW(),
 			`id_company` = #{id_company},
-			`note` = #{note}
+			`note` = #{note},
+			`portfolio_metrics_enable` = #{portfolio_metrics_enable}
 			
 		WHERE
 			`id` = #{id}

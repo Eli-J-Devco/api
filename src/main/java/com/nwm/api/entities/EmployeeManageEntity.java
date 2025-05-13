@@ -62,8 +62,9 @@ public class EmployeeManageEntity extends SortEntity {
 	private int id_company;
 	private String note;
 	private String table;
+	private int portfolio_metrics_enable;
 	private String domain;
-private String domain_role;
+	private String domain_role;
 	
 	
 	public String getDomain_role() {
@@ -398,6 +399,12 @@ private String domain_role;
 	}
 	public void setTable(String table) {
 		this.table = table;
+	}
+	public int getPortfolio_metrics_enable() {
+		return portfolio_metrics_enable;
+	}
+	public void setPortfolio_metrics_enable(int portfolio_metrics_enable) {
+		this.portfolio_metrics_enable = portfolio_metrics_enable;
 	}
 	
 	

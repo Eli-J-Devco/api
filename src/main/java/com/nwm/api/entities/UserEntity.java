@@ -59,8 +59,9 @@ public class UserEntity implements UserDetails, Authentication{
 	private double time_account_locked;
 	private int is_send_email_unblock;
 	private int id_company;
+	private int portfolio_metrics_enable;
 	private String domain;
-private String domain_role;
+	private String domain_role;
 	
 	
 	public String getDomain_role() {
@@ -471,6 +472,12 @@ private String domain_role;
 	 */
 	public void setToken_setpassword(String token_setpassword) {
 		this.token_setpassword = token_setpassword;
+	}
+	public int getPortfolio_metrics_enable() {
+		return portfolio_metrics_enable;
+	}
+	public void setPortfolio_metrics_enable(int portfolio_metrics_enable) {
+		this.portfolio_metrics_enable = portfolio_metrics_enable;
 	}
 	
 	
