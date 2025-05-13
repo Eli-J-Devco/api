@@ -240,7 +240,10 @@ public class PortfolioService extends DB {
 	public List getAvailabilityVsPerformance(PortfolioAvailabilityVsPerformanceEntity obj) {
 		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", null);
+			HashMap<String, String> params = new HashMap<String, String>();
+			params.put("start_date", obj.getStart_date());
+			params.put("end_date", obj.getEnd_date());
+			dataList = queryForList("Portfolio.getAvailability", params);
 			if (dataList == null)
 				return new ArrayList();
 			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
@@ -249,7 +252,7 @@ public class PortfolioService extends DB {
 				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(k);
 				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
 					HashMap energyData = getEnergyBySite(
-						(int) item.get("id_site"), 
+						(int) item.get("site_id"), 
 						obj.getStart_date(), 
 						obj.getEnd_date()
 					);
