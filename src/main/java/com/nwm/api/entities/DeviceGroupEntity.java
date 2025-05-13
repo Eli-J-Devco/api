@@ -34,9 +34,16 @@ public class DeviceGroupEntity{
 	private String notes;
 	private String manufacture;
 	private String filterBy;
+	private String title_trans;
 	
 	
 	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
 	public String getFilterBy() {
 		return filterBy;
 	}

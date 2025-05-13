@@ -9,7 +9,8 @@
 			id,
 			id AS value,
 			name AS label,
-			name AS text
+			name AS text,
+			IFNULL(title_trans, "N/A") AS title_trans
 		FROM
 			categorize_data
 		WHERE

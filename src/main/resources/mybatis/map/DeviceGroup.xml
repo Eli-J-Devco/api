@@ -20,6 +20,8 @@
 		<result property="code_prefix" column="code_prefix" />
 		<result property="view_tablename" column="view_tablename" />
 		<result property="job_tablename" column="job_tablename" />
+		<result property="title_trans" column="title_trans" />
+		<result property="des_trans" column="des_trans" />
 		
 	</resultMap>
 	

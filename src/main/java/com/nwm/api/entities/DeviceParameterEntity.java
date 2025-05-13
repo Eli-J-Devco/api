@@ -56,10 +56,32 @@ public class DeviceParameterEntity{
 	private boolean is_irradiance;
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
+	private String title_trans;
 	
 	
 	
 	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
+	public boolean isIs_active_power() {
+		return is_active_power;
+	}
+	public boolean isIs_energy() {
+		return is_energy;
+	}
+	public boolean isIs_irradiance() {
+		return is_irradiance;
+	}
+	public boolean isIs_temperature() {
+		return is_temperature;
+	}
+	public boolean isIs_panel_temperature() {
+		return is_panel_temperature;
+	}
 	public int getRounding_decimals() {
 		return rounding_decimals;
 	}

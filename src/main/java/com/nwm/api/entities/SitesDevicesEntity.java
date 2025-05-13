@@ -183,9 +183,23 @@ public class SitesDevicesEntity extends SortEntity {
 	private String hvac_gateway;
 	private String hvac_layout;
 	private int id_hvac_layout;
+	private String device_group_title_trans;
+	private String device_type_title_trans;
 	
 	
 	
+	public String getDevice_group_title_trans() {
+		return device_group_title_trans;
+	}
+	public void setDevice_group_title_trans(String device_group_title_trans) {
+		this.device_group_title_trans = device_group_title_trans;
+	}
+	public String getDevice_type_title_trans() {
+		return device_type_title_trans;
+	}
+	public void setDevice_type_title_trans(String device_type_title_trans) {
+		this.device_type_title_trans = device_type_title_trans;
+	}
 	public double getWeather_snow() {
 		return weather_snow;
 	}

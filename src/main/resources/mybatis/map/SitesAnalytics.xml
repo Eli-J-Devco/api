@@ -13,6 +13,8 @@
 			d.id_device_type,
 			d.hidden,
 			dg.group_name,
+			IFNULL(dt.title_trans, "N/A") AS type_title_trans,
+			IFNULL(dg.title_trans, "N/A") AS group_title_trans,
 			dg.table_name,
 			dt.name AS device_type_name,
 			dt.order,
@@ -27,12 +29,15 @@
 				'is_common', dp.is_common,
 				'id_generic_parameter', gp.id,
 				'generic_parameter_name', gp.name,
+				'generic_parameter_trans', gp.title_trans,
+				
 				'id_generic_parameter_type', gp.id_generic_parameter_type,
 				'value_chart_tool', dp.value_chart_tool,
 				'hide', dp.hide,
 				'min_value', IFNULL(dpf.min_value, 0.001),
 				'max_value', IFNULL(dpf.max_value, 0.001),
-				'rounding_decimals', dp.rounding_decimals
+				'rounding_decimals', dp.rounding_decimals,
+				'parameter_title_trans', IFNULL(dp.title_trans, "N/A")
 			)) AS parameters,
 			0 AS checked
 		FROM
