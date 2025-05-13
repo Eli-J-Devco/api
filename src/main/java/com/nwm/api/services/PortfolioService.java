@@ -6,20 +6,34 @@
 package com.nwm.api.services;
 
 import java.io.FileNotFoundException;
+
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.EnergyEntity;
+import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEnergyEntity;
+import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.entities.WeatherEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -215,6 +229,193 @@ public class PortfolioService extends DB {
 			}
 			
 		
+	}
+
+	/**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 */
+
+	public List getAvailabilityVsPerformance(PortfolioAvailabilityVsPerformanceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Portfolio.getAvailabilityVsPerformance", null);
+			if (dataList == null)
+				return new ArrayList();
+			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
+			for (int i = 0; i < dataList.size(); i = i + 1) {
+				int k = i;
+				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(k);
+				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
+					HashMap energyData = getEnergyBySite(
+						(int) item.get("id_site"), 
+						obj.getStart_date(), 
+						obj.getEnd_date()
+					);
+					return energyData;
+				});
+				list.add(future);
+			}
+			List energyList = list.stream().map(future -> future.join()).collect(Collectors.toList());
+			for (int i = 0; i < dataList.size(); i = i + 1) {
+					HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(i);
+					item.putAll((HashMap<String, Object>) energyList.get(i));
+			}
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	 /**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 */
+	 
+	 public HashMap getEnergyBySite(int site_id, String start_date, String end_date) {
+		HashMap data = new HashMap();
+		try {
+			HashMap<String, Object> params = new HashMap<String, Object>();
+			params.put("site_id", site_id);
+			params.put("start_date", start_date);
+			params.put("end_date", end_date);
+			data = (HashMap) queryForObject("Portfolio.getEnergyBySite", params);
+			if (data == null)
+				return new HashMap();
+		} catch (Exception ex) {
+			return new HashMap();
+		}
+		return data;
+	}
+	
+	/**
+	 * @description Get sites metrics summary by employee
+	 * @author Hung.Bui
+	 * @since 2025-05-07
+	 * @param obj
+	 */
+	public SitesMetricsSummaryEntity getSitesMetricsSummary(PortfolioEntity obj) {
+		try {
+			SitesMetricsSummaryEntity data = (SitesMetricsSummaryEntity) queryForObject("Portfolio.getSitesMetricsSummary", obj);
+			if (data == null) return new SitesMetricsSummaryEntity();
+			
+			return data;
+		} catch (Exception ex) {
+			return new SitesMetricsSummaryEntity();
+		}
+	}
+	
+	/**
+	 * @description Get site detail list
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 */
+	public List<SiteEntity> getSites(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> dataList = queryForList("Portfolio.getSites", obj);
+			if (dataList == null) return new ArrayList<>();
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics loss past 24h
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 */
+	public EnergyEntity getSitesMetricsLossPast24h(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.size() == 0) return new EnergyEntity();
+			
+			List<CompletableFuture<EnergyEntity>> futureList = new ArrayList<CompletableFuture<EnergyEntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity site = sites.get(i);
+				
+				CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
+					try {
+						EnergyEntity data = (EnergyEntity) queryForObject("Portfolio.getSitesMetricsLossPast24h", site);
+						if (Objects.isNull(data)) return new EnergyEntity();
+						return data;
+					} catch (Exception e) {
+						return new EnergyEntity();
+					}
+				});
+				futureList.add(future);
+			}
+			
+			List<EnergyEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			Double actual = dataList.stream().anyMatch(item -> Objects.nonNull(item.getActual())) ?
+					BigDecimal.valueOf(dataList.stream().filter(item -> Objects.nonNull(item.getActual())).mapToDouble(EnergyEntity::getActual).sum()).setScale(0, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			Double expected = dataList.stream().anyMatch(item -> Objects.nonNull(item.getExpected())) ?
+					BigDecimal.valueOf(dataList.stream().filter(item -> Objects.nonNull(item.getExpected())).mapToDouble(EnergyEntity::getExpected).sum()).setScale(0, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			Double loss = Objects.nonNull(actual) && Objects.nonNull(expected) && expected > 0 ?
+					BigDecimal.valueOf((expected - actual) / expected * 100).setScale(1, RoundingMode.HALF_UP).doubleValue()
+					: null;
+			return new EnergyEntity(actual, expected, loss);
+		} catch (Exception ex) {
+			return new EnergyEntity();
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics actual vs expected
+	 * @author Hung.Bui
+	 * @since 2025-05-12
+	 * @param obj
+	 */
+	public List<SiteEnergyEntity> getSitesMetricsActualVsExpected(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.size() == 0) return new ArrayList<>();
+			
+			CustomerViewService customerViewService = new CustomerViewService();
+			List<CompletableFuture<SiteEnergyEntity>> futureList = new ArrayList<CompletableFuture<SiteEnergyEntity>>();
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity site = sites.get(i);
+				site.setStart_date(obj.getStart_date());
+				site.setEnd_date(obj.getEnd_date());
+				site.setFilterBy(obj.getId_filter());
+				
+				CompletableFuture<SiteEnergyEntity> future = CompletableFuture.supplyAsync(() -> {
+					List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
+					
+					SiteEnergyEntity item = new SiteEnergyEntity();
+					item.setName(site.getName());
+					
+					for (PerformanceDataChartItemEntity entity : data) {
+						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
+						
+						if (entity.getType().equals("chart_energy_kwh")) {
+							item.setActualPower(siteEnergyData.getNvmActivePower());
+							item.setActualEnergy(siteEnergyData.getNvmActiveEnergy());
+						} else if (entity.getType().equals("expected_power") || entity.getType().equals("expected_energy")) {
+							item.setExpectedPower(siteEnergyData.getExpected_power());
+							item.setExpectedEnergy(siteEnergyData.getExpected_energy());
+						}
+					}
+					
+					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
+						item.setVariance(BigDecimal.valueOf((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy() * 100).setScale(2, RoundingMode.HALF_UP).doubleValue());
+					}
+					
+					return item;
+				});
+				futureList.add(future);
+			}
+			
+			List<SiteEnergyEntity> dataList = futureList.stream().map(future -> future.join()).collect(Collectors.toList());
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
 	}
 	
 }

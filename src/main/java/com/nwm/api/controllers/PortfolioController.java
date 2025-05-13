@@ -7,13 +7,19 @@ package com.nwm.api.controllers;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
+import com.nwm.api.entities.SiteEnergyEntity;
+import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
+import com.nwm.api.entities.SitesMetricsSummaryEntity;
 import com.nwm.api.services.EmployeeService;
 import com.nwm.api.services.PortfolioService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -123,6 +129,90 @@ public class PortfolioController extends BaseController {
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+
+	/**
+	 * @description get availability vs performance
+	 * @author giang.le
+	 * @since 2025-05-07
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-availability-vs-performance")
+	public Object getAvailabilityVsPerformance(@RequestBody PortfolioAvailabilityVsPerformanceEntity obj) {
+		try {
+			PortfolioService service = new PortfolioService();
+			List data = service.getAvailabilityVsPerformance(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+			
+	/**
+	 * @description Get sites metrics summary
+	 * @author Hung.Bui
+	 * @since 2025-05-07
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/summary")
+	public Object getSitesMetricsSummary(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			SitesMetricsSummaryEntity data = service.getSitesMetricsSummary(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics loss past 24h
+	 * @author Hung.Bui
+	 * @since 2025-05-08
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/loss-past-24h")
+	public Object getSitesMetricsLossPast24h(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			EnergyEntity data = service.getSitesMetricsLossPast24h(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics actual vs expected
+	 * @author Hung.Bui
+	 * @since 2025-05-12
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/actual-vs-expected")
+	public Object getSitesMetricsActualVsExpected(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			List<SiteEnergyEntity> data = service.getSitesMetricsActualVsExpected(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}

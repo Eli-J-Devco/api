@@ -174,9 +174,11 @@
 				</when>
 				<otherwise>
 					CASE
-						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF( SUM(meterPower) > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1) )
-						ELSE IF(SUM(meterEnergy) > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
+						WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN IF(#{totalMeter} > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1))
+						ELSE IF(#{totalMeter} > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL))
 					END AS chart_energy_kwh,
+					IF(#{totalMeter} > 0, ROUND(SUM(meterPower), 1), ROUND(SUM(inverterPower), 1)) AS nvmActivePower,
+					IF(#{totalMeter} > 0, CAST(SUM(meterEnergy) AS DECIMAL), CAST(SUM(inverterEnergy) AS DECIMAL)) AS nvmActiveEnergy,
 					ROUND(AVG(expected_power), 1) AS expected_power,
 					ROUND(SUM(expected_energy), 1) AS expected_energy
 				</otherwise>
@@ -203,6 +205,10 @@
 							DATE_FORMAT( sdr.time, '%Y' ) AS time_full,
 							DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
 						</when>
+						<otherwise>
+							"all" AS time_full,
+							"all" AS categories_time,
+						</otherwise>
 					</choose>
 					AVG(expected_power) AS expected_power,
 					AVG(expected_power) * 24 * COUNT(*) AS expected_energy,
@@ -313,6 +319,8 @@
 				WHEN DATEDIFF(#{end_date}, #{start_date}) <![CDATA[ < ]]> 5 THEN ROUND(nvmActivePower, 1)
 				ELSE CAST(nvmActiveEnergy AS DECIMAL)
 			END AS chart_energy_kwh,
+			ROUND(nvmActivePower, 1) AS nvmActivePower,
+			CAST(nvmActiveEnergy AS DECIMAL) AS nvmActiveEnergy,
 			ROUND(expected_power, 1) AS expected_power,
 			ROUND(expected_energy, 1) AS expected_energy
 		FROM
@@ -406,6 +414,11 @@
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS time_full,
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y' ) AS categories_time,
 								</when>
+								<otherwise>
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS group_by_time,
+									"all" AS time_full,
+									"all" AS categories_time,
+								</otherwise>
 							</choose>
 							AVG(IF(
 								(dpf1.min_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ < ]]> dpf1.min_value) OR (dpf1.max_value IS NOT NULL AND dv.nvmActivePower <![CDATA[ > ]]> dpf1.max_value),
