@@ -6,12 +6,20 @@
 package com.nwm.api.services;
 
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelXGI1500Entity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelXGI1500Service extends DB {
 
@@ -125,14 +133,343 @@ public class ModelXGI1500Service extends DB {
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelXGI1500.insertModelXGI1500", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelXGI1500(obj);
+	        	
+	        }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2023-04-03
+	 * @param datatablename
+	 */
+
+	public ModelXGI1500Entity checkAlertWriteCode(ModelXGI1500Entity obj) {
+		ModelXGI1500Entity rowItem = new ModelXGI1500Entity();
+		try {
+
+			List dataList = queryForList("ModelXGI1500.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0, totalFaultStatus = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault1 = (double) item.get("Fault1");
+					if(Double.compare(obj.getFault1(), fault1) == 0 && obj.getFault1() > 0 && fault1 > 0) { 
+						totalFault1++;
+					}
+					
+					double fault2 = (double) item.get("Fault2");
+					if(Double.compare(obj.getFault2(), fault2) == 0 && obj.getFault2() > 0 && fault2 > 0) { 
+						totalFault2++;
+					}
+					
+					double fault3 = (double) item.get("Fault3");
+					if(Double.compare(obj.getFault3(), fault3) == 0 && obj.getFault3() > 0 && fault3 > 0) { 
+						totalFault3++;
+					}
+					
+					double faultStatus = (double) item.get("FaultStatus");
+					if(Double.compare(obj.getFaultStatus(), faultStatus) == 0 && obj.getFaultStatus() > 0 && faultStatus > 0) { 
+						totalFaultStatus++;
+					}
+					
+					
+				}
+				rowItem.setTotalFault1(totalFault1);
+				rowItem.setTotalFault2(totalFault2);
+				rowItem.setTotalFault3(totalFault3);
+				rowItem.setTotalFaultStatus(totalFaultStatus);
+				
+			}
+			
+			if (rowItem == null)
+				return new ModelXGI1500Entity();
+		} catch (Exception ex) {
+			return new ModelXGI1500Entity();
+		}
+		return rowItem;
+	}
+	
+	
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author duy.phan
+	 * @since  2025-05-07
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelXGI1500(ModelXGI1500Entity obj) {
+		// Check device alert by fault code
+		long fault1 = (obj.getFault1() > 0 && obj.getFault1() != 0.001) ? (long) obj.getFault1() : 0;
+		long fault2 = (obj.getFault2() > 0 && obj.getFault2() != 0.001) ? (long) obj.getFault2() : 0;
+		int fault3 = (obj.getFault3() > 0 && obj.getFault3() != 0.001) ? (int) obj.getFault3() : 0;
+		long faultStatus = (obj.getFaultStatus() > 0 && obj.getFaultStatus() != 0.001) ? (long) obj.getFaultStatus() : 0;
+		
+		
+		ModelXGI1500Entity rowItem = (ModelXGI1500Entity) checkAlertWriteCode(obj);
+		
+		
+		// check faultStatus
+		if (faultStatus > 0  && rowItem.getTotalFaultStatus() >= 20) {
+			try {
+				String toBinary = Long.toBinaryString(faultStatus);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelXGI1500(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close faultStatus 
+			try {
+				if(rowItem.getTotalFaultStatus() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is faultStatus
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFaultStatus = new ArrayList();
+					dataListFaultStatus = queryForList("ModelXGI1500.getListTriggerFaultCode", alertItemClose);
+					if(dataListFaultStatus.size() > 0) {
+						for(int i = 0; i < dataListFaultStatus.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFaultStatus.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// check fault code 1
+		if (fault1 > 0  && rowItem.getTotalFault1() >= 20) {
+			try {
+				String toBinary = Long.toBinaryString(fault1);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelXGI1500(v, 2);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 1
+			try {
+				if(rowItem.getTotalFault1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 2 is fault1
+					alertItemClose.setFaultCodeLevel(2);
+					List dataListFault1 = new ArrayList();
+					dataListFault1 = queryForList("ModelXGI1500.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault1.size() > 0) {
+						for(int i = 0; i < dataListFault1.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		// check fault code 2
+		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
+			try {
+				String toBinary = Long.toBinaryString(fault2);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelXGI1500(v, 3);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 2
+			try {
+				if(rowItem.getTotalFault2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 3 is fault2
+					alertItemClose.setFaultCodeLevel(3);
+					List dataListFault2 = new ArrayList();
+					dataListFault2 = queryForList("ModelXGI1500.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault2.size() > 0) {
+						for(int i = 0; i < dataListFault2.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		
+		
+		// check fault code 3
+		if (fault3 > 0  && rowItem.getTotalFault3() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault3);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelXGI1500(v, 4);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 3
+			try {
+				if(rowItem.getTotalFault3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 4 is fault3
+					alertItemClose.setFaultCodeLevel(4);
+					List dataListFault3 = new ArrayList();
+					dataListFault3 = queryForList("ModelXGI1500.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault3.size() > 0) {
+						for(int i = 0; i < dataListFault3.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

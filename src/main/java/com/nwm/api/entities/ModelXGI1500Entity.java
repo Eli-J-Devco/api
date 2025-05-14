@@ -46,6 +46,37 @@ public class ModelXGI1500Entity extends ModelBaseEntity {
 	private String datatablename;
 	private String view_tablename;
 	private String job_tablename;
+	
+	private int totalFaultStatus;
+	private int totalFault1;
+	private int totalFault2;
+	private int totalFault3;
+	
+	
+	public int getTotalFaultStatus() {
+		return totalFaultStatus;
+	}
+	public void setTotalFaultStatus(int totalFaultStatus) {
+		this.totalFaultStatus = totalFaultStatus;
+	}
+	public int getTotalFault1() {
+		return totalFault1;
+	}
+	public void setTotalFault1(int totalFault1) {
+		this.totalFault1 = totalFault1;
+	}
+	public int getTotalFault2() {
+		return totalFault2;
+	}
+	public void setTotalFault2(int totalFault2) {
+		this.totalFault2 = totalFault2;
+	}
+	public int getTotalFault3() {
+		return totalFault3;
+	}
+	public void setTotalFault3(int totalFault3) {
+		this.totalFault3 = totalFault3;
+	}
 	public double getACCurrentAverage() {
 		return ACCurrentAverage;
 	}

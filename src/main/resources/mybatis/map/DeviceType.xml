@@ -18,6 +18,7 @@
 		<result property="color" column="color" />
 		<result property="label" column="label" />
 		<result property="value" column="value" />
+		<result property="title_trans" column="title_trans" />
 	</resultMap>
 	
 
@@ -28,7 +29,8 @@
 			t.*,
 			t.name AS text,
 			t.name AS label,
-			t.id AS value
+			t.id AS value,
+			IFNULL(t.title_trans, "N/A") AS title_trans
 		FROM
 			device_type AS t
 		WHERE

@@ -45,7 +45,8 @@
 		    d.device_ftp_pass,
 		    d.device_ftp_folder,
 		    d.device_ftp_port,
-	
+			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			tag.tags,
 			DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
 			<include refid="com.nwm.common.keyIndicatorField"/>,
@@ -493,11 +494,12 @@
 			dp.description,
 			dp.register,
 			dp.hide,
-			dp.standard_name,
+			IFNULL(dp.standard_name, dp.`name`) AS standard_name,
 			dp.writable,
 			ct.id AS id_categorize_data,
 			dps.scale,
-			dp.rounding_decimals
+			dp.rounding_decimals,
+			IFNULL(dp.title_trans, "N/A") AS title_trans
 		FROM
 			device d
 			LEFT JOIN device_group dg ON dg.id = d.id_device_group 

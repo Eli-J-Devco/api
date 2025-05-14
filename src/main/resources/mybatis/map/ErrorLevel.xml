@@ -18,6 +18,7 @@
 		<result property="active" column="active" />
 		<result property="id_icon" column="id_icon" />
 		<result property="label" column="label" />
+		<result property="title_trans" column="title_trans" />
 	</resultMap>
 	
 
@@ -29,7 +30,8 @@
 			t.name AS text,
 			t.name AS label,
 			t.id AS value,
-			0 as active
+			0 as active,
+			IFNULL(t.title_trans, "N/A") AS title_trans
 		FROM
 			error_level AS t
 		WHERE

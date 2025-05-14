@@ -70,6 +70,7 @@
 			device d
 		WHERE
 			d.id_device_type = 12
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 	</sql>
 	
 	<sql id="activeAndExpectedPowerByWSSubquery">
@@ -561,12 +562,10 @@
 					t.id_site
 			) er ON er.id_site = s.id
 		WHERE
-			s.id IN (
-				<foreach item="item" collection="id_sites" separator=",">
-					#{item}
-				</foreach>
-			)
-			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			<foreach item="item" collection="id_sites" open="AND s.id IN (" close=")" separator=",">
+				#{item}
+			</foreach>
 			<if test="hash_id_site_group != null">	
 	 			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 			</if>

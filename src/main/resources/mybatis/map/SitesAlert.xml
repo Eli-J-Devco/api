@@ -36,6 +36,10 @@
 			l.disable_notification,
 			l.resolved,
 			l.note,
+			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
+			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
+			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
+			IFNULL(e.title_trans, "N/A") AS error_title_trans,
 			CASE
 			WHEN COUNT(t.id_alert) > 0 THEN 
 					CONCAT(

@@ -31,8 +31,15 @@ public class DeviceTypeEntity{
 	private int checkAll;
 	private String label;
 	private int value;
+	private String title_trans;
 	
 	
+	public String getTitle_trans() {
+		return title_trans;
+	}
+	public void setTitle_trans(String title_trans) {
+		this.title_trans = title_trans;
+	}
 	public String getLabel() {
 		return label;
 	}

@@ -246,10 +246,10 @@ public class BatchConfig {
 	public void startBatchJobGenerateDataReport() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
-//		if (env.equals("staging")) {
+		if (env.equals("staging")) {
 			BatchJob job =new BatchJob(); 
 			job.runCronJobGenerateDataReport();
-//		}
+		}
 	}
 	
 	
