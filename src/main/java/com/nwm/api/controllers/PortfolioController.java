@@ -140,8 +140,13 @@ public class PortfolioController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-availability-vs-performance")
-	public Object getAvailabilityVsPerformance(@RequestBody PortfolioAvailabilityVsPerformanceEntity obj) {
+	public Object getAvailabilityVsPerformance(
+			@RequestBody PortfolioEntity obj,
+			@RequestHeader(name = "Authorization") String authz
+		) {
 		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
 			PortfolioService service = new PortfolioService();
 			List data = service.getAvailabilityVsPerformance(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data);

@@ -237,61 +237,46 @@ public class PortfolioService extends DB {
 	 * @since 2025-05-07
 	 */
 
-	public List getAvailabilityVsPerformance(PortfolioAvailabilityVsPerformanceEntity obj) {
+	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
+		List<SiteEntity> sites = getSites(obj);
+		
 		List dataList = new ArrayList();
-		try {
-			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("start_date", obj.getStart_date());
-			params.put("end_date", obj.getEnd_date());
-			dataList = queryForList("Portfolio.getAvailability", params);
+		if (sites.size() == 0) return dataList;
+		
+		
+		try {			
+			dataList = queryForList("Portfolio.getAvailability", obj);
 			if (dataList == null)
 				return new ArrayList();
-			List<CompletableFuture<Map<String, Object>>> list = new ArrayList<CompletableFuture<Map<String, Object>>>();
-			for (int i = 0; i < dataList.size(); i = i + 1) {
-				int k = i;
-				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(k);
-				CompletableFuture<Map<String, Object>> future = CompletableFuture.supplyAsync(() -> {
-					HashMap energyData = getEnergyBySite(
-						(int) item.get("site_id"), 
-						obj.getStart_date(), 
-						obj.getEnd_date()
-					);
-					return energyData;
-				});
-				list.add(future);
-			}
-			List energyList = list.stream().map(future -> future.join()).collect(Collectors.toList());
-			for (int i = 0; i < dataList.size(); i = i + 1) {
-					HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(i);
-					item.putAll((HashMap<String, Object>) energyList.get(i));
+			System.out.println("dataList: " + dataList);
+			List<SiteEnergyEntity> energyData = getSitesMetricsActualVsExpected(obj);
+
+			for (int i = 0; i < dataList.size(); i = i + 1) {		
+				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(i);
+				for (int j = 0; j < energyData.size(); j = j + 1) {
+					SiteEnergyEntity energyItem = energyData.get(j);
+					if ((int) item.get("site_id") == energyItem.getId()) {
+						item.put("actual_energy", energyItem.getActualEnergy());
+						item.put("actual_power", energyItem.getActualPower());
+						item.put("expected_energy", energyItem.getExpectedEnergy());
+						item.put("expected_power", energyItem.getExpectedPower());
+						try {
+							item.put("performance", (energyItem.getActualEnergy() / energyItem.getExpectedEnergy()) * 100);
+						} catch (Exception e) {
+							item.put("performance", null);
+						}
+						item.put("variance", energyItem.getVariance());
+						System.out.println("item: " + item.toString());
+					}
+				}
 			}
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
+		System.out.println("result: " + dataList);
 		return dataList;
 	}
-	 /**
-	 * @description get availability vs performance
-	 * @author giang.le
-	 * @since 2025-05-07
-	 */
 	 
-	 public HashMap getEnergyBySite(int site_id, String start_date, String end_date) {
-		HashMap data = new HashMap();
-		try {
-			HashMap<String, Object> params = new HashMap<String, Object>();
-			params.put("site_id", site_id);
-			params.put("start_date", start_date);
-			params.put("end_date", end_date);
-			data = (HashMap) queryForObject("Portfolio.getEnergyBySite", params);
-			if (data == null)
-				return new HashMap();
-		} catch (Exception ex) {
-			return new HashMap();
-		}
-		return data;
-	}
-	
 	/**
 	 * @description Get sites metrics summary by employee
 	 * @author Hung.Bui
@@ -386,12 +371,13 @@ public class PortfolioService extends DB {
 				site.setStart_date(obj.getStart_date());
 				site.setEnd_date(obj.getEnd_date());
 				site.setFilterBy(obj.getId_filter());
-				
+
 				CompletableFuture<SiteEnergyEntity> future = CompletableFuture.supplyAsync(() -> {
 					List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(site);
 					
 					SiteEnergyEntity item = new SiteEnergyEntity();
 					item.setName(site.getName());
+					item.setId(site.getId_site());
 					
 					for (PerformanceDataChartItemEntity entity : data) {
 						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);

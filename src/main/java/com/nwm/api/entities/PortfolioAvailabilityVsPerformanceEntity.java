@@ -7,6 +7,7 @@ package com.nwm.api.entities;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -15,18 +16,17 @@ import java.time.format.DateTimeFormatter;
 
 
 public class PortfolioAvailabilityVsPerformanceEntity extends SortEntity {
-	private int id_site;
+	private List id_sites;
 	private String date_range;
 	private String timezone;
 	
 	
-	public int getId_site() {
-		return id_site;
+	public List getId_sites() {
+		return id_sites;
 	}
-	public void setId_site(int id_site) {
-		this.id_site = id_site;
+	public void setId_sites(List id_sites) {
+		this.id_sites = id_sites;
 	}
-
 	public String getDate_range() {
 		return date_range;
 	}

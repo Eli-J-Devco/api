@@ -6,12 +6,21 @@
 package com.nwm.api.entities;
 
 public class SiteEnergyEntity {
+	private int id;
 	private String name;
 	private Double actualPower;
 	private Double expectedPower;
 	private Double actualEnergy;
 	private Double expectedEnergy;
 	private Double variance;
+	
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 	
 	public String getName() {
 		return name;
