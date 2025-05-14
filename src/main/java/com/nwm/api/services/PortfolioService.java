@@ -262,11 +262,7 @@ public class PortfolioService extends DB {
 						item.put("actual_power", energyItem.getActualPower());
 						item.put("expected_energy", energyItem.getExpectedEnergy());
 						item.put("expected_power", energyItem.getExpectedPower());
-						try {
-							item.put("performance", (energyItem.getActualEnergy() / energyItem.getExpectedEnergy()) * 100);
-						} catch (Exception e) {
-							item.put("performance", null);
-						}
+						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 100 : null);
 						item.put("variance", energyItem.getVariance());
 					}
 				}
