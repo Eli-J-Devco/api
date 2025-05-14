@@ -735,7 +735,7 @@
 			`id` = #{id_device}
 	</update>
 
-	<select id="getAvailability" resultType="Map" >
+	<select id="getAvailability" resultType="Map">
 		SELECT a.site_id AS site_id,
 			   a.site_name AS site_name,
 			   ((a.total_inverters - b.unavailable_inverters) / a.total_inverters) * 100 AS availability,
@@ -746,18 +746,20 @@
 					 COUNT(*) AS total_inverters
 			  FROM device d
 			  LEFT JOIN site s ON d.id_site = s.id
-			  WHERE s.id IN (
-					<foreach item="item" collection="id_sites" separator=",">
+			<if test="id_sites != null and !id_sites.isEmpty()">
+				WHERE s.id IN  (
+					<foreach item="item" index="index" collection="id_sites" separator=" , ">
 						#{item}
 					</foreach>
 				)
-				<if test="hash_id_site_group != null">	
-					AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
-				</if>
-				<if test="hash_id_site_sub_group != null">	
-					AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
-				</if>
-				<include refid="com.nwm.common.siteByDomainCondition"/>
+			</if>
+			<if test="hash_id_site_group != null">	
+				AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+			</if>
+			<if test="hash_id_site_sub_group != null">	
+				AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 			  GROUP BY s.id) AS a
 		LEFT JOIN (SELECT d.id_site AS site_id,
 						  COUNT(CASE 
@@ -771,11 +773,13 @@
 				   LEFT JOIN alert a ON a.id_device = d.id
 				   LEFT JOIN error e ON e.id = a.id_error
 				   LEFT JOIN error_level el ON el.id = e.id_error_level
-				   WHERE s.id IN (
-						<foreach item="item" collection="id_sites" separator=",">
-							#{item}
-						</foreach>
-					)
+				   <if test="id_sites != null and !id_sites.isEmpty()">
+						WHERE s.id IN  (
+							<foreach item="item" index="index" collection="id_sites" separator=" , ">
+								#{item}
+							</foreach>
+						)
+					</if>
 					<if test="hash_id_site_group != null">	
 						AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
 					</if>

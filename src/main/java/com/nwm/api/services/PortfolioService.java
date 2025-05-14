@@ -239,18 +239,18 @@ public class PortfolioService extends DB {
 
 	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
 		List<SiteEntity> sites = getSites(obj);
-		
 		List dataList = new ArrayList();
 		if (sites.size() == 0) return dataList;
-		
-		
+		List site_ids = new ArrayList();
+		for (SiteEntity site : sites) {
+			site_ids.add(site.getId_site());
+		}
+		obj.setId_sites(site_ids);
 		try {			
 			dataList = queryForList("Portfolio.getAvailability", obj);
 			if (dataList == null)
 				return new ArrayList();
-			System.out.println("dataList: " + dataList);
 			List<SiteEnergyEntity> energyData = getSitesMetricsActualVsExpected(obj);
-
 			for (int i = 0; i < dataList.size(); i = i + 1) {		
 				HashMap<String, Object> item = (HashMap<String, Object>) dataList.get(i);
 				for (int j = 0; j < energyData.size(); j = j + 1) {
@@ -266,14 +266,12 @@ public class PortfolioService extends DB {
 							item.put("performance", null);
 						}
 						item.put("variance", energyItem.getVariance());
-						System.out.println("item: " + item.toString());
 					}
 				}
 			}
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		System.out.println("result: " + dataList);
 		return dataList;
 	}
 	 
