@@ -100,6 +100,8 @@ public class ThirdPartyAPIController extends BaseController {
 			try {
 				if (params.getStart_date() == null || params.getEnd_date() == null || params.getDevice_id() == null || params.getData_type() == null || params.getInterval() == null)
 					throw new IllegalArgumentException("Start date/end date/device id/data type/interval are required.");
+				if (Arrays.asList(params.getDevice_id().split(",")).size() > 1) throw new IllegalArgumentException("Allow only one device_id.");
+				if (Arrays.asList(params.getData_type().split(",")).size() > 2) throw new IllegalArgumentException("Allow only two data_type (params).");
 			} catch (IllegalArgumentException e) {
 				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
 			}
