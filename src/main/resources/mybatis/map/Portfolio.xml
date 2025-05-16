@@ -743,32 +743,42 @@
 			   a.total_inverters AS total_inverters
 		FROM (SELECT s.id AS site_id,
 					 s.name AS site_name,
-					 COUNT(*) AS total_inverters
-			  FROM device d
-			  LEFT JOIN site s ON d.id_site = s.id
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				WHERE s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item}
-					</foreach>
-				)
-			</if>
-			<if test="hash_id_site_group != null">	
-				AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
-			</if>
-			<if test="hash_id_site_sub_group != null">	
-				AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
-			</if>
-			<include refid="com.nwm.common.siteByDomainCondition"/>
+					 COUNT(CASE
+								WHEN d.`status` = 1 
+								AND d.is_delete = 0
+								AND d.id_device_type = 1 
+								THEN 1
+							END
+					 ) AS total_inverters
+			  FROM site s
+			  LEFT JOIN device d ON d.id_site = s.id
+				<if test="id_sites != null and !id_sites.isEmpty()">
+					WHERE s.id IN  (
+						<foreach item="item" index="index" collection="id_sites" separator=" , ">
+							#{item}
+						</foreach>
+					)
+				</if>
+				<if test="hash_id_site_group != null">	
+					AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+				</if>
+				<if test="hash_id_site_sub_group != null">	
+					AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+				</if>
+				<include refid="com.nwm.common.siteByDomainCondition"/>
 			  GROUP BY s.id) AS a
-		LEFT JOIN (SELECT d.id_site AS site_id,
+		LEFT JOIN (SELECT s.id AS site_id,
 						  COUNT(CASE 
 									WHEN (el.name = "PRODUCTION" OR el.name = "COMM")
 									AND ((CONVERT_TZ(a.end_date, 'UTC', t.value) BETWEEN #{start_date} AND #{end_date} AND a.status = 1) OR a.end_date IS NULL)
+									AND d.`status` = 1 
+									AND d.is_delete = 0
+									AND d.id_device_type = 1
 									THEN 1
-						  		END) AS unavailable_inverters
-				   FROM device d
-				   LEFT JOIN site s ON s.id = d.id_site
+						  		END
+						  ) AS unavailable_inverters
+				   FROM site s
+				   LEFT JOIN device d ON s.id = d.id_site
 				   LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				   LEFT JOIN alert a ON a.id_device = d.id
 				   LEFT JOIN error e ON e.id = a.id_error
@@ -787,7 +797,7 @@
 						AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
 					</if>
 					<include refid="com.nwm.common.siteByDomainCondition"/>
-				   GROUP BY d.id_site) AS b
+				   GROUP BY s.id) AS b
 		ON a.site_id = b.site_id
 		ORDER BY site_id
 	</select>
