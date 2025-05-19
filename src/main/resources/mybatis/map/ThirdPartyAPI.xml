@@ -34,8 +34,8 @@
 			AND d.is_delete = 0
 			AND dp.status = 1
 			AND dp.is_delete = 0
+			AND dp.is_calculation = 0
 			AND dp.is_filter = 1
-			AND dp.is_user_defined = 0
 			<if test="id_device_type != null">
 				<foreach collection="id_device_type" item="item" open="AND d.id_device_type IN (" close=")" separator=",">
 					#{item}
@@ -107,7 +107,15 @@
 		FROM (
 			SELECT
 				<foreach collection="data_types" item="item">
-					${item.aggregate_function}(dv.${item.name}) AS ${item.name},
+					<choose>
+						<when test="item.name == 'MeasuredProduction' or item.name == 'Energy'">
+							IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), SUM(dv.MeasuredProduction))
+						</when>
+						<otherwise>
+						${item.aggregate_function}(dv.${item.name}) 
+						</otherwise>
+					</choose> AS ${item.name},
+					
 				</foreach>
 				<choose>
 					<when test="interval == '15min'">
@@ -134,6 +142,22 @@
 				LEFT JOIN device d ON d.id = dv.id_device
 				LEFT JOIN site s ON s.id = d.id_site
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				<if test="interval == 'year' or 'month'">
+				LEFT JOIN (
+					SELECT 
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d') AS time_has_data,
+						dv.id_device
+					FROM
+						${datatablename} dv 
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						dv.id_device = #{id}
+						AND (CAST(CONVERT_TZ( dv.time, 'UTC', t.value ) AS DATETIME) BETWEEN CAST(#{startDateTime} AS DATETIME) AND CAST(#{endDateTime} AS DATETIME))
+						ORDER BY dv.time ASC LIMIT 1
+				) si ON si.id_device = dv.id_device
+				</if>
 			WHERE
 				dv.time BETWEEN CONVERT_TZ(DATE_FORMAT(#{startDateTime}, '%Y-%m-%d 00:00:00'), t.value, 'UTC') AND CONVERT_TZ(DATE_FORMAT(#{endDateTime}, '%Y-%m-%d 23:59:59'), t.value, 'UTC')
 			GROUP BY
