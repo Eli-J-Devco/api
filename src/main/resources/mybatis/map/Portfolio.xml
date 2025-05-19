@@ -175,17 +175,19 @@
 			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
 		FROM
 			site s
-			LEFT JOIN device d ON d.id_site = s.id
-			LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
-			LEFT JOIN error e ON a.id_error = e.id 
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device d ON d.id_site = s.id
+			JOIN alert a ON a.id_device = d.id
+			JOIN error e ON a.id_error = e.id 
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			s.`status` = 1
 			AND s.is_delete = 0
 			AND s.enable_alert = 1
 			AND a.`status` = 1
+			AND a.is_delete = 0
+			AND a.resolved = 0
 			AND e.`status` = 1
 			AND e.`is_delete` = 0
 			AND d.`status` = 1
