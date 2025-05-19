@@ -57,12 +57,14 @@
 					)
 				</if>
 				
-				<if test="id_status != null and !id_status.isEmpty()">
-					AND ${alertTable}.status IN  (
-						<foreach item="item" index="index" collection="id_status" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
+				<if test="id_status != null and id_status.size() == 1">
+					<if test="id_status.get(0).id == 0">
+						AND ${alertTable}.`status` = 0
+					</if>
+					<if test="id_status.get(0).id == 1">
+						AND ${alertTable}.`status` = 1
+						AND ${alertTable}.resolved = 0
+					</if>
 				</if>
 				
 				<if test="id_types != null and !id_types.isEmpty()">
@@ -115,22 +117,6 @@
 			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			IFNULL(e.title_trans, "N/A") AS error_title_trans,
-			CASE
-			WHEN COUNT(ah.id_alert) > 0 THEN 
-					CONCAT(
-					'[',
-					GROUP_CONCAT(
-						JSON_OBJECT(
-							'fullname',
-							ah.fullname,
-							'created_date',
-							ah.date_view
-						)),
-					']' 
-				)
-			ELSE NULL
-			END AS user_history,
-			
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
 			el.`name` AS `level`,
 			e.message,
@@ -176,38 +162,22 @@
 		FROM
 			`alert` l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN device d ON d.id = l.id_device
-			LEFT JOIN device_group dg ON dg.id = d.id_device_group
-			LEFT JOIN device_type dt ON dt.id = d.id_device_type
-			
-			
-			LEFT JOIN (
-				SELECT 
-				ah.id_alert,
-				CONCAT_WS( ' ',e.first_name, e.last_name) AS fullname,
-				DATE_FORMAT(ah.created_date, '%Y-%m-%d %H:%i:%s') AS date_view
-				FROM alert_history ah 
-				LEFT JOIN employee e ON ah.id_employee = e.id
-				WHERE e.id = #{id_employee}
-				GROUP BY ah.id_alert
-			) ah ON ah.id_alert = l.id
-			
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN device d ON d.id = l.id_device
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT
 					id_site,
 					MAX(is_hiding) AS is_hiding
 				FROM site_employee_map
-				WHERE id_employee = #{id_employee}
 				GROUP BY id_site
 			) h ON h.id_site = s.id
-			
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			
 		WHERE
@@ -219,12 +189,7 @@
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND s.enable_alert = 1
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
@@ -236,12 +201,12 @@
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
 			<include refid="viewHistoryCondition">
 				<property name="alertTable" value="l"/>
 			</include>
 			
-		GROUP BY l.id 
-		
 		ORDER BY
 			<choose>
 			    <when test="sort_column == 'times_ago' or sort_column == 'start_date'">
@@ -274,13 +239,12 @@
 		FROM
 			`alert` l
 			STRAIGHT_JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN device d ON d.id = l.id_device
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN device d ON d.id = l.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			
 		WHERE
@@ -292,12 +256,7 @@
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND s.enable_alert = 1
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
@@ -308,6 +267,8 @@
 			</if>
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 			
 			<include refid="viewHistoryCondition">
 				<property name="alertTable" value="l"/>
@@ -861,28 +822,28 @@
 	
 	<sql id="alertSummary">
 		SELECT
-			COUNT(*) AS ${priority}
+			COUNT(*)
 		FROM
 			alert a
-			LEFT JOIN device d ON d.id = a.id_device
-			LEFT JOIN error e ON a.id_error = e.id 
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			
+			JOIN device d ON d.id = a.id_device
+			JOIN error e ON a.id_error = e.id 
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 		WHERE
 			a.`status` = 1 
-			AND e.`status` = 1
 			AND a.is_delete = 0
+			AND a.resolved = 0
+			AND e.`status` = 1
 			AND e.is_delete = 0
 			AND d.`status` = 1
 			AND d.is_delete = 0
 			AND s.status = 1
 			AND s.is_delete = 0
 			AND s.enable_alert = 1
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<if test="id_sites != null and !id_sites.isEmpty()">
 				AND d.id_site IN  (
 					<foreach item="item" index="index" collection="id_sites" separator=" , ">
@@ -891,35 +852,26 @@
 				)
 			</if>
 			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
-			
 			<if test="!isUserNW.booleanValue()">
 				AND e.id_error_level != 14
 			</if>
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 	</sql>
 	
 	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
 		SELECT (
-			<include refid="alertSummary">
-				<property name="priority" value="lowPriority" />
-			</include>
+			<include refid="alertSummary" />
 			AND e.id_error_level = 13
 		) AS lowPriority,
 		(
-			<include refid="alertSummary">
-				<property name="priority" value="highPriority" />
-			</include>
+			<include refid="alertSummary" />
 			AND e.id_error_level = 11
 		) AS highPriority,
 		(
-			<include refid="alertSummary">
-				<property name="priority" value="totalError" />
-			</include>
+			<include refid="alertSummary" />
 		) AS totalError
 		
 				
@@ -973,19 +925,19 @@
 			SUM(if(d.id_device_type = 1, 1, 0)) AS totalInverter,
 			SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS totalMeter,
 			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0))) > 0, SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, d.last_value, 0)), SUM(IF(d.id_device_type = 1, d.last_value, 0)) ) AS power,
-			DATE_FORMAT(CONVERT_TZ( l.last_updated, 'UTC', t.value ), '%m/%d/%Y %H:%i') AS last_updated,
+			DATE_FORMAT(CONVERT_TZ(MAX(IF(d.id_device_type = 5, d.last_updated, NULL)), 'UTC', t.value), '%m/%d/%Y %H:%i') AS last_updated,
 			h.is_hiding,
-			IFNULL(g.alertMeter, 0) AS alertMeter,
-			IFNULL(g.alertInverter, 0) AS alertInverter,
-			IFNULL(g.totalAlert, 0) AS totalAlert,
+			g.alertMeter,
+			g.alertInverter,
+			g.totalAlert,
 			g.start_date
 		FROM
 			site s
-			LEFT JOIN device d ON d.id_site = s.id
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device d ON d.id_site = s.id
+			JOIN time_zone t ON t.id = s.id_time_zone
 			
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			
 			LEFT JOIN (
@@ -996,26 +948,7 @@
 				GROUP BY id_site
 			) h ON h.id_site = s.id
 			
-			LEFT JOIN (
-				SELECT 
-					s.id, 
-					d.last_updated
-				FROM device d 
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-				WHERE d.id_device_type = 5
-				AND s.`status` = 1
-				AND s.is_delete = 0
-				AND d.`status` = 1
-				AND d.`is_delete` = 0
-				
-				<include refid="com.nwm.common.deviceByDomainCondition"/>
-		        
-				GROUP BY s.id
-			)l ON l.id = s.id
-			
-			LEFT JOIN (
+			JOIN (
 				SELECT
 					s.id,
 					MAX(a.start_date) AS start_date,
@@ -1024,15 +957,23 @@
 					COUNT(a.id) AS totalAlert
 				FROM
 					alert a
-					LEFT JOIN error e ON e.id = a.id_error
-					LEFT JOIN error_level el ON el.id = e.id_error_level
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				WHERE a.is_delete = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
+					JOIN error e ON e.id = a.id_error
+					JOIN error_level el ON el.id = e.id_error_level
+					JOIN device d ON d.id = a.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+					<if test="is_supper_admin != 1">
+						JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+					</if>
+				WHERE
+					e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND d.is_delete = 0
+					AND a.is_delete = 0
+					AND s.status = 1
+					AND s.is_delete = 0
+					AND s.enable_alert = 1
 					
 					<if test="!isUserNW.booleanValue()">
 						AND el.id != 14
@@ -1040,27 +981,25 @@
 					
 					<include refid="com.nwm.common.deviceByDomainCondition"/>
 					
+					<include refid="com.nwm.common.siteByDomainCondition"/>
+					
 					<include refid="viewHistoryCondition">
 						<property name="alertTable" value="a"/>
 					</include>
 					
 				GROUP BY s.id
-			)g ON g.id = s.id
+			) g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
-			AND s.enable_alert = 1
 			AND s.is_delete = 0 
+			AND s.enable_alert = 1
 			AND d.`status` = 1
 			AND d.is_delete = 0
-			AND totalAlert > 0
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 			
 			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
@@ -1082,10 +1021,6 @@
 			    	g.`alertMeter` ${order_by}
 			    </when>
 			    
-			    <when test="sort_column == 'last_updated'">
- 			   		l.`last_updated` ${order_by}
-			    </when>
-			    
 			    <when test="sort_column != null and sort_column != ''">
 	                ${sort_column} ${order_by}
 	            </when>
@@ -1105,12 +1040,12 @@
 			COUNT(s.id) AS totalRecord
 		FROM
 			site s
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN time_zone t ON t.id = s.id_time_zone
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 			
-			LEFT JOIN (
+			JOIN (
 				SELECT
 					s.id,
 					SUM(if(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, 0)) AS alertMeter,
@@ -1118,15 +1053,22 @@
 					COUNT(a.id) AS totalAlert
 				FROM
 					alert a
-					LEFT JOIN device d ON d.id = a.id_device
-					LEFT JOIN site s ON s.id = d.id_site
-					LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-					LEFT JOIN time_zone t ON t.id = s.id_time_zone
-					LEFT JOIN error e ON e.id = a.id_error
-					LEFT JOIN error_level el ON el.id = e.id_error_level
-				WHERE a.is_delete = 0
-					AND e.`status` = 1
-					AND e.`is_delete` = 0
+					JOIN device d ON d.id = a.id_device
+					JOIN site s ON s.id = d.id_site
+					JOIN time_zone t ON t.id = s.id_time_zone
+					JOIN error e ON e.id = a.id_error
+					JOIN error_level el ON el.id = e.id_error_level
+					<if test="is_supper_admin != 1">
+						JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
+					</if>
+				WHERE
+					e.`status` = 1
+					AND e.is_delete = 0
+					AND d.`status` = 1
+					AND d.is_delete = 0
+					AND a.is_delete = 0
+					AND s.status = 1
+					AND s.is_delete = 0
 					AND s.enable_alert = 1
 					
 					<if test="!isUserNW.booleanValue()">
@@ -1135,26 +1077,20 @@
 					
 					<include refid="com.nwm.common.deviceByDomainCondition"/>
 					
+					<include refid="com.nwm.common.siteByDomainCondition"/>
+					
 					<include refid="viewHistoryCondition">
 						<property name="alertTable" value="a"/>
 					</include>
-
 				GROUP BY s.id
-			)g ON g.id = s.id
+			) g ON g.id = s.id
 		WHERE
 			s.`status` = 1 
 			AND s.is_delete = 0 
-			AND totalAlert > 0
-			AND (CONVERT_TZ(NOW(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
-			
-			<if test="site_name != null">
-				AND s.`name` LIKE CONCAT("%",#{site_name}, "%")
-			</if>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
 			
 			<if test="keyword != null">
 				AND s.`name` LIKE CONCAT("%",#{keyword}, "%")
@@ -1220,17 +1156,17 @@
 			
 		FROM
 			`alert` l
-			LEFT JOIN error e ON e.id = l.id_error
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN device d ON d.id = l.id_device
-			LEFT JOIN device_group dg ON dg.id = d.id_device_group
-			LEFT JOIN device_type dt ON dt.id = d.id_device_type
-			LEFT JOIN site s ON s.id = d.id_site
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN device d ON d.id = l.id_device
+			JOIN device_group dg ON dg.id = d.id_device_group
+			JOIN device_type dt ON dt.id = d.id_device_type
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
 			
 			<if test="is_supper_admin != 1">
-				LEFT JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
 			</if>
 		WHERE
 			e.`status` = 1 
@@ -1238,11 +1174,6 @@
 			AND l.is_delete = 0
 			AND s.enable_alert = 1
 			AND s.id = #{id}
-			
-			<if test="is_supper_admin != 1">
-				AND sem.id_employee = #{id_employee}
-				AND sem.is_hiding = 0
-			</if>
 			
 			<if test="!isUserNW.booleanValue()">
 				AND el.id != 14
