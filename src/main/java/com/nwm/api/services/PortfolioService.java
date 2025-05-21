@@ -30,6 +30,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
@@ -401,9 +402,28 @@ public class PortfolioService extends DB {
 				
 				CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
 					try {
-						EnergyEntity data = (EnergyEntity) queryForObject("Portfolio.getSitesMetricsLossPast24h", site);
-						if (Objects.isNull(data)) return new EnergyEntity();
-						return data;
+						EnergyEntity data = new EnergyEntity();
+						
+						if (site.getEnable_virtual_device() == 1) {
+							data = (EnergyEntity) queryForObject("Portfolio.getSitesMetricsLossPast24hByVirtualDevice", site);
+						} else {
+							List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", site);
+							List<DeviceEntity> meters = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
+							List<DeviceEntity> inverters = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
+							List<DeviceEntity> irradiances = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+							List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
+							
+							if (powerDevices.size() > 0) {
+								Double actual = (Double) queryForObject("Portfolio.getSitesMetricsLossPast24hActualByDevice", powerDevices);
+								data.setActual(actual);
+							}
+							if (irradiances.size() > 0) {
+								Double expected = (Double) queryForObject("Portfolio.getSitesMetricsLossPast24hExpectedByDevice", irradiances.get(0));
+								data.setExpected(expected);
+							}
+						}
+						
+						return Objects.nonNull(data) ? data : new EnergyEntity();
 					} catch (Exception e) {
 						return new EnergyEntity();
 					}
