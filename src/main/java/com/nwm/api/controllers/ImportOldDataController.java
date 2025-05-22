@@ -27,6 +27,7 @@ import org.dhatim.fastexcel.reader.Row;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,8 +55,10 @@ public class ImportOldDataController extends BaseController {
 	 * @return data 
 	 */
 	@PostMapping("/get-list-all-site-by-employee")
-	public Object getDropdownList(@RequestBody ImportOldDataEntity obj) {
+	public Object getDropdownList(@RequestBody ImportOldDataEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() > 0) obj.setId_sites(sites);
 			ImportOldDataService service = new ImportOldDataService();
 			List data = service.getAllSiteByEmployeeId(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());

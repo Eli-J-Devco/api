@@ -38,6 +38,8 @@ public class ImportOldDataEntity{
 	private String filename;
 	private String device_group_table;
 	private String table_data_report;
+	private List<Integer> id_sites;
+	private String domain;
 	
 	
 	
@@ -185,6 +187,18 @@ public class ImportOldDataEntity{
 	}
 	public void setDataList(List dataList) {
 		this.dataList = dataList;
+	}
+	public List<Integer> getId_sites() {
+		return id_sites;
+	}
+	public void setId_sites(List<Integer> id_sites) {
+		this.id_sites = id_sites;
+	}
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
 	}
 	
 	

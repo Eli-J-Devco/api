@@ -2325,7 +2325,7 @@ public class ImportOldDataService extends DB {
 		rowItem.put("amps_a_min_avg_demand", !r.getCellText(46).toString().equals("") ? r.getCellText(46).toString() : "0.001");
 		rowItem.put("amps_b_min_avg_demand", !r.getCellText(47).toString().equals("") ? r.getCellText(47).toString() : "0.001");
 		rowItem.put("amps_c_min_avg_demand", !r.getCellText(48).toString().equals("") ? r.getCellText(48).toString() : "0.001");
-		rowItem.put("positive_watts_3ph_min_avg_demand", r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
+		rowItem.put("positive_watts_3ph_min_avg_demand", !r.getCellText(49).toString().equals("") ? r.getCellText(49).toString() : "0.001");
 		rowItem.put("positive_vars_3ph_min_avg_demand", !r.getCellText(50).toString().equals("") ? r.getCellText(50).toString() : "0.001");
 		rowItem.put("negative_watts_3ph_min_avg_demand", !r.getCellText(51).toString().equals("") ? r.getCellText(51).toString() : "0.001");
 		rowItem.put("negative_vars_3ph_min_avg_demand", !r.getCellText(52).toString().equals("") ? r.getCellText(52).toString() : "0.001");
