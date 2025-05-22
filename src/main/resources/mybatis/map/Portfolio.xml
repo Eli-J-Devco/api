@@ -175,17 +175,19 @@
 			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
 		FROM
 			site s
-			LEFT JOIN device d ON d.id_site = s.id
-			LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1
-			LEFT JOIN error e ON a.id_error = e.id 
-			LEFT JOIN error_level el ON el.id = e.id_error_level
-			LEFT JOIN icon i ON i.id = el.id_icon
-			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			JOIN device d ON d.id_site = s.id
+			JOIN alert a ON a.id_device = d.id
+			JOIN error e ON a.id_error = e.id 
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN icon i ON i.id = el.id_icon
+			JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
 			s.`status` = 1
 			AND s.is_delete = 0
 			AND s.enable_alert = 1
 			AND a.`status` = 1
+			AND a.is_delete = 0
+			AND a.resolved = 0
 			AND e.`status` = 1
 			AND e.`is_delete` = 0
 			AND d.`status` = 1
@@ -743,32 +745,42 @@
 			   a.total_inverters AS total_inverters
 		FROM (SELECT s.id AS site_id,
 					 s.name AS site_name,
-					 COUNT(*) AS total_inverters
-			  FROM device d
-			  LEFT JOIN site s ON d.id_site = s.id
-			<if test="id_sites != null and !id_sites.isEmpty()">
-				WHERE s.id IN  (
-					<foreach item="item" index="index" collection="id_sites" separator=" , ">
-						#{item}
-					</foreach>
-				)
-			</if>
-			<if test="hash_id_site_group != null">	
-				AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
-			</if>
-			<if test="hash_id_site_sub_group != null">	
-				AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
-			</if>
-			<include refid="com.nwm.common.siteByDomainCondition"/>
+					 COUNT(CASE
+								WHEN d.`status` = 1 
+								AND d.is_delete = 0
+								AND d.id_device_type = 1 
+								THEN 1
+							END
+					 ) AS total_inverters
+			  FROM site s
+			  LEFT JOIN device d ON d.id_site = s.id
+				<if test="id_sites != null and !id_sites.isEmpty()">
+					WHERE s.id IN  (
+						<foreach item="item" index="index" collection="id_sites" separator=" , ">
+							#{item}
+						</foreach>
+					)
+				</if>
+				<if test="hash_id_site_group != null">	
+					AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+				</if>
+				<if test="hash_id_site_sub_group != null">	
+					AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
+				</if>
+				<include refid="com.nwm.common.siteByDomainCondition"/>
 			  GROUP BY s.id) AS a
-		LEFT JOIN (SELECT d.id_site AS site_id,
+		LEFT JOIN (SELECT s.id AS site_id,
 						  COUNT(CASE 
 									WHEN (el.name = "PRODUCTION" OR el.name = "COMM")
 									AND ((CONVERT_TZ(a.end_date, 'UTC', t.value) BETWEEN #{start_date} AND #{end_date} AND a.status = 1) OR a.end_date IS NULL)
+									AND d.`status` = 1 
+									AND d.is_delete = 0
+									AND d.id_device_type = 1
 									THEN 1
-						  		END) AS unavailable_inverters
-				   FROM device d
-				   LEFT JOIN site s ON s.id = d.id_site
+						  		END
+						  ) AS unavailable_inverters
+				   FROM site s
+				   LEFT JOIN device d ON s.id = d.id_site
 				   LEFT JOIN time_zone t ON t.id = s.id_time_zone
 				   LEFT JOIN alert a ON a.id_device = d.id
 				   LEFT JOIN error e ON e.id = a.id_error
@@ -787,7 +799,7 @@
 						AND SHA2(s.id_site_sub_group, 512) = #{hash_id_site_sub_group}
 					</if>
 					<include refid="com.nwm.common.siteByDomainCondition"/>
-				   GROUP BY d.id_site) AS b
+				   GROUP BY s.id) AS b
 		ON a.site_id = b.site_id
 		ORDER BY site_id
 	</select>
@@ -832,12 +844,54 @@
 			<include refid="com.nwm.common.siteByDomainCondition"/>
 	</select>
 	
-	<select id="getSitesMetricsLossPast24h" resultType="com.nwm.api.entities.EnergyEntity">
+	<select id="getSitesMetricsLossPast24hByVirtualDevice" resultType="com.nwm.api.entities.EnergyEntity">
 		SELECT
 			SUM(nvmActiveEnergy) AS actual,
 			AVG(expected_power_ac) * 24 AS expected
 		FROM
 			${table_data_virtual}
+		WHERE
+			time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
+	</select>
+	
+	<select id="getSitesMetricsLossPast24hActualByDevice" resultType="Double">
+		SELECT
+			SUM(actual) AS actual
+		FROM
+			(
+				<foreach collection="list" item="item" separator="UNION ALL">
+					SELECT
+						SUM(MeasuredProduction) AS actual
+					FROM
+						${item.datatablename}
+					WHERE
+						time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
+				</foreach>
+			) t
+	</select>
+	
+	<select id="getSitesMetricsLossPast24hExpectedByDevice" resultType="Double">
+		SELECT
+			CASE s.pv_model
+				WHEN 1 THEN
+					AVG(IF(
+						IFNULL(s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+						s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - (dv.nvm_temperature))) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+						s.ac_capacity
+					))
+				WHEN 2 THEN
+			 		AVG(IFNULL(s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(dv.nvm_panel_temperature <![CDATA[>]]> 0, dv.nvm_panel_temperature, dv.nvm_temperature) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0))
+				ELSE
+					AVG(IF(
+						s.t_avg IS NULL OR NOT ((dv.nvm_irradiance) >= s.min_irradiance_limit),
+						NULL,
+						s.dc_capacity * ((dv.nvm_irradiance) / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - ((dv.nvm_temperature) + (dv.nvm_irradiance)/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100
+					))
+			END * 24 AS expected
+		FROM
+			${datatablename} dv
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site 
 		WHERE
 			time BETWEEN DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 DAY) AND UTC_TIMESTAMP()
 	</select>
