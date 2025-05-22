@@ -82,6 +82,13 @@ public class CustomUserDetailService extends BaseController implements UserDetai
         	if (user.getId() == 0) {
         		message = "The account does not exist or has been locked. Please contact administrator.";
                 throw new InvalidGrantException(message);
+            } else if (password.equals(user.getPassword()) && (user.getAccount_locked() == 1 || user.getFailed_attempt() > 0 || user.getIs_send_email_unblock() == 1) ) {
+            	userEn.setFailed_attempt(0);
+            	userEn.setLock_time(null);
+            	userEn.setAccount_locked(0);
+            	userEn.setIs_send_email_unblock(0);
+            	employeeService.updateLockAccountAndEmail(userEn);
+            	
             } else if(user.getAccount_locked() == 1 || user.getFailed_attempt() >= maxFailedAttempt) {
             	
             	userEn.setLock_time(format.format(date).toString());
