@@ -35,6 +35,7 @@
 			AND dp.status = 1
 			AND dp.is_delete = 0
 			AND dp.is_filter = 1
+			AND IF(d.id_device_type IN (1,3), dp.name LIKE 'AC_Power' OR dp.name LIKE 'Energy', dp.name != '')
 			<if test="id_device_type != null">
 				<foreach collection="id_device_type" item="item" open="AND d.id_device_type IN (" close=")" separator=",">
 					#{item}
@@ -104,16 +105,16 @@
 					<when test="item.name == 'SolarInsolation'">
 						<choose>
 							<when test="interval == '15min' or interval == 'hour' or interval == 'day'">
-								AVG(t.${item.name})
+								IFNULL(AVG(t.${item.name}), 'N/A')
 							</when>
 							<when test="interval == 'month' or interval == 'year'">
-								SUM(t.${item.name})
+								IFNULL(SUM(t.${item.name}), 'N/A')
 							</when>				
 						</choose>
 					</when>
 					
 					<otherwise>
-						${item.aggregate_function}(t.${item.name})
+						IFNULL(${item.aggregate_function}(t.${item.name}), 'N/A')
 					</otherwise>
 				</choose>  AS ${item.name},
 				
@@ -137,9 +138,12 @@
 			SELECT
 				<foreach collection="data_types" item="item">
 					<choose>
-						<when test="item.name == 'MeasuredProduction' or item.name == 'Energy'">
+						<when test="item.name == 'MeasuredProduction'">
 							IF (DATEDIFF(#{endDateTime}, #{startDateTime}) <![CDATA[<=]]> 5, AVG(dv.nvmActivePower), SUM(dv.MeasuredProduction))
 						</when>
+						<when test="item.name == 'Energy'">
+							SUM(dv.MeasuredProduction)
+						</when>					
 						<when test="item.name == 'AC_Power'">
 							${item.aggregate_function}(dv.nvmActivePower)
 						</when>

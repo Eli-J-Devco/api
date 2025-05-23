@@ -106,7 +106,8 @@ public class ThirdPartyAPIService extends DB {
 						Map<String, Object> device = (Map<String, Object>) devicesList.get(k);
 						maps.put("id", device.get("id"));
 						maps.put("name", device.get("name"));
-						maps.put("interval_list", new String[] {"15min", "hour", "day", "month", "year"});
+//						maps.put("interval_list", new String[] {"15min", "hour", "day", "month", "year"});
+						maps.put("interval_list", new String[] {"15min"});
 						
 						ObjectMapper mapper = new ObjectMapper();
 						List<Map<String, String>> parameters = mapper.readValue(device.get("parameters").toString(), new TypeReference<List<Map<String, String>>>(){});

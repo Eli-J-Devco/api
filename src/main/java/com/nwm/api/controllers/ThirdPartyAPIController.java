@@ -102,6 +102,7 @@ public class ThirdPartyAPIController extends BaseController {
 					throw new IllegalArgumentException("Start date/end date/device id/data type/interval are required.");
 				if (Arrays.asList(params.getDevice_id().split(",")).size() > 1) throw new IllegalArgumentException("Allow only one device_id.");
 				if (Arrays.asList(params.getData_type().split(",")).size() > 2) throw new IllegalArgumentException("Allow only two data_type (params).");
+				if (!params.getInterval().replaceAll("\\s+","").equals("15min")) throw new IllegalArgumentException("Allow only 15min interval.");
 			} catch (IllegalArgumentException e) {
 				return this.thirdPartyJsonResult(false, e.getMessage(), null, 0);
 			}
@@ -126,6 +127,7 @@ public class ThirdPartyAPIController extends BaseController {
 			 * 
 			 */
 			
+			params.setData_type(params.getData_type().replaceAll("\\s+",""));
 			List dataList = service.getDeviceData(key, params);
 			
 			return this.thirdPartyJsonResult(true, Constants.GET_SUCCESS_MSG, dataList, dataList.size());
