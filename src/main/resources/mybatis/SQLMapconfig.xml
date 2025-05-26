@@ -169,6 +169,7 @@
 		<mapper resource="mybatis/map/EnergyUsage.xml"/>
 		<mapper resource="mybatis/map/BreakerPanel.xml"/>
 		<mapper resource="mybatis/map/Zone.xml"/>
+		<mapper resource="mybatis/map/ModelOpenMeteoWeather.xml"/>
 		
 		
 		

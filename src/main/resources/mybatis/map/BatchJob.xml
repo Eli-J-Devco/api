@@ -59,6 +59,29 @@
 	</select>
 	
 	
+	<select id="getListDeviceOpenMeteoWeather" resultType="com.nwm.api.entities.DeviceEntity" >
+		SELECT
+			d.id,
+			d.id_site,
+			s.lat,
+			s.lng,
+			d.devicename,
+			d.datatablename
+		FROM
+			device d
+			LEFT JOIN site s ON d.id_site = s.id 
+		WHERE
+			d.id_device_group = 110
+			AND s.`status` = 1 
+			AND d.`status` = 1 
+			AND s.is_delete = 0 
+			AND d.is_delete = 0
+			AND s.lat != 0
+			AND s.lng != 0
+	</select>
+	
+	
+	
 	<select id="getListAlertOpenBySite" resultType="Map" >
 		SELECT
 			a.id,

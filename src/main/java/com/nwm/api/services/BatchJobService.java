@@ -27,6 +27,7 @@ import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ErrorEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
+import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SiteDataReportEntity;
@@ -309,6 +310,25 @@ public class BatchJobService extends DB {
 		}
 		return dataList;
 	}
+	
+	
+	 /* @description get devices open meteo weather
+	 * @author long.pham
+	 * @since 2021-02-17
+	 */
+	
+	public List getListDeviceOpenMeteoWeather(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("BatchJob.getListDeviceOpenMeteoWeather", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	 
 	
 
 	/**
@@ -775,6 +795,25 @@ public class BatchJobService extends DB {
 		}
 	}
 	
+	
+	
+	/**
+	 * @description insert open meteo weather 
+	 * @author long.pham
+	 * @since 2025-05-26
+	 */
+	public boolean insertOpenMeteoWeather(ModelOpenMeteoWeatherEntity obj){
+		try{
+			Object insert = insert("ModelOpenMeteoWeather.insertModelOpenMeteoWeather", obj);
+			if (insert == null) {
+				return false;
+			}
+			return true;
+		}catch (Exception ex) {
+			log.error("ModelOpenMeteoWeather.insertModelOpenMeteoWeather", ex);
+			return false;
+		}
+	}
 	
 	/**
 	 * @description update sunset sunrise from java

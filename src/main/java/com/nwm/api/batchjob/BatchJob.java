@@ -71,6 +71,7 @@ import com.nwm.api.controllers.ReportsController;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
+import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
 import com.nwm.api.entities.ModelSolarOpenWeatherEntity;
@@ -464,6 +465,122 @@ public class BatchJob {
 			log.error(e);
 		}
 	}
+	
+	
+	
+	public void startBatchJobOpenMeteoWeather() {
+		try {
+			BatchJobService service = new BatchJobService();
+			// Get devices by open meteo weather
+			List devices = service.getListDeviceOpenMeteoWeather(new DeviceEntity());
+			if (devices == null || devices.size() == 0) { return; }
+			
+			for (int i = 0; i < devices.size(); i++) {
+				DeviceEntity deviceItem = (DeviceEntity) devices.get(i);
+				double latitude = (double) deviceItem.getLat();
+				double longitude = (double) deviceItem.getLng();
+				if(latitude != 0L && longitude != 0L) {
+					String inline = "";
+					String APIURL = "https://customer-api.open-meteo.com/v1/forecast?latitude="+latitude+"&longitude="+longitude+"&daily=uv_index_max,sunrise,sunset&current=cloud_cover,precipitation,surface_pressure,wind_direction_10m,global_tilted_irradiance,temperature_2m,weather_code,is_day,wind_speed_10m,apparent_temperature,wind_gusts_10m,relative_humidity_2m,rain,snowfall&apikey=uHFwcW4hseLrXbuT&forecast_days=1";
+							
+					URL url = new URL(APIURL);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setRequestMethod("GET");
+					conn.connect();
+					int responsecode = conn.getResponseCode();
+					if (responsecode == 200) {
+						Scanner sc = new Scanner(url.openStream());
+						while (sc.hasNext()) {
+							inline += sc.nextLine();
+						}
+						sc.close();
+						
+						ModelOpenMeteoWeatherEntity itemMeteo = new ModelOpenMeteoWeatherEntity();
+						itemMeteo.setId_device(deviceItem.getId());
+						JSONParser parse = new JSONParser();
+						JSONObject jobj = (JSONObject) parse.parse(inline);
+						JSONObject current = (JSONObject) jobj.get("current");
+						JSONObject daily = (JSONObject) jobj.get("daily");
+						JSONArray sunriseArr = (JSONArray) daily.get("sunrise");
+						JSONArray sunsetArr = (JSONArray) daily.get("sunset");
+						JSONArray uvIndexMax = (JSONArray) daily.get("uv_index_max");
+						
+						String sunrise = sunriseArr.get(0).toString() + ":00+00:00";
+						String sunset = sunsetArr.get(0).toString()+ ":00+00:00";
+						double uv_index_max = Double.parseDouble(uvIndexMax.get(0).toString());
+						itemMeteo.setUv_index(uv_index_max);
+						
+						double irradiance = 0;
+						irradiance =  Double.parseDouble(current.get("global_tilted_irradiance").toString());
+						itemMeteo.setIrradiance(irradiance);
+						itemMeteo.setNvm_irradiance(irradiance);
+						
+						double temperature = 0;
+						temperature = Double.parseDouble( current.get("temperature_2m").toString());
+						itemMeteo.setTemperature(temperature);
+						itemMeteo.setTemperature(temperature);
+						itemMeteo.setNvm_panel_temperature(temperature);
+						
+						double humid = 0;
+						humid =  Double.parseDouble(current.get("relative_humidity_2m").toString());
+						itemMeteo.setHumid(humid);
+						
+						double wind = 0;
+						wind = Double.parseDouble( current.get("wind_speed_10m").toString());
+						itemMeteo.setWind_speed(wind);
+						
+						double wind_direction = 0;
+						wind_direction = Double.parseDouble( current.get("wind_direction_10m").toString());
+						itemMeteo.setWind_direction(wind_direction);
+						
+						
+						double surface_pressure;
+						surface_pressure = Double.parseDouble( current.get("surface_pressure").toString());
+						itemMeteo.setSurface_pressure(surface_pressure);
+						
+						
+						double precipitation = 0;
+						precipitation = Double.parseDouble( current.get("precipitation").toString());
+						itemMeteo.setTotal_precipitation(precipitation);
+						
+						double rain = 0;
+						rain =  Double.parseDouble(current.get("rain").toString());
+						itemMeteo.setRain(rain);
+						
+						
+						double snowfall = 0;
+						snowfall =  Double.parseDouble(current.get("snowfall").toString());
+						itemMeteo.setSnowfall(snowfall);
+						
+						
+						double cloud_cover;
+						cloud_cover =  Double.parseDouble(current.get("cloud_cover").toString());
+						itemMeteo.setCloud_cover(cloud_cover);
+						
+						
+						itemMeteo.setSunrise(sunrise);
+						itemMeteo.setSunset(sunset);
+						
+						String date = (String) current.get("time"); 
+						SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+						Date parsedDate = inputFormat.parse(date);
+						String formattedDate = outputFormat.format(parsedDate);
+						
+						itemMeteo.setTime(formattedDate);
+						itemMeteo.setHigh_alarm(0);
+						itemMeteo.setLow_alarm(0);
+						itemMeteo.setError(0);
+						itemMeteo.setDatatablename(deviceItem.getDatatablename());
+						service.insertOpenMeteoWeather(itemMeteo);
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.error(e);
+		}
+	}
+	
 
 //	public void runCronJobUpdateEnergyLifetime() {
 //		try {
