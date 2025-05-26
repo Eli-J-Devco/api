@@ -525,4 +525,24 @@
 		    </otherwise>                                                  
         </choose>
 	</sql>
+	
+	<sql id="expectedPowerByPvModel">
+		CASE s.pv_model
+			WHEN 1 THEN
+				IF(
+					IFNULL(s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - ${temperature})) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100, 0) <![CDATA[<]]> s.ac_capacity,
+					s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (IFNULL(s.pv_module_temperature_coeff, -0.43)/100) * (s.stc_temperature - ${temperature})) * (1 - IFNULL(s.system_loss, 9)/100) * IFNULL(s.inverter_efficiency, 96)/100,
+					s.ac_capacity
+				)
+			WHEN 2 THEN
+		 		IFNULL(s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - (1 + (IFNULL(s.pv_module_temperature_coeff, -0.43)/100)) * ((IF(${panelTemperature} > 0, ${panelTemperature}, ${temperature}) - s.stc_temperature)/100)) * (POW(1 - (IFNULL(s.annual_pv_module_degradation, 0.5)/100), YEAR(CURRENT_TIMESTAMP) - IFNULL(YEAR(s.commissioning), YEAR(s.built_since)))) * (1 - (IFNULL(s.soiling, 5)/100)) * (1 - (IFNULL(s.cable_losses, 1)/100)) * (1 - (IFNULL(s.transformer_losses, 1.5)/100)) * (1 - (IFNULL(s.other_losses, 1.5)/100)) * (IFNULL(s.inverter_efficiency, 98.5)/100), 0)
+			WHEN 3 THEN
+				IF(
+					(${irradiance} >= s.min_irradiance_limit) AND (IF(${power} > (s.ac_capacity * IFNULL(s.clip, 99)/100), 1, 0) = 0),
+					s.dc_capacity * (${irradiance} / s.global_solar_irradiance_at_stc) * (1 - IFNULL(s.pv_module_temperature_coeff, -0.37)/100 * (s.t_avg - (${temperature} + ${irradiance}/s.global_solar_irradiance_at_stc * 3))) * IFNULL(s.inverter_efficiency, 100)/100,
+					NULL
+				)
+			ELSE NULL
+		END
+	</sql>
 </mapper>
