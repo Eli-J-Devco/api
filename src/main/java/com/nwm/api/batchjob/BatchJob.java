@@ -518,7 +518,7 @@ public class BatchJob {
 						double temperature = 0;
 						temperature = Double.parseDouble( current.get("temperature_2m").toString());
 						itemMeteo.setTemperature(temperature);
-						itemMeteo.setTemperature(temperature);
+						itemMeteo.setNvm_temperature(temperature);
 						itemMeteo.setNvm_panel_temperature(temperature);
 						
 						double humid = 0;
