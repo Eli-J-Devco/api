@@ -563,7 +563,7 @@ public class BatchJob {
 						
 						String date = (String) current.get("time"); 
 						SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
-						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+						SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						Date parsedDate = inputFormat.parse(date);
 						String formattedDate = outputFormat.format(parsedDate);
 						
