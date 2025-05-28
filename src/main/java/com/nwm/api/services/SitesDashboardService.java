@@ -165,6 +165,9 @@ public class SitesDashboardService extends DB {
 			int interval = 0;
 			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
+			
+			
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 			LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 			LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -175,6 +178,7 @@ public class SitesDashboardService extends DB {
 					timeUnit = ChronoUnit.MINUTES;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
 					break;
 					
 				case 2: // 15 minutes
@@ -182,6 +186,7 @@ public class SitesDashboardService extends DB {
 					timeUnit = ChronoUnit.MINUTES;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
+					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
 					break;
 			}
 			
@@ -190,6 +195,7 @@ public class SitesDashboardService extends DB {
 				ZoneGraphDateEntity dateTime = new ZoneGraphDateEntity();
 				dateTime.setTime_full(start.format(timeFullFormat));
 				dateTime.setCategories_time(start.format(categoriesTimeFormat));
+				dateTime.setTime_format(start.format(timeFormat));
 				dateTimeList.add(dateTime);
 				start = start.plus(interval, timeUnit);
 			}

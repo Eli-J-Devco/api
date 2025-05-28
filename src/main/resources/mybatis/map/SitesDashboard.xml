@@ -416,10 +416,13 @@
 		<choose>
 			<when test="data_send_time == 1">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%m-%d-%Y %H:%i %p') AS time_format,
+				
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 300)*300), '%h:%i %p') AS categories_time
 			</when>
 			<when test="data_send_time == 2">
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i') AS time_full,
+				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%m-%d-%Y %H:%i %p') AS time_format,
 				FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.value )) DIV 900)*900), '%h:%i %p') AS categories_time
 			</when>
 		</choose>
