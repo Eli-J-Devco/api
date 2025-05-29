@@ -6438,6 +6438,61 @@
 					  )
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
+	            
+	            <when test="id_device_group == 111">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`Tracker_Address` double DEFAULT NULL,
+							`Hour` double DEFAULT NULL,
+							`Minute` double DEFAULT NULL,
+							`Day` double DEFAULT NULL,
+							`Digital_Inputs` double DEFAULT NULL,
+							`Digital_Outputs` double DEFAULT NULL,
+							`Watchdog_Counter` double DEFAULT NULL,
+							`AngleCalc` double DEFAULT NULL,
+							`Latitude` double DEFAULT NULL,
+							`Longitude` double DEFAULT NULL,
+							`Tracker_1_Mode` double DEFAULT NULL,
+							`Tracker_1_First_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_1_Second_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_1_Angle_Setpoint` double DEFAULT NULL,
+							`Tracker_1_Angle` double DEFAULT NULL,
+							`Tracker_1_Night_Stow_Position` double DEFAULT NULL,
+							`Tracker_1_Wind_Stow_Position` double DEFAULT NULL,
+							`Tracker_2_Mode` double DEFAULT NULL,
+							`Tracker_2_First_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_2_Second_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_2_Angle_Setpoint` double DEFAULT NULL,
+							`Tracker_2_Angle` double DEFAULT NULL,
+							`Tracker_2_Night_Stow_Position` double DEFAULT NULL,
+							`Tracker_2_Wind_Stow_Position` double DEFAULT NULL,
+							`Tracker_3_Mode` double DEFAULT NULL,
+							`Tracker_3_First_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_3_Second_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_3_Angle_Setpoint` double DEFAULT NULL,
+							`Tracker_3_Angle` double DEFAULT NULL,
+							`Tracker_3_Night_Stow_Position` double DEFAULT NULL,
+							`Tracker_3_Wind_Stow_Position` double DEFAULT NULL,
+							`Tracker_4_Mode` double DEFAULT NULL,
+							`Tracker_4_First_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_4_Second_Clear_Accumulator` double DEFAULT NULL,
+							`Tracker_4_Angle_Setpoint` double DEFAULT NULL,
+							`Tracker_4_Angle` double DEFAULT NULL,
+							`Tracker_4_Night_Stow_Position` double DEFAULT NULL,
+							`Tracker_4_Wind_Stow_Position` double DEFAULT NULL,
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
 	                                                      
 	        </choose> 
 	        

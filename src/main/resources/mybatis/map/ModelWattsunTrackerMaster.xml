@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelWattsunTrackerMaster">
+	<resultMap id="ModelWattsunTrackerMasterMap"
+		type="com.nwm.api.entities.ModelWattsunTrackerMasterEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />		
+		<result property="Tracker_Address" column="Tracker_Address" />
+		<result property="Hour" column="Hour" />
+		<result property="Minute" column="Minute" />
+		<result property="Day" column="Day" />
+		<result property="Digital_Inputs" column="Digital_Inputs" />
+		<result property="Digital_Outputs" column="Digital_Outputs" />
+		<result property="Watchdog_Counter" column="Watchdog_Counter" />		
+		<result property="AngleCalc" column="AngleCalc" />
+		<result property="Latitude" column="Latitude" />
+		<result property="Longitude" column="Longitude" />
+		<result property="Tracker_1_Mode" column="Tracker_1_Mode" />
+		<result property="Tracker_1_First_Clear_Accumulator" column="Tracker_1_First_Clear_Accumulator" />
+		<result property="Tracker_1_Second_Clear_Accumulator" column="Tracker_1_Second_Clear_Accumulator" />
+		<result property="Tracker_1_Angle_Setpoint" column="Tracker_1_Angle_Setpoint" />
+		<result property="Tracker_1_Angle" column="Tracker_1_Angle" />
+		<result property="Tracker_1_Night_Stow_Position" column="Tracker_1_Night_Stow_Position" />
+		<result property="Tracker_1_Wind_Stow_Position" column="Tracker_1_Wind_Stow_Position" />
+		<result property="Tracker_2_Mode" column="Tracker_2_Mode" />
+		<result property="Tracker_2_First_Clear_Accumulator" column="Tracker_2_First_Clear_Accumulator" />
+		<result property="Tracker_2_Second_Clear_Accumulator" column="Tracker_2_Second_Clear_Accumulator" />
+		<result property="Tracker_2_Angle_Setpoint" column="Tracker_2_Angle_Setpoint" />
+		<result property="Tracker_2_Angle" column="Tracker_2_Angle" />
+		<result property="Tracker_2_Night_Stow_Position" column="Tracker_2_Night_Stow_Position" />
+		<result property="Tracker_2_Wind_Stow_Position" column="Tracker_2_Wind_Stow_Position" />
+		<result property="Tracker_3_Mode" column="Tracker_3_Mode" />
+		<result property="Tracker_3_First_Clear_Accumulator" column="Tracker_3_First_Clear_Accumulator" />
+		<result property="Tracker_3_Second_Clear_Accumulator" column="Tracker_3_Second_Clear_Accumulator" />
+		<result property="Tracker_3_Angle_Setpoint" column="Tracker_3_Angle_Setpoint" />
+		<result property="Tracker_3_Angle" column="Tracker_3_Angle" />
+		<result property="Tracker_3_Night_Stow_Position" column="Tracker_3_Night_Stow_Position" />
+		<result property="Tracker_3_Wind_Stow_Position" column="Tracker_3_Wind_Stow_Position" />
+		<result property="Tracker_4_Mode" column="Tracker_4_Mode" />
+		<result property="Tracker_4_First_Clear_Accumulator" column="Tracker_4_First_Clear_Accumulator" />
+		<result property="Tracker_4_Second_Clear_Accumulator" column="Tracker_4_Second_Clear_Accumulator" />
+		<result property="Tracker_4_Angle_Setpoint" column="Tracker_4_Angle_Setpoint" />
+		<result property="Tracker_4_Angle" column="Tracker_4_Angle" />
+		<result property="Tracker_4_Night_Stow_Position" column="Tracker_4_Night_Stow_Position" />
+		<result property="Tracker_4_Wind_Stow_Position" column="Tracker_4_Wind_Stow_Position" />
+		
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+		
+
+	</resultMap>
+
+	<insert id="insertModelWattsunTrackerMaster"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>		
+			<if test="Tracker_Address != 0.001">
+				`Tracker_Address`,
+			</if>
+			<if test="Hour != 0.001">
+				`Hour`,
+			</if>
+			<if test="Minute != 0.001">
+				`Minute`,
+			</if>
+			<if test="Day != 0.001">
+				`Day`,
+			</if>
+			<if test="Digital_Inputs != 0.001">
+				`Digital_Inputs`,
+			</if>
+			<if test="Digital_Outputs != 0.001">
+				`Digital_Outputs`,
+			</if>
+			<if test="Watchdog_Counter != 0.001">
+				`Watchdog_Counter`,
+			</if>		
+			<if test="AngleCalc != 0.001">
+				`AngleCalc`,
+			</if>
+			<if test="Latitude != 0.001">
+				`Latitude`,
+			</if>
+			<if test="Longitude != 0.001">
+				`Longitude`,
+			</if>
+			<if test="Tracker_1_Mode != 0.001">
+				`Tracker_1_Mode`,
+			</if>
+			<if test="Tracker_1_First_Clear_Accumulator != 0.001">
+				`Tracker_1_First_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_1_Second_Clear_Accumulator != 0.001">
+				`Tracker_1_Second_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_1_Angle_Setpoint != 0.001">
+				`Tracker_1_Angle_Setpoint`,
+			</if>
+			<if test="Tracker_1_Angle != 0.001">
+				`Tracker_1_Angle`,
+			</if>
+			<if test="Tracker_1_Night_Stow_Position != 0.001">
+				`Tracker_1_Night_Stow_Position`,
+			</if>
+			<if test="Tracker_1_Wind_Stow_Position != 0.001">
+				`Tracker_1_Wind_Stow_Position`,
+			</if>
+			<if test="Tracker_2_Mode != 0.001">
+				`Tracker_2_Mode`,
+			</if>
+			<if test="Tracker_2_First_Clear_Accumulator != 0.001">
+				`Tracker_2_First_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_2_Second_Clear_Accumulator != 0.001">
+				`Tracker_2_Second_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_2_Angle_Setpoint != 0.001">
+				`Tracker_2_Angle_Setpoint`,
+			</if>
+			<if test="Tracker_2_Angle != 0.001">
+				`Tracker_2_Angle`,
+			</if>
+			<if test="Tracker_2_Night_Stow_Position != 0.001">
+				`Tracker_2_Night_Stow_Position`,
+			</if>
+			<if test="Tracker_2_Wind_Stow_Position != 0.001">
+				`Tracker_2_Wind_Stow_Position`,
+			</if>
+			<if test="Tracker_3_Mode != 0.001">
+				`Tracker_3_Mode`,
+			</if>
+			<if test="Tracker_3_First_Clear_Accumulator != 0.001">
+				`Tracker_3_First_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_3_Second_Clear_Accumulator != 0.001">
+				`Tracker_3_Second_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_3_Angle_Setpoint != 0.001">
+				`Tracker_3_Angle_Setpoint`,
+			</if>
+			<if test="Tracker_3_Angle != 0.001">
+				`Tracker_3_Angle`,
+			</if>
+			<if test="Tracker_3_Night_Stow_Position != 0.001">
+				`Tracker_3_Night_Stow_Position`,
+			</if>
+			<if test="Tracker_3_Wind_Stow_Position != 0.001">
+				`Tracker_3_Wind_Stow_Position`,
+			</if>
+			<if test="Tracker_4_Mode != 0.001">
+				`Tracker_4_Mode`,
+			</if>
+			<if test="Tracker_4_First_Clear_Accumulator != 0.001">
+				`Tracker_4_First_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_4_Second_Clear_Accumulator != 0.001">
+				`Tracker_4_Second_Clear_Accumulator`,
+			</if>
+			<if test="Tracker_4_Angle_Setpoint != 0.001">
+				`Tracker_4_Angle_Setpoint`,
+			</if>			
+			<if test="Tracker_4_Angle != 0.001">
+				`Tracker_4_Angle`,
+			</if>
+			<if test="Tracker_4_Night_Stow_Position != 0.001">
+				`Tracker_4_Night_Stow_Position`,
+			</if>
+			<if test="Tracker_4_Wind_Stow_Position != 0.001">
+				`Tracker_4_Wind_Stow_Position`,
+			</if>
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="Tracker_Address != 0.001">
+				#{Tracker_Address},
+			</if>
+			<if test="Hour != 0.001">
+				#{Hour},
+			</if>
+			<if test="Minute != 0.001">
+				#{Minute},
+			</if>
+			<if test="Day != 0.001">
+				#{Day},
+			</if>
+			<if test="Digital_Inputs != 0.001">
+				#{Digital_Inputs},
+			</if>
+			<if test="Digital_Outputs != 0.001">
+				#{Digital_Outputs},
+			</if>
+			<if test="Watchdog_Counter != 0.001">
+				#{Watchdog_Counter},
+			</if>
+			
+			<if test="AngleCalc != 0.001">
+				#{AngleCalc},
+			</if>
+			<if test="Latitude != 0.001">
+				#{Latitude},
+			</if>
+			<if test="Longitude != 0.001">
+				#{Longitude},
+			</if>
+			<if test="Tracker_1_Mode != 0.001">
+				#{Tracker_1_Mode},
+			</if>
+			<if test="Tracker_1_First_Clear_Accumulator != 0.001">
+				#{Tracker_1_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_1_Second_Clear_Accumulator != 0.001">
+				#{Tracker_1_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_1_Angle_Setpoint != 0.001">
+				#{Tracker_1_Angle_Setpoint},
+			</if>
+			<if test="Tracker_1_Angle != 0.001">
+				#{Tracker_1_Angle},
+			</if>
+			<if test="Tracker_1_Night_Stow_Position != 0.001">
+				#{Tracker_1_Night_Stow_Position},
+			</if>
+			<if test="Tracker_1_Wind_Stow_Position != 0.001">
+				#{Tracker_1_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_2_Mode != 0.001">
+				#{Tracker_2_Mode},
+			</if>
+			<if test="Tracker_2_First_Clear_Accumulator != 0.001">
+				#{Tracker_2_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_2_Second_Clear_Accumulator != 0.001">
+				#{Tracker_2_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_2_Angle_Setpoint != 0.001">
+				#{Tracker_2_Angle_Setpoint},
+			</if>
+			<if test="Tracker_2_Angle != 0.001">
+				#{Tracker_2_Angle},
+			</if>
+			<if test="Tracker_2_Night_Stow_Position != 0.001">
+				#{Tracker_2_Night_Stow_Position},
+			</if>
+			<if test="Tracker_2_Wind_Stow_Position != 0.001">
+				#{Tracker_2_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_3_Mode != 0.001">
+				#{Tracker_3_Mode},
+			</if>
+			<if test="Tracker_3_First_Clear_Accumulator != 0.001">
+				#{Tracker_3_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_3_Second_Clear_Accumulator != 0.001">
+				#{Tracker_3_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_3_Angle_Setpoint != 0.001">
+				#{Tracker_3_Angle_Setpoint},
+			</if>
+			<if test="Tracker_3_Angle != 0.001">
+				#{Tracker_3_Angle},
+			</if>
+			<if test="Tracker_3_Night_Stow_Position != 0.001">
+				#{Tracker_3_Night_Stow_Position},
+			</if>
+			<if test="Tracker_3_Wind_Stow_Position != 0.001">
+				#{Tracker_3_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_4_Mode != 0.001">
+				#{Tracker_4_Mode},
+			</if>
+			<if test="Tracker_4_First_Clear_Accumulator != 0.001">
+				#{Tracker_4_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_4_Second_Clear_Accumulator != 0.001">
+				#{Tracker_4_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_4_Angle_Setpoint != 0.001">
+				#{Tracker_4_Angle_Setpoint},
+			</if>
+			<if test="Tracker_4_Angle != 0.001">
+				#{Tracker_4_Angle},
+			</if>
+			<if test="Tracker_4_Night_Stow_Position != 0.001">
+				#{Tracker_4_Night_Stow_Position},
+			</if>
+			<if test="Tracker_4_Wind_Stow_Position != 0.001">
+				#{Tracker_4_Wind_Stow_Position},
+			</if>
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			<if test="Tracker_Address != 0.001">
+				`Tracker_Address` = #{Tracker_Address},
+			</if>
+			<if test="Hour != 0.001">
+				`Hour` = #{Hour},
+			</if>
+			<if test="Minute != 0.001">
+				`Minute` = #{Minute},
+			</if>
+			<if test="Day != 0.001">
+				`Day` = #{Day},
+			</if>
+			<if test="Digital_Inputs != 0.001">
+				`Digital_Inputs`= #{Digital_Inputs},
+			</if>
+			<if test="Digital_Outputs != 0.001">
+				`Digital_Outputs` = #{Digital_Outputs},
+			</if>
+			<if test="Watchdog_Counter != 0.001">
+				`Watchdog_Counter` = #{Watchdog_Counter},
+			</if>
+			<if test="AngleCalc != 0.001">
+				`AngleCalc` = #{AngleCalc},
+			</if>
+			<if test="Latitude != 0.001">
+				`Latitude` = #{Latitude},
+			</if>
+			<if test="Longitude != 0.001">
+				`Longitude` = #{Longitude},
+			</if>
+			<if test="Tracker_1_Mode != 0.001">
+				`Tracker_1_Mode` = #{Tracker_1_Mode},
+			</if>
+			<if test="Tracker_1_First_Clear_Accumulator != 0.001">
+				`Tracker_1_First_Clear_Accumulator`= #{Tracker_1_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_1_Second_Clear_Accumulator != 0.001">
+				`Tracker_1_Second_Clear_Accumulator` = #{Tracker_1_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_1_Angle_Setpoint != 0.001">
+				`Tracker_1_Angle_Setpoint` = #{Tracker_1_Angle_Setpoint},
+			</if>
+			<if test="Tracker_1_Angle != 0.001">
+				`Tracker_1_Angle` = #{Tracker_1_Angle},
+			</if>
+			<if test="Tracker_1_Night_Stow_Position != 0.001">
+				`Tracker_1_Night_Stow_Position` = #{Tracker_1_Night_Stow_Position},
+			</if>
+			<if test="Tracker_1_Wind_Stow_Position != 0.001">
+				`Tracker_1_Wind_Stow_Position` = #{Tracker_1_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_2_Mode != 0.001">
+				`Tracker_2_Mode` = #{Tracker_2_Mode},
+			</if>
+			<if test="Tracker_2_First_Clear_Accumulator != 0.001">
+				`Tracker_2_First_Clear_Accumulator`= #{Tracker_2_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_2_Second_Clear_Accumulator != 0.001">
+				`Tracker_2_Second_Clear_Accumulator` = #{Tracker_2_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_2_Angle_Setpoint != 0.001">
+				`Tracker_2_Angle_Setpoint` = #{Tracker_2_Angle_Setpoint},
+			</if>
+			<if test="Tracker_2_Angle != 0.001">
+				`Tracker_2_Angle` = #{Tracker_2_Angle},
+			</if>
+			<if test="Tracker_2_Night_Stow_Position != 0.001">
+				`Tracker_2_Night_Stow_Position` = #{Tracker_2_Night_Stow_Position},
+			</if>
+			<if test="Tracker_2_Wind_Stow_Position != 0.001">
+				`Tracker_2_Wind_Stow_Position` = #{Tracker_2_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_3_Mode != 0.001">
+				`Tracker_3_Mode` = #{Tracker_3_Mode},
+			</if>
+			<if test="Tracker_3_First_Clear_Accumulator != 0.001">
+				`Tracker_3_First_Clear_Accumulator`= #{Tracker_3_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_3_Second_Clear_Accumulator != 0.001">
+				`Tracker_3_Second_Clear_Accumulator` = #{Tracker_3_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_3_Angle_Setpoint != 0.001">
+				`Tracker_3_Angle_Setpoint` = #{Tracker_3_Angle_Setpoint},
+			</if>
+			<if test="Tracker_3_Angle != 0.001">
+				`Tracker_3_Angle` = #{Tracker_3_Angle},
+			</if>
+			<if test="Tracker_3_Night_Stow_Position != 0.001">
+				`Tracker_3_Night_Stow_Position` = #{Tracker_3_Night_Stow_Position},
+			</if>
+			<if test="Tracker_3_Wind_Stow_Position != 0.001">
+				`Tracker_3_Wind_Stow_Position` = #{Tracker_3_Wind_Stow_Position},
+			</if>
+			<if test="Tracker_4_Mode != 0.001">
+				`Tracker_4_Mode` = #{Tracker_4_Mode},
+			</if>
+			<if test="Tracker_4_First_Clear_Accumulator != 0.001">
+				`Tracker_4_First_Clear_Accumulator`= #{Tracker_4_First_Clear_Accumulator},
+			</if>
+			<if test="Tracker_4_Second_Clear_Accumulator != 0.001">
+				`Tracker_4_Second_Clear_Accumulator` = #{Tracker_4_Second_Clear_Accumulator},
+			</if>
+			<if test="Tracker_4_Angle_Setpoint != 0.001">
+				`Tracker_4_Angle_Setpoint` = #{Tracker_4_Angle_Setpoint},
+			</if>
+			<if test="Tracker_4_Angle != 0.001">
+				`Tracker_4_Angle` = #{Tracker_4_Angle},
+			</if>
+			<if test="Tracker_4_Night_Stow_Position != 0.001">
+				`Tracker_4_Night_Stow_Position` = #{Tracker_4_Night_Stow_Position},
+			</if>
+			<if test="Tracker_4_Wind_Stow_Position != 0.001">
+				`Tracker_4_Wind_Stow_Position` = #{Tracker_4_Wind_Stow_Position},
+			</if>
+		</trim>
+	</insert>
+	
+
+</mapper> 

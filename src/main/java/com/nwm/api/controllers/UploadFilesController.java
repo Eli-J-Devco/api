@@ -110,6 +110,7 @@ import com.nwm.api.entities.ModelWKippZonenRT1Entity;
 import com.nwm.api.entities.ModelWaterMeterKyPulseEntity;
 import com.nwm.api.entities.ModelWattsunTcuEntity;
 import com.nwm.api.entities.ModelWattsunTrackerEntity;
+import com.nwm.api.entities.ModelWattsunTrackerMasterEntity;
 import com.nwm.api.entities.ModelXGI1500Entity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
@@ -196,6 +197,7 @@ import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
 import com.nwm.api.services.ModelWKippZonenRT1Service;
 import com.nwm.api.services.ModelWaterMeterKyPulseService;
 import com.nwm.api.services.ModelWattsunTcuService;
+import com.nwm.api.services.ModelWattsunTrackerMasterService;
 import com.nwm.api.services.ModelWattsunTrackerService;
 import com.nwm.api.services.ModelXGI1500Service;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
@@ -2651,7 +2653,47 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+											
+											case "model_wattsun_tracker_master":
+												ModelWattsunTrackerMasterService serviceModelWTMaster = new ModelWattsunTrackerMasterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														double setAngleCalc = Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.0");
+														
+														// ReadAngle
+														if(!Lib.isBlank(words.get(8))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setAngleCalc)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														deviceUpdateE.setField_value2(null);
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														ModelWattsunTrackerMasterEntity dataModelWT = serviceModelWTMaster.setModelWattsunTrackerMaster(line);
+														dataModelWT.setId_device(item.getId());
+														dataModelWT.setDatatablename(item.getDatatablename());
+														dataModelWT.setView_tablename(item.getView_tablename());
+														dataModelWT.setJob_tablename(item.getJob_tablename());
+														
+														serviceModelWTMaster.insertModelWattsunTrackerMaster(dataModelWT);
+													}
+												}
 												
+												break;
 												
 											case "model_sev_sg110cx":
 												ModelSevSg110cxService serviceModel = new ModelSevSg110cxService();
