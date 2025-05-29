@@ -165,7 +165,7 @@ public class SitesDashboardService extends DB {
 			int interval = 0;
 			DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 			DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
-			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
+			DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy hh:mm a");
 			
 			
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
@@ -178,7 +178,7 @@ public class SitesDashboardService extends DB {
 					timeUnit = ChronoUnit.MINUTES;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
-					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
+					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy hh:mm a");
 					break;
 					
 				case 2: // 15 minutes
@@ -186,7 +186,7 @@ public class SitesDashboardService extends DB {
 					timeUnit = ChronoUnit.MINUTES;
 					timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
 					categoriesTimeFormat = DateTimeFormatter.ofPattern("hh:mm a");
-					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm a");
+					timeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy hh:mm a");
 					break;
 			}
 			
