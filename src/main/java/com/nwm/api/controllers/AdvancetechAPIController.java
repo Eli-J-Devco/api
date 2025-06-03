@@ -52,7 +52,7 @@ public class AdvancetechAPIController extends BaseController {
 
 //			if(getDetail.getId() > 0 && getDetail.getAdvance_tech_host() != null && getDetail.getAdvance_tech_pass() != null) {
 			// Login
-			String url = getDetail.getAdvance_tech_host() + "/sys/log_in?Timeout=0";
+			String url = getDetail.getAdvance_tech_host() + "/" + obj.getSerial_number() + "/sys/log_in?Timeout=0";
 			String json = "{\"password\":\"" + obj.getAdvance_tech_pass() + "\"}";
 			// Create HttpClient
 			try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -83,7 +83,7 @@ public class AdvancetechAPIController extends BaseController {
 							if (obj.getDevice_type().equals("inv") && obj.getStatus_type().equals("restart")) {
 								tagKey = obj.getAdvance_tech_field_restart();
 								tagValue = obj.getAdvance_tech_value_restart();
-								message = "RestetAart successful";
+								message = "Restart successful";
 							}
 							if (obj.getDevice_type().equals("inv") && obj.getStatus_type().equals("stop")) {
 								tagKey = obj.getAdvance_tech_field_stop();
@@ -96,7 +96,7 @@ public class AdvancetechAPIController extends BaseController {
 								message = "Start successful";
 							}
 							
-							String urlControl = getDetail.getAdvance_tech_host() +"/data/tags/" + tagKey + "/value";
+							String urlControl = getDetail.getAdvance_tech_host() + "/" + obj.getSerial_number()  +"/data/tags/" + tagKey + "/value";
 							String jsonControl = "{\"value\":\"" + tagValue + "\"}";
 							
 							try (CloseableHttpClient httpClientControl = HttpClients.createDefault()) {
