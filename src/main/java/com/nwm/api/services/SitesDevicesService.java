@@ -78,6 +78,9 @@ public class SitesDevicesService extends DB {
 		}
 	}
 	
+	
+	
+	
 	/**
 	 * @description Get device yield list
 	 * @author Hung.Bui
@@ -98,7 +101,7 @@ public class SitesDevicesService extends DB {
 					try {
 						DeviceYieldEntity device = (DeviceYieldEntity) queryForObject("SitesDevices.getDeviceStatus", item);
 						if (device == null) return new DeviceYieldEntity();
-						if (!Arrays.asList(1,3,7,9).contains(device.getId_device_type())) return device;
+						if (!Arrays.asList(1,3,7,9,16).contains(device.getId_device_type())) return device;
 						
 						DeviceYieldEntity yield = (DeviceYieldEntity) queryForObject("SitesDevices.getYieldByDevice", item);
 						if (yield != null) {
@@ -107,6 +110,19 @@ public class SitesDevicesService extends DB {
 							device.setYieldLast7Days(yield.getYieldLast7Days());
 							device.setYieldYTD(yield.getYieldYTD());
 						}
+						
+						// Get all parameter by device
+						List dataList = queryForList("SitesDevices.getListParameterByDevice", item);
+						if(dataList.size() > 0) {
+							// Get last data 
+							item.put("parameters", dataList);
+							Object listRowData = (Object) queryForObject("SitesDevices.getLastRowData", item);
+							String json = new ObjectMapper().writeValueAsString(listRowData);
+							device.setJson_last_data(json);
+							
+						}
+						
+						device.setParameters(dataList);
 						
 						return device;
 					} catch (Exception ex) {

@@ -120,7 +120,6 @@ public class SitesDevicesController extends BaseController {
 		}
 	}
 	
-	
 	/**
 	 * @description Get device detail by id 
 	 * @author long.pham

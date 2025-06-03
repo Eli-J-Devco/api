@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.List;
+
 public class DeviceYieldEntity {
 	private int id;
 	private String hash_id;
@@ -20,7 +22,22 @@ public class DeviceYieldEntity {
 	private Double yieldYesterday;
 	private Double yieldLast7Days;
 	private Double yieldYTD;
+	private List parameters;
+	private String json_last_data;
 	
+	
+	public String getJson_last_data() {
+		return json_last_data;
+	}
+	public void setJson_last_data(String json_last_data) {
+		this.json_last_data = json_last_data;
+	}
+	public List getParameters() {
+		return parameters;
+	}
+	public void setParameters(List parameters) {
+		this.parameters = parameters;
+	}
 	public int getId() {
 		return id;
 	}
