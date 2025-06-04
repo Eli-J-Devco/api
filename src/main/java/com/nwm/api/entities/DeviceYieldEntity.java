@@ -24,8 +24,16 @@ public class DeviceYieldEntity {
 	private Double yieldYTD;
 	private List parameters;
 	private String json_last_data;
+	private String advance_tech_control_tag;
 	
 	
+	
+	public String getAdvance_tech_control_tag() {
+		return advance_tech_control_tag;
+	}
+	public void setAdvance_tech_control_tag(String advance_tech_control_tag) {
+		this.advance_tech_control_tag = advance_tech_control_tag;
+	}
 	public String getJson_last_data() {
 		return json_last_data;
 	}
