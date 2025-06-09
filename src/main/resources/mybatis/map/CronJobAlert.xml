@@ -648,7 +648,7 @@
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
 		FROM
 			site s
-			JOIN (
+			LEFT JOIN (
 				SELECT
 					COUNT(*) AS enable_virtual_device,
 					d.id_site
@@ -673,18 +673,18 @@
 			d.id_site AS id,
 			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
 			CASE
-				 WHEN MONTH(t.current) = '01' then ROUND(ee.jan)
-				 WHEN MONTH(t.current) = '02' then ROUND(ee.feb)
-				 WHEN MONTH(t.current) = '03' then ROUND(ee.mar)
-				 WHEN MONTH(t.current) = '04' then ROUND(ee.apr)
-				 WHEN MONTH(t.current) = '05' then ROUND(ee.may)
-				 WHEN MONTH(t.current) = '06' then ROUND(ee.jun)
-				 WHEN MONTH(t.current) = '07' then ROUND(ee.jul)
-				 WHEN MONTH(t.current) = '08' then ROUND(ee.aug)
-				 WHEN MONTH(t.current) = '09' then ROUND(ee.sep)
-				 WHEN MONTH(t.current) = '10' then ROUND(ee.oct)
-				 WHEN MONTH(t.current) = '11' then ROUND(ee.nov)
-				 WHEN MONTH(t.current) = '12' then ROUND(ee.dec)
+				 WHEN MONTH(t.current) = '01' then ROUND(ee.jan * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '02' then ROUND(ee.feb * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '03' then ROUND(ee.mar * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '04' then ROUND(ee.apr * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '05' then ROUND(ee.may * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '06' then ROUND(ee.jun * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '07' then ROUND(ee.jul * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '08' then ROUND(ee.aug * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '09' then ROUND(ee.sep * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '10' then ROUND(ee.oct * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '11' then ROUND(ee.nov * t.currentContainEnergyDate)
+				 WHEN MONTH(t.current) = '12' then ROUND(ee.dec * t.currentContainEnergyDate)
 			END AS EstimatedGeneration
 		FROM
 			${table_data_report} sdr
@@ -692,6 +692,10 @@
 			JOIN (
 				SELECT
 					s.id,
+					<choose>
+						<when test="filterBy == 'this_month'">DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)) / EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)))</when>
+						<otherwise>1</otherwise>
+					</choose> AS currentContainEnergyDate,
 					<choose>
 						<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
 						<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
