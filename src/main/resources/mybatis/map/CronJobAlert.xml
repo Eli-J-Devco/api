@@ -666,7 +666,6 @@
 		WHERE
 			s.`status` = 1
 			AND s.is_delete = 0
-			AND s.id = 313
 	</select>
 	
 	<select id="getMonthGenerationBySite" parameterType="com.nwm.api.entities.SiteEntity" resultType="com.nwm.api.entities.EEREntity">
