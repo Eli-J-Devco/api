@@ -242,7 +242,7 @@
 							sdr.ActualGeneration,
 							sdr.id_device,
 							IF(
-								d.id_device_type = 4,
+								d.id_device_type = 4 AND d.reverse_poa = 0,
 								<include refid="com.nwm.common.expectedPowerByPvModel">
 									<property name="irradiance" value="sdr.POAAVG" />
 									<property name="temperature" value="sdr.TCellAVG" />
