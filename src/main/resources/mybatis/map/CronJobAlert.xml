@@ -672,6 +672,8 @@
 		SELECT
 			d.id_site AS id,
 			IF( (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))) > 0, (SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0))), (SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0))) ) AS ActualGeneration,
+			IF(ex.expected_energy > 0 OR expected_energy IS NOT NULL,
+			ex.expected_energy,
 			CASE
 				 WHEN MONTH(t.current) = '01' then ROUND(ee.jan * t.currentContainEnergyDate)
 				 WHEN MONTH(t.current) = '02' then ROUND(ee.feb * t.currentContainEnergyDate)
@@ -685,7 +687,7 @@
 				 WHEN MONTH(t.current) = '10' then ROUND(ee.oct * t.currentContainEnergyDate)
 				 WHEN MONTH(t.current) = '11' then ROUND(ee.nov * t.currentContainEnergyDate)
 				 WHEN MONTH(t.current) = '12' then ROUND(ee.dec * t.currentContainEnergyDate)
-			END AS EstimatedGeneration
+			END) AS EstimatedGeneration
 		FROM
 			${table_data_report} sdr
 			JOIN device d ON d.id = sdr.id_device
@@ -708,6 +710,51 @@
 					s.id = #{id}
 			) t ON t.id = d.id_site
 			JOIN energy_expectations ee ON ee.id_site = d.id_site AND ee.year = YEAR(t.current)
+			LEFT JOIN (
+				SELECT
+					sdr.time,
+					s.id,
+					AVG(IF(
+						d.id_device_type = 4,
+						<include refid="com.nwm.common.expectedPowerByPvModel">
+							<property name="irradiance" value="sdr.POAAVG" />
+							<property name="temperature" value="sdr.TCellAVG" />
+							<property name="panelTemperature" value="sdr.TCellAVG" />
+							<property name="power" value="sdr.PowerTodayAVG" />
+						</include>,
+						NULL
+					)) * 24 * COUNT(*) AS expected_energy
+				FROM
+					${table_data_report} sdr
+					LEFT JOIN device d ON d.id = sdr.id_device
+					LEFT JOIN site s ON s.id = d.id_site
+					JOIN (
+						SELECT
+							s.id,
+							<choose>
+								<when test="filterBy == 'this_month'">DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)) / EXTRACT(DAY FROM LAST_DAY(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)))</when>
+								<otherwise>1</otherwise>
+							</choose> AS currentContainEnergyDate,
+							<choose>
+								<when test="filterBy == 'this_month'">CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</when>
+								<when test="filterBy == 'last_month'">DATE_SUB(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value), INTERVAL 1 MONTH)</when>
+								<otherwise>CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value)</otherwise>
+							</choose> AS current
+						FROM
+							site s
+							JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE
+							s.id = #{id}
+					) t ON t.id = d.id_site
+				WHERE
+					s.`status` = 1
+					AND d.`status` = 1
+					AND d.id_site = #{id}
+					AND s.is_delete = 0
+					AND d.is_delete = 0
+					AND d.id_device_type = 4
+					AND sdr.time BETWEEN DATE_FORMAT(DATE_SUB(DATE_ADD(LAST_DAY(t.current), INTERVAL 1 DAY), INTERVAL 1 MONTH), '%Y-%m-%d 00:00:00') AND DATE_FORMAT(LAST_DAY(t.current), '%Y-%m-%d 23:59:59')
+			) ex ON ex.id = d.id_site
 		WHERE
 			d.`status` = 1
 			AND d.is_delete = 0
