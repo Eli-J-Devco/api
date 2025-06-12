@@ -205,6 +205,25 @@
 	</select>
 	
 	
+	<select id="getListDeviceMeterInverterWeather" resultType="Map">
+		SELECT
+			d.id,
+			d.devicename,
+			d.datatablename,
+			d.view_tablename,
+			d.id_site,
+			d.id_device_type
+		FROM
+			device d
+			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
+		WHERE
+			dt.id IN(1,4,6)
+			AND SHA1(d.id_site) = #{hash_id}
+			AND d.`status` = 1 
+			AND d.is_delete = 0
+	</select>
+	
+	
 	<select id="getDataEnergy" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 		<choose>
 			<when test="filterBy == 'today'">
@@ -285,6 +304,165 @@
 			</otherwise>
 		</choose>
 	</select>
+	
+	
+	
+	<select id="getDataByDevice" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
+		SELECT
+			t.categories_time,
+			<if test="filterBy == 'today'">
+				t.hour_time,
+			</if>
+			
+			t.time_format,
+			CAST(t.`value` AS DECIMAL) AS energy,
+			t.id_device
+		FROM
+			(
+					SELECT
+					<choose>
+						<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+							DATE_FORMAT( dv.time, '%m/%d/%Y' ) AS time_format,
+							DATE_FORMAT( dv.time, '%m/%d' ) AS categories_time,
+						</when>
+						<when test="filterBy == '12_month'">
+							DATE_FORMAT( dv.time, '%m/%Y' ) AS time_format,
+							DATE_FORMAT( dv.time, '%b-%Y' ) AS categories_time,
+						</when>
+						<when test="filterBy == 'lifetime'">
+							DATE_FORMAT( dv.time, '%Y' ) AS time_format,
+							DATE_FORMAT( dv.time, '%Y' ) AS categories_time,
+						</when>
+						<otherwise>
+					      DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
+					    </otherwise>
+					</choose>
+						<if test="filterBy == 'today'">
+							DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
+						</if>
+						d.id_device_type,
+						dv.id_device,
+						<choose>
+							<when test="id_device_type == 4 or id_device_type == 6">
+								AVG(dv.nvm_irradiance) AS `value`
+							</when>
+							<otherwise>
+								<choose>
+									<when test="filterBy == 'today'">
+										AVG(dv.nvmActivePower) AS `value`
+									</when>
+									<otherwise>
+										SUM(dv.MeasuredProduction) AS `value`
+									</otherwise>
+								</choose>
+						
+							</otherwise>
+						</choose>
+					FROM
+					
+					<choose>
+						<when test="filterBy == '12_month' or filterBy == 'lifetime'">
+							${datatablename} dv
+						</when>
+						<otherwise>
+					      ${view_tablename} dv
+					    </otherwise>
+					</choose>
+					
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+					WHERE
+						
+						(CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+						AND s.`status` = 1 
+						AND d.`status` = 1 
+					GROUP BY
+						time_format
+			) t 
+		GROUP BY
+			t.time_format
+		<!-- <choose>
+			<when test="filterBy == 'today'">
+				SELECT
+					t.categories_time,
+					t.hour_time,
+					CAST(SUM(IF(t.id_device_type IN (1,3,7,9), t.`value`, 0)) AS DECIMAL) AS energy,
+					ROUND(AVG(IF(t.id_device_type IN (4,6), t.`value`, NULL)), 1) AS irradiance
+				FROM
+					(
+						<foreach collection="groupDevices" item="item" index="index" separator="union all">
+							SELECT
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d %H:00' ) AS time_format,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,
+								DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%H:00' ) AS hour_time,
+								d.id_device_type,
+								<choose>
+									<when test="item.id_device_type == 4 or item.id_device_type == 6">
+										AVG(dv.nvm_irradiance) AS `value`
+									</when>
+									<otherwise>
+										SUM(dv.MeasuredProduction) AS `value`
+									</otherwise>
+								</choose>
+							FROM
+								${item.datatablename} dv
+								LEFT JOIN device d ON d.id = dv.id_device
+								LEFT JOIN site s ON s.id = d.id_site 
+								LEFT JOIN time_zone t ON t.id = s.id_time_zone
+							WHERE
+								SHA1(s.id) = #{hash_id}
+								AND (CONVERT_TZ( dv.time, 'UTC', t.`value` ) BETWEEN #{start_date} AND #{end_date})
+								AND s.`status` = 1 
+								AND d.`status` = 1 
+							GROUP BY
+								d.id, time_format
+				      </foreach>
+					) t 
+				GROUP BY
+					t.time_format
+			</when>
+			<otherwise>
+				SELECT
+					categories_time,
+					CAST(IF(meterEnergy > 0, meterEnergy, inverterEnergy) AS DECIMAL) AS energy,
+					ROUND(nvm_irradiance, 1) AS irradiance
+				FROM (
+					SELECT
+						<choose>
+							<when test="filterBy == 'this_month' or filterBy == 'last_month'">
+								DATE_FORMAT( sdr.time, '%m/%d/%Y' ) AS time_format,
+								DATE_FORMAT( sdr.time, '%m/%d' ) AS categories_time,
+							</when>
+							<when test="filterBy == '12_month'">
+								DATE_FORMAT( sdr.time, '%m/%Y' ) AS time_format,
+								DATE_FORMAT( sdr.time, '%b-%Y' ) AS categories_time,
+							</when>
+							<when test="filterBy == 'lifetime'">
+								DATE_FORMAT( sdr.time, '%Y' ) AS time_format,
+								DATE_FORMAT( sdr.time, '%Y' ) AS categories_time,
+							</when>
+						</choose>
+						SUM(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, sdr.ActualGeneration, 0)) AS meterEnergy,
+						SUM(IF(d.id_device_type = 1, sdr.ActualGeneration, 0)) AS inverterEnergy,
+						AVG(IF(d.id_device_type IN (4,6), sdr.POAAVG, NULL)) AS nvm_irradiance 
+					FROM
+						${table_data_report} sdr
+						LEFT JOIN device d ON d.id = sdr.id_device
+						LEFT JOIN site s ON s.id = d.id_site 
+					WHERE
+						d.`status` = 1 
+						AND d.is_delete = 0 
+						AND SHA1( d.id_site ) = #{hash_id} 
+						AND (sdr.time BETWEEN #{start_date} AND #{end_date})
+					GROUP BY
+						time_format
+				) t
+			</otherwise>
+		</choose> -->
+	</select>
+	
 	
 	<select id="getDataVirtualDevice" resultType="com.nwm.api.entities.KioskViewTodayEntity" >
 		SELECT
