@@ -52,6 +52,8 @@
 		<result property="about" column="about" />
 		<result property="kiosk_view" column="kiosk_view" />
 		<result property="ac_power" column="ac_power" />
+		<result property="inv_level" column="inv_level" />
+		
 	</resultMap>
 	
 	
@@ -66,6 +68,7 @@
 			s.dc_capacity,
 			s.gallery,
 			s.about,
+			s.inv_level,
 			s.kiosk_view,
 			s.site_logo,
 			s.lat,

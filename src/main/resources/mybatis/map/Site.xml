@@ -86,6 +86,8 @@
 		<result property="mqtt_username" column="mqtt_username" />
 		<result property="mqtt_password" column="mqtt_password" />
 		<result property="site_domain_type" column="site_domain_type" />
+		<result property="inv_level" column="inv_level" />
+		
 		
 		
 	
@@ -564,7 +566,8 @@
 			s.mqtt_port,
 			s.mqtt_protocol,
 			s.mqtt_username,
-			s.mqtt_password
+			s.mqtt_password,
+			s.inv_level
 		FROM
 			site s
 			LEFT JOIN site_employee_map scm ON scm.id_site = s.id
@@ -828,7 +831,8 @@
 			`g_status`,
 			`g_lat`,
 			`g_lng`,		
-			`is_solar_site`
+			`is_solar_site`,
+			`inv_level`
 		)VALUES(
 			#{id_company},
 			#{id_country},
@@ -900,7 +904,8 @@
 			#{g_status},
 			#{g_lat},
 			#{g_lng},
-			#{is_solar_site}
+			#{is_solar_site},
+			#{inv_level}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -981,7 +986,8 @@
 			`g_status` = #{g_status},
 			`g_lat` = #{g_lat},
 			`g_lng` = #{g_lng},
-			`is_solar_site` = #{is_solar_site}
+			`is_solar_site` = #{is_solar_site},
+			`inv_level` = #{inv_level}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -1129,7 +1135,8 @@
 			e.electricity_over_limit_power_cost,
 			e.electricity_over_limit_power_per,
 			e.electricity_over_limit_power_unit,		
-			s.is_solar_site
+			s.is_solar_site,
+			s.inv_level
 		FROM
 			site s
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
@@ -1325,7 +1332,8 @@
 			s.mqtt_port,
 			s.mqtt_protocol,
 			s.mqtt_username,
-			s.mqtt_password
+			s.mqtt_password,
+			s.inv_level
 		FROM
 			site AS s
 		WHERE

@@ -320,10 +320,18 @@ public class SiteEntity extends SortEntity {
 	private String temperature_unit;
 	private double humidity;
 	private int device_mode;
+	private int inv_level;
 	
 	
 	
 	
+	
+	public int getInv_level() {
+		return inv_level;
+	}
+	public void setInv_level(int inv_level) {
+		this.inv_level = inv_level;
+	}
 	public int getDevice_mode() {
 		return device_mode;
 	}
