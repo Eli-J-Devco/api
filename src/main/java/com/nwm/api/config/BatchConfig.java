@@ -319,8 +319,33 @@ public class BatchConfig {
 	 * @author Hung.Bui
 	 * @since 2025-04-14
 	 */
+	@Scheduled(cron = "0 0 0 * * *")
+	public void mqttPublishToHVACScheduler1() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+			List<String> gatewayList = sitesOverviewHVACService.getGatewayList();
+			if (gatewayList.size() == 0) return;
+			
+			ObjectMapper objectMapper = new ObjectMapper();
+			Map<String, Object> message = new HashMap<String, Object>();
+
+			message.put("online", false);
+			message.put("ts", "2025-01-09T15:10:12.167Z");
+			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
+			
+			message.put("online", true);
+			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
+		}
+	}
+	
+	/**
+	 * @description publish MQTT to HVAC gateway on schedule
+	 * @author Hung.Bui
+	 * @since 2025-04-14
+	 */
 	@Scheduled(cron = "0 0/10 * * * *")
-	public void mqttPublishToHVACScheduler() throws Exception {
+	public void mqttPublishToHVACScheduler2() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
@@ -338,8 +363,7 @@ public class BatchConfig {
 			
 			for (String gateway : gatewayList) {
 				message.put("targetId", gateway);
-				try { hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/".concat(gateway).concat("/cmd/req")); }
-				catch (Exception ex) {}
+				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/".concat(gateway).concat("/cmd/req"));
 			}
 		}
 	}
