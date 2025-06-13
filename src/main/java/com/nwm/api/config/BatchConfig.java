@@ -6,6 +6,7 @@
 package com.nwm.api.config;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -20,7 +21,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.config.MQTTClientConfig.HVACGateway;
+import com.nwm.api.services.building.SitesOverviewHVACService;
 import com.nwm.api.utils.Constants;
+
 @Configuration
 @EnableBatchProcessing
 @EnableScheduling
@@ -308,6 +311,7 @@ public class BatchConfig {
         return taskScheduler;
     }
 	
+	@Autowired SitesOverviewHVACService sitesOverviewHVACService;
 	@Autowired HVACGateway hvacGateway;
 	
 	/**
@@ -315,20 +319,28 @@ public class BatchConfig {
 	 * @author Hung.Bui
 	 * @since 2025-04-14
 	 */
-	@Scheduled(cron = "0 0 0/1 * * *")
+	@Scheduled(cron = "0 0/10 * * * *")
 	public void mqttPublishToHVACScheduler() throws Exception {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
+			List<String> gatewayList = sitesOverviewHVACService.getGatewayList();
+			if (gatewayList.size() == 0) return;
+			
 			ObjectMapper objectMapper = new ObjectMapper();
 			Map<String, Object> message = new HashMap<String, Object>();
+			Map<String, Object> arguments = new HashMap<String, Object>();
+			arguments.put("telemetry", new String[] {"all"});
+			message.put("clientId", "NextWave123");
+			message.put("command", "SUBSCRIBE");
+			message.put("arguments", arguments);
+			message.put("sequence", 2);
 			
-			message.put("online", false);
-			message.put("ts", "2025-01-09T15:10:12.167Z");
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message));
-			
-			message.put("online", true);
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message));
+			for (String gateway : gatewayList) {
+				message.put("targetId", gateway);
+				try { hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/".concat(gateway).concat("/cmd/req")); }
+				catch (Exception ex) {}
+			}
 		}
 	}
 	

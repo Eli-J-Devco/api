@@ -13,11 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
@@ -156,7 +152,7 @@ public class SitesOverviewHVACService extends DB {
 	 * @since 2025-04-08
 	 * @return list of gateway
 	 */
-	private List<String> getGatewayList() {
+	public List<String> getGatewayList() {
 		try {
 			List<String> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
 			if (dataList != null && dataList.size() > 0) return dataList;
@@ -166,29 +162,8 @@ public class SitesOverviewHVACService extends DB {
 		return new ArrayList<String>();
 	}
 	
-	@Autowired
-	MqttPahoMessageDrivenChannelAdapter mqttAdapter;
 	private static Map<String, Map<String, String>> fieldCache = new HashMap<String, Map<String, String>>();
 	private static List<Map<String, String>> updatingFieldList = new ArrayList<Map<String, String>>();
-	
-	/**
-	 * Subscribe to MQTT gateway.
-	 * @author Hung.Bui
-	 * @since 2025-04-08
-	 */
-	@PostConstruct
-	private void subscribeToGateway() {
-		try {
-			List<String> gatewayList = this.getGatewayList();
-			if (gatewayList.size() == 0) return;
-			
-			for (String gateway : gatewayList) {
-				mqttAdapter.addTopic("t/".concat(gateway).concat("/NextWave123/telemetry"));
-			}
-		} catch (Exception ex) {
-			log.error("SitesOverviewHVAC.subscribeToGateway", ex);
-		}
-	}
 	
 	/**
 	 * Save field data (cache data for 5 minutes then saving to database).
@@ -229,8 +204,8 @@ public class SitesOverviewHVACService extends DB {
 			}
 			
 			if (updatingFieldList.size() > maxBatchSize) {
-				int rows = (int) insert("SitesOverviewHVAC.insertFieldData", updatingFieldList);
-				if (rows > 0) updatingFieldList.clear();
+				insert("SitesOverviewHVAC.insertFieldData", updatingFieldList);
+				updatingFieldList.clear();
 			}
 		} catch (Exception ex) {
 			log.error("SitesOverviewHVAC.saveFieldData", ex);
