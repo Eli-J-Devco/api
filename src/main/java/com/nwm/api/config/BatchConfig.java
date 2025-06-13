@@ -324,9 +324,6 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			List<String> gatewayList = sitesOverviewHVACService.getGatewayList();
-			if (gatewayList.size() == 0) return;
-			
 			ObjectMapper objectMapper = new ObjectMapper();
 			Map<String, Object> message = new HashMap<String, Object>();
 
