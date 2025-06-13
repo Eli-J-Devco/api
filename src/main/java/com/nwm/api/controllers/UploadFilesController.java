@@ -54,6 +54,7 @@ import com.nwm.api.entities.ModelElsterA1700Entity;
 import com.nwm.api.entities.ModelG3LightControllerEntity;
 import com.nwm.api.entities.ModelGasMeterEntity;
 import com.nwm.api.entities.ModelHoneywellEMON3200Entity;
+import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
 import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
 import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
 import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
@@ -142,6 +143,7 @@ import com.nwm.api.services.ModelElsterA1700Service;
 import com.nwm.api.services.ModelG3LightControllerService;
 import com.nwm.api.services.ModelGasMeterService;
 import com.nwm.api.services.ModelHoneywellEMON3200Service;
+import com.nwm.api.services.ModelHuaweiSun200028ktlService;
 import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
 import com.nwm.api.services.ModelIMTSolarClass8000Service;
 import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
@@ -3936,6 +3938,46 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelModelHoneywellEMON3200.insertData(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_huawei_sun2000_28ktl":
+												ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
