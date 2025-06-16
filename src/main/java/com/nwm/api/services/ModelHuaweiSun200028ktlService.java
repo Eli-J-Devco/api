@@ -5,22 +5,12 @@
 *********************************************************/
 package com.nwm.api.services;
 
-
-import java.sql.SQLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
-import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
 import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.LibErrorCode;
 
 public class ModelHuaweiSun200028ktlService extends DB {
 	/**
@@ -85,7 +75,7 @@ public class ModelHuaweiSun200028ktlService extends DB {
 	
 	public boolean insertModelHuaweiSun200028ktl(ModelHuaweiSun200028ktlEntity obj) {
 		try {
-			ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelIVTSolaronEXT.getLastRow", obj);
+			ModelHuaweiSun200028ktlEntity dataObj = (ModelHuaweiSun200028ktlEntity) queryForObject("ModelHuaweiSun200028ktl.getLastRow", obj);
 			
 			 double measuredProduction = 0;
 			 if(dataObj != null && dataObj.getId_device() > 0 && dataObj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() > 0 && obj.getNvmActiveEnergy() != 0.001 ) {
