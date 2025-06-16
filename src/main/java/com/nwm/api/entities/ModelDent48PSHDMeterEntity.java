@@ -69,6 +69,9 @@ public class ModelDent48PSHDMeterEntity extends ModelBaseEntity {
 	private double 	ExportedVARhQ4C;
 	private double WattDemandElement;
 	
+	private int totalApparentPFAvg;
+	private int totalLineFrequency;
+	
 //	private double DisplacementPFSum;
 //	private double DisplacementPFCH1A;
 //	private double DisplacementPFCH2B;
@@ -261,8 +264,21 @@ public class ModelDent48PSHDMeterEntity extends ModelBaseEntity {
 //	public void setRoCoilPGAGainCh3(double roCoilPGAGainCh3) {
 //		RoCoilPGAGainCh3 = roCoilPGAGainCh3;
 //	}
+	
 	public double getCurrentSum() {
 		return CurrentSum;
+	}
+	public int getTotalApparentPFAvg() {
+		return totalApparentPFAvg;
+	}
+	public void setTotalApparentPFAvg(int totalApparentPFAvg) {
+		this.totalApparentPFAvg = totalApparentPFAvg;
+	}
+	public int getTotalLineFrequency() {
+		return totalLineFrequency;
+	}
+	public void setTotalLineFrequency(int totalLineFrequency) {
+		this.totalLineFrequency = totalLineFrequency;
 	}
 	public void setCurrentSum(double currentSum) {
 		CurrentSum = currentSum;

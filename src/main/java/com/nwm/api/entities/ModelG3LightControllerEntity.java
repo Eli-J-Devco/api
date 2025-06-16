@@ -41,6 +41,65 @@ public class ModelG3LightControllerEntity {
 	private String view_tablename;
 	private String job_tablename;
 	private int enable_alert;
+	
+	private int totalNoComm;
+	private int totalZonesAlarmState132;
+	private int totalBreakersPanel0L;
+	private int totalBreakersPanel0R;
+	private int totalBreakersPanel1L;
+	private int totalBreakersPanel1R;
+	private int totalBreakersPanel2L;
+	private int totalBreakersPanel2R;
+	
+	
+	public int getTotalNoComm() {
+		return totalNoComm;
+	}
+	public void setTotalNoComm(int totalNoComm) {
+		this.totalNoComm = totalNoComm;
+	}
+	public int getTotalZonesAlarmState132() {
+		return totalZonesAlarmState132;
+	}
+	public void setTotalZonesAlarmState132(int totalZonesAlarmState132) {
+		this.totalZonesAlarmState132 = totalZonesAlarmState132;
+	}
+	public int getTotalBreakersPanel0L() {
+		return totalBreakersPanel0L;
+	}
+	public void setTotalBreakersPanel0L(int totalBreakersPanel0L) {
+		this.totalBreakersPanel0L = totalBreakersPanel0L;
+	}
+	public int getTotalBreakersPanel0R() {
+		return totalBreakersPanel0R;
+	}
+	public void setTotalBreakersPanel0R(int totalBreakersPanel0R) {
+		this.totalBreakersPanel0R = totalBreakersPanel0R;
+	}
+	public int getTotalBreakersPanel1L() {
+		return totalBreakersPanel1L;
+	}
+	public void setTotalBreakersPanel1L(int totalBreakersPanel1L) {
+		this.totalBreakersPanel1L = totalBreakersPanel1L;
+	}
+	public int getTotalBreakersPanel1R() {
+		return totalBreakersPanel1R;
+	}
+	public void setTotalBreakersPanel1R(int totalBreakersPanel1R) {
+		this.totalBreakersPanel1R = totalBreakersPanel1R;
+	}
+	public int getTotalBreakersPanel2L() {
+		return totalBreakersPanel2L;
+	}
+	public void setTotalBreakersPanel2L(int totalBreakersPanel2L) {
+		this.totalBreakersPanel2L = totalBreakersPanel2L;
+	}
+	public int getTotalBreakersPanel2R() {
+		return totalBreakersPanel2R;
+	}
+	public void setTotalBreakersPanel2R(int totalBreakersPanel2R) {
+		this.totalBreakersPanel2R = totalBreakersPanel2R;
+	}
 	public String getTime() {
 		return time;
 	}

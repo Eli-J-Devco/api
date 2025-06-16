@@ -298,5 +298,88 @@
 			</if>
 		</trim>
 	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelG3LightControllerEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	<select id="checkAlertWriteCode" resultType="Map">
+    	SELECT
+				m.error AS error,
+				m.ZonesAlarmState132 AS ZonesAlarmState132,	
+				m.BreakersPanel0L AS BreakersPanel0L,
+				m.NonRespondingBreakersPanel0L ASA NonRespondingBreakersPanel0L,
+				m.BreakersPanel0R AS BreakersPanel0R,
+				m.NonRespondingBreakersPanel0R AS NonRespondingBreakersPanel0R,
+				m.BreakersPanel1L AS BreakersPanel1L,
+				m.NonRespondingBreakersPanel1L AS NonRespondingBreakersPanel1L,
+				m.BreakersPanel1R AS BreakersPanel1R,
+				m.NonRespondingBreakersPanel1R AS NonRespondingBreakersPanel1R,
+				m.BreakersPanel2L AS BreakersPanel2L,
+				m.NonRespondingBreakersPanel2L AS NonRespondingBreakersPanel2L,
+				m.BreakersPanel2R AS BreakersPanel2R,
+				m.NonRespondingBreakersPanel2R AS NonRespondingBreakersPanel2R			
+			FROM
+				${datatablename} m
+			WHERE
+				id_device = #{id_device}
+			ORDER BY
+				time DESC 
+			LIMIT 20;
+  	</select>
+  	
+  	<select id="getListTriggerFaultCode" resultType="Map" parameterType="String">
+		SELECT
+			l.id,
+			l.id_error,
+			l.id_device,
+			l.`status`,
+			DATE_FORMAT(l.start_date,'%Y-%m-%d %H:%i:%s') AS start_date,
+			DATE_FORMAT(NOW(),'%Y-%m-%d %H:%i:%s') AS end_date			
+		FROM
+			`alert` l
+			LEFT JOIN error e ON e.id = l.id_error
+			WHERE l.`status` = 1
+			AND e.is_delete = 0 AND e.`status` = 1
+			AND l.is_delete = 0 AND l.id_device = #{id_device}
+			<if test="faultCodeLevel == 1">
+				AND l.id_error IN(1625)
+			</if>
+			<if test="faultCodeLevel == 2">
+				AND l.id_error IN(1626)
+			</if>
+			<if test="faultCodeLevel == 3">
+				AND l.id_error IN(1627)
+			</if>
+			<if test="faultCodeLevel == 4">
+				AND l.id_error IN(1628)
+			</if>
+			<if test="faultCodeLevel == 5">
+				AND l.id_error IN(1629)
+			</if>
+			<if test="faultCodeLevel == 6">
+				AND l.id_error IN(1630)
+			</if>
+			<if test="faultCodeLevel == 7">
+				AND l.id_error IN(1631)
+			</if>
+			<if test="faultCodeLevel == 8">
+				AND l.id_error IN(1632)
+			</if>
+	</select>
 
 </mapper> 

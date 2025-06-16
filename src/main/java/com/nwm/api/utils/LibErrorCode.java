@@ -4594,4 +4594,70 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/*
+	 * get PVMStatusCodes from table model_dent_48pshd_meter
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelDent48PSHDMeter(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 1:
+				// POWER FACTOR
+				errorCode = 1623;
+				break;
+			case 2:
+				// GRID FREQUENCY
+				errorCode = 1624;
+				break;
+		}
+
+		return errorCode;
+	}
+	
+	/*
+	 * get PVMStatusCodes from table model_dent_48pshd_meter
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelG3LightController(int bitLevel) {
+		int errorCode = 0;
+		switch (bitLevel) {
+			case 1:
+				// No Com
+				errorCode = 1625;
+				break;
+			case 2:
+				// ZONE
+				errorCode = 1626;
+				break;
+			case 3:
+				// BREAKER
+				errorCode = 1627;
+				break;
+			case 4:
+				// BREAKER
+				errorCode = 1628;
+				break;
+			case 5:
+				// BREAKER
+				errorCode = 1629;
+				break;
+			case 6:
+				// BREAKER
+				errorCode = 1630;
+				break;
+			case 7:
+				// BREAKER
+				errorCode = 1631;
+				break;
+			case 8:
+				// BREAKER
+				errorCode = 1632;
+				break;
+		}
+
+		return errorCode;
+	}
+	
 }
