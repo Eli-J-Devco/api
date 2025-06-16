@@ -6526,6 +6526,88 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            
+	            <when test="id_device_group == 113">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`PowerOn` double DEFAULT NULL,
+							`PowerOff` double DEFAULT NULL,
+							`PowerOnOff` double DEFAULT NULL,
+							`PowerOnOffReverse` double DEFAULT NULL,
+							`TransferTrip` double DEFAULT NULL,
+							`ArrayReset` double DEFAULT NULL,
+							`ActiveAdjustment` double DEFAULT NULL,
+							`ReactiveAdjustment` double DEFAULT NULL,
+							`ActiveAdjustment2` double DEFAULT NULL,
+							`ReactiveAdjustment2` double DEFAULT NULL,
+							`ActivePowerAdjustmentBy` double DEFAULT NULL,
+							`PowerFactorAdjustment` double DEFAULT NULL,
+							`DCCurrent` double DEFAULT NULL,
+							`InputPower` double DEFAULT NULL,
+							`CO2Reduction` double DEFAULT NULL,
+							`ActivePower` double DEFAULT NULL,
+							`PowerFactor` double DEFAULT NULL,
+							`PlantStatusQinghai` double DEFAULT NULL,
+							`ReactivePower` double DEFAULT NULL,
+							`CO2ReductionLarge` double DEFAULT NULL,
+							`DCCurrent2` double DEFAULT NULL,
+							`ETotal` double DEFAULT NULL,
+							`EDaily` double DEFAULT NULL,
+							`DurationOfDailyPowerGeneration` double DEFAULT NULL,
+							`PlantStatusXinjiang` double DEFAULT NULL,
+							`PlantStatusNingxia` double DEFAULT NULL,
+							`ActiveAlarmSequenceNumber` double DEFAULT NULL,
+							`HistoricalAlarmSequenceNumber` double DEFAULT NULL,
+							`PhaseACurrent` double DEFAULT NULL,
+							`PhaseBCurrent` double DEFAULT NULL,
+							`PhaseCCurrent` double DEFAULT NULL,
+							`Uab` double DEFAULT NULL,
+							`Ubc` double DEFAULT NULL,
+							`Uca` double DEFAULT NULL,
+							`Reserved` double DEFAULT NULL,
+							`InverterEfficiency` double DEFAULT NULL,
+							`MaxReactiveAdjustment` double DEFAULT NULL,
+							`MinReactiveAdjustment` double DEFAULT NULL,
+							`MaxActiveAdjustment` double DEFAULT NULL,
+							`Locked` double DEFAULT NULL,
+							`DIStatus` double DEFAULT NULL,
+							`ESN` double DEFAULT NULL,
+							`SystemReset` double DEFAULT NULL,
+							`FastDeviceAccess` double DEFAULT NULL,
+							`DeviceOperation` double DEFAULT NULL,
+							`DeviceAccessStatus` double DEFAULT NULL,
+							`ActivePowerControlMode` double DEFAULT NULL,
+							`ActivePowerSchedulingTargetValue` double DEFAULT NULL,
+							`ReactivePowerControlMode` double DEFAULT NULL,
+							`ReactivePowerSchedulingCurveMode` double DEFAULT NULL,
+							`ReactivePowerSchedulingTargetValue` double DEFAULT NULL,
+							`ActiveSchedulingPercentage` double DEFAULT NULL,
+							`CO2EmissionReductionCoefficient` double DEFAULT NULL,
+							`PVModuleCapacity` double DEFAULT NULL,
+							`RatedPlantCapacity` double DEFAULT NULL,
+							`TotalRatedCapacityOfGridConnectedInverters` double DEFAULT NULL,
+							`ConversionCoefficient` double DEFAULT NULL,
+							`CommunicationStatus` double DEFAULT NULL,
+							
+							`nvmActivePower` double DEFAULT NULL,
+						    `nvmActiveEnergy` double DEFAULT NULL,
+						    `MeasuredProduction` double DEFAULT NULL,
+							
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
 	                                                      
 	        </choose> 
 	        
