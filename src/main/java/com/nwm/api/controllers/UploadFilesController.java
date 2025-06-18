@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
 import com.nwm.api.entities.ModelATiTrackerEntity;
+import com.nwm.api.entities.ModelAbbTrio500tkOutdEntity;
 import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
 import com.nwm.api.entities.ModelAbbUnoDm1250tpPlusEntity;
 import com.nwm.api.entities.ModelAcuRevProductionMeterEntity;
@@ -120,6 +121,7 @@ import com.nwm.api.entities.ModelXantrexInverterEntity;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelATiTrackerService;
+import com.nwm.api.services.ModelAbbTrio500tkOutdService;
 import com.nwm.api.services.ModelAbbTrioClass6210Service;
 import com.nwm.api.services.ModelAbbUnoDm1250tpPlusService;
 import com.nwm.api.services.ModelAcuRevProductionMeterService;
@@ -3980,6 +3982,46 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_abb_trio500tk_outd":
+												ModelAbbTrio500tkOutdService serviceAbbTrio500tkOutd = new ModelAbbTrio500tkOutdService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelAbbTrio500tkOutdEntity dataEntity = serviceAbbTrio500tkOutd.setModelAbbTrio500tkOutd(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														if(dataEntity.getOutputActivePower() != 0.001 && dataEntity.getOutputActivePower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getOutputActivePower() != 0.001 ? dataEntity.getOutputActivePower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getOutputActivePower() != 0.001 ? dataEntity.getOutputActivePower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceAbbTrio500tkOutd.insertModelAbbTrio500tkOutd(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}

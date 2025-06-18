@@ -173,8 +173,8 @@
 		<mapper resource="mybatis/map/ModelOpenMeteoWeather.xml"/>
 		<mapper resource="mybatis/map/ModelHuaweiSun200028ktl.xml"/>
 		<mapper resource="mybatis/map/ModelSmartLogger3000.xml"/>
-		
-		
+		<mapper resource="mybatis/map/AiModel.xml"/>
+		<mapper resource="mybatis/map/ModelAbbTrio500tkOutd.xml"/>
 		
 		
 		
