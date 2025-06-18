@@ -54,6 +54,7 @@ public class Constants {
 	public static final String uploadFilePathReportFiles="uploadpath.files";
 	
 	public static final String uploadFilePathConfigKeyOlddata="uploadpath.olddata";
+	public static final String uploadFilePathAiModel="uploadpath.ai_datasources";
 	
 	
 	

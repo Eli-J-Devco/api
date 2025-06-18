@@ -163,8 +163,15 @@ public class DeviceEntity {
 	private String domain_role;
 	private String commissioning;
 	private boolean isUserNW;
+	private List dataParameters;
 	
 	
+	public List getDataParameters() {
+		return dataParameters;
+	}
+	public void setDataParameters(List dataParameters) {
+		this.dataParameters = dataParameters;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}

@@ -321,11 +321,18 @@ public class SiteEntity extends SortEntity {
 	private double humidity;
 	private int device_mode;
 	private int inv_level;
+	private int year;
 	
 	
 	
 	
 	
+	public int getYear() {
+		return year;
+	}
+	public void setYear(int year) {
+		this.year = year;
+	}
 	public int getInv_level() {
 		return inv_level;
 	}
