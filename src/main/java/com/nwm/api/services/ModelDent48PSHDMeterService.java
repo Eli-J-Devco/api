@@ -227,11 +227,11 @@ public class ModelDent48PSHDMeterService extends DB {
 					double ApparentPFAvg = (double) item.get("ApparentPFAvg");
 					double LineFrequency = (double) item.get("LineFrequency");
 					
-					if(ApparentPFAvg > -0.7 && ApparentPFAvg < 0.7) { 
+					if(ApparentPFAvg < -0.7 || ApparentPFAvg > 0.7) { 
 						totalApparentPFAvg++;
 					}
 					
-					if(LineFrequency > 59.8 && LineFrequency < 60.2) { 
+					if(LineFrequency < 59.8 || LineFrequency > 60.2) { 
 						totalLineFrequency++;
 					}
 					
@@ -262,7 +262,7 @@ public class ModelDent48PSHDMeterService extends DB {
 		
 		 ModelDent48PSHDMeterEntity rowItem = (ModelDent48PSHDMeterEntity) checkAlertWriteCode(obj);
 		
-		if(obj.getApparentPFAvg() > -0.7 && obj.getApparentPFAvg() < 0.7 && rowItem.getTotalApparentPFAvg() >= 20) {
+		if(obj.getApparentPFAvg() < -0.7 || obj.getApparentPFAvg() > 0.7 && rowItem.getTotalApparentPFAvg() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertModelDent48PSHDMeter(1);	
 				if (errorId > 0) {
@@ -311,7 +311,7 @@ public class ModelDent48PSHDMeterService extends DB {
 			}
 		}
 		
-		if(obj.getLineFrequency() > 59.8 && obj.getLineFrequency() < 60.2 && rowItem.getTotalLineFrequency() >= 20) {
+		if(obj.getLineFrequency() < 59.8 || obj.getLineFrequency() > 60.2 && rowItem.getTotalLineFrequency() >= 20) {
 			try {
 				int errorId = LibErrorCode.GetAlertModelDent48PSHDMeter(2);	
 				if (errorId > 0) {
