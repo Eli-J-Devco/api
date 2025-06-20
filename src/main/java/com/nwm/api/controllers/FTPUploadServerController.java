@@ -1550,6 +1550,12 @@ public class FTPUploadServerController extends BaseController {
 							Pattern pattern = Pattern.compile(regex);
 						    Matcher m = pattern.matcher(currentFileName);
 						    
+						    //yyyymmddhhmmssMMM_
+						    String regex2 = ".*(\\d{17}_).*";
+						    Pattern pattern2 = Pattern.compile(regex2);
+						    Matcher m2 = pattern2.matcher(currentFileName);
+						    
+						    						    
 						    // date by file name
 						    if (m.find()){
 						    	String unformatDate = m.group(1);
@@ -1559,7 +1565,23 @@ public class FTPUploadServerController extends BaseController {
 						        year = yyyyMMdd.split(":", 3)[0];
 						        String HHmmss = unformatDate.split("_")[1].replace("-", ":");
 						        created_date = yyyyMMdd + " " + HHmmss;
+						    } else if (m2.find()) {
+						    	String unformatDate = m2.group(1);
+						    	unformatDate = unformatDate.substring(0, unformatDate.length() - 4);
+						    	
+						    	String yyyyString = unformatDate.substring(0, 4);
+						    	String MMString = unformatDate.substring(4, 6);
+						    	String ddString = unformatDate.substring(6, 8);
+						    	String HHString = unformatDate.substring(8, 10);
+						    	String mmString = unformatDate.substring(10, 12);
+						    	String ssString = unformatDate.substring(12, 14);
+						    	
+						    	month = MMString;
+						    	year = yyyyString;
+						    	created_date = yyyyString + ":" + MMString + ":" + ddString + " " + HHString + ":" + mmString + ":" + ssString;
 						    }
+						    
+						    
 						    
 						    // if date by filename is empty ->  date by file on ftp server
 						    Calendar currrentDateCalendar = aFile.getTimestamp();	
