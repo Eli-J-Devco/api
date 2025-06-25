@@ -114,6 +114,7 @@ import com.nwm.api.entities.ModelWaterMeterKyPulseEntity;
 import com.nwm.api.entities.ModelWattsunTcuEntity;
 import com.nwm.api.entities.ModelWattsunTrackerEntity;
 import com.nwm.api.entities.ModelWattsunTrackerMasterEntity;
+import com.nwm.api.entities.ModelWeatherStationBSPEntity;
 import com.nwm.api.entities.ModelXGI1500Entity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
@@ -205,6 +206,7 @@ import com.nwm.api.services.ModelWaterMeterKyPulseService;
 import com.nwm.api.services.ModelWattsunTcuService;
 import com.nwm.api.services.ModelWattsunTrackerMasterService;
 import com.nwm.api.services.ModelWattsunTrackerService;
+import com.nwm.api.services.ModelWeatherStationBSPService;
 import com.nwm.api.services.ModelXGI1500Service;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.services.ModelXantrexGT500EService;
@@ -3988,6 +3990,47 @@ public class UploadFilesController extends BaseController {
 												}
 												
 												break;
+												
+											case "model_weather_station_bsp":
+												ModelWeatherStationBSPService serviceModelWeatherStationBSP = new ModelWeatherStationBSPService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelWeatherStationBSPEntity dataEntity = serviceModelWeatherStationBSP.setModelWeatherStationBSP(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real IRR
+														if(dataEntity.getTotalIrradiance() != 0.001 && dataEntity.getTotalIrradiance() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
+														deviceUpdateE.setField_value1(dataEntity.getTotalIrradiance() != 0.001 ? dataEntity.getTotalIrradiance() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelWeatherStationBSP.insertModelWeatherStationBSP(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
 												
 											case "model_abb_trio500tk_outd":
 												ModelAbbTrio500tkOutdService serviceAbbTrio500tkOutd = new ModelAbbTrio500tkOutdService();

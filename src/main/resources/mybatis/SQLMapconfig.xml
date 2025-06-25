@@ -175,7 +175,7 @@
 		<mapper resource="mybatis/map/ModelSmartLogger3000.xml"/>
 		<mapper resource="mybatis/map/AiModel.xml"/>
 		<mapper resource="mybatis/map/ModelAbbTrio500tkOutd.xml"/>
-		
+		<mapper resource="mybatis/map/ModelWeatherStationBSP.xml"/>
 		
 		
 		
