@@ -94,6 +94,10 @@
                 #{PowerFactor},
           </if>
           
+          <if test="CabinetTemperature != 0.001" >
+               #{CabinetTemperature}, 
+          </if>
+          
          
 		  <if test="nvmActivePower != 0.001" >
 		  	#{nvmActivePower},
@@ -137,6 +141,10 @@
           
           <if test="PowerFactor != 0.001" >
                 `PowerFactor` = #{PowerFactor},
+          </if>
+          
+          <if test="CabinetTemperature != 0.001" >
+               `CabinetTemperature` = #{CabinetTemperature}, 
           </if>
           
          
