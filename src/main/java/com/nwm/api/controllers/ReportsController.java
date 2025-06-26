@@ -3072,49 +3072,18 @@ public class ReportsController extends BaseController {
 	}
 
 	/**
-	 * @description Get customer view chart data
-	 * @author long.pham
-	 * @since 2021-12-28
-	 * @param id
+	 * @description Get custom report
+	 * @author Hung.Bui
+	 * @since 2025-06-25
 	 * @return data (status, message, array, total_row
 	 */
-	@PostMapping("/view-report")
-	public Object viewReport(@RequestBody ViewReportEntity obj) {
+	@PostMapping("/sanity-check-report")
+	public Object getSanityCheckReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-
-			ViewReportEntity dataObj = (ViewReportEntity) service.getSiteDetail(obj);
-
-			if (dataObj != null) {
-				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
-			} else {
-				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			}
-
-//			ViewReportEntity dataObj = queryForObject("CustomerViewTypeA.getCustomerViewInfo", obj);
-//			
-//			
-//			switch (filterBy) {
-//			case "today":
-//				List dataEnergy = service.getChartDataEnergy(obj);
-//				obj.setEnergy(dataEnergy);
-//				break;
-//			case "last_month":
-//			case "this_month":
-//				List dataThisMonthEnergy = service.getChartDataEnergy(obj);
-//				obj.setEnergy(dataThisMonthEnergy);
-//				break;
-//			case "12_month":
-//				List data12MonthEnergy = service.getChartDataEnergy(obj);
-//				obj.setEnergy(data12MonthEnergy);
-//				break;
-//			case "lifetime":
-//				  List dataLifetimeEnergy = service.getChartDataEnergy(obj);
-//				obj.setEnergy(dataLifetimeEnergy);
-//				break;
-//			}
-
-//			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

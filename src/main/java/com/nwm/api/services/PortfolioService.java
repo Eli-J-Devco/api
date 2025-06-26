@@ -31,6 +31,7 @@ import org.json.simple.parser.JSONParser;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
@@ -399,6 +400,7 @@ public class PortfolioService extends DB {
 			List<CompletableFuture<EnergyEntity>> futureList = new ArrayList<CompletableFuture<EnergyEntity>>();
 			for (int i = 0; i < sites.size(); i++) {
 				SiteEntity site = sites.get(i);
+				site.setDomain(obj.getDomain());
 				
 				CompletableFuture<EnergyEntity> future = CompletableFuture.supplyAsync(() -> {
 					try {
@@ -407,10 +409,11 @@ public class PortfolioService extends DB {
 						if (site.getEnable_virtual_device() == 1) {
 							data = (EnergyEntity) queryForObject("Portfolio.getSitesMetricsLossPast24hByVirtualDevice", site);
 						} else {
-							List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", site);
-							List<DeviceEntity> meters = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
-							List<DeviceEntity> inverters = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
-							List<DeviceEntity> irradiances = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+							CustomerViewService customerViewService = new CustomerViewService();
+							DevicesByTypeEntity devices = customerViewService.getDevicesBySite(site);
+							List<DeviceEntity> meters = devices.getMeter();
+							List<DeviceEntity> inverters = devices.getInverter();
+							List<DeviceEntity> irradiances = devices.getIrradiance();
 							List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
 							
 							if (powerDevices.size() > 0) {

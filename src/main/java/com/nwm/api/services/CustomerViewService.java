@@ -18,6 +18,7 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.utils.Lib;
@@ -74,6 +75,20 @@ public class CustomerViewService extends DB {
 		}
 	}
 	
+	public <T> DevicesByTypeEntity getDevicesBySite(T obj) {
+		try {
+			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
+			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
+			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
+			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+			
+			return new DevicesByTypeEntity(meterDevices, inverterDevices, irradianceDevices);
+		} catch (Exception e) {
+			return new DevicesByTypeEntity(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+		}
+		
+	}
+	
 	/**
 	 * @description get chart data energy
 	 * @author long.pham
@@ -84,11 +99,10 @@ public class CustomerViewService extends DB {
 	public List<PerformanceDataChartItemEntity> getChartDataPerformance(SiteEntity obj) {
 		try {
 			List<PerformanceDataChartItemEntity> dataEnergy = new ArrayList<>();
-			
-			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
-			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
-			List<DeviceEntity> inverterDevices = devices.stream().filter(item -> (item.getId_device_type() == 1)).collect(Collectors.toList());
-			List<DeviceEntity> irradianceDevices = devices.stream().filter(item -> (item.getId_device_type() == 4) && item.getReverse_poa() == 0).collect(Collectors.toList());
+			DevicesByTypeEntity devices = getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
+			List<DeviceEntity> inverterDevices = devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
 			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
 			if (powerDevices.size() == 0) return new ArrayList<>();
 			
@@ -224,8 +238,8 @@ public class CustomerViewService extends DB {
 
 	public Object getCustomerViewInfo(SiteEntity obj) {
 		try {
-			List<DeviceEntity> devices = queryForList("CustomerView.getDevicesBySite", obj);
-			List<DeviceEntity> meterDevices = devices.stream().filter(item -> (item.getId_device_type() == 3 || item.getId_device_type() == 7 || item.getId_device_type() == 9) && !item.isIs_excluded_meter()).collect(Collectors.toList());
+			DevicesByTypeEntity devices = getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
 			obj.setMeter_type(meterDevices.size() > 0 ? 1 : 0);
 			
 			return queryForObject("CustomerView.getCustomerViewInfo", obj);
