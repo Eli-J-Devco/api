@@ -517,7 +517,7 @@
 
 			WHEN dg.table_name = 'model_honeywell_emon_3200' AND d.field_value_default = 'RealPower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
-			WHEN dg.table_name = 'model_smartlogger3000' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_huawei_sun2000_28ktl' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_weather_station_bsp' AND d.field_value_default = 'TotalIrradiance' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "W/m²" )))
 
