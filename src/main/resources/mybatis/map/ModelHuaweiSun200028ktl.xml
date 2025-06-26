@@ -34,19 +34,34 @@
           <if test="ReactivePower != 0.001" >
                 `ReactivePower`,
           </if>
-
+          <if test="TotalDCInputCurrent != 0.001" >
+                `TotalDCInputCurrent`,
+          </if>
           <if test="TotalInputPower != 0.001" >
                 `TotalInputPower`,
           </if>
-
+          <if test="InsulationResistance != 0.001" >
+                `InsulationResistance`,
+          </if>
           <if test="PowerFactor != 0.001" >
                 `PowerFactor`,
           </if>
-
+          <if test="InverterStatus != 0.001" >
+                `InverterStatus`,
+          </if>
           <if test="CabinetTemperature != 0.001" >
                `CabinetTemperature`, 
           </if>
-          
+          <if test="MajorFaultCode != 0.001" >
+                `MajorFaultCode`,
+          </if>
+          <if test="MinorFaultCode != 0.001" >
+                `MinorFaultCode`,
+          </if>
+          <if test="WarningCode != 0.001" >
+                `WarningCode`,
+          </if>
+         
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
 		  </if>
@@ -85,19 +100,33 @@
           <if test="ReactivePower != 0.001" >
                 #{ReactivePower},
           </if>
-
+          <if test="TotalDCInputCurrent != 0.001" >
+                #{TotalDCInputCurrent},
+          </if>
           <if test="TotalInputPower != 0.001" >
                 #{TotalInputPower},
           </if>
-
+          <if test="InsulationResistance != 0.001" >
+                #{InsulationResistance},
+          </if>
           <if test="PowerFactor != 0.001" >
                 #{PowerFactor},
           </if>
-          
+          <if test="InverterStatus != 0.001" >
+                #{InverterStatus},
+          </if>
           <if test="CabinetTemperature != 0.001" >
                #{CabinetTemperature}, 
           </if>
-          
+          <if test="MajorFaultCode != 0.001" >
+                #{MajorFaultCode},
+          </if>
+          <if test="MinorFaultCode != 0.001" >
+                #{MinorFaultCode},
+          </if>
+          <if test="WarningCode != 0.001" >
+                #{WarningCode},
+          </if>
          
 		  <if test="nvmActivePower != 0.001" >
 		  	#{nvmActivePower},
@@ -134,19 +163,34 @@
           <if test="ReactivePower != 0.001" >
                 `ReactivePower` = #{ReactivePower},
           </if>
-
+          <if test="TotalDCInputCurrent != 0.001" >
+                `TotalDCInputCurrent` = #{TotalDCInputCurrent},
+          </if>
           <if test="TotalInputPower != 0.001" >
                 `TotalInputPower` = #{TotalInputPower},
           </if>
-          
+          <if test="InsulationResistance != 0.001" >
+                `InsulationResistance` = #{InsulationResistance},
+          </if>
           <if test="PowerFactor != 0.001" >
                 `PowerFactor` = #{PowerFactor},
           </if>
-          
+          <if test="InverterStatus != 0.001" >
+                `InverterStatus` = #{InverterStatus},
+          </if>
           <if test="CabinetTemperature != 0.001" >
                `CabinetTemperature` = #{CabinetTemperature}, 
           </if>
-          
+          <if test="MajorFaultCode != 0.001" >
+                `MajorFaultCode` = #{MajorFaultCode},
+          </if>
+          <if test="MinorFaultCode != 0.001" >
+                `MinorFaultCode` = #{MinorFaultCode},
+          </if>
+          <if test="WarningCode != 0.001" >
+                `WarningCode` = #{WarningCode},
+          </if>
+         
          
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower` = #{nvmActivePower},

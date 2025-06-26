@@ -36,9 +36,17 @@ public class ModelHuaweiSun200028ktlService extends DB {
 				
 				dataModel.setActivePower(power);
 				dataModel.setReactivePower(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
-				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
-				dataModel.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
-				dataModel.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModel.setTotalDCInputCurrent(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
+				dataModel.setTotalInputPower(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
+				dataModel.setInsulationResistance(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
+				dataModel.setPowerFactor(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
+				dataModel.setInverterStatus(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));
+				dataModel.setCabinetTemperature(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
+				
+				dataModel.setMajorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
+				dataModel.setMinorFaultCode(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
+				dataModel.setWarningCode(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
+				
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
@@ -57,6 +65,8 @@ public class ModelHuaweiSun200028ktlService extends DB {
 		}
 	}
 
+	
+	
 
 	/**
 	 * @description insert data from datalogger to model_ivt_solaron_ext
