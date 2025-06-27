@@ -166,28 +166,35 @@
 	
 	<select id="getList" resultType="Map" >
 		SELECT
-			CASE
-		    	WHEN r.type_report = 1 THEN
-		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Solar Production Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Solar Production Report")
+			CASE r.type_report
+		    	WHEN 1 THEN
+		    		CASE r.type_option
+		    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Solar Production Report")
+		    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Solar Production Report")
 		    			ELSE "Solar Production Report"
 		    		END
-		    	WHEN r.type_report = 2 THEN
-		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Production Trend Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Production Trend Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Production Trend Report")
+		    	WHEN 2 THEN
+		    		CASE r.type_option
+		    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Production Trend Report")
+		    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Production Trend Report")
+		    			WHEN 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Production Trend Report")
 		    			ELSE "Production Trend Report"
 		    		END
-		    	WHEN r.type_report = 3 THEN
-		    		CASE
-		    			WHEN r.type_option = 1 THEN CONCAT_WS(" " , t1.sites_name, "Leviton BMO Consumption Report")
-		    			WHEN r.type_option = 2 THEN CONCAT_WS(" " , t2.sites_name, "Leviton BMO Consumption Report")
-		    			WHEN r.type_option = 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Leviton BMO Consumption Report")
+		    	WHEN 3 THEN
+		    		CASE r.type_option
+		    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Leviton BMO Consumption Report")
+		    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Leviton BMO Consumption Report")
+		    			WHEN 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Leviton BMO Consumption Report")
 		    			ELSE "Leviton BMO Consumption Report"
 		    		END
-		    	WHEN r.type_report = 4 THEN CONCAT_WS(" " , t2.sites_name, "Asset Management and Operation Performance Report")
+		    	WHEN 4 THEN CONCAT_WS(" " , t2.sites_name, "Asset Management and Operation Performance Report")
+		    	WHEN 5 THEN
+		    		CASE r.type_option
+		    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Sanity Check Report")
+		    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Sanity Check Report")
+		    			WHEN 4 THEN CONCAT_WS(" " , t4.sites_name, "Sanity Check Report")
+		    			ELSE "Sanity Check Report"
+		    		END
 		    	ELSE ""
 			END	AS report_name,
 			CASE
@@ -225,18 +232,20 @@
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
 			r.days_week,
-			DATE_FORMAT(r.created_date, '%m/%d/%Y %H:%i %p') AS created_on,
-			DATE_FORMAT(r.updated_date, '%m/%d/%Y %H:%i %p') AS last_modified,
-			CASE
-				WHEN r.type_option = 1 THEN t1.ids_site
-				WHEN r.type_option = 2 THEN t2.ids_site
-				WHEN r.type_option = 3 THEN t3.ids_site
+			DATE_FORMAT(CONVERT_TZ(r.created_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS created_on,
+			DATE_FORMAT(CONVERT_TZ(r.updated_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS last_modified,
+			CASE r.type_option
+				WHEN 1 THEN t1.ids_site
+				WHEN 2 THEN t2.ids_site
+				WHEN 3 THEN t3.ids_site
+				WHEN 4 THEN t4.ids_site
 				ELSE t2.ids_site
 			END AS ids_site,
-			CASE
-				WHEN r.type_option = 1 THEN t1.sitesListJSON
-				WHEN r.type_option = 2 THEN t2.sitesListJSON
-				WHEN r.type_option = 3 THEN t3.sitesListJSON
+			CASE r.type_option
+				WHEN 1 THEN t1.sitesListJSON
+				WHEN 2 THEN t2.sitesListJSON
+				WHEN 3 THEN t3.sitesListJSON
+				WHEN 4 THEN t4.sitesListJSON
 				ELSE t2.sitesListJSON
 			END AS sitesListJSON
 		FROM
@@ -306,6 +315,28 @@
 				GROUP BY
 					s.id_site_sub_group
 			) t3 ON t3.id_site_sub_group = r.id_sub_group
+			LEFT JOIN (
+				SELECT
+					sem.id_employee,
+					'REC' AS sites_name,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+					JSON_ARRAYAGG(JSON_OBJECT(
+						'id', s.id,
+						'value', s.id,
+						'text', <include refid="com.nwm.common.siteName"/>,
+						'label', <include refid="com.nwm.common.siteName"/>,
+						'id_site_group', s.id_site_group
+					)) AS sitesListJSON
+				FROM
+					site s
+					JOIN site_employee_map sem ON sem.id_site = s.id
+				WHERE 
+					s.`status` = 1
+					AND s.is_delete = 0
+					AND s.is_rec_report = 1
+				GROUP BY
+					sem.id_employee
+			) t4 ON t4.id_employee = r.id_employee
 		WHERE
 			r.status = 1
 			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
@@ -1316,6 +1347,59 @@
 		DELETE FROM `report_site_map`
 		WHERE id_report = #{id};
 	</delete>
+	
+	<select id="getEnergySanityCheckReport" resultType="com.nwm.api.entities.AccumulatedEnergyByMonthEntity">
+		<foreach collection="groupDevices" item="item" separator="UNION ALL">
+			SELECT
+				#{item.id_device_type} AS deviceTypeId,
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = curr.beginning) AS currentBOM,
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = curr.ending) AS currentEOM,
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = last.beginning) AS lastBOM,
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = last.ending) AS lastEOM
+			FROM 
+				(
+					SELECT
+						MIN(time) AS beginning,
+						MAX(time) AS ending
+					FROM
+						${item.datatablename}
+					WHERE
+						time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(ADDTIME(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), '00:01:00'), #{item.timezone_value}, 'UTC')
+				) curr
+				CROSS JOIN
+				(
+					SELECT
+						MIN(time) AS beginning,
+						MAX(time) AS ending
+					FROM
+						${item.datatablename}
+					WHERE
+						time BETWEEN CONVERT_TZ(ADDTIME(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), '00:01:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC')
+				) last
+		</foreach>
+	</select>
+	
+	<select id="getIrradianceSanityCheckReport" resultType="Map">
+		<foreach collection="groupDevices" item="item" separator="UNION ALL">
+			SELECT
+				(
+					SELECT
+						AVG(nvm_irradiance)
+					FROM
+						${item.datatablename}
+					WHERE
+						time >= CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC')
+				) AS current,
+				(
+					SELECT
+						AVG(nvm_irradiance)
+					FROM
+						${item.datatablename}
+					WHERE
+						time >= CONVERT_TZ(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC')
+				) AS last
+		</foreach>
+	</select>
   	
 	
 </mapper>

@@ -544,4 +544,18 @@ public class AlertService extends DB {
 			return false;
 		}
 	}
+	
+	/**
+	 * get site alert count list
+	 * @author Hung.Bui
+	 * @since 2025-06-27
+	 * @return list of alert count
+	 */
+	public List<AlertEntity> getSiteAlertCountList(AlertEntity obj) {
+		try {
+			return queryForList("Alert.getSiteAlertCountList", obj);
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
 }

@@ -5,6 +5,8 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -28,10 +31,15 @@ import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
+import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
+import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
+import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.Constants;
@@ -229,6 +237,7 @@ public class ReportsService extends DB {
 			}
 			
 			List<ViewReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
+			
 			return reportObj.getCadence_range() == 5 ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
 		} catch (Exception e) {
 			return new ArrayList<>();
@@ -511,6 +520,114 @@ public class ReportsService extends DB {
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
+		}
+	}
+	
+	/**
+	 * Get sanity check report
+	 * @author Hung.Bui
+	 * @since 2025-06-25
+	 * @return SanityCheckReportEntity
+	 */
+	public List<SanityCheckReportEntity> getSanityCheckReport(ViewReportEntity obj, List<AlertEntity> alertCountList) {
+		try {
+			// convert list of alert count to map
+			Map<Integer, Integer> alertCountMap = new HashMap<Integer, Integer>();
+			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
+			
+			List<CompletableFuture<SanityCheckReportEntity>> list = new ArrayList<CompletableFuture<SanityCheckReportEntity>>();
+			
+			if (obj.getIds() != null && obj.getIds().size() > 0) {
+				for (int i = 0; i < obj.getIds().size(); i++) {
+					ViewReportEntity siteObj = new ViewReportEntity();
+					siteObj.setId_site((int) obj.getIds().get(i));
+					siteObj.setId(obj.getId());
+					siteObj.setStart_date(obj.getStart_date());
+					
+					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
+						try {
+							ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", siteObj);
+							if (dataObj == null || dataObj.getId_site() == 0) return null;
+							
+							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
+							sanityCheckReport.setSiteName(dataObj.getSite_name());
+							sanityCheckReport.setReportDate(dataObj.getReport_date());
+							
+							// alert
+							sanityCheckReport.setAlert(alertCountMap.get(siteObj.getId_site()));
+							
+							// meter and inverter
+							CustomerViewService customerViewService = new CustomerViewService();
+							DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(siteObj);
+							
+							List<DeviceEntity> powerDevices = new ArrayList<>(devicesByType.getMeter());
+							powerDevices.addAll(devicesByType.getInverter());
+							if (powerDevices.size() == 0) return sanityCheckReport;
+							
+							siteObj.setGroupDevices(powerDevices);
+							List<AccumulatedEnergyByMonthEntity> energyList = queryForList("Reports.getEnergySanityCheckReport", siteObj);
+							Double totalCurrEnergy = null;
+							Double totalLastEnergy = null;
+							
+							for (AccumulatedEnergyByMonthEntity item : energyList) {
+								Double currEnergy = Objects.nonNull(item.getCurrentEOM()) && Objects.nonNull(item.getCurrentBOM()) ? item.getCurrentEOM() - item.getCurrentBOM() : null;
+								Double lastEnergy = Objects.nonNull(item.getLastEOM()) && Objects.nonNull(item.getLastBOM()) ? item.getLastEOM() - item.getLastBOM() : null;
+								
+								if (item.getDeviceTypeId() == 1) {
+									sanityCheckReport.addAccumulatedEnergyBOMByInverter(item.getCurrentBOM());
+									sanityCheckReport.addAccumulatedEnergyEOMByInverter(item.getCurrentEOM());
+									sanityCheckReport.addAccumulatedEnergyDifferenceByInverter(currEnergy);
+								} else if (item.getDeviceTypeId() == 3) {
+									sanityCheckReport.addAccumulatedEnergyBOMByMeter(item.getCurrentBOM());
+									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
+									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
+									
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {
+									totalCurrEnergy = Objects.nonNull(currEnergy) ? Optional.ofNullable(totalCurrEnergy).orElse(0.0) + currEnergy : totalCurrEnergy;
+									totalLastEnergy = Objects.nonNull(lastEnergy) ? Optional.ofNullable(totalLastEnergy).orElse(0.0) + lastEnergy : totalLastEnergy;
+								}
+							}
+							
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalCurrEnergy > 0) sanityCheckReport.setProductionDifference1(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalCurrEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalLastEnergy > 0) sanityCheckReport.setProductionDifference2(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalLastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							
+							// irradiance
+							if (devicesByType.getIrradiance().size() > 0) {
+								siteObj.setGroupDevices(devicesByType.getIrradiance());
+								List<Map<String, Double>> irradianceList = queryForList("Reports.getIrradianceSanityCheckReport", siteObj);
+								
+								if (irradianceList.size() > 0) {
+									Map<String, Double> irradianceDevice = irradianceList.get(0);
+									if (Objects.isNull(irradianceDevice)) return sanityCheckReport;
+									
+									Double current = irradianceDevice.get("current");
+									Double last = irradianceDevice.get("last");
+									if(Objects.nonNull(current) && Objects.nonNull(last) && current > 0) sanityCheckReport.setIrradianceDifference1(BigDecimal.valueOf((current - last) / current * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+							}
+							
+							return sanityCheckReport;
+						} catch (Exception ex) {
+							log.error(ex);
+							return null;
+						}
+					});
+					
+					list.add(future);
+				}
+			}
+			
+			List<SanityCheckReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
+			dataList.sort((a,b) -> a.getSiteName().compareTo(b.getSiteName()));
+			
+			return dataList;
+		} catch (Exception ex) {
+			return new ArrayList<>();
 		}
 	}
 	

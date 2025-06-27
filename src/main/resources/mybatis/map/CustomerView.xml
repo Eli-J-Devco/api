@@ -12,7 +12,8 @@
 			d.id_site,
 			d.is_excluded_meter,
 			d.reverse_poa,
-			dt.id AS id_device_type
+			dt.id AS id_device_type,
+			t.value AS timezone_value
 		FROM
 			device d
 			LEFT JOIN device_type dt ON d.id_device_type = dt.id 
