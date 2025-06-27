@@ -1264,5 +1264,42 @@
 			e.id = #{id_employee}
 			LIMIT 1;
   	</select>
+  	
+  	<select id="getSiteAlertCountList" resultType="com.nwm.api.entities.AlertEntity">
+	  	SELECT
+	  		s.id,
+			COUNT(*) as totalError
+		FROM
+			alert l
+			JOIN error e ON e.id = l.id_error
+			JOIN error_level el ON el.id = e.id_error_level
+			JOIN device d ON d.id = l.id_device
+			JOIN site s ON s.id = d.id_site
+			JOIN time_zone t ON t.id = s.id_time_zone
+		WHERE
+			l.`status` = 1
+			AND l.is_delete = 0
+			AND l.resolved = 0
+			AND e.`status` = 1
+			AND e.is_delete = 0
+			AND d.`status` = 1
+			AND d.is_delete = 0
+			AND s.`status` = 1
+			AND s.is_delete = 0
+			AND s.enable_alert = 1
+			AND (CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', t.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND el.id IN (32,33)
+			<if test="id_sites != null and !id_sites.isEmpty()">
+				AND s.id IN (
+					<foreach item="item" collection="id_sites" separator=",">
+						#{item}
+					</foreach>
+				)
+			</if>
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+		GROUP BY
+			s.id
+  	</select>
 
 </mapper>

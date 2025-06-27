@@ -13,7 +13,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
@@ -219,14 +219,11 @@ public class ReportsService extends DB {
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
 							ViewReportEntity data = null;
-							if (reportObj.getType_report() == 5) data = this.getSanityCheckReport(siteObj);
-							else {
-								if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) this.getDailyReport(siteObj);
-								else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
-								else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
-								else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
-								else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) this.getCustomReport(siteObj);
-							}
+							if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) this.getDailyReport(siteObj);
+							else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
+							else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
+							else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
+							else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) this.getCustomReport(siteObj);
 							
 							return data;
 						} catch (Exception ex) {
@@ -240,7 +237,6 @@ public class ReportsService extends DB {
 			}
 			
 			List<ViewReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
-			if (reportObj.getType_report() == 5) dataList.sort((a,b) -> a.getSite_name().compareTo(b.getSite_name()));
 			
 			return reportObj.getCadence_range() == 5 ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
 		} catch (Exception e) {
@@ -527,70 +523,111 @@ public class ReportsService extends DB {
 		}
 	}
 	
-	public ViewReportEntity getSanityCheckReport(ViewReportEntity obj) {
+	/**
+	 * Get sanity check report
+	 * @author Hung.Bui
+	 * @since 2025-06-25
+	 * @return SanityCheckReportEntity
+	 */
+	public List<SanityCheckReportEntity> getSanityCheckReport(ViewReportEntity obj, List<AlertEntity> alertCountList) {
 		try {
-			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
-			if (dataObj == null || dataObj.getId_site() == 0) return null;
+			// convert list of alert count to map
+			Map<Integer, Integer> alertCountMap = new HashMap<Integer, Integer>();
+			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
 			
-			CustomerViewService customerViewService = new CustomerViewService();
-			DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(obj);
+			List<CompletableFuture<SanityCheckReportEntity>> list = new ArrayList<CompletableFuture<SanityCheckReportEntity>>();
 			
-			List<DeviceEntity> powerDevices = new ArrayList<>(devicesByType.getMeter());
-			powerDevices.addAll(devicesByType.getInverter());
-			if (powerDevices.size() == 0) return dataObj;
-			
-			SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
-			dataObj.setDataReports(Arrays.asList(sanityCheckReport));
-			
-			obj.setGroupDevices(powerDevices);
-			List<AccumulatedEnergyByMonthEntity> energyList = queryForList("Reports.getEnergySanityCheckReport", obj);
-			Double totalCurrEnergy = null;
-			Double totalLastEnergy = null;
-			
-			for (AccumulatedEnergyByMonthEntity item : energyList) {
-				Double currEnergy = Objects.nonNull(item.getCurrentEOM()) && Objects.nonNull(item.getCurrentBOM()) ? item.getCurrentEOM() - item.getCurrentBOM() : null;
-				Double lastEnergy = Objects.nonNull(item.getLastEOM()) && Objects.nonNull(item.getLastBOM()) ? item.getLastEOM() - item.getLastBOM() : null;
-				
-				if (item.getDeviceTypeId() == 1) {
-					sanityCheckReport.addAccumulatedEnergyBOMByInverter(item.getCurrentBOM());
-					sanityCheckReport.addAccumulatedEnergyEOMByInverter(item.getCurrentEOM());
-					sanityCheckReport.addAccumulatedEnergyDifferenceByInverter(currEnergy);
-				} else if (item.getDeviceTypeId() == 3) {
-					sanityCheckReport.addAccumulatedEnergyBOMByMeter(item.getCurrentBOM());
-					sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
-					sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
+			if (obj.getIds() != null && obj.getIds().size() > 0) {
+				for (int i = 0; i < obj.getIds().size(); i++) {
+					ViewReportEntity siteObj = new ViewReportEntity();
+					siteObj.setId_site((int) obj.getIds().get(i));
+					siteObj.setId(obj.getId());
+					siteObj.setStart_date(obj.getStart_date());
 					
-					if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-				}
-				
-				if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {
-					totalCurrEnergy = Objects.nonNull(currEnergy) ? Optional.ofNullable(totalCurrEnergy).orElse(0.0) + currEnergy : totalCurrEnergy;
-					totalLastEnergy = Objects.nonNull(lastEnergy) ? Optional.ofNullable(totalLastEnergy).orElse(0.0) + lastEnergy : totalLastEnergy;
-				}
-			};
-			
-			if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalCurrEnergy > 0) sanityCheckReport.setProductionDifference1(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalCurrEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-			if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalLastEnergy > 0) sanityCheckReport.setProductionDifference2(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalLastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-			
-			if (devicesByType.getIrradiance().size() > 0) {
-				obj.setGroupDevices(devicesByType.getIrradiance());
-				List<Map<String, Double>> irradianceList = queryForList("Reports.getIrradianceSanityCheckReport", obj);
-				
-				if (irradianceList.size() > 0) {
-					Map<String, Double> irradianceDevice = irradianceList.get(0);
-					if (Objects.isNull(irradianceDevice)) return dataObj;
+					CompletableFuture<SanityCheckReportEntity> future = CompletableFuture.supplyAsync(() -> {
+						try {
+							ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", siteObj);
+							if (dataObj == null || dataObj.getId_site() == 0) return null;
+							
+							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
+							sanityCheckReport.setSiteName(dataObj.getSite_name());
+							sanityCheckReport.setReportDate(dataObj.getReport_date());
+							
+							// alert
+							sanityCheckReport.setAlert(alertCountMap.get(siteObj.getId_site()));
+							
+							// meter and inverter
+							CustomerViewService customerViewService = new CustomerViewService();
+							DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(siteObj);
+							
+							List<DeviceEntity> powerDevices = new ArrayList<>(devicesByType.getMeter());
+							powerDevices.addAll(devicesByType.getInverter());
+							if (powerDevices.size() == 0) return sanityCheckReport;
+							
+							siteObj.setGroupDevices(powerDevices);
+							List<AccumulatedEnergyByMonthEntity> energyList = queryForList("Reports.getEnergySanityCheckReport", siteObj);
+							Double totalCurrEnergy = null;
+							Double totalLastEnergy = null;
+							
+							for (AccumulatedEnergyByMonthEntity item : energyList) {
+								Double currEnergy = Objects.nonNull(item.getCurrentEOM()) && Objects.nonNull(item.getCurrentBOM()) ? item.getCurrentEOM() - item.getCurrentBOM() : null;
+								Double lastEnergy = Objects.nonNull(item.getLastEOM()) && Objects.nonNull(item.getLastBOM()) ? item.getLastEOM() - item.getLastBOM() : null;
+								
+								if (item.getDeviceTypeId() == 1) {
+									sanityCheckReport.addAccumulatedEnergyBOMByInverter(item.getCurrentBOM());
+									sanityCheckReport.addAccumulatedEnergyEOMByInverter(item.getCurrentEOM());
+									sanityCheckReport.addAccumulatedEnergyDifferenceByInverter(currEnergy);
+								} else if (item.getDeviceTypeId() == 3) {
+									sanityCheckReport.addAccumulatedEnergyBOMByMeter(item.getCurrentBOM());
+									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
+									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
+									
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+								
+								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {
+									totalCurrEnergy = Objects.nonNull(currEnergy) ? Optional.ofNullable(totalCurrEnergy).orElse(0.0) + currEnergy : totalCurrEnergy;
+									totalLastEnergy = Objects.nonNull(lastEnergy) ? Optional.ofNullable(totalLastEnergy).orElse(0.0) + lastEnergy : totalLastEnergy;
+								}
+							}
+							
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalCurrEnergy > 0) sanityCheckReport.setProductionDifference1(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalCurrEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalLastEnergy > 0) sanityCheckReport.setProductionDifference2(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalLastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							
+							// irradiance
+							if (devicesByType.getIrradiance().size() > 0) {
+								siteObj.setGroupDevices(devicesByType.getIrradiance());
+								List<Map<String, Double>> irradianceList = queryForList("Reports.getIrradianceSanityCheckReport", siteObj);
+								
+								if (irradianceList.size() > 0) {
+									Map<String, Double> irradianceDevice = irradianceList.get(0);
+									if (Objects.isNull(irradianceDevice)) return sanityCheckReport;
+									
+									Double current = irradianceDevice.get("current");
+									Double last = irradianceDevice.get("last");
+									if(Objects.nonNull(current) && Objects.nonNull(last) && current > 0) sanityCheckReport.setIrradianceDifference1(BigDecimal.valueOf((current - last) / current * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+								}
+							}
+							
+							return sanityCheckReport;
+						} catch (Exception ex) {
+							log.error(ex);
+							return null;
+						}
+					});
 					
-					Double current = irradianceDevice.get("current");
-					Double last = irradianceDevice.get("last");
-					if(Objects.nonNull(current) && Objects.nonNull(last) && current > 0) sanityCheckReport.setIrradianceDifference1(BigDecimal.valueOf((current - last) / current * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+					list.add(future);
 				}
 			}
 			
-			return dataObj;
+			List<SanityCheckReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
+			dataList.sort((a,b) -> a.getSiteName().compareTo(b.getSiteName()));
+			
+			return dataList;
 		} catch (Exception ex) {
-			return null;
+			return new ArrayList<>();
 		}
 	}
 	

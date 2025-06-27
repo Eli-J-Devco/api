@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SanityCheckReportEntity {
+	private String siteName;
+	private String reportDate;
 	private List<Double> recDifference1 = new ArrayList<Double>();
 	private List<Double> recDifference2 = new ArrayList<Double>();
 	private Double productionDifference1;
@@ -23,6 +25,18 @@ public class SanityCheckReportEntity {
 	private List<Double> accumulatedEnergyEOMByInverter = new ArrayList<Double>();
 	private List<Double> accumulatedEnergyDifferenceByInverter = new ArrayList<Double>();
 	
+	public String getSiteName() {
+		return siteName;
+	}
+	public void setSiteName(String siteName) {
+		this.siteName = siteName;
+	}
+	public String getReportDate() {
+		return reportDate;
+	}
+	public void setReportDate(String reportDate) {
+		this.reportDate = reportDate;
+	}
 	public List<Double> getRecDifference1() {
 		return recDifference1;
 	}

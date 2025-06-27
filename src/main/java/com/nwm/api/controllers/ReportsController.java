@@ -92,6 +92,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.config.ReportTaskScheduler;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
@@ -99,8 +100,10 @@ import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportsEntity;
+import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
+import com.nwm.api.services.AlertService;
 import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.DocumentHelper;
@@ -3072,7 +3075,7 @@ public class ReportsController extends BaseController {
 	}
 
 	/**
-	 * @description Get custom report
+	 * Get sanity check report
 	 * @author Hung.Bui
 	 * @since 2025-06-25
 	 * @return data (status, message, array, total_row
@@ -3080,13 +3083,19 @@ public class ReportsController extends BaseController {
 	@PostMapping("/sanity-check-report")
 	public Object getSanityCheckReport(@RequestBody ViewReportEntity obj) {
 		try {
+			AlertEntity alert = new AlertEntity();
+			alert.setId_sites(obj.getIds());
+			alert.setDomain(obj.getDomain());
+			AlertService alertService = new AlertService();
+			List<AlertEntity> alertCountList = alertService.getSiteAlertCountList(alert);
+			
 			ReportsService service = new ReportsService();
-			List<ViewReportEntity> dataObjList = service.getReportDataList(obj);
+			List<SanityCheckReportEntity> dataObjList = service.getSanityCheckReport(obj, alertCountList);
 			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
 		} catch (Exception e) {
 			log.error(e);
-			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
 		}
 	}
 
