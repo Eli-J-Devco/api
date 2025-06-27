@@ -6690,6 +6690,70 @@
 	            </when>
 	            
 	            
+	             <when test="id_device_group == 116">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`ACcurrentA` double DEFAULT NULL,
+						  `CurrentlineconductorL1` double DEFAULT NULL,
+						  `CurrentlineconductorL2` double DEFAULT NULL,
+						  `CurrentlineconductorL3` double DEFAULT NULL,
+						  `Scalefactorcurrent` double DEFAULT NULL,
+						  `VoltagelineconductorL1toL2` double DEFAULT NULL,
+						  `VoltagelineconductorL2toL3` double DEFAULT NULL,
+						  `VoltagelineconductorL3toL1` double DEFAULT NULL,
+						  `VoltagelineconductorL1toN` double DEFAULT NULL,
+						  `VoltagelineconductorL2toN` double DEFAULT NULL,
+						  `VoltagelineconductorL3toN` double DEFAULT NULL,
+						  `Scalefactorvoltage` double DEFAULT NULL,
+						  `Activepower` double DEFAULT NULL,
+						  `Scalefactoractivepower` double DEFAULT NULL,
+						  `Powerfrequency` double DEFAULT NULL,
+						  `Scalefactorpowerfrequency` double DEFAULT NULL,
+						  `Apparentpower` double DEFAULT NULL,
+						  `Scalefactorapparentpower` double DEFAULT NULL,
+						  `Reactivepower` double DEFAULT NULL,
+						  `Scalefactorreactivepower` double DEFAULT NULL,
+						  `Displacementpowerfactorcos` double DEFAULT NULL,
+						  `Scalefactordisplacementpowerfactor` double DEFAULT NULL,
+						  `Totalyield` double DEFAULT NULL,
+						  `calefactortotalyield` double DEFAULT NULL,
+						  `DCcurrent` double DEFAULT NULL,
+						  `ScalefactorDCcurrent` double DEFAULT NULL,
+						  `DCvoltage` double DEFAULT NULL,
+						  `ScalefactorDCvoltage` double DEFAULT NULL,
+						  `DCpower` double DEFAULT NULL,
+						  `ScalefactorDCpower` double DEFAULT NULL,
+						  `Internaltemperature` double DEFAULT NULL,
+						  `Heatsinktemperature` double DEFAULT NULL,
+						  `Transformer` double DEFAULT NULL,
+						  `Othertemperature` double DEFAULT NULL,
+						  `Scalefactortemperature` double DEFAULT NULL,
+						  `Operatingstatus` double DEFAULT NULL,
+						  `EventnumberEvt1` double DEFAULT NULL,
+						  `EventnumberEvt2` double DEFAULT NULL,
+						  `ManufacturerspecificeventcodeEvtVnd1` double DEFAULT NULL,
+						  `ManufacturerspecificeventcodeEvtVnd2` double DEFAULT NULL,
+						  `ManufacturerspecificeventcodeEvtVnd3` double DEFAULT NULL,
+						  `ManufacturerspecificeventcodeEvtVnd4` double DEFAULT NULL,
+						  `nvmActivePower` double DEFAULT NULL,
+						    `nvmActiveEnergy` double DEFAULT NULL,
+						    `MeasuredProduction` double DEFAULT NULL,
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
+	            
+	            
 	            
 	                                                      
 	        </choose> 

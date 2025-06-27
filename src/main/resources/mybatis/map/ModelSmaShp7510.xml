@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSmaShp7510">
+
+	<insert id="insertModelSmaShp7510" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="ACcurrentA != 0.001" >
+                `ACcurrentA`,
+          </if>
+          <if test="CurrentlineconductorL1 != 0.001" >
+                `CurrentlineconductorL1`,
+          </if>
+          <if test="CurrentlineconductorL2 != 0.001" >
+                `CurrentlineconductorL2`,
+          </if>
+          <if test="CurrentlineconductorL3 != 0.001" >
+                `CurrentlineconductorL3`,
+          </if>
+          <if test="Scalefactorcurrent != 0.001" >
+                `Scalefactorcurrent`,
+          </if>
+          <if test="VoltagelineconductorL1toL2 != 0.001" >
+                `VoltagelineconductorL1toL2`,
+          </if>
+          <if test="VoltagelineconductorL2toL3 != 0.001" >
+                `VoltagelineconductorL2toL3`,
+          </if>
+          <if test="VoltagelineconductorL3toL1 != 0.001" >
+               `VoltagelineconductorL3toL1`, 
+          </if>
+          <if test="VoltagelineconductorL1toN != 0.001" >
+                `VoltagelineconductorL1toN`,
+          </if>
+          <if test="VoltagelineconductorL2toN != 0.001" >
+                `VoltagelineconductorL2toN`,
+          </if>
+          <if test="VoltagelineconductorL3toN != 0.001" >
+                `VoltagelineconductorL3toN`,
+          </if>
+          <if test="Scalefactorvoltage != 0.001" >
+                `Scalefactorvoltage`,
+          </if>
+          <if test="Activepower != 0.001" >
+                `Activepower`,
+          </if>
+          <if test="Scalefactoractivepower != 0.001" >
+                `Scalefactoractivepower`,
+          </if>
+          <if test="Powerfrequency != 0.001" >
+                `Powerfrequency`,
+          </if>
+          <if test="Scalefactorpowerfrequency != 0.001" >
+                `Scalefactorpowerfrequency`,
+          </if>
+          <if test="Apparentpower != 0.001" >
+                `Apparentpower`,
+          </if>
+          <if test="Scalefactorapparentpower != 0.001" >
+                `Scalefactorapparentpower`,
+          </if>
+          <if test="Reactivepower != 0.001" >
+                `Reactivepower`,
+          </if>
+          <if test="Scalefactorreactivepower != 0.001" >
+                `Scalefactorreactivepower`,
+          </if>
+          <if test="Displacementpowerfactorcos != 0.001" >
+                `Displacementpowerfactorcos`,
+          </if>
+          <if test="Scalefactordisplacementpowerfactor != 0.001" >
+                `Scalefactordisplacementpowerfactor`,
+          </if>
+          <if test="Totalyield != 0.001" >
+                `Totalyield`,
+          </if>
+          <if test="calefactortotalyield != 0.001" >
+                `calefactortotalyield`,
+          </if>
+          <if test="DCcurrent != 0.001" >
+                `DCcurrent`,
+          </if>
+          <if test="ScalefactorDCcurrent != 0.001" >
+                `ScalefactorDCcurrent`,
+          </if>
+          <if test="DCvoltage != 0.001" >
+                `DCvoltage`,
+          </if>
+          <if test="ScalefactorDCvoltage != 0.001" >
+                `ScalefactorDCvoltage`,
+          </if>
+          <if test="DCpower != 0.001" >
+                `DCpower`,
+          </if>
+          <if test="ScalefactorDCpower != 0.001" >
+                `ScalefactorDCpower`,
+          </if>
+          <if test="Internaltemperature != 0.001" >
+                `Internaltemperature`,
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                `Heatsinktemperature`,
+          </if>
+          <if test="Transformer != 0.001" >
+                `Transformer`,
+          </if>
+          <if test="Othertemperature != 0.001" >
+                `Othertemperature`,
+          </if>
+          <if test="Scalefactortemperature != 0.001" >
+                `Scalefactortemperature`,
+          </if>
+          <if test="Operatingstatus != 0.001" >
+                `Operatingstatus`,
+          </if>
+          <if test="EventnumberEvt1 != 0.001" >
+               `EventnumberEvt1`,
+          </if>
+          <if test="EventnumberEvt2 != 0.001" >
+                `EventnumberEvt2`,
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd1 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd1`,
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd2 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd2`,
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd3 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd3`,
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd4 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd4`,
+          </if>
+          
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="ACcurrentA != 0.001" >
+                #{ACcurrentA},
+          </if>
+          <if test="CurrentlineconductorL1 != 0.001" >
+                #{CurrentlineconductorL1},
+          </if>
+          <if test="CurrentlineconductorL2 != 0.001" >
+                #{CurrentlineconductorL2},
+          </if>
+          <if test="CurrentlineconductorL3 != 0.001" >
+                #{CurrentlineconductorL3},
+          </if>
+          <if test="Scalefactorcurrent != 0.001" >
+                #{Scalefactorcurrent},
+          </if>
+          <if test="VoltagelineconductorL1toL2 != 0.001" >
+                #{VoltagelineconductorL1toL2},
+          </if>
+          <if test="VoltagelineconductorL2toL3 != 0.001" >
+                #{VoltagelineconductorL2toL3},
+          </if>
+          <if test="VoltagelineconductorL3toL1 != 0.001" >
+               #{VoltagelineconductorL3toL1}, 
+          </if>
+          <if test="VoltagelineconductorL1toN != 0.001" >
+                #{VoltagelineconductorL1toN},
+          </if>
+          <if test="VoltagelineconductorL2toN != 0.001" >
+                #{VoltagelineconductorL2toN},
+          </if>
+          <if test="VoltagelineconductorL3toN != 0.001" >
+                #{VoltagelineconductorL3toN},
+          </if>
+          <if test="Scalefactorvoltage != 0.001" >
+                #{Scalefactorvoltage},
+          </if>
+          <if test="Activepower != 0.001" >
+                #{Activepower},
+          </if>
+          <if test="Scalefactoractivepower != 0.001" >
+                #{Scalefactoractivepower},
+          </if>
+          <if test="Powerfrequency != 0.001" >
+                #{Powerfrequency},
+          </if>
+          <if test="Scalefactorpowerfrequency != 0.001" >
+                #{Scalefactorpowerfrequency},
+          </if>
+          <if test="Apparentpower != 0.001" >
+                #{Apparentpower},
+          </if>
+          <if test="Scalefactorapparentpower != 0.001" >
+                #{Scalefactorapparentpower},
+          </if>
+          <if test="Reactivepower != 0.001" >
+                #{Reactivepower},
+          </if>
+          <if test="Scalefactorreactivepower != 0.001" >
+                #{Scalefactorreactivepower},
+          </if>
+          <if test="Displacementpowerfactorcos != 0.001" >
+                #{Displacementpowerfactorcos},
+          </if>
+          <if test="Scalefactordisplacementpowerfactor != 0.001" >
+                #{Scalefactordisplacementpowerfactor},
+          </if>
+          <if test="Totalyield != 0.001" >
+                #{Totalyield},
+          </if>
+          <if test="calefactortotalyield != 0.001" >
+                #{calefactortotalyield},
+          </if>
+          <if test="DCcurrent != 0.001" >
+                #{DCcurrent},
+          </if>
+          <if test="ScalefactorDCcurrent != 0.001" >
+                #{ScalefactorDCcurrent},
+          </if>
+          <if test="DCvoltage != 0.001" >
+                #{DCvoltage},
+          </if>
+          <if test="ScalefactorDCvoltage != 0.001" >
+                #{ScalefactorDCvoltage},
+          </if>
+          <if test="DCpower != 0.001" >
+                #{DCpower},
+          </if>
+          <if test="ScalefactorDCpower != 0.001" >
+                #{ScalefactorDCpower},
+          </if>
+          <if test="Internaltemperature != 0.001" >
+                #{Internaltemperature},
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                #{Heatsinktemperature},
+          </if>
+          <if test="Transformer != 0.001" >
+                #{Transformer},
+          </if>
+          <if test="Othertemperature != 0.001" >
+                #{Othertemperature},
+          </if>
+          <if test="Scalefactortemperature != 0.001" >
+                #{Scalefactortemperature},
+          </if>
+          <if test="Operatingstatus != 0.001" >
+                #{Operatingstatus},
+          </if>
+          <if test="EventnumberEvt1 != 0.001" >
+               #{EventnumberEvt1}, 
+          </if>
+          <if test="EventnumberEvt2 != 0.001" >
+                #{EventnumberEvt2},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd1 != 0.001" >
+                #{ManufacturerspecificeventcodeEvtVnd1},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd2 != 0.001" >
+                #{ManufacturerspecificeventcodeEvtVnd2},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd3 != 0.001" >
+                #{ManufacturerspecificeventcodeEvtVnd3},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd4 != 0.001" >
+                #{ManufacturerspecificeventcodeEvtVnd4},
+          </if>
+          
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="ACcurrentA != 0.001" >
+                `ACcurrentA` = #{ACcurrentA},
+          </if>
+          <if test="CurrentlineconductorL1 != 0.001" >
+                `CurrentlineconductorL1` = #{CurrentlineconductorL1},
+          </if>
+          <if test="CurrentlineconductorL2 != 0.001" >
+                `CurrentlineconductorL2` = #{CurrentlineconductorL2},
+          </if>
+          <if test="CurrentlineconductorL3 != 0.001" >
+                `CurrentlineconductorL3` = #{CurrentlineconductorL3},
+          </if>
+          <if test="Scalefactorcurrent != 0.001" >
+                `Scalefactorcurrent` = #{Scalefactorcurrent},
+          </if>
+          <if test="VoltagelineconductorL1toL2 != 0.001" >
+                `VoltagelineconductorL1toL2` = #{VoltagelineconductorL1toL2},
+          </if>
+          <if test="VoltagelineconductorL2toL3 != 0.001" >
+                `VoltagelineconductorL2toL3` = #{VoltagelineconductorL2toL3},
+          </if>
+          <if test="VoltagelineconductorL3toL1 != 0.001" >
+               `VoltagelineconductorL3toL1` = #{VoltagelineconductorL3toL1}, 
+          </if>
+          <if test="VoltagelineconductorL1toN != 0.001" >
+                `VoltagelineconductorL1toN` = #{VoltagelineconductorL1toN},
+          </if>
+          <if test="VoltagelineconductorL2toN != 0.001" >
+                `VoltagelineconductorL2toN` = #{VoltagelineconductorL2toN},
+          </if>
+          <if test="VoltagelineconductorL3toN != 0.001" >
+                `VoltagelineconductorL3toN` = #{VoltagelineconductorL3toN},
+          </if>
+          <if test="Scalefactorvoltage != 0.001" >
+                `Scalefactorvoltage` = #{Scalefactorvoltage},
+          </if>
+          <if test="Activepower != 0.001" >
+                `Activepower` = #{Activepower},
+          </if>
+          <if test="Scalefactoractivepower != 0.001" >
+                `Scalefactoractivepower` = #{Scalefactoractivepower},
+          </if>
+          <if test="Powerfrequency != 0.001" >
+                `Powerfrequency` = #{Powerfrequency},
+          </if>
+          <if test="Scalefactorpowerfrequency != 0.001" >
+                `Scalefactorpowerfrequency` = #{Scalefactorpowerfrequency},
+          </if>
+          <if test="Apparentpower != 0.001" >
+                `Apparentpower` = #{Apparentpower},
+          </if>
+          <if test="Scalefactorapparentpower != 0.001" >
+                `Scalefactorapparentpower` = #{Scalefactorapparentpower},
+          </if>
+          <if test="Reactivepower != 0.001" >
+                `Reactivepower` = #{Reactivepower},
+          </if>
+          <if test="Scalefactorreactivepower != 0.001" >
+                `Scalefactorreactivepower` = #{Scalefactorreactivepower},
+          </if>
+          <if test="Displacementpowerfactorcos != 0.001" >
+                `Displacementpowerfactorcos` = #{Displacementpowerfactorcos},
+          </if>
+          <if test="Scalefactordisplacementpowerfactor != 0.001" >
+                `Scalefactordisplacementpowerfactor` = #{Scalefactordisplacementpowerfactor},
+          </if>
+          <if test="Totalyield != 0.001" >
+                `Totalyield` = #{Totalyield},
+          </if>
+          <if test="calefactortotalyield != 0.001" >
+                `calefactortotalyield` = #{calefactortotalyield},
+          </if>
+          <if test="DCcurrent != 0.001" >
+                `DCcurrent` = #{DCcurrent},
+          </if>
+          <if test="ScalefactorDCcurrent != 0.001" >
+                `ScalefactorDCcurrent` = #{ScalefactorDCcurrent},
+          </if>
+          <if test="DCvoltage != 0.001" >
+                `DCvoltage` = #{DCvoltage},
+          </if>
+          <if test="ScalefactorDCvoltage != 0.001" >
+                `ScalefactorDCvoltage` = #{ScalefactorDCvoltage},
+          </if>
+          <if test="DCpower != 0.001" >
+                `DCpower` = #{DCpower},
+          </if>
+          <if test="ScalefactorDCpower != 0.001" >
+                `ScalefactorDCpower` = #{ScalefactorDCpower},
+          </if>
+          <if test="Internaltemperature != 0.001" >
+                `Internaltemperature` = #{Internaltemperature},
+          </if>
+          <if test="Heatsinktemperature != 0.001" >
+                `Heatsinktemperature` = #{Heatsinktemperature},
+          </if>
+          <if test="Transformer != 0.001" >
+                `Transformer` = #{Transformer},
+          </if>
+          <if test="Othertemperature != 0.001" >
+                `Othertemperature` = #{Othertemperature},
+          </if>
+          <if test="Scalefactortemperature != 0.001" >
+                `Scalefactortemperature` = #{Scalefactortemperature},
+          </if>
+          <if test="Operatingstatus != 0.001" >
+                `Operatingstatus` = #{Operatingstatus},
+          </if>
+          <if test="EventnumberEvt1 != 0.001" >
+               `EventnumberEvt1` = #{EventnumberEvt1}, 
+          </if>
+          <if test="EventnumberEvt2 != 0.001" >
+                `EventnumberEvt2` = #{EventnumberEvt2},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd1 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd1` = #{ManufacturerspecificeventcodeEvtVnd1},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd2 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd2` = #{ManufacturerspecificeventcodeEvtVnd2},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd3 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd3` = #{ManufacturerspecificeventcodeEvtVnd3},
+          </if>
+          <if test="ManufacturerspecificeventcodeEvtVnd4 != 0.001" >
+                `ManufacturerspecificeventcodeEvtVnd4` = #{ManufacturerspecificeventcodeEvtVnd4},
+          </if>
+          
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSmaShp7510Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

@@ -95,6 +95,7 @@ import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelShark100v1Entity;
 import com.nwm.api.entities.ModelShark250Entity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
+import com.nwm.api.entities.ModelSmaShp7510Entity;
 import com.nwm.api.entities.ModelSmaStp2550us50Entity;
 import com.nwm.api.entities.ModelSmartLogger3000Entity;
 import com.nwm.api.entities.ModelSolArkInverterEntity;
@@ -187,6 +188,7 @@ import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelShark100v1Service;
 import com.nwm.api.services.ModelShark250Service;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
+import com.nwm.api.services.ModelSmaShp7510Service;
 import com.nwm.api.services.ModelSmaStp2550us50Service;
 import com.nwm.api.services.ModelSmartLogger3000Service;
 import com.nwm.api.services.ModelSolArkInverterService;
@@ -3984,6 +3986,47 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceHuaweiSun200028ktl.insertModelHuaweiSun200028ktl(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+										
+											case "model_sma_shp7510":
+												ModelSmaShp7510Service serviceModelSmaShp7510 = new ModelSmaShp7510Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelSmaShp7510Entity dataEntity = serviceModelSmaShp7510.setModelSmaShp7510(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														if(dataEntity.getActivepower() != 0.001 && dataEntity.getActivepower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivepower() != 0.001 ? dataEntity.getActivepower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelSmaShp7510.insertModelSmaShp7510(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
