@@ -67,6 +67,7 @@ import com.nwm.api.entities.ModelKyPulseMeterEntity;
 import com.nwm.api.entities.ModelLeviton70D48000Entity;
 import com.nwm.api.entities.ModelLevitonAbviusA891123ChannelEntity;
 import com.nwm.api.entities.ModelLevitonS40000rPowerMeterEntity;
+import com.nwm.api.entities.ModelLovatoDmg800Entity;
 import com.nwm.api.entities.ModelLufftClass8020Entity;
 import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
 import com.nwm.api.entities.ModelMeterIon6200Entity;
@@ -160,6 +161,7 @@ import com.nwm.api.services.ModelKyPulseMeterService;
 import com.nwm.api.services.ModelLeviton70D48000Service;
 import com.nwm.api.services.ModelLevitonAbviusA891123ChannelService;
 import com.nwm.api.services.ModelLevitonS40000rPowerMeterService;
+import com.nwm.api.services.ModelLovatoDmg800Service;
 import com.nwm.api.services.ModelLufftClass8020Service;
 import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
 import com.nwm.api.services.ModelMeterIon6200Service;
@@ -4027,6 +4029,47 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSmaShp7510.insertModelSmaShp7510(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+												
+											case "model_lovato_dmg800":
+												ModelLovatoDmg800Service serviceModelLovatoDmg800 = new ModelLovatoDmg800Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelLovatoDmg800Entity dataEntity = serviceModelLovatoDmg800.setModelLovatoDmg800(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// real power
+														if(dataEntity.getEqvActivepower() != 0.001 && dataEntity.getEqvActivepower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+														deviceUpdateE.setLast_value(dataEntity.getEqvActivepower() != 0.001 ? dataEntity.getEqvActivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getEqvActivepower() != 0.001 ? dataEntity.getEqvActivepower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelLovatoDmg800.insertModelLovatoDmg800(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}

@@ -45,7 +45,7 @@ public class ModelSmaShp7510Service extends DB {
 				
 				dataModel.setVoltagelineconductorL3toL1(Double.parseDouble(!Lib.isBlank(words.get(11)) ? words.get(11) : "0.001"));
 				dataModel.setVoltagelineconductorL1toN(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
-				dataModel.setVoltagelineconductorL2toN(power);
+				dataModel.setVoltagelineconductorL2toN(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
 				dataModel.setVoltagelineconductorL3toN(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
 				dataModel.setScalefactorvoltage(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModel.setActivepower(power);

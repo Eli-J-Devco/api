@@ -6752,6 +6752,73 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
+	            <when test="id_device_group == 117">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+						(
+							`time` datetime NOT NULL,
+							`id_device` int NOT NULL,
+							`error` int unsigned DEFAULT '0',
+							`low_alarm` int unsigned DEFAULT '0',
+							`high_alarm` int unsigned DEFAULT '0',
+							
+							`L1phasevoltage` double DEFAULT NULL,
+							  `L2phasevoltage` double DEFAULT NULL,
+							  `L3phasevoltage` double DEFAULT NULL,
+							  `L1current` double DEFAULT NULL,
+							  `L2current` double DEFAULT NULL,
+							  `L3current` double DEFAULT NULL,
+							  `L1L2voltage` double DEFAULT NULL,
+							  `L2L3voltage` double DEFAULT NULL,
+							  `L3L1voltage` double DEFAULT NULL,
+							  `L1activepower` double DEFAULT NULL,
+							  `L2activepower` double DEFAULT NULL,
+							  `L3activepower` double DEFAULT NULL,
+							  `L1reactivepower` double DEFAULT NULL,
+							  `L2reactivepower` double DEFAULT NULL,
+							  `L3reactivepower` double DEFAULT NULL,
+							  `L1apparentpower` double DEFAULT NULL,
+							  `L2apparentpower` double DEFAULT NULL,
+							  `L3apparentpower` double DEFAULT NULL,
+							  `L1powerfactor` double DEFAULT NULL,
+							  `L2powerfactor` double DEFAULT NULL,
+							  `L3powerfactor` double DEFAULT NULL,
+							  `Frequency` double DEFAULT NULL,
+							  `EqvPhasevoltage` double DEFAULT NULL,
+							  `EqvPhasetophasevoltage` double DEFAULT NULL,
+							  `EqvCurrent` double DEFAULT NULL,
+							  `EqvActivepower` double DEFAULT NULL,
+							  `EqvReactivepower` double DEFAULT NULL,
+							  `EqvApparentpower` double DEFAULT NULL,
+							  `Eqvpowerfactor` double DEFAULT NULL,
+							  `Asymmetriyphasephasevoltage` double DEFAULT NULL,
+							  `Asymmetriyphaseneuralvoltage` double DEFAULT NULL,
+							  `Asymmetriyneutralcurrent` double DEFAULT NULL,
+							  `Neutralcurrent` double DEFAULT NULL,
+							  `ThdL1voltage` double DEFAULT NULL,
+							  `ThdL2voltage` double DEFAULT NULL,
+							  `ThdL3voltage` double DEFAULT NULL,
+							  `ThdL1current` double DEFAULT NULL,
+							  `ThdL2current` double DEFAULT NULL,
+							  `ThdL3current` double DEFAULT NULL,
+							  `ThdL12voltage` double DEFAULT NULL,
+							  `ThdL23voltage` double DEFAULT NULL,
+							  `ThdL31voltage` double DEFAULT NULL,
+							  `ActiveEnergyImport` double DEFAULT NULL,
+							  `ActiveEnergyExport` double DEFAULT NULL,
+							  `ReactivgEnergyImport` double DEFAULT NULL,
+							  `ReactiveEnergyExport` double DEFAULT NULL,
+							  `ApparentEnergy` double DEFAULT NULL,
+						    `nvmActivePower` double DEFAULT NULL,
+						    `nvmActiveEnergy` double DEFAULT NULL,
+						    `MeasuredProduction` double DEFAULT NULL,
+				
+							PRIMARY KEY (`time`,`id_device`) USING BTREE,
+							KEY `id_device` (`id_device`),
+							CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	            
 	            
 	            
 	            
