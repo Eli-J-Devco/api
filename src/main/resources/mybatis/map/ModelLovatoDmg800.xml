@@ -464,9 +464,6 @@
                 `Asymmetriyphaseneuralvoltage` = #{Asymmetriyphaseneuralvoltage},
           </if>
 
-          <if test="Neutralcurrent != 0.001" >
-                `Neutralcurrent` = #{Neutralcurrent},
-          </if>
           <if test="ThdL1voltage != 0.001" >
                 `ThdL1voltage` = #{ThdL1voltage},
           </if>
