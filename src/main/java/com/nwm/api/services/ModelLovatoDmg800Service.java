@@ -26,7 +26,7 @@ public class ModelLovatoDmg800Service extends DB {
 			if (words.size() > 0) {
 				ModelLovatoDmg800Entity dataModel = new ModelLovatoDmg800Entity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001");
 				
 				
