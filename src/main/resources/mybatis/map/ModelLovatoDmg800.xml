@@ -125,9 +125,7 @@
           <if test="Asymmetriyneutralcurrent != 0.001" >
                 `Asymmetriyneutralcurrent`,
           </if>
-          <if test="Neutralcurrent != 0.001" >
-                `Neutralcurrent`,
-          </if>
+
           <if test="ThdL1voltage != 0.001" >
                 `ThdL1voltage`,
           </if>
@@ -299,9 +297,7 @@
           <if test="Asymmetriyneutralcurrent != 0.001" >
                 #{Asymmetriyneutralcurrent},
           </if>
-          <if test="Neutralcurrent != 0.001" >
-                #{Neutralcurrent},
-          </if>
+
           <if test="ThdL1voltage != 0.001" >
                 #{ThdL1voltage},
           </if>
@@ -467,9 +463,7 @@
           <if test="Asymmetriyphaseneuralvoltage != 0.001" >
                 `Asymmetriyphaseneuralvoltage` = #{Asymmetriyphaseneuralvoltage},
           </if>
-          <if test="Asymmetriyneutralcurrent != 0.001" >
-                `Asymmetriyneutralcurrent` = #{Asymmetriyneutralcurrent},
-          </if>
+
           <if test="Neutralcurrent != 0.001" >
                 `Neutralcurrent` = #{Neutralcurrent},
           </if>

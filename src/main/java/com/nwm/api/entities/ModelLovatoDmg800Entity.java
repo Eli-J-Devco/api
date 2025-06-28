@@ -38,7 +38,6 @@ public class ModelLovatoDmg800Entity extends ModelBaseEntity {
 	private double Asymmetriyphasephasevoltage;
 	private double Asymmetriyphaseneuralvoltage;
 	private double Asymmetriyneutralcurrent;
-	private double Neutralcurrent;
 	private double ThdL1voltage;
 	private double ThdL2voltage;
 	private double ThdL3voltage;
@@ -245,12 +244,7 @@ public class ModelLovatoDmg800Entity extends ModelBaseEntity {
 	public void setAsymmetriyneutralcurrent(double asymmetriyneutralcurrent) {
 		Asymmetriyneutralcurrent = asymmetriyneutralcurrent;
 	}
-	public double getNeutralcurrent() {
-		return Neutralcurrent;
-	}
-	public void setNeutralcurrent(double neutralcurrent) {
-		Neutralcurrent = neutralcurrent;
-	}
+
 	public double getThdL1voltage() {
 		return ThdL1voltage;
 	}

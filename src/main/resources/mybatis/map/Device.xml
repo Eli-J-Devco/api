@@ -6793,7 +6793,6 @@
 							  `Asymmetriyphasephasevoltage` double DEFAULT NULL,
 							  `Asymmetriyphaseneuralvoltage` double DEFAULT NULL,
 							  `Asymmetriyneutralcurrent` double DEFAULT NULL,
-							  `Neutralcurrent` double DEFAULT NULL,
 							  `ThdL1voltage` double DEFAULT NULL,
 							  `ThdL2voltage` double DEFAULT NULL,
 							  `ThdL3voltage` double DEFAULT NULL,

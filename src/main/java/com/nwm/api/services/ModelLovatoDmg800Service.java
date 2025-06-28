@@ -27,7 +27,7 @@ public class ModelLovatoDmg800Service extends DB {
 				ModelLovatoDmg800Entity dataModel = new ModelLovatoDmg800Entity();
 				
 				Double power = Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001");
-				Double energy = Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001");
+				Double energy = Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001");
 				
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
@@ -70,24 +70,24 @@ public class ModelLovatoDmg800Service extends DB {
 				dataModel.setAsymmetriyphasephasevoltage(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
 				dataModel.setAsymmetriyphaseneuralvoltage(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
 				dataModel.setAsymmetriyneutralcurrent(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
-				dataModel.setNeutralcurrent(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModel.setThdL1voltage(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
-				dataModel.setThdL2voltage(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
-				dataModel.setThdL3voltage(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModel.setThdL1current(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
 				
-				dataModel.setThdL2current(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
-				dataModel.setThdL3current(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModel.setThdL12voltage(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModel.setThdL23voltage(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setThdL1voltage(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
+				dataModel.setThdL2voltage(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModel.setThdL3voltage(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
+				dataModel.setThdL1current(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				
+				dataModel.setThdL2current(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setThdL3current(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModel.setThdL12voltage(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModel.setThdL23voltage(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
 				
 				
-				dataModel.setThdL31voltage(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				dataModel.setThdL31voltage(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
 				dataModel.setActiveEnergyImport(energy);
-				dataModel.setActiveEnergyExport(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
-				dataModel.setReactivgEnergyImport(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
-				dataModel.setReactiveEnergyExport(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
-				dataModel.setApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
+				dataModel.setActiveEnergyExport(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
+				dataModel.setReactivgEnergyImport(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
+				dataModel.setReactiveEnergyExport(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
+				dataModel.setApparentEnergy(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
 				
 				
 				
