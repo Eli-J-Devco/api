@@ -75,6 +75,12 @@ public class LevitonReportsController extends BaseController {
 	public static final int COLUMN_INDEX_PRICE = 2;
 	public static final int COLUMN_INDEX_QUANTITY = 3;
 	public static final int COLUMN_INDEX_TOTAL = 4;
+
+	private final ReportsController reportsController;
+	
+    LevitonReportsController(ReportsController reportsController) {
+        this.reportsController = reportsController;
+    }
 	
 	
 	/**
@@ -675,45 +681,23 @@ public class LevitonReportsController extends BaseController {
 					
 					writeHeaderLevitonReport(chartSheet, 0, dataObj);
 					
-					// Write the output to a file
-					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-					String dir = uploadRootPath() + "/"
-							+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-					String fileName = dir + "/bmo-consumption-report-" + timeStamp + ".xlsx";
-					
-					try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
-						document.write(fileOut);
-						String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName,
-								Constants.mailFromContact);
-
-						String msgTemplate = Constants.getMailTempleteByState(16);
-						String cadenceRange = null;
-						switch(dataObj.getCadence_range()){
-						case 1:
-							cadenceRange = "Daily ";
-							break;
-						case 2:
-							cadenceRange = "Monthly ";
-							break;
-						case 4:
-							cadenceRange = "Annual ";
-							break;
-						case 6:
-							cadenceRange = "Weekly ";
-							break;
-						}
-						
-						String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", cadenceRange, "", "");
-						String mailTo = dataObj.getSubscribers();
-						String subject = Constants.getMailSubjectByState(16);
-
-						String tags = "leviton_report";
-						String fromName = "NEXT WAVE ENERGY MONITORING INC";
-						boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
-						if (!flagSent) {
-							throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
-						}
+					String cadenceRange = null;
+					switch(dataObj.getCadence_range()){
+					case 1:
+						cadenceRange = "Daily ";
+						break;
+					case 2:
+						cadenceRange = "Monthly ";
+						break;
+					case 4:
+						cadenceRange = "Annual ";
+						break;
+					case 6:
+						cadenceRange = "Weekly ";
+						break;
 					}
+					reportsController.sentExcelReportByMail(document, dataObj.getSubscribers(), "bmo-consumption", 16, "Customer", cadenceRange);
+					
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 				} else {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
@@ -737,10 +721,7 @@ public class LevitonReportsController extends BaseController {
 	@PostMapping("/sent-email-pdf-leviton-report")
 	public Object sentMailPdfDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-			String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-			String fileName = dir + "/bmo-consumption-report-" + timeStamp + ".pdf";
-			File file = new File(fileName);
+			File file = reportsController.createPdfFile("bmo-consumption");
 			
 			try (
 					PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -848,18 +829,7 @@ public class LevitonReportsController extends BaseController {
 					// It must be closed before attach to mail
 					document.close();
 					
-				    String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-				    String msgTemplate = Constants.getMailTempleteByState(16);
-				    String body = String.format(msgTemplate, dataObj.getSite_name(), dataObj.getId_site(), "Customer", cadenceRange.toLowerCase(), "", "");
-				    String mailTo = dataObj.getSubscribers();
-				    String subject = Constants.getMailSubjectByState(16);
-				    
-				    String tags = "report_leviton";
-				    String fromName = "NEXT WAVE ENERGY MONITORING INC";
-				    boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
-				    if (!flagSent) {
-				    	throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
-				    }
+					reportsController.sentPdfReportByMail(dataObj.getSubscribers(), obj.getCadence_range_name(), file);
 				    
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 				} else {

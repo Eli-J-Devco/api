@@ -7,6 +7,7 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
 import java.io.File;
@@ -18,7 +19,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -49,7 +52,10 @@ import org.apache.poi.xddf.usermodel.chart.XDDFDataSourcesFactory;
 import org.apache.poi.xddf.usermodel.chart.XDDFNumericalDataSource;
 import org.apache.poi.xddf.usermodel.chart.XDDFValueAxis;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartData.Series;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -92,7 +98,6 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.config.ReportTaskScheduler;
-import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
@@ -103,7 +108,6 @@ import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
-import com.nwm.api.services.AlertService;
 import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.DocumentHelper;
@@ -404,7 +408,7 @@ public class ReportsController extends BaseController {
 					}
 				}
 				
-				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+				sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 			} catch (Exception e) {
 				return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -850,7 +854,7 @@ public class ReportsController extends BaseController {
 				}
 			}
 				
-			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -1500,7 +1504,7 @@ public class ReportsController extends BaseController {
 				}
 			}
 					
-			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -1795,7 +1799,7 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param document, subscribers, cadenceRange
 	 */
-	private void sentExcelReportByMail(XSSFWorkbook document, String subscribers, String cadenceRangeName) throws Exception {
+	public void sentExcelReportByMail(XSSFWorkbook document, String subscribers, String cadenceRangeName, int templateState, Object... templateSubstitutions) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 		String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
@@ -1804,10 +1808,10 @@ public class ReportsController extends BaseController {
 			// Write the output to a file
 			document.write(fileOut);
 			String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-			String msgTemplate = Constants.getMailTempleteByState(16);
-			String body = String.format(msgTemplate, "", "", "Customer", cadenceRangeName + " ", "", "");
+			String msgTemplate = Constants.getMailTempleteByState(templateState);
+			String body = String.format(msgTemplate, templateSubstitutions);
 			String mailTo = subscribers;
-			String subject = Constants.getMailSubjectByState(16);
+			String subject = Constants.getMailSubjectByState(templateState);
 
 			String tags = "report_" + cadenceRangeName.toLowerCase();
 			String fromName = "NEXT WAVE ENERGY MONITORING INC";
@@ -1824,7 +1828,7 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param cadenceRange
 	 */
-	private File createPdfFile(String cadenceRangeName) throws Exception {
+	public File createPdfFile(String cadenceRangeName) throws Exception {
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
 		String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
 		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
@@ -1837,10 +1841,10 @@ public class ReportsController extends BaseController {
 	 * @since 2024-07-01
 	 * @param  subscribers, cadenceRange, file
 	 */
-	private void sentPdfReportByMail(String subscribers, String cadenceRangeName, File file) throws Exception {
+	public void sentPdfReportByMail(String subscribers, String cadenceRangeName, File file) throws Exception {
 		String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
 		String msgTemplate = Constants.getMailTempleteByState(16);
-		String body = String.format(msgTemplate, "", "", "Customer", cadenceRangeName + " ", "", "");
+		String body = String.format(msgTemplate, "Customer", cadenceRangeName);
 		String mailTo = subscribers;
 		String subject = Constants.getMailSubjectByState(16);
 
@@ -2062,28 +2066,8 @@ public class ReportsController extends BaseController {
 					// report table
 					writeTableEstimatedLossByEventReport(sheet, data);
 				}
-								
-				// Write the output to a file
-				String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-				String dir = uploadRootPath() + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-				String fileName = dir + "/asset-management-and-operation-performance-report-" + timeStamp + ".xlsx";
 				
-				try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
-					document.write(fileOut);
-					String mailFromContact = Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailFromContact);
-					String msgTemplate = Constants.getMailTempleteByState(21);
-					String body = String.format(msgTemplate, dataObj.getReportDetail().getSite_name(), dataObj.getReportDetail().getId_site(), "Customer");
-					String mailTo = dataObj.getReportDetail().getSubscribers();
-					String subject = Constants.getMailSubjectByState(21);
-
-					String tags = "asset-management-and-operation-performance-report";
-					String fromName = "NEXT WAVE ENERGY MONITORING INC";
-					boolean flagSent = SendMail.SendGmailTLSAttachment(mailFromContact, fromName, mailTo, subject, body, tags, fileName);
-					if (!flagSent) {
-						throw new Exception(Translator.toLocale(Constants.SENT_EMAIL_ERROR));
-					}
-				}
-				
+				sentExcelReportByMail(document, dataObj.getReportDetail().getSubscribers(), "asset-management-and-operation-performance", 21, dataObj.getReportDetail().getSite_name(), dataObj.getReportDetail().getId_site(), "Customer");
 				return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 			}
 		} catch (Exception e) {
@@ -2458,7 +2442,7 @@ public class ReportsController extends BaseController {
 				}
 			}
 				
-			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+			sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -2925,7 +2909,7 @@ public class ReportsController extends BaseController {
 						}
 					}
 					
-					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name());
+					sentExcelReportByMail(document, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
 				} catch (Exception e) {
 					return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
@@ -3078,24 +3062,391 @@ public class ReportsController extends BaseController {
 	 * Get sanity check report
 	 * @author Hung.Bui
 	 * @since 2025-06-25
+	 * @param obj
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/sanity-check-report")
 	public Object getSanityCheckReport(@RequestBody ViewReportEntity obj) {
 		try {
-			AlertEntity alert = new AlertEntity();
-			alert.setId_sites(obj.getIds());
-			alert.setDomain(obj.getDomain());
-			AlertService alertService = new AlertService();
-			List<AlertEntity> alertCountList = alertService.getSiteAlertCountList(alert);
-			
 			ReportsService service = new ReportsService();
-			List<SanityCheckReportEntity> dataObjList = service.getSanityCheckReport(obj, alertCountList);
-			if (dataObjList == null || dataObjList.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObjList, dataObjList.size());
+			ViewReportEntity dataObj = service.getSanityCheckReport(obj);
+			
+			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * Sent mail sanity check report in excel
+	 * @author Hung.Bui
+	 * @since 2025-06-30
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-excel-sanity-check-report")
+	public Object sentMailSanityCheckReport(@RequestBody ViewReportEntity obj) {
+		try (XSSFWorkbook document = new XSSFWorkbook()) {
+			ReportsService service = new ReportsService();
+			ViewReportEntity dataObj = service.getSanityCheckReport(obj);
+			if (dataObj == null) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+			
+			XSSFSheet sheet = document.createSheet("Sanity Check Report");
+			
+			// insert logo image
+			int pictureIdx = DocumentHelper.readLogoImageFile(document);
+			ClientAnchor logoAnchor = new XSSFClientAnchor(0, 10 * Units.EMU_PER_PIXEL, 0, -10 * Units.EMU_PER_PIXEL, 11, 0, 12, 4);
+			DocumentHelper.insertLogo(sheet, logoAnchor, pictureIdx);
+			
+			// report information and table
+			writeHeaderSanityCheckReport(sheet, obj, dataObj);
+			
+			sentExcelReportByMail(document, dataObj.getSubscribers(), "sanity-check", 25);
+			return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+		}
+	}
+	
+	private void writeHeaderSanityCheckReport(Sheet sheet, ViewReportEntity report, ViewReportEntity dataObj) {
+		try {
+			sheet.setDefaultColumnWidth(16);
+			sheet.setColumnWidth(0, 15 * 256);
+			sheet.setColumnWidth(1, 15 * 256);
+			sheet.setColumnWidth(2, 15 * 256);
+			sheet.setColumnWidth(3, 15 * 256);
+			sheet.setColumnWidth(4, 15 * 256);
+			sheet.setColumnWidth(5, 15 * 256);
+			sheet.setColumnWidth(6, 15 * 256);
+			sheet.setColumnWidth(7, 15 * 256);
+			sheet.setColumnWidth(8, 15 * 256);
+			sheet.setColumnWidth(9, 15 * 256);
+			sheet.setColumnWidth(10, 15 * 256);
+			sheet.setColumnWidth(11, 18 * 256);
+			sheet.setDefaultRowHeight((short) 500);
+			sheet.setDisplayGridlines(false);
+			
+			CellStyle reportTitleCellStyle = DocumentHelper.createStyleForReportTitle(sheet, (short) 22, true);
+			CellStyle reportInfoCellStyle = DocumentHelper.createStyleForReportInfo(sheet, false);
+			CellStyle reportInfoBoldCellStyle = DocumentHelper.createStyleForReportInfo(sheet, true);
+			XSSFCellStyle tableHeaderCellStyle = (XSSFCellStyle) DocumentHelper.createStyleForTableHeader(sheet);
+			tableHeaderCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			tableHeaderCellStyle.setFillForegroundColor(new XSSFColor(new byte[]{ (byte) 230, (byte) 230, (byte) 230 }, new DefaultIndexedColorMap()));
+			XSSFCellStyle tableSubHeaderCellStyle = (XSSFCellStyle) DocumentHelper.createStyleForTableHeader(sheet);
+			tableSubHeaderCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+			tableSubHeaderCellStyle.setFillForegroundColor(new XSSFColor(new byte[]{ (byte) 245, (byte) 245, (byte) 245 }, new DefaultIndexedColorMap()));
+			CellStyle tableRowCellStyle = DocumentHelper.createStyleForTableRow(sheet, false);
+			CellStyle tableRowNoDecimalCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, null);
+			CellStyle tableRowOneDecimalPlaceWithPercentageCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceWithPercentageDataFormat);
+
+			Row row = sheet.createRow(0);
+			Cell cell = row.createCell(0);
+			cell = row.createCell(1);
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+			
+			cell = row.createCell(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(3);
+			cell = row.createCell(4);
+			sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
+			
+			row = sheet.createRow(1);
+			cell = row.createCell(0);
+			row.setHeight((short) 600);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Report Date");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(dataObj.getReport_date());
+			cell = row.createCell(3);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(reportInfoCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
+			
+			row = sheet.createRow(2);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			cell.setCellValue("Covered Period");
+			cell = row.createCell(1);
+			cell.setCellStyle(reportInfoBoldCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 1));
+			
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell.setCellValue(format.format(dateFormat.parse(report.getStart_date())) + " - " + format.format(dateFormat.parse(report.getEnd_date())));
+			cell = row.createCell(3);
+			cell.setCellStyle(reportInfoCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(reportInfoCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(2, 2, 2, 4));
+			
+			row = sheet.createRow(3);
+			row.setHeight((short) 600);
+			cell = row.createCell(0);
+			cell = row.createCell(1);
+			sheet.addMergedRegion(new CellRangeAddress(3, 3, 0, 1));
+			
+			cell = row.createCell(2);
+			cell = row.createCell(3);
+			cell = row.createCell(4);
+			sheet.addMergedRegion(new CellRangeAddress(3, 3, 2, 4));
+			
+			for (int i = 0; i <= 3; i++) {
+				row = Objects.nonNull(sheet.getRow(i)) ? sheet.getRow(i) : sheet.createRow(i);
+				for (int j = 5; j <= 10; j++) {
+					cell = row.createCell(j);
+					cell.setCellStyle(reportTitleCellStyle);
+					if(i == 0 && j == 5) cell.setCellValue("SANITY CHECK REPORT");
+				}
+			}
+			sheet.addMergedRegion(new CellRangeAddress(0, 3, 5, 10));	
+			
+			row = sheet.createRow(4);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Site");
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(4, 5, 0, 1));
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("% Difference");
+			cell = row.createCell(3);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(4);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(5);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(6);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(7);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(4, 4, 2, 7));
+			
+			cell = row.createCell(8);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Alert");
+			sheet.addMergedRegion(new CellRangeAddress(4, 5, 8, 8));
+			
+			cell = row.createCell(9);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Manual Calculation - Meter");
+			cell = row.createCell(10);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(11);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(12);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(13);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(14);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(4, 4, 9, 14));
+			
+			cell = row.createCell(15);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Manual Calculation - Inverter");
+			cell = row.createCell(16);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(17);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(18);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(19);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(20);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(4, 4, 15, 20));
+			
+			row = sheet.createRow(5);
+			cell = row.createCell(0);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell = row.createCell(1);
+			cell.setCellStyle(tableHeaderCellStyle);
+			
+			cell = row.createCell(2);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			cell.setCellValue("REC");
+			cell = row.createCell(3);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 2, 3));
+			
+			cell = row.createCell(4);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			cell.setCellValue("Production");
+			cell = row.createCell(5);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 4, 5));
+			
+			cell = row.createCell(6);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			cell.setCellValue("Irradiance");
+			cell = row.createCell(7);
+			cell.setCellStyle(tableSubHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 6, 7));
+			cell = row.createCell(8);
+			cell.setCellStyle(tableHeaderCellStyle);
+			
+			cell = row.createCell(9);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("3 Phase Accumulated Energy BOM");
+			cell = row.createCell(10);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 9, 10));
+			
+			cell = row.createCell(11);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("3 Phase Accumulated Energy EOM");
+			cell = row.createCell(12);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 11, 12));
+			
+			cell = row.createCell(13);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Calculated Difference");
+			cell = row.createCell(14);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 13, 14));
+			
+			cell = row.createCell(15);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("3 Phase Accumulated Energy BOM");
+			cell = row.createCell(16);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 15, 16));
+			
+			cell = row.createCell(17);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("3 Phase Accumulated Energy EOM");
+			cell = row.createCell(18);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 17, 18));
+			
+			cell = row.createCell(19);
+			cell.setCellStyle(tableHeaderCellStyle);
+			cell.setCellValue("Calculated Difference");
+			cell = row.createCell(20);
+			cell.setCellStyle(tableHeaderCellStyle);
+			sheet.addMergedRegion(new CellRangeAddress(5, 5, 19, 20));
+				
+			List<SanityCheckReportEntity> dataExports = dataObj.getDataReports();
+			if(Objects.nonNull(dataExports) && dataExports.size() > 0) {
+				int accumulatedRowCount = 0;
+				
+				for(int i = 0; i < dataExports.size(); i++) {
+					SanityCheckReportEntity item = dataExports.get(i);
+					int firstRow = 6 + accumulatedRowCount + i;
+					int countFromFirstRow = Collections.max(Arrays.asList(item.getRecDifference1().size(), item.getRecDifference2().size(), item.getAccumulatedEnergyBOMByMeter().size(), item.getAccumulatedEnergyEOMByMeter().size(), item.getAccumulatedEnergyBOMByInverter().size(), item.getAccumulatedEnergyEOMByInverter().size(), 1)) - 1;
+					
+					for (int j = firstRow; j <= firstRow + countFromFirstRow; j++) {
+						// Site
+						Row row6 = Objects.nonNull(sheet.getRow(j)) ? sheet.getRow(j) : sheet.createRow(j);
+						cell = row6.createCell(0);
+						cell.setCellStyle(tableRowCellStyle);
+						if (j == firstRow) cell.setCellValue(item.getSiteName());
+						cell = row6.createCell(1);
+						cell.setCellStyle(tableRowCellStyle);
+						
+						// Production Difference 1
+						cell = row6.createCell(4);
+						cell.setCellStyle(tableRowOneDecimalPlaceWithPercentageCellStyle);
+						if (j == firstRow && Objects.nonNull(item.getProductionDifference1())) cell.setCellValue(item.getProductionDifference1());
+						
+						// Production Difference 2
+						cell = row6.createCell(5);
+						cell.setCellStyle(tableRowOneDecimalPlaceWithPercentageCellStyle);
+						if (j == firstRow && Objects.nonNull(item.getProductionDifference2())) cell.setCellValue(item.getProductionDifference2());
+						
+						// Irradiance Difference 1
+						cell = row6.createCell(6);
+						cell.setCellStyle(tableRowOneDecimalPlaceWithPercentageCellStyle);
+						if (j == firstRow && Objects.nonNull(item.getIrradianceDifference1())) cell.setCellValue(item.getIrradianceDifference1());
+						
+						// Irradiance Difference 2
+						cell = row6.createCell(7);
+						cell.setCellStyle(tableRowOneDecimalPlaceWithPercentageCellStyle);
+						if (j == firstRow && Objects.nonNull(item.getIrradianceDifference2())) cell.setCellValue(item.getIrradianceDifference2());
+						
+						// Alert
+						cell = row6.createCell(8);
+						cell.setCellStyle(tableRowNoDecimalCellStyle);
+						if (j == firstRow && Objects.nonNull(item.getAlert())) cell.setCellValue(item.getAlert());
+					}
+					sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 0, 1));
+					if(countFromFirstRow > 0) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 4, 4));
+					if(countFromFirstRow > 0) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 5, 5));
+					if(countFromFirstRow > 0) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 6, 6));
+					if(countFromFirstRow > 0) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 7, 7));
+					if(countFromFirstRow > 0) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + countFromFirstRow, 8, 8));
+					
+					int rowsPerMeter = (int) (item.getAccumulatedEnergyBOMByMeter().size() == 0 ? Math.max(item.getAccumulatedEnergyBOMByInverter().size(), 1) : Math.max(Math.floor(item.getAccumulatedEnergyBOMByInverter().size() / item.getAccumulatedEnergyBOMByMeter().size()), 1));
+					int rowsPerInverter = (int) (item.getAccumulatedEnergyBOMByInverter().size() == 0 ? Math.max(item.getAccumulatedEnergyBOMByMeter().size(), 1) : Math.max(Math.floor(item.getAccumulatedEnergyBOMByMeter().size() / item.getAccumulatedEnergyBOMByInverter().size()), 1));
+					
+					// REC Difference 1
+					sanityCheckReportListOfValueRender(sheet, item.getRecDifference1(), firstRow, 2, 2, rowsPerMeter, countFromFirstRow + 1, tableRowOneDecimalPlaceWithPercentageCellStyle);
+					// REC Difference 2
+					sanityCheckReportListOfValueRender(sheet, item.getRecDifference2(), firstRow, 3, 3, rowsPerMeter, countFromFirstRow + 1, tableRowOneDecimalPlaceWithPercentageCellStyle);
+					// accumulated energy BOM by meter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyBOMByMeter(), firstRow, 9, 10, rowsPerMeter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					// accumulated energy EOM by meter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyEOMByMeter(), firstRow, 11, 12, rowsPerMeter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					// accumulated energy difference by meter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyDifferenceByMeter(), firstRow, 13, 14, rowsPerMeter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					// accumulated energy BOM by inverter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyBOMByInverter(), firstRow, 15, 16, rowsPerInverter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					// accumulated energy EOM by inverter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyEOMByInverter(), firstRow, 17, 18, rowsPerInverter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					// accumulated energy difference by inverter
+					sanityCheckReportListOfValueRender(sheet, item.getAccumulatedEnergyDifferenceByInverter(), firstRow, 19, 20, rowsPerInverter, countFromFirstRow + 1, tableRowNoDecimalCellStyle);
+					
+					accumulatedRowCount += countFromFirstRow;
+				}
+			}
+		} catch (Exception e) {
+		}
+	}
+	
+	private void sanityCheckReportListOfValueRender(Sheet sheet, List<Double> data, int firstRow, int firstColumn, int lastColumn, int rowsPerValue, int totalRows, CellStyle cellStyle) {
+		// format all cells
+		for (int rowIndex = 0; rowIndex < totalRows; rowIndex++) {
+			Row row = Objects.nonNull(sheet.getRow(firstRow + rowIndex)) ? sheet.getRow(firstRow + rowIndex) : sheet.createRow(firstRow + rowIndex);
+			
+			for (int colIndex = firstColumn; colIndex <= lastColumn; colIndex++) {
+				Cell cell = row.createCell(colIndex);
+				cell.setCellStyle(cellStyle);
+			}
+		}
+		
+		if (data.size() == 0) {
+			if ((lastColumn - firstColumn > 0) || (totalRows > 1)) sheet.addMergedRegion(new CellRangeAddress(firstRow, firstRow + totalRows - 1, firstColumn, lastColumn));
+			return;
+		}
+		
+		for (int dataIndex = 0; dataIndex < data.size(); dataIndex++) {
+			Row row = sheet.getRow(firstRow + dataIndex * rowsPerValue);
+			Cell cell = row.getCell(firstColumn);
+			if(Objects.nonNull(data.get(dataIndex))) cell.setCellValue(data.get(dataIndex));
+			
+			if ((lastColumn - firstColumn > 0) || (rowsPerValue > 1)) sheet.addMergedRegion(new CellRangeAddress(firstRow + dataIndex * rowsPerValue, firstRow + dataIndex * rowsPerValue + rowsPerValue - 1, firstColumn, lastColumn));
+		}
+		
+		// merge the rest of rows which are empty by row
+		if ((data.size() * rowsPerValue < totalRows) && (lastColumn - firstColumn > 0)) {
+			for (int i = 0; i < totalRows - data.size() * rowsPerValue; i++) {
+				sheet.addMergedRegion(new CellRangeAddress(firstRow + data.size() * rowsPerValue + i, firstRow + data.size() * rowsPerValue + i, firstColumn, lastColumn));
+			}
 		}
 	}
 

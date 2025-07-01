@@ -551,9 +551,9 @@ public class AlertService extends DB {
 	 * @since 2025-06-27
 	 * @return list of alert count
 	 */
-	public List<AlertEntity> getSiteAlertCountList(AlertEntity obj) {
+	public List<AlertEntity> getSiteAlertCountListInDuration(AlertEntity obj) {
 		try {
-			return queryForList("Alert.getSiteAlertCountList", obj);
+			return queryForList("Alert.getSiteAlertCountListInDuration", obj);
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}

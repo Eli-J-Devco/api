@@ -1265,7 +1265,7 @@
 			LIMIT 1;
   	</select>
   	
-  	<select id="getSiteAlertCountList" resultType="com.nwm.api.entities.AlertEntity">
+  	<select id="getSiteAlertCountListInDuration" resultType="com.nwm.api.entities.AlertEntity">
 	  	SELECT
 	  		s.id,
 			COUNT(*) as totalError
@@ -1277,9 +1277,7 @@
 			JOIN site s ON s.id = d.id_site
 			JOIN time_zone t ON t.id = s.id_time_zone
 		WHERE
-			l.`status` = 1
-			AND l.is_delete = 0
-			AND l.resolved = 0
+			l.is_delete = 0
 			AND e.`status` = 1
 			AND e.is_delete = 0
 			AND d.`status` = 1
@@ -1298,6 +1296,15 @@
 			</if>
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			<include refid="com.nwm.common.siteByDomainCondition"/>
+			AND ((
+					l.status = 1
+					AND l.resolved = 0
+					AND l.start_date <![CDATA[ <= ]]> CONVERT_TZ(#{end_date}, t.value, 'UTC')
+				) OR (
+					l.status = 0
+					AND l.start_date <![CDATA[ <= ]]> CONVERT_TZ(#{end_date}, t.value, 'UTC')
+					AND l.end_date <![CDATA[ >= ]]> CONVERT_TZ(#{start_date}, t.value, 'UTC')
+			))
 		GROUP BY
 			s.id
   	</select>
