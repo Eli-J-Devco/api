@@ -1530,11 +1530,18 @@ public class BatchJob {
 					}
 					break;
 					
-				case 4: // Asset Management and Operation Performance Report, no cadence range
+				case 4: // Asset Management and Operation Performance Report
 					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth())));
 					objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
 					if (objReport.getFile_type() == 1) {}
 					else if (objReport.getFile_type() == 2) controller.sentMailAssetManagementAndOperationPerformanceReport(objReport);
+					break;
+					
+				case 5: // Sanity Check Report
+					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
+					objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+					if (objReport.getFile_type() == 1) {}
+					else if (objReport.getFile_type() == 2) controller.sentMailSanityCheckReport(objReport);
 					break;
 	
 				default:
