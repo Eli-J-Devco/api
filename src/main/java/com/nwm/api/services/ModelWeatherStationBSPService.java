@@ -31,7 +31,7 @@ public class ModelWeatherStationBSPService extends DB {
 				Double irradiance = Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001");
 				if(irradiance < 0) { irradiance = 0.0; };
 				
-				double temperature = !Lib.isBlank(words.get(5)) ? Double.parseDouble(words.get(5)) : 0.001;
+				double temperature = !Lib.isBlank(words.get(7)) ? Double.parseDouble(words.get(7)) : 0.001;
 				
 				dataModel.setTime(words.get(0).replace("'", ""));
 				dataModel.setError(Integer.parseInt(!Lib.isBlank(words.get(1)) ? words.get(1) : "0"));
