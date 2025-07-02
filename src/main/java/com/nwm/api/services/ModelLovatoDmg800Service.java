@@ -94,7 +94,7 @@ public class ModelLovatoDmg800Service extends DB {
 				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModel.setNvmActivePower(power);
-				dataModel.setNvmActiveEnergy(Double.parseDouble("0.001"));
+				dataModel.setNvmActiveEnergy(energy);
 				
 				return dataModel;
 				
