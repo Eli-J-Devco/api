@@ -1358,6 +1358,7 @@
 				WHEN r.type_option = 1 THEN t1.ids_site
 				WHEN r.type_option = 2 THEN t2.ids_site
 				WHEN r.type_option = 3 THEN t3.ids_site
+				WHEN r.type_option = 4 THEN t4.ids_site
 				ELSE NULL
 			END AS id_sites
 		FROM
@@ -1401,6 +1402,20 @@
 				GROUP BY
 					s.id_site_sub_group
 			) t3 ON t3.id_site_sub_group = r.id_sub_group
+			LEFT JOIN (
+				SELECT
+					sem.id_employee,
+					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site
+				FROM
+					site s
+					JOIN site_employee_map sem ON sem.id_site = s.id
+				WHERE 
+					s.`status` = 1
+					AND s.is_delete = 0
+					AND s.is_rec_report = 1
+				GROUP BY
+					sem.id_employee
+			) t4 ON t4.id_employee = r.id_employee
 		WHERE
 			r.id = #{id}
 			AND r.status = 1

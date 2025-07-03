@@ -80,8 +80,9 @@ public class DashboardController extends BaseController {
 	 */
 
 	@PostMapping("/alert-summary")
-	public Object getAlertSummary(@RequestBody AlertEntity obj) {
+	public Object getAlertSummary(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setIsUserNW(Lib.isUserNW(authz));
 			DashboardService service = new DashboardService();
 			Object detailObj = service.getAlertSummary(obj);
 			if (detailObj != null) {

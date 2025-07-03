@@ -126,6 +126,9 @@ public class Constants {
 	public static final String mailAssetManagementAndOperationPerformanceTitle = "mailAssetManagementAndOperationPerformanceTitle";
 	public static final String mailAssetManagementAndOperationPerformanceBody = "mailAssetManagementAndOperationPerformanceBody";
 	
+	public static final String mailSanityCheckReportTitle = "mailSanityCheckReportTitle";
+	public static final String mailSanityCheckReportBody = "mailSanityCheckReportBody";
+	
 	public static final String mailOTPTitle = "mailOTPTitle";
 	public static final String mailOTPBody = "mailOTPBody";
 	
@@ -593,6 +596,9 @@ public class Constants {
 		case 24:
 			// Add a new site
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSiteBody);
+		case 25:
+			// sanity check report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportBody);
 		default:
 			return null;
 		}
@@ -666,6 +672,9 @@ public class Constants {
 		case 24:
 			// delete site 
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailDeleteSite);
+		case 25:
+			// sanity check report
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportTitle);
 		default:
 			return null;
 		}

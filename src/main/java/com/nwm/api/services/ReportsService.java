@@ -527,10 +527,18 @@ public class ReportsService extends DB {
 	 * Get sanity check report
 	 * @author Hung.Bui
 	 * @since 2025-06-25
-	 * @return SanityCheckReportEntity
+	 * @return ViewReportEntity
 	 */
-	public List<SanityCheckReportEntity> getSanityCheckReport(ViewReportEntity obj, List<AlertEntity> alertCountList) {
+	public ViewReportEntity getSanityCheckReport(ViewReportEntity obj) {
 		try {
+			AlertEntity alertObj = new AlertEntity();
+			alertObj.setId_sites(obj.getIds());
+			alertObj.setDomain(obj.getDomain());
+			alertObj.setStart_date(obj.getStart_date());
+			alertObj.setEnd_date(obj.getEnd_date());
+			AlertService alertService = new AlertService();
+			List<AlertEntity> alertCountList = alertService.getSiteAlertCountListInDuration(alertObj);
+			
 			// convert list of alert count to map
 			Map<Integer, Integer> alertCountMap = new HashMap<Integer, Integer>();
 			for (AlertEntity alert : alertCountList) alertCountMap.put(alert.getId(), alert.getTotalError());
@@ -549,9 +557,11 @@ public class ReportsService extends DB {
 							ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", siteObj);
 							if (dataObj == null || dataObj.getId_site() == 0) return null;
 							
+							obj.setReport_date(dataObj.getReport_date());
+							obj.setSubscribers(dataObj.getSubscribers());
+							
 							SanityCheckReportEntity sanityCheckReport = new SanityCheckReportEntity();
 							sanityCheckReport.setSiteName(dataObj.getSite_name());
-							sanityCheckReport.setReportDate(dataObj.getReport_date());
 							
 							// alert
 							sanityCheckReport.setAlert(alertCountMap.get(siteObj.getId_site()));
@@ -582,18 +592,27 @@ public class ReportsService extends DB {
 									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
 									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
 									
-									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 								
 								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {
-									totalCurrEnergy = Objects.nonNull(currEnergy) ? Optional.ofNullable(totalCurrEnergy).orElse(0.0) + currEnergy : totalCurrEnergy;
-									totalLastEnergy = Objects.nonNull(lastEnergy) ? Optional.ofNullable(totalLastEnergy).orElse(0.0) + lastEnergy : totalLastEnergy;
+									if (Objects.nonNull(currEnergy)) totalCurrEnergy = Optional.ofNullable(totalCurrEnergy).orElse(0.0) + currEnergy;
+									if (Objects.nonNull(lastEnergy)) totalLastEnergy = Optional.ofNullable(totalLastEnergy).orElse(0.0) + lastEnergy;
 								}
 							}
 							
-							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalCurrEnergy > 0) sanityCheckReport.setProductionDifference1(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalCurrEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalLastEnergy > 0) sanityCheckReport.setProductionDifference2(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalLastEnergy * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalCurrEnergy > 0) sanityCheckReport.setProductionDifference1(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalCurrEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+							if(Objects.nonNull(totalCurrEnergy) && Objects.nonNull(totalLastEnergy) && totalLastEnergy > 0) sanityCheckReport.setProductionDifference2(BigDecimal.valueOf((totalCurrEnergy - totalLastEnergy) / totalLastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+							
+							if (sanityCheckReport.getRecDifference1().stream().allMatch(Objects::isNull)) sanityCheckReport.getRecDifference1().clear();
+							if (sanityCheckReport.getRecDifference2().stream().allMatch(Objects::isNull)) sanityCheckReport.getRecDifference2().clear();
+							if (sanityCheckReport.getAccumulatedEnergyBOMByInverter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyBOMByInverter().clear();
+							if (sanityCheckReport.getAccumulatedEnergyEOMByInverter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyEOMByInverter().clear();
+							if (sanityCheckReport.getAccumulatedEnergyDifferenceByInverter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyDifferenceByInverter().clear();
+							if (sanityCheckReport.getAccumulatedEnergyBOMByMeter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyBOMByMeter().clear();
+							if (sanityCheckReport.getAccumulatedEnergyEOMByMeter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyEOMByMeter().clear();
+							if (sanityCheckReport.getAccumulatedEnergyDifferenceByMeter().stream().allMatch(Objects::isNull)) sanityCheckReport.getAccumulatedEnergyDifferenceByMeter().clear();
 							
 							// irradiance
 							if (devicesByType.getIrradiance().size() > 0) {
@@ -606,8 +625,8 @@ public class ReportsService extends DB {
 									
 									Double current = irradianceDevice.get("current");
 									Double last = irradianceDevice.get("last");
-									if(Objects.nonNull(current) && Objects.nonNull(last) && current > 0) sanityCheckReport.setIrradianceDifference1(BigDecimal.valueOf((current - last) / current * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-									if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+									if(Objects.nonNull(current) && Objects.nonNull(last) && current > 0) sanityCheckReport.setIrradianceDifference1(BigDecimal.valueOf((current - last) / current).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if(Objects.nonNull(current) && Objects.nonNull(last) && last > 0) sanityCheckReport.setIrradianceDifference2(BigDecimal.valueOf((current - last) / last).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 							}
 							
@@ -624,10 +643,11 @@ public class ReportsService extends DB {
 			
 			List<SanityCheckReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
 			dataList.sort((a,b) -> a.getSiteName().compareTo(b.getSiteName()));
+			obj.setDataReports(dataList);
 			
-			return dataList;
+			return obj;
 		} catch (Exception ex) {
-			return new ArrayList<>();
+			return null;
 		}
 	}
 	
