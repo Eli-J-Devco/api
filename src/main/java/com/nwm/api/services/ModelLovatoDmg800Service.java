@@ -59,7 +59,7 @@ public class ModelLovatoDmg800Service extends DB {
 				dataModel.setL2powerfactor(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModel.setL3powerfactor(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
 				dataModel.setFrequency(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
-				dataModel.setEqvPhasevoltage(energy);
+				dataModel.setEqvPhasevoltage(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(26) : "0.001"));
 				dataModel.setEqvPhasetophasevoltage(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModel.setEqvCurrent(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				dataModel.setEqvActivepower(power);
@@ -127,6 +127,7 @@ public class ModelLovatoDmg800Service extends DB {
 			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
 				obj.setNvmActiveEnergy(dataObj.getNvmActiveEnergy());
 				obj.setActiveEnergyImport(dataObj.getNvmActiveEnergy());
+				obj.setEqvActivepower(0);
 			}
 						
 			 double measuredProduction = 0;
