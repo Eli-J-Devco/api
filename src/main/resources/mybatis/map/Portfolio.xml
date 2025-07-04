@@ -77,25 +77,7 @@
 		SELECT
 			s.id AS id_site,
 			d.id_device_type,
-			CASE
-				WHEN d.datatablename LIKE '%model_adam4017ws_class8110_nelis190'  THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_lufft_class8020' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_lufft_ws501_umb_weather' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_imtsolar_class8000' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_hukseflux_sr30d1_deviceclass_v0' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_imtsolar_tmodul_class8006' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_w_kipp_zonen_rt1' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_kippzonen_rt1_class8009' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_rt1_class30000' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_tti_tracker' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_poa_temp' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_eri_weather_icp_class8050' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_pyranometer_poa' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_pvmet_100' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_pvmet_200' THEN ROUND( SUM(d.last_value), 2)
-				WHEN d.datatablename LIKE '%model_sungrow_weather_pvmet75200' THEN ROUND( SUM(d.last_value), 2)					
-				ELSE "-"
-		 	END AS irradiance,
+			ROUND(SUM(d.last_value), 2) AS irradiance,
 		 	
 		 	<include refid="com.nwm.common.expectedPowerByPvModel">
 				<property name="irradiance" value="AVG(d.last_value)" />
