@@ -315,6 +315,12 @@ public class BuiltInReportController extends BaseController {
 	// Write header with format monthly portfolio production report 
 	private static void writeHeaderMonthTrendReport(Sheet sheet, ViewReportEntity dataObj) {
 		try {
+			// set print area
+			sheet.setFitToPage(true);
+			sheet.getPrintSetup().setFitWidth((short) 1);
+			sheet.getPrintSetup().setFitHeight((short) 0);
+			
+			// set column width
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 20 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
