@@ -261,7 +261,7 @@
 			CONCAT(d.devicename, " ", e.message) AS event,
 			d.devicename AS hardware,
 			i.icon AS icon_url,
-			DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', #{timezone_value}), '%d %b, %Y : %h:%i %p') AS trigger_date,
+			DATE_FORMAT(CONVERT_TZ(l.start_date, 'UTC', #{timezone_value}), '%d %b, %Y %h:%i %p') AS trigger_date,
 			IF(
 				TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()) > 0,
 				CONCAT(TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()), " year", IF(TIMESTAMPDIFF(YEAR, l.start_date, UTC_TIMESTAMP()) > 1, "s", "")),
