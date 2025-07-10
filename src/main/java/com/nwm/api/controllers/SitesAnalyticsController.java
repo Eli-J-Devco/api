@@ -21,6 +21,8 @@ import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
 import com.nwm.api.utils.Translator;
 import org.springframework.web.bind.annotation.*;
+
+import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
 import com.nwm.api.services.SitesAnalyticsService;
@@ -177,6 +179,27 @@ public class SitesAnalyticsController extends BaseController {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description get device energy by site
+	 * @author Hung.Bui
+	 * @since 2025-07-10
+	 * @param obj { date, siteId, deviceTypeId, granularityId }
+	 * @return data (status, message, array, total_row)
+	 */
+	@PostMapping("/device-energy-by-site")
+	public Object getDeviceEnergyBySite(@RequestBody DeviceEnergyBySiteRequest obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			if (!Lib.isSiteManagedByUser(authz, obj.getId_site())) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+			SitesAnalyticsService service = new SitesAnalyticsService();
+			List<DeviceEntity> data = service.getDeviceEnergyBySite(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 	

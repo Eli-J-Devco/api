@@ -608,4 +608,25 @@
 	 	LIMIT 1
 	</delete>
 	
+	<select id="getDeviceEnergyBySite" parameterType="com.nwm.api.entities.DeviceEntity" resultType="com.nwm.api.entities.DeviceEnergyBySiteDTO">
+		SELECT
+			<choose>
+				<when test="filterBy == 'hourly'">
+					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
+					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
+				</when>
+				<otherwise>
+					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%H:00') AS categories_time,
+					DATE_FORMAT(CONVERT_TZ(time, 'UTC', #{timezone_value}), '%Y-%m-%d %H:00') AS time_full,
+				</otherwise>
+			</choose>
+			SUM(MeasuredProduction) AS actual
+		FROM
+			${datatablename}
+		WHERE
+			time BETWEEN CONVERT_TZ(#{start_date}, #{timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{timezone_value}, 'UTC')
+		GROUP BY
+			time_full
+	</select>
+	
 </mapper>

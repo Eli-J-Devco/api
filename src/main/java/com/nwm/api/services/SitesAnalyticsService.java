@@ -24,9 +24,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEnergyBySiteDTO;
+import com.nwm.api.entities.DeviceEnergyBySiteRequest;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EmployeeChartFilterEntity;
-import com.nwm.api.entities.SitesAnalyticsReportEntity;
+import com.nwm.api.utils.Lib;
 
 
 public class SitesAnalyticsService extends DB {
@@ -525,7 +528,64 @@ public class SitesAnalyticsService extends DB {
 	}
 	
 
-	public void sendCustomReport(SitesAnalyticsReportEntity obj) {
-
+	/**
+	 * @description get device energy by site
+	 * @author Hung.Bui
+	 * @since 2025-07-10
+	 * @param obj { date, siteId, deviceTypeId, granularityId }
+	 * @return list of devices
+	 */
+	public List<DeviceEntity> getDeviceEnergyBySite(DeviceEnergyBySiteRequest obj) {
+		try {
+			CustomerViewService customerViewService = new CustomerViewService();
+			DevicesByTypeEntity devicesByType = customerViewService.getDevicesBySite(obj);
+			List<DeviceEntity> devices = obj.getDeviceTypeId().equals("inverter") ? devicesByType.getInverter() : devicesByType.getMeter();
+			if (devices.size() == 0) return new ArrayList<>();
+			
+			DateTimeFormatter inputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			DateTimeFormatter outputDateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+			LocalDateTime startDate = LocalDate.parse(obj.getDate(), inputDateFormat).atStartOfDay();
+			LocalDateTime endDate = LocalDate.parse(obj.getDate(), inputDateFormat).atTime(23, 59, 59);
+			
+			List<CompletableFuture<DeviceEntity>> list = new ArrayList<CompletableFuture<DeviceEntity>>();
+			
+			DeviceEntity dateTimeParams = new DeviceEntity();
+			switch (obj.getGranularityId()) {
+				case "hourly":
+				default:
+					dateTimeParams.setData_send_time(3);
+					dateTimeParams.setFilterBy("today");
+					break;
+			}
+			
+			List<DeviceEnergyBySiteDTO> dateTimeList = getDateTimeList(dateTimeParams, startDate, endDate)
+					.stream()
+					.map(DeviceEnergyBySiteDTO::convertDateTimeToEntity)
+					.collect(Collectors.toList());
+			
+			for(int i = 0; i < devices.size(); i++) {
+				DeviceEntity device = devices.get(i);
+				device.setStart_date(startDate.format(outputDateFormat));
+				device.setEnd_date(endDate.format(outputDateFormat));
+				device.setFilterBy(obj.getGranularityId());
+				
+				CompletableFuture<DeviceEntity> future = CompletableFuture.supplyAsync(() -> {
+					try {
+						List<DeviceEnergyBySiteDTO> data = queryForList("SitesAnalytics.getDeviceEnergyBySite", device);
+						device.setDataDevice(Lib.fulfillData(dateTimeList, data, "time_full"));
+					} catch (Exception ex) {
+						log.error("getDeviceEnergyBySite", ex);
+					}
+					
+					return device;
+				});
+				
+				list.add(future);
+			}
+			
+			return list.stream().map(future -> future.join()).collect(Collectors.toList());
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
 	}
 }
