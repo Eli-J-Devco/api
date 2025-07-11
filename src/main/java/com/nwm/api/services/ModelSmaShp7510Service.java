@@ -73,13 +73,17 @@ public class ModelSmaShp7510Service extends DB {
 				dataModel.setOthertemperature(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
 				dataModel.setScalefactortemperature(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
 				dataModel.setOperatingstatus(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
-				dataModel.setEventnumberEvt1(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModel.setEventnumberEvt2(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setManufacturerspecificstatuscode(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModel.setEventnumberEvt1(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setEventnumberEvt2(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
 				
-				dataModel.setManufacturerspecificeventcodeEvtVnd1(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd2(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd3(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd4(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd1(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd2(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd3(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd4(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				
+				
+				
 				
 				
 				
