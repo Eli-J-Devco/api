@@ -6741,6 +6741,7 @@
 						  `ManufacturerspecificeventcodeEvtVnd2` double DEFAULT NULL,
 						  `ManufacturerspecificeventcodeEvtVnd3` double DEFAULT NULL,
 						  `ManufacturerspecificeventcodeEvtVnd4` double DEFAULT NULL,
+						  `Manufacturerspecificstatuscode` double DEFAULT NULL,
 						  `nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,

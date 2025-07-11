@@ -155,6 +155,12 @@
                 `ManufacturerspecificeventcodeEvtVnd4`,
           </if>
           
+          <if test="Manufacturerspecificstatuscode != 0.001" >
+                `Manufacturerspecificstatuscode`,
+          </if>
+          
+          
+          
 		  <if test="nvmActivePower != 0.001" >
 		  	`nvmActivePower`,
 		  </if>
@@ -314,6 +320,10 @@
                 #{ManufacturerspecificeventcodeEvtVnd4},
           </if>
           
+          <if test="Manufacturerspecificstatuscode != 0.001" >
+                #{Manufacturerspecificstatuscode},
+          </if>
+          
 			  <if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			  </if>
@@ -469,6 +479,11 @@
           <if test="ManufacturerspecificeventcodeEvtVnd4 != 0.001" >
                 `ManufacturerspecificeventcodeEvtVnd4` = #{ManufacturerspecificeventcodeEvtVnd4},
           </if>
+          
+          <if test="Manufacturerspecificstatuscode != 0.001" >
+                `Manufacturerspecificstatuscode` = #{Manufacturerspecificstatuscode},
+          </if>
+          
           
 			  <if test="nvmActivePower != 0.001" >
 			  	nvmActivePower = #{nvmActivePower},

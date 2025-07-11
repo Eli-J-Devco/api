@@ -49,6 +49,14 @@ public class ModelSmaShp7510Entity extends ModelBaseEntity {
 	private double ManufacturerspecificeventcodeEvtVnd2;
 	private double ManufacturerspecificeventcodeEvtVnd3;
 	private double ManufacturerspecificeventcodeEvtVnd4;
+	private double Manufacturerspecificstatuscode;
+	
+	public double getManufacturerspecificstatuscode() {
+		return Manufacturerspecificstatuscode;
+	}
+	public void setManufacturerspecificstatuscode(double manufacturerspecificstatuscode) {
+		Manufacturerspecificstatuscode = manufacturerspecificstatuscode;
+	}
 	public double getACcurrentA() {
 		return ACcurrentA;
 	}
