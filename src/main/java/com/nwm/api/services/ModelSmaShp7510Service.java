@@ -69,25 +69,29 @@ public class ModelSmaShp7510Service extends DB {
 				dataModel.setTotalyield(energy);
 				dataModel.setCalefactortotalyield(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModel.setDCcurrent(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
-				dataModel.setDCvoltage(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
-				dataModel.setScalefactorDCvoltage(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
 				
-				dataModel.setDCpower(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
-				dataModel.setScalefactorDCpower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
-				dataModel.setInternaltemperature(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
-				dataModel.setHeatsinktemperature(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
-				dataModel.setTransformer(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
-				dataModel.setOthertemperature(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
-				dataModel.setScalefactortemperature(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
-				dataModel.setOperatingstatus(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
-				dataModel.setManufacturerspecificstatuscode(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
-				dataModel.setEventnumberEvt1(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
-				dataModel.setEventnumberEvt2(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModel.setScalefactorDCcurrent(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
 				
-				dataModel.setManufacturerspecificeventcodeEvtVnd1(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd2(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd3(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
-				dataModel.setManufacturerspecificeventcodeEvtVnd4(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				
+				dataModel.setDCvoltage(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModel.setScalefactorDCvoltage(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				
+				dataModel.setDCpower(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModel.setScalefactorDCpower(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
+				dataModel.setInternaltemperature(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
+				dataModel.setHeatsinktemperature(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
+				dataModel.setTransformer(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
+				dataModel.setOthertemperature(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModel.setScalefactortemperature(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
+				dataModel.setOperatingstatus(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				dataModel.setManufacturerspecificstatuscode(Double.parseDouble(!Lib.isBlank(words.get(40)) ? words.get(40) : "0.001"));
+				dataModel.setEventnumberEvt1(Double.parseDouble(!Lib.isBlank(words.get(41)) ? words.get(41) : "0.001"));
+				dataModel.setEventnumberEvt2(Double.parseDouble(!Lib.isBlank(words.get(42)) ? words.get(42) : "0.001"));
+				
+				dataModel.setManufacturerspecificeventcodeEvtVnd1(Double.parseDouble(!Lib.isBlank(words.get(43)) ? words.get(43) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd2(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd3(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
+				dataModel.setManufacturerspecificeventcodeEvtVnd4(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
 				
 				
 				
