@@ -204,6 +204,17 @@
 			  </if>
 			  
 			  
+			  <if test="AlarmInfo1 != 0.001">
+			  `AlarmInfo1`,
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  `AlarmInfo2`,
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  `AlarmInfo3`,
+			  </if>
+			  
+			  
 			<if test="nvmActivePower != 0.001">
 			  `nvmActivePower`,
 			  </if>
@@ -412,6 +423,16 @@
 			  #{CommunicationStatus},
 			  </if>
 			  
+			  <if test="AlarmInfo1 != 0.001">
+			  #{AlarmInfo1},
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  #{AlarmInfo2},
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  #{AlarmInfo3},
+			  </if>
+			  
 			  
 			<if test="nvmActivePower != 0.001">
 			  #{nvmActivePower},
@@ -618,6 +639,17 @@
 			  </if>
 			  <if test="CommunicationStatus != 0.001">
 			  `CommunicationStatus` = #{CommunicationStatus},
+			  </if>
+			  
+			  
+			  <if test="AlarmInfo1 != 0.001">
+			  `AlarmInfo1` = #{AlarmInfo1},
+			  </if>
+			  <if test="AlarmInfo2 != 0.001">
+			  `AlarmInfo2` = #{AlarmInfo2},
+			  </if>
+			  <if test="AlarmInfo3 != 0.001">
+			  `AlarmInfo3` = #{AlarmInfo3},
 			  </if>
 			  
 			  

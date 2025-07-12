@@ -99,6 +99,10 @@ public class ModelSmartLogger3000Service extends DB {
 				dataModel.setConversionCoefficient(Double.parseDouble(!Lib.isBlank(words.get(60)) ? words.get(60) : "0.001"));
 				dataModel.setCommunicationStatus(Double.parseDouble(!Lib.isBlank(words.get(60)) ? words.get(60) : "0.001"));
 				
+				dataModel.setAlarmInfo1(Double.parseDouble(!Lib.isBlank(words.get(61)) ? words.get(61) : "0.001"));
+				dataModel.setAlarmInfo2(Double.parseDouble(!Lib.isBlank(words.get(62)) ? words.get(62) : "0.001"));
+				dataModel.setAlarmInfo3(Double.parseDouble(!Lib.isBlank(words.get(63)) ? words.get(63) : "0.001"));
+				
 				
 				
 				

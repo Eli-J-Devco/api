@@ -6595,6 +6595,12 @@
 							`ConversionCoefficient` double DEFAULT NULL,
 							`CommunicationStatus` double DEFAULT NULL,
 							
+							`AlarmInfo1` double DEFAULT NULL,
+							`AlarmInfo2` double DEFAULT NULL,
+							`AlarmInfo3` double DEFAULT NULL,
+							
+							
+							
 							`nvmActivePower` double DEFAULT NULL,
 						    `nvmActiveEnergy` double DEFAULT NULL,
 						    `MeasuredProduction` double DEFAULT NULL,

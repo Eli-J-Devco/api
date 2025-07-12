@@ -60,6 +60,30 @@ public class ModelSmartLogger3000Entity extends ModelBaseEntity {
 	private double TotalRatedCapacityOfGridConnectedInverters;
 	private double ConversionCoefficient;
 	private double CommunicationStatus;
+	
+	private double AlarmInfo1;
+	private double AlarmInfo2;
+	private double AlarmInfo3;
+	
+	
+	public double getAlarmInfo1() {
+		return AlarmInfo1;
+	}
+	public void setAlarmInfo1(double alarmInfo1) {
+		AlarmInfo1 = alarmInfo1;
+	}
+	public double getAlarmInfo2() {
+		return AlarmInfo2;
+	}
+	public void setAlarmInfo2(double alarmInfo2) {
+		AlarmInfo2 = alarmInfo2;
+	}
+	public double getAlarmInfo3() {
+		return AlarmInfo3;
+	}
+	public void setAlarmInfo3(double alarmInfo3) {
+		AlarmInfo3 = alarmInfo3;
+	}
 	public double getPowerOn() {
 		return PowerOn;
 	}
