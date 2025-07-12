@@ -4750,4 +4750,58 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	 /* get Fault Code from table ModelSmaShp7510
+	 * 
+	 * @return
+	 */
+	public static int GetFaultCodeModelSmaShp7510(int decimalCode) {
+		int errorCode = 0;
+		switch (decimalCode) {
+		case 0:
+			errorCode = 1716;
+			break;
+		case 10:
+			errorCode = 1717;
+			break;
+		case 20:
+			errorCode = 1718;
+			break;
+		case 30:
+			errorCode = 1719;
+			break;
+		case 40:
+			errorCode = 1720;
+			break;
+		case 50:
+			errorCode = 1721;
+			break;
+		case 51:
+			errorCode = 1722;
+			break;
+		case 52:
+			errorCode = 1723;
+			break;
+		case 53:
+			errorCode = 1724;
+			break;
+		case 54:
+			errorCode = 1725;
+			break;
+		case 60:
+			errorCode = 1726;
+			break;
+		case 70:
+			errorCode = 1727;
+			break;
+		case 80:
+			errorCode = 1728;
+			break;
+		}
+		
+		return errorCode;
+	}
+	
+	 
+	
 }

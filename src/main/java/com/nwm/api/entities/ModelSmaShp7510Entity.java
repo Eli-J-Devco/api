@@ -50,7 +50,14 @@ public class ModelSmaShp7510Entity extends ModelBaseEntity {
 	private double ManufacturerspecificeventcodeEvtVnd3;
 	private double ManufacturerspecificeventcodeEvtVnd4;
 	private double Manufacturerspecificstatuscode;
+	private int totalFault1;
 	
+	public int getTotalFault1() {
+		return totalFault1;
+	}
+	public void setTotalFault1(int totalFault1) {
+		this.totalFault1 = totalFault1;
+	}
 	public double getManufacturerspecificstatuscode() {
 		return Manufacturerspecificstatuscode;
 	}

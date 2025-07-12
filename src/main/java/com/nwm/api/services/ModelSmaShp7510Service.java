@@ -5,12 +5,20 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSmaShp7510Entity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelSmaShp7510Service extends DB {
 	/**
@@ -136,6 +144,14 @@ public class ModelSmaShp7510Service extends DB {
 	        	return false;
 	        }
 	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelSmaShp7510(obj);
+	        	
+	        }
+	        
 	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
@@ -143,6 +159,101 @@ public class ModelSmaShp7510Service extends DB {
 		}
 
 	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2021-05-18
+	 * @param datatablename
+	 */
+
+	public ModelSmaShp7510Entity checkAlertWriteCode(ModelSmaShp7510Entity obj) {
+		ModelSmaShp7510Entity rowItem = new ModelSmaShp7510Entity();
+		try {
+			List dataList = queryForList("ModelSmaShp7510.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double Mode = (double) item.get("Manufacturerspecificstatuscode");
+					if(Double.compare(obj.getManufacturerspecificstatuscode(), Mode) == 0 && obj.getManufacturerspecificstatuscode() > 0 && Mode > 0) { 
+						totalFault1++;
+					}
+				}
+				rowItem.setTotalFault1(totalFault1);
+				
+			}
+			
+			if (rowItem == null)
+				return new ModelSmaShp7510Entity();
+		} catch (Exception ex) {
+			log.error("ModelSmaShp7510.checkAlertWriteCode", ex);
+			return new ModelSmaShp7510Entity();
+		}
+		return rowItem;
+	}
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author long.pham
+	 * @since 2022-09-26
+	 * @param data from datalogger 
+	 */
+
+	public void checkTriggerAlertModelSmaShp7510(ModelSmaShp7510Entity obj) {
+		
+		
+		// Check device alert by fault code
+		int fault1 = (obj.getManufacturerspecificstatuscode() > 0 && obj.getManufacturerspecificstatuscode() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
+		
+		ModelSmaShp7510Entity rowItem = (ModelSmaShp7510Entity) checkAlertWriteCode(obj);
+		
+		if(fault1 > 0 && rowItem.getTotalFault1() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetFaultCodeModelSmaShp7510(fault1);
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else {
+			// Close
+			try {
+				AlertEntity alertItemClose = new AlertEntity();
+				alertItemClose.setId_device(obj.getId_device());
+				// type 1 is warning code
+				alertItemClose.setFaultCodeLevel(1);
+				List dataListWarningCode = queryForList("ModelSmaShp7510.getListTriggerFaultCode", alertItemClose);
+				if(dataListWarningCode.size() > 0) {
+					for(int i = 0; i < dataListWarningCode.size(); i++) {
+						Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+						int id =  Integer.parseInt(itemFault.get("id").toString());
+						int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+						alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+						alertItemClose.setId(id );
+						alertItemClose.setId_error(idError);
+						update("Alert.UpdateErrorRow", alertItemClose);
+					}
+				}
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+	
 	
 
 }
