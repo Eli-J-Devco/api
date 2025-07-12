@@ -243,19 +243,10 @@ public class PortfolioService extends DB {
 	 */
 
 	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
-		List<SiteEntity> sites = getSites(obj);
-		List dataList = new ArrayList();
-		if (sites.size() == 0) return dataList;
-		List site_ids = new ArrayList();
-		for (SiteEntity site : sites) {
-			site_ids.add(site.getId_site());
-		}
-		obj.setId_sites(site_ids);
-
 		try {			
-			dataList = queryForList("Portfolio.getAvailability", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("Portfolio.getAvailability", obj);
+			if (dataList == null) return new ArrayList();
+			
 			List<SiteEnergyEntity> energyData = getSitesMetricsActualVsExpected(obj);
 			for (HashMap<String, Object> item: (List<HashMap<String, Object>>) dataList) {		
 				for (SiteEnergyEntity energyItem: energyData) {
@@ -269,88 +260,11 @@ public class PortfolioService extends DB {
 					}
 				}
 			}
-//			try {
-//				SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//				Date start_date = date_format.parse(obj.getStart_date());
-//				Date end_date = date_format.parse(obj.getEnd_date());
-//				Calendar startCalendar = Calendar.getInstance();
-//				Calendar endCalendar = Calendar.getInstance();
-//				startCalendar.setTime(start_date);
-//				endCalendar.setTime(end_date);
-//				switch(obj.getId_filter()) {
-//					case "today":
-//						startCalendar.add(Calendar.DATE, -1);
-//						endCalendar.add(Calendar.DATE, -1);
-//						endCalendar.set(Calendar.HOUR_OF_DAY, 23);
-//						endCalendar.set(Calendar.MINUTE, 59);
-//						endCalendar.set(Calendar.SECOND, 59);
-//						endCalendar.set(Calendar.MILLISECOND, 999);
-//						break;
-//					case "this_month":
-//						startCalendar.add(Calendar.MONTH, -1);
-//						endCalendar.add(Calendar.MONTH, -1);
-//						endCalendar.set(Calendar.DATE, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-//						endCalendar.set(Calendar.HOUR_OF_DAY, 23);
-//						endCalendar.set(Calendar.MINUTE, 59);
-//						endCalendar.set(Calendar.SECOND, 59);
-//						endCalendar.set(Calendar.MILLISECOND, 999);
-//						break;
-//					case "last_month":
-//						startCalendar.add(Calendar.MONTH, -1);
-//						endCalendar.add(Calendar.MONTH, -1);
-//						endCalendar.set(Calendar.DATE, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-//						endCalendar.set(Calendar.HOUR_OF_DAY, 23);
-//						endCalendar.set(Calendar.MINUTE, 59);
-//						endCalendar.set(Calendar.SECOND, 59);
-//						endCalendar.set(Calendar.MILLISECOND, 999);
-//						break;
-//					case "12_month":
-//						startCalendar.add(Calendar.MONTH, -13);
-//						endCalendar.add(Calendar.MONTH, -13);
-//						endCalendar.set(Calendar.DATE, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-//						endCalendar.set(Calendar.HOUR_OF_DAY, 23);
-//						endCalendar.set(Calendar.MINUTE, 59);
-//						endCalendar.set(Calendar.SECOND, 59);
-//						endCalendar.set(Calendar.MILLISECOND, 999);
-//						break;
-//					default:
-//				}
-//				obj.setStart_date(date_format.format(startCalendar.getTime()));
-//				obj.setEnd_date(date_format.format(endCalendar.getTime()));
-//				List previousDataList = queryForList("Portfolio.getAvailability", obj);
-//				for (HashMap<String, Object> item: (List<HashMap<String, Object>>) dataList) {
-//					for (HashMap<String, Object> previousItem: (List<HashMap<String, Object>>) previousDataList) {
-//						if (item.get("site_id").equals(previousItem.get("site_id"))) {
-//							item.put("previous_unavailable_inverters", previousItem.get("unavailable_inverters"));
-//							item.put("previous_availability", previousItem.get("availability"));
-//							item.put("previous_total_inverters", previousItem.get("total_inverters"));
-//						}
-//					}
-//				}
-//				List<SiteEnergyEntity> previousEnergyData = getSitesMetricsActualVsExpected(obj);
-//				for (HashMap<String, Object> item: (List<HashMap<String, Object>>) dataList) {
-//					for (SiteEnergyEntity previousItem: previousEnergyData) {
-//						if ((int) item.get("site_id") == previousItem.getId()) {
-//							item.put("previous_actual_energy", previousItem.getActualEnergy());
-//							item.put("previous_actual_power", previousItem.getActualPower());
-//							item.put("previous_expected_energy", previousItem.getExpectedEnergy());
-//							item.put("previous_expected_power", previousItem.getExpectedPower());
-//							try {
-//								item.put("previous_performance", (previousItem.getActualEnergy() / previousItem.getExpectedEnergy()) * 100);
-//							} catch (Exception e) {
-//								item.put("previous_performance", null);
-//							}
-//							item.put("previous_variance", previousItem.getVariance());
-//						}
-//					}
-//				}
-//			} catch (Exception e) {
-//				System.out.println(e);
-//			}
+			
+			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
 		}
-		return dataList;
 	}
 	 
 	/**
