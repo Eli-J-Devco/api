@@ -4660,4 +4660,94 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	/**
+	 * get error code from table model_ivt_solaron_ext
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelHuaweiSun200028kt(int decimalAlarmId, int decimalCauseId, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			if(decimalAlarmId == 400 && decimalCauseId == 1) { errorCode = 1647; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 20) { errorCode = 1648; }
+			else if(decimalAlarmId == 318 && decimalCauseId == 1) { errorCode = 1649; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 1) { errorCode = 1650; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 5) { errorCode = 1651; }
+			else if(decimalAlarmId == 313 && decimalCauseId == 1) { errorCode = 1651; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 2) { errorCode = 1653; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 6) { errorCode = 1654; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 23) { errorCode = 1655; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 1) { errorCode = 1656; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 2) { errorCode = 1657; }
+			else if(decimalAlarmId == 103 && decimalCauseId == 3) { errorCode = 1658; }
+			else if(decimalAlarmId == 321 && decimalCauseId == 14) { errorCode = 1659; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 3) { errorCode = 1660; }
+			else if(decimalAlarmId == 410 && decimalCauseId == 4) { errorCode = 1661; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 10) { errorCode = 1662; }
+			else if(decimalAlarmId == 200 && decimalCauseId == 11) { errorCode = 1663; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 4) { errorCode = 1664; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 3) { errorCode = 1665; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 13) { errorCode = 1666; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 14) { errorCode = 1667; }
+			else if(decimalAlarmId == 202 && decimalCauseId == 16) { errorCode = 1668; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 21) { errorCode = 1669; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 7) { errorCode = 1670; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 8) { errorCode = 1671; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 9) { errorCode = 1672; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 4) { errorCode = 1673; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 5) { errorCode = 1674; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 6) { errorCode = 1675; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 16) { errorCode = 1676; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 17) { errorCode = 1677; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 18) { errorCode = 1678; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 2) { errorCode = 1679; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 4) { errorCode = 1680; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 28) { errorCode = 1681; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 29) { errorCode = 1682; }
+			else if(decimalAlarmId == 326 && decimalCauseId == 1) { errorCode = 1683; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 26) { errorCode = 1684; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 31) { errorCode = 1685; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 32) { errorCode = 1686; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 33) { errorCode = 1687; }
+			else if(decimalAlarmId == 400 && decimalCauseId == 21) { errorCode = 1688; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 19) { errorCode = 1689; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 20) { errorCode = 1690; }
+			else if(decimalAlarmId == 301 && decimalCauseId == 21) { errorCode = 1691; }
+			if(decimalAlarmId == 301 && decimalCauseId == 22) { errorCode = 1692; }
+			
+			break;
+		case 2:
+			if(decimalAlarmId == 505 && decimalCauseId == 1) { errorCode = 1693; }
+			else if(decimalAlarmId == 504 && decimalCauseId == 2) { errorCode = 1694; }
+			else if(decimalAlarmId == 504 && decimalCauseId == 3) { errorCode = 1695; }
+			if(decimalAlarmId == 61440 && decimalCauseId == 1) { errorCode = 1696; }
+			
+			break;
+		case 3:
+			if(decimalAlarmId == 122 && decimalCauseId == 1) { errorCode = 1697; }
+			else if(decimalAlarmId == 120 && decimalCauseId == 1) { errorCode = 1698; }
+			else if(decimalAlarmId == 121 && decimalCauseId == 1) { errorCode = 1699; }
+			else if(decimalAlarmId == 123 && decimalCauseId == 1) { errorCode = 1700; }
+			else if(decimalAlarmId == 124 && decimalCauseId == 1) { errorCode = 1701; }
+			else if(decimalAlarmId == 125 && decimalCauseId == 1) { errorCode = 1702; }
+			else if(decimalAlarmId == 120 && decimalCauseId == 2) { errorCode = 1703; }
+			else if(decimalAlarmId == 121 && decimalCauseId == 2) { errorCode = 1704; }
+			else if(decimalAlarmId == 122 && decimalCauseId == 2) { errorCode = 1705; }
+			else if(decimalAlarmId == 123 && decimalCauseId == 2) { errorCode = 1706; }
+			else if(decimalAlarmId == 124 && decimalCauseId == 2) { errorCode = 1707; }
+			else if(decimalAlarmId == 125 && decimalCauseId == 2) { errorCode = 1708; }
+			else if(decimalAlarmId == 300 && decimalCauseId == 1) { errorCode = 1709; }
+			else if(decimalAlarmId == 106 && decimalCauseId == 1) { errorCode = 1710; }
+			else if(decimalAlarmId == 107 && decimalCauseId == 1) { errorCode = 1711; }
+			else if(decimalAlarmId == 108 && decimalCauseId == 1) { errorCode = 1712; }
+			else if(decimalAlarmId == 109 && decimalCauseId == 1) { errorCode = 1713; }
+			else if(decimalAlarmId == 110 && decimalCauseId == 1) { errorCode = 1714; }
+			 if(decimalAlarmId == 111 && decimalCauseId == 1) { errorCode = 1715; }
+			break;
+		}
+
+		return errorCode;
+	}
+	
 }
