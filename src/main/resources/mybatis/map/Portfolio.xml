@@ -771,6 +771,7 @@
 	<select id="getSites" resultType="com.nwm.api.entities.SiteEntity">
 		SELECT
 			s.id AS id_site,
+			SHA1(s.id) AS hash_id,
 			<include refid="com.nwm.common.siteName"/> AS name,
 			s.table_data_report,
 			s.table_data_virtual,
