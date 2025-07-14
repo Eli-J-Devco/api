@@ -139,7 +139,7 @@
 			s.id AS id_site,
 			el.id AS id_error_level,
 			COUNT( a.id ) AS total_error,
-			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon) AS obj_alert
+			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon, 'id_error_level', el.id) AS obj_alert
 		FROM
 			site s
 			JOIN device d ON d.id_site = s.id
