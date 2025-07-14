@@ -4802,6 +4802,67 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSmartLogger3000(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 1:
+			switch (bitLevel) {
+			case 3: errorCode = 1729; break; // 0
+			case 11: errorCode = 1730; break; // 1
+			}
+			break;
+			
+		case 2: 
+			switch (bitLevel) {
+			case 1: errorCode = 1731; break; // 17
+			case 2: errorCode = 1732; break; // 18
+			case 3: errorCode = 1733; break; // 19
+			case 4: errorCode = 1734; break; // 20
+			case 5: errorCode = 1735; break; // 21
+			case 6: errorCode = 1736; break; // 22
+			case 7: errorCode = 1737; break; // 23
+			case 8: errorCode = 1738; break; // 24
+			case 9: errorCode = 1739; break; // 25
+			case 10: errorCode = 1740; break; // 26
+			case 11: errorCode = 1741; break; // 27
+			case 12: errorCode = 1742; break; // 28
+			case 13: errorCode = 1743; break; // 29
+			
+			}
+			break;
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1744; break; // 32
+			case 1: errorCode = 1745; break; // 33
+			case 2: errorCode = 1746; break; // 34
+			case 3: errorCode = 1747; break; // 35
+			case 4: errorCode = 1748; break; // 36
+			case 5: errorCode = 1749; break; // 37
+			case 6: errorCode = 1750; break; // 38
+			case 7: errorCode = 1751; break; // 39
+			case 8: errorCode = 1752; break; // 40 
+			case 9: errorCode = 1753; break; // 41
+			case 10: errorCode = 1754; break; // 42
+			case 11: errorCode = 1755; break; // 43
+			case 12: errorCode = 1756; break; // 44
+			case 13: errorCode = 1757; break; // 45
+			case 14: errorCode = 1758; break; // 46
+			
+			}
+			break;
+		
+		}
+
+		return errorCode;
+	}
+	
+	
 	 
 	
 }

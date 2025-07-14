@@ -64,8 +64,29 @@ public class ModelSmartLogger3000Entity extends ModelBaseEntity {
 	private double AlarmInfo1;
 	private double AlarmInfo2;
 	private double AlarmInfo3;
+	private int totalFaultWord1;
+	private int totalFaultWord2;
+	private int totalFaultWord3;
 	
 	
+	public int getTotalFaultWord1() {
+		return totalFaultWord1;
+	}
+	public void setTotalFaultWord1(int totalFaultWord1) {
+		this.totalFaultWord1 = totalFaultWord1;
+	}
+	public int getTotalFaultWord2() {
+		return totalFaultWord2;
+	}
+	public void setTotalFaultWord2(int totalFaultWord2) {
+		this.totalFaultWord2 = totalFaultWord2;
+	}
+	public int getTotalFaultWord3() {
+		return totalFaultWord3;
+	}
+	public void setTotalFaultWord3(int totalFaultWord3) {
+		this.totalFaultWord3 = totalFaultWord3;
+	}
 	public double getAlarmInfo1() {
 		return AlarmInfo1;
 	}

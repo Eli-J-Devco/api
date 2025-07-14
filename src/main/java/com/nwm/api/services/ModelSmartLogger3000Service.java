@@ -5,13 +5,21 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
 import com.nwm.api.entities.ModelSmartLogger3000Entity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelSmartLogger3000Service extends DB {
 	
@@ -147,15 +155,296 @@ public class ModelSmartLogger3000Service extends DB {
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSmartLogger3000.insertModelSmartLogger3000", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelSmartLogger3000(obj);
+	        }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	/**
+	 * @description get last row
+	 * @author long.pham
+	 * @since 2022-05-11
+	 * @param id_device
+	 * @return Object
+	 */
+
+	public ModelSmartLogger3000Entity getLastRow(ModelSmartLogger3000Entity obj) {
+		ModelSmartLogger3000Entity dataObj = new ModelSmartLogger3000Entity();
+		try {
+			dataObj = (ModelSmartLogger3000Entity) queryForObject("ModelSmartLogger3000.getLastRow", obj);
+			if (dataObj == null)
+				return new ModelSmartLogger3000Entity();
+		} catch (Exception ex) {
+			return new ModelSmartLogger3000Entity();
+		}
+		return dataObj;
+	}
+	
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author long.pham
+	 * @since 2023-04-03
+	 * @param datatablename
+	 */
+
+	public ModelSmartLogger3000Entity checkAlertWriteCode(ModelSmartLogger3000Entity obj) {
+		ModelSmartLogger3000Entity rowItem = new ModelSmartLogger3000Entity();
+		try {
+			List dataList = queryForList("ModelSmartLogger3000.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFault1 = 0, totalFault2 = 0, totalFault3 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double fault1 = (double) item.get("AlarmInfo1");
+					if(Double.compare(obj.getAlarmInfo1(), fault1) == 0 && obj.getAlarmInfo1() > 0 && fault1 > 0) { 
+						totalFault1++;
+					}
+					
+					double fault2 = (double) item.get("AlarmInfo2");
+					if(Double.compare(obj.getAlarmInfo2(), fault2) == 0 && obj.getAlarmInfo2() > 0 && fault2 > 0) { 
+						totalFault2++;
+					}
+					
+					double fault3 = (double) item.get("AlarmInfo3");
+					if(Double.compare(obj.getAlarmInfo1(), fault3) == 0 && obj.getAlarmInfo1() > 0 && fault3 > 0) { 
+						totalFault3++;
+					}
+					
+				}
+				rowItem.setTotalFaultWord1(totalFault1);
+				rowItem.setTotalFaultWord2(totalFault2);
+				rowItem.setTotalFaultWord3(totalFault3);
+				
+			}
+			
+			if (rowItem == null)
+				return new ModelSmartLogger3000Entity();
+		} catch (Exception ex) {
+			return new ModelSmartLogger3000Entity();
+		}
+		return rowItem;
+	}
+	
+
+	/**
+	 * @description check trigger alert fault code
+	 * @author long.pham
+	 * @since  2023-04-03
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelSmartLogger3000(ModelSmartLogger3000Entity obj) {
+		// Check device alert by fault code
+		int fault1 = (obj.getAlarmInfo1() > 0 && obj.getAlarmInfo1() != 0.001) ? (int) obj.getAlarmInfo1() : 0;
+		int fault2 = (obj.getAlarmInfo2() > 0 && obj.getAlarmInfo2() != 0.001) ? (int) obj.getAlarmInfo2() : 0;
+		int fault3 = (obj.getAlarmInfo3() > 0 && obj.getAlarmInfo3() != 0.001) ? (int) obj.getAlarmInfo3() : 0;
+		
+		
+		ModelSmartLogger3000Entity rowItem = (ModelSmartLogger3000Entity) checkAlertWriteCode(obj);
+		
+		
+		// check fault code 1
+		if (fault1 > 0  && rowItem.getTotalFaultWord1() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault1);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmartLogger3000(v, 1);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 1
+			try {
+				if(rowItem.getTotalFaultWord1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListFault1 = new ArrayList();
+					dataListFault1 = queryForList("ModelSmartLogger3000.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault1.size() > 0) {
+						for(int i = 0; i < dataListFault1.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault1.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		// check fault code 2
+		if (fault2 > 0  && rowItem.getTotalFaultWord2() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault2);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmartLogger3000(v, 2);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 
+			try {
+				if(rowItem.getTotalFaultWord2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(2);
+					List dataListFault2 = new ArrayList();
+					dataListFault2 = queryForList("ModelSmartLogger3000.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault2.size() > 0) {
+						for(int i = 0; i < dataListFault2.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		// check fault code 3
+				if (fault3 > 0  && rowItem.getTotalFaultWord3() >= 20) {
+					try {
+						String toBinary = Integer.toBinaryString(fault3);
+						String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+						int v = 0;
+						for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+							int index = b;
+							int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+							if (bitLevel == 1) {
+								int errorId = LibErrorCode.GetErrorCodeModelSmartLogger3000(v, 3);
+								if (errorId > 0) {
+									AlertEntity alertDeviceItem = new AlertEntity();
+									alertDeviceItem.setId_device(obj.getId_device());
+									alertDeviceItem.setStart_date(obj.getTime());
+									alertDeviceItem.setId_error(errorId);
+									boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+									boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+									if (!checkAlertDeviceExist && errorExits) {
+										insert("BatchJob.insertAlert", alertDeviceItem);
+									}
+								}
+							}
+							v += 1;
+						}
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				} else {
+					// Close fault code 3
+					try {
+						if(rowItem.getTotalFaultWord3() == 0) {
+							AlertEntity alertItemClose = new AlertEntity();
+							alertItemClose.setId_device(obj.getId_device());
+							alertItemClose.setFaultCodeLevel(3);
+							List dataListFault3 = new ArrayList();
+							dataListFault3 = queryForList("ModelSmartLogger3000.getListTriggerFaultCode", alertItemClose);
+							if(dataListFault3.size() > 0) {
+								for(int i = 0; i < dataListFault3.size(); i++) {
+									Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
+									int id =  Integer.parseInt(itemFault.get("id").toString());
+									int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+									alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+									alertItemClose.setId(id );
+									alertItemClose.setId_error(idError);
+									update("Alert.UpdateErrorRow", alertItemClose);
+								}
+							}
+						}
+						
+					}
+					catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+		
+		
+		
+		
+		
+		
+		
+
+		
 	}
 
 }
