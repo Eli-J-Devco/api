@@ -6,6 +6,7 @@
 	<select id="getListDeviceBySite" resultType="Map">
 		SELECT
 			d.id,
+			d.id_site,
 			d.devicename AS name,
 			d.id_device_group,
 			d.datatablename,
@@ -37,7 +38,8 @@
 				'min_value', IFNULL(dpf.min_value, 0.001),
 				'max_value', IFNULL(dpf.max_value, 0.001),
 				'rounding_decimals', dp.rounding_decimals,
-				'parameter_title_trans', IFNULL(dp.title_trans, "N/A")
+				'parameter_title_trans', IFNULL(dp.title_trans, "N/A"),
+				'ai_model_enable', dp.ai_model_enable
 			)) AS parameters,
 			0 AS checked
 		FROM
