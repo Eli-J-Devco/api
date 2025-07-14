@@ -704,7 +704,7 @@
 	<select id="getAvailability" resultType="Map">
 		SELECT a.site_id AS site_id,
 			   a.site_name AS site_name,
-			   ((a.total_inverters - b.unavailable_inverters) / a.total_inverters) * 100 AS availability,
+			   ROUND((a.total_inverters - b.unavailable_inverters) / a.total_inverters * 100, 0) AS availability,
 			   b.unavailable_inverters AS unavailable_inverters,
 			   a.total_inverters AS total_inverters
 		FROM (SELECT s.id AS site_id,

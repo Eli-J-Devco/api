@@ -13,6 +13,7 @@ public class SiteEnergyEntity {
 	private Double actualEnergy;
 	private Double expectedEnergy;
 	private Double variance;
+	private Double ae;
 	
 	public int getId() {
 		return id;
@@ -68,5 +69,13 @@ public class SiteEnergyEntity {
 
 	public void setVariance(Double variance) {
 		this.variance = variance;
+	}
+
+	public Double getAe() {
+		return ae;
+	}
+
+	public void setAe(Double ae) {
+		this.ae = ae;
 	}
 }
