@@ -4863,6 +4863,86 @@ LibErrorCode {
 	}
 	
 	
+	
+	/**
+	 * get error code from table model_satcon_pvs357_inverter
+	 * 
+	 * @return
+	 */
+	public static int GetErrorCodeModelSmaShp7510Bit(int bitLevel, int faultLevel) {
+		int errorCode = 0;
+		switch (faultLevel) {
+		case 2:
+			switch (bitLevel) {
+			case 0: errorCode = 1760; break; // 0
+			case 1: errorCode = 1760; break; // 1
+			case 2: errorCode = 1761; break; // 2
+			case 3: errorCode = 1762; break; // 3
+			case 4: errorCode = 1762; break; // 4
+			case 5: errorCode = 1763; break; // 5
+//			case 6: errorCode = 575; break; // 6
+			
+			case 7: errorCode = 1764; break; // 7
+			case 8: errorCode = 1764; break; // 8
+			case 9: errorCode = 1770; break; // 9
+			case 10: errorCode = 1766; break; // 10
+			case 11: errorCode = 1771; break; // 11
+			case 12: errorCode = 1767; break; // 12
+			case 13: errorCode = 1767; break; // 13
+			case 14: errorCode = 1768; break; // 14
+			case 15: errorCode = 1772; break; // 15
+			case 16: errorCode = 1773; break; // 15
+			case 25: errorCode = 1781; break; // 15
+			case 26: errorCode = 1778; break; // 15
+			}
+			break;
+			
+		case 3: 
+			switch (bitLevel) {
+			case 0: errorCode = 1785; break; // 15
+			case 1: errorCode = 1786; break; // 17
+			case 2: errorCode = 1798; break; // 18
+			case 3: errorCode = 1793; break; // 19
+			case 4: errorCode = 1796; break; // 20
+			case 5: errorCode = 1802; break; // 21
+			}
+			break;
+		case 4: 
+			switch (bitLevel) {
+			case 0: errorCode = 1775; break; // 32
+			case 1: errorCode = 1776; break; // 33
+			
+			
+			}
+			break;
+		case 5: 
+			switch (bitLevel) {
+			case 0: errorCode = 1779; break; // 48
+			case 1: errorCode = 1780; break; // 49
+			case 2: errorCode = 1777; break; // 50
+			case 3: errorCode = 1783; break; // 51
+			case 4: errorCode = 1784; break; // 52
+			case 5: errorCode = 1788; break; // 53
+			case 6: errorCode = 1782; break; // 54
+			case 7: errorCode = 1789; break; // 55
+			case 8: errorCode = 1790; break; // 56
+			case 9: errorCode = 1791; break; // 57
+			case 10: errorCode = 1792; break; // 58
+			case 11: errorCode = 1794; break; // 59
+			
+			
+			case 13: errorCode = 1795; break; // 61
+			case 24: errorCode = 1776; break; // 62
+			case 25: errorCode = 1799; break; // 62
+			case 26: errorCode = 1800; break; // 63
+			}
+			break;
+		
+		}
+
+		return errorCode;
+	}
+	
 	 
 	
 }

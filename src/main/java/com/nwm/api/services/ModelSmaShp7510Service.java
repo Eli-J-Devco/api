@@ -8,6 +8,7 @@ package com.nwm.api.services;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -209,6 +210,10 @@ public class ModelSmaShp7510Service extends DB {
 		
 		// Check device alert by fault code
 		int fault1 = (obj.getManufacturerspecificstatuscode() > 0 && obj.getManufacturerspecificstatuscode() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
+		int fault2 = (obj.getManufacturerspecificeventcodeEvtVnd1() > 0 && obj.getManufacturerspecificeventcodeEvtVnd1() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
+		int fault3 = (obj.getManufacturerspecificeventcodeEvtVnd2() > 0 && obj.getManufacturerspecificeventcodeEvtVnd2() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
+		int fault4 = (obj.getManufacturerspecificeventcodeEvtVnd3() > 0 && obj.getManufacturerspecificeventcodeEvtVnd3() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
+		int fault5 = (obj.getManufacturerspecificeventcodeEvtVnd4() > 0 && obj.getManufacturerspecificeventcodeEvtVnd4() != 0.001) ? (int) obj.getManufacturerspecificstatuscode() : 0;
 		
 		ModelSmaShp7510Entity rowItem = (ModelSmaShp7510Entity) checkAlertWriteCode(obj);
 		
@@ -254,6 +259,250 @@ public class ModelSmaShp7510Service extends DB {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		// check fault code 2
+		if (fault2 > 0  && rowItem.getTotalFault2() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault2);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmaShp7510Bit(v, 2);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 
+			try {
+				if(rowItem.getTotalFault2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(2);
+					List dataListFault2 = new ArrayList();
+					dataListFault2 = queryForList("ModelSmaShp7510.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault2.size() > 0) {
+						for(int i = 0; i < dataListFault2.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault2.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		// check fault code 3
+		if (fault3 > 0  && rowItem.getTotalFault3() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault3);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmaShp7510Bit(v, 3);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 3
+			try {
+				if(rowItem.getTotalFault3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(3);
+					List dataListFault3 = new ArrayList();
+					dataListFault3 = queryForList("ModelSmaShp7510.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault3.size() > 0) {
+						for(int i = 0; i < dataListFault3.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault3.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		
+		
+		// check fault code 4
+		if (fault4 > 0  && rowItem.getTotalFault4() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault4);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmaShp7510Bit(v, 4);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 4
+			try {
+				if(rowItem.getTotalFault4() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(4);
+					List dataListFault4 = new ArrayList();
+					dataListFault4 = queryForList("ModelSmaShp7510.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault4.size() > 0) {
+						for(int i = 0; i < dataListFault4.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault4.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		// check fault code 5
+		if (fault5 > 0  && rowItem.getTotalFault5() >= 20) {
+			try {
+				String toBinary = Integer.toBinaryString(fault5);
+				String toBinary32Bit = String.format("%32s", toBinary).replaceAll(" ", "0");
+				int v = 0;
+				for (int b = toBinary32Bit.length() - 1; b >= 0; b--) {
+					int index = b;
+					int bitLevel = Integer.parseInt(toBinary32Bit.substring(index, Math.min(index + 1, toBinary32Bit.length())));
+					if (bitLevel == 1) {
+						int errorId = LibErrorCode.GetErrorCodeModelSmaShp7510Bit(v, 5);
+						if (errorId > 0) {
+							AlertEntity alertDeviceItem = new AlertEntity();
+							alertDeviceItem.setId_device(obj.getId_device());
+							alertDeviceItem.setStart_date(obj.getTime());
+							alertDeviceItem.setId_error(errorId);
+							boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist", alertDeviceItem) > 0;
+							boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+							if (!checkAlertDeviceExist && errorExits) {
+								insert("BatchJob.insertAlert", alertDeviceItem);
+							}
+						}
+					}
+					v += 1;
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			// Close fault code 5
+			try {
+				if(rowItem.getTotalFault5() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					alertItemClose.setFaultCodeLevel(5);
+					List dataListFault5 = new ArrayList();
+					dataListFault5 = queryForList("ModelSmaShp7510.getListTriggerFaultCode", alertItemClose);
+					if(dataListFault5.size() > 0) {
+						for(int i = 0; i < dataListFault5.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListFault5.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 
 	}
 	

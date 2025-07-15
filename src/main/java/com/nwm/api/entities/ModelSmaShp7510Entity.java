@@ -51,7 +51,37 @@ public class ModelSmaShp7510Entity extends ModelBaseEntity {
 	private double ManufacturerspecificeventcodeEvtVnd4;
 	private double Manufacturerspecificstatuscode;
 	private int totalFault1;
+	private int totalFault2;
+	private int totalFault3;
+	private int totalFault4;
+	private int totalFault5;
 	
+	
+	
+	public int getTotalFault2() {
+		return totalFault2;
+	}
+	public void setTotalFault2(int totalFault2) {
+		this.totalFault2 = totalFault2;
+	}
+	public int getTotalFault3() {
+		return totalFault3;
+	}
+	public void setTotalFault3(int totalFault3) {
+		this.totalFault3 = totalFault3;
+	}
+	public int getTotalFault4() {
+		return totalFault4;
+	}
+	public void setTotalFault4(int totalFault4) {
+		this.totalFault4 = totalFault4;
+	}
+	public int getTotalFault5() {
+		return totalFault5;
+	}
+	public void setTotalFault5(int totalFault5) {
+		this.totalFault5 = totalFault5;
+	}
 	public int getTotalFault1() {
 		return totalFault1;
 	}
