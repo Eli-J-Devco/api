@@ -255,8 +255,9 @@ public class PortfolioService extends DB {
 						item.put("actual_power", energyItem.getActualPower());
 						item.put("expected_energy", energyItem.getExpectedEnergy());
 						item.put("expected_power", energyItem.getExpectedPower());
-						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 100 : null);
+						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? BigDecimal.valueOf(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 						item.put("variance", energyItem.getVariance());
+						item.put("hash_id", energyItem.getHash_id());
 					}
 				}
 			}
@@ -389,6 +390,7 @@ public class PortfolioService extends DB {
 					SiteEnergyEntity item = new SiteEnergyEntity();
 					item.setName(site.getName());
 					item.setId(site.getId_site());
+					item.setHash_id(site.getHash_id());
 					
 					for (PerformanceDataChartItemEntity entity : data) {
 						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
@@ -404,6 +406,7 @@ public class PortfolioService extends DB {
 					
 					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
 						item.setVariance(BigDecimal.valueOf((item.getExpectedEnergy() - item.getActualEnergy()) / item.getExpectedEnergy() * 100).setScale(2, RoundingMode.HALF_UP).doubleValue());
+						item.setAe(BigDecimal.valueOf(item.getActualEnergy() / item.getExpectedEnergy() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
 					}
 					
 					return item;

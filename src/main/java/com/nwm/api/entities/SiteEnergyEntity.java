@@ -7,12 +7,14 @@ package com.nwm.api.entities;
 
 public class SiteEnergyEntity {
 	private int id;
+	private String hash_id;
 	private String name;
 	private Double actualPower;
 	private Double expectedPower;
 	private Double actualEnergy;
 	private Double expectedEnergy;
 	private Double variance;
+	private Double ae;
 	
 	public int getId() {
 		return id;
@@ -22,6 +24,14 @@ public class SiteEnergyEntity {
 		this.id = id;
 	}
 	
+	public String getHash_id() {
+		return hash_id;
+	}
+
+	public void setHash_id(String hash_id) {
+		this.hash_id = hash_id;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -68,5 +78,13 @@ public class SiteEnergyEntity {
 
 	public void setVariance(Double variance) {
 		this.variance = variance;
+	}
+
+	public Double getAe() {
+		return ae;
+	}
+
+	public void setAe(Double ae) {
+		this.ae = ae;
 	}
 }
