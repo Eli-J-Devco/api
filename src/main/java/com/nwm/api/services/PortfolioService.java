@@ -13,12 +13,8 @@ import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
@@ -28,12 +24,12 @@ import org.apache.ibatis.session.SqlSession;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.EnergyEntity;
-import com.nwm.api.entities.PortfolioAvailabilityVsPerformanceEntity;
 import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SiteEnergyEntity;
@@ -56,12 +52,10 @@ public class PortfolioService extends DB {
 		List dataList = new ArrayList();
 		try {
 			dataList = queryForList("Portfolio.getList", obj);
-			if (dataList == null)
-				return new ArrayList();
+			if (dataList == null) return new ArrayList();
 			
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> site = (Map<String, Object>) dataList.get(i);
-				String devicesList = (String) site.get("devices_list");
 				String alerts = (String) site.get("alerts");
 				String tags = (String) site.get("tags");
 				JSONParser parse = new JSONParser();
@@ -76,40 +70,49 @@ public class PortfolioService extends DB {
 					site.put("tags", jsonTags);
 				}
 							
-				if (!Lib.isBlank(devicesList)) {
-					List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
-					
-					List<Object> green = new ArrayList<>();
-					List<Object> yellow = new ArrayList<>();
-					List<Object> red = new ArrayList<>();
-					
-					boolean hasInverter = jsonArray.stream().filter(item -> Integer.parseInt(item.get("id_device_type").toString()) == 1).findFirst().isPresent();
-					
-					for (int j = 0; j < jsonArray.size(); j++) {
-						Map<String, Object> device = (Map<String, Object>) jsonArray.get(j);
-						Double comparison_ratio = device.get("comparison_ratio") == null ? null : Double.parseDouble(device.get("comparison_ratio").toString()) ;
-						int id_device_type = Integer.parseInt(device.get("id_device_type").toString());
-						if (id_device_type != (hasInverter ? 1 : 3)) continue;
-						
-						if (comparison_ratio == null || comparison_ratio <= 10) {
-							red.add(device);
-						} else if (comparison_ratio <= 70) {
-							yellow.add(device);
-						} else {
-							green.add(device);
-						}
-					}
-					
-					site.put("green", green);
-					site.put("yellow", yellow);
-					site.put("red", red);
-					site.remove("devices_list");
-				}
+				setInverterStatus(site);
 			}
 			
 			return dataList;
 		} catch (Exception ex) {
 			return new ArrayList();
+		}
+	}
+	
+	private void setInverterStatus(Map<String, Object> site) {
+		try {
+			String devicesList = (String) site.get("devices_list");
+			if (Lib.isBlank(devicesList)) return;
+			
+			JSONParser parse = new JSONParser();
+			List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(devicesList);
+			
+			List<Object> green = new ArrayList<>();
+			List<Object> yellow = new ArrayList<>();
+			List<Object> red = new ArrayList<>();
+			
+			boolean hasInverter = jsonArray.stream().filter(item -> Integer.parseInt(item.get("id_device_type").toString()) == 1).findFirst().isPresent();
+			
+			for (int j = 0; j < jsonArray.size(); j++) {
+				Map<String, Object> device = (Map<String, Object>) jsonArray.get(j);
+				Double comparison_ratio = device.get("comparison_ratio") == null ? null : Double.parseDouble(device.get("comparison_ratio").toString()) ;
+				int id_device_type = Integer.parseInt(device.get("id_device_type").toString());
+				if (id_device_type != (hasInverter ? 1 : 3)) continue;
+				
+				if (comparison_ratio == null || comparison_ratio <= 10) {
+					red.add(device);
+				} else if (comparison_ratio <= 70) {
+					yellow.add(device);
+				} else {
+					green.add(device);
+				}
+			}
+			
+			site.put("green", green);
+			site.put("yellow", yellow);
+			site.put("red", red);
+			site.remove("devices_list");
+		} catch (Exception e) {
 		}
 	}
 
@@ -244,11 +247,13 @@ public class PortfolioService extends DB {
 
 	public List getAvailabilityVsPerformance(PortfolioEntity obj) {
 		try {			
-			List dataList = queryForList("Portfolio.getAvailability", obj);
+			List<Map<String, Object>> dataList = queryForList("Portfolio.getAvailability", obj);
 			if (dataList == null) return new ArrayList();
 			
 			List<SiteEnergyEntity> energyData = getSitesMetricsActualVsExpected(obj);
-			for (HashMap<String, Object> item: (List<HashMap<String, Object>>) dataList) {		
+			for (Map<String, Object> item: dataList) {
+				setInverterStatus(item);
+				
 				for (SiteEnergyEntity energyItem: energyData) {
 					if ((int) item.get("site_id") == energyItem.getId()) {
 						item.put("actual_energy", energyItem.getActualEnergy());
@@ -258,6 +263,8 @@ public class PortfolioService extends DB {
 						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? BigDecimal.valueOf(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
 						item.put("variance", energyItem.getVariance());
 						item.put("hash_id", energyItem.getHash_id());
+						
+						break;
 					}
 				}
 			}
