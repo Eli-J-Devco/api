@@ -286,6 +286,18 @@ public class PortfolioService extends DB {
 			List<SitesMetricsSummaryEntity> data = queryForList("Portfolio.getSitesMetricsSummary", obj);
 			if (data == null) return new ArrayList<>();
 			
+			JSONParser parse = new JSONParser();
+			for (SitesMetricsSummaryEntity site : data) {
+				try {
+					String alerts = site.getAlertsJSON();
+					if (Objects.isNull(alerts)) continue;
+					List<Map<String, Object>> jsonArray = (JSONArray) parse.parse(alerts);
+					site.setAlertsJSON(null);
+					site.setAlerts(jsonArray);
+				} catch (Exception e) {
+				}
+			}
+			
 			return data;
 		} catch (Exception ex) {
 			return new ArrayList<>();

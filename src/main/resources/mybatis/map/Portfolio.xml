@@ -139,7 +139,14 @@
 			s.id AS id_site,
 			el.id AS id_error_level,
 			COUNT( a.id ) AS total_error,
-			JSON_OBJECT('id_site', s.id, 'total_error', COUNT( a.id ), 'icon_alert', i.icon, 'id_error_level', el.id) AS obj_alert
+			JSON_OBJECT(
+				'id_site', s.id,
+				'total_error', COUNT( a.id ),
+				'icon_alert', i.icon,
+				'id_error_level', el.id,
+				'error_level_name', el.name,
+				'error_level_color', el.color
+			) AS obj_alert
 		FROM
 			site s
 			JOIN device d ON d.id_site = s.id
@@ -504,11 +511,9 @@
 	<select id="getSitesMetricsSummary" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
 		SELECT
 			s.id,
-			er.fatal AS fatalAlerts,
-			er.warning AS warningAlerts,
-			er.noProd AS noProdAlerts,
-			er.noComm AS noCommAlerts,
-			er.other AS otherAlerts,
+			SHA1(s.id) AS hashId,
+			s.name,
+			er.alertsJSON,
 			s.ac_capacity / 1000 AS capacity,
 			IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000 AS activePower
 		FROM
@@ -519,11 +524,7 @@
 			LEFT JOIN (
 				SELECT
 					t.id_site,
-					SUM(IF(t.id_error_level = 11, t.total_error, 0)) AS fatal,
-					SUM(IF(t.id_error_level = 13, t.total_error, 0)) AS warning,
-					SUM(IF(t.id_error_level = 32, t.total_error, 0)) AS noProd,
-					SUM(IF(t.id_error_level = 33, t.total_error, 0)) AS noComm,
-					SUM(IF(t.id_error_level IN (2, 11, 12, 13), t.total_error, 0)) AS other
+					JSON_ARRAYAGG(t.obj_alert) AS alertsJSON
 				FROM (<include refid="alertsBySiteAndErrorLevelSubquery"/>) t
 				GROUP BY
 					t.id_site

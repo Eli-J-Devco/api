@@ -5,13 +5,16 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class SitesMetricsSummaryEntity {
 	private int id;
-	private int fatalAlerts;
-	private int warningAlerts;
-	private int noProdAlerts;
-	private int noCommAlerts;
-	private int otherAlerts;
+	private String hashId;
+	private String name;
+	private String alertsJSON;
+	private List<Map<String, Object>> alerts = new ArrayList<>();
 	private double capacity;
 	private double activePower;
 	
@@ -21,35 +24,29 @@ public class SitesMetricsSummaryEntity {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public int getFatalAlerts() {
-		return fatalAlerts;
+	public String getHashId() {
+		return hashId;
 	}
-	public void setFatalAlerts(int fatalAlerts) {
-		this.fatalAlerts = fatalAlerts;
+	public void setHashId(String hashId) {
+		this.hashId = hashId;
 	}
-	public int getWarningAlerts() {
-		return warningAlerts;
+	public String getName() {
+		return name;
 	}
-	public void setWarningAlerts(int warningAlerts) {
-		this.warningAlerts = warningAlerts;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public int getNoProdAlerts() {
-		return noProdAlerts;
+	public String getAlertsJSON() {
+		return alertsJSON;
 	}
-	public void setNoProdAlerts(int noProdAlerts) {
-		this.noProdAlerts = noProdAlerts;
+	public void setAlertsJSON(String alertsJSON) {
+		this.alertsJSON = alertsJSON;
 	}
-	public int getNoCommAlerts() {
-		return noCommAlerts;
+	public List<Map<String, Object>> getAlerts() {
+		return alerts;
 	}
-	public void setNoCommAlerts(int noCommAlerts) {
-		this.noCommAlerts = noCommAlerts;
-	}
-	public int getOtherAlerts() {
-		return otherAlerts;
-	}
-	public void setOtherAlerts(int otherAlerts) {
-		this.otherAlerts = otherAlerts;
+	public void setAlerts(List<Map<String, Object>> alerts) {
+		this.alerts = alerts;
 	}
 	public double getCapacity() {
 		return capacity;
