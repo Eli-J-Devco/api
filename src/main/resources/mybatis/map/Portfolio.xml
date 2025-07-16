@@ -503,17 +503,14 @@
 	
 	<select id="getSitesMetricsSummary" resultType="com.nwm.api.entities.SitesMetricsSummaryEntity">
 		SELECT
-			COUNT(s.id) AS sites,
-			SUM(er.noProd) AS noProdAlerts,
-			SUM(er.noComm) AS noCommAlerts,
-			SUM(er.other) AS otherAlerts,
-			COUNT(er.id_site) AS totalInAlertsSites,
-			SUM(IF(er.criticalIssues > 0, 1, 0)) AS criticalIssuesSites,
-			SUM(IF(er.noProd > 0, 1, 0)) AS noProdSites,
-			SUM(IF(er.noComm > 0, 1, 0)) AS noCommSites,
-			SUM(IF(er.other  > 0, 1, 0)) AS otherAlertsSites,
-			ROUND(SUM(s.ac_capacity) / 1000, 0) AS capacity,
-			ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))) / 1000, 1) AS activePower
+			s.id,
+			er.fatal AS fatalAlerts,
+			er.warning AS warningAlerts,
+			er.noProd AS noProdAlerts,
+			er.noComm AS noCommAlerts,
+			er.other AS otherAlerts,
+			s.ac_capacity / 1000 AS capacity,
+			IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000 AS activePower
 		FROM
 			site s
 			LEFT JOIN (<include refid="activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
@@ -522,10 +519,11 @@
 			LEFT JOIN (
 				SELECT
 					t.id_site,
-					SUM(IF(t.id_error_level = 11, t.total_error, 0)) AS criticalIssues,
+					SUM(IF(t.id_error_level = 11, t.total_error, 0)) AS fatal,
+					SUM(IF(t.id_error_level = 13, t.total_error, 0)) AS warning,
 					SUM(IF(t.id_error_level = 32, t.total_error, 0)) AS noProd,
 					SUM(IF(t.id_error_level = 33, t.total_error, 0)) AS noComm,
-					SUM(IF(t.id_error_level NOT IN (32, 33), t.total_error, 0)) AS other
+					SUM(IF(t.id_error_level IN (2, 11, 12, 13), t.total_error, 0)) AS other
 				FROM (<include refid="alertsBySiteAndErrorLevelSubquery"/>) t
 				GROUP BY
 					t.id_site

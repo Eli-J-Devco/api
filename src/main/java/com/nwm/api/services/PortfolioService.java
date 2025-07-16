@@ -281,14 +281,14 @@ public class PortfolioService extends DB {
 	 * @since 2025-05-07
 	 * @param obj
 	 */
-	public SitesMetricsSummaryEntity getSitesMetricsSummary(PortfolioEntity obj) {
+	public List<SitesMetricsSummaryEntity> getSitesMetricsSummary(PortfolioEntity obj) {
 		try {
-			SitesMetricsSummaryEntity data = (SitesMetricsSummaryEntity) queryForObject("Portfolio.getSitesMetricsSummary", obj);
-			if (data == null) return new SitesMetricsSummaryEntity();
+			List<SitesMetricsSummaryEntity> data = queryForList("Portfolio.getSitesMetricsSummary", obj);
+			if (data == null) return new ArrayList<>();
 			
 			return data;
 		} catch (Exception ex) {
-			return new SitesMetricsSummaryEntity();
+			return new ArrayList<>();
 		}
 	}
 	

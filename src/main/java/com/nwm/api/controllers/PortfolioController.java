@@ -169,9 +169,9 @@ public class PortfolioController extends BaseController {
 			
 			obj.setId_sites(sites);
 			PortfolioService service = new PortfolioService();
-			SitesMetricsSummaryEntity data = service.getSitesMetricsSummary(obj);
+			List<SitesMetricsSummaryEntity> data = service.getSitesMetricsSummary(obj);
 			
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
