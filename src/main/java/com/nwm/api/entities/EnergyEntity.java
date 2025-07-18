@@ -6,18 +6,39 @@
 package com.nwm.api.entities;
 
 public class EnergyEntity {
+	private int id;
+    private String hashId;
+    private String name;
 	private Double actual;
 	private Double expected;
 	private Double loss;
 	
 	public EnergyEntity() {}
 	
-	public EnergyEntity(Double actual, Double expected, Double loss) {
-		this.actual = actual;
-		this.expected = expected;
-		this.loss = loss;
+	public EnergyEntity(int id, String hashId, String name) {
+		this.id = id;
+		this.hashId = hashId;
+		this.name = name;
 	}
-	
+
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getHashId() {
+		return hashId;
+	}
+	public void setHashId(String hashId) {
+		this.hashId = hashId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public Double getActual() {
 		return actual;
 	}

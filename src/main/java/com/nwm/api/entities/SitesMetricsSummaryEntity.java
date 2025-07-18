@@ -5,72 +5,48 @@
 *********************************************************/
 package com.nwm.api.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 public class SitesMetricsSummaryEntity {
-	private int sites;
-	private int noProdAlerts;
-	private int noCommAlerts;
-	private int otherAlerts;
-	private int totalInAlertsSites;
-	private int criticalIssuesSites;
-	private int noProdSites;
-	private int noCommSites;
-	private int otherAlertsSites;
+	private int id;
+	private String hashId;
+	private String name;
+	private String alertsJSON;
+	private List<Map<String, Object>> alerts = new ArrayList<>();
 	private double capacity;
 	private double activePower;
 	
-	public int getSites() {
-		return sites;
+	public int getId() {
+		return id;
 	}
-	public void setSites(int sites) {
-		this.sites = sites;
+	public void setId(int id) {
+		this.id = id;
 	}
-	public int getNoProdAlerts() {
-		return noProdAlerts;
+	public String getHashId() {
+		return hashId;
 	}
-	public void setNoProdAlerts(int noProdAlerts) {
-		this.noProdAlerts = noProdAlerts;
+	public void setHashId(String hashId) {
+		this.hashId = hashId;
 	}
-	public int getNoCommAlerts() {
-		return noCommAlerts;
+	public String getName() {
+		return name;
 	}
-	public void setNoCommAlerts(int noCommAlerts) {
-		this.noCommAlerts = noCommAlerts;
+	public void setName(String name) {
+		this.name = name;
 	}
-	public int getOtherAlerts() {
-		return otherAlerts;
+	public String getAlertsJSON() {
+		return alertsJSON;
 	}
-	public void setOtherAlerts(int otherAlerts) {
-		this.otherAlerts = otherAlerts;
+	public void setAlertsJSON(String alertsJSON) {
+		this.alertsJSON = alertsJSON;
 	}
-	public int getTotalInAlertsSites() {
-		return totalInAlertsSites;
+	public List<Map<String, Object>> getAlerts() {
+		return alerts;
 	}
-	public void setTotalInAlertsSites(int totalInAlertsSites) {
-		this.totalInAlertsSites = totalInAlertsSites;
-	}
-	public int getCriticalIssuesSites() {
-		return criticalIssuesSites;
-	}
-	public void setCriticalIssuesSites(int criticalIssuesSites) {
-		this.criticalIssuesSites = criticalIssuesSites;
-	}
-	public int getNoProdSites() {
-		return noProdSites;
-	}
-	public void setNoProdSites(int noProdSites) {
-		this.noProdSites = noProdSites;
-	}
-	public int getNoCommSites() {
-		return noCommSites;
-	}
-	public void setNoCommSites(int noCommSites) {
-		this.noCommSites = noCommSites;
-	}
-	public int getOtherAlertsSites() {
-		return otherAlertsSites;
-	}
-	public void setOtherAlertsSites(int otherAlertsSites) {
-		this.otherAlertsSites = otherAlertsSites;
+	public void setAlerts(List<Map<String, Object>> alerts) {
+		this.alerts = alerts;
 	}
 	public double getCapacity() {
 		return capacity;
