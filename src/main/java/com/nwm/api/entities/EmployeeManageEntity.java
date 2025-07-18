@@ -65,8 +65,15 @@ public class EmployeeManageEntity extends SortEntity {
 	private int portfolio_metrics_enable;
 	private String domain;
 	private String domain_role;
+	private String site_names;
 	
 	
+	public String getSite_names() {
+		return site_names;
+	}
+	public void setSite_names(String site_names) {
+		this.site_names = site_names;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}

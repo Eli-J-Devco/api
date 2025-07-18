@@ -178,7 +178,7 @@
 		<mapper resource="mybatis/map/ModelWeatherStationBSP.xml"/>
 		<mapper resource="mybatis/map/ModelSmaShp7510.xml"/>
 		<mapper resource="mybatis/map/ModelLovatoDmg800.xml"/>
-		
+		<mapper resource="mybatis/map/AdminSettingGroup.xml"/>
 
 		
 		
@@ -237,6 +237,7 @@
 		 <mapper resource="mybatis/map/CronFindLogAlert.xml" />
 		  <mapper resource="mybatis/map/EmailTracking.xml"/>
 		  <mapper resource="mybatis/map/BuildingDashboard.xml"/>
+		  <mapper resource="mybatis/map/AdminSettingRole.xml"/>
 		  
 		 
 		 

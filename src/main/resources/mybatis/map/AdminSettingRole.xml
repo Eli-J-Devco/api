@@ -2,8 +2,8 @@
 <!DOCTYPE mapper
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="Role">
-	<resultMap id="RoleMap" type="com.nwm.api.entities.RoleEntity">
+<mapper namespace="AdminSettingRole">
+	<resultMap id="AdminSettingRoleMap" type="com.nwm.api.entities.AdminSettingRoleEntity">
   			<result property="id" column="id" />
   			<result property="name" column="name" />
   			<result property="description" column="description" />
@@ -47,54 +47,32 @@
 			<result property="description" column="description" />
 			
 	</resultMap>	
-		
-	<select id="getList" resultMap="RoleMap" >
-		SELECT  
-		r.*,
-		r.id AS value,
-		r.`name` as label,
-		r.`name` as text
-		FROM `role` r
-		 
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE r.id_company = #{id_company}
-		</if>
-			
-		
-		    order by
-	        <choose>  
-	            <when test="order_by == 'id'">
-	                id ${sort_by}
-	            </when>         
-	            <when test="order_by == 'name'">
-	                name ${sort_by}
-	            </when>
-	            <otherwise>
-			      menu_order ASC
-			    </otherwise>                                                  
-	        </choose>  
-		 	 
-		 LIMIT ${limit} OFFSET ${offset};
+	
+	<select id="getListScreenByIsAdminRole" resultType="Map" >
+		SELECT * FROM role r
+		LEFT JOIN role_screen_map rm ON rm.id_role = r.id
+		WHERE r.is_admin_role = 1 
+		AND r.id_company = #{id_company} 
+		AND r.is_delete = 0 AND r.`status` = 1
+		GROUP BY rm.id_screen
 	</select>
 	
-	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.RoleEntity">
-    	SELECT count(*) as totalRecord
-		FROM role r
-		 
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE r.id_company = #{id_company}
-		</if>
-		;
-  	</select>
+	<insert id="insertScreenRoleMap">
   	
-  	
-  	<update id="updateStatus">
-		UPDATE `role`
-		SET
-			`status` = #{status}
-		WHERE
-			`id` = #{id}
-	</update>
+	  	INSERT INTO role_screen_map (
+	    id_role,
+	    id_screen,
+	    auths
+	    )
+	    VALUES
+	    <foreach collection="screens" item="item" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{item.id_screen},
+	        0
+	    </foreach>
+	</insert>
+	
+  
 	
 	
 	<insert id="insertRole" useGeneratedKeys="true" keyProperty="id">
@@ -115,13 +93,71 @@
         </selectKey>
 	</insert>
 	
+	<select id="getList" resultType="Map" >
+		SELECT  
+		r.*,
+		r.id AS value,
+		r.`name` as label,
+		r.`name` as text,
+		IF(
+				COUNT(rm.id_role) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', s.id,
+					'name', s.screen_name,
+					'auths', rm.auths,
+					'view', (IFNULL(rm.auths,0) <![CDATA[&]]> 1),
+					'new', (IFNULL(rm.auths,0) <![CDATA[&]]> 2),
+					'delete', (IFNULL(rm.auths,0) <![CDATA[&]]> 4),
+					'edit', (IFNULL(rm.auths,0) <![CDATA[&]]> 8),
+					'excel', (IFNULL(rm.auths,0) <![CDATA[&]]> 16),
+					'pdf', (IFNULL(rm.auths,0) <![CDATA[&]]> 32),
+					'print', (IFNULL(rm.auths,0) <![CDATA[&]]> 64), 
+					'translate', (IFNULL(rm.auths,0) <![CDATA[&]]> 128),
+					'approval', (IFNULL(rm.auths,0) <![CDATA[&]]> 256)
+				))
+			) AS screens
+		FROM `role` r
+		 LEFT JOIN role_screen_map rm ON r.id = rm.id_role
+		 LEFT JOIN screen s ON s.id = rm.id_screen
+		WHERE r.id_company = #{id_company} AND r.status = 1 and r.is_delete = 0
+			GROUP BY r.id
+		    order by
+	        <choose>  
+	            <when test="order_by == 'id'">
+	                id ${sort_by}
+	            </when>         
+	            <when test="order_by == 'name'">
+	                name ${sort_by}
+	            </when>
+	            <otherwise>
+			      r.id DESC
+			    </otherwise>                                                  
+	        </choose>  
+		 	 
+		 LIMIT ${limit} OFFSET ${offset};
+	</select>
+	
+	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.AdminSettingRoleEntity">
+    	SELECT count(*) as totalRecord
+		FROM role r
+		 WHERE r.id_company = #{id_company};
+  	</select>
+  	
+	
+	<update id="updateRoleScreenMap">
+		UPDATE `role_screen_map`
+		SET
+			`auths` = #{auths}
+		WHERE
+			id_screen = #{id_screen} AND id_role = #{id_role}
+	</update>
+	
 	<update id="updateRole">
 		UPDATE `role`
 		SET
 			`name` = #{name},
-			`parent` = #{parent},
-			description = #{description},
-			`id_company` = #{id_company}
+			description = #{description}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -133,6 +169,40 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	
+	<select id="getAllRole" resultType="Map">
+		SELECT t.*, 
+		t.id AS value,
+		t.name AS label,
+		t.name AS text,
+		0 as is_checked 
+		FROM `role` t
+		WHERE t.id_company = #{id_company} AND t.status = 1 and t.is_delete = 0;
+	</select>
+	
+	
+	
+	<!-- 
+	
+	<update id="updateStatus">
+		UPDATE `role`
+		SET
+			`status` = #{status}
+		WHERE
+			`id` = #{id}
+	</update>
+		
+	
+  	
+  	
+  	
+  	
+	
+	
+	
+	
+	
 	
 	
 	<select id="getListScreenPermission" resultType="Map" >
@@ -178,30 +248,14 @@
 			s.`level` ASC
 	</select>
 	
-	<select id="getAllRole" resultMap="RoleMap" >
-		SELECT t.*, 
-		t.id AS value,
-		t.name AS label,
-		t.name AS text,
-		0 as is_checked FROM `role` t
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE t.id_company = #{id_company}
-		</if>
-		;
-	</select>
+	
 	
 	<select id="checkRoleScreenMapExist" resultType="int" parameterType="com.nwm.api.entities.RoleScreenMapEntity" >
 		SELECT COUNT(*) AS totalRecord FROM `role_screen_map` WHERE id_screen = #{id_screen} AND id_role = #{id_role};
 	</select>
 	
 	
-	<update id="updateRoleScreenMap">
-		UPDATE `role_screen_map`
-		SET
-			`auths` = #{auths}
-		WHERE
-			id_screen = #{id_screen} AND id_role = #{id_role}
-	</update>
+	
 	
 	
 	
@@ -229,6 +283,6 @@
 	
 	<select id="getAllScreen" resultMap="ScreenMap" >
 		SELECT t.* FROM `screen` t WHERE `status` = 1 AND is_delete = 0;
-	</select>
+	</select> --> 
 	
 </mapper>
