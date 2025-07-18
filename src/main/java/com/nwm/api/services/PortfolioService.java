@@ -8,8 +8,6 @@ package com.nwm.api.services;
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -260,7 +258,7 @@ public class PortfolioService extends DB {
 						item.put("actual_power", energyItem.getActualPower());
 						item.put("expected_energy", energyItem.getExpectedEnergy());
 						item.put("expected_power", energyItem.getExpectedPower());
-						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? BigDecimal.valueOf(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue() : null);
+						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? energyItem.getActualEnergy() / energyItem.getExpectedEnergy() : null);
 						item.put("variance", energyItem.getVariance());
 						item.put("hash_id", energyItem.getHash_id());
 						
@@ -364,7 +362,7 @@ public class PortfolioService extends DB {
 							}
 						}
 						
-						if (Objects.nonNull(data.getActual()) && Objects.nonNull(data.getExpected()) && data.getExpected() > 0) data.setLoss(BigDecimal.valueOf((data.getExpected() - data.getActual()) / data.getExpected() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						if (Objects.nonNull(data.getActual()) && Objects.nonNull(data.getExpected()) && data.getExpected() > 0) data.setLoss((data.getExpected() - data.getActual()) / data.getExpected());
 						
 					} catch (Exception e) {
 					}
@@ -420,8 +418,8 @@ public class PortfolioService extends DB {
 					}
 					
 					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
-						item.setVariance(BigDecimal.valueOf((item.getExpectedEnergy() - item.getActualEnergy()) / item.getExpectedEnergy() * 100).setScale(2, RoundingMode.HALF_UP).doubleValue());
-						item.setAe(BigDecimal.valueOf(item.getActualEnergy() / item.getExpectedEnergy() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						item.setVariance((item.getExpectedEnergy() - item.getActualEnergy()) / item.getExpectedEnergy());
+						item.setAe(item.getActualEnergy() / item.getExpectedEnergy());
 					}
 					
 					return item;

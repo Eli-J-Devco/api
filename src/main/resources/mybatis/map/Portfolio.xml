@@ -706,7 +706,7 @@
 		SELECT
 			s.id AS site_id,
 			s.name AS site_name,
-			ROUND((a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters * 100, 0) AS availability,
+			(a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters AS availability,
 			im.devices_list AS devices_list
 		FROM
 			site s
