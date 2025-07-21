@@ -418,7 +418,7 @@ public class PortfolioService extends DB {
 					}
 					
 					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
-						item.setVariance((item.getExpectedEnergy() - item.getActualEnergy()) / item.getExpectedEnergy());
+						item.setVariance((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy());
 						item.setAe(item.getActualEnergy() / item.getExpectedEnergy());
 					}
 					
