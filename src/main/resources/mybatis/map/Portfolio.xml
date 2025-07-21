@@ -145,7 +145,8 @@
 				'icon_alert', i.icon,
 				'id_error_level', el.id,
 				'error_level_name', el.name,
-				'error_level_color', el.color
+				'error_level_color', el.color,
+				'id_device', JSON_ARRAYAGG(d.id)
 			) AS obj_alert
 		FROM
 			site s
