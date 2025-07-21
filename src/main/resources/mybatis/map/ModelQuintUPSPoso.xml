@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelQuintUPSPoso">
+
+	<insert id="insertModelQuintUPSPoso"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="OutputVoltage != 0.001">
+				`OutputVoltage`,
+			</if>
+			<if test="StateofCharge != 0.001">
+				`StateofCharge`,
+			</if>
+			<if test="ResidualBackupTime != 0.001">
+				`ResidualBackupTime`,
+			</if>
+			<if test="BattteryVoltage != 0.001">
+				`BattteryVoltage`,
+			</if>
+			<if test="BatteryTemperature != 0.001">
+				`BatteryTemperature`,
+			</if>
+			<if test="ResidualLifeTime != 0.001">
+				`ResidualLifeTime`,
+			</if>
+			<if test="BatteryDischargingCurrent != 0.001">
+				`BatteryDischargingCurrent`,
+			</if>
+			<if test="DetectedBatteryUnits != 0.001">
+				`DetectedBatteryUnits`,
+			</if>
+			<if test="BatteryNominalCapacity != 0.001">
+				`BatteryNominalCapacity`,
+			</if>
+			<if test="BatteryModeStatus != 0.001">
+				`BatteryModeStatus`,
+			</if>
+			<if test="ShutdownEventStatus != 0.001">
+				`ShutdownEventStatus`,
+			</if>
+			<if test="BatteryChargingStatus != 0.001">
+				`BatteryChargingStatus`,
+			</if>
+			<if test="ActualAlarm != 0.001">
+				`ActualAlarm`,
+			</if>
+			<if test="ActualWarning != 0.001">
+				`ActualWarning`,
+			</if>
+			<if test="ChargeTimeout != 0.001">
+				`ChargeTimeout`,
+			</if>
+			<if test="RemoteStatus != 0.001">
+				`RemoteStatus`,
+			</if>
+			
+			
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="OutputVoltage != 0.001">
+				#{OutputVoltage},
+			</if>
+			<if test="StateofCharge != 0.001">
+				#{StateofCharge},
+			</if>
+			<if test="ResidualBackupTime != 0.001">
+				#{ResidualBackupTime},
+			</if>
+			<if test="BattteryVoltage != 0.001">
+				#{BattteryVoltage},
+			</if>
+			<if test="BatteryTemperature != 0.001">
+				#{BatteryTemperature},
+			</if>
+			<if test="ResidualLifeTime != 0.001">
+				#{ResidualLifeTime},
+			</if>
+			<if test="BatteryDischargingCurrent != 0.001">
+				#{BatteryDischargingCurrent},
+			</if>
+			<if test="DetectedBatteryUnits != 0.001">
+				#{DetectedBatteryUnits},
+			</if>
+			<if test="BatteryNominalCapacity != 0.001">
+				#{BatteryNominalCapacity},
+			</if>
+			<if test="BatteryModeStatus != 0.001">
+				#{BatteryModeStatus},
+			</if>
+			<if test="ShutdownEventStatus != 0.001">
+				#{ShutdownEventStatus},
+			</if>
+			<if test="BatteryChargingStatus != 0.001">
+				#{BatteryChargingStatus},
+			</if>
+			<if test="ActualAlarm != 0.001">
+				#{ActualAlarm},
+			</if>
+			<if test="ActualWarning != 0.001">
+				#{ActualWarning},
+			</if>
+			<if test="ChargeTimeout != 0.001">
+				#{ChargeTimeout},
+			</if>
+			<if test="RemoteStatus != 0.001">
+				#{RemoteStatus},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="OutputVoltage != 0.001">
+				`OutputVoltage` = #{OutputVoltage},
+			</if>
+			<if test="StateofCharge != 0.001">
+				`StateofCharge` = #{StateofCharge},
+			</if>
+			<if test="ResidualBackupTime != 0.001">
+				`ResidualBackupTime` = #{ResidualBackupTime},
+			</if>
+			<if test="BattteryVoltage != 0.001">
+				`BattteryVoltage` = #{BattteryVoltage},
+			</if>
+			<if test="BatteryTemperature != 0.001">
+				`BatteryTemperature` = #{BatteryTemperature},
+			</if>
+			<if test="ResidualLifeTime != 0.001">
+				`ResidualLifeTime` = #{ResidualLifeTime},
+			</if>
+			<if test="BatteryDischargingCurrent != 0.001">
+				`BatteryDischargingCurrent` = #{BatteryDischargingCurrent},
+			</if>
+			<if test="DetectedBatteryUnits != 0.001">
+				`DetectedBatteryUnits` = #{DetectedBatteryUnits},
+			</if>
+			<if test="BatteryNominalCapacity != 0.001">
+				`BatteryNominalCapacity` = #{BatteryNominalCapacity},
+			</if>
+			<if test="BatteryModeStatus != 0.001">
+				`BatteryModeStatus` = #{BatteryModeStatus},
+			</if>
+			<if test="ShutdownEventStatus != 0.001">
+				`ShutdownEventStatus` = #{ShutdownEventStatus},
+			</if>
+			<if test="BatteryChargingStatus != 0.001">
+				`BatteryChargingStatus` = #{BatteryChargingStatus},
+			</if>
+			<if test="ActualAlarm != 0.001">
+				`ActualAlarm` = #{ActualAlarm},
+			</if>
+			<if test="ActualWarning != 0.001">
+				`ActualWarning` = #{ActualWarning},
+			</if>
+			<if test="ChargeTimeout != 0.001">
+				`ChargeTimeout` = #{ChargeTimeout},
+			</if>
+			<if test="RemoteStatus != 0.001">
+				`RemoteStatus` = #{RemoteStatus},
+			</if>
+			
+		</trim>
+	</insert>
+
+</mapper> 

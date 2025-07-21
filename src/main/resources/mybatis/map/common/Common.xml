@@ -315,6 +315,8 @@
 			
 			WHEN dg.table_name = 'model_lovato_dmg800' AND d.field_value_default = 'EqvActivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
+			WHEN dg.table_name = 'model_quint_ups_poso' AND d.field_value_default = 'BatteryTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees F" )))
+			
 			
 			
 			
@@ -535,6 +537,7 @@
 			
 			WHEN dg.table_name = 'model_lovato_dmg800' AND d.field_value_default = 'EqvActivepower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 
+			WHEN dg.table_name = 'model_quint_ups_poso' AND d.field_value_default = 'BatteryTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees F" )))
 			
 			ELSE "Z"
 			

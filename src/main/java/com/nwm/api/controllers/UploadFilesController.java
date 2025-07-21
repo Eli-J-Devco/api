@@ -86,6 +86,7 @@ import com.nwm.api.entities.ModelPowerLogicPM8000LoadMeterEntity;
 import com.nwm.api.entities.ModelPowerMeasurementIon7650Entity;
 import com.nwm.api.entities.ModelPyranometerPoaEntity;
 import com.nwm.api.entities.ModelQuint4UPSEntity;
+import com.nwm.api.entities.ModelQuintUPSPosoEntity;
 import com.nwm.api.entities.ModelRT1Class30000Entity;
 import com.nwm.api.entities.ModelSEL651REntity;
 import com.nwm.api.entities.ModelSatconPowergate225InverterEntity;
@@ -180,6 +181,7 @@ import com.nwm.api.services.ModelPowerLogicPM8000LoadMeterService;
 import com.nwm.api.services.ModelPowerMeasurementIon7650Service;
 import com.nwm.api.services.ModelPyranometerPoaService;
 import com.nwm.api.services.ModelQuint4UPSService;
+import com.nwm.api.services.ModelQuintUPSPosoService;
 import com.nwm.api.services.ModelRT1Class30000Service;
 import com.nwm.api.services.ModelSEL651RService;
 import com.nwm.api.services.ModelSatconPowergate225InverterService;
@@ -3830,6 +3832,50 @@ public class UploadFilesController extends BaseController {
 														dataModelQUPS.setJob_tablename(item.getJob_tablename());
 														dataModelQUPS.setEnable_alert(item.getEnable_alert());
 														serviceModelQUPS.insertModelQuint4UPS(dataModelQUPS);
+													}
+												}
+												
+												break;
+												
+											case "model_quint_ups_poso":
+												ModelQuintUPSPosoService serviceModelQUPSPoso = new ModelQuintUPSPosoService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														double setTemp = Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.0");
+//														setAngle = Math.round((setAngle * 180) / 3.14);
+														
+														// State of Charge Remaining Time
+														if(!Lib.isBlank(words.get(8))) {
+															deviceUpdateE.setLast_updated(words.get(0).replace("'", ""));
+															deviceUpdateE.setLast_value(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setTemp)) : null);
+															deviceUpdateE.setField_value1(!Lib.isBlank(words.get(8)) ? Double.parseDouble(String.valueOf(setTemp)) : null);
+														} else {
+															deviceUpdateE.setLast_updated(null);
+															deviceUpdateE.setLast_value(null);
+															deviceUpdateE.setField_value1(null);
+														}
+														
+														
+														// value 2
+														deviceUpdateE.setField_value2(null);
+														
+														// value 3
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														ModelQuintUPSPosoEntity dataModelQUPSPoso = serviceModelQUPSPoso.setModelQuintUPSPoso(line);
+														dataModelQUPSPoso.setId_device(item.getId());
+														dataModelQUPSPoso.setDatatablename(item.getDatatablename());
+														dataModelQUPSPoso.setView_tablename(item.getView_tablename());
+														dataModelQUPSPoso.setJob_tablename(item.getJob_tablename());
+														dataModelQUPSPoso.setEnable_alert(item.getEnable_alert());
+														serviceModelQUPSPoso.insertModelQuintUPSPoso(dataModelQUPSPoso);
 													}
 												}
 												

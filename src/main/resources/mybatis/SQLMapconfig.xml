@@ -238,6 +238,7 @@
 		  <mapper resource="mybatis/map/EmailTracking.xml"/>
 		  <mapper resource="mybatis/map/BuildingDashboard.xml"/>
 		  <mapper resource="mybatis/map/AdminSettingRole.xml"/>
+		  <mapper resource="mybatis/map/ModelQuintUPSPoso.xml"/>
 		  
 		 
 		 
