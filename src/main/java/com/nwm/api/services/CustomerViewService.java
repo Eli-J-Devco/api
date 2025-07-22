@@ -188,6 +188,24 @@ public class CustomerViewService extends DB {
 
 	}
 	
+	public List<ClientMonthlyDateEntity> getSitePowerChart(SiteEntity site) {
+		try {
+			DevicesByTypeEntity devices = getDevicesBySite(site);
+			List<DeviceEntity> meters = devices.getMeter();
+			List<DeviceEntity> inverters = devices.getInverter();
+			List<DeviceEntity> powerDevices = meters.size() > 0 ? meters : inverters;
+			if (powerDevices.size() == 0) return new ArrayList<>();
+			
+			site.setDevices(powerDevices);
+			LocalDateTime start = LocalDateTime.parse(site.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			LocalDateTime end = LocalDateTime.parse(site.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+			
+			return Lib.fulfillData(getDateTimeList(site, start, end), queryForList("CustomerView.getSitePowerChart", site), "time_full");
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
 	private void separateDataByType(List<PerformanceDataChartItemEntity> dataEnergy, SiteEntity obj, List<ClientMonthlyDateEntity> data , List<DeviceEntity> irradianceDevices, boolean isPower) {
 		List<ClientMonthlyDateEntity> energy = new ArrayList<>();
 		List<ClientMonthlyDateEntity> expected = new ArrayList<>();
