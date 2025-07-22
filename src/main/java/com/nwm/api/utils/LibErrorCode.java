@@ -5744,6 +5744,807 @@ LibErrorCode {
 		return errorCode;
 	}
 	
+	
+	
+	/*
+	 * get PVMStatusCodes from table  sma core custom
+	 * 
+	 * @return
+	 */
+	public static int GetAlertModelSmaCore(int valueCode, int type) {
+		int errorCode = 0;
+		switch (type) {
+		case 1:
+			switch (valueCode) {
+			case 101:
+			    errorCode = 1806;
+			    break;
+			  case 102:
+			    errorCode = 1807;
+			    break;
+			  case 103:
+			    errorCode = 1808;
+			    break;
+			  case 104:
+			    errorCode = 1809;
+			    break;
+			  case 105:
+			    errorCode = 1810;
+			    break;
+			  case 202:
+			    errorCode = 1811;
+			    break;
+			  case 203:
+			    errorCode = 1812;
+			    break;
+			  case 204:
+			    errorCode = 1813;
+			    break;
+			  case 205:
+			    errorCode = 1814;
+			    break;
+			  case 206:
+			    errorCode = 1815;
+			    break;
+			  case 301:
+			    errorCode = 1816;
+			    break;
+			  case 401:
+			    errorCode = 1817;
+			    break;
+			  case 402:
+			    errorCode = 1818;
+			    break;
+			  case 501:
+			    errorCode = 1819;
+			    break;
+			  case 507:
+			    errorCode = 1820;
+			    break;
+			  case 601:
+			    errorCode = 1821;
+			    break;
+			  case 701:
+			    errorCode = 1822;
+			    break;
+			  case 901:
+			    errorCode = 1823;
+			    break;
+			  case 1001:
+			    errorCode = 1824;
+			    break;
+			  case 1101:
+			    errorCode = 1825;
+			    break;
+			  case 1302:
+			    errorCode = 1826;
+			    break;
+			  case 1501:
+			    errorCode = 1827;
+			    break;
+			  case 3401:
+			    errorCode = 1828;
+			    break;
+			  case 3402:
+			    errorCode = 1829;
+			    break;
+			  case 3407:
+			    errorCode = 1830;
+			    break;
+			  case 3501:
+			    errorCode = 1831;
+			    break;
+			  case 3601:
+			    errorCode = 1832;
+			    break;
+			  case 3701:
+			    errorCode = 1833;
+			    break;
+			  case 3801:
+			    errorCode = 1834;
+			    break;
+			  case 3802:
+			    errorCode = 1835;
+			    break;
+			  case 3805:
+			    errorCode = 1836;
+			    break;
+			  case 3901:
+			    errorCode = 1837;
+			    break;
+			  case 3902:
+			    errorCode = 1838;
+			    break;
+			  case 6002:
+			    errorCode = 1839;
+			    break;
+			  case 6003:
+			    errorCode = 1840;
+			    break;
+			  case 6004:
+			    errorCode = 1841;
+			    break;
+			  case 6005:
+			    errorCode = 1842;
+			    break;
+			  case 6006:
+			    errorCode = 1843;
+			    break;
+			  case 6009:
+			    errorCode = 1844;
+			    break;
+			  case 6101:
+			    errorCode = 1845;
+			    break;
+			  case 6105:
+			    errorCode = 1846;
+			    break;
+			  case 6107:
+			    errorCode = 1847;
+			    break;
+			  case 6109:
+			    errorCode = 1848;
+			    break;
+			  case 6111:
+			    errorCode = 1849;
+			    break;
+			  case 6112:
+			    errorCode = 1850;
+			    break;
+			  case 6121:
+			    errorCode = 1851;
+			    break;
+			  case 6155:
+			    errorCode = 1852;
+			    break;
+			  case 6202:
+			    errorCode = 1853;
+			    break;
+			  case 6301:
+			    errorCode = 1854;
+			    break;
+			  case 6304:
+			    errorCode = 1855;
+			    break;
+			  case 6305:
+			    errorCode = 1856;
+			    break;
+			  case 6306:
+			    errorCode = 1857;
+			    break;
+			  case 6401:
+			    errorCode = 1858;
+			    break;
+			  case 6403:
+			    errorCode = 1859;
+			    break;
+			  case 6404:
+			    errorCode = 1860;
+			    break;
+			  case 6405:
+			    errorCode = 1861;
+			    break;
+			  case 6406:
+			    errorCode = 1862;
+			    break;
+			  case 6407:
+			    errorCode = 1863;
+			    break;
+			  case 6408:
+			    errorCode = 1864;
+			    break;
+			  case 6409:
+			    errorCode = 1865;
+			    break;
+			  case 6410:
+			    errorCode = 1866;
+			    break;
+			  case 6411:
+			    errorCode = 1867;
+			    break;
+			  case 6412:
+			    errorCode = 1868;
+			    break;
+			  case 6415:
+			    errorCode = 1869;
+			    break;
+			  case 6416:
+			    errorCode = 1870;
+			    break;
+			  case 6462:
+			    errorCode = 1871;
+			    break;
+			  case 6499:
+			    errorCode = 1872;
+			    break;
+			  case 6501:
+			    errorCode = 1873;
+			    break;
+			  case 6502:
+			    errorCode = 1874;
+			    break;
+			  case 6509:
+			    errorCode = 1875;
+			    break;
+			  case 6512:
+			    errorCode = 1876;
+			    break;
+			  case 6603:
+			    errorCode = 1877;
+			    break;
+			  case 6604:
+			    errorCode = 1878;
+			    break;
+			  case 6607:
+			    errorCode = 1879;
+			    break;
+			  case 6608:
+			    errorCode = 1880;
+			    break;
+			  case 6609:
+			    errorCode = 1881;
+			    break;
+			  case 6610:
+			    errorCode = 1882;
+			    break;
+			  case 6701:
+			    errorCode = 1883;
+			    break;
+			  case 6702:
+			    errorCode = 1884;
+			    break;
+			  case 6801:
+			    errorCode = 1885;
+			    break;
+			  case 6802:
+			    errorCode = 1886;
+			    break;
+			  case 6901:
+			    errorCode = 1887;
+			    break;
+			  case 6902:
+			    errorCode = 1888;
+			    break;
+			  case 7001:
+			    errorCode = 1889;
+			    break;
+			  case 7002:
+			    errorCode = 1890;
+			    break;
+			  case 7106:
+			    errorCode = 1891;
+			    break;
+			  case 7110:
+			    errorCode = 1892;
+			    break;
+			  case 7112:
+			    errorCode = 1893;
+			    break;
+			  case 7113:
+			    errorCode = 1894;
+			    break;
+			  case 7201:
+			    errorCode = 1895;
+			    break;
+			  case 7202:
+			    errorCode = 1896;
+			    break;
+			  case 7303:
+			    errorCode = 1897;
+			    break;
+			  case 7320:
+			    errorCode = 1898;
+			    break;
+			  case 7324:
+			    errorCode = 1899;
+			    break;
+			  case 7330:
+			    errorCode = 1900;
+			    break;
+			  case 7331:
+			    errorCode = 1901;
+			    break;
+			  case 7332:
+			    errorCode = 1902;
+			    break;
+			  case 7333:
+			    errorCode = 1903;
+			    break;
+			  case 7337:
+			    errorCode = 1904;
+			    break;
+			  case 7340:
+			    errorCode = 1905;
+			    break;
+			  case 7347:
+			    errorCode = 1906;
+			    break;
+			  case 7348:
+			    errorCode = 1907;
+			    break;
+			  case 7349:
+			    errorCode = 1908;
+			    break;
+			  case 7350:
+			    errorCode = 1909;
+			    break;
+			  case 7352:
+			    errorCode = 1910;
+			    break;
+			  case 7353:
+			    errorCode = 1911;
+			    break;
+			  case 7354:
+			    errorCode = 1912;
+			    break;
+			  case 7355:
+			    errorCode = 1913;
+			    break;
+			  case 7356:
+			    errorCode = 1914;
+			    break;
+			  case 7357:
+			    errorCode = 1915;
+			    break;
+			  case 7358:
+			    errorCode = 1916;
+			    break;
+			  case 7359:
+			    errorCode = 1917;
+			    break;
+			  case 7360:
+			    errorCode = 1918;
+			    break;
+			  case 7619:
+			    errorCode = 1919;
+			    break;
+			  case 7623:
+			    errorCode = 1920;
+			    break;
+			  case 7624:
+			    errorCode = 1921;
+			    break;
+			  case 7701:
+			    errorCode = 1922;
+			    break;
+			  case 7702:
+			    errorCode = 1923;
+			    break;
+			  case 7703:
+			    errorCode = 1924;
+			    break;
+			  case 8003:
+			    errorCode = 1925;
+			    break;
+			  case 8101:
+			    errorCode = 1926;
+			    break;
+			  case 8102:
+			    errorCode = 1927;
+			    break;
+			  case 8103:
+			    errorCode = 1928;
+			    break;
+			  case 8104:
+			    errorCode = 1929;
+			    break;
+			  case 8501:
+			    errorCode = 1930;
+			    break;
+			  case 8502:
+			    errorCode = 1931;
+			    break;
+			  case 8708:
+			    errorCode = 1932;
+			    break;
+			  case 8709:
+			    errorCode = 1933;
+			    break;
+			  case 8710:
+			    errorCode = 1934;
+			    break;
+			  case 9002:
+			    errorCode = 1935;
+			    break;
+			  case 9003:
+			    errorCode = 1936;
+			    break;
+			  case 9005:
+			    errorCode = 1937;
+			    break;
+			  case 9007:
+			    errorCode = 1938;
+			    break;
+			  case 9202:
+			    errorCode = 1939;
+			    break;
+			  case 9203:
+			    errorCode = 1940;
+			    break;
+			  case 9204:
+			    errorCode = 1941;
+			    break;
+			  case 9205:
+			    errorCode = 1942;
+			    break;
+			  case 9206:
+			    errorCode = 1943;
+			    break;
+			  case 9207:
+			    errorCode = 1944;
+			    break;
+			  case 9208:
+			    errorCode = 1945;
+			    break;
+			  case 9209:
+			    errorCode = 1946;
+			    break;
+			  case 9211:
+			    errorCode = 1947;
+			    break;
+			  case 9214:
+			    errorCode = 1948;
+			    break;
+			  case 9215:
+			    errorCode = 1949;
+			    break;
+			  case 9216:
+			    errorCode = 1950;
+			    break;
+			  case 9217:
+			    errorCode = 1951;
+			    break;
+			  case 9218:
+			    errorCode = 1952;
+			    break;
+			  case 9219:
+			    errorCode = 1953;
+			    break;
+			  case 9220:
+			    errorCode = 1954;
+			    break;
+			  case 9221:
+			    errorCode = 1955;
+			    break;
+			  case 9223:
+			    errorCode = 1956;
+			    break;
+			  case 9301:
+			    errorCode = 1957;
+			    break;
+			  case 9303:
+			    errorCode = 1958;
+			    break;
+			  case 9304:
+			    errorCode = 1959;
+			    break;
+			  case 9305:
+			    errorCode = 1960;
+			    break;
+			  case 9306:
+			    errorCode = 1961;
+			    break;
+			  case 9307:
+			    errorCode = 1962;
+			    break;
+			  case 9308:
+			    errorCode = 1963;
+			    break;
+			  case 9311:
+			    errorCode = 1964;
+			    break;
+			  case 9312:
+			    errorCode = 1965;
+			    break;
+			  case 9313:
+			    errorCode = 1966;
+			    break;
+			  case 9314:
+			    errorCode = 1967;
+			    break;
+			  case 9315:
+			    errorCode = 1968;
+			    break;
+			  case 9316:
+			    errorCode = 1969;
+			    break;
+			  case 9334:
+			    errorCode = 1970;
+			    break;
+			  case 9335:
+			    errorCode = 1971;
+			    break;
+			  case 9336:
+			    errorCode = 1972;
+			    break;
+			  case 9337:
+			    errorCode = 1973;
+			    break;
+			  case 9338:
+			    errorCode = 1974;
+			    break;
+			  case 9339:
+			    errorCode = 1975;
+			    break;
+			  case 9340:
+			    errorCode = 1976;
+			    break;
+			  case 9345:
+			    errorCode = 1977;
+			    break;
+			  case 9346:
+			    errorCode = 1978;
+			    break;
+			  case 9347:
+			    errorCode = 1979;
+			    break;
+			  case 9351:
+			    errorCode = 1980;
+			    break;
+			  case 9352:
+			    errorCode = 1981;
+			    break;
+			  case 9353:
+			    errorCode = 1982;
+			    break;
+			  case 9354:
+			    errorCode = 1983;
+			    break;
+			  case 10100:
+			    errorCode = 1984;
+			    break;
+			  case 10101:
+			    errorCode = 1985;
+			    break;
+			  case 10102:
+			    errorCode = 1986;
+			    break;
+			  case 10103:
+			    errorCode = 1987;
+			    break;
+			  case 10104:
+			    errorCode = 1988;
+			    break;
+			  case 10105:
+			    errorCode = 1989;
+			    break;
+			  case 10108:
+			    errorCode = 1990;
+			    break;
+			  case 10109:
+			    errorCode = 1991;
+			    break;
+			  case 10110:
+			    errorCode = 1992;
+			    break;
+			  case 10116:
+			    errorCode = 1993;
+			    break;
+			  case 10118:
+			    errorCode = 1994;
+			    break;
+			  case 10120:
+			    errorCode = 1995;
+			    break;
+			  case 10224:
+			    errorCode = 1996;
+			    break;
+			  case 10248:
+			    errorCode = 1997;
+			    break;
+			  case 10249:
+			    errorCode = 1998;
+			    break;
+			  case 10250:
+			    errorCode = 1999;
+			    break;
+			  case 10251:
+			    errorCode = 2000;
+			    break;
+			  case 10252:
+			    errorCode = 2001;
+			    break;
+			  case 10253:
+			    errorCode = 2002;
+			    break;
+			  case 10254:
+			    errorCode = 2003;
+			    break;
+			  case 10255:
+			    errorCode = 2004;
+			    break;
+			  case 10282:
+			    errorCode = 2005;
+			    break;
+			  case 10283:
+			    errorCode = 2006;
+			    break;
+			  case 10284:
+			    errorCode = 2007;
+			    break;
+			  case 10285:
+			    errorCode = 2008;
+			    break;
+			  case 10286:
+			    errorCode = 2009;
+			    break;
+			  case 10287:
+			    errorCode = 2010;
+			    break;
+			  case 10339:
+			    errorCode = 2011;
+			    break;
+			  case 10340:
+			    errorCode = 2012;
+			    break;
+			  case 10341:
+			    errorCode = 2013;
+			    break;
+			  case 10343:
+			    errorCode = 2014;
+			    break;
+			  case 10420:
+			    errorCode = 2015;
+			    break;
+			  case 10421:
+			    errorCode = 2016;
+			    break;
+			  case 10513:
+			    errorCode = 2017;
+			    break;
+			  case 10517:
+			    errorCode = 2018;
+			    break;
+			  case 10518:
+			    errorCode = 2019;
+			    break;
+			  case 10520:
+			    errorCode = 2020;
+			    break;
+			  case 10521:
+			    errorCode = 2021;
+			    break;
+			  case 10525:
+			    errorCode = 2022;
+			    break;
+			  case 10528:
+			    errorCode = 2023;
+			    break;
+			  case 27107:
+			    errorCode = 2024;
+			    break;
+			  case 27108:
+			    errorCode = 2025;
+			    break;
+			  case 27109:
+			    errorCode = 2026;
+			    break;
+			  case 27301:
+			    errorCode = 2027;
+			    break;
+			  case 27302:
+			    errorCode = 2028;
+			    break;
+			  case 27312:
+			    errorCode = 2029;
+			    break;
+			  case 27329:
+			    errorCode = 2030;
+			    break;
+			  case 27331:
+			    errorCode = 2031;
+			    break;
+			  case 27332:
+			    errorCode = 2032;
+			    break;
+			  case 27336:
+			    errorCode = 2033;
+			    break;
+			  case 29001:
+			    errorCode = 2034;
+			    break;
+			  case 29004:
+			    errorCode = 2035;
+			    break;
+			  case 29006:
+			    errorCode = 2036;
+			    break;
+			  case 29016:
+			    errorCode = 2037;
+			    break;
+			  case 29252:
+			    errorCode = 2038;
+			    break;
+			  case 29253:
+			    errorCode = 2039;
+			    break;
+			  case 29254:
+			    errorCode = 2040;
+			    break;
+			}
+			
+			break;
+		case 2:
+			switch (valueCode) {
+			case 257:
+			    errorCode = 2042;
+			    break;
+			  case 1655:
+			    errorCode = 2043;
+			    break;
+			  case 1690:
+			    errorCode = 2044;
+			    break;
+			  case 2386:
+			    errorCode = 2045;
+			    break;
+			  case 2387:
+			    errorCode = 2046;
+			    break;
+			  case 2388:
+			    errorCode = 2047;
+			    break;
+			  case 2389:
+			    errorCode = 2048;
+			    break;
+			  case 2390:
+			    errorCode = 2049;
+			    break;
+			  case 2490:
+			    errorCode = 2050;
+			    break;
+			  case 3165:
+			    errorCode = 2051;
+			    break;
+			  case 3166:
+			    errorCode = 2052;
+			    break;
+			  case 3167:
+			    errorCode = 2053;
+			    break;
+			  case 4553:
+			    errorCode = 2054;
+			    break;
+			  case 4570:
+			    errorCode = 2055;
+			    break;
+			  case 16777213:
+			    errorCode = 2056;
+			    break;
+			}
+			break;
+		case 3:
+			switch (valueCode) {
+			case 557:
+			    errorCode = 2057;
+			    break;
+			  case 1705:
+			    errorCode = 2058;
+			    break;
+			  case 3520:
+			    errorCode = 2059;
+			    break;
+			  case 3554:
+			    errorCode = 2060;
+			    break;
+			  case 3556:
+			    errorCode = 2061;
+			    break;
+			  case 4560:
+			    errorCode = 2062;
+			    break;
+			  case 4561:
+			    errorCode = 2063;
+			    break;
+			  case 16777213:
+			    errorCode = 2064;
+			    break;
+			}
+			break;
+		}
+
+		return errorCode;
+	}
 	 
 	
 }

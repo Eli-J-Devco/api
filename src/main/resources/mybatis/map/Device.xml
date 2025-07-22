@@ -6867,6 +6867,82 @@
 	            </when>
 	            
 	            
+	            <when test="id_device_group == 119">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `CurrentPhase1` double DEFAULT NULL,
+							`CurrentPhase2` double DEFAULT NULL,
+							`CurrentPhase3` double DEFAULT NULL,
+							`GridFrequency` double DEFAULT NULL,
+							`VoltagePhase1` double DEFAULT NULL,
+							`VoltagePhase2` double DEFAULT NULL,
+							`VoltagePhase3` double DEFAULT NULL,
+							`VoltagePhase12` double DEFAULT NULL,
+							`VoltagePhase23` double DEFAULT NULL,
+							`VoltagePhase31` double DEFAULT NULL,
+							`PowerFactor` double DEFAULT NULL,
+							`ActivePower` double DEFAULT NULL,
+							`ActivePowerPhase1` double DEFAULT NULL,
+							`ActivePowerPhase2` double DEFAULT NULL,
+							`ActivePowerPhase3` double DEFAULT NULL,
+							`ApparentPower` double DEFAULT NULL,
+							`ApparentPowerPhase1` double DEFAULT NULL,
+							`ApparentPowerPhase2` double DEFAULT NULL,
+							`ApparentPowerPhase3` double DEFAULT NULL,
+							`ReactivePower` double DEFAULT NULL,
+							`ReactivePowerPhase1` double DEFAULT NULL,
+							`ReactivePowerPhase2` double DEFAULT NULL,
+							`ReactivePowerPhase3` double DEFAULT NULL,
+							`ResidualCurrent` double DEFAULT NULL,
+							`InternalTemperature` double DEFAULT NULL,
+							`TotalYield` double DEFAULT NULL,
+							`InsulationResistance` double DEFAULT NULL,
+							`DCCurrentInputA` double DEFAULT NULL,
+							`DCCurrentInputB` double DEFAULT NULL,
+							`DCCurrentInputC` double DEFAULT NULL,
+							`DCCurrentInputD` double DEFAULT NULL,
+							`DCCurrentInputE` double DEFAULT NULL,
+							`DCVoltageInputA` double DEFAULT NULL,
+							`DCVoltageInputB` double DEFAULT NULL,
+							`DCVoltageInputC` double DEFAULT NULL,
+							`DCVoltageInputD` double DEFAULT NULL,
+							`DCVoltageInputE` double DEFAULT NULL,
+							`DCPowerInputA` double DEFAULT NULL,
+							`DCPowerInputB` double DEFAULT NULL,
+							`DCPowerInputC` double DEFAULT NULL,
+							`DCPowerInputD` double DEFAULT NULL,
+							`DCPowerInputE` double DEFAULT NULL,
+							`DCCurrentInputF` double DEFAULT NULL,
+							`DCVoltageInputF` double DEFAULT NULL,
+							`DCPowerInputF` double DEFAULT NULL,
+							`EventMessage` double DEFAULT NULL,
+							`HealthCondiiton` double DEFAULT NULL,
+							`Faultcorrectionmeasure` double DEFAULT NULL,
+							`BlockStatus` double DEFAULT NULL,
+							`ReasonforDerating` double DEFAULT NULL,
+							`FeedinTime` double DEFAULT NULL,
+							`OperatingTime` double DEFAULT NULL,
+							`SerialNumber` double DEFAULT NULL,
+						  
+						  						  
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>  
+	            
+	            
 	            
 	            
 	            

@@ -25,9 +25,16 @@ public class DeviceYieldEntity {
 	private List parameters;
 	private String json_last_data;
 	private String advance_tech_control_tag;
+	private String advance_tech_field_device_status;
 	
 	
 	
+	public String getAdvance_tech_field_device_status() {
+		return advance_tech_field_device_status;
+	}
+	public void setAdvance_tech_field_device_status(String advance_tech_field_device_status) {
+		this.advance_tech_field_device_status = advance_tech_field_device_status;
+	}
 	public String getAdvance_tech_control_tag() {
 		return advance_tech_control_tag;
 	}

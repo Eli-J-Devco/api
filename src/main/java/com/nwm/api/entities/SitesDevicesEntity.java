@@ -7,6 +7,7 @@ package com.nwm.api.entities;
 import java.util.Date;
 import java.util.List;
 
+
 public class SitesDevicesEntity extends SortEntity {
 	private int id;
 	private int id_customer;
@@ -186,9 +187,16 @@ public class SitesDevicesEntity extends SortEntity {
 	private int id_hvac_layout;
 	private String device_group_title_trans;
 	private String device_type_title_trans;
+	private String advance_tech_field_device_status;
 	
 	
 	
+	public String getAdvance_tech_field_device_status() {
+		return advance_tech_field_device_status;
+	}
+	public void setAdvance_tech_field_device_status(String advance_tech_field_device_status) {
+		this.advance_tech_field_device_status = advance_tech_field_device_status;
+	}
 	public String getAdvance_tech_control_tag() {
 		return advance_tech_control_tag;
 	}
