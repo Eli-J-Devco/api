@@ -96,6 +96,7 @@ import com.nwm.api.entities.ModelShark100Entity;
 import com.nwm.api.entities.ModelShark100TestEntity;
 import com.nwm.api.entities.ModelShark100v1Entity;
 import com.nwm.api.entities.ModelShark250Entity;
+import com.nwm.api.entities.ModelSmaCoreEntity;
 import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
 import com.nwm.api.entities.ModelSmaShp7510Entity;
 import com.nwm.api.entities.ModelSmaStp2550us50Entity;
@@ -191,6 +192,7 @@ import com.nwm.api.services.ModelShark100Service;
 import com.nwm.api.services.ModelShark100TestService;
 import com.nwm.api.services.ModelShark100v1Service;
 import com.nwm.api.services.ModelShark250Service;
+import com.nwm.api.services.ModelSmaCoreService;
 import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
 import com.nwm.api.services.ModelSmaShp7510Service;
 import com.nwm.api.services.ModelSmaStp2550us50Service;
@@ -3158,6 +3160,48 @@ public class UploadFilesController extends BaseController {
 						                            serviceD.updateLastUpdated(deviceUpdateE);
 						                            
 						                            serviceModelSmaStp2550us50.insertModelSmaStp2550us50(dataEntity);
+													
+													uploadFilesService.checkWrongEnergy(item, dataEntity);
+						                          }
+						                        }
+						                        
+						                        break;
+						                        
+						                        
+											case "model_sma_core":
+												ModelSmaCoreService serviceModelSmaCore = new ModelSmaCoreService();
+						                        // Check insert database status
+						                        while ((line = br.readLine()) != null) {
+						                          sb.append(line); // appends line to string buffer
+						                          sb.append("\n"); // line feed
+						                          // Convert string to array
+						                          List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+						                          if (words.size() > 0) {
+						                            
+						                        	ModelSmaCoreEntity dataEntity = serviceModelSmaCore.setModelSmaCore(line);
+						                            dataEntity.setId_device(item.getId());
+						                            dataEntity.setDatatablename(item.getDatatablename());
+						                            dataEntity.setView_tablename(item.getView_tablename());
+						                            dataEntity.setJob_tablename(item.getJob_tablename());
+						                            dataEntity.setOffset_data_old(item.getOffset_data_old());
+						                            
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+						                            // Active_Power
+						                            if(dataEntity.getActivePower() != 0.001 && dataEntity.getActivePower() >= 0){
+						                              deviceUpdateE.setLast_updated(dataEntity.getTime());
+						                            }
+						                            
+						                            deviceUpdateE.setLast_value(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+						                            deviceUpdateE.setField_value1(dataEntity.getActivePower() != 0.001 ? dataEntity.getActivePower() : null);
+						                            
+						                            deviceUpdateE.setField_value2(null);
+						                            deviceUpdateE.setField_value3(null);
+						                            
+						                            deviceUpdateE.setId(item.getId());
+						                            serviceD.updateLastUpdated(deviceUpdateE);
+						                            
+						                            serviceModelSmaCore.insertModelSmaCore(dataEntity);
 													
 													uploadFilesService.checkWrongEnergy(item, dataEntity);
 						                          }
