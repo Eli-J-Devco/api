@@ -11,9 +11,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -434,4 +436,50 @@ public class PortfolioService extends DB {
 		}
 	}
 	
+	/**
+	 * @description Get sites metrics chart generation
+	 * @author Hung.Bui
+	 * @since 2025-07-21
+	 * @param obj
+	 */
+	public List<ClientMonthlyDateEntity> getSitesMetricsChartGeneration(PortfolioEntity obj) {
+		try {
+			List<SiteEntity> sites = getSites(obj);
+			if (sites.size() == 0) return new ArrayList<>();
+			
+			CustomerViewService customerViewService = new CustomerViewService();
+			List<CompletableFuture<List<ClientMonthlyDateEntity>>> futureList = new ArrayList<CompletableFuture<List<ClientMonthlyDateEntity>>>();
+			
+			for (int i = 0; i < sites.size(); i++) {
+				SiteEntity site = sites.get(i);
+				site.setDomain(obj.getDomain());
+				site.setStart_date(obj.getStart_date());
+				site.setEnd_date(obj.getEnd_date());
+				site.setData_send_time(2);
+				site.setFilterBy("3_day");
+				CompletableFuture<List<ClientMonthlyDateEntity>> future = CompletableFuture.supplyAsync(() -> customerViewService.getSitePowerChart(site));
+				futureList.add(future);
+			}
+			
+			List<List<ClientMonthlyDateEntity>> siteDataList = futureList.stream()
+					.map(future -> future.join())
+					.filter(item -> item.size() > 0)
+					.collect(Collectors.toList());
+			List<ClientMonthlyDateEntity> longestSiteData = Collections.max(siteDataList, (l1, l2) -> l1.size() - l2.size());
+			List<ClientMonthlyDateEntity> data = new ArrayList<ClientMonthlyDateEntity>(longestSiteData);
+			
+			for (int i = 0; i < longestSiteData.size(); i++) {
+				data.get(i).setNvmActivePower(null);
+				
+				for (List<ClientMonthlyDateEntity> siteData : siteDataList) {
+					if (i > siteData.size() - 1) continue;
+					if (Objects.nonNull(siteData.get(i).getNvmActivePower())) data.get(i).setNvmActivePower(Optional.ofNullable(data.get(i).getNvmActivePower()).orElse(0.0) + siteData.get(i).getNvmActivePower());
+				}
+			}
+			
+			return data;
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
 }

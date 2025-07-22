@@ -957,6 +957,29 @@
 			
   	</select>
   	
+	<select id="getSitePowerChart" resultType="com.nwm.api.entities.ClientMonthlyDateEntity" >
+		SELECT
+			t.time_full,
+			t.categories_time,
+			CAST(SUM(t.nvmActivePower) AS DECIMAL) AS nvmActivePower
+		FROM
+			(
+				<foreach collection="devices" item="item" separator="UNION ALL">
+					SELECT
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', #{item.timezone_value})) DIV 900)*900), '%Y-%m-%d %H:%i') AS time_full,
+						FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ(dv.time, 'UTC', #{item.timezone_value})) DIV 900)*900), '%d. %b %H:%i') AS categories_time,
+						AVG(dv.nvmActivePower) AS nvmActivePower
+					FROM
+						${item.datatablename} dv
+					WHERE
+						dv.time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{end_date}, #{item.timezone_value}, 'UTC')
+					GROUP BY
+						time_full
+				</foreach>
+			) t 
+		GROUP BY
+			t.time_full
+	</select>
   	
 	
 </mapper>

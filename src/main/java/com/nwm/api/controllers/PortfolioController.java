@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.EnergyEntity;
 import com.nwm.api.entities.PortfolioEntity;
 import com.nwm.api.entities.SiteEnergyEntity;
@@ -220,6 +221,30 @@ public class PortfolioController extends BaseController {
 			List<SiteEnergyEntity> data = service.getSitesMetricsActualVsExpected(obj);
 			
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
+	
+	/**
+	 * @description Get sites metrics chart generation
+	 * @author Hung.Bui
+	 * @since 2025-07-21
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/metrics/chart-generation")
+	public Object getSitesMetricsChartGeneration(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
+		try {
+			List sites = Lib.sitesManagedByUser(authz);
+			if (sites.size() == 0) return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+			
+			obj.setId_sites(sites);
+			PortfolioService service = new PortfolioService();
+			List<ClientMonthlyDateEntity> data = service.getSitesMetricsChartGeneration(obj);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
