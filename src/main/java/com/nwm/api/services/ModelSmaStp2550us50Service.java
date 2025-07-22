@@ -80,6 +80,14 @@ public class ModelSmaStp2550us50Service extends DB {
 				dataModelSmaStp2550us50.setDC_Power_Input_3(Double.parseDouble(!Lib.isBlank(words.get(44)) ? words.get(44) : "0.001"));
 				dataModelSmaStp2550us50.setDC_Power_Input_4(Double.parseDouble(!Lib.isBlank(words.get(45)) ? words.get(45) : "0.001"));
 				
+				dataModelSmaStp2550us50.setEventMessage(Double.parseDouble(!Lib.isBlank(words.get(46)) ? words.get(46) : "0.001"));
+				dataModelSmaStp2550us50.setHealthCondition(Double.parseDouble(!Lib.isBlank(words.get(47)) ? words.get(47) : "0.001"));
+				dataModelSmaStp2550us50.setFaultCorrectionMeasure(Double.parseDouble(!Lib.isBlank(words.get(48)) ? words.get(48) : "0.001"));
+				dataModelSmaStp2550us50.setBlockStatus(Double.parseDouble(!Lib.isBlank(words.get(49)) ? words.get(49) : "0.001"));
+				dataModelSmaStp2550us50.setReasonforDerating(Double.parseDouble(!Lib.isBlank(words.get(50)) ? words.get(50) : "0.001"));
+				
+				
+				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelSmaStp2550us50.setNvmActivePower(power);
 				dataModelSmaStp2550us50.setNvmActiveEnergy(energy);

@@ -204,7 +204,27 @@
 			</if>
 			<if test="DC_Power_Input_4 != 0.001" >
 				`DC_Power_Input_4`,
+			</if>
+			
+			<if test="EventMessage != 0.001" >
+				`EventMessage`,
 			</if>	
+			
+			<if test="HealthCondition != 0.001" >
+				`HealthCondition`,
+			</if>	
+			
+			<if test="FaultCorrectionMeasure != 0.001" >
+				`FaultCorrectionMeasure`,
+			</if>	
+			<if test="BlockStatus != 0.001" >
+				`BlockStatus`,
+			</if>	
+			<if test="ReasonforDerating != 0.001" >
+				`ReasonforDerating`,
+			</if>	
+				
+			
 			<if test="nvmActivePower != 0.001" >
 			  	`nvmActivePower`,
 			</if>
@@ -358,6 +378,25 @@
 			<if test="DC_Power_Input_4 != 0.001" >
 				#{DC_Power_Input_4},
 			</if>		
+			
+			<if test="EventMessage != 0.001" >
+				#{EventMessage},
+			</if>	
+			
+			<if test="HealthCondition != 0.001" >
+				#{HealthCondition},
+			</if>	
+			
+			<if test="FaultCorrectionMeasure != 0.001" >
+				#{FaultCorrectionMeasure},
+			</if>	
+			<if test="BlockStatus != 0.001" >
+				#{BlockStatus},
+			</if>	
+			<if test="ReasonforDerating != 0.001" >
+				#{ReasonforDerating},
+			</if>	
+			
 			<if test="nvmActivePower != 0.001" >
 			  	#{nvmActivePower},
 			</if>
@@ -509,6 +548,25 @@
 			<if test="DC_Power_Input_4 != 0.001" >
 				`DC_Power_Input_4` = #{DC_Power_Input_4},
 			</if>		
+			
+			<if test="EventMessage != 0.001" >
+				`EventMessage` = #{EventMessage},
+			</if>	
+			
+			<if test="HealthCondition != 0.001" >
+				`HealthCondition` = #{HealthCondition},
+			</if>	
+			
+			<if test="FaultCorrectionMeasure != 0.001" >
+				`FaultCorrectionMeasure` = #{FaultCorrectionMeasure},
+			</if>	
+			<if test="BlockStatus != 0.001" >
+				`BlockStatus` = #{BlockStatus},
+			</if>	
+			<if test="ReasonforDerating != 0.001" >
+				`ReasonforDerating` = #{ReasonforDerating},
+			</if>
+			
 			<if test="nvmActivePower != 0.001" >
 			 	`nvmActivePower` = #{nvmActivePower},
 			</if>

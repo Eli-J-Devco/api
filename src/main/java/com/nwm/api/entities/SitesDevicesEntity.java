@@ -154,6 +154,7 @@ public class SitesDevicesEntity extends SortEntity {
 	private String advance_tech_field_restart;
 	private String advance_tech_field_stop;
 	private String advance_tech_field_start;
+	private String advance_tech_control_tag;
 	private int advance_tech_control_enable = 0;
 	private String domain;
 	private boolean isUserNW;
@@ -188,6 +189,12 @@ public class SitesDevicesEntity extends SortEntity {
 	
 	
 	
+	public String getAdvance_tech_control_tag() {
+		return advance_tech_control_tag;
+	}
+	public void setAdvance_tech_control_tag(String advance_tech_control_tag) {
+		this.advance_tech_control_tag = advance_tech_control_tag;
+	}
 	public String getDevice_group_title_trans() {
 		return device_group_title_trans;
 	}

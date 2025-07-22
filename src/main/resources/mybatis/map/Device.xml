@@ -6395,6 +6395,13 @@
 						  `DC_Power_Input_2` double DEFAULT NULL,
 						  `DC_Power_Input_3` double DEFAULT NULL,
 						  `DC_Power_Input_4` double DEFAULT NULL,
+	
+						  `EventMessage` double DEFAULT NULL,
+						  `HealthCondition` double DEFAULT NULL,
+						  `FaultCorrectionMeasure` double DEFAULT NULL,
+						  `BlockStatus` double DEFAULT NULL,
+						  `ReasonforDerating` double DEFAULT NULL,
+						  
 						  						  
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
