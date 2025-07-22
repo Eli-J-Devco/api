@@ -6,13 +6,21 @@
 package com.nwm.api.services;
 
 
+import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.ModelSmaStp2550us50Entity;
+import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.utils.Lib;
+import com.nwm.api.utils.LibErrorCode;
 
 public class ModelSmaStp2550us50Service extends DB {
 	
@@ -135,15 +143,239 @@ public class ModelSmaStp2550us50Service extends DB {
 			 obj.setMeasuredProduction(measuredProduction);
 			 
 			 Object insertId = insert("ModelSmaStp2550us50.insertModelSmaStp2550us50", obj);
-		        if(insertId == null ) {
-		        	return false;
-		        }
-		        return true;
+	        if(insertId == null ) {
+	        	return false;
+	        }
+	        
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelSmaStp2550us50(obj);
+	        }
+	        
+	        return true;
 		} catch (Exception ex) {
 			log.error("insert", ex);
 			return false;
 		}
 
+	}
+	
+	/**
+	 * @description get last row "data table name" by device
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param datatablename
+	 */
+
+	public ModelSmaStp2550us50Entity checkAlertWriteCode(ModelSmaStp2550us50Entity obj) {
+		ModelSmaStp2550us50Entity rowItem = new ModelSmaStp2550us50Entity();
+		try {
+
+			List dataList = queryForList("ModelSmaStp2550us50.checkAlertWriteCode", obj);
+			if(dataList.size() > 0) {
+				int totalFaultCode1 = 0, totalFaultCode2 = 0, totalFaultCode3 = 0;
+				for(int i =0; i < dataList.size(); i ++) {
+					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
+					double EventMessage = (double) item.get("EventMessage");
+					if(Double.compare(obj.getEventMessage(), EventMessage) == 0 && obj.getEventMessage() > 0 && EventMessage > 0 && obj.getEventMessage() != 302 && EventMessage != 302) { 
+						totalFaultCode1++;
+					}
+					
+					double BlockStatus = (double) item.get("BlockStatus");
+					if(Double.compare(obj.getBlockStatus(), BlockStatus) == 0 && obj.getBlockStatus() > 0 && BlockStatus > 0 && obj.getBlockStatus() != 302 && BlockStatus != 302) { 
+						totalFaultCode2++;
+					}
+					
+					double ReasonforDerating = (double) item.get("ReasonforDerating");
+					if(Double.compare(obj.getReasonforDerating(), ReasonforDerating) == 0 && obj.getReasonforDerating() > 0 && ReasonforDerating > 0 && obj.getReasonforDerating() != 884 && ReasonforDerating != 884) { 
+						totalFaultCode3++;
+						
+					}
+					
+				}
+				rowItem.setTotalFaultCode1(totalFaultCode1);
+				rowItem.setTotalFaultCode2(totalFaultCode2);
+				rowItem.setTotalFaultCode3(totalFaultCode3);
+			}
+			
+			if (rowItem == null)
+				return new ModelSmaStp2550us50Entity();
+		} catch (Exception ex) {
+			log.error("ModelSmaStp2550us50.checkAlertWriteCode", ex);
+			return new ModelSmaStp2550us50Entity();
+		}
+		return rowItem;
+	}
+	
+	/**
+	 * @description check trigger alert fault code
+	 * @author duy.phan
+	 * @since 2023-11-16
+	 * @param data from datalogger
+	 */
+
+	public void checkTriggerAlertModelSmaStp2550us50(ModelSmaStp2550us50Entity obj) {
+		// Check device alert by fault code
+		 int faultCode1 = (obj.getEventMessage() > 0 && obj.getEventMessage() != 302 && obj.getEventMessage() != 0.001) ? (int) obj.getEventMessage() : 0;
+		 int faultCode2 = (obj.getBlockStatus() > 0 && obj.getBlockStatus() != 302 && obj.getBlockStatus() != 0.001) ? (int) obj.getEventMessage() : 0;
+		 int faultCode3 = (obj.getReasonforDerating() > 0 && obj.getReasonforDerating() != 884 && obj.getReasonforDerating() != 0.001) ? (int) obj.getEventMessage() : 0;
+		 
+		
+		 ModelSmaStp2550us50Entity rowItem = (ModelSmaStp2550us50Entity) checkAlertWriteCode(obj);
+		
+		if(faultCode1 > 0 && rowItem.getTotalFaultCode1() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelSmaStp2550us50(faultCode1, 1);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode1() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(1);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelSmaStp2550us50.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		if(faultCode2 > 0 && rowItem.getTotalFaultCode2() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelSmaStp2550us50(faultCode2, 2);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode2() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(2);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelSmaStp2550us50.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
+		
+		if(faultCode3 > 0 && rowItem.getTotalFaultCode3() >= 20) {
+			try {
+				int errorId = LibErrorCode.GetAlertModelSmaStp2550us50(faultCode3, 3);	
+				if (errorId > 0) {
+					AlertEntity alertDeviceItem = new AlertEntity();
+					alertDeviceItem.setId_device(obj.getId_device());
+					alertDeviceItem.setStart_date(obj.getTime());
+					alertDeviceItem.setId_error(errorId);
+					boolean checkAlertDeviceExist = (int) queryForObject("BatchJob.checkAlertlExist",
+							alertDeviceItem) > 0;
+					boolean errorExits = (int) queryForObject("BatchJob.checkErrorExist", alertDeviceItem) > 0;
+					if (!checkAlertDeviceExist && errorExits) {
+						insert("BatchJob.insertAlert", alertDeviceItem);
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			// Close faultCode
+			try {
+				if(rowItem.getTotalFaultCode3() == 0) {
+					AlertEntity alertItemClose = new AlertEntity();
+					alertItemClose.setId_device(obj.getId_device());
+					// type 1 is error code
+					alertItemClose.setFaultCodeLevel(3);
+					List dataListWarningCode = new ArrayList();
+					dataListWarningCode = queryForList("ModelSmaStp2550us50.getListTriggerFaultCode", alertItemClose);
+					if(dataListWarningCode.size() > 0) {
+						for(int i = 0; i < dataListWarningCode.size(); i++) {
+							Map<String, Object> itemFault = (Map<String, Object>) dataListWarningCode.get(i);
+							int id =  Integer.parseInt(itemFault.get("id").toString());
+							int idError =  Integer.parseInt(itemFault.get("id_error").toString());
+							alertItemClose.setEnd_date(itemFault.get("end_date").toString());
+							alertItemClose.setId(id );
+							alertItemClose.setId_error(idError);
+							update("Alert.UpdateErrorRow", alertItemClose);
+						}
+					}
+				}
+				
+			}
+			catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 }
