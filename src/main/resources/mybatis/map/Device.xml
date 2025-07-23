@@ -6943,6 +6943,69 @@
 	            </when>  
 	            
 	            
+	            <when test="id_device_group == 120">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `CurrentPhase1` double DEFAULT NULL,
+							`CurrentPhase2` double DEFAULT NULL,
+							`CurrentPhase3` double DEFAULT NULL,
+							`VoltagePhase1` double DEFAULT NULL,
+							`VoltagePhase2` double DEFAULT NULL,
+							`VoltagePhase3` double DEFAULT NULL,
+							`PowerFactorPhase1` double DEFAULT NULL,
+							`PowerFactorPhase2` double DEFAULT NULL,
+							`PowerFactorPhase3` double DEFAULT NULL,
+							`ApparentPowerPhase1` double DEFAULT NULL,
+							`ApparentPowerPhase2` double DEFAULT NULL,
+							`ApparentPowerPhase3` double DEFAULT NULL,
+							`RealPowerPhase1` double DEFAULT NULL,
+							`RealPowerPhase2` double DEFAULT NULL,
+							`RealPowerPhase3` double DEFAULT NULL,
+							`ReactivePowerPhase1` double DEFAULT NULL,
+							`ReactivePowerPhase2` double DEFAULT NULL,
+							`ReactivePowerPhase3` double DEFAULT NULL,
+							`LineFrequency` double DEFAULT NULL,
+							`DemandCurrentPhase1` double DEFAULT NULL,
+							`DemandCurrentPhase2` double DEFAULT NULL,
+							`DemandCurrentPhase3` double DEFAULT NULL,
+							`BatteryVoltage` double DEFAULT NULL,
+							`BatteryCurrent` double DEFAULT NULL,
+							`TotalTripCounter` double DEFAULT NULL,
+							`RecloserClosed` double DEFAULT NULL,
+							`RecloserOpened` double DEFAULT NULL,
+							`ControlisLocked` double DEFAULT NULL,
+							`ControlOK` double DEFAULT NULL,
+							`SystemAlarm` double DEFAULT NULL,
+							`PhaseATrip` double DEFAULT NULL,
+							`PhaseBTrip` double DEFAULT NULL,
+							`PhaseCTrip` double DEFAULT NULL,
+							`ACPowerAlarm` double DEFAULT NULL,
+							`BatteryAlarm` double DEFAULT NULL,
+							`PhaseOvercurrentAlarm` double DEFAULT NULL,
+							`GroundOvercurrentAlarm` double DEFAULT NULL,
+							`NegativeSequenceOCAlarm` double DEFAULT NULL,
+							`Close` double DEFAULT NULL,
+							`Open` double DEFAULT NULL,
+						  
+						  						  
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>  
+	            
+	            
 	            
 	            
 	            

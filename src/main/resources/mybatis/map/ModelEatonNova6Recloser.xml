@@ -1,0 +1,496 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelEatonNova6Recloser">
+
+	<insert id="insertModelEatonNova6Recloser" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="CurrentPhase1 != 0.001" >
+                `CurrentPhase1`,
+          </if>
+          <if test="CurrentPhase2 != 0.001" >
+                `CurrentPhase2`,
+          </if>
+          <if test="CurrentPhase3 != 0.001" >
+                `CurrentPhase3`,
+          </if>
+          <if test="VoltagePhase1 != 0.001" >
+                `VoltagePhase1`,
+          </if>
+          <if test="VoltagePhase2 != 0.001" >
+                `VoltagePhase2`,
+          </if>
+          <if test="VoltagePhase3 != 0.001" >
+                `VoltagePhase3`,
+          </if>
+          <if test="PowerFactorPhase1 != 0.001" >
+                `PowerFactorPhase1`,
+          </if>
+          <if test="PowerFactorPhase2 != 0.001" >
+               `PowerFactorPhase2`, 
+          </if>
+          <if test="PowerFactorPhase3 != 0.001" >
+                `PowerFactorPhase3`,
+          </if>
+          <if test="ApparentPowerPhase1 != 0.001" >
+                `ApparentPowerPhase1`,
+          </if>
+          <if test="ApparentPowerPhase2 != 0.001" >
+                `ApparentPowerPhase2`,
+          </if>
+          <if test="ApparentPowerPhase3 != 0.001" >
+                `ApparentPowerPhase3`,
+          </if>
+          <if test="RealPowerPhase1 != 0.001" >
+                `RealPowerPhase1`,
+          </if>
+          <if test="RealPowerPhase2 != 0.001" >
+                `RealPowerPhase2`,
+          </if>
+          <if test="RealPowerPhase3 != 0.001" >
+                `RealPowerPhase3`,
+          </if>
+          <if test="ReactivePowerPhase1 != 0.001" >
+                `ReactivePowerPhase1`,
+          </if>
+          <if test="ReactivePowerPhase2 != 0.001" >
+                `ReactivePowerPhase2`,
+          </if>
+          <if test="ReactivePowerPhase3 != 0.001" >
+                `ReactivePowerPhase3`,
+          </if>
+          <if test="LineFrequency != 0.001" >
+                `LineFrequency`,
+          </if>
+          <if test="DemandCurrentPhase1 != 0.001" >
+                `DemandCurrentPhase1`,
+          </if>
+          <if test="DemandCurrentPhase2 != 0.001" >
+                `DemandCurrentPhase2`,
+          </if>
+          <if test="DemandCurrentPhase3 != 0.001" >
+                `DemandCurrentPhase3`,
+          </if>
+          <if test="BatteryVoltage != 0.001" >
+                `BatteryVoltage`,
+          </if>
+          <if test="BatteryCurrent != 0.001" >
+                `BatteryCurrent`,
+          </if>
+          <if test="TotalTripCounter != 0.001" >
+                `TotalTripCounter`,
+          </if>
+          <if test="RecloserClosed != 0.001" >
+                `RecloserClosed`,
+          </if>
+          <if test="RecloserOpened != 0.001" >
+                `RecloserOpened`,
+          </if>
+          <if test="ControlisLocked != 0.001" >
+                `ControlisLocked`,
+          </if>
+          <if test="ControlOK != 0.001" >
+                `ControlOK`,
+          </if>
+          <if test="SystemAlarm != 0.001" >
+                `SystemAlarm`,
+          </if>
+          <if test="PhaseATrip != 0.001" >
+                `PhaseATrip`,
+          </if>
+          <if test="PhaseBTrip != 0.001" >
+                `PhaseBTrip`,
+          </if>
+          <if test="PhaseCTrip != 0.001" >
+                `PhaseCTrip`,
+          </if>
+          <if test="ACPowerAlarm != 0.001" >
+                `ACPowerAlarm`,
+          </if>
+          <if test="BatteryAlarm != 0.001" >
+                `BatteryAlarm`,
+          </if>
+          <if test="PhaseOvercurrentAlarm != 0.001" >
+                `PhaseOvercurrentAlarm`,
+          </if>
+          <if test="GroundOvercurrentAlarm != 0.001" >
+               `GroundOvercurrentAlarm`, 
+          </if>
+          <if test="NegativeSequenceOCAlarm != 0.001" >
+                `NegativeSequenceOCAlarm`,
+          </if>
+          <if test="Close != 0.001" >
+                `Close`,
+          </if>
+          <if test="Open != 0.001" >
+                `Open`,
+          </if>
+          
+          
+          
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			   <if test="CurrentPhase1 != 0.001" >
+                #{CurrentPhase1},
+          </if>
+          <if test="CurrentPhase2 != 0.001" >
+                #{CurrentPhase2},
+          </if>
+          <if test="CurrentPhase3 != 0.001" >
+                #{CurrentPhase3},
+          </if>
+          <if test="VoltagePhase1 != 0.001" >
+                #{VoltagePhase1},
+          </if>
+          <if test="VoltagePhase2 != 0.001" >
+                #{VoltagePhase2},
+          </if>
+          <if test="VoltagePhase3 != 0.001" >
+                #{VoltagePhase3},
+          </if>
+          <if test="PowerFactorPhase1 != 0.001" >
+                #{PowerFactorPhase1},
+          </if>
+          <if test="PowerFactorPhase2 != 0.001" >
+               #{PowerFactorPhase2}, 
+          </if>
+          <if test="PowerFactorPhase3 != 0.001" >
+                #{PowerFactorPhase3},
+          </if>
+          <if test="ApparentPowerPhase1 != 0.001" >
+                #{ApparentPowerPhase1},
+          </if>
+          <if test="ApparentPowerPhase2 != 0.001" >
+                #{ApparentPowerPhase2},
+          </if>
+          <if test="ApparentPowerPhase3 != 0.001" >
+                #{ApparentPowerPhase3},
+          </if>
+          <if test="RealPowerPhase1 != 0.001" >
+                #{RealPowerPhase1},
+          </if>
+          <if test="RealPowerPhase2 != 0.001" >
+                #{RealPowerPhase2},
+          </if>
+          <if test="RealPowerPhase3 != 0.001" >
+                #{RealPowerPhase3},
+          </if>
+          <if test="ReactivePowerPhase1 != 0.001" >
+                #{ReactivePowerPhase1},
+          </if>
+          <if test="ReactivePowerPhase2 != 0.001" >
+                #{ReactivePowerPhase2},
+          </if>
+          <if test="ReactivePowerPhase3 != 0.001" >
+                #{ReactivePowerPhase3},
+          </if>
+          <if test="LineFrequency != 0.001" >
+                #{LineFrequency},
+          </if>
+          <if test="DemandCurrentPhase1 != 0.001" >
+                #{DemandCurrentPhase1},
+          </if>
+          <if test="DemandCurrentPhase2 != 0.001" >
+                #{DemandCurrentPhase2},
+          </if>
+          <if test="DemandCurrentPhase3 != 0.001" >
+                #{DemandCurrentPhase3},
+          </if>
+          <if test="BatteryVoltage != 0.001" >
+                #{BatteryVoltage},
+          </if>
+          <if test="BatteryCurrent != 0.001" >
+                #{BatteryCurrent},
+          </if>
+          <if test="TotalTripCounter != 0.001" >
+                #{TotalTripCounter},
+          </if>
+          <if test="RecloserClosed != 0.001" >
+                #{RecloserClosed},
+          </if>
+          <if test="RecloserOpened != 0.001" >
+                #{RecloserOpened},
+          </if>
+          <if test="ControlisLocked != 0.001" >
+                #{ControlisLocked},
+          </if>
+          <if test="ControlOK != 0.001" >
+                #{ControlOK},
+          </if>
+          <if test="SystemAlarm != 0.001" >
+                #{SystemAlarm},
+          </if>
+          <if test="PhaseATrip != 0.001" >
+                #{PhaseATrip},
+          </if>
+          <if test="PhaseBTrip != 0.001" >
+                #{PhaseBTrip},
+          </if>
+          <if test="PhaseCTrip != 0.001" >
+                #{PhaseCTrip},
+          </if>
+          <if test="ACPowerAlarm != 0.001" >
+                #{ACPowerAlarm},
+          </if>
+          <if test="BatteryAlarm != 0.001" >
+                #{BatteryAlarm},
+          </if>
+          <if test="PhaseOvercurrentAlarm != 0.001" >
+                #{PhaseOvercurrentAlarm},
+          </if>
+          <if test="GroundOvercurrentAlarm != 0.001" >
+               #{GroundOvercurrentAlarm}, 
+          </if>
+          <if test="NegativeSequenceOCAlarm != 0.001" >
+                #{NegativeSequenceOCAlarm},
+          </if>
+          <if test="Close != 0.001" >
+                #{Close},
+          </if>
+          <if test="Open != 0.001" >
+                #{Open},
+          </if>
+         
+      <if test="nvmActivePower != 0.001" >
+        #{nvmActivePower},
+      </if>
+      <if test="nvmActiveEnergy != 0.001" >
+        #{nvmActiveEnergy},
+      </if>
+      <if test="MeasuredProduction != 0.001">
+        #{MeasuredProduction},
+      </if>
+			
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			   <if test="CurrentPhase1 != 0.001" >
+                `CurrentPhase1` = #{CurrentPhase1},
+          </if>
+          <if test="CurrentPhase2 != 0.001" >
+                `CurrentPhase2` = #{CurrentPhase2},
+          </if>
+          <if test="CurrentPhase3 != 0.001" >
+                `CurrentPhase3` = #{CurrentPhase3},
+          </if>
+          <if test="VoltagePhase1 != 0.001" >
+                `VoltagePhase1` = #{VoltagePhase1},
+          </if>
+          <if test="VoltagePhase2 != 0.001" >
+                `VoltagePhase2` = #{VoltagePhase2},
+          </if>
+          <if test="VoltagePhase3 != 0.001" >
+                `VoltagePhase3` = #{VoltagePhase3},
+          </if>
+          <if test="PowerFactorPhase1 != 0.001" >
+                `PowerFactorPhase1` = #{PowerFactorPhase1},
+          </if>
+          <if test="PowerFactorPhase2 != 0.001" >
+               `PowerFactorPhase2` = #{PowerFactorPhase2}, 
+          </if>
+          <if test="PowerFactorPhase3 != 0.001" >
+                `PowerFactorPhase3` = #{PowerFactorPhase3},
+          </if>
+          <if test="ApparentPowerPhase1 != 0.001" >
+                `ApparentPowerPhase1` = #{ApparentPowerPhase1},
+          </if>
+          <if test="ApparentPowerPhase2 != 0.001" >
+                `ApparentPowerPhase2` = #{ApparentPowerPhase2},
+          </if>
+          <if test="ApparentPowerPhase3 != 0.001" >
+                `ApparentPowerPhase3` = #{ApparentPowerPhase3},
+          </if>
+          <if test="RealPowerPhase1 != 0.001" >
+                `RealPowerPhase1` = #{RealPowerPhase1},
+          </if>
+          <if test="RealPowerPhase2 != 0.001" >
+                `RealPowerPhase2` = #{RealPowerPhase2},
+          </if>
+          <if test="RealPowerPhase3 != 0.001" >
+                `RealPowerPhase3` = #{RealPowerPhase3},
+          </if>
+          <if test="ReactivePowerPhase1 != 0.001" >
+                `ReactivePowerPhase1` = #{ReactivePowerPhase1},
+          </if>
+          <if test="ReactivePowerPhase2 != 0.001" >
+                `ReactivePowerPhase2` = #{ReactivePowerPhase2},
+          </if>
+          <if test="ReactivePowerPhase3 != 0.001" >
+                `ReactivePowerPhase3` = #{ReactivePowerPhase3},
+          </if>
+          <if test="LineFrequency != 0.001" >
+                `LineFrequency` = #{LineFrequency},
+          </if>
+          <if test="DemandCurrentPhase1 != 0.001" >
+                `DemandCurrentPhase1` = #{DemandCurrentPhase1},
+          </if>
+          <if test="DemandCurrentPhase2 != 0.001" >
+                `DemandCurrentPhase2` = #{DemandCurrentPhase2},
+          </if>
+          <if test="DemandCurrentPhase3 != 0.001" >
+                `DemandCurrentPhase3` = #{DemandCurrentPhase3},
+          </if>
+          <if test="BatteryVoltage != 0.001" >
+                `BatteryVoltage` = #{BatteryVoltage},
+          </if>
+          <if test="BatteryCurrent != 0.001" >
+                `BatteryCurrent` = #{BatteryCurrent},
+          </if>
+          <if test="TotalTripCounter != 0.001" >
+                `TotalTripCounter` = #{TotalTripCounter},
+          </if>
+          <if test="RecloserClosed != 0.001" >
+                `RecloserClosed` = #{RecloserClosed},
+          </if>
+          <if test="RecloserOpened != 0.001" >
+                `RecloserOpened` = #{RecloserOpened},
+          </if>
+          <if test="ControlisLocked != 0.001" >
+               `ControlisLocked` =  #{ControlisLocked},
+          </if>
+          <if test="ControlOK != 0.001" >
+                `ControlOK` = #{ControlOK},
+          </if>
+          <if test="SystemAlarm != 0.001" >
+                `SystemAlarm` = #{SystemAlarm},
+          </if>
+          <if test="PhaseATrip != 0.001" >
+                `PhaseATrip` = #{PhaseATrip},
+          </if>
+          <if test="PhaseBTrip != 0.001" >
+                `PhaseBTrip` = #{PhaseBTrip},
+          </if>
+          <if test="PhaseCTrip != 0.001" >
+               `PhaseCTrip` =  #{PhaseCTrip},
+          </if>
+          <if test="ACPowerAlarm != 0.001" >
+                `ACPowerAlarm` = #{ACPowerAlarm},
+          </if>
+          <if test="BatteryAlarm != 0.001" >
+                `BatteryAlarm` = #{BatteryAlarm},
+          </if>
+          <if test="PhaseOvercurrentAlarm != 0.001" >
+               `PhaseOvercurrentAlarm` =  #{PhaseOvercurrentAlarm},
+          </if>
+          <if test="GroundOvercurrentAlarm != 0.001" >
+              `GroundOvercurrentAlarm` = #{GroundOvercurrentAlarm}, 
+          </if>
+          <if test="NegativeSequenceOCAlarm != 0.001" >
+                `NegativeSequenceOCAlarm` = #{NegativeSequenceOCAlarm},
+          </if>
+          <if test="Close != 0.001" >
+                `Close` = #{Close},
+          </if>
+          <if test="Open != 0.001" >
+                `Open` = #{Open},
+          </if>
+         
+          
+         
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower` = #{nvmActivePower},
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy` = #{nvmActiveEnergy},
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelEatonNova6RecloserEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 

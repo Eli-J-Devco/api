@@ -48,6 +48,7 @@ import com.nwm.api.entities.ModelDTSMeasurelogicDemandMeterEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
 import com.nwm.api.entities.ModelDent48PSHDMeterEntity;
 import com.nwm.api.entities.ModelERIWeatherICPClass8050Entity;
+import com.nwm.api.entities.ModelEatonNova6RecloserEntity;
 import com.nwm.api.entities.ModelElkorProductionMeterEntity;
 import com.nwm.api.entities.ModelElkorProductionMeterv1Entity;
 import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
@@ -144,6 +145,7 @@ import com.nwm.api.services.ModelDTSMeasurelogicDemandMeterService;
 import com.nwm.api.services.ModelDataloggerService;
 import com.nwm.api.services.ModelDent48PSHDMeterService;
 import com.nwm.api.services.ModelERIWeatherICPClass8050Service;
+import com.nwm.api.services.ModelEatonNova6RecloserService;
 import com.nwm.api.services.ModelElkorProductionMeterService;
 import com.nwm.api.services.ModelElkorProductionMeterv1Service;
 import com.nwm.api.services.ModelElkorWattsonPVMeterService;
@@ -3784,6 +3786,49 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSEL651R.insertModelSEL651R(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												
+												break;
+												
+											case "model_eaton_nova6_recloser":
+												ModelEatonNova6RecloserService serviceModelEaton = new ModelEatonNova6RecloserService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														
+														ModelEatonNova6RecloserEntity dataEntity = serviceModelEaton.setModelEatonNova6Recloser(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														dataEntity.setOffset_data_old(item.getOffset_data_old());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// active power
+														if(dataEntity.getCurrentPhase1() != 0.001 && dataEntity.getCurrentPhase1() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+														
+//														deviceUpdateE.setLast_value(dataEntity.getRecloserClosed() != 0.001 ? dataEntity.getRecloserClosed() : null);
+//														deviceUpdateE.setField_value1(dataEntity.getRecloserClosed() != 0.001 ? dataEntity.getRecloserClosed() : null);
+														deviceUpdateE.setLast_value(null);
+														deviceUpdateE.setField_value1(null);
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelEaton.insertModelEatonNova6Recloser(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}
