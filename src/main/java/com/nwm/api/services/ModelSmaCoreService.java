@@ -154,13 +154,13 @@ public class ModelSmaCoreService extends DB {
 	        	return false;
 	        }
 	        
-//	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
-//	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
-//	        int hours = zdtNowLosAngeles.getHour();
-//	        
-//	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
-//	        	checkTriggerAlertModelSmaCore(obj);
-//	        }
+	        ZoneId zoneIdLosAngeles = ZoneId.of("America/Los_Angeles"); // "America/Los_Angeles"
+	        ZonedDateTime zdtNowLosAngeles = ZonedDateTime.now(zoneIdLosAngeles);
+	        int hours = zdtNowLosAngeles.getHour();
+	        
+	        if (hours >= 9 && hours <= 17 && dataObj.getEnable_alert() >= 1) {
+	        	checkTriggerAlertModelSmaCore(obj);
+	        }
 	        
 	        return true;
 		} catch (Exception ex) {
