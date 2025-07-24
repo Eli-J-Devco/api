@@ -5659,6 +5659,27 @@ LibErrorCode {
 			  case 29254:
 			    errorCode = 2040;
 			    break;
+			    
+			  case 404:
+				    errorCode = 2331;
+				    break;
+			  case 3301:
+				    errorCode = 2332;
+				    break;
+			  case 3302:
+				    errorCode = 2333;
+				    break;
+			  case 3303:
+				    errorCode = 2334;
+				    break;
+			  case 6001:
+				    errorCode = 2335;
+				    break;
+			  case 7351:
+				    errorCode = 2336;
+				    break;
+
+			    
 			}
 			
 			break;
@@ -6461,6 +6482,26 @@ LibErrorCode {
 				case 29254:
 				  errorCode = 2299;
 				  break;
+				  
+				  
+				case 404:
+				    errorCode = 2324;
+				    break;
+			  case 3301:
+				    errorCode = 2325;
+				    break;
+			  case 3302:
+				    errorCode = 2326;
+				    break;
+			  case 3303:
+				    errorCode =2327;
+				    break;
+			  case 6001:
+				    errorCode = 2328;
+				    break;
+			  case 7351:
+				    errorCode = 2329;
+				    break;
 			}
 			
 			break;
