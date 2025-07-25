@@ -71,6 +71,15 @@
 			s.inv_level,
 			s.kiosk_view,
 			s.site_logo,
+			<choose> 
+		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+					"/uploads/logo/demo-logo.jpg"
+		        </when>
+		        <otherwise>
+					s.site_logo
+			    </otherwise>                                                  
+		    </choose> AS site_logo,
+				        
 			s.lat,
 			s.lng,
 			s.table_data_report,
