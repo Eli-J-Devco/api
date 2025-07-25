@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.services.building;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.messaging.Message;
@@ -204,11 +206,14 @@ public class SitesOverviewHVACService extends DB {
 			}
 			
 			if (updatingFieldList.size() > maxBatchSize) {
-				insert("SitesOverviewHVAC.insertFieldData", updatingFieldList);
+				List<Map<String, String>> insertData = new ArrayList<Map<String, String>>(updatingFieldList);
+				CompletableFuture.runAsync(() -> {
+					try { insert("SitesOverviewHVAC.insertFieldData", insertData); }
+					catch (SQLException ex) { log.error("SitesOverviewHVAC.saveFieldData", ex); }
+				});
 				updatingFieldList.clear();
 			}
 		} catch (Exception ex) {
-			log.error("SitesOverviewHVAC.saveFieldData", ex);
 		}
 	}
 	
