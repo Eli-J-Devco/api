@@ -549,7 +549,7 @@
 	<sql id="siteName">
 		<choose> 
             <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
-				CONCAT_WS("", s.city, " #", s.id)
+				CONCAT_WS("", "Site", " #", s.id)
             </when>
             <otherwise>
 				s.name
