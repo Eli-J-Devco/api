@@ -67,7 +67,16 @@
 			s.ac_capacity,
 			s.dc_capacity,
 			s.gallery,
-			s.about,
+			
+			<choose> 
+		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+					"Hiden for demo"
+		        </when>
+		        <otherwise>
+					s.about
+			    </otherwise>                                                  
+		    </choose> AS about,
+		    
 			s.inv_level,
 			s.kiosk_view,
 			<choose> 
