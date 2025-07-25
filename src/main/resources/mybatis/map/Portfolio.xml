@@ -714,7 +714,7 @@
 	<select id="getAvailability" resultType="Map">
 		SELECT
 			s.id AS site_id,
-			s.name AS site_name,
+			<include refid="com.nwm.common.siteName"/> AS site_name,
 			(a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters AS availability,
 			im.devices_list AS devices_list
 		FROM
