@@ -70,7 +70,6 @@
 			s.about,
 			s.inv_level,
 			s.kiosk_view,
-			s.site_logo,
 			<choose> 
 		        <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
 					"/uploads/logo/demo-logo.jpg"
