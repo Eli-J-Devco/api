@@ -271,7 +271,15 @@
 			IFNULL(s.ac_capacity, 0) as ac_capacity,
 			IFNULL(s.dc_capacity, 0) as dc_capacity,
 			DATE_FORMAT(s.built_since,'%m/%d/%Y') AS built_since,
-			c.name AS company_name,
+			<choose> 
+            <when test="domain == 'demo.nextwavemonitoring.com' || domain_role == '1ff1de774005f8da13f42943881c655f'">
+				CONCAT_WS(""," #", s.id)
+            </when>
+            <otherwise>
+				c.name
+		    </otherwise>                                                  
+        </choose> AS company_name,
+				        
 			s.weather_icon,
 			s.weather_description,
 			s.id_company,
