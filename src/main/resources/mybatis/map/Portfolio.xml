@@ -521,7 +521,7 @@
 		SELECT
 			s.id,
 			SHA1(s.id) AS hashId,
-			s.name,
+			<include refid="com.nwm.common.siteName"/> AS name,
 			er.alertsJSON,
 			s.ac_capacity / 1000 AS capacity,
 			IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower)) / 1000 AS activePower
