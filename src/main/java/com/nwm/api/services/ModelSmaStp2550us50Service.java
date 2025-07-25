@@ -219,7 +219,7 @@ public class ModelSmaStp2550us50Service extends DB {
 
 	public void checkTriggerAlertModelSmaStp2550us50(ModelSmaStp2550us50Entity obj) {
 		// Check device alert by fault code
-		 int faultCode1 = (obj.getEventMessage() > 0 && obj.getEventMessage() != 302 && obj.getEventMessage() != 0.001) ? (int) obj.getEventMessage() : 0;
+		 int faultCode1 = (obj.getEventMessage() > 0 && obj.getEventMessage() != 886 && obj.getEventMessage() != 0.001) ? (int) obj.getEventMessage() : 0;
 		 int faultCode2 = (obj.getBlockStatus() > 0 && obj.getBlockStatus() != 302 && obj.getBlockStatus() != 0.001) ? (int) obj.getEventMessage() : 0;
 		 int faultCode3 = (obj.getReasonforDerating() > 0 && obj.getReasonforDerating() != 884 && obj.getReasonforDerating() != 0.001) ? (int) obj.getEventMessage() : 0;
 		 
