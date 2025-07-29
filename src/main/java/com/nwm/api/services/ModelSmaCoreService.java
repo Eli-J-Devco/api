@@ -187,7 +187,7 @@ public class ModelSmaCoreService extends DB {
 				for(int i =0; i < dataList.size(); i ++) {
 					Map<String, Object> item = (Map<String, Object>) dataList.get(i);
 					double EventMessage = (double) item.get("EventMessage");
-					if(Double.compare(obj.getEventMessage(), EventMessage) == 0 && obj.getEventMessage() > 0 && EventMessage > 0 && obj.getEventMessage() != 302 && EventMessage != 302) { 
+					if(Double.compare(obj.getEventMessage(), EventMessage) == 0 && obj.getEventMessage() > 0 && EventMessage > 0 && obj.getEventMessage() != 886 && EventMessage != 886) { 
 						totalFaultCode1++;
 					}
 					
@@ -227,8 +227,8 @@ public class ModelSmaCoreService extends DB {
 	public void checkTriggerAlertModelSmaCore(ModelSmaCoreEntity obj) {
 		// Check device alert by fault code
 		 int faultCode1 = (obj.getEventMessage() > 0 && obj.getEventMessage() != 886 && obj.getEventMessage() != 0.001) ? (int) obj.getEventMessage() : 0;
-		 int faultCode2 = (obj.getBlockStatus() > 0 && obj.getBlockStatus() != 302 && obj.getBlockStatus() != 0.001) ? (int) obj.getEventMessage() : 0;
-		 int faultCode3 = (obj.getReasonforDerating() > 0 && obj.getReasonforDerating() != 884 && obj.getReasonforDerating() != 0.001) ? (int) obj.getEventMessage() : 0;
+		 int faultCode2 = (obj.getBlockStatus() > 0 && obj.getBlockStatus() != 302 && obj.getBlockStatus() != 0.001) ? (int) obj.getBlockStatus() : 0;
+		 int faultCode3 = (obj.getReasonforDerating() > 0 && obj.getReasonforDerating() != 884 && obj.getReasonforDerating() != 0.001) ? (int) obj.getReasonforDerating() : 0;
 		 
 		
 		 ModelSmaCoreEntity rowItem = (ModelSmaCoreEntity) checkAlertWriteCode(obj);
