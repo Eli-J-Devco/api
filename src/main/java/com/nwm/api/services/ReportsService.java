@@ -592,8 +592,8 @@ public class ReportsService extends DB {
 									sanityCheckReport.addAccumulatedEnergyEOMByMeter(item.getCurrentEOM());
 									sanityCheckReport.addAccumulatedEnergyDifferenceByMeter(currEnergy);
 									
-									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
-									if (Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (dataObj.is_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && currEnergy > 0) sanityCheckReport.addRecDifference1(BigDecimal.valueOf((currEnergy - lastEnergy) / currEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
+									if (dataObj.is_rec_report() && Objects.nonNull(currEnergy) && Objects.nonNull(lastEnergy) && lastEnergy > 0) sanityCheckReport.addRecDifference2(BigDecimal.valueOf((currEnergy - lastEnergy) / lastEnergy).setScale(3, RoundingMode.HALF_UP).doubleValue());
 								}
 								
 								if ((devicesByType.getMeter().size() > 0 && item.getDeviceTypeId() == 3) || (devicesByType.getMeter().size() == 0 && item.getDeviceTypeId() == 1)) {

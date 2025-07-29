@@ -413,6 +413,7 @@
 			DATE_FORMAT(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y') AS report_date,
 			s.ac_capacity,
 			s.dc_capacity,
+			s.is_rec_report,
 			r.subscribers,
 			r.data_intervals,
 			r.type_report,
