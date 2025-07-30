@@ -1354,9 +1354,9 @@
 			SELECT
 				#{item.id_device_type} AS deviceTypeId,
 				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = curr.beginning) AS currentBOM,
-				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = curr.ending) AS currentEOM,
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = IFNULL(next.beginning, curr.ending)) AS currentEOM,
 				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = last.beginning) AS lastBOM,
-				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = last.ending) AS lastEOM
+				(SELECT CAST(nvmActiveEnergy AS DECIMAL) FROM ${item.datatablename} WHERE time = IFNULL(curr.beginning, last.ending)) AS lastEOM
 			FROM 
 				(
 					SELECT
@@ -1365,7 +1365,17 @@
 					FROM
 						${item.datatablename}
 					WHERE
-						time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(ADDTIME(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), '00:01:00'), #{item.timezone_value}, 'UTC')
+						time BETWEEN CONVERT_TZ(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_ADD(#{start_date}, INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
+				) next
+				CROSS JOIN
+				(
+					SELECT
+						MIN(time) AS beginning,
+						MAX(time) AS ending
+					FROM
+						${item.datatablename}
+					WHERE
+						time BETWEEN CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(#{start_date}), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
 				) curr
 				CROSS JOIN
 				(
@@ -1375,7 +1385,7 @@
 					FROM
 						${item.datatablename}
 					WHERE
-						time BETWEEN CONVERT_TZ(ADDTIME(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), '00:01:00'), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC')
+						time BETWEEN CONVERT_TZ(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND CONVERT_TZ(DATE_FORMAT(LAST_DAY(DATE_SUB(#{start_date}, INTERVAL 1 MONTH)), '%Y-%m-%d 23:59:59'), #{item.timezone_value}, 'UTC')
 				) last
 		</foreach>
 	</select>
