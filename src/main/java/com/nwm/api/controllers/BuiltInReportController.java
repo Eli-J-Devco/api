@@ -398,7 +398,7 @@ public class BuiltInReportController extends BaseController {
 					
 					Cell cell51 = row5.createCell(3);
 					cell51.setCellStyle(tableRowNoDecimalCellStyle);
-					cell51.setCellValue(item.getMonthlyProduction());
+					if (item.getMonthlyProduction() != null) cell51.setCellValue(item.getMonthlyProduction());
 					cell51 = row5.createCell(4);
 					cell51.setCellStyle(tableRowNoDecimalCellStyle);
 					sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 3, 4));
