@@ -188,9 +188,23 @@ public class SitesDevicesEntity extends SortEntity {
 	private String device_group_title_trans;
 	private String device_type_title_trans;
 	private String advance_tech_field_device_status;
+	private int id_error_level;
+	private int id_error_type;
 	
 	
 	
+	public int getId_error_level() {
+		return id_error_level;
+	}
+	public void setId_error_level(int id_error_level) {
+		this.id_error_level = id_error_level;
+	}
+	public int getId_error_type() {
+		return id_error_type;
+	}
+	public void setId_error_type(int id_error_type) {
+		this.id_error_type = id_error_type;
+	}
 	public String getAdvance_tech_field_device_status() {
 		return advance_tech_field_device_status;
 	}

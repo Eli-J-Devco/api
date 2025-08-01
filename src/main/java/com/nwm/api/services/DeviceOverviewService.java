@@ -19,6 +19,7 @@ import com.nwm.api.entities.CameraImageEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceParameterEntity;
 import com.nwm.api.entities.DeviceYieldEntity;
+import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
@@ -46,4 +47,26 @@ public class DeviceOverviewService extends DB {
 			return new ArrayList();
 		}
 	}
+	
+	
+	/**
+	 * @description get all site by id_employee, id_company
+	 * @author long.pham
+	 * @since 2022-01-29
+	 * @param id_employee
+	 */
+	
+
+	public List getSiteByEmployee(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceOverview.getSiteByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
 }

@@ -40,12 +40,82 @@
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
 			AND s.id_company = #{id_company}
+			
+			
+			<if test="id_site != null and id_site > 0">
+				AND s.id = #{id_site}
+			</if>
+			
+			<if test="id_device_type != null and id_device_type > 0">
+				AND dt.id = #{id_device_type}
+			</if>
+			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND el.id = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND et.id = #{id_error_type}
+			</if>
+			
+			
+			
+			
+			
 		GROUP BY d.id
 		<if test="limit > 0">
 			LIMIT ${limit} OFFSET ${offset};
 		</if>	     
 		 
 	</select>
+	
+	
+	<select id="getSiteByEmployee" resultType="Map">
+		SELECT
+			s.id,
+			SHA1(s.id) AS hash_id,
+			<include refid="com.nwm.common.siteName"/> AS `name`,
+			<include refid="com.nwm.common.siteName"/> AS `text`,
+			<include refid="com.nwm.common.siteName"/> AS `label`,
+			s.is_rec_report,
+			s.datalogger_ip,
+			em.first_name,
+			em.last_name,
+			s.id_site_group,
+			s.id_site_sub_group,
+			s.timezone_datalogger,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.street,
+			s.city,
+			s.postal_code,
+			s.state,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.site_domain_type
+			
+		FROM
+			site AS s
+			LEFT JOIN site_employee_map sem ON sem.id_site = s.id 
+			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN employee em ON em.id = sem.id_employee
+ 			
+
+		WHERE
+			s.is_delete = 0	
+			AND s.`status` = 1 
+			AND em.id = #{id_employee}
+			AND s.id_company = #{id_company}
+		GROUP BY s.id	
+		ORDER BY s.`name`, s.id_company ASC;
+			 
+	</select>
+	
+	
 	
 	
 	
