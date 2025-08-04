@@ -241,7 +241,7 @@
 		  <mapper resource="mybatis/map/ModelQuintUPSPoso.xml"/>
 		  <mapper resource="mybatis/map/ModelSmaCore.xml"/>
 		  <mapper resource="mybatis/map/ModelEatonNova6Recloser.xml"/>
-		 
+		 <mapper resource="mybatis/map/EmailSubscribers.xml"/>
 		 
 		 
 		<mapper resource="mybatis/map/ScadaDevice.xml"/>
