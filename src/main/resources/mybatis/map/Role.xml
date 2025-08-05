@@ -23,6 +23,7 @@
 			<result property="label" column="label" />
 			<result property="parent" column="parent" />
 			<result property="id_company" column="id_company" />
+			<result property="total_users" column="total_users" />
 			
 	</resultMap>
 	
@@ -183,11 +184,14 @@
 		t.id AS value,
 		t.name AS label,
 		t.name AS text,
-		0 as is_checked FROM `role` t
+		0 as is_checked,
+		COUNT(er.id_employee) AS total_users
+		FROM `role` t
+		LEFT JOIN employee_role_map er ON er.id_role = t.id
 		<if test="id_company != null and id_company != 0 and id_company > 1">
 			WHERE t.id_company = #{id_company}
 		</if>
-		;
+		GROUP BY t.id
 	</select>
 	
 	<select id="checkRoleScreenMapExist" resultType="int" parameterType="com.nwm.api.entities.RoleScreenMapEntity" >

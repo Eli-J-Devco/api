@@ -40,10 +40,17 @@ public class RoleEntity {
 	private String label;
 	private int parent;
 	private int id_company;
+	private int total_users;
 	
 	
 	
 	
+	public int getTotal_users() {
+		return total_users;
+	}
+	public void setTotal_users(int total_users) {
+		this.total_users = total_users;
+	}
 	public int getId_company() {
 		return id_company;
 	}

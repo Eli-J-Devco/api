@@ -98,6 +98,7 @@
 				JSON_ARRAY(),
 				JSON_ARRAYAGG(JSON_OBJECT(
 					'id', ss.id,
+					'id_hash', SHA1(s.id),
 					'name', ss.name,
 					'id_company', ss.id_company,
 					'text', ss.`name`,
@@ -133,7 +134,7 @@
 	            </when>
 	            
 	            <otherwise>
-			      s.id DESC
+			      s.id, s.parent DESC
 			    </otherwise>                                                  
 	        </choose>  
 		 	 
