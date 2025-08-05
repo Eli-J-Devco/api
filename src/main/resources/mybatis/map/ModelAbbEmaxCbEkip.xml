@@ -1,0 +1,511 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelAbbEmaxCbEkip">
+	<resultMap id="ModelAbbEmaxCbEkipMap" type="com.nwm.api.entities.ModelAbbEmaxCbEkipEntity">
+			<result property="time" column="time" />
+			<result property="id_device" column="id_device" />
+			<result property="error" column="error" />
+			<result property="low_alarm" column="low_alarm" />
+			<result property="high_alarm" column="high_alarm" />
+			
+			<result property="PhaseACurrent" column="PhaseACurrent" />
+			<result property="PhaseBCurrent" column="PhaseBCurrent" />
+			<result property="PhaseCCurrent" column="PhaseCCurrent" />
+			<result property="NeutralCurrent" column="NeutralCurrent" />
+			<result property="PowerFactorPhaseA" column="PowerFactorPhaseA" />
+			<result property="PowerFactorPhaseB" column="PowerFactorPhaseB" />
+			<result property="PowerFactorPhaseC" column="PowerFactorPhaseC" />
+			<result property="PowerFactor3PhaseTotal" column="PowerFactor3PhaseTotal" />
+			<result property="VoltagePhaseA" column="VoltagePhaseA" />
+			<result property="VoltagePhaseB" column="VoltagePhaseB" />
+			<result property="VoltagePhaseC" column="VoltagePhaseC" />
+			<result property="VoltagePhaseAB" column="VoltagePhaseAB" />
+			<result property="VoltagePhaseBC" column="VoltagePhaseBC" />
+			<result property="VoltagePhaseCA" column="VoltagePhaseCA" />
+			<result property="ActivePowerPhaseA" column="ActivePowerPhaseA" />
+			<result property="ActivePowerPhaseB" column="ActivePowerPhaseB" />
+			<result property="ActivePowerPhaseC" column="ActivePowerPhaseC" />
+			<result property="ActivePower3PhaseTotal" column="ActivePower3PhaseTotal" />
+			<result property="ReactivePowerPhaseA" column="ReactivePowerPhaseA" />
+			<result property="ReactivePowerPhaseB" column="ReactivePowerPhaseB" />
+			<result property="ReactivePowerPhaseC" column="ReactivePowerPhaseC" />
+			<result property="ReactivePower3PhaseTotal" column="ReactivePower3PhaseTotal" />
+			<result property="ApparentPowerPhaseA" column="ApparentPowerPhaseA" />
+			<result property="ApparentPowerPhaseB" column="ApparentPowerPhaseB" />
+			<result property="ApparentPowerPhaseC" column="ApparentPowerPhaseC" />
+			<result property="ApparentPower3PhaseTotal" column="ApparentPower3PhaseTotal" />
+			<result property="Frequency" column="Frequency" />
+			<result property="PeakFactorPhaseA" column="PeakFactorPhaseA" />
+			<result property="PeakFactorPhaseB" column="PeakFactorPhaseB" />
+			<result property="PeakFactorPhaseC" column="PeakFactorPhaseC" />
+			<result property="PeakFactorNeutral" column="PeakFactorNeutral" />
+			<result property="THDPhaseA" column="THDPhaseA" />
+			<result property="THDPhaseB" column="THDPhaseB" />
+			<result property="THDPhaseC" column="THDPhaseC" />
+			<result property="THDNeutral" column="THDNeutral" />
+			<result property="TotalActiveEnergy" column="TotalActiveEnergy" />
+			<result property="TotalReactiveEnergy" column="TotalReactiveEnergy" />
+			<result property="TotalApparentEnergy" column="TotalApparentEnergy" />
+			<result property="Command" column="Command" />
+
+		    <result property="nvmActivePower" column="nvmActivePower" />
+		    <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		    <result property="MeasuredProduction" column="MeasuredProduction" />
+		    <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+	</resultMap>
+
+	<insert id="insertModelAbbEmaxCbEkip" useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+	        	`time`,
+	        </if>
+			<if test="id_device != 0.001" >
+	            `id_device`,
+	        </if>
+			<if test="error != 0.001" >
+	            `error`,
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm`,
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm`,
+	        </if>
+			<if test="PhaseACurrent != 0.001" >
+				`PhaseACurrent`,
+			</if>
+			<if test="PhaseBCurrent != 0.001" >
+				`PhaseBCurrent`,
+			</if>
+			<if test="PhaseCCurrent != 0.001" >
+				`PhaseCCurrent`,
+			</if>
+			<if test="NeutralCurrent != 0.001" >
+				`NeutralCurrent`,
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA`,
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB`,
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC`,
+			</if>
+			<if test="PowerFactor3PhaseTotal != 0.001" >
+				`PowerFactor3PhaseTotal`,
+			</if>
+			<if test="VoltagePhaseA != 0.001" >
+				`VoltagePhaseA`,
+			</if>
+			<if test="VoltagePhaseB != 0.001" >
+				`VoltagePhaseB`,
+			</if>
+			<if test="VoltagePhaseC != 0.001" >
+				`VoltagePhaseC`,
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB`,
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC`,
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA`,
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA`,
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB`,
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC`,
+			</if>
+			<if test="ActivePower3PhaseTotal != 0.001" >
+				`ActivePower3PhaseTotal`,
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA`,
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB`,
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC`,
+			</if>
+			<if test="ReactivePower3PhaseTotal != 0.001" >
+				`ReactivePower3PhaseTotal`,
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA`,
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB`,
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC`,
+			</if>
+			<if test="ApparentPower3PhaseTotal != 0.001" >
+				`ApparentPower3PhaseTotal`,
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency`,
+			</if>
+			<if test="PeakFactorPhaseA != 0.001" >
+				`PeakFactorPhaseA`,
+			</if>
+			<if test="PeakFactorPhaseB != 0.001" >
+				`PeakFactorPhaseB`,
+			</if>
+			<if test="PeakFactorPhaseC != 0.001" >
+				`PeakFactorPhaseC`,
+			</if>
+			<if test="PeakFactorNeutral != 0.001" >
+				`PeakFactorNeutral`,
+			</if>
+			<if test="THDPhaseA != 0.001" >
+				`THDPhaseA`,
+			</if>
+			<if test="THDPhaseB != 0.001" >
+				`THDPhaseB`,
+			</if>
+			<if test="THDPhaseC != 0.001" >
+				`THDPhaseC`,
+			</if>
+			<if test="THDNeutral != 0.001" >
+				`THDNeutral`,
+			</if>
+			<if test="TotalActiveEnergy != 0.001" >
+				`TotalActiveEnergy`,
+			</if>
+			<if test="TotalReactiveEnergy != 0.001" >
+				`TotalReactiveEnergy`,
+			</if>
+			<if test="TotalApparentEnergy != 0.001" >
+				`TotalApparentEnergy`,
+			</if>
+			<if test="Command != 0.001" >
+				`Command`,
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			  	`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="time != null" >
+                #{time},
+	        </if>
+			<if test="id_device != 0.001" >
+                #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	#{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	        	#{high_alarm},
+	        </if>
+			<if test="PhaseACurrent != 0.001" >
+				#{PhaseACurrent},
+			</if>
+			<if test="PhaseBCurrent != 0.001" >
+				#{PhaseBCurrent},
+			</if>
+			<if test="PhaseCCurrent != 0.001" >
+				#{PhaseCCurrent},
+			</if>
+			<if test="NeutralCurrent != 0.001" >
+				#{NeutralCurrent},
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				#{PowerFactorPhaseA},
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				#{PowerFactorPhaseB},
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				#{PowerFactorPhaseC},
+			</if>
+			<if test="PowerFactor3PhaseTotal != 0.001" >
+				#{PowerFactor3PhaseTotal},
+			</if>
+			<if test="VoltagePhaseA != 0.001" >
+				#{VoltagePhaseA},
+			</if>
+			<if test="VoltagePhaseB != 0.001" >
+				#{VoltagePhaseB},
+			</if>
+			<if test="VoltagePhaseC != 0.001" >
+				#{VoltagePhaseC},
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				#{VoltagePhaseAB},
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				#{VoltagePhaseBC},
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				#{VoltagePhaseCA},
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				#{ActivePowerPhaseA},
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				#{ActivePowerPhaseB},
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				#{ActivePowerPhaseC},
+			</if>
+			<if test="ActivePower3PhaseTotal != 0.001" >
+				#{ActivePower3PhaseTotal},
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				#{ReactivePowerPhaseA},
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				#{ReactivePowerPhaseB},
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				#{ReactivePowerPhaseC},
+			</if>
+			<if test="ReactivePower3PhaseTotal != 0.001" >
+				#{ReactivePower3PhaseTotal},
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				#{ApparentPowerPhaseA},
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				#{ApparentPowerPhaseB},
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				#{ApparentPowerPhaseC},
+			</if>
+			<if test="ApparentPower3PhaseTotal != 0.001" >
+				#{ApparentPower3PhaseTotal},
+			</if>
+			<if test="Frequency != 0.001" >
+				#{Frequency},
+			</if>
+			<if test="PeakFactorPhaseA != 0.001" >
+				#{PeakFactorPhaseA},
+			</if>
+			<if test="PeakFactorPhaseB != 0.001" >
+				#{PeakFactorPhaseB},
+			</if>
+			<if test="PeakFactorPhaseC != 0.001" >
+				#{PeakFactorPhaseC},
+			</if>
+			<if test="PeakFactorNeutral != 0.001" >
+				#{PeakFactorNeutral},
+			</if>
+			<if test="THDPhaseA != 0.001" >
+				#{THDPhaseA},
+			</if>
+			<if test="THDPhaseB != 0.001" >
+				#{THDPhaseB},
+			</if>
+			<if test="THDPhaseC != 0.001" >
+				#{THDPhaseC},
+			</if>
+			<if test="THDNeutral != 0.001" >
+				#{THDNeutral},
+			</if>
+			<if test="TotalActiveEnergy != 0.001" >
+				#{TotalActiveEnergy},
+			</if>
+			<if test="TotalReactiveEnergy != 0.001" >
+				#{TotalReactiveEnergy},
+			</if>
+			<if test="TotalApparentEnergy != 0.001" >
+				#{TotalApparentEnergy},
+			</if>
+			<if test="Command != 0.001" >
+				#{Command},
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	        	`id_device` = #{id_device},
+	        </if>
+			<if test="error != 0.001" >
+	        	`error` = #{error},
+	        </if>
+			<if test="low_alarm != 0.001" >
+	            `low_alarm` = #{low_alarm},
+	        </if>
+			<if test="high_alarm != 0.001" >
+	            `high_alarm` = #{high_alarm},
+	        </if>
+			<if test="PhaseACurrent != 0.001" >
+				`PhaseACurrent` = #{PhaseACurrent},
+			</if>
+			<if test="PhaseBCurrent != 0.001" >
+				`PhaseBCurrent` = #{PhaseBCurrent},
+			</if>
+			<if test="PhaseCCurrent != 0.001" >
+				`PhaseCCurrent` = #{PhaseCCurrent},
+			</if>
+			<if test="NeutralCurrent != 0.001" >
+				`NeutralCurrent` = #{NeutralCurrent},
+			</if>
+			<if test="PowerFactorPhaseA != 0.001" >
+				`PowerFactorPhaseA` = #{PowerFactorPhaseA},
+			</if>
+			<if test="PowerFactorPhaseB != 0.001" >
+				`PowerFactorPhaseB` = #{PowerFactorPhaseB},
+			</if>
+			<if test="PowerFactorPhaseC != 0.001" >
+				`PowerFactorPhaseC` = #{PowerFactorPhaseC},
+			</if>
+			<if test="PowerFactor3PhaseTotal != 0.001" >
+				`PowerFactor3PhaseTotal` = #{PowerFactor3PhaseTotal},
+			</if>
+			<if test="VoltagePhaseA != 0.001" >
+				`VoltagePhaseA` = #{VoltagePhaseA},
+			</if>
+			<if test="VoltagePhaseB != 0.001" >
+				`VoltagePhaseB` = #{VoltagePhaseB},
+			</if>
+			<if test="VoltagePhaseC != 0.001" >
+				`VoltagePhaseC` = #{VoltagePhaseC},
+			</if>
+			<if test="VoltagePhaseAB != 0.001" >
+				`VoltagePhaseAB` = #{VoltagePhaseAB},
+			</if>
+			<if test="VoltagePhaseBC != 0.001" >
+				`VoltagePhaseBC` = #{VoltagePhaseBC},
+			</if>
+			<if test="VoltagePhaseCA != 0.001" >
+				`VoltagePhaseCA` = #{VoltagePhaseCA},
+			</if>
+			<if test="ActivePowerPhaseA != 0.001" >
+				`ActivePowerPhaseA` = #{ActivePowerPhaseA},
+			</if>
+			<if test="ActivePowerPhaseB != 0.001" >
+				`ActivePowerPhaseB` = #{ActivePowerPhaseB},
+			</if>
+			<if test="ActivePowerPhaseC != 0.001" >
+				`ActivePowerPhaseC` = #{ActivePowerPhaseC},
+			</if>
+			<if test="ActivePower3PhaseTotal != 0.001" >
+				`ActivePower3PhaseTotal` = #{ActivePower3PhaseTotal},
+			</if>
+			<if test="ReactivePowerPhaseA != 0.001" >
+				`ReactivePowerPhaseA` = #{ReactivePowerPhaseA},
+			</if>
+			<if test="ReactivePowerPhaseB != 0.001" >
+				`ReactivePowerPhaseB` = #{ReactivePowerPhaseB},
+			</if>
+			<if test="ReactivePowerPhaseC != 0.001" >
+				`ReactivePowerPhaseC` = #{ReactivePowerPhaseC},
+			</if>
+			<if test="ReactivePower3PhaseTotal != 0.001" >
+				`ReactivePower3PhaseTotal` = #{ReactivePower3PhaseTotal},
+			</if>
+			<if test="ApparentPowerPhaseA != 0.001" >
+				`ApparentPowerPhaseA` = #{ApparentPowerPhaseA},
+			</if>
+			<if test="ApparentPowerPhaseB != 0.001" >
+				`ApparentPowerPhaseB` = #{ApparentPowerPhaseB},
+			</if>
+			<if test="ApparentPowerPhaseC != 0.001" >
+				`ApparentPowerPhaseC` = #{ApparentPowerPhaseC},
+			</if>
+			<if test="ApparentPower3PhaseTotal != 0.001" >
+				`ApparentPower3PhaseTotal` = #{ApparentPower3PhaseTotal},
+			</if>
+			<if test="Frequency != 0.001" >
+				`Frequency` = #{Frequency},
+			</if>
+			<if test="PeakFactorPhaseA != 0.001" >
+				`PeakFactorPhaseA` = #{PeakFactorPhaseA},
+			</if>
+			<if test="PeakFactorPhaseB != 0.001" >
+				`PeakFactorPhaseB` = #{PeakFactorPhaseB},
+			</if>
+			<if test="PeakFactorPhaseC != 0.001" >
+				`PeakFactorPhaseC` = #{PeakFactorPhaseC},
+			</if>
+			<if test="PeakFactorNeutral != 0.001" >
+				`PeakFactorNeutral` = #{PeakFactorNeutral},
+			</if>
+			<if test="THDPhaseA != 0.001" >
+				`THDPhaseA` = #{THDPhaseA},
+			</if>
+			<if test="THDPhaseB != 0.001" >
+				`THDPhaseB` = #{THDPhaseB},
+			</if>
+			<if test="THDPhaseC != 0.001" >
+				`THDPhaseC` = #{THDPhaseC},
+			</if>
+			<if test="THDNeutral != 0.001" >
+				`THDNeutral` = #{THDNeutral},
+			</if>
+			<if test="TotalActiveEnergy != 0.001" >
+				`TotalActiveEnergy` = #{TotalActiveEnergy},
+			</if>
+			<if test="TotalReactiveEnergy != 0.001" >
+				`TotalReactiveEnergy` = #{TotalReactiveEnergy},
+			</if>
+			<if test="TotalApparentEnergy != 0.001" >
+				`TotalApparentEnergy` = #{TotalApparentEnergy},
+			</if>
+			<if test="Command != 0.001" >
+				`Command` = #{Command},
+			</if>
+			<if test="nvmActivePower != 0.001" >
+			 	`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001" >
+			 	`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+	</insert>
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelAbbEmaxCbEkipEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+</mapper> 

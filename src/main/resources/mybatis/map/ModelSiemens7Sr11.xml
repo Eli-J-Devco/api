@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelSiemens7Sr11">
+	<resultMap id="ModelSiemens7Sr11Map" type="com.nwm.api.entities.ModelSiemens7Sr11Entity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="EventCount" column="EventCount" />
+		   <result property="EventRecordPart1" column="EventRecordPart1" />
+		   <result property="EventRecordPart2" column="EventRecordPart2" />
+		   <result property="VoltagePhaseAtoB" column="VoltagePhaseAtoB" />
+		   <result property="VoltagePhaseBtoC" column="VoltagePhaseBtoC" />
+		   <result property="VoltagePhaseCtoA" column="VoltagePhaseCtoA" />
+		   <result property="VoltagePhaseA" column="VoltagePhaseA" />
+		   <result property="VoltagePhaseB" column="VoltagePhaseB" />
+		   <result property="VoltagePhaseC" column="VoltagePhaseC" />
+		   <result property="Vzps" column="Vzps" />
+		   <result property="Vzps" column="Vzps" />
+		   <result property="Vnps" column="Vnps" />
+		   <result property="VzpsDegrees" column="VzpsDegrees" />
+		   <result property="VppsDegrees" column="VppsDegrees" />
+		   <result property="VnpsDegrees" column="VnpsDegrees" />
+		   <result property="Frequency" column="Frequency" />
+		   <result property="PhaseACurrent" column="PhaseACurrent" />
+		   <result property="PhaseBCurrent" column="PhaseBCurrent" />
+		   <result property="PhaseCCurrent" column="PhaseCCurrent" />
+		   <result property="NeutralCurrent" column="NeutralCurrent" />
+		   <result property="GroundCurrent" column="GroundCurrent" />
+		   <result property="ActivePowerPhaseA" column="ActivePowerPhaseA" />
+		   <result property="ActivePowerPhaseB" column="ActivePowerPhaseB" />
+		   <result property="ActivePowerPhaseC" column="ActivePowerPhaseC" />
+		   <result property="ActivePower3PhaseTotal" column="ActivePower3PhaseTotal" />
+		   <result property="ReactivePowerPhaseA" column="ReactivePowerPhaseA" />
+		   <result property="ReactivePowerPhaseB" column="ReactivePowerPhaseB" />
+		   <result property="ReactivePowerPhaseC" column="ReactivePowerPhaseC" />
+		   <result property="ReactivePower3PhaseTotal" column="ReactivePower3PhaseTotal" />
+		   <result property="ApparentPowerPhaseA" column="ApparentPowerPhaseA" />
+		   <result property="ApparentPowerPhaseB" column="ApparentPowerPhaseB" />
+		   <result property="ApparentPowerPhaseC" column="ApparentPowerPhaseC" />
+		   <result property="ApparentPower3PhaseTotal" column="ApparentPower3PhaseTotal" />
+		   <result property="PowerFactorPhaseA" column="PowerFactorPhaseA" />
+		   <result property="PowerFactorPhaseB" column="PowerFactorPhaseB" />
+		   <result property="PowerFactorPhaseC" column="PowerFactorPhaseC" />
+		   <result property="PowerFactor3PhaseTotal" column="PowerFactor3PhaseTotal" />
+		   <result property="ActiveEnergyExported" column="ActiveEnergyExported" />
+		   <result property="ActiveEnergyImported" column="ActiveEnergyImported" />
+		   <result property="ReactiveEnergyExported" column="ReactiveEnergyExported" />
+		   <result property="ReactiveEnergyImported" column="ReactiveEnergyImported" />
+		   <result property="ThermalStatusPhaseA" column="ThermalStatusPhaseA" />
+		   <result property="ThermalStatusPhaseB" column="ThermalStatusPhaseB" />
+		   <result property="ThermalStatusPhaseC" column="ThermalStatusPhaseC" />
+		   <result property="FaultRecords" column="FaultRecords" />
+		   <result property="EventRecords" column="EventRecords" />
+		   <result property="LED1_16Bitmap" column="LED1_16Bitmap" />
+		   <result property="LED17_32Bitmap" column="LED17_32Bitmap" />
+		   <result property="InputStatus1_16Bitmap" column="InputStatus1_16Bitmap" />
+		   <result property="InputStatus17_32Bitmap" column="InputStatus17_32Bitmap" />
+		   <result property="CircuitBreaker1Status" column="CircuitBreaker1Status" />
+		   <result property="AutoRecloseActive" column="AutoRecloseActive" />
+		   <result property="RemoteMode" column="RemoteMode" />
+		   <result property="LocalRemoteMode" column="LocalRemoteMode" />
+		   <result property="OutofServiceMode" column="OutofServiceMode" />
+		   <result property="CicruitBreaker1Open" column="CicruitBreaker1Open" />
+		   <result property="CircuitBreaker1Close" column="CircuitBreaker1Close" />
+		   
+		   
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelSiemens7Sr11" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="EventCount != 0.001" >
+                `EventCount`,
+          </if>
+          <if test="EventRecordPart1 != 0.001" >
+                `EventRecordPart1`,
+          </if>
+          <if test="EventRecordPart2 != 0.001" >
+                `EventRecordPart2`,
+          </if>
+          <if test="VoltagePhaseAtoB != 0.001" >
+                `VoltagePhaseAtoB`,
+          </if>
+          <if test="VoltagePhaseBtoC != 0.001" >
+                `VoltagePhaseBtoC`,
+          </if>
+          <if test="VoltagePhaseCtoA != 0.001" >
+                `VoltagePhaseCtoA`,
+          </if>
+          <if test="VoltagePhaseA != 0.001" >
+                `VoltagePhaseA`,
+          </if>
+          <if test="VoltagePhaseB != 0.001" >
+               `VoltagePhaseB`, 
+          </if>
+          <if test="VoltagePhaseC != 0.001" >
+                `VoltagePhaseC`,
+          </if>
+          <if test="Vzps != 0.001" >
+                `Vzps`,
+          </if>
+          <if test="Vpps != 0.001" >
+                `Vpps`,
+          </if>
+          <if test="Vnps != 0.001" >
+                `Vnps`,
+          </if>
+          <if test="VzpsDegrees != 0.001" >
+                `VzpsDegrees`,
+          </if>
+          <if test="VppsDegrees != 0.001" >
+                `VppsDegrees`,
+          </if>
+          <if test="VnpsDegrees != 0.001" >
+                `VnpsDegrees`,
+          </if>
+          <if test="Frequency != 0.001" >
+                `Frequency`,
+          </if>
+          <if test="PhaseACurrent != 0.001" >
+                `PhaseACurrent`,
+          </if>
+          <if test="PhaseBCurrent != 0.001" >
+                `PhaseBCurrent`,
+          </if>
+          <if test="PhaseCCurrent != 0.001" >
+                `PhaseCCurrent`,
+          </if>
+          <if test="NeutralCurrent != 0.001" >
+                `NeutralCurrent`,
+          </if>
+          <if test="GroundCurrent != 0.001" >
+                `GroundCurrent`,
+          </if>
+          <if test="ActivePowerPhaseA != 0.001" >
+                `ActivePowerPhaseA`,
+          </if>
+          <if test="ActivePowerPhaseB != 0.001" >
+                `ActivePowerPhaseB`,
+          </if>
+          <if test="ActivePowerPhaseC != 0.001" >
+                `ActivePowerPhaseC`,
+          </if>
+          <if test="ActivePower3PhaseTotal != 0.001" >
+                `ActivePower3PhaseTotal`,
+          </if>
+          <if test="ReactivePowerPhaseA != 0.001" >
+                `ReactivePowerPhaseA`,
+          </if>
+          <if test="ReactivePowerPhaseB != 0.001" >
+                `ReactivePowerPhaseB`,
+          </if>
+          <if test="ReactivePowerPhaseC != 0.001" >
+                `ReactivePowerPhaseC`,
+          </if>
+          <if test="ReactivePower3PhaseTotal != 0.001" >
+                `ReactivePower3PhaseTotal`,
+          </if>
+          <if test="ApparentPowerPhaseA != 0.001" >
+                `ApparentPowerPhaseA`,
+          </if>
+          <if test="ApparentPowerPhaseB != 0.001" >
+                `ApparentPowerPhaseB`,
+          </if>
+          <if test="ApparentPowerPhaseC != 0.001" >
+                `ApparentPowerPhaseC`,
+          </if>
+          <if test="ApparentPower3PhaseTotal != 0.001" >
+                `ApparentPower3PhaseTotal`,
+          </if>
+          <if test="PowerFactorPhaseA != 0.001" >
+                `PowerFactorPhaseA`,
+          </if>
+          <if test="PowerFactorPhaseB != 0.001" >
+                `PowerFactorPhaseB`,
+          </if>
+          <if test="PowerFactorPhaseC != 0.001" >
+                `PowerFactorPhaseC`,
+          </if>
+          <if test="PowerFactor3PhaseTotal != 0.001" >
+               `PowerFactor3PhaseTotal` , 
+          </if>
+          <if test="ActiveEnergyExported != 0.001" >
+                `ActiveEnergyExported`,
+          </if>
+          <if test="ActiveEnergyImported != 0.001" >
+                `ActiveEnergyImported`,
+          </if>
+          <if test="ReactiveEnergyExported != 0.001" >
+                `ReactiveEnergyExported`,
+          </if>
+          <if test="ReactiveEnergyImported != 0.001" >
+                `ReactiveEnergyImported`,
+          </if>
+          <if test="ThermalStatusPhaseA != 0.001" >
+                `ThermalStatusPhaseA`,
+          </if>
+          <if test="ThermalStatusPhaseB != 0.001" >
+                `ThermalStatusPhaseB`,
+          </if>
+          <if test="ThermalStatusPhaseC != 0.001" >
+                `ThermalStatusPhaseC`,
+          </if>
+          <if test="FaultRecords != 0.001" >
+                `FaultRecords`,
+          </if>
+          <if test="EventRecords != 0.001" >
+                `EventRecords`,
+          </if>
+          <if test="LED1_16Bitmap != 0.001" >
+                `LED1_16Bitmap`,
+          </if>
+          <if test="LED17_32Bitmap != 0.001" >
+                `LED17_32Bitmap`,
+          </if>
+          <if test="InputStatus1_16Bitmap != 0.001" >
+                `InputStatus1_16Bitmap`,
+          </if>
+          <if test="InputStatus17_32Bitmap != 0.001" >
+                `InputStatus17_32Bitmap`,
+          </if>
+          <if test="CircuitBreaker1Status != 0.001" >
+                `CircuitBreaker1Status`,
+          </if>
+          <if test="AutoRecloseActive != 0.001" >
+                `AutoRecloseActive`,
+          </if>
+          <if test="RemoteMode != 0.001" >
+                `RemoteMode`,
+          </if>
+          <if test="LocalRemoteMode != 0.001" >
+                `LocalRemoteMode`,
+          </if>
+          <if test="OutofServiceMode != 0.001" >
+                `OutofServiceMode`,
+          </if>
+          <if test="CicruitBreaker1Open != 0.001" >
+                `CicruitBreaker1Open`,
+          </if>
+          <if test="CircuitBreaker1Close != 0.001" >
+                `CircuitBreaker1Close`,
+          </if>
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="EventCount != 0.001" >
+	                #{EventCount},
+	          </if>
+	          <if test="EventRecordPart1 != 0.001" >
+	                #{EventRecordPart1},
+	          </if>
+	          <if test="EventRecordPart2 != 0.001" >
+	                #{EventRecordPart2},
+	          </if>
+	          <if test="VoltagePhaseAtoB != 0.001" >
+	                #{VoltagePhaseAtoB},
+	          </if>
+	          <if test="VoltagePhaseBtoC != 0.001" >
+	                #{VoltagePhaseBtoC},
+	          </if>
+	          <if test="VoltagePhaseCtoA != 0.001" >
+	                #{VoltagePhaseCtoA},
+	          </if>
+	          <if test="VoltagePhaseA != 0.001" >
+	                #{VoltagePhaseA},
+	          </if>
+	          <if test="VoltagePhaseB != 0.001" >
+	               #{VoltagePhaseB}, 
+	          </if>
+	          <if test="VoltagePhaseC != 0.001" >
+	                #{VoltagePhaseC},
+	          </if>
+	          <if test="Vzps != 0.001" >
+	                #{Vzps},
+	          </if>
+	          <if test="Vpps != 0.001" >
+	                #{Vpps},
+	          </if>
+	          <if test="Vnps != 0.001" >
+	                #{Vnps},
+	          </if>
+	          <if test="VzpsDegrees != 0.001" >
+	                #{VzpsDegrees},
+	          </if>
+	          <if test="VppsDegrees != 0.001" >
+	                #{VppsDegrees},
+	          </if>
+	          <if test="VnpsDegrees != 0.001" >
+	                #{VnpsDegrees},
+	          </if>
+	          <if test="Frequency != 0.001" >
+	                #{Frequency},
+	          </if>
+	          <if test="PhaseACurrent != 0.001" >
+	                #{PhaseACurrent},
+	          </if>
+	          <if test="PhaseBCurrent != 0.001" >
+	                #{PhaseBCurrent},
+	          </if>
+	          <if test="PhaseCCurrent != 0.001" >
+	                #{PhaseCCurrent},
+	          </if>
+	          <if test="NeutralCurrent != 0.001" >
+	                #{NeutralCurrent},
+	          </if>
+	          <if test="GroundCurrent != 0.001" >
+	                #{GroundCurrent},
+	          </if>
+	          <if test="ActivePowerPhaseA != 0.001" >
+	                #{ActivePowerPhaseA},
+	          </if>
+	          <if test="ActivePowerPhaseB != 0.001" >
+	                #{ActivePowerPhaseB},
+	          </if>
+	          <if test="ActivePowerPhaseC != 0.001" >
+	                #{ActivePowerPhaseC},
+	          </if>
+	          <if test="ActivePower3PhaseTotal != 0.001" >
+	                #{ActivePower3PhaseTotal},
+	          </if>
+	          <if test="ReactivePowerPhaseA != 0.001" >
+	                #{ReactivePowerPhaseA},
+	          </if>
+	          <if test="ReactivePowerPhaseB != 0.001" >
+	                #{ReactivePowerPhaseB},
+	          </if>
+	          <if test="ReactivePowerPhaseC != 0.001" >
+	                #{ReactivePowerPhaseC},
+	          </if>
+	          <if test="ReactivePower3PhaseTotal != 0.001" >
+	                #{ReactivePower3PhaseTotal},
+	          </if>
+	          <if test="ApparentPowerPhaseA != 0.001" >
+	                #{ApparentPowerPhaseA},
+	          </if>
+	          <if test="ApparentPowerPhaseB != 0.001" >
+	                #{ApparentPowerPhaseB},
+	          </if>
+	          <if test="ApparentPowerPhaseC != 0.001" >
+	                #{ApparentPowerPhaseC},
+	          </if>
+	          <if test="ApparentPower3PhaseTotal != 0.001" >
+	                #{ApparentPower3PhaseTotal},
+	          </if>
+	          <if test="PowerFactorPhaseA != 0.001" >
+	                #{PowerFactorPhaseA},
+	          </if>
+	          <if test="PowerFactorPhaseB != 0.001" >
+	                #{PowerFactorPhaseB},
+	          </if>
+	          <if test="PowerFactorPhaseC != 0.001" >
+	                #{PowerFactorPhaseC},
+	          </if>
+	          <if test="PowerFactor3PhaseTotal != 0.001" >
+	               #{PowerFactor3PhaseTotal}, 
+	          </if>
+	          <if test="ActiveEnergyExported != 0.001" >
+	                #{ActiveEnergyExported},
+	          </if>
+	          <if test="ActiveEnergyImported != 0.001" >
+	                #{ActiveEnergyImported},
+	          </if>
+	          <if test="ReactiveEnergyExported != 0.001" >
+	                #{ReactiveEnergyExported},
+	          </if>
+	          <if test="ReactiveEnergyImported != 0.001" >
+	                #{ReactiveEnergyImported},
+	          </if>
+	          <if test="ThermalStatusPhaseA != 0.001" >
+	                #{ThermalStatusPhaseA},
+	          </if>
+	          <if test="ThermalStatusPhaseB != 0.001" >
+	                #{ThermalStatusPhaseB},
+	          </if>
+	          <if test="ThermalStatusPhaseC != 0.001" >
+	                #{ThermalStatusPhaseC},
+	          </if>
+	          <if test="FaultRecords != 0.001" >
+	                #{FaultRecords},
+	          </if>
+	          <if test="EventRecords != 0.001" >
+	                #{EventRecords},
+	          </if>
+	          <if test="LED1_16Bitmap != 0.001" >
+	                #{LED1_16Bitmap},
+	          </if>
+	          <if test="LED17_32Bitmap != 0.001" >
+	                #{LED17_32Bitmap},
+	          </if>
+	          <if test="InputStatus1_16Bitmap != 0.001" >
+	                #{InputStatus1_16Bitmap},
+	          </if>
+	          <if test="InputStatus17_32Bitmap != 0.001" >
+	                #{InputStatus17_32Bitmap},
+	          </if>
+	          <if test="CircuitBreaker1Status != 0.001" >
+	                #{CircuitBreaker1Status},
+	          </if>
+	          <if test="AutoRecloseActive != 0.001" >
+	                #{AutoRecloseActive},
+	          </if>
+	          <if test="RemoteMode != 0.001" >
+	                #{RemoteMode},
+	          </if>
+	          <if test="LocalRemoteMode != 0.001" >
+	                #{LocalRemoteMode},
+	          </if>
+	          <if test="OutofServiceMode != 0.001" >
+	                #{OutofServiceMode},
+	          </if>
+	          <if test="CicruitBreaker1Open != 0.001" >
+	                #{CicruitBreaker1Open},
+	          </if>
+	          <if test="CircuitBreaker1Close != 0.001" >
+	                #{CircuitBreaker1Close},
+	          </if>
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="EventCount != 0.001" >
+	                EventCount = #{EventCount},
+	          </if>
+	          <if test="EventRecordPart1 != 0.001" >
+	                EventRecordPart1 = #{EventRecordPart1},
+	          </if>
+	          <if test="EventRecordPart2 != 0.001" >
+	                EventRecordPart2 = #{EventRecordPart2},
+	          </if>
+	          <if test="VoltagePhaseAtoB != 0.001" >
+	                VoltagePhaseAtoB = #{VoltagePhaseAtoB},
+	          </if>
+	          <if test="VoltagePhaseBtoC != 0.001" >
+	                VoltagePhaseBtoC = #{VoltagePhaseBtoC},
+	          </if>
+	          <if test="VoltagePhaseCtoA != 0.001" >
+	                VoltagePhaseCtoA = #{VoltagePhaseCtoA},
+	          </if>
+	          <if test="VoltagePhaseA != 0.001" >
+	                VoltagePhaseA = #{VoltagePhaseA},
+	          </if>
+	          <if test="VoltagePhaseB != 0.001" >
+	               VoltagePhaseB = #{VoltagePhaseB}, 
+	          </if>
+	          <if test="VoltagePhaseC != 0.001" >
+	                VoltagePhaseC = #{VoltagePhaseC},
+	          </if>
+	          <if test="Vzps != 0.001" >
+	                Vzps = #{Vzps},
+	          </if>
+	          <if test="Vpps != 0.001" >
+	                Vpps = #{Vpps},
+	          </if>
+	          <if test="Vnps != 0.001" >
+	                Vnps = #{Vnps},
+	          </if>
+	          <if test="VzpsDegrees != 0.001" >
+	                VzpsDegrees = #{VzpsDegrees},
+	          </if>
+	          <if test="VppsDegrees != 0.001" >
+	                VppsDegrees = #{VppsDegrees},
+	          </if>
+	          <if test="VnpsDegrees != 0.001" >
+	                VnpsDegrees = #{VnpsDegrees},
+	          </if>
+	          <if test="Frequency != 0.001" >
+	                Frequency = #{Frequency},
+	          </if>
+	          <if test="PhaseACurrent != 0.001" >
+	                PhaseACurrent = #{PhaseACurrent},
+	          </if>
+	          <if test="PhaseBCurrent != 0.001" >
+	                PhaseBCurrent = #{PhaseBCurrent},
+	          </if>
+	          <if test="PhaseCCurrent != 0.001" >
+	                PhaseCCurrent = #{PhaseCCurrent},
+	          </if>
+	          <if test="NeutralCurrent != 0.001" >
+	                NeutralCurrent = #{NeutralCurrent},
+	          </if>
+	          <if test="GroundCurrent != 0.001" >
+	                GroundCurrent = #{GroundCurrent},
+	          </if>
+	          <if test="ActivePowerPhaseA != 0.001" >
+	                ActivePowerPhaseA = #{ActivePowerPhaseA},
+	          </if>
+	          <if test="ActivePowerPhaseB != 0.001" >
+	                ActivePowerPhaseB = #{ActivePowerPhaseB},
+	          </if>
+	          <if test="ActivePowerPhaseC != 0.001" >
+	                ActivePowerPhaseC = #{ActivePowerPhaseC},
+	          </if>
+	          <if test="ActivePower3PhaseTotal != 0.001" >
+	                ActivePower3PhaseTotal = #{ActivePower3PhaseTotal},
+	          </if>
+	          <if test="ReactivePowerPhaseA != 0.001" >
+	                ReactivePowerPhaseA = #{ReactivePowerPhaseA},
+	          </if>
+	          <if test="ReactivePowerPhaseB != 0.001" >
+	                ReactivePowerPhaseB = #{ReactivePowerPhaseB},
+	          </if>
+	          <if test="ReactivePowerPhaseC != 0.001" >
+	                ReactivePowerPhaseC = #{ReactivePowerPhaseC},
+	          </if>
+	          <if test="ReactivePower3PhaseTotal != 0.001" >
+	                ReactivePower3PhaseTotal = #{ReactivePower3PhaseTotal},
+	          </if>
+	          <if test="ApparentPowerPhaseA != 0.001" >
+	                ApparentPowerPhaseA = #{ApparentPowerPhaseA},
+	          </if>
+	          <if test="ApparentPowerPhaseB != 0.001" >
+	                ApparentPowerPhaseB = #{ApparentPowerPhaseB},
+	          </if>
+	          <if test="ApparentPowerPhaseC != 0.001" >
+	                ApparentPowerPhaseC = #{ApparentPowerPhaseC},
+	          </if>
+	          <if test="ApparentPower3PhaseTotal != 0.001" >
+	                ApparentPower3PhaseTotal = #{ApparentPower3PhaseTotal},
+	          </if>
+	          <if test="PowerFactorPhaseA != 0.001" >
+	                PowerFactorPhaseA = #{PowerFactorPhaseA},
+	          </if>
+	          <if test="PowerFactorPhaseB != 0.001" >
+	                PowerFactorPhaseB = #{PowerFactorPhaseB},
+	          </if>
+	          <if test="PowerFactorPhaseC != 0.001" >
+	                PowerFactorPhaseC = #{PowerFactorPhaseC},
+	          </if>
+	          <if test="PowerFactor3PhaseTotal != 0.001" >
+	               PowerFactor3PhaseTotal = #{PowerFactor3PhaseTotal}, 
+	          </if>
+	          <if test="ActiveEnergyExported != 0.001" >
+	                ActiveEnergyExported = #{ActiveEnergyExported},
+	          </if>
+	          <if test="ActiveEnergyImported != 0.001" >
+	                ActiveEnergyImported = #{ActiveEnergyImported},
+	          </if>
+	          <if test="ReactiveEnergyExported != 0.001" >
+	                ReactiveEnergyExported = #{ReactiveEnergyExported},
+	          </if>
+	          <if test="ReactiveEnergyImported != 0.001" >
+	                ReactiveEnergyImported = #{ReactiveEnergyImported},
+	          </if>
+	          <if test="ThermalStatusPhaseA != 0.001" >
+	                ThermalStatusPhaseA = #{ThermalStatusPhaseA},
+	          </if>
+	          <if test="ThermalStatusPhaseB != 0.001" >
+	                ThermalStatusPhaseB = #{ThermalStatusPhaseB},
+	          </if>
+	          <if test="ThermalStatusPhaseC != 0.001" >
+	                ThermalStatusPhaseC = #{ThermalStatusPhaseC},
+	          </if>
+	          <if test="FaultRecords != 0.001" >
+	                FaultRecords = #{FaultRecords},
+	          </if>
+	          <if test="EventRecords != 0.001" >
+	                EventRecords = #{EventRecords},
+	          </if>
+	          <if test="LED1_16Bitmap != 0.001" >
+	                LED1_16Bitmap = #{LED1_16Bitmap},
+	          </if>
+	          <if test="LED17_32Bitmap != 0.001" >
+	                LED17_32Bitmap = #{LED17_32Bitmap},
+	          </if>
+	          <if test="InputStatus1_16Bitmap != 0.001" >
+	                InputStatus1_16Bitmap = #{InputStatus1_16Bitmap},
+	          </if>
+	          <if test="InputStatus17_32Bitmap != 0.001" >
+	                InputStatus17_32Bitmap = #{InputStatus17_32Bitmap},
+	          </if>
+	          <if test="CircuitBreaker1Status != 0.001" >
+	                CircuitBreaker1Status = #{CircuitBreaker1Status},
+	          </if>
+	          <if test="AutoRecloseActive != 0.001" >
+	                AutoRecloseActive = #{AutoRecloseActive},
+	          </if>
+	          <if test="RemoteMode != 0.001" >
+	                RemoteMode = #{RemoteMode},
+	          </if>
+	          <if test="LocalRemoteMode != 0.001" >
+	                LocalRemoteMode = #{LocalRemoteMode},
+	          </if>
+	          <if test="OutofServiceMode != 0.001" >
+	                OutofServiceMode = #{OutofServiceMode},
+	          </if>
+	          <if test="CicruitBreaker1Open != 0.001" >
+	                CicruitBreaker1Open = #{CicruitBreaker1Open},
+	          </if>
+	          <if test="CircuitBreaker1Close != 0.001" >
+	                CircuitBreaker1Close = #{CircuitBreaker1Close},
+	          </if>         
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelSiemens7Sr11Entity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
