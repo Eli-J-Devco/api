@@ -319,6 +319,14 @@
 			
 			WHEN dg.table_name = 'model_sma_core' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
+			WHEN dg.table_name = 'model_abb_emax_cb_ekip' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'ActivePowerPhaseA' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_siemens_7sr11' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_thermtronic_th104bus' AND d.field_value_default = 'AmbientMeasuredMaximumTemperature' THEN IF(s.unit_type_temp = 2,CONCAT_WS(" ", ROUND(IFNULL((d.field_value1 * 1.8 + 32), 0 ),2), "°F" ), CONCAT_WS(" ", ROUND(IFNULL(d.field_value1, 0 ),2), "°C" ))
+			
 			
 			ELSE "-"
 		END AS key_indicator
@@ -540,6 +548,15 @@
 			WHEN dg.table_name = 'model_quint_ups_poso' AND d.field_value_default = 'BatteryTemperature' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Degrees F" )))
 			
 			WHEN dg.table_name = 'model_sma_core' AND d.field_value_default = 'ActivePower' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			
+			WHEN dg.table_name = 'model_abb_emax_cb_ekip' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_pextron_urp6000' AND d.field_value_default = 'ActivePowerPhaseA' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_siemens_7sr11' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
+			
+			WHEN dg.table_name = 'model_thermtronic_th104bus' AND d.field_value_default = 'AmbientMeasuredMaximumTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+						
 			
 			ELSE "Z"
 			

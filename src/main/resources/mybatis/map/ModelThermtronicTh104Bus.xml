@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelThermtronicTh104Bus">
+	<resultMap id="ModelThermtronicTh104BusMap"
+		type="com.nwm.api.entities.ModelThermtronicTh104BusEntity">
+		<result property="time" column="time" />
+		<result property="id_device" column="id_device" />
+		<result property="error" column="error" />
+		<result property="low_alarm" column="low_alarm" />
+		<result property="high_alarm" column="high_alarm" />
+		<result property="S1AlarmTemperature"
+			column="S1AlarmTemperature" />
+		<result property="S1TripTemperature"
+			column="S1TripTemperature" />
+		<result property="S2AlarmTemperature"
+			column="S2AlarmTemperature" />
+		<result property="S2TripTemperature"
+			column="S2TripTemperature" />
+		<result property="S3AlarmTemperature"
+			column="S3AlarmTemperature" />
+		<result property="S3TripTemperature"
+			column="S3TripTemperature" />
+		<result property="AmbientAlarmTemperature"
+			column="AmbientAlarmTemperature" />
+		<result property="AmbientTripTemperature"
+			column="AmbientTripTemperature" />
+		<result property="UnitsofMeasurement"
+			column="UnitsofMeasurement" />
+		<result property="Fan1ActivationTemperature" column="Fan1ActivationTemperature" />
+		<result property="Fan1DeactivationTemperature" column="Fan1DeactivationTemperature" />
+		<result property="SensorStatus" column="SensorStatus" />
+		<result property="Fan2ActivationTemperature" column="Fan2ActivationTemperature" />
+		<result property="Fan2DeactivationTemperature"
+			column="Fan2DeactivationTemperature" />
+		<result property="MinutesActive" column="MinutesActive" />
+		<result property="Sensor1Status" column="Sensor1Status" />
+		<result property="Sensor2Status"
+			column="Sensor2Status" />
+		<result property="Sensor3Status" column="Sensor3Status" />
+		<result property="S1MeasuredMaximumTemperature" column="S1MeasuredMaximumTemperature" />
+		<result property="S2MeasuredMaximumTemperature" column="S2MeasuredMaximumTemperature" />
+		<result property="S3MeasuredMaximumTemperature" column="S3MeasuredMaximumTemperature" />
+		<result property="AmbientMeasuredMaximumTemperature"
+			column="AmbientMeasuredMaximumTemperature" />
+		<result property="S1CurrentTemperature" column="S1CurrentTemperature" />
+		<result property="S2CurrentTemperature" column="S2CurrentTemperature" />
+		<result property="S3CurrentTemperature" column="S3CurrentTemperature" />
+		<result property="AmbientAirCurrentTemperature" column="AmbientAirCurrentTemperature" />
+		<result property="Fan2Relay" column="Fan2Relay" />
+		<result property="Fan1Relay" column="Fan1Relay" />
+		<result property="FaultRelay" column="FaultRelay" />
+		<result property="TripRelay"
+			column="TripRelay" />
+		<result property="AlarmRelay"
+			column="AlarmRelay" />			
+		<result property="nvm_irradiance" column="nvm_irradiance" />
+		<result property="nvm_temperature" column="nvm_temperature" />
+		<result property="nvm_panel_temperature" column="nvm_panel_temperature" />
+		<result property="datatablename" column="datatablename" />
+		<result property="view_tablename" column="view_tablename" />
+		<result property="job_tablename" column="job_tablename" />
+
+
+	</resultMap>
+
+	<insert id="insertModelThermtronicTh104Bus" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="S1AlarmTemperature != 0.001">
+				`S1AlarmTemperature`,
+			</if>
+			<if test="S1TripTemperature != 0.001">
+				`S1TripTemperature`,
+			</if>
+			<if test="S2AlarmTemperature != 0.001">
+				`S2AlarmTemperature`,
+			</if>
+			<if test="S2TripTemperature != 0.001">
+				`S2TripTemperature`,
+			</if>
+			<if test="S3AlarmTemperature != 0.001">
+				`S3AlarmTemperature`,
+			</if>
+			<if test="S3TripTemperature != 0.001">
+				`S3TripTemperature`,
+			</if>
+			<if test="AmbientAlarmTemperature != 0.001">
+				`AmbientAlarmTemperature`,
+			</if>
+			<if test="AmbientTripTemperature != 0.001">
+				`AmbientTripTemperature`,
+			</if>
+			
+			<if test="UnitsofMeasurement != 0.001">
+				`UnitsofMeasurement`,
+			</if>
+			<if test="Fan1ActivationTemperature != 0.001">
+				`Fan1ActivationTemperature`,
+			</if>
+			<if test="Fan1DeactivationTemperature != 0.001">
+				`Fan1DeactivationTemperature`,
+			</if>
+			<if test="SensorStatus != 0.001">
+				`SensorStatus`,
+			</if>
+			<if test="Fan2ActivationTemperature != 0.001">
+				`Fan2ActivationTemperature`,
+			</if>
+			<if test="Fan2DeactivationTemperature != 0.001">
+				`Fan2DeactivationTemperature`,
+			</if>
+			<if test="MinutesActive != 0.001">
+				`MinutesActive`,
+			</if>
+			
+			<if test="Sensor1Status != 0.001">
+				`Sensor1Status`,
+			</if>
+			<if test="Sensor2Status != 0.001">
+				`Sensor2Status`,
+			</if>
+			<if test="Sensor3Status != 0.001">
+				`Sensor3Status`,
+			</if>
+			<if test="S1MeasuredMaximumTemperature != 0.001">
+				`S1MeasuredMaximumTemperature`,
+			</if>
+			<if test="S2MeasuredMaximumTemperature != 0.001">
+				`S2MeasuredMaximumTemperature`,
+			</if>
+			<if test="S3MeasuredMaximumTemperature != 0.001">
+				`S3MeasuredMaximumTemperature`,
+			</if>
+			<if test="AmbientMeasuredMaximumTemperature != 0.001">
+				`AmbientMeasuredMaximumTemperature`,
+			</if>
+			<if test="S1CurrentTemperature != 0.001">
+				`S1CurrentTemperature`,
+			</if>
+			<if test="S2CurrentTemperature != 0.001">
+				`S2CurrentTemperature`,
+			</if>
+			<if test="S3CurrentTemperature != 0.001">
+				`S3CurrentTemperature`,
+			</if>
+			<if test="AmbientAirCurrentTemperature != 0.001">
+				`AmbientAirCurrentTemperature`,
+			</if>
+			<if test="Fan2Relay != 0.001">
+				`Fan2Relay`,
+			</if>
+			<if test="Fan1Relay != 0.001">
+				`Fan1Relay`,
+			</if>
+			<if test="FaultRelay != 0.001">
+				`FaultRelay`,
+			</if>		
+			<if test="TripRelay != 0.001">
+				`TripRelay`,
+			</if>
+			<if test="AlarmRelay != 0.001">
+				`AlarmRelay`,
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				`nvm_irradiance`,
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature`,
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			<if test="S1AlarmTemperature != 0.001">
+				#{S1AlarmTemperature},
+			</if>
+			<if test="S1TripTemperature != 0.001">
+				#{S1TripTemperature},
+			</if>
+			<if test="S2AlarmTemperature != 0.001">
+				#{S2AlarmTemperature},
+			</if>
+			<if test="S2TripTemperature != 0.001">
+				#{S2TripTemperature},
+			</if>
+			<if test="S3AlarmTemperature != 0.001">
+				#{S3AlarmTemperature},
+			</if>
+			<if test="S3TripTemperature != 0.001">
+				#{S3TripTemperature},
+			</if>
+			<if test="AmbientAlarmTemperature != 0.001">
+				#{AmbientAlarmTemperature},
+			</if>
+			<if test="AmbientTripTemperature != 0.001">
+				#{AmbientTripTemperature},
+			</if>
+			<if test="UnitsofMeasurement != 0.001">
+				#{UnitsofMeasurement},
+			</if>
+			<if test="Fan1ActivationTemperature != 0.001">
+				#{Fan1ActivationTemperature},
+			</if>
+			<if test="Fan1DeactivationTemperature != 0.001">
+				#{Fan1DeactivationTemperature},
+			</if>
+			<if test="SensorStatus != 0.001">
+				#{SensorStatus},
+			</if>
+			<if test="Fan2ActivationTemperature != 0.001">
+				#{Fan2ActivationTemperature},
+			</if>
+			<if test="Fan2DeactivationTemperature != 0.001">
+				#{Fan2DeactivationTemperature},
+			</if>
+			<if test="MinutesActive != 0.001">
+				#{MinutesActive},
+			</if>
+			
+			<if test="Sensor1Status != 0.001">
+				#{Sensor1Status},
+			</if>
+			<if test="Sensor2Status != 0.001">
+				#{Sensor2Status},
+			</if>
+			<if test="Sensor3Status != 0.001">
+				#{Sensor3Status},
+			</if>
+			<if test="S1MeasuredMaximumTemperature != 0.001">
+				#{S1MeasuredMaximumTemperature},
+			</if>
+			<if test="S2MeasuredMaximumTemperature != 0.001">
+				#{S2MeasuredMaximumTemperature},
+			</if>
+			<if test="S3MeasuredMaximumTemperature != 0.001">
+				#{S3MeasuredMaximumTemperature},
+			</if>
+			<if test="AmbientMeasuredMaximumTemperature != 0.001">
+				#{AmbientMeasuredMaximumTemperature},
+			</if>
+			<if test="S1CurrentTemperature != 0.001">
+				#{S1CurrentTemperature},
+			</if>
+			<if test="S2CurrentTemperature != 0.001">
+				#{S2CurrentTemperature},
+			</if>
+			<if test="S3CurrentTemperature != 0.001">
+				#{S3CurrentTemperature},
+			</if>
+			<if test="AmbientAirCurrentTemperature != 0.001">
+				#{AmbientAirCurrentTemperature},
+			</if>
+			<if test="Fan2Relay != 0.001">
+				#{Fan2Relay},
+			</if>
+			<if test="Fan1Relay != 0.001">
+				#{Fan1Relay},
+			</if>
+			<if test="FaultRelay != 0.001">
+				#{FaultRelay},
+			</if>	
+			<if test="TripRelay != 0.001">
+				#{TripRelay},
+			</if>
+			<if test="AlarmRelay != 0.001">
+				#{AlarmRelay},
+			</if>
+			<if test="nvm_irradiance != 0.001">
+				#{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				#{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				#{nvm_panel_temperature},
+			</if>
+		</trim>
+
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+
+			<if test="id_device != 0.001">
+				id_device = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				error = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				low_alarm = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				high_alarm = #{high_alarm},
+			</if>
+			<if test="S1AlarmTemperature != 0.001">
+				S1AlarmTemperature = #{S1AlarmTemperature},
+			</if>
+			<if test="S1TripTemperature != 0.001">
+				S1TripTemperature = #{S1TripTemperature},
+			</if>
+			<if test="S2AlarmTemperature != 0.001">
+				S2AlarmTemperature = #{S2AlarmTemperature},
+			</if>
+			<if test="S2TripTemperature != 0.001">
+				S2TripTemperature = #{S2TripTemperature},
+			</if>
+			<if test="S3AlarmTemperature != 0.001">
+				S3AlarmTemperature = #{S3AlarmTemperature},
+			</if>
+			<if test="S3TripTemperature != 0.001">
+				S3TripTemperature= #{S3TripTemperature},
+			</if>
+			<if test="AmbientAlarmTemperature != 0.001">
+				AmbientAlarmTemperature = #{AmbientAlarmTemperature},
+			</if>
+			<if test="AmbientTripTemperature != 0.001">
+				AmbientTripTemperature = #{AmbientTripTemperature},
+			</if>
+			<if test="UnitsofMeasurement != 0.001">
+				UnitsofMeasurement = #{UnitsofMeasurement},
+			</if>
+			<if test="Fan1ActivationTemperature != 0.001">
+				Fan1ActivationTemperature = #{Fan1ActivationTemperature},
+			</if>
+			<if test="Fan1DeactivationTemperature != 0.001">
+				Fan1DeactivationTemperature = #{Fan1DeactivationTemperature},
+			</if>
+			<if test="SensorStatus != 0.001">
+				SensorStatus = #{SensorStatus},
+			</if>
+			<if test="Fan2ActivationTemperature != 0.001">
+				Fan2ActivationTemperature = #{Fan2ActivationTemperature},
+			</if>
+			<if test="Fan2DeactivationTemperature != 0.001">
+				Fan2DeactivationTemperature = #{Fan2DeactivationTemperature},
+			</if>
+			<if test="MinutesActive != 0.001">
+				MinutesActive = #{MinutesActive},
+			</if>
+			
+			<if test="Sensor1Status != 0.001">
+				Sensor1Status = #{Sensor1Status},
+			</if>
+			<if test="Sensor2Status != 0.001">
+				Sensor2Status = #{Sensor2Status},
+			</if>
+			<if test="Sensor3Status != 0.001">
+				Sensor3Status = #{Sensor3Status},
+			</if>
+			<if test="S1MeasuredMaximumTemperature != 0.001">
+				S1MeasuredMaximumTemperature = #{S1MeasuredMaximumTemperature},
+			</if>
+			<if test="S2MeasuredMaximumTemperature != 0.001">
+				S2MeasuredMaximumTemperature = #{S2MeasuredMaximumTemperature},
+			</if>
+			<if test="S3MeasuredMaximumTemperature != 0.001">
+				S3MeasuredMaximumTemperature = #{S3MeasuredMaximumTemperature},
+			</if>
+			<if test="AmbientMeasuredMaximumTemperature != 0.001">
+				AmbientMeasuredMaximumTemperature = #{AmbientMeasuredMaximumTemperature},
+			</if>
+			<if test="S1CurrentTemperature != 0.001">
+				S1CurrentTemperature = #{S1CurrentTemperature},
+			</if>
+			<if test="S2CurrentTemperature != 0.001">
+				S2CurrentTemperature = #{S2CurrentTemperature},
+			</if>
+			<if test="S3CurrentTemperature != 0.001">
+				S3CurrentTemperature = #{S3CurrentTemperature},
+			</if>
+			<if test="AmbientAirCurrentTemperature != 0.001">
+				AmbientAirCurrentTemperature = #{AmbientAirCurrentTemperature},
+			</if>
+			<if test="Fan2Relay != 0.001">
+				Fan2Relay = #{Fan2Relay},
+			</if>
+			<if test="Fan1Relay != 0.001">
+				Fan1Relay = #{Fan1Relay},
+			</if>
+			<if test="FaultRelay != 0.001">
+				FaultRelay = #{FaultRelay},
+			</if>
+			<if test="TripRelay != 0.001">
+				TripRelay = #{TripRelay},
+			</if>
+			<if test="AlarmRelay != 0.001">
+				AlarmRelay = #{AlarmRelay},
+			</if>		
+			<if test="nvm_irradiance != 0.001">
+				nvm_irradiance = #{nvm_irradiance},
+			</if>
+			<if test="nvm_temperature != 0.001">
+				`nvm_temperature` = #{nvm_temperature},
+			</if>
+			<if test="nvm_panel_temperature != 0.001">
+				`nvm_panel_temperature` = #{nvm_panel_temperature},
+			</if>
+		</trim>
+
+	</insert>
+
+</mapper> 

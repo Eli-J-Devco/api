@@ -124,6 +124,10 @@ import com.nwm.api.entities.ModelXGI1500Entity;
 import com.nwm.api.entities.ModelXantrexGT100250500Entity;
 import com.nwm.api.entities.ModelXantrexGT500EEntity;
 import com.nwm.api.entities.ModelXantrexInverterEntity;
+import com.nwm.api.entities.ModelAbbEmaxCbEkipEntity;
+import com.nwm.api.entities.ModelPextronUrp6000Entity;
+import com.nwm.api.entities.ModelSiemens7Sr11Entity;
+import com.nwm.api.entities.ModelThermtronicTh104BusEntity;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelAE1000NXClass9644Service;
 import com.nwm.api.services.ModelATiTrackerService;
@@ -221,10 +225,13 @@ import com.nwm.api.services.ModelXGI1500Service;
 import com.nwm.api.services.ModelXantrexGT100250500Service;
 import com.nwm.api.services.ModelXantrexGT500EService;
 import com.nwm.api.services.ModelXantrexInverterService;
+import com.nwm.api.services.ModelAbbEmaxCbEkipService;
+import com.nwm.api.services.ModelPextronUrp6000Service;
+import com.nwm.api.services.ModelSiemens7Sr11Service;
+import com.nwm.api.services.ModelThermtronicTh104BusService;
 import com.nwm.api.services.UploadFilesService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -4374,7 +4381,179 @@ public class UploadFilesController extends BaseController {
 												
 												break;
 												
-						                        
+												// Model model_abb_emax_cb_ekip
+											case "model_abb_emax_cb_ekip":
+												ModelAbbEmaxCbEkipService serviceModelAbbEmaxCbEkip = new ModelAbbEmaxCbEkipService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelAbbEmaxCbEkipEntity dataEntity = serviceModelAbbEmaxCbEkip.setModelAbbEmaxCbEkip(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														if(dataEntity.getActivePower3PhaseTotal() != 0.001 && dataEntity.getActivePower3PhaseTotal() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														
+														// ApparentPower3PhaseTotal
+														deviceUpdateE.setField_value2(dataEntity.getApparentPower3PhaseTotal() != 0.001 ? dataEntity.getApparentPower3PhaseTotal() : null);
+														
+														// ReactivePower3PhaseTotal
+														deviceUpdateE.setField_value3(dataEntity.getReactivePower3PhaseTotal() != 0.001 ? dataEntity.getReactivePower3PhaseTotal() : null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelAbbEmaxCbEkip.insertModelAbbEmaxCbEkip(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+												// Model model_pextron_urp6000
+											case "model_pextron_urp6000":
+												ModelPextronUrp6000Service serviceModelPextronUrp6000 = new ModelPextronUrp6000Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelPextronUrp6000Entity dataEntity = serviceModelPextronUrp6000.setModelPextronUrp6000(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePowerPhaseA
+														if(dataEntity.getActivePowerPhaseA() != 0.001 && dataEntity.getActivePowerPhaseA() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getActivePowerPhaseA() != 0.001 ? dataEntity.getActivePowerPhaseA() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePowerPhaseA() != 0.001 ? dataEntity.getActivePowerPhaseA() : null);
+														
+														// ActivePowerPhaseB
+														deviceUpdateE.setField_value2(dataEntity.getActivePowerPhaseB() != 0.001 ? dataEntity.getActivePowerPhaseB() : null);
+														
+														// ActivePowerPhaseC
+														deviceUpdateE.setField_value3(dataEntity.getActivePowerPhaseC() != 0.001 ? dataEntity.getActivePowerPhaseC() : null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelPextronUrp6000.insertModelPextronUrp6000(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+												// Model model_siemens_7sr11
+											case "model_siemens_7sr11":
+												ModelSiemens7Sr11Service serviceModelSiemens7Sr11 = new ModelSiemens7Sr11Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelSiemens7Sr11Entity dataEntity = serviceModelSiemens7Sr11.setModelSiemens7Sr11(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														if(dataEntity.getActivePower3PhaseTotal() != 0.001 && dataEntity.getActivePower3PhaseTotal() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActivePower3PhaseTotal() != 0.001 ? dataEntity.getActivePower3PhaseTotal() : null);
+														
+														// Frequency
+														deviceUpdateE.setField_value2(dataEntity.getFrequency() != 0.001 ? dataEntity.getFrequency() : null);
+														
+														// GroundCurrent
+														deviceUpdateE.setField_value3(dataEntity.getGroundCurrent() != 0.001 ? dataEntity.getGroundCurrent() : null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelSiemens7Sr11.insertModelSiemens7Sr11(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+												// Model model_thermtronic_th104bus
+											case "model_thermtronic_th104bus":
+												ModelThermtronicTh104BusService serviceModelThermtronicTh104Bus = new ModelThermtronicTh104BusService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelThermtronicTh104BusEntity dataEntity = serviceModelThermtronicTh104Bus.setModelThermtronicTh104Bus(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// AmbientMeasuredMaximumTemperature
+														if(dataEntity.getAmbientMeasuredMaximumTemperature() != 0.001 && dataEntity.getAmbientMeasuredMaximumTemperature() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getAmbientMeasuredMaximumTemperature() != 0.001 ? dataEntity.getAmbientMeasuredMaximumTemperature() : null);
+														deviceUpdateE.setField_value1(dataEntity.getAmbientMeasuredMaximumTemperature() != 0.001 ? dataEntity.getAmbientMeasuredMaximumTemperature() : null);
+														
+														// AmbientAirCurrentTemperature
+														deviceUpdateE.setField_value2(dataEntity.getAmbientAirCurrentTemperature() != 0.001 ? dataEntity.getAmbientAirCurrentTemperature() : null);
+														
+														// AmbientAlarmTemperature
+														deviceUpdateE.setField_value3(dataEntity.getAmbientAlarmTemperature() != 0.001 ? dataEntity.getAmbientAlarmTemperature() : null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelThermtronicTh104Bus.insertModelThermtronicTh104Bus(dataEntity);							
+													}
+												}
+												
+												break;								
 											
 										}
 										
