@@ -38,6 +38,7 @@ import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
+import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -776,6 +777,33 @@ public class ReportsService extends DB {
 			session.rollback();
 			log.error("Reports.updateReports", ex);
 			return false;
+		} finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * @description duplicate report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 */
+	public ReportDuplicateRequest duplicate(ReportDuplicateRequest obj) {
+		SqlSession session = this.beginTransaction();
+		
+		try {
+			session.insert("Reports.duplicate", obj);
+			int insertLastId = obj.getNewId();
+			if (insertLastId == 0) return null;
+			
+			session.insert("Reports.duplicateReportSiteMap", obj);
+			session.commit();
+			
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Reports.duplicate", ex);
+			
+			return null;
 		} finally {
 			session.close();
 		}

@@ -104,6 +104,7 @@ import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
+import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -2279,6 +2280,24 @@ public class ReportsController extends BaseController {
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description duplicate report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 * @param obj { id }
+	 */
+	@PostMapping("/duplicate")
+	public Object duplicate(@Valid @RequestBody ReportDuplicateRequest obj) {
+		try {
+			ReportsService service = new ReportsService();
+			ReportDuplicateRequest data = service.duplicate(obj);
+			return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
 		}
 	}
 

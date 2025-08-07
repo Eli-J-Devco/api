@@ -163,6 +163,56 @@
 			`id` = #{id}
 	</update>
 	
+	<insert id="duplicate" parameterType="com.nwm.api.entities.ReportDuplicateRequest" useGeneratedKeys="true" keyProperty="newId">
+		INSERT INTO `report` (
+			id_employee,
+			id_site,
+			type_report,
+			cadence_range,
+			date_from,
+			date_to,
+			subscribers,
+			data_intervals,
+			file_type,
+			created_date,
+			updated_date,
+			id_sub_group,
+			type_option,
+			schedule_enable,
+			periodicity,
+			time_schedule,
+			days_week,
+			offset_timezone
+		)
+		SELECT
+			id_employee,
+			id_site,
+			type_report,
+			cadence_range,
+			date_from,
+			date_to,
+			subscribers,
+			data_intervals,
+			file_type,
+			NOW() AS created_date,
+			NOW() AS updated_date,
+			id_sub_group,
+			type_option,
+			schedule_enable,
+			periodicity,
+			time_schedule,
+			days_week,
+			offset_timezone
+		FROM
+			`report`
+		WHERE
+			id = #{id};
+		
+		<selectKey keyProperty="newId" resultType="int">
+	        SELECT LAST_INSERT_ID()
+        </selectKey>
+	</insert>
+	
 	
 	<select id="getList" resultType="Map" >
 		SELECT
@@ -1342,6 +1392,19 @@
 			</foreach>
 	</insert>
 	
+	<insert id="duplicateReportSiteMap" parameterType="com.nwm.api.entities.ReportDuplicateRequest">
+		INSERT INTO report_site_map (
+			id_report,
+			id_site
+		)
+		SELECT
+			#{newId} AS id_report,
+			id_site
+		FROM
+			report_site_map
+		WHERE
+			id_report = #{id}
+	</insert>
 	
 	
 	<delete id = "deleteReportSiteMap" parameterType = "com.nwm.api.entities.ReportsEntity">
