@@ -355,6 +355,11 @@ public class ReportsService extends DB {
 	
 	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
 		try {
+			String id_sites = obj.getId_sites() != null ? obj.getId_sites() : (obj.getIds_site() != null ? obj.getIds_site() : null);
+			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
+			if (idSiteArr.length == 0) return null;
+			obj.setId_site(Integer.parseInt(idSiteArr[0]));
+			
 			ViewReportEntity reportObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (reportObj == null) return null;
 			
