@@ -1497,6 +1497,13 @@ public class BatchJob {
 							if (objReport.getFile_type() == 1) controller.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailAnnuallyReport(objReport);
 							break;
+
+						case 5: // custom
+							objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
+							objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							if (objReport.getFile_type() == 1) controller.sentMailPdfCustomReport(objReport);
+							else if (objReport.getFile_type() == 2) controller.sentMailCustomReport(objReport);
+							break;
 	
 						default:
 							break;
