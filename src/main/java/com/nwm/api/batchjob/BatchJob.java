@@ -1464,7 +1464,8 @@ public class BatchJob {
 			ReportsController controller = new ReportsController();
 			BuiltInReportController builtInController = new BuiltInReportController();
 
-			objReport.setIds(objReport.getId_sites() != null ? Arrays.asList(objReport.getId_sites().split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
+			String idSiteList = objReport.getId_sites() != null ? objReport.getId_sites() : (objReport.getIds_site() != null ? objReport.getIds_site() : null);
+			objReport.setIds(idSiteList != null ? Arrays.asList(idSiteList.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
 			
 			switch (objReport.getType_report()) {
 				case 1: // Solar Production Report
@@ -1495,6 +1496,13 @@ public class BatchJob {
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
 							if (objReport.getFile_type() == 1) controller.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) controller.sentMailAnnuallyReport(objReport);
+							break;
+
+						case 5: // custom
+							objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
+							objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							if (objReport.getFile_type() == 1) controller.sentMailPdfCustomReport(objReport);
+							else if (objReport.getFile_type() == 2) controller.sentMailCustomReport(objReport);
 							break;
 	
 						default:

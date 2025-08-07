@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
@@ -38,6 +39,7 @@ import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
+import com.nwm.api.entities.ReportDuplicateRequest;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -353,6 +355,11 @@ public class ReportsService extends DB {
 	
 	public AssetManagementAndOperationPerformanceReportEntity getAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
 		try {
+			String id_sites = obj.getId_sites() != null ? obj.getId_sites() : (obj.getIds_site() != null ? obj.getIds_site() : null);
+			String[] idSiteArr = id_sites != null ? id_sites.split(",") : new String[0];
+			if (idSiteArr.length == 0) return null;
+			obj.setId_site(Integer.parseInt(idSiteArr[0]));
+			
 			ViewReportEntity reportObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (reportObj == null) return null;
 			
@@ -778,6 +785,54 @@ public class ReportsService extends DB {
 			return false;
 		} finally {
 			session.close();
+		}
+	}
+	
+	/**
+	 * @description duplicate report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 */
+	public ReportDuplicateRequest duplicate(ReportDuplicateRequest obj) {
+		SqlSession session = this.beginTransaction();
+		
+		try {
+			session.insert("Reports.duplicate", obj);
+			int insertLastId = obj.getNewId();
+			if (insertLastId == 0) return null;
+			
+			session.insert("Reports.duplicateReportSiteMap", obj);
+			session.commit();
+			
+			return obj;
+		} catch (Exception ex) {
+			session.rollback();
+			log.error("Reports.duplicate", ex);
+			
+			return null;
+		} finally {
+			session.close();
+		}
+	}
+	
+	/**
+	 * @description download report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 */
+	public boolean download(List<ViewReportEntity> obj) {
+		try {
+			if (obj.size() == 0) return true;
+			BatchJob batchJob = new BatchJob();
+			
+			for (int i = 0; i < obj.size(); i++) {
+				ViewReportEntity reportEntity = obj.get(i);
+				CompletableFuture.runAsync(() -> batchJob.sentMailReportOnSchedule(reportEntity));
+			}
+			
+			return true;
+		} catch (Exception ex) {
+			return false;
 		}
 	}
 

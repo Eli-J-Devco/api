@@ -81,7 +81,7 @@ public class ReportTaskScheduler {
 				ViewReportEntity currentReport = service.getReportDetail(prevReport);
 				if (
 					currentReport == null ||
-					!currentReport.getDays_week().equals(prevReport.getDays_week()) ||
+					(currentReport.getPeriodicity() == 2 && !currentReport.getDays_week().equals(prevReport.getDays_week())) ||
 					!currentReport.getTime_schedule().equals(prevReport.getTime_schedule()) ||
 					currentReport.getPeriodicity() != prevReport.getPeriodicity()
 				) {
