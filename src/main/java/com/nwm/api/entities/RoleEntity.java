@@ -41,10 +41,24 @@ public class RoleEntity {
 	private int parent;
 	private int id_company;
 	private int total_users;
+	private int is_admin_role = 0;
+	private String company_name;
 	
 	
 	
 	
+	public String getCompany_name() {
+		return company_name;
+	}
+	public void setCompany_name(String company_name) {
+		this.company_name = company_name;
+	}
+	public int getIs_admin_role() {
+		return is_admin_role;
+	}
+	public void setIs_admin_role(int is_admin_role) {
+		this.is_admin_role = is_admin_role;
+	}
 	public int getTotal_users() {
 		return total_users;
 	}

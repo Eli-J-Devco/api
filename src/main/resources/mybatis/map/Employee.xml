@@ -227,6 +227,7 @@
 			t.color,
 			m.manage_site_total,
 			m.ids_site,
+			m.site_name AS site_names,
 			s.last_login,
 			s.offset_timezone,
 			s.page_login,

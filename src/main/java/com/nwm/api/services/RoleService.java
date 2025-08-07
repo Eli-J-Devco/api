@@ -236,6 +236,26 @@ public class RoleService extends DB {
 	}
 	
 	
+	/**
+	 * @description get all screen
+	 * @author long.pham
+	 * @since 2021-01-06
+	 */
+	
+	public List getAllScreen(RoleEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("Role.getAllScreen", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
 	
 	/**
 	 * @description update role

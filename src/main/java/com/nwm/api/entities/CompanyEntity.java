@@ -51,11 +51,30 @@ public class CompanyEntity{
 	private String file_upload;
 	private int primary_contact;
 	private int bill_different_address;
+	private List screens;
+	private int id_admin_role;
+	private List dataScreenMap;
 	
 	
 	
-	
-	
+	public List getDataScreenMap() {
+		return dataScreenMap;
+	}
+	public void setDataScreenMap(List dataScreenMap) {
+		this.dataScreenMap = dataScreenMap;
+	}
+	public int getId_admin_role() {
+		return id_admin_role;
+	}
+	public void setId_admin_role(int id_admin_role) {
+		this.id_admin_role = id_admin_role;
+	}
+	public List getScreens() {
+		return screens;
+	}
+	public void setScreens(List screens) {
+		this.screens = screens;
+	}
 	public int getBill_different_address() {
 		return bill_different_address;
 	}

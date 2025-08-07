@@ -37,7 +37,8 @@ public class DeviceOverviewController extends BaseController {
 		try {
 			DeviceOverviewService service = new DeviceOverviewService();
 			List data = service.getListDeviceByCompany(obj);
-			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+			int totalRecord = service.getTotalRecordByCompany(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, totalRecord);
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

@@ -18,6 +18,8 @@ import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.CompanyEntity;
 import com.nwm.api.entities.ContactInfoCompanyEntity;
 import com.nwm.api.entities.ContactInfoCompanyPhoneEntity;
+import com.nwm.api.entities.RoleEntity;
+import com.nwm.api.entities.RoleScreenMapEntity;
 import com.nwm.api.utils.Lib;
 
 public class CompanyService extends DB {
@@ -105,6 +107,28 @@ public class CompanyService extends DB {
 			List contactInformation = obj.getContactInformation();
 			session.insert("Company.insertCompany", obj);
 			int insertLastId = obj.getId();
+			
+			List screens = obj.getScreens();
+			if(insertLastId > 0 && screens.size() > 0) {
+				// Create role 
+				RoleEntity roleItem = new RoleEntity();
+				roleItem.setName("Admin");
+				roleItem.setDescription("");
+				roleItem.setId_company(insertLastId);
+				roleItem.setIs_admin_role(1);
+				
+				
+				session.insert("Role.insertRole", roleItem);
+				if(roleItem.getId() > 0) {
+					for (int i = 0; i < screens.size(); i++) {
+						Map<String, Object> item = (Map<String, Object>) screens.get(i);
+						Integer id_screen = Integer.parseInt(item.get("id").toString()) ;
+						RoleScreenMapEntity mapItem = this._buildRoleScreenMap(roleItem.getId(), id_screen, 511 );
+						session.insert("Role.insertRoleScreenMap", mapItem);
+					}
+				} else { return null; }
+			} else {return null; }  
+			
 			if(insertLastId > 0 && contactInformation.size() > 0) {
 				for (int i = 0; i < contactInformation.size(); i++) {
 					Map<String, Object> item = (Map<String, Object>) contactInformation.get(i);
@@ -132,7 +156,7 @@ public class CompanyService extends DB {
 						}
 					}
 				}
-			}
+			} else { return null; }
 			
 			session.commit();
 			return obj;
@@ -169,6 +193,29 @@ public class CompanyService extends DB {
 	}
 	
 	
+	
+	/**
+	 * build contact info company
+	 * @author long.pham
+	 * @since 2024-07-16
+	 * @param idCompany
+	 * @param first_name, last_name, email, title_position, primary_contact
+	 * @return
+	 */
+	private RoleScreenMapEntity _buildRoleScreenMap(int id_role, int id_screen, int auths) {
+		try {
+			RoleScreenMapEntity item = new RoleScreenMapEntity();
+			item.setId_role(id_role);
+			item.setId_screen(id_screen);
+			item.setAuths(auths);
+			return item;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
+	
 	/**
 	 * build contact info company
 	 * @author long.pham
@@ -202,6 +249,66 @@ public class CompanyService extends DB {
 		try {
 			session.update("Company.updateCompany", obj);
 			session.delete("Company.deleteContactInfoCompany", obj);
+			List screens = obj.getScreens();
+			if(screens.size() > 0 && obj.getId() > 0 && obj.getId_admin_role() > 0) {
+				
+				ArrayList<RoleScreenMapEntity> dataScreenMap = new ArrayList<RoleScreenMapEntity>(10);
+				
+				// Get all role by company 
+				List<Map<String, Object>> dataRolesByCompany = queryForList("Role.getListRoleByCompanyNotAdminRole", obj);
+				if(dataRolesByCompany.size() > 0) {
+					
+					for (int i = 0; i < dataRolesByCompany.size(); i++) {
+						
+						Map<String, Object> itemRole = (Map<String, Object>) dataRolesByCompany.get(i);
+						List<Map<String, Object>> dataScreenByRole = queryForList("Role.getDataScreenByRole", itemRole);
+						if(dataScreenByRole.size() > 0) {
+							
+							for (int j = 0; j < screens.size(); j++) {
+								
+								Map<String, Object> itemScreen = (Map<String, Object>) screens.get(j);
+								RoleScreenMapEntity itemScreenMap = new RoleScreenMapEntity();
+								itemScreenMap.setId_role(Integer.parseInt(itemRole.get("id").toString()));
+								itemScreenMap.setId_screen(Integer.parseInt(itemScreen.get("id").toString()));
+								itemScreenMap.setAuths(0);
+								
+								for (int v = 0; v < dataScreenByRole.size(); v++) {
+									Map<String, Object> itemScreenOld = (Map<String, Object>) dataScreenByRole.get(v);
+									if( Integer.parseInt(itemScreen.get("id").toString()) == Integer.parseInt(itemScreenOld.get("id_screen").toString()) &&  Integer.parseInt(itemRole.get("id").toString()) == Integer.parseInt(itemScreenOld.get("id_role").toString()) ) {
+										itemScreenMap.setId_role(Integer.parseInt(itemScreenOld.get("id_role").toString()));
+										itemScreenMap.setId_screen(Integer.parseInt(itemScreenOld.get("id_screen").toString()));
+										itemScreenMap.setAuths(Integer.parseInt(itemScreenOld.get("auths").toString()));
+									}
+								}
+								
+								dataScreenMap.add(itemScreenMap);
+							}
+							
+						}
+					}
+					
+				}
+				
+				if(dataScreenMap.size() > 0) {
+					obj.setDataScreenMap(dataScreenMap);
+					session.delete("Role.deleteMultiRole", obj);
+					session.insert("Role.insertMultiRoleScreenMap", obj);
+					
+					
+				}
+				
+				// Update permission for admin role
+				session.delete("Role.deleteRoleScreenMap", obj);
+				for (int i = 0; i < screens.size(); i++) {
+					Map<String, Object> item = (Map<String, Object>) screens.get(i);
+					Integer id_screen = Integer.parseInt(item.get("id").toString()) ;
+					RoleScreenMapEntity mapItem = this._buildRoleScreenMap(obj.getId_admin_role(), id_screen, 511 );
+					session.insert("Role.insertRoleScreenMap", mapItem);
+				}
+			}
+			
+			
+			
 			List contactInformation = obj.getContactInformation();
 			if(obj.getId() > 0 && contactInformation.size() > 0) {
 				for (int i = 0; i < contactInformation.size(); i++) {
@@ -233,6 +340,8 @@ public class CompanyService extends DB {
 			}
 
 			session.commit();
+
+			
 			return true;
 		} catch (Exception ex) {
 			session.rollback();

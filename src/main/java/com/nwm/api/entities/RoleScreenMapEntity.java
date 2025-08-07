@@ -9,6 +9,8 @@ public class RoleScreenMapEntity {
 	private int id_role;
 	private int id_screen;
 	private int totalRecord;
+	
+	
 	/**
 	 * @return the auths
 	 */

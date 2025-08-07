@@ -37,6 +37,8 @@
 	<select id="getList" resultType="Map" >
 		SELECT
 			s.*,
+			st.dataScreens,
+			IFNULL(r.id, 0) AS id_admin_role,
 			IF(
 				COUNT(c.id) = 0,
 				JSON_ARRAY(),
@@ -79,6 +81,28 @@
 				GROUP BY
 					c.id
 			) c ON c.id_company = s.id
+			
+			
+			LEFT JOIN(
+				SELECT 
+					c.id, 
+					IF(
+							COUNT(r.id) = 0,
+							JSON_ARRAY(),
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id', sc.id,
+								'screen_name', sc.screen_name
+							))
+						) AS dataScreens
+				FROM company c 
+				LEFT JOIN role r ON r.id_company = c.id
+				LEFT JOIN role_screen_map rsm ON rsm.id_role = r.id
+				LEFT JOIN screen sc ON sc.id = rsm.id_screen
+				WHERE r.`status` = 1 AND r.is_delete = 0 AND c.`status` = 1 AND c.is_delete = 0 AND r.is_admin_role = 1
+				GROUP BY c.id
+			)st ON st.id = s.id
+			
+			LEFT JOIN role r ON r.id_company = s.id AND r.is_admin_role = 1
 		WHERE 
 			s.is_delete = 0
 			<if test="keyword != null">
