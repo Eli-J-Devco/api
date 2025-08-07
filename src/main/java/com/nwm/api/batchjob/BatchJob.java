@@ -1464,7 +1464,8 @@ public class BatchJob {
 			ReportsController controller = new ReportsController();
 			BuiltInReportController builtInController = new BuiltInReportController();
 
-			objReport.setIds(objReport.getId_sites() != null ? Arrays.asList(objReport.getId_sites().split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
+			String idSiteList = objReport.getId_sites() != null ? objReport.getId_sites() : (objReport.getIds_site() != null ? objReport.getIds_site() : null);
+			objReport.setIds(idSiteList != null ? Arrays.asList(idSiteList.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
 			
 			switch (objReport.getType_report()) {
 				case 1: // Solar Production Report

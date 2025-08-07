@@ -27,6 +27,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
@@ -806,6 +807,27 @@ public class ReportsService extends DB {
 			return null;
 		} finally {
 			session.close();
+		}
+	}
+	
+	/**
+	 * @description download report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 */
+	public boolean download(List<ViewReportEntity> obj) {
+		try {
+			if (obj.size() == 0) return true;
+			BatchJob batchJob = new BatchJob();
+			
+			for (int i = 0; i < obj.size(); i++) {
+				ViewReportEntity reportEntity = obj.get(i);
+				CompletableFuture.runAsync(() -> batchJob.sentMailReportOnSchedule(reportEntity));
+			}
+			
+			return true;
+		} catch (Exception ex) {
+			return false;
 		}
 	}
 

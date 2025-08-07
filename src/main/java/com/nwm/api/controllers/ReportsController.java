@@ -2300,6 +2300,23 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
 		}
 	}
+	
+	/**
+	 * @description download report
+	 * @author Hung.Bui
+	 * @since 2025-08-07
+	 * @param obj { id }
+	 */
+	@PostMapping("/download")
+	public Object download(@Valid @RequestBody List<ViewReportEntity> obj) {
+		try {
+			ReportsService service = new ReportsService();
+			return service.download(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+		}
+	}
 
 	/**
 	 * @description Get list report

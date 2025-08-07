@@ -282,6 +282,7 @@
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
 			r.periodicity,
 			r.days_week,
+			r.offset_timezone,
 			DATE_FORMAT(CONVERT_TZ(r.created_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS created_on,
 			DATE_FORMAT(CONVERT_TZ(r.updated_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS last_modified,
 			CASE r.type_option
