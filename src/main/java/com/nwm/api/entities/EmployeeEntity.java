@@ -47,8 +47,15 @@ public class EmployeeEntity implements UserDetails, Authentication{
 	private String note;
 	private String domain;
 private String domain_role;
+	private int is_admin_company;
 	
 	
+	public int getIs_admin_company() {
+		return is_admin_company;
+	}
+	public void setIs_admin_company(int is_admin_company) {
+		this.is_admin_company = is_admin_company;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}

@@ -66,8 +66,16 @@ public class EmployeeManageEntity extends SortEntity {
 	private String domain;
 	private String domain_role;
 	private String site_names;
+	private int is_admin_company;
 	
 	
+	
+	public int getIs_admin_company() {
+		return is_admin_company;
+	}
+	public void setIs_admin_company(int is_admin_company) {
+		this.is_admin_company = is_admin_company;
+	}
 	public String getSite_names() {
 		return site_names;
 	}

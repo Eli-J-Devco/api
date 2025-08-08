@@ -238,7 +238,8 @@
 			SHA2(e.`id`, 256) AS hash_id_user,
 			e.id_company,
 			e.note,
-			e.portfolio_metrics_enable
+			e.portfolio_metrics_enable,
+			e.is_admin_company
 		FROM
 			`employee` e	
 			
@@ -320,7 +321,7 @@
 					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
 				</when>
 				<otherwise>
-					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
 				</otherwise>
 			</choose>
 		</if> 	
@@ -412,7 +413,7 @@
 					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
 				</when>
 				<otherwise>
-					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
+					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
 				</otherwise>
 			</choose>
 		</if>

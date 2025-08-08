@@ -194,8 +194,9 @@
 		FROM `role` t
 		LEFT JOIN company c ON c.id = t.id_company
 		LEFT JOIN employee_role_map er ON er.id_role = t.id
+		WHERE t.status = 1 AND t.is_delete = 0
 		<if test="id_company != null and id_company != 0 and id_company > 1">
-			WHERE t.id_company = #{id_company}
+			AND t.id_company = #{id_company}
 		</if>
 		GROUP BY t.id
 	</select>
