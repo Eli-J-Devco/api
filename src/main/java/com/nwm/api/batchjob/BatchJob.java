@@ -1526,6 +1526,13 @@ public class BatchJob {
 							else if (objReport.getFile_type() == 2) builtInController.sentMailAnnualTrendReport(objReport);
 							break;
 							
+						case 5: // custom
+							objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
+							objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							if (objReport.getFile_type() == 1) {}
+							else if (objReport.getFile_type() == 2) builtInController.sentMailMonthlyTrendReport(objReport);
+							break;
+							
 						case 6: // weekly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
