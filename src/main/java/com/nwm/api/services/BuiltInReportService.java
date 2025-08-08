@@ -64,6 +64,11 @@ public class BuiltInReportService extends DB {
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yy");
 					timeUnit = ChronoUnit.MONTHS;
 					break;
+				case 5: // custom
+					interval = 15;
+					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:00");
+					timeUnit = ChronoUnit.MINUTES;
+					break;
 				case 6: // weekly
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 					timeUnit = ChronoUnit.DAYS;
@@ -106,6 +111,7 @@ public class BuiltInReportService extends DB {
 							if (siteObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyTrendBuitInReport(siteObj);
 							else if (siteObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyBuitInReport(siteObj);
 							else if (siteObj.getCadence_range() == 6) data = (ViewReportEntity) this.getWeeklyBuiltInReport(siteObj);
+							else if (siteObj.getCadence_range() == 5) data = (ViewReportEntity) this.getMonthlyTrendBuitInReport(siteObj);
 							
 							return data;
 						} catch (Exception ex) {
