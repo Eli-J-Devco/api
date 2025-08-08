@@ -88,7 +88,7 @@ public class AlertEntity extends SortEntity {
 	private String domain;
 	private String keyword;
 	private boolean isUserNW;
-	private boolean is_supper_admin;
+	private int is_supper_admin;
 	private String domain_role;
 	
 	
@@ -575,10 +575,10 @@ public class AlertEntity extends SortEntity {
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
 	}
-	public boolean isIs_supper_admin() {
+	public int isIs_supper_admin() {
 		return is_supper_admin;
 	}
-	public void setIs_supper_admin(boolean is_supper_admin) {
+	public void setIs_supper_admin(int is_supper_admin) {
 		this.is_supper_admin = is_supper_admin;
 	}
 	
