@@ -58,10 +58,8 @@ import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.services.LevitonReportsService;
+import com.nwm.api.services.ReportsService;
 import com.nwm.api.utils.Constants;
-import com.nwm.api.utils.Lib;
-import com.nwm.api.utils.SendMail;
-import com.nwm.api.utils.Translator;
 
 import springfox.documentation.annotations.ApiIgnore;
 
@@ -76,12 +74,7 @@ public class LevitonReportsController extends BaseController {
 	public static final int COLUMN_INDEX_QUANTITY = 3;
 	public static final int COLUMN_INDEX_TOTAL = 4;
 
-	private final ReportsController reportsController;
-	
-    LevitonReportsController(ReportsController reportsController) {
-        this.reportsController = reportsController;
-    }
-	
+	ReportsService reportsService = new ReportsService();
 	
 	/**
 	 * @description Get daily report
@@ -696,7 +689,10 @@ public class LevitonReportsController extends BaseController {
 						cadenceRange = "Weekly ";
 						break;
 					}
-					reportsController.sentExcelReportByMail(document, dataObj.getSubscribers(), "bmo-consumption", 16, "Customer", cadenceRange);
+					
+					String filePath = reportsService.writeToSheetFile(document, "bmo-consumption");
+					if (filePath == null) return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+					reportsService.sentReportByMail(filePath, dataObj.getSubscribers(), "bmo-consumption", 16, "Customer", cadenceRange);
 					
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 				} else {
@@ -721,7 +717,7 @@ public class LevitonReportsController extends BaseController {
 	@PostMapping("/sent-email-pdf-leviton-report")
 	public Object sentMailPdfDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
-			File file = reportsController.createPdfFile("bmo-consumption");
+			File file = reportsService.writeToPdfFile("bmo-consumption");
 			
 			try (
 					PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
@@ -829,7 +825,7 @@ public class LevitonReportsController extends BaseController {
 					// It must be closed before attach to mail
 					document.close();
 					
-					reportsController.sentPdfReportByMail(dataObj.getSubscribers(), obj.getCadence_range_name(), file);
+					reportsService.sentReportByMail(file.getAbsolutePath(), dataObj.getSubscribers(), "bmo-consumption", 16, "Customer", cadenceRange);
 				    
 					return this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, dataObj, 1);
 				} else {
