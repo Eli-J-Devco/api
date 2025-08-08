@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import java.util.List;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 
@@ -62,6 +63,49 @@ public class DeviceOverviewService extends DB {
 		List dataList = new ArrayList();
 		try {
 			dataList = queryForList("DeviceOverview.getSiteByEmployee", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	/**
+	 * @description get list site group by id_employee, id_company
+	 * @author long.pham
+	 * @since 2022-01-29
+	 * @param id_employee
+	 */
+	
+
+	public List getListSiteGroups(SiteEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceOverview.getListSiteGroups", obj);
+			if (dataList == null)
+				return new ArrayList();
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+		return dataList;
+	}
+	
+	
+	
+	/**
+	 * @description get alert by device id
+	 * @author long.pham
+	 * @since 2022-01-29
+	 * @param id_employee
+	 */
+	
+
+	public List getListAlertByDevice(DeviceEntity obj) {
+		List dataList = new ArrayList();
+		try {
+			dataList = queryForList("DeviceOverview.getListAlertByDevice", obj);
 			if (dataList == null)
 				return new ArrayList();
 		} catch (Exception ex) {

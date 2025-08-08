@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.DeviceOverviewService;
@@ -65,5 +66,49 @@ public class DeviceOverviewController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	
+	/**
+	 * @description Get all site group by id_employee, id_company
+	 * @author long.pham
+	 * @since 2022-01-29
+	 * @param id_employee
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-site-groups")
+	public Object getListSiteGroups(@RequestBody SiteEntity site) {
+		try {
+			DeviceOverviewService service = new DeviceOverviewService();
+			List data = service.getListSiteGroups(site);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	/**
+	 * @description Get alert by device id
+	 * @author long.pham
+	 * @since 2022-01-29
+	 * @param id_employee
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-list-alert-by-device")
+	public Object getListAlertByDevice(@RequestBody DeviceEntity site) {
+		try {
+			DeviceOverviewService service = new DeviceOverviewService();
+			List data = service.getListAlertByDevice(site);
+			
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 }
