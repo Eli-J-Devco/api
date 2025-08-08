@@ -105,12 +105,14 @@
 			`name`,
 			`parent`,
 			`description`,
-			`id_company`
+			`id_company`,
+			`is_admin_role`
 		)VALUES(
 			#{name},
 			#{parent},
 			#{description},
-			#{id_company}
+			#{id_company},
+			#{is_admin_role}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
