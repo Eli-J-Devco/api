@@ -56,7 +56,7 @@
 		r.id AS value,
 		r.`name` as label,
 		r.`name` as text,
-		c.`name` AS comapny_name
+		c.`name` AS company_name
 		FROM `role` r
 		 LEFT JOIN company c ON c.id = r.id_company
 		<if test="id_company != null and id_company != 0 and id_company > 1">
@@ -183,8 +183,8 @@
 			s.`level` ASC
 	</select>
 	
-	<select id="getAllRole" resultMap="RoleMap" >
-		SELECT t.*, 
+	<select id="getAllRole" resultType="Map" >
+		SELECT t.*,
 		t.id AS value,
 		t.name AS label,
 		t.name AS text,
