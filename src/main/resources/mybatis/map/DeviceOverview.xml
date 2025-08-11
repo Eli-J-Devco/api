@@ -57,6 +57,8 @@
 		LEFT JOIN tag_device_map tdm ON tdm.id_device = d.id
 		LEFT JOIN tag tg ON tg.id = tdm.id_tag
 		
+		LEFT JOIN site_employee_map esm ON esm.id_site = s.id
+		
 		
 		<if test="id_site_group != null and id_site_group > 0">
 			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
@@ -66,7 +68,8 @@
 			AND d.is_delete = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
-			AND s.id_company = #{id_company}
+			<!-- AND s.id_company = #{id_company} -->
+			AND esm.id_employee = #{id_employee}
 			
 			<if test="id_site_group != null and id_site_group > 0">
 				AND sgm.id_site_group = #{id_site_group}
@@ -132,11 +135,14 @@
 			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
 		</if>
 		
+		LEFT JOIN site_employee_map esm ON esm.id_site = s.id
+		
 		WHERE d.`status` = 1 
 			AND d.is_delete = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
-			AND s.id_company = #{id_company}
+			<!-- AND s.id_company = #{id_company} -->
+			AND esm.id_employee = #{id_employee}
 			
 			
 			<if test="id_site != null and id_site > 0">
@@ -217,7 +223,7 @@
 			s.is_delete = 0	
 			AND s.`status` = 1 
 			AND em.id = #{id_employee}
-			AND s.id_company = #{id_company}
+			<!-- AND s.id_company = #{id_company} -->
 		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
 			 
