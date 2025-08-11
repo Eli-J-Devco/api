@@ -366,9 +366,9 @@
 		        AND td.name = #{tag_device}
 		    </if>
 			
-			<if test="id_company != null and id_company != 0 and id_company > 1">
+			<!-- <if test="id_company != null and id_company != 0 and id_company > 1">
 				AND s.id_company = #{id_company}
-			</if>
+			</if> -->
 			
 			
 			<include refid="com.nwm.common.siteByDomainCondition"/>
@@ -1404,9 +1404,10 @@
 					</foreach>
 				)
 			</if>
+			<!--
 			<if test="id_company != null and id_company != 0 and id_company > 1">
 				AND s.id_company = #{id_company}
-			</if>
+			</if> -->
 		GROUP BY
 			ssg.id
 		
@@ -1458,9 +1459,10 @@
 					</foreach>
 				)
 			</if>
+			<!-- 
 			<if test="id_company != null and id_company != 0 and id_company > 1">
 				AND s.id_company = #{id_company}
-			</if>
+			</if> -->
 		GROUP BY
 			sg.id
 	</select>
