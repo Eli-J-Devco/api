@@ -104,6 +104,7 @@
 				AND e.error_code IS NULL
 			</if> 
 			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
 			
 			
@@ -176,7 +177,9 @@
 			
 			<if test="id_sort_by == 2">
 				AND e.error_code IS NULL
-			</if> 
+			</if>
+			
+			<include refid="com.nwm.common.deviceByDomainCondition"/>
 			
 			GROUP BY d.id
 			) t
