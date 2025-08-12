@@ -1185,7 +1185,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send daily report sheet file
+	 * @description send mail daily report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1194,7 +1194,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createDailyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1205,27 +1205,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send daily report pdf file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailPdfDailyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createDailyReportPdfFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download daily report sheet file
+	 * @description download daily report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1241,7 +1221,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send monthly report sheet file
+	 * @description send mail monthly report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1250,7 +1230,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createMonthlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1261,27 +1241,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send monthly report pdf file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailPdfMonthlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createMonthlyReportPdfFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download monthly report sheet file
+	 * @description download monthly report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1297,7 +1257,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send quarterly report sheet file
+	 * @description send mail quarterly report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1306,7 +1266,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createQuarterlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1317,27 +1277,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send quarterly report pdf file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailPdfQuarterlyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createQuarterlyReportPdfFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download quarterly report sheet file
+	 * @description download quarterly report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1353,7 +1293,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send annually report sheet file
+	 * @description send mail annually report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1362,7 +1302,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createAnnuallyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1373,27 +1313,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send annually report pdf file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailPdfAnnuallyReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createAnnuallyReportPdfFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download annually report sheet file
+	 * @description download annually report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1409,7 +1329,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send custom report sheet file
+	 * @description send mail custom report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
@@ -1418,7 +1338,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createCustomReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1429,27 +1349,7 @@ public class ReportsService extends DB {
 	}
 	
 	/**
-	 * @description send custom report sheet file
-	 * @author Hung.Bui
-	 * @since 2025-08-08
-	 * @param obj
-	 */
-	public boolean sentMailPdfCustomReport(ViewReportEntity obj) {
-		try {
-			List<ViewReportEntity> dataObjList = getReportDataList(obj);
-			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = createCustomReportPdfFile(obj, dataObjList);
-			if (filePath == null) return false;
-			
-			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	/**
-	 * @description download custom report sheet file
+	 * @description download custom report
 	 * @author Hung.Bui
 	 * @since 2025-08-08
 	 * @param obj
