@@ -19,17 +19,20 @@
 			IFNULL(d.energy_this_year, 0) AS energy_this_year,
 			IFNULL(d.avg_daily_7days, 0) AS avg_daily_7days,
 			IFNULL(d.avg_daily_last_7days, 0) AS avg_daily_last_7days,
-			a.note,		
-			a.id_error,
-			a.start_date,
-			a.end_date,
-			e.message,
-			IFNULL(e.error_code, 0) AS error_code,
-			el.`name` AS error_level_name,
-			et.`name` AS error_type_name,
+			t.id_error,
+			t.start_date,
+			t.end_date,
+			t.message,
+			IFNULL(t.error_code, 0) AS error_code,
+			
+			t.id_error, 
+			t.id_error_type, 
+			t.id_error_level,
+			t.error_level_name,
+			t.error_type_name,
+			t.color,
+					
 			dt.image,
-			el.color,
-			el.id AS id_error_level,
 			dt.`name` as device_type_name,
 			d.modbusdevicenumber,
 			d.serial_number,
@@ -48,10 +51,31 @@
 		LEFT JOIN device_type dt ON dt.id = d.id_device_type
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1 AND a.end_date IS NULL
-		LEFT JOIN error e ON e.id = a.id_error
-		LEFT JOIN error_level el ON el.id = e.id_error_level
-		LEFT JOIN error_type et ON et.id = e.id_error_type
+		LEFT JOIN (
+			SELECT 
+					a.id_device, 
+					e.message, 
+					e.error_code, 
+					a.note, 
+					a.start_date, 
+					a.end_date, a.id_error, 
+					e.id_error_type, 
+					e.id_error_level,
+					el.`name` AS error_level_name,
+					et.`name` AS error_type_name,
+					el.color
+			
+			FROM alert a 
+			LEFT JOIN device d ON d.id = a.id_device
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
+			
+			WHERE e.`status` = 1 AND e.is_delete = 0 
+			AND a.`status` = 1 AND a.end_date IS NULL
+			GROUP BY d.id
+		) t ON t.id_device = d.id
+		
 		LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		LEFT JOIN device_parameters dp ON dp.id_device_group = dg.id AND dp.slug = d.field_value_default
 		LEFT JOIN tag_device_map tdm ON tdm.id_device = d.id
@@ -84,11 +108,11 @@
 			</if>
 			
 			<if test="id_error_level != null and id_error_level > 0">
-				AND el.id = #{id_error_level}
+				AND id_error_level = #{id_error_level}
 			</if>
 			
 			<if test="id_error_type != null and id_error_type > 0">
-				AND et.id = #{id_error_type}
+				AND id_error_type = #{id_error_type}
 			</if>
 			
 			
@@ -97,11 +121,11 @@
 			</if> 
 			
 			<if test="id_sort_by == 1">
-				AND e.error_code IS NOT NULL
+				AND error_code IS NOT NULL
 			</if> 
 			
 			<if test="id_sort_by == 2">
-				AND e.error_code IS NULL
+				AND error_code IS NULL
 			</if> 
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
@@ -127,10 +151,32 @@
 		LEFT JOIN device_type dt ON dt.id = d.id_device_type
 		LEFT JOIN site s ON s.id = d.id_site
 		LEFT JOIN time_zone t ON t.id = s.id_time_zone
-		LEFT JOIN alert a ON a.id_device = d.id AND a.`status` = 1 AND a.end_date IS NULL
-		LEFT JOIN error e ON e.id = a.id_error
-		LEFT JOIN error_level el ON el.id = e.id_error_level
-		LEFT JOIN error_type et ON et.id = e.id_error_type
+		LEFT JOIN (
+			SELECT 
+					a.id_device, 
+					e.message, 
+					e.error_code, 
+					a.note, 
+					a.start_date, 
+					a.end_date, a.id_error, 
+					e.id_error_type, 
+					e.id_error_level,
+					el.`name` AS error_level_name,
+					et.`name` AS error_type_name,
+					el.color
+			
+			FROM alert a 
+			LEFT JOIN device d ON d.id = a.id_device
+			LEFT JOIN error e ON e.id = a.id_error
+			LEFT JOIN error_level el ON el.id = e.id_error_level
+			LEFT JOIN error_type et ON et.id = e.id_error_type
+			
+			WHERE e.`status` = 1 AND e.is_delete = 0 
+			AND a.`status` = 1 AND a.end_date IS NULL
+			GROUP BY d.id
+		) t ON t.id_device = d.id
+		
+		
 		LEFT JOIN device_group dg ON dg.id = d.id_device_group
 		<if test="id_site_group != null and id_site_group > 0">
 			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
@@ -159,11 +205,11 @@
 			</if>
 			
 			<if test="id_error_level != null and id_error_level > 0">
-				AND el.id = #{id_error_level}
+				AND id_error_level = #{id_error_level}
 			</if>
 			
 			<if test="id_error_type != null and id_error_type > 0">
-				AND et.id = #{id_error_type}
+				AND id_error_type = #{id_error_type}
 			</if>
 			
 			
@@ -172,11 +218,11 @@
 			</if> 
 			
 			<if test="id_sort_by == 1">
-				AND e.error_code IS NOT NULL
+				AND error_code IS NOT NULL
 			</if> 
 			
 			<if test="id_sort_by == 2">
-				AND e.error_code IS NULL
+				AND error_code IS NULL
 			</if>
 			
 			<include refid="com.nwm.common.deviceByDomainCondition"/>
