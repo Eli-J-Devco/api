@@ -61,23 +61,6 @@ public class ReportsController extends BaseController {
 	}
 		
 	/**
-	 * @description sent mail daily report in pdf
-	 * @author Hung.Bui
-	 * @since 2022-11-29
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/sent-mail-pdf-daily-report")
-	public Object sentMailPdfDailyReport(@RequestBody ViewReportEntity obj) {
-		try {
-			ReportsService service = new ReportsService();
-			return service.sentMailPdfDailyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
-		}
-	}
-		
-	/**
 	 * @description Get daily report
 	 * @author long.pham
 	 * @since 2021-12-28
@@ -112,23 +95,6 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 			return service.sentMailAnnuallyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
-		}
-	}
-	
-	/**
-	 * @description sent mail annually report in pdf
-	 * @author Hung.Bui
-	 * @since 2022-11-29
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/sent-mail-pdf-annually-report")
-	public Object sentMailPdfAnnuallyReport(@RequestBody ViewReportEntity obj) {
-		try {
-			ReportsService service = new ReportsService();
-			return service.sentMailPdfAnnuallyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -169,23 +135,6 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 			return service.sentMailQuarterlyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
-		}
-	}
-	
-	/**
-	 * @description sent mail quarterly report in pdf
-	 * @author Hung.Bui
-	 * @since 2022-12-05
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/sent-mail-pdf-quarterly-report")
-	public Object sentMailPdfQuarterlyReport(@RequestBody ViewReportEntity obj) {
-		try {
-			ReportsService service = new ReportsService();
-			return service.sentMailPdfQuarterlyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
@@ -587,23 +536,6 @@ public class ReportsController extends BaseController {
 	}
 	
 	/**
-	 * @description sent mail monthly report in pdf
-	 * @author Hung.Bui
-	 * @since 2022-11-29
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/sent-mail-pdf-monthly-report")
-	public Object sentMailPdfMonthlyReport(@RequestBody ViewReportEntity obj) {
-		try {
-			ReportsService service = new ReportsService();
-			return service.sentMailPdfMonthlyReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
-		}
-	}
-	
-	/**
 	 * @description Get custom report
 	 * @author Hung.Bui
 	 * @since 2022-12-15
@@ -635,23 +567,6 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 			return service.sentMailCustomReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
-		} catch (Exception e) {
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
-		}
-	}
-	
-	/**
-	 * @description sent mail daily report in pdf
-	 * @author Hung.Bui
-	 * @since 2022-12-19
-	 * @param id
-	 * @return data (status, message, array, total_row
-	 */
-	@PostMapping("/sent-mail-pdf-custom-report")
-	public Object sentMailPdfCustomReport(@RequestBody ViewReportEntity obj) {
-		try {
-			ReportsService service = new ReportsService();
-			return service.sentMailPdfCustomReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
 		} catch (Exception e) {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
