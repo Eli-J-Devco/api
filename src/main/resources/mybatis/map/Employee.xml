@@ -143,8 +143,10 @@
 						FROM
 							employee em
 							JOIN employee_role_map er ON er.id_employee = em.id
+							LEFT JOIN role r ON r.id = er.id_role
 						WHERE
 							em.email = #{value}
+							AND r.status = 1 and r.is_delete = 0
 						GROUP BY em.id
 					) r ON r.id = em.id
 					JOIN site s ON s.`status` = 1 AND s.is_delete = 0
@@ -265,9 +267,9 @@
 						SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
 						FROM employee_role_map er 
 						LEFT JOIN role r ON r.id = er.id_role
-						
+						WHERE r.status = 1 and r.is_delete = 0
 						<if test="roles != null and !roles.isEmpty()">
-							WHERE r.id IN  (
+							AND r.id IN  (
 								<foreach item="item" index="index" collection="roles" separator=" , ">
 									#{item.id}
 								</foreach>
@@ -364,9 +366,9 @@
 				SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
 				FROM employee_role_map er 
 				LEFT JOIN role r ON r.id = er.id_role
-				
+				WHERE r.status = 1 and r.is_delete = 0
 				<if test="roles != null and !roles.isEmpty()">
-					WHERE r.id IN  (
+					AND r.id IN  (
 						<foreach item="item" index="index" collection="roles" separator=" , ">
 							#{item.id}
 						</foreach>

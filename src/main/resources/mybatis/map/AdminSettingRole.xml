@@ -80,12 +80,14 @@
 			`name`,
 			`parent`,
 			`description`,
-			`id_company`
+			`id_company`,
+			`color`
 		)VALUES(
 			#{name},
 			#{parent},
 			#{description},
-			#{id_company}
+			#{id_company},
+			#{color}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -99,6 +101,7 @@
 		r.id AS value,
 		r.`name` as label,
 		r.`name` as text,
+		r.color,
 		IF(
 				COUNT(rm.id_role) = 0,
 				JSON_ARRAY(),
@@ -157,7 +160,8 @@
 		UPDATE `role`
 		SET
 			`name` = #{name},
-			description = #{description}
+			description = #{description},
+			color = #{color}
 		WHERE
 			`id` = #{id}
 	</update>
