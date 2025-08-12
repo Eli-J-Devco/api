@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
@@ -57,6 +58,8 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -1454,16 +1457,25 @@ public class BatchJob {
 	}
 
 	public void sentMailReportOnSchedule(ViewReportEntity report) {
+		getReport(report, false);
+	}
+	
+	public Resource reportDownload(ViewReportEntity report) {
+		String filePath = getReport(report, true);
+		if (Objects.isNull(filePath)) return null;
+		return new FileSystemResource(filePath);
+	}
+	
+	private String getReport(ViewReportEntity objReport, boolean isDownload) {
 		try {
-			ViewReportEntity objReport = report;
 			ZonedDateTime nowLocalDateTime = ZonedDateTime.now();
 			ZonedDateTime nowTimeZonedDateTime = nowLocalDateTime.withZoneSameInstant(ZoneId.of(objReport.getOffset_timezone()));
 			String startDateFormat = "yyyy-MM-dd 00:00:00";
 			String endDateFormat = "yyyy-MM-dd 23:59:59";
-
+	
 			ReportsService reportService = new ReportsService();
 			BuiltInReportService builtInService = new BuiltInReportService();
-
+	
 			String idSiteList = objReport.getId_sites() != null ? objReport.getId_sites() : (objReport.getIds_site() != null ? objReport.getIds_site() : null);
 			objReport.setIds(idSiteList != null ? Arrays.asList(idSiteList.split(",")).stream().map(Integer::parseInt).collect(Collectors.toList()) : null);
 			
@@ -1473,40 +1485,42 @@ public class BatchJob {
 						case 1: // daily
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusDays(3)));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusDays(1)));
+							if (isDownload) return reportService.downloadDailyReport(objReport);
 							if (objReport.getFile_type() == 1) reportService.sentMailPdfDailyReport(objReport);
 							else if (objReport.getFile_type() == 2) reportService.sentMailDailyReport(objReport);
-							break;
+							return null;
 							
 						case 2: // monthly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+							if (isDownload) return reportService.downloadMonthlyReport(objReport);
 							if (objReport.getFile_type() == 1) reportService.sentMailPdfMonthlyReport(objReport);
 							else if (objReport.getFile_type() == 2) reportService.sentMailMonthlyReport(objReport);
-							break;
+							return null;
 							
 						case 3: // quarterly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter()).with(TemporalAdjusters.firstDayOfMonth())));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(nowTimeZonedDateTime.minusMonths(3).getMonth().firstMonthOfQuarter().plus(2)).with(TemporalAdjusters.lastDayOfMonth())));
+							if (isDownload) return reportService.downloadQuarterlyReport(objReport);
 							if (objReport.getFile_type() == 1) reportService.sentMailPdfQuarterlyReport(objReport);
 							else if (objReport.getFile_type() == 2) reportService.sentMailQuarterlyReport(objReport);
-							break;
+							return null;
 							
 						case 4: // annually
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
+							if (isDownload) return reportService.downloadAnnuallyReport(objReport);
 							if (objReport.getFile_type() == 1) reportService.sentMailPdfAnnuallyReport(objReport);
 							else if (objReport.getFile_type() == 2) reportService.sentMailAnnuallyReport(objReport);
-							break;
+							return null;
 
 						case 5: // custom
 							objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
 							objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							if (isDownload) return reportService.downloadCustomReport(objReport);
 							if (objReport.getFile_type() == 1) reportService.sentMailPdfCustomReport(objReport);
 							else if (objReport.getFile_type() == 2) reportService.sentMailCustomReport(objReport);
-							break;
-	
-						default:
-							break;
+							return null;
 					}
 					break;
 					
@@ -1515,55 +1529,58 @@ public class BatchJob {
 						case 2: // monthly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+							if (isDownload) return builtInService.downloadMonthlyTrendReport(objReport);
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInService.sentMailMonthlyTrendReport(objReport);
-							break;
+							return null;
 							
 						case 4: // annually
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfYear())));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.lastDayOfYear())));
+							if (isDownload) return builtInService.downloadAnnualTrendReport(objReport);
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInService.sentMailAnnualTrendReport(objReport);
-							break;
+							return null;
 							
 						case 5: // custom
 							objReport.setStart_date(LocalDateTime.parse(objReport.getDate_from(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(startDateFormat)));
 							objReport.setEnd_date(LocalDateTime.parse(objReport.getDate_to(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")).format(DateTimeFormatter.ofPattern(endDateFormat)));
+							if (isDownload) return builtInService.downloadMonthlyTrendReport(objReport);
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInService.sentMailMonthlyTrendReport(objReport);
-							break;
+							return null;
 							
 						case 6: // weekly
 							objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))));
 							objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusWeeks(1).with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))));
+							if (isDownload) return builtInService.downloadWeeklyTrendReport(objReport);
 							if (objReport.getFile_type() == 1) {}
 							else if (objReport.getFile_type() == 2) builtInService.sentMailWeeklyTrendReport(objReport);
-							break;
-	
-						default:
-							break;
+							return null;
 					}
 					break;
 					
 				case 4: // Asset Management and Operation Performance Report
 					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusYears(1).with(TemporalAdjusters.firstDayOfMonth())));
 					objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.with(TemporalAdjusters.lastDayOfMonth())));
+					if (isDownload) return reportService.downloadAssetManagementAndOperationPerformanceReport(objReport);
 					if (objReport.getFile_type() == 1) {}
 					else if (objReport.getFile_type() == 2) reportService.sentMailAssetManagementAndOperationPerformanceReport(objReport);
-					break;
+					return null;
 					
 				case 5: // Sanity Check Report
 					objReport.setStart_date(DateTimeFormatter.ofPattern(startDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.firstDayOfMonth())));
 					objReport.setEnd_date(DateTimeFormatter.ofPattern(endDateFormat).format(nowTimeZonedDateTime.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth())));
+					if (isDownload) return reportService.downloadSanityCheckReport(objReport);
 					if (objReport.getFile_type() == 1) {}
 					else if (objReport.getFile_type() == 2) reportService.sentMailSanityCheckReport(objReport);
-					break;
-	
-				default:
-					break;
+					return null;
 			}
+			
+			return null;
 		} catch (Exception e) {
 			log.error(e);
+			return null;
 		}
 	}
 

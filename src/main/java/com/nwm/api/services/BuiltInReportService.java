@@ -349,6 +349,24 @@ public class BuiltInReportService extends DB {
 	}
 	
 	/**
+	 * @description download weekly production trend report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadWeeklyTrendReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			String title = "Weekly Production Trend Report (Daily Interval)";
+			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
+			return createWeeklyTrendReportSheetFile(summarizedList, title);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @description send monthly production trend report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
@@ -372,6 +390,25 @@ public class BuiltInReportService extends DB {
 	}
 	
 	/**
+	 * @description download monthly production trend report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadMonthlyTrendReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			String title = "Monthly Production Trend Report ";
+			if (dataObjList.get(0).getData_intervals() == 2) title = title.concat("(15-minute Interval)");
+			else if (dataObjList.get(0).getData_intervals() == 6) title = title.concat("(Monthly Interval)");
+			return createMonthlyTrendReportSheetFile(obj, dataObjList, title);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @description send annual production trend report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
@@ -390,6 +427,24 @@ public class BuiltInReportService extends DB {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description download annual production trend report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadAnnualTrendReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			String title = "Annual Production Trend Report (Monthly Interval)";
+			List<ViewReportEntity> summarizedList = summarizeReport(dataObjList, WeeklyDateEntity.class);
+			return createWeeklyTrendReportSheetFile(summarizedList, title);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	

@@ -32,6 +32,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -69,6 +71,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateTickMarkPosition;
@@ -83,7 +86,8 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -906,19 +910,44 @@ public class ReportsService extends DB {
 	 * @author Hung.Bui
 	 * @since 2025-08-07
 	 */
-	public boolean download(List<ViewReportEntity> obj) {
+	public Resource download(List<ViewReportEntity> obj) {
 		try {
-			if (obj.size() == 0) return true;
+			if (obj.size() == 0) return null;
 			BatchJob batchJob = new BatchJob();
+			
+			// download one report
+			if (obj.size() == 1) return batchJob.reportDownload(obj.get(0));
+			
+			// download all reports
+			String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
+			String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+			File file = new File(dir + "/" + "reports.zip");
+			FileOutputStream fos = new FileOutputStream(file);
+			ZipOutputStream zos = new ZipOutputStream(fos);
+			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
 			
 			for (int i = 0; i < obj.size(); i++) {
 				ViewReportEntity reportEntity = obj.get(i);
-				CompletableFuture.runAsync(() -> batchJob.sentMailReportOnSchedule(reportEntity));
+				CompletableFuture<Resource> future = CompletableFuture.supplyAsync(() -> batchJob.reportDownload(reportEntity));
+				list.add(future);
 			}
 			
-			return true;
+			list.stream().forEach(future -> {
+				try {
+					Resource resource = future.join();
+					zos.putNextEntry(new ZipEntry(resource.getFilename()));
+					IOUtils.copy(resource.getInputStream(), zos);
+					zos.closeEntry();
+				} catch (IOException e) {
+				}
+			});
+			
+			zos.finish();
+			zos.close();
+			
+			return new FileSystemResource(file);
 		} catch (Exception ex) {
-			return false;
+			return null;
 		}
 	}
 
@@ -1196,6 +1225,22 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	 * @description download daily report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadDailyReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			return obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @description send monthly report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
@@ -1232,6 +1277,22 @@ public class ReportsService extends DB {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description download monthly report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadMonthlyReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			return obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	
@@ -1276,6 +1337,22 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	 * @description download quarterly report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadQuarterlyReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			return obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * @description send annually report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
@@ -1312,6 +1389,22 @@ public class ReportsService extends DB {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description download annually report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadAnnuallyReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			return obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	
@@ -1356,6 +1449,22 @@ public class ReportsService extends DB {
 	}
 	
 	/**
+	 * @description download custom report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadCustomReport(ViewReportEntity obj) {
+		try {
+			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+			if (dataObjList == null || dataObjList.size() == 0) return null;
+			return obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
 	 * send mail asset management and performance report sheet file
 	 * @author Hung.Bui
 	 * @since 2025-08-08
@@ -1372,6 +1481,22 @@ public class ReportsService extends DB {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description download asset management and performance report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadAssetManagementAndOperationPerformanceReport(ViewReportEntity obj) {
+		try {
+			AssetManagementAndOperationPerformanceReportEntity dataObj = getAssetManagementAndOperationPerformanceReport(obj);
+			if (dataObj == null) return null;
+			return createAssetManagementAndOperationPerformanceReportSheetFile(dataObj);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	
@@ -1394,6 +1519,24 @@ public class ReportsService extends DB {
 			return true;
 		} catch (Exception e) {
 			return false;
+		}
+	}
+	
+	/**
+	 * @description download anity check report sheet file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public String downloadSanityCheckReport(ViewReportEntity obj) {
+		try {
+			ViewReportEntity dataObj = getSanityCheckReport(obj);
+			if (dataObj == null) return null;
+			dataObj.setStart_date(obj.getStart_date());
+			dataObj.setEnd_date(obj.getEnd_date());
+			return createSanityCheckReportSheetFile(dataObj);
+		} catch (Exception e) {
+			return null;
 		}
 	}
 	

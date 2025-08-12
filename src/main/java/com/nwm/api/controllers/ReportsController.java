@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -487,13 +490,14 @@ public class ReportsController extends BaseController {
 	 * @param obj { id }
 	 */
 	@PostMapping("/download")
-	public Object download(@Valid @RequestBody List<ViewReportEntity> obj) {
+	public ResponseEntity<Resource> download(@Valid @RequestBody List<ViewReportEntity> obj) {
 		try {
 			ReportsService service = new ReportsService();
-			return service.download(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+			Resource resource = service.download(obj);
+			if (resource == null || !resource.exists()) return ResponseEntity.ok(null);
+			return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(resource);
 		} catch (Exception e) {
-			// log error
-			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null);
+			return ResponseEntity.ok(null);
 		}
 	}
 
