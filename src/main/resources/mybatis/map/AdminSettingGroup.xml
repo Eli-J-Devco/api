@@ -50,7 +50,7 @@
 				AND a.action_mode = #{action_mode}
 			</if>
 		<if test="keyword != ''">
-			AND (e.email LIKE CONCAT("%",#{keyword}, "%") OR e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%"))
+			AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
 		</if>
 		    order by a.id ASC
 		 	 
@@ -73,7 +73,7 @@
 				AND a.action_mode = #{action_mode}
 			</if>
 		<if test="keyword != ''">
-			AND (e.email LIKE CONCAT("%",#{keyword}, "%") OR e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%"))
+			AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
 		</if> 	
 		    order by a.id ASC
 		
