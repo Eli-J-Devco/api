@@ -232,6 +232,7 @@ public class BuiltInReportService extends DB {
 			ViewReportEntity summaryReport = gson.fromJson(gson.toJson(findReport), ViewReportEntity.class);
 			summaryReport.setDataReports(summaryData);
 			summaryReport.setSite_name("Summary");
+			summaryReport.setId_site(0);
 			
 			dataList.add(0, summaryReport);
 		} catch (Exception e) {
