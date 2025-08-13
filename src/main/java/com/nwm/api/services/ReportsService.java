@@ -7,6 +7,7 @@ package com.nwm.api.services;
 
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -86,7 +87,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -138,6 +139,11 @@ public class ReportsService extends DB {
 	private static final Color BLUE_COLOR = new Color(49, 119, 168);
 	private static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
 	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
+	
+	private String getReportFolderPath() {
+		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
+		return uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+	}
 	
 	/**
 	 * @description create date time list
@@ -916,14 +922,16 @@ public class ReportsService extends DB {
 			BatchJob batchJob = new BatchJob();
 			
 			// download one report
-			if (obj.size() == 1) return batchJob.reportDownload(obj.get(0));
+			if (obj.size() == 1) {
+				Resource resource = batchJob.reportDownload(obj.get(0));
+				byte[] bytes = resource.getInputStream().readAllBytes();
+				if (resource.exists()) resource.getFile().delete();
+				return new ByteArrayResource(bytes);
+			}
 			
 			// download all reports
-			String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
-			String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-			File file = new File(dir + "/" + "reports.zip");
-			FileOutputStream fos = new FileOutputStream(file);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ZipOutputStream zos = new ZipOutputStream(baos);
 			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
 			
 			for (int i = 0; i < obj.size(); i++) {
@@ -938,14 +946,15 @@ public class ReportsService extends DB {
 					zos.putNextEntry(new ZipEntry(resource.getFilename()));
 					IOUtils.copy(resource.getInputStream(), zos);
 					zos.closeEntry();
+					if (resource.exists()) resource.getFile().delete();
 				} catch (IOException e) {
 				}
 			});
 			
-			zos.finish();
 			zos.close();
+			baos.close();
 			
-			return new FileSystemResource(file);
+			return new ByteArrayResource(baos.toByteArray());
 		} catch (Exception ex) {
 			return null;
 		}
@@ -1449,10 +1458,8 @@ public class ReportsService extends DB {
 	 * @return file path
 	 */
 	public String writeToSheetFile(XSSFWorkbook document, String cadenceRangeName) {
-		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
+		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
 		
 		try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 			document.write(fileOut);
@@ -1469,10 +1476,8 @@ public class ReportsService extends DB {
 	 * @param cadenceRange
 	 */
 	public File writeToPdfFile(String cadenceRangeName) throws Exception {
-		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
+		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
 		return new File(fileName);
 	}
 	
