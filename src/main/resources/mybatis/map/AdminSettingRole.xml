@@ -68,7 +68,7 @@
 	    <foreach collection="screens" item="item" index="index" open="(" separator="),("  close=")">
 	        #{id},
 	        #{item.id_screen},
-	        0
+	        IF(#{item.id_screen} = 1, 511, 0)
 	    </foreach>
 	</insert>
 	
