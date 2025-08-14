@@ -59,6 +59,8 @@
 		<result property="id_company" column="id_company" />
 		<result property="note" column="note" />
 		<result property="portfolio_metrics_enable" column="portfolio_metrics_enable" />
+		<result property="data_roles" column="data_roles" />
+		
 		
 	</resultMap>
 	
@@ -227,6 +229,7 @@
 			t.group_roles,
 			t.role_ids,
 			t.color,
+			t.data_roles,
 			m.manage_site_total,
 			m.ids_site,
 			m.site_name AS site_names,
@@ -264,8 +267,24 @@
 					
 					
 			LEFT JOIN (
-						SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
+						SELECT 
+						er.id_employee,
+						 GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, 
+						 GROUP_CONCAT(r.`id`) AS role_ids, 
+						 r.color,
+						 
+						 IF(
+							COUNT(r.id) = 0,
+							JSON_ARRAY(),
+							JSON_ARRAYAGG(JSON_OBJECT(
+								'id', r.id,
+								'name', r.name,
+								'color', r.color
+							))
+						) AS data_roles
+			
 						FROM employee_role_map er 
+						LEFT JOIN employee e ON e.id = er.id_employee
 						LEFT JOIN role r ON r.id = er.id_role
 						WHERE r.status = 1 and r.is_delete = 0
 						<if test="roles != null and !roles.isEmpty()">
@@ -274,6 +293,10 @@
 									#{item.id}
 								</foreach>
 							)
+						</if>
+						
+						<if test="id_company != null and id_company != 0 and id_company > 1">
+							AND e.id_company = #{id_company}
 						</if>
 						
 						<if test="id_role != 0">
