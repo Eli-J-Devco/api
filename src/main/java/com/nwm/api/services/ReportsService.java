@@ -113,6 +113,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
@@ -1035,7 +1036,34 @@ public class ReportsService extends DB {
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+			
+			List<MonthlyDateEntity> dataEnergy = new ArrayList<>();
+			
+			if (dataObj.isEnable_virtual_device()) {
+				SiteEntity siteObj = new SiteEntity();
+				siteObj.setId_site(dataObj.getId_site());
+				siteObj.setStart_date(obj.getStart_date());
+				siteObj.setEnd_date(obj.getEnd_date());
+				siteObj.setData_send_time(4);
+				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setHidden_data_list(new ArrayList<>());
+				
+				List<ClientMonthlyDateEntity> virtualData = queryForList("CustomerView.getDataVirtualDevice", siteObj);
+				
+				dataEnergy = virtualData.stream().map(item -> {
+					MonthlyDateEntity dataItem = new MonthlyDateEntity();
+					
+					dataItem.setCategories_time(LocalDate.parse(item.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
+					dataItem.setActual(item.getChart_energy_kwh());
+					dataItem.setEstimated(item.getExpected_energy());
+					if (Objects.nonNull(dataItem.getActual()) && Objects.nonNull(dataItem.getEstimated()) && dataItem.getEstimated() > 0) dataItem.setPercent(BigDecimal.valueOf(dataItem.getActual() / dataItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+					
+					return dataItem;
+				}).collect(Collectors.toList());
+			} else {
+				dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+			}
+			
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
