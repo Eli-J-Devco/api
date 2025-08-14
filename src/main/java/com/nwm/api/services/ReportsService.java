@@ -7,6 +7,7 @@ package com.nwm.api.services;
 
 import java.awt.Color;
 import java.awt.geom.Ellipse2D;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -86,7 +87,7 @@ import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.Year;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -112,6 +113,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
+import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
@@ -138,6 +140,11 @@ public class ReportsService extends DB {
 	private static final Color BLUE_COLOR = new Color(49, 119, 168);
 	private static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
 	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
+	
+	private String getReportFolderPath() {
+		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
+		return uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+	}
 	
 	/**
 	 * @description create date time list
@@ -916,14 +923,16 @@ public class ReportsService extends DB {
 			BatchJob batchJob = new BatchJob();
 			
 			// download one report
-			if (obj.size() == 1) return batchJob.reportDownload(obj.get(0));
+			if (obj.size() == 1) {
+				Resource resource = batchJob.reportDownload(obj.get(0));
+				byte[] bytes = resource.getInputStream().readAllBytes();
+				if (resource.exists()) resource.getFile().delete();
+				return new ByteArrayResource(bytes);
+			}
 			
 			// download all reports
-			String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
-			String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-			File file = new File(dir + "/" + "reports.zip");
-			FileOutputStream fos = new FileOutputStream(file);
-			ZipOutputStream zos = new ZipOutputStream(fos);
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ZipOutputStream zos = new ZipOutputStream(baos);
 			List<CompletableFuture<Resource>> list = new ArrayList<CompletableFuture<Resource>>();
 			
 			for (int i = 0; i < obj.size(); i++) {
@@ -938,14 +947,15 @@ public class ReportsService extends DB {
 					zos.putNextEntry(new ZipEntry(resource.getFilename()));
 					IOUtils.copy(resource.getInputStream(), zos);
 					zos.closeEntry();
+					if (resource.exists()) resource.getFile().delete();
 				} catch (IOException e) {
 				}
 			});
 			
-			zos.finish();
 			zos.close();
+			baos.close();
 			
-			return new FileSystemResource(file);
+			return new ByteArrayResource(baos.toByteArray());
 		} catch (Exception ex) {
 			return null;
 		}
@@ -1026,7 +1036,34 @@ public class ReportsService extends DB {
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+			
+			List<MonthlyDateEntity> dataEnergy = new ArrayList<>();
+			
+			if (dataObj.isEnable_virtual_device()) {
+				SiteEntity siteObj = new SiteEntity();
+				siteObj.setId_site(dataObj.getId_site());
+				siteObj.setStart_date(obj.getStart_date());
+				siteObj.setEnd_date(obj.getEnd_date());
+				siteObj.setData_send_time(4);
+				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setHidden_data_list(new ArrayList<>());
+				
+				List<ClientMonthlyDateEntity> virtualData = queryForList("CustomerView.getDataVirtualDevice", siteObj);
+				
+				dataEnergy = virtualData.stream().map(item -> {
+					MonthlyDateEntity dataItem = new MonthlyDateEntity();
+					
+					dataItem.setCategories_time(LocalDate.parse(item.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
+					dataItem.setActual(item.getChart_energy_kwh());
+					dataItem.setEstimated(item.getExpected_energy());
+					if (Objects.nonNull(dataItem.getActual()) && Objects.nonNull(dataItem.getEstimated()) && dataItem.getEstimated() > 0) dataItem.setPercent(BigDecimal.valueOf(dataItem.getActual() / dataItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+					
+					return dataItem;
+				}).collect(Collectors.toList());
+			} else {
+				dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+			}
+			
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
@@ -1449,10 +1486,8 @@ public class ReportsService extends DB {
 	 * @return file path
 	 */
 	public String writeToSheetFile(XSSFWorkbook document, String cadenceRangeName) {
-		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
+		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".xlsx";
 		
 		try (FileOutputStream fileOut = new FileOutputStream(fileName)) {
 			document.write(fileOut);
@@ -1469,10 +1504,8 @@ public class ReportsService extends DB {
 	 * @param cadenceRange
 	 */
 	public File writeToPdfFile(String cadenceRangeName) throws Exception {
-		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
 		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
-		String dir = uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
-		String fileName = dir + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
+		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
 		return new File(fileName);
 	}
 	
