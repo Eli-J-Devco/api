@@ -204,7 +204,7 @@
 					LEFT JOIN role r ON r.id = rs.id_role
 					LEFT JOIN employee_role_map er ON r.id = er.id_role
 					LEFT JOIN employee e ON e.id = er.id_employee
-				WHERE e.id = #{id} AND s.`status` = 1 AND s.is_delete = 0 AND rs.auths > 0
+				WHERE e.id = #{id} AND s.`status` = 1 AND s.is_delete = 0 AND rs.auths > 0 AND r.status = 1 AND r.is_delete = 0
 			)m  GROUP BY m.id_screen ORDER BY m.`level`
 	</select>
 	
