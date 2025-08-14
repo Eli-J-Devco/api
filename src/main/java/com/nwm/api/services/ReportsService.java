@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -925,7 +926,7 @@ public class ReportsService extends DB {
 			// download one report
 			if (obj.size() == 1) {
 				Resource resource = batchJob.reportDownload(obj.get(0));
-				byte[] bytes = resource.getInputStream().readAllBytes();
+				byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
 				if (resource.exists()) resource.getFile().delete();
 				return new ByteArrayResource(bytes);
 			}
