@@ -327,6 +327,7 @@
 				</otherwise>
 			</choose>
 		</if> 	
+		GROUP BY e.id
 		    order by
 	        <choose>  
 	            <when test="sort_column == 'first_name'">
