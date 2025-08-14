@@ -174,7 +174,7 @@
 		SET
 			`is_delete` = #{is_delete}
 		WHERE
-			`id` = #{id}
+			`id` = #{id} OR parent = #{id}
 	</update>
 	
 	<update id="deleteSubGroup">
