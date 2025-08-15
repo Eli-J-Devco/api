@@ -926,6 +926,7 @@ public class ReportsService extends DB {
 			// download one report
 			if (obj.size() == 1) {
 				Resource resource = batchJob.reportDownload(obj.get(0));
+				if (Objects.isNull(resource)) return null;
 				byte[] bytes = Files.readAllBytes(resource.getFile().toPath());
 				if (resource.exists()) resource.getFile().delete();
 				return new ByteArrayResource(bytes);
@@ -945,6 +946,7 @@ public class ReportsService extends DB {
 			list.stream().forEach(future -> {
 				try {
 					Resource resource = future.join();
+					if (Objects.isNull(resource)) return;
 					zos.putNextEntry(new ZipEntry(resource.getFilename()));
 					IOUtils.copy(resource.getInputStream(), zos);
 					zos.closeEntry();
