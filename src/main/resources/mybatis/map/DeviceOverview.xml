@@ -74,6 +74,15 @@
 			
 			WHERE e.`status` = 1 AND e.is_delete = 0 
 			AND a.`status` = 1 AND a.end_date IS NULL
+			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND el.id = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND et.id = #{id_error_type}
+			</if>
+			
 			GROUP BY d.id
 		) t ON t.id_device = d.id
 		
@@ -110,14 +119,6 @@
 			
 			<if test="id_device_type != null and id_device_type > 0">
 				AND dt.id = #{id_device_type}
-			</if>
-			
-			<if test="id_error_level != null and id_error_level > 0">
-				AND id_error_level = #{id_error_level}
-			</if>
-			
-			<if test="id_error_type != null and id_error_type > 0">
-				AND id_error_type = #{id_error_type}
 			</if>
 			
 			
@@ -178,6 +179,14 @@
 			
 			WHERE e.`status` = 1 AND e.is_delete = 0 
 			AND a.`status` = 1 AND a.end_date IS NULL
+			<if test="id_error_level != null and id_error_level > 0">
+				AND el.id = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND et.id = #{id_error_type}
+			</if>
+			
 			GROUP BY d.id
 		) t ON t.id_device = d.id
 		
@@ -212,13 +221,6 @@
 				AND dt.id = #{id_device_type}
 			</if>
 			
-			<if test="id_error_level != null and id_error_level > 0">
-				AND id_error_level = #{id_error_level}
-			</if>
-			
-			<if test="id_error_type != null and id_error_type > 0">
-				AND id_error_type = #{id_error_type}
-			</if>
 			
 			
 			<if test="keyword != null and keyword != ''">
@@ -324,6 +326,13 @@
 		ORDER BY a.`status` DESC 
 		LIMIT 200
 	</select>
+	
+	
+	
+	<select id="getDeviceDetail" resultType="Map">
+		
+	</select>
+	
 	
 	
 	
