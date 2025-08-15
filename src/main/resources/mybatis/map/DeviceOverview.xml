@@ -121,6 +121,14 @@
 				AND dt.id = #{id_device_type}
 			</if>
 			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND id_error_level = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND id_error_type = #{id_error_type}
+			</if>
+			
 			
 			<if test="keyword != null  and keyword != ''">
 				AND s.name LIKE CONCAT("%",#{keyword}, "%")
@@ -221,6 +229,13 @@
 				AND dt.id = #{id_device_type}
 			</if>
 			
+			<if test="id_error_level != null and id_error_level > 0">
+				AND id_error_level = #{id_error_level}
+			</if>
+			
+			<if test="id_error_type != null and id_error_type > 0">
+				AND id_error_type = #{id_error_type}
+			</if>
 			
 			
 			<if test="keyword != null and keyword != ''">
