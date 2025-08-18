@@ -18,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -382,10 +383,11 @@ public class ReportsController extends BaseController {
 	private ReportTaskScheduler reportTaskScheduler;
 
 	@PostMapping("/save")
-	public Object save(@Valid @RequestBody ReportsEntity obj) {
+	public Object save(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			ReportsService service = new ReportsService();
 			if (obj.getScreen_mode() == 1) {
+				obj.setCreated_by(Lib.getUserId(authz));
 				ReportsEntity data = service.insertReports(obj);
 				if (data != null) {
 					// update scheduled task
@@ -396,6 +398,7 @@ public class ReportsController extends BaseController {
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
+					obj.setUpdated_by(Lib.getUserId(authz));
 					boolean insert = service.updateReports(obj);
 					if (insert == true) {
 						// update scheduled task
@@ -421,8 +424,9 @@ public class ReportsController extends BaseController {
 	 * @param obj { id }
 	 */
 	@PostMapping("/duplicate")
-	public Object duplicate(@Valid @RequestBody ReportDuplicateRequest obj) {
+	public Object duplicate(@Valid @RequestBody ReportDuplicateRequest obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setCreated_by(Lib.getUserId(authz));
 			ReportsService service = new ReportsService();
 			ReportDuplicateRequest data = service.duplicate(obj);
 			return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null);
@@ -478,9 +482,10 @@ public class ReportsController extends BaseController {
 	 * @return obj
 	 */
 	@PostMapping("/delete")
-	public Object delete(@Valid @RequestBody ReportsEntity obj) {
+	public Object delete(@Valid @RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		ReportsService service = new ReportsService();
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			boolean result = service.deleteReports(obj);
 			if (result) {
 				// update scheduled task

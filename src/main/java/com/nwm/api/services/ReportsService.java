@@ -1011,6 +1011,7 @@ public class ReportsService extends DB {
 		try {
 			session.delete("Reports.deleteReportSiteMap", obj);
 			int rowDelete = session.delete("Reports.deleteReports", obj);
+			session.update("Reports.auditLogging", obj);
 			session.commit();
 			return rowDelete > 0;
 		} catch (Exception ex) {

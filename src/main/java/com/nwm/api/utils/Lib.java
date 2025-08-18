@@ -3009,6 +3009,11 @@ Lib {
 		}
 	}
 	
+	public static int getUserId(String authz) {
+		Map<String, Object> claims = getClaimsFromToken(authz);
+		return (int) claims.get("id_user");
+	}
+	
 	public static boolean isUserNW(String authz) {
 		Map<String, Object> claims = getClaimsFromToken(authz);
 		if (claims == null) return false;
