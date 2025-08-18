@@ -22,18 +22,7 @@
 			ROUND(IFNULL(d.energy_this_year, 0), 2) AS energy_this_year,
 			ROUND(IFNULL(d.avg_daily_7days, 0), 2) AS avg_daily_7days,
 			ROUND(IFNULL(d.avg_daily_last_7days, 0), 2) AS avg_daily_last_7days,
-			t.id_error,
-			t.start_date,
-			t.end_date,
-			t.message,
-			IFNULL(t.error_code, 0) AS error_code,
 			
-			t.id_error, 
-			t.id_error_type, 
-			t.id_error_level,
-			t.error_level_name,
-			t.error_type_name,
-			t.color,
 					
 			dt.image,
 			dt.`name` as device_type_name,
@@ -49,7 +38,10 @@
 					'id_tag', tg.id,
 					'tag_name', tg.`name`
 				))
-			) AS tags
+			) AS tags,
+			t.data_errors,
+			IFNULL(t.error_code, -1) AS error_code 
+			
 		FROM device d 
 		LEFT JOIN device_type dt ON dt.id = d.id_device_type
 		LEFT JOIN site s ON s.id = d.id_site
@@ -57,16 +49,20 @@
 		LEFT JOIN (
 			SELECT 
 					a.id_device, 
-					e.message, 
-					e.error_code, 
-					a.note, 
-					a.start_date, 
-					a.end_date, a.id_error, 
+					e.error_code,
 					e.id_error_type, 
-					e.id_error_level,
-					el.`name` AS error_level_name,
-					et.`name` AS error_type_name,
-					el.color
+ 					e.id_error_level,
+					IF(
+						COUNT(a.id) = 0,
+						JSON_ARRAY(),
+						JSON_ARRAYAGG(JSON_OBJECT(
+							'message', e.message,
+							'error_code', e.error_code,
+							'error_level_name', el.`name`,
+							'error_type_name', et.`name`,
+							'color', el.color
+						))
+					) AS data_errors
 			
 			FROM alert a 
 			LEFT JOIN device d ON d.id = a.id_device
