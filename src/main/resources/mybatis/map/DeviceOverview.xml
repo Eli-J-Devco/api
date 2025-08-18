@@ -104,6 +104,7 @@
 			AND d.is_delete = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<!-- AND s.id_company = #{id_company} -->
 			
 			<if test="is_supper_admin != 1">
@@ -212,6 +213,7 @@
 			AND d.is_delete = 0
 			AND s.`status` = 1 
 			AND s.is_delete = 0 
+			AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
 			<!-- AND s.id_company = #{id_company} -->
 			<if test="is_supper_admin != 1">
 				AND esm.id_employee = #{id_employee}
