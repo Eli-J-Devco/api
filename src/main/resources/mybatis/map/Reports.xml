@@ -329,7 +329,7 @@
 						'value', s.id,
 						'text', <include refid="com.nwm.common.siteName"/>,
 						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_site_group', s.id_site_group
+						'id_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					site_employee_map sem 
@@ -350,7 +350,7 @@
 						'value', s.id,
 						'text', <include refid="com.nwm.common.siteName"/>,
 						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_site_group', s.id_site_group
+						'id_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					report_site_map rsm
@@ -371,7 +371,7 @@
 						'value', s.id,
 						'text', <include refid="com.nwm.common.siteName"/>,
 						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_site_group', s.id_site_group
+						'id_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					site s
@@ -392,7 +392,7 @@
 						'value', s.id,
 						'text', <include refid="com.nwm.common.siteName"/>,
 						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_site_group', s.id_site_group
+						'id_group', s.id_site_group
 					)) AS sitesListJSON
 				FROM
 					site s
