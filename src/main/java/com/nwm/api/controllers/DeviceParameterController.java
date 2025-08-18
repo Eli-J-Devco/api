@@ -248,4 +248,28 @@ public class DeviceParameterController extends BaseController {
 		}
 	}
 	
+	
+	/**
+	 * @description update metric enable
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @param  screen_mode = 0:add, 1:edit
+	 */
+	@PostMapping("/update-metric-enable")
+	public Object updateMetricEnable(@Valid @RequestBody DeviceParameterEntity obj) {
+		try {
+			DeviceParameterService service = new DeviceParameterService();
+			
+			boolean update = service.updateMetricEnable(obj);
+			if (update == true) {
+				return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+			} else {
+				return this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.SAVE_ERROR_MSG, e, 0);
+		}
+	}
+	
 }

@@ -255,4 +255,23 @@ public class DeviceParameterService extends DB {
 			return false;
 		}
 	}
+	
+	
+	
+	
+	/**
+	 * @description update device parameter
+	 * @author Hung.Bui
+	 * @since 2023-06-26
+	 * @param id
+	 */
+	public boolean updateMetricEnable(DeviceParameterEntity obj){
+		try{
+			return update("DeviceParameter.updateMetricEnable", obj) > 0;
+		}catch (Exception ex) {
+			log.error("DeviceParameter.updateMetricEnable", ex);
+			return false;
+		}
+	}
+	
 }

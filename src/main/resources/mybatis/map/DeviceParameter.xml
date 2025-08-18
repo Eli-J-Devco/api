@@ -276,7 +276,8 @@
 			dp.unit,
 			ct.name AS categorize_data_name,
 			gp.id AS id_generic_parameter,
-			gp.name AS generic_parameter_name
+			gp.name AS generic_parameter_name,
+			dp.detail_metric_enable
 		FROM
 			device_parameters AS dp
 			LEFT JOIN categorize_data ct ON ct.id = dp.id_categorize_data AND ct.status = 1 AND ct.is_delete = 0
@@ -428,6 +429,16 @@
 		WHERE
 			`id_param` = #{id}
 	</update>
+	
+	
+	<update id="updateMetricEnable">
+		UPDATE `device_parameters`
+		SET
+			`detail_metric_enable` = #{detail_metric_enable}
+		WHERE
+			`id` = #{id}
+	</update>
+	
 	
 	<update id="resetDuplicatedAssignedGenericParameter">
 		UPDATE device_parameters

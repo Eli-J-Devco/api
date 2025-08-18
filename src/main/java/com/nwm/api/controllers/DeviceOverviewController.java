@@ -111,4 +111,33 @@ public class DeviceOverviewController extends BaseController {
 	}
 	
 	
+	
+	/**
+	 * @description Get device detail
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/get-device-detail")
+	public Object getSiteDetail(@RequestBody DeviceEntity obj) {
+		try {
+
+			DeviceOverviewService service = new DeviceOverviewService();
+
+			Object detail = service.getDeviceDetail(obj);
+			
+			if (detail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
 }

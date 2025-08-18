@@ -6,8 +6,10 @@
 package com.nwm.api.services;
 
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -113,5 +115,31 @@ public class DeviceOverviewService extends DB {
 		}
 		return dataList;
 	}
+	
+	
+	/**
+	 * @description get device detail
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 */
+	
+	
+	public Object getDeviceDetail(DeviceEntity obj) {
+		Object dataObj = null;
+		Map<String, Object> maps = new HashMap<>();
+		try {
+			maps =  (Map<String, Object>) queryForObject("DeviceOverview.getDeviceDetail", obj);
+			if (maps == null)
+				return new DeviceEntity();
+			List dataList = queryForList("DeviceOverview.getListParamByDeviceGroup", obj);
+			
+			maps.put("dataParameters", dataList);
+		} catch (Exception ex) {
+			return new DeviceEntity();
+		}
+		return maps;
+	}
+	
 	
 }

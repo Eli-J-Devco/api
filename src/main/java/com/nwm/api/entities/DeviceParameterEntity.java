@@ -57,10 +57,17 @@ public class DeviceParameterEntity{
 	private boolean is_temperature;
 	private boolean is_panel_temperature;
 	private String title_trans;
+	private int detail_metric_enable;
 	
 	
 	
 	
+	public int getDetail_metric_enable() {
+		return detail_metric_enable;
+	}
+	public void setDetail_metric_enable(int detail_metric_enable) {
+		this.detail_metric_enable = detail_metric_enable;
+	}
 	public String getTitle_trans() {
 		return title_trans;
 	}

@@ -8,7 +8,9 @@
 			d.id,
 			d.id_site,
 			d.id_device_type,
+			d.id_device_group,
 			s.`name` AS site_name,
+			d.datatablename,
 			d.devicename,
 			d.field_value_default,
 			dp.unit,
@@ -344,8 +346,104 @@
 	
 	
 	
+	<select id="getListParamByDeviceGroup" resultType="Map">
+		SELECT 
+			dp.* 
+		FROM device_parameters dp 
+		LEFT JOIN device_group dg ON dg.id = dp.id_device_group
+		LEFT JOIN device d ON d.id_device_group = dg.id
+		WHERE d.id = #{id}
+		AND dp.`status` = 1 AND dp.is_delete = 0
+		AND dg.`status` = 1 AND dg.is_delete = 0
+		AND d.`status` = 1 AND d.is_delete = 0
+		AND dp.detail_metric_enable = 1
+		GROUP BY dp.id 
+
+	</select>
+	
 	<select id="getDeviceDetail" resultType="Map">
+		SELECT 
+			IFNULL(d.energy_lifetime, 0) AS energy_lifetime,
+			IFNULL(d.energy_today, 0) AS energy_today,
+			IFNULL(d.energy_yesterday, 0) AS energy_yesterday,
+			IFNULL(d.energy_this_week, 0) AS energy_this_week,
+			IFNULL(d.energy_last_week, 0) AS energy_last_week,
+			IFNULL(d.energy_this_month, 0) AS energy_this_month,
+			IFNULL(d.energy_last_month, 0) AS energy_last_month,
+			IFNULL(d.energy_compare_last_month, 0) AS energy_compare_last_month,
+			IFNULL(d.energy_last30_days, 0) AS energy_last30_days,
+			IFNULL(d.energy_this_year, 0) AS energy_this_year,
+			IFNULL(d.field_value1, 0) AS field_value1,
+			IFNULL(e.total_error, 0) AS total_error,
+			IFNULL(up.uptime, 0) AS uptime,
+			<choose>
+			    <when test="id_device_type == 4 || id_device_type == 6">
+			      IFNULL(t.peak_irradiance_today, 0) AS peak_irradiance_today,
+			    </when>
+			 </choose>
+			 
+			
+			d.devicename,
+			dv.*
+		FROM ${datatablename} dv 
+		LEFT JOIN device d ON d.id = dv.id_device
 		
+		
+		LEFT JOIN (
+			SELECT 
+				COUNT(dv.time),
+				d.id AS id_device,
+				s.data_send_time,
+					CASE
+							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 6840)*100, 1)
+							WHEN s.data_send_time = 2 THEN ROUND((COUNT(dv.time) / 2880)*100, 1)
+							WHEN s.data_send_time = 3 THEN ROUND((COUNT(dv.time) / 43200)*100, 1)
+							ELSE 0
+					END AS uptime
+				
+			FROM ${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			WHERE dv.time >= DATE_ADD(NOW(), INTERVAL -30 DAY)
+		)up ON up.id_device = d.id
+		
+
+		
+		LEFT JOIN (
+			SELECT 
+				d.id AS id_device, 
+				COUNT(a.id) AS total_error 
+			FROM device d 
+			LEFT JOIN alert a ON a.id_device = d.id
+			LEFT JOIN error e ON e.id = a.id_error
+			WHERE a.`status` = 1 
+				AND a.end_date IS NULL 
+				AND e.`status` = 1 
+				AND e.is_delete = 0 
+				AND e.id_error_level = 33 
+				AND d.id = #{id}
+		)e ON e.id_device = d.id
+		
+		
+		<choose>
+			    <when test="id_device_type == 4 || id_device_type == 6">
+			      LEFT JOIN (
+						SELECT 
+							d.id AS id_device, 
+							MAX(dv.nvm_irradiance) AS  peak_irradiance_today 
+						FROM ${datatablename} dv 
+						LEFT JOIN device d ON d.id = dv.id_device
+						LEFT JOIN site s ON s.id = d.id_site
+						LEFT JOIN time_zone t ON t.id = s.id_time_zone
+						WHERE CONVERT_TZ(dv.time, "UTC", t.`value`) BETWEEN  DATE_FORMAT( CONVERT_TZ(NOW(), "UTC", t.`value`) , "%Y-%m-%d 00:00:00") AND DATE_FORMAT(CONVERT_TZ(NOW(), "UTC", t.`value`), "%Y-%m-%d %H:%i:%s")
+					)t ON t.id_device = d.id
+			    </when>
+			    
+			 </choose>
+			 
+		
+		ORDER BY dv.time DESC  
+		LIMIT 1; 
 	</select>
 	
 	
