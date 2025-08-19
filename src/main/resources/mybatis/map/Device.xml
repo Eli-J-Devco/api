@@ -7252,7 +7252,51 @@
 					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	            </when>
 	            
-	                                                      
+	            <when test="id_device_group == 125">
+	            	CREATE TABLE IF NOT EXISTS `data${id}_${device_group_table}` 
+					  (
+					      `time` datetime NOT NULL,
+						  `id_device` int NOT NULL,
+						  `error` int unsigned DEFAULT '0',
+						  `low_alarm` int unsigned DEFAULT '0',
+						  `high_alarm` int unsigned DEFAULT '0',
+						  
+						  `Pressure` double DEFAULT NULL COMMENT 'Pressure',
+						  `Temperature` double DEFAULT NULL COMMENT 'Temperature',
+						  `FlowRateCorrectedVolume` double DEFAULT NULL COMMENT 'FlowRateCorrectedVolume',
+						  `BatteryVoltage` double DEFAULT NULL COMMENT 'BatteryVoltage',
+						  `CaseTemperature` double DEFAULT NULL COMMENT 'CaseTemperature',
+						  `P1HighAlarmLimit` double DEFAULT NULL COMMENT 'P1HighAlarmLimit',
+						  `P1LowAlarmLimit` double DEFAULT NULL COMMENT 'P1LowAlarmLimit',
+						  `FlowRateHighAlarmLimit` double DEFAULT NULL COMMENT 'FlowRateHighAlarmLimit',
+						  `BasePressure` double DEFAULT NULL COMMENT 'BasePressure',
+						  `AtmosphericPressure` double DEFAULT NULL COMMENT 'AtmosphericPressure',
+						  `GasEnergyValue` double DEFAULT NULL COMMENT 'GasEnergyValue',
+						  `TotalCorrectionValue` double DEFAULT NULL COMMENT 'TotalCorrectionValue',
+						  `FirmwareVersion` double DEFAULT NULL COMMENT 'FirmwareVersion',
+						  `CorrectedVolume` double DEFAULT NULL COMMENT 'CorrectedVolume',
+						  `UncorrectedVolume` double DEFAULT NULL COMMENT 'UncorrectedVolume',
+						  `Energy` double DEFAULT NULL COMMENT 'Energy',
+						  `MasterAlarmStatus` double DEFAULT NULL COMMENT 'MasterAlarmStatus',
+						  `VolumeSensor1Alarm` double DEFAULT NULL COMMENT 'VolumeSensor1Alarm',
+						  `VolumeSensor2Alarm` double DEFAULT NULL COMMENT 'VolumeSensor2Alarm',
+						  `BatteryLowAlarm` double DEFAULT NULL COMMENT 'BatteryLowAlarm',
+						  `P1PressureLowAlarm` double DEFAULT NULL COMMENT 'P1PressureLowAlarm',
+						  `P1HighPressureAlarm` double DEFAULT NULL COMMENT 'P1HighPressureAlarm',
+						  `TemperatureLowAlarm` double DEFAULT NULL COMMENT 'TemperatureLowAlarm',
+						  `TemperatureHighAlarm` double DEFAULT NULL COMMENT 'TemperatureHighAlarm',
+						  `FlowRateHighAlarm` double DEFAULT NULL COMMENT 'FlowRateHighAlarm',
+						  
+						  `nvmActivePower` double DEFAULT NULL,
+						  `nvmActiveEnergy` double DEFAULT NULL,
+						  `MeasuredProduction` double DEFAULT NULL,
+						  PRIMARY KEY (`time`,`id_device`) USING BTREE,
+						  KEY `id_device` (`id_device`),
+						  CONSTRAINT `fk_data${id}_${device_group_table}` FOREIGN KEY (`id_device`) REFERENCES `device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  )
+					  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	            </when>
+	                                                                
 	        </choose> 
 	        
 		

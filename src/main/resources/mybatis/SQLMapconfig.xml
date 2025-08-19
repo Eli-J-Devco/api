@@ -164,6 +164,7 @@
 		<mapper resource="mybatis/map/ModelPVMet200.xml"/>
 		<mapper resource="mybatis/map/ModelSolectriaINV00SLC3146.xml"/>
 		<mapper resource="mybatis/map/ModelGasMeter.xml"/>
+		<mapper resource="mybatis/map/ModelEC350GasMeter.xml"/>
 		<mapper resource="mybatis/map/ModelWaterMeter.xml"/>
 		<mapper resource="mybatis/map/UploadWaterAndGas.xml"/>
 		<mapper resource="mybatis/map/ModelKyPulseMeter.xml"/>

@@ -285,6 +285,7 @@
 			WHEN dg.table_name = 'model_acuvim_IIR' AND d.field_value_default = 'SystempowerPsum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_gas_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
+			WHEN dg.table_name = 'model_ec350_gas_meter' AND d.field_value_default = 'Energy' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "Therms" )))
 			WHEN dg.table_name = 'model_water_meter' AND d.field_value_default = 'ReadingValue' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
 			
 			WHEN dg.table_name = 'model_dent_48pshd_meter' AND d.field_value_default = 'PowerSum' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "-", CONCAT_WS(" ", ROUND(d.field_value1, 2), "kW" )))
@@ -556,6 +557,8 @@
 			WHEN dg.table_name = 'model_siemens_7sr11' AND d.field_value_default = 'ActivePower3PhaseTotal' THEN  (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "kW"))
 			
 			WHEN dg.table_name = 'model_thermtronic_th104bus' AND d.field_value_default = 'AmbientMeasuredMaximumTemperature' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Degrees C"))
+			
+			WHEN dg.table_name = 'model_ec350_gas_meter' AND d.field_value_default = 'Energy' THEN (IF(d.field_value1 = -1 or d.field_value1 IS NULL, "Z", "Therms"))
 						
 			
 			ELSE "Z"

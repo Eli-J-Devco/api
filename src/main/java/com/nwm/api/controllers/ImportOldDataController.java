@@ -482,6 +482,9 @@ public class ImportOldDataController extends BaseController {
 										case "model_gas_meter":
 											service.setModelGasMeter(rowItem, r);
 											break;
+										case "model_ec350_gas_meter":
+											service.setModelEC350GasMeter(rowItem, r);
+											break;
 										case "model_water_meter":
 											service.setModelWaterMeter(rowItem, r);
 											break;

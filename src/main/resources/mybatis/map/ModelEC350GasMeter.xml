@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelEC350GasMeter">
+	<resultMap id="ModelEC350GasMeterMap" type="com.nwm.api.entities.ModelEC350GasMeterEntity">
+		   <result property="time" column="time" />
+		   <result property="id_device" column="id_device" />
+		   <result property="error" column="error" />
+		   <result property="low_alarm" column="low_alarm" />
+		   <result property="high_alarm" column="high_alarm" />
+		   <result property="Pressure" column="Pressure" />
+		   <result property="Temperature" column="Temperature" />
+		   <result property="FlowRateCorrectedVolume" column="FlowRateCorrectedVolume" />
+		   <result property="BatteryVoltage" column="BatteryVoltage" />
+		   <result property="CaseTemperature" column="CaseTemperature" />
+		   <result property="P1HighAlarmLimit" column="P1HighAlarmLimit" />
+		   <result property="P1LowAlarmLimit" column="P1LowAlarmLimit" />
+		   <result property="FlowRateHighAlarmLimit" column="FlowRateHighAlarmLimit" />
+		   <result property="BasePressure" column="BasePressure" />
+		   <result property="AtmosphericPressure" column="AtmosphericPressure" />
+		   <result property="GasEnergyValue" column="GasEnergyValue" />
+		   <result property="TotalCorrectionValue" column="TotalCorrectionValue" />
+		   <result property="FirmwareVersion" column="FirmwareVersion" />
+		   <result property="CorrectedVolume" column="CorrectedVolume" />
+		   <result property="UncorrectedVolume" column="UncorrectedVolume" />
+		   <result property="Energy" column="Energy" />
+		   <result property="MasterAlarmStatus" column="MasterAlarmStatus" />
+		   <result property="VolumeSensor1Alarm" column="VolumeSensor1Alarm" />
+		   <result property="VolumeSensor2Alarm" column="VolumeSensor2Alarm" />
+		   <result property="BatteryLowAlarm" column="BatteryLowAlarm" />
+		   <result property="P1PressureLowAlarm" column="P1PressureLowAlarm" />
+		   <result property="P1HighPressureAlarm" column="P1HighPressureAlarm" />
+		   <result property="TemperatureLowAlarm" column="TemperatureLowAlarm" />
+		   <result property="TemperatureHighAlarm" column="TemperatureHighAlarm" />
+		   <result property="FlowRateHighAlarm" column="FlowRateHighAlarm" />		   
+		   <result property="nvmActivePower" column="nvmActivePower" />
+		   <result property="nvmActiveEnergy" column="nvmActiveEnergy" />
+		   <result property="MeasuredProduction" column="MeasuredProduction" />
+		   <result property="datatablename" column="datatablename" />
+			<result property="view_tablename" column="view_tablename" />
+			<result property="job_tablename" column="job_tablename" />
+
+	</resultMap>
+
+	<insert id="insertModelEC350GasMeter" useGeneratedKeys="true"
+		keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="time != null" >
+                `time`,
+          </if>
+		  
+		  <if test="id_device != 0.001" >
+                `id_device`,
+          </if>
+		  
+		  <if test="error != 0.001" >
+                `error`,
+          </if>
+		  
+		  <if test="low_alarm != 0.001" >
+                `low_alarm`,
+          </if>
+		  
+		  <if test="high_alarm != 0.001" >
+                `high_alarm`,
+          </if>
+		  
+		  <if test="Pressure != 0.001" >
+                `Pressure`,
+          </if>
+          <if test="Temperature != 0.001" >
+                `Temperature`,
+          </if>
+          <if test="FlowRateCorrectedVolume != 0.001" >
+                `FlowRateCorrectedVolume`,
+          </if>
+          <if test="BatteryVoltage != 0.001" >
+                `BatteryVoltage`,
+          </if>
+          <if test="CaseTemperature != 0.001" >
+                `CaseTemperature`,
+          </if>
+          <if test="P1HighAlarmLimit != 0.001" >
+                `P1HighAlarmLimit`,
+          </if>
+          <if test="P1LowAlarmLimit != 0.001" >
+                `P1LowAlarmLimit`,
+          </if>
+          <if test="FlowRateHighAlarmLimit != 0.001" >
+               `FlowRateHighAlarmLimit`, 
+          </if>
+          <if test="BasePressure != 0.001" >
+                `BasePressure`,
+          </if>
+          <if test="AtmosphericPressure != 0.001" >
+                `AtmosphericPressure`,
+          </if>
+          <if test="GasEnergyValue != 0.001" >
+                `GasEnergyValue`,
+          </if>
+          <if test="TotalCorrectionValue != 0.001" >
+                `TotalCorrectionValue`,
+          </if>
+          <if test="FirmwareVersion != 0.001" >
+                `FirmwareVersion`,
+          </if>
+          <if test="CorrectedVolume != 0.001" >
+                `CorrectedVolume`,
+          </if>
+          <if test="UncorrectedVolume != 0.001" >
+                `UncorrectedVolume`,
+          </if>
+          <if test="Energy != 0.001" >
+                `Energy`,
+          </if>
+          <if test="MasterAlarmStatus != 0.001" >
+                `MasterAlarmStatus`,
+          </if>
+          <if test="VolumeSensor1Alarm != 0.001" >
+                `VolumeSensor1Alarm`,
+          </if>
+          <if test="VolumeSensor2Alarm != 0.001" >
+                `VolumeSensor2Alarm`,
+          </if>
+          <if test="BatteryLowAlarm != 0.001" >
+                `BatteryLowAlarm`,
+          </if>
+          <if test="P1PressureLowAlarm != 0.001" >
+                `P1PressureLowAlarm`,
+          </if>
+          <if test="P1HighPressureAlarm != 0.001" >
+                `P1HighPressureAlarm`,
+          </if>
+          <if test="TemperatureLowAlarm != 0.001" >
+                `TemperatureLowAlarm`,
+          </if>
+          <if test="TemperatureHighAlarm != 0.001" >
+                `TemperatureHighAlarm`,
+          </if>
+          <if test="FlowRateHighAlarm != 0.001" >
+                `FlowRateHighAlarm`,
+          </if>       
+		  <if test="nvmActivePower != 0.001" >
+		  	`nvmActivePower`,
+		  </if>
+		  <if test="nvmActiveEnergy != 0.001" >
+		  	`nvmActiveEnergy`,
+		  </if>
+		  <if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+		</trim>
+		
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			  <if test="time != null" >
+                #{time},
+	          </if>
+			  
+			  <if test="id_device != 0.001" >
+	                #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                #{high_alarm},
+	          </if>
+			  
+			  <if test="Pressure != 0.001" >
+	                #{Pressure},
+	          </if>
+	          <if test="Temperature != 0.001" >
+	                #{Temperature},
+	          </if>
+	          <if test="FlowRateCorrectedVolume != 0.001" >
+	                #{FlowRateCorrectedVolume},
+	          </if>
+	          <if test="BatteryVoltage != 0.001" >
+	                #{BatteryVoltage},
+	          </if>
+	          <if test="CaseTemperature != 0.001" >
+	                #{CaseTemperature},
+	          </if>
+	          <if test="P1HighAlarmLimit != 0.001" >
+	                #{P1HighAlarmLimit},
+	          </if>
+	          <if test="P1LowAlarmLimit != 0.001" >
+	                #{P1LowAlarmLimit},
+	          </if>
+	          <if test="FlowRateHighAlarmLimit != 0.001" >
+	               #{FlowRateHighAlarmLimit}, 
+	          </if>
+	          <if test="BasePressure != 0.001" >
+	                #{BasePressure},
+	          </if>
+	          <if test="AtmosphericPressure != 0.001" >
+	                #{AtmosphericPressure},
+	          </if>
+	          <if test="GasEnergyValue != 0.001" >
+	                #{GasEnergyValue},
+	          </if>
+	          <if test="TotalCorrectionValue != 0.001" >
+	                #{TotalCorrectionValue},
+	          </if>
+	          <if test="FirmwareVersion != 0.001" >
+	                #{FirmwareVersion},
+	          </if>
+	          <if test="CorrectedVolume != 0.001" >
+	                #{CorrectedVolume},
+	          </if>
+	          <if test="UncorrectedVolume != 0.001" >
+	                #{UncorrectedVolume},
+	          </if>
+	          <if test="Energy != 0.001" >
+	                #{Energy},
+	          </if>
+	          <if test="MasterAlarmStatus != 0.001" >
+	                #{MasterAlarmStatus},
+	          </if>
+	          <if test="VolumeSensor1Alarm != 0.001" >
+	                #{VolumeSensor1Alarm},
+	          </if>
+	          <if test="VolumeSensor2Alarm != 0.001" >
+	                #{VolumeSensor2Alarm},
+	          </if>
+	          <if test="BatteryLowAlarm != 0.001" >
+	                #{BatteryLowAlarm},
+	          </if>
+	          <if test="P1PressureLowAlarm != 0.001" >
+	                #{P1PressureLowAlarm},
+	          </if>
+	          <if test="P1HighPressureAlarm != 0.001" >
+	                #{P1HighPressureAlarm},
+	          </if>
+	          <if test="TemperatureLowAlarm != 0.001" >
+	                #{TemperatureLowAlarm},
+	          </if>
+	          <if test="TemperatureHighAlarm != 0.001" >
+	                #{TemperatureHighAlarm},
+	          </if>
+	          <if test="FlowRateHighAlarm != 0.001" >
+	                #{FlowRateHighAlarm},
+	          </if>          
+			  <if test="nvmActivePower != 0.001" >
+			  	#{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	#{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+		</trim>
+		
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001" >
+	                id_device = #{id_device},
+	          </if>
+			  
+			  <if test="error != 0.001" >
+	                `error` = #{error},
+	          </if>
+			  
+			  <if test="low_alarm != 0.001" >
+	                low_alarm = #{low_alarm},
+	          </if>
+			  
+			  <if test="high_alarm != 0.001" >
+	                high_alarm = #{high_alarm},
+	          </if>
+			  
+			  <if test="Pressure != 0.001" >
+	                Pressure = #{Pressure},
+	          </if>
+	          <if test="Temperature != 0.001" >
+	                Temperature = #{Temperature},
+	          </if>
+	          <if test="FlowRateCorrectedVolume != 0.001" >
+	                FlowRateCorrectedVolume = #{FlowRateCorrectedVolume},
+	          </if>
+	          <if test="BatteryVoltage != 0.001" >
+	                BatteryVoltage = #{BatteryVoltage},
+	          </if>
+	          <if test="CaseTemperature != 0.001" >
+	                CaseTemperature = #{CaseTemperature},
+	          </if>
+	          <if test="P1HighAlarmLimit != 0.001" >
+	                P1HighAlarmLimit = #{P1HighAlarmLimit},
+	          </if>
+	          <if test="P1LowAlarmLimit != 0.001" >
+	                P1LowAlarmLimit = #{P1LowAlarmLimit},
+	          </if>
+	          <if test="FlowRateHighAlarmLimit != 0.001" >
+	               FlowRateHighAlarmLimit = #{FlowRateHighAlarmLimit}, 
+	          </if>
+	          <if test="BasePressure != 0.001" >
+	                BasePressure = #{BasePressure},
+	          </if>
+	          <if test="AtmosphericPressure != 0.001" >
+	                AtmosphericPressure = #{AtmosphericPressure},
+	          </if>
+	          <if test="GasEnergyValue != 0.001" >
+	                GasEnergyValue = #{GasEnergyValue},
+	          </if>
+	          <if test="TotalCorrectionValue != 0.001" >
+	                TotalCorrectionValue = #{TotalCorrectionValue},
+	          </if>
+	          <if test="FirmwareVersion != 0.001" >
+	                FirmwareVersion = #{FirmwareVersion},
+	          </if>
+	          <if test="CorrectedVolume != 0.001" >
+	                CorrectedVolume = #{CorrectedVolume},
+	          </if>
+	          <if test="UncorrectedVolume != 0.001" >
+	                UncorrectedVolume = #{UncorrectedVolume},
+	          </if>
+	          <if test="Energy != 0.001" >
+	                Energy = #{Energy},
+	          </if>
+	          <if test="MasterAlarmStatus != 0.001" >
+	                MasterAlarmStatus = #{MasterAlarmStatus},
+	          </if>
+	          <if test="VolumeSensor1Alarm != 0.001" >
+	                VolumeSensor1Alarm = #{VolumeSensor1Alarm},
+	          </if>
+	          <if test="VolumeSensor2Alarm != 0.001" >
+	                VolumeSensor2Alarm = #{VolumeSensor2Alarm},
+	          </if>
+	          <if test="BatteryLowAlarm != 0.001" >
+	                BatteryLowAlarm = #{BatteryLowAlarm},
+	          </if>
+	          <if test="P1PressureLowAlarm != 0.001" >
+	                P1PressureLowAlarm = #{P1PressureLowAlarm},
+	          </if>
+	          <if test="P1HighPressureAlarm != 0.001" >
+	                P1HighPressureAlarm = #{P1HighPressureAlarm},
+	          </if>
+	          <if test="TemperatureLowAlarm != 0.001" >
+	                TemperatureLowAlarm = #{TemperatureLowAlarm},
+	          </if>
+	          <if test="TemperatureHighAlarm != 0.001" >
+	                TemperatureHighAlarm = #{TemperatureHighAlarm},
+	          </if>
+	          <if test="FlowRateHighAlarm != 0.001" >
+	                FlowRateHighAlarm = #{FlowRateHighAlarm},
+	          </if>                   
+			  <if test="nvmActivePower != 0.001" >
+			  	nvmActivePower = #{nvmActivePower},
+			  </if>
+			  <if test="nvmActiveEnergy != 0.001" >
+			  	nvmActiveEnergy = #{nvmActiveEnergy},
+			  </if>
+			  <if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+		</trim>
+		
+	</insert>
+	
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelEC350GasMeterEntity">
+		SELECT
+			dv.*,
+			s.enable_alert
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+	
+</mapper> 
