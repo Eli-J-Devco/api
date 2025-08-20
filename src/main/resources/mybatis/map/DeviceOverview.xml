@@ -374,6 +374,9 @@
 			IFNULL(d.field_value1, 0) AS field_value1,
 			IFNULL(e.total_error, 0) AS total_error,
 			IFNULL(up.uptime, 0) AS uptime,
+			IFNULL(uty.uptime_yesterday, 0) AS uptime_yesterday,
+			
+			
 			<choose>
 			    <when test="id_device_type == 4 || id_device_type == 6">
 			      IFNULL(t.peak_irradiance_today, 0) AS peak_irradiance_today,
@@ -393,7 +396,7 @@
 				d.id AS id_device,
 				s.data_send_time,
 					CASE
-							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 6840)*100, 1)
+							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 8640)*100, 1)
 							WHEN s.data_send_time = 2 THEN ROUND((COUNT(dv.time) / 2880)*100, 1)
 							WHEN s.data_send_time = 3 THEN ROUND((COUNT(dv.time) / 43200)*100, 1)
 							ELSE 0
@@ -402,8 +405,30 @@
 			FROM ${datatablename} dv 
 			LEFT JOIN device d ON d.id = dv.id_device
 			LEFT JOIN site s ON s.id = d.id_site
-			WHERE dv.time >= DATE_ADD(NOW(), INTERVAL -29 DAY)
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE CONVERT_TZ(dv.time, "UTC", t.`value`) <![CDATA[ >= ]]> CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -29 DAY), "UTC", t.`value`)
 		)up ON up.id_device = d.id
+		
+		
+		LEFT JOIN (
+			SELECT 
+				COUNT(dv.time),
+				d.id AS id_device,
+				s.data_send_time,
+					CASE
+							WHEN s.data_send_time = 1 THEN ROUND((COUNT(dv.time) / 288)*100, 1)
+							WHEN s.data_send_time = 2 THEN ROUND((COUNT(dv.time) / 96)*100, 1)
+							WHEN s.data_send_time = 3 THEN ROUND((COUNT(dv.time) / 1440)*100, 1)
+							ELSE 0
+					END AS uptime_yesterday
+				
+			FROM ${datatablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+			LEFT JOIN time_zone t ON t.id = s.id_time_zone
+			WHERE DATE_FORMAT(CONVERT_TZ(dv.time, "UTC", t.`value`), "%Y-%m-%d") = DATE_FORMAT(CONVERT_TZ(DATE_ADD(NOW(), INTERVAL -1 DAY), "UTC", t.`value`), "%Y-%m-%d") 
+		)uty ON uty.id_device = d.id
+		
 		
 
 		
