@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -114,18 +115,23 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceReportEntity;
+import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.CustomReportDataEntity;
 import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
+import com.nwm.api.entities.LogBase;
+import com.nwm.api.entities.LogDifference;
+import com.nwm.api.entities.LogOperationEnum;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
 import com.nwm.api.entities.QuarterlyDateEntity;
 import com.nwm.api.entities.ReportDuplicateRequest;
+import com.nwm.api.entities.ReportLogs;
 import com.nwm.api.entities.ReportsEntity;
 import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
@@ -1023,6 +1029,63 @@ public class ReportsService extends DB {
 		}
 	}
 	
+	/**
+	 * @description Get report logs
+	 * @author Hung.Bui
+	 * @since 2025-08-19
+	 * @param id
+	 */
+	public List<AuditLog> getLogs(ReportsEntity obj) {
+		try {
+			List<ReportLogs> logs = queryForList("Reports.getLogs", obj);
+			if (Objects.isNull(logs)) return new ArrayList<>();
+			List<String> excludedFields = new ArrayList<>(Arrays.asList("updated_date", "updated_by", "operation"));
+			
+			return getLogDifferences(logs, excludedFields);
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
+	}
+	
+	private <T extends LogBase> List<AuditLog> getLogDifferences(List<T> logs, List<String> excludedFields) {
+		try {
+			List<AuditLog> auditLogList = new ArrayList<>();
+			
+			for (int i = 0; i < logs.size(); i++) {
+				T log = logs.get(i);
+				
+				if (log.getOperation().equals(LogOperationEnum.INSERT.getValue())) {
+					auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.INSERT, new ArrayList<>()));
+					continue;
+				}
+				
+				if (log.getOperation().equals(LogOperationEnum.DELETE.getValue())) {
+					auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.DELETE, new ArrayList<>()));
+					continue;
+				}
+				
+				if (i + 1 >= logs.size()) continue;
+				T prevLog = logs.get(i + 1);
+				if (prevLog.getOperation().equals(3)) continue;
+				List<LogDifference> logDifferences = new ArrayList<>();
+				
+				for (Field field: log.getClass().getDeclaredFields()) {
+					if (excludedFields.contains(field.getName())) continue;
+					field.setAccessible(true);
+					Object newValue = field.get(log);
+					Object oldValue = field.get(prevLog);
+					if (Objects.equals(oldValue, newValue)) continue;
+					logDifferences.add(new LogDifference(field.getName(), oldValue, newValue));
+				}
+				
+				if (logDifferences.size() > 0) auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.UPDATE, logDifferences));
+			}
+			
+			return auditLogList;
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
 	
 	
 	/**

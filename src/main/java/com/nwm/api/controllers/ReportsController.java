@@ -497,6 +497,25 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.DELETE_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description Get report logs
+	 * @author Hung.Bui
+	 * @since 2025-08-19
+	 * @param id
+	 * @return obj
+	 */
+	@PostMapping("/logs")
+	public Object getLogs(@Valid @RequestBody ReportsEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			List data = service.getLogs(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
+		}
+	}
 
 	/**
 	 * @description Get customer view chart data

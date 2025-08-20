@@ -461,6 +461,38 @@
 			AND operation = 3
 	</update>
 	
+	<select id="getLogs" resultType="com.nwm.api.entities.ReportLogs">
+		SELECT
+			r.operation,
+			r.site_mapping,
+			r.id_report,
+			r.id_employee,
+			r.id_site,
+			r.type_report,
+			r.cadence_range,
+			r.date_from,
+			r.date_to,
+			r.subscribers,
+			r.data_intervals,
+			r.file_type,
+			IF(r.operation = 1, r.created_date, r.updated_date) AS modified_date,
+			e.email AS modified_by,
+			r.id_sub_group,
+			r.type_option,
+			r.schedule_enable,
+			r.periodicity,
+			r.time_schedule,
+			r.days_week,
+			r.duplicated_from
+		FROM
+			report_log r
+			JOIN employee e ON e.id = IF(r.operation = 1, r.created_by, r.updated_by)
+		WHERE
+			r.id_report = #{id}
+		ORDER BY
+			r.id DESC
+	</select>
+	
 	<select id="getSiteDetail" resultType="com.nwm.api.entities.ViewReportEntity" parameterType="com.nwm.api.entities.ViewReportEntity" >
 		SELECT
 			s.id,
