@@ -1054,31 +1054,36 @@ public class ReportsService extends DB {
 			for (int i = 0; i < logs.size(); i++) {
 				T log = logs.get(i);
 				
-				if (log.getOperation().equals(LogOperationEnum.INSERT.getValue())) {
-					auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.INSERT, new ArrayList<>()));
-					continue;
+				switch (LogOperationEnum.fromValue(log.getOperation())) {
+					case INSERT:
+						auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.INSERT, new ArrayList<>()));
+						continue;
+						
+					case DELETE:
+						auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.DELETE, new ArrayList<>()));
+						continue;
+						
+					case UPDATE:
+						if (i + 1 >= logs.size()) continue;
+						T prevLog = logs.get(i + 1);
+						if (prevLog.getOperation().equals(LogOperationEnum.DELETE.getValue())) continue;
+						List<LogDifference> logDifferences = new ArrayList<>();
+						
+						for (Field field: log.getClass().getDeclaredFields()) {
+							if (excludedFields.contains(field.getName())) continue;
+							field.setAccessible(true);
+							Object newValue = field.get(log);
+							Object oldValue = field.get(prevLog);
+							if (Objects.equals(oldValue, newValue)) continue;
+							logDifferences.add(new LogDifference(field.getName(), oldValue, newValue));
+						}
+						
+						if (logDifferences.size() > 0) auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.UPDATE, logDifferences));
+						continue;
+	
+					default:
+						break;
 				}
-				
-				if (log.getOperation().equals(LogOperationEnum.DELETE.getValue())) {
-					auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.DELETE, new ArrayList<>()));
-					continue;
-				}
-				
-				if (i + 1 >= logs.size()) continue;
-				T prevLog = logs.get(i + 1);
-				if (prevLog.getOperation().equals(3)) continue;
-				List<LogDifference> logDifferences = new ArrayList<>();
-				
-				for (Field field: log.getClass().getDeclaredFields()) {
-					if (excludedFields.contains(field.getName())) continue;
-					field.setAccessible(true);
-					Object newValue = field.get(log);
-					Object oldValue = field.get(prevLog);
-					if (Objects.equals(oldValue, newValue)) continue;
-					logDifferences.add(new LogDifference(field.getName(), oldValue, newValue));
-				}
-				
-				if (logDifferences.size() > 0) auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.UPDATE, logDifferences));
 			}
 			
 			return auditLogList;
