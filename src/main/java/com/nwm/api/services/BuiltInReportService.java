@@ -910,14 +910,14 @@ public class BuiltInReportService extends DB {
 					cell5.setCellStyle(tableRowCellStyle);
 					cell5 = row5.createCell(2);
 					cell5.setCellStyle(tableRowCellStyle);
-					sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 0, 2));
+					sheet.addMergedRegionUnsafe(new CellRangeAddress(i + 6, i + 6, 0, 2));
 					
 					Cell cell51 = row5.createCell(3);
 					cell51.setCellStyle(tableRowNoDecimalCellStyle);
 					if (item.getMonthlyProduction() != null) cell51.setCellValue(item.getMonthlyProduction());
 					cell51 = row5.createCell(4);
 					cell51.setCellStyle(tableRowNoDecimalCellStyle);
-					sheet.addMergedRegion(new CellRangeAddress(i + 6, i + 6, 3, 4));
+					sheet.addMergedRegionUnsafe(new CellRangeAddress(i + 6, i + 6, 3, 4));
 				}
 			}
 		} catch (Exception e) {
