@@ -159,8 +159,7 @@
 			`time_schedule` = #{time_schedule},
 			`days_week` = #{days_week},
 			`offset_timezone` = #{offset_timezone},
-			`next_run_time` = NULL,
-			`duplicated_from` = NULL
+			`next_run_time` = NULL
 		WHERE
 			`id` = #{id}
 	</update>
