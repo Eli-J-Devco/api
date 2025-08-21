@@ -524,6 +524,9 @@ public class BuiltInReportService extends DB {
 	
 	private static void writeHeaderWeeklyReport(Sheet sheet, ViewReportEntity dataObj) {
 		try {
+			setPrintAreaToFitOnePage(sheet);
+			
+			// set column width
 			sheet.setDefaultColumnWidth(16);
 			sheet.setColumnWidth(0, 15 * 256);
 			sheet.setColumnWidth(1, 30 * 256);
@@ -705,6 +708,12 @@ public class BuiltInReportService extends DB {
 		}
 	}
 	
+	private static void setPrintAreaToFitOnePage(Sheet sheet) {
+		sheet.setFitToPage(true);
+		sheet.getPrintSetup().setFitWidth((short) 1);
+		sheet.getPrintSetup().setFitHeight((short) 0);
+	}
+	
 	/**
 	 * @description create monthly production trend report sheet file
 	 * @author Hung.Bui
@@ -825,10 +834,7 @@ public class BuiltInReportService extends DB {
 	
 	private static void writeHeaderMonthTrendReport(Sheet sheet, ViewReportEntity dataObj) {
 		try {
-			// set print area
-			sheet.setFitToPage(true);
-			sheet.getPrintSetup().setFitWidth((short) 1);
-			sheet.getPrintSetup().setFitHeight((short) 0);
+			setPrintAreaToFitOnePage(sheet);
 			
 			// set column width
 			sheet.setDefaultColumnWidth(16);
