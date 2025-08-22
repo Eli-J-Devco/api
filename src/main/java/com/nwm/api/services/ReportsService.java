@@ -1039,9 +1039,7 @@ public class ReportsService extends DB {
 		try {
 			List<ReportLogs> logs = queryForList("Reports.getLogs", obj);
 			if (Objects.isNull(logs)) return new ArrayList<>();
-			List<String> excludedFields = new ArrayList<>(Arrays.asList("updated_date", "updated_by", "operation"));
-			
-			return getLogDifferences(logs, excludedFields);
+			return getLogDifferences(logs, null);
 		} catch (Exception ex) {
 			return new ArrayList<>();
 		}
@@ -1070,7 +1068,7 @@ public class ReportsService extends DB {
 						List<LogDifference> logDifferences = new ArrayList<>();
 						
 						for (Field field: log.getClass().getDeclaredFields()) {
-							if (excludedFields.contains(field.getName())) continue;
+							if (Objects.nonNull(excludedFields) && excludedFields.contains(field.getName())) continue;
 							field.setAccessible(true);
 							Object newValue = field.get(log);
 							Object oldValue = field.get(prevLog);

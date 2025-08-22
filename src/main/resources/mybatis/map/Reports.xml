@@ -141,7 +141,6 @@
 		UPDATE `report`
 		SET
 			`id_site` = #{id_site},
-			`id_employee` = #{id_employee},
 			`type_report` = #{type_report},
 			`cadence_range` = #{cadence_range},
 			`date_from` = #{date_from},
@@ -465,7 +464,6 @@
 			r.operation,
 			r.site_mapping,
 			r.id_report,
-			r.id_employee,
 			r.id_site,
 			r.type_report,
 			r.cadence_range,
