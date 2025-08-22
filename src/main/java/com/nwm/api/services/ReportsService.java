@@ -879,7 +879,7 @@ public class ReportsService extends DB {
 			List dataSite = obj.getDataSite();
 			
 			session.delete("Reports.deleteReportSiteMap", obj);
-			if (dataSite != null && dataSite.size() > 0) session.insert("Reports.insertReportSiteMap", obj);
+			if (obj.getType_option() == 2 && dataSite != null && dataSite.size() > 0) session.insert("Reports.insertReportSiteMap", obj);
 			
 			session.commit();
 			return true;
