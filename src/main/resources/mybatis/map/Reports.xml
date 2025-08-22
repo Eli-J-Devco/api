@@ -346,7 +346,7 @@
 					<include refid="siteConditionForReportMappingSite"/>
 				GROUP BY
 					sem.id_employee
-			) t1 ON t1.id_employee = r.id_employee
+			) t1 ON t1.id_employee = #{id_employee}
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
@@ -385,7 +385,7 @@
 					AND s.is_rec_report = 1
 				GROUP BY
 					sem.id_employee
-			) t4 ON t4.id_employee = r.id_employee
+			) t4 ON t4.id_employee = #{id_employee}
 		WHERE
 			r.status = 1
 			<if test="is_supper_admin != 1">
