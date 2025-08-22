@@ -32,8 +32,17 @@ public class DeviceTypeEntity{
 	private String label;
 	private int value;
 	private String title_trans;
+	private String domain;
 	
 	
+	
+	
+	public String getDomain() {
+		return domain;
+	}
+	public void setDomain(String domain) {
+		this.domain = domain;
+	}
 	public String getTitle_trans() {
 		return title_trans;
 	}
