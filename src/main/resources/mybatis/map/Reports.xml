@@ -215,6 +215,28 @@
         </selectKey>
 	</insert>
 	
+	<sql id="reportMappingSite">
+		GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+		JSON_ARRAYAGG(JSON_OBJECT(
+			'id', s.id,
+			'value', s.id,
+			'text', <include refid="com.nwm.common.siteName"/>,
+			'label', <include refid="com.nwm.common.siteName"/>,
+			'id_group', s.id_site_group
+		)) AS sitesListJSON
+	</sql>
+	
+	<sql id="managedSites">
+		site s
+		JOIN time_zone tz ON tz.id = s.id_time_zone
+		JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
+	</sql>
+	
+	<sql id="siteConditionForReportMappingSite">
+		s.`status` = 1
+		AND s.is_delete = 0
+		AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+	</sql>
 	
 	<select id="getList" resultType="Map" >
 		SELECT
@@ -271,8 +293,6 @@
 		    	ELSE ""
 			END	AS cadence_range_name,
 			r.id,
-			s.id AS id_site,
-			s.table_data_report,
 			r.id_employee,
 			r.cadence_range,
 			r.type_report,
@@ -315,47 +335,28 @@
 			END AS sitesListJSON
 		FROM
 			report r
-			LEFT JOIN site s ON s.id = r.id_site
-			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT
 					sem.id_employee,
 					"Entire Portfolio" AS sites_name,
-					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', <include refid="com.nwm.common.siteName"/>,
-						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_group', s.id_site_group
-					)) AS sitesListJSON
+					<include refid="reportMappingSite"/>
 				FROM
-					site_employee_map sem 
-					LEFT JOIN site s ON s.id = sem.id_site
+					<include refid="managedSites"/>
 				WHERE
-					s.`status` = 1
-					AND s.is_delete = 0
+					<include refid="siteConditionForReportMappingSite"/>
 				GROUP BY
 					sem.id_employee
 			) t1 ON t1.id_employee = r.id_employee
 			LEFT JOIN (
 				SELECT
 					rsm.id_report,
-					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
 					GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR ' - ') AS sites_name,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', <include refid="com.nwm.common.siteName"/>,
-						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_group', s.id_site_group
-					)) AS sitesListJSON
+					<include refid="reportMappingSite"/>
 				FROM
-					report_site_map rsm
-					LEFT JOIN site s ON s.id = rsm.id_site
+					<include refid="managedSites"/>
+					JOIN report_site_map rsm ON rsm.id_site = s.id
 				WHERE
-					s.`status` = 1
-					AND s.is_delete = 0
+					<include refid="siteConditionForReportMappingSite"/>
 				GROUP BY
 					rsm.id_report
 			) t2 ON t2.id_report = r.id
@@ -363,20 +364,12 @@
 				SELECT
 					s.id_site_sub_group,
 					ssg.name AS sites_name,
-					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', <include refid="com.nwm.common.siteName"/>,
-						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_group', s.id_site_group
-					)) AS sitesListJSON
+					<include refid="reportMappingSite"/>
 				FROM
-					site s
-					LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+					<include refid="managedSites"/>
+					JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 				WHERE 
-					s.`status` = 1
-					AND s.is_delete = 0
+					<include refid="siteConditionForReportMappingSite"/>
 				GROUP BY
 					s.id_site_sub_group
 			) t3 ON t3.id_site_sub_group = r.id_sub_group
@@ -384,34 +377,22 @@
 				SELECT
 					sem.id_employee,
 					'REC' AS sites_name,
-					GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-					JSON_ARRAYAGG(JSON_OBJECT(
-						'id', s.id,
-						'value', s.id,
-						'text', <include refid="com.nwm.common.siteName"/>,
-						'label', <include refid="com.nwm.common.siteName"/>,
-						'id_group', s.id_site_group
-					)) AS sitesListJSON
+					<include refid="reportMappingSite"/>
 				FROM
-					site s
-					JOIN site_employee_map sem ON sem.id_site = s.id
+					<include refid="managedSites"/>
 				WHERE 
-					s.`status` = 1
-					AND s.is_delete = 0
+					<include refid="siteConditionForReportMappingSite"/>
 					AND s.is_rec_report = 1
 				GROUP BY
 					sem.id_employee
 			) t4 ON t4.id_employee = r.id_employee
 		WHERE
 			r.status = 1
-			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-		
-		<if test="is_supper_admin != 1">
-			AND r.id_employee = #{id_employee} 
-		</if>
-			
+			<if test="is_supper_admin != 1">
+				AND r.id_employee = #{id_employee}
+			</if>
 		GROUP BY r.id 
-		    order by
+		ORDER BY
 	        <choose>  
 	            <when test="sort_column == 'id'">
 	                r.id ${order_by}
