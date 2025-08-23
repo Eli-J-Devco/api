@@ -120,8 +120,10 @@
 			IF(l.`status` = 1, 'Opened', 'Closed') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.description,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
@@ -133,9 +135,11 @@
 			d.job_tablename,
 			d.id AS id_device,
 			d.id_device_type,
+			d.serialnumber,
 			dt.name AS device_type_name,
 			el.color AS color_error_level,
 			h.is_hiding,
+			dg.group_name,
 			
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i:%s' ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value) , '%c/%e/%Y %h:%i %p') AS start_date,
@@ -294,11 +298,15 @@
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			al.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
+			dg.group_name,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
 			d.id as id_device,
+			d.serialnumber,
 			'kW' AS capacity_unit,
 			DATE_FORMAT( CONVERT_TZ( l.start_date, t.`offset`, #{offset_timezone} ), #{format_sql_long} ) AS start,
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'+00:00', t.`offset`) , '%m/%d/%Y %H:%i %p') AS start_date,
@@ -315,6 +323,7 @@
 			LEFT JOIN alert_level al ON al.id = l.id_level
 			LEFT JOIN error e ON e.id = l.id_error
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -398,8 +407,12 @@
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
+			d.serialnumber,
+			dg.group_name,
 			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
 			IFNULL(e.title_trans, "N/A") AS error_title_trans,
@@ -636,7 +649,9 @@
 			IF(l.`status` = 1, 'Open', 'Close') AS status_name,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			d.devicename,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,
@@ -645,6 +660,8 @@
 			d.datatablename,
 			d.view_tablename,
 			d.job_tablename,
+			d.serialnumber,
+			dg.group_name,
 			d.id AS id_device,
 			DATE_FORMAT( l.start_date, '%Y-%m-%d %H:%i:%s') AS org_start_date,
 			el.id AS id_error_level,
@@ -665,6 +682,7 @@
 			LEFT JOIN error_level el ON el.id = e.id_error_level
 			LEFT JOIN icon i ON i.id = el.id_icon
 			LEFT JOIN device d ON d.id = l.id_device
+			LEFT JOIN device_group dg ON d.id_device_group = dg.id
 			
 			LEFT JOIN site s ON s.id = d.id_site
 			LEFT JOIN time_zone t ON t.id = s.id_time_zone
@@ -887,6 +905,7 @@
 			IF(a.end_date IS NULL , "-", DATE_FORMAT( CONVERT_TZ( a.end_date, '+00:00', t.`offset` ), '%m-%d-%Y %H:%i %p' ) ) AS end_date,
 			e.message,
 			e.error_code,
+			e.id AS id_error,
 			IF(a.`status` = 0, 'Closed', 'Opened') AS `status_name`,
 			a.open_send_mail,
 			a.close_send_mail,
@@ -1113,7 +1132,9 @@
 			DATE_FORMAT( CONVERT_TZ( l.start_date,'UTC', t.value), '%Y-%m-%d %H:%i' ) AS start,
 			el.`name` AS `level`,
 			e.message,
+			e.id AS id_error,
 			e.error_code,
+			e.troubleshoot_enable,
 			IFNULL(dg.title_trans, "N/A") AS device_group_title_trans,
 			IFNULL(el.title_trans, "N/A") AS err_level_title_trans,
 			IFNULL(dt.title_trans, "N/A") AS device_type_title_trans,
@@ -1125,6 +1146,8 @@
 			d.id as id_device,
 			d.id_device_type,
 			d.datatablename,
+			d.serialnumber,
+			dg.group_name,
 			i.icon AS icon_alert,
 			el.id AS id_error_level,
 			el.level,

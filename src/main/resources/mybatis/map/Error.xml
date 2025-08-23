@@ -20,6 +20,8 @@
 		<result property="error_type_name" column="error_type_name" />
 		<result property="id_error_type" column="id_error_type" />
 		<result property="description" column="description" />
+		<result property="troubleshoot_enable" column="troubleshoot_enable" />
+		
 	</resultMap>
 	
 	
@@ -40,6 +42,7 @@
 			s.description,
 			s.nw,
 			s.client,
+			s.troubleshoot_enable,
 			(SELECT
 				COUNT(m.id_role) as nw_interal
 			FROM (SELECT 
@@ -191,14 +194,18 @@
 			`id_error_level`,
 			`id_device_group`,
 			`id_error_type`,
-			`description`
+			`description`,
+			`safety`,
+			`troubleshoot_enable`
 		)VALUES(
 			#{error_code},
 			#{message},
 			#{id_error_level},
 			#{id_device_group},
 			#{id_error_type},
-			#{description}
+			#{description},
+			#{safety},
+			#{troubleshoot_enable}
 		);
 		<selectKey keyProperty="id" resultType="int">
 	        SELECT 
@@ -214,7 +221,9 @@
 			`id_error_level` = #{id_error_level},
 			`id_device_group` = #{id_device_group},
 			`id_error_type` = #{id_error_type},
-			`description` = #{description}
+			`description` = #{description},
+			`safety` = #{safety},
+			`troubleshoot_enable` = #{troubleshoot_enable}
 		WHERE
 			`id` = #{id}
 	</update>
@@ -258,6 +267,100 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	<insert id="insertErrorTools">
+	    INSERT INTO error_tools (
+	    id_error,
+	    name,
+	    description,
+	    image,
+	    required
+	    )
+	    VALUES
+	    <foreach collection="recommendTools" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.description},
+	        #{element.image},
+	        #{element.required}
+	    </foreach>
+	</insert>
+	
+	
+	<insert id="insertErrorSteps">
+	    INSERT INTO error_steps (
+	    id_error,
+	    name,
+	    description,
+	    warning,
+	    content
+	    )
+	    VALUES
+	    <foreach collection="dataSteps" item="element" index="index" open="(" separator="),("  close=")">
+	        #{id},
+	        #{element.name},
+	        #{element.description},
+	        #{element.warning},
+	        #{element.content}
+	    </foreach>
+	</insert>
+	
+	
+	
+	<delete id="deleteErrorTools">
+		DELETE FROM error_tools
+        WHERE id_error = #{id}
+	</delete>
+	
+	<delete id="deleteErrorSteps">
+		DELETE FROM error_steps
+        WHERE id_error = #{id}
+	</delete>
+	
+	
+	
+	<select id="getErrorDetail" resultType="com.nwm.api.entities.ErrorEntity" parameterType="com.nwm.api.entities.ErrorEntity">
+		SELECT
+			e.*
+		FROM
+			error e
+		WHERE
+			e.id = #{id} 
+			AND e.`status` = 1 
+			AND e.is_delete = 0
+	</select>
+	
+	
+	
+	<select id="getDataTecommendToolsByErrorId" resultType="Map" >
+		SELECT
+			s.id,
+			s.id_error,
+			s.name,
+			s.description,
+			s.image,
+			s.required,
+			0 AS is_validate,
+			0 AS is_checked
+		FROM
+			error_tools s
+		WHERE s.id_error = #{id}
+	</select>
+	
+	<select id="getDataStepsByErrorId" resultType="Map" >
+		SELECT
+			s.id,
+			s.id_error,
+			s.`name`,
+			s.description,
+			s.warning,
+			s.content,
+			0 AS `read`,
+			0 AS active
+		FROM
+			error_steps s
+		WHERE s.id_error = #{id}
+	</select>
   	
 	
 </mapper>
