@@ -11,12 +11,7 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 
 import com.nwm.api.DBManagers.DB;
-import com.nwm.api.entities.AccountEntity;
-import com.nwm.api.entities.EmployeeRoleMapEntity;
-import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ErrorLevelEntity;
-import com.nwm.api.entities.SiteEntity;
 
 public class ErrorService extends DB {
 
@@ -132,13 +127,7 @@ public class ErrorService extends DB {
 		} finally {
 			session.close();
 		}
-		
-//		try{
-//			return update("Error.updateError", obj)>0;
-//		}catch (Exception ex) {
-//			log.error("Error.updateError", ex);
-//			return false;
-//		}
+
 	}
 	
 	

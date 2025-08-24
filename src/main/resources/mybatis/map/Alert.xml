@@ -359,6 +359,8 @@
 	</insert>
 	
 	
+	
+	
 	<select id="checkAlertlExist" parameterType="com.nwm.api.entities.AlertEntity" resultType="int">
     	SELECT
     	COUNT(id) as totalRecord
@@ -780,6 +782,21 @@
 		WHERE
 			`id` = #{id}
 	</update>
+	
+	
+	<update id="updateAlertNote">
+		INSERT INTO `alert_notes`(
+			`id_employee`,
+			`id_alert`,
+			`note`
+		)VALUES(
+			#{id_employee},
+			#{id_alert},
+			#{note}
+		)
+		ON DUPLICATE KEY UPDATE note = #{note};
+	</update>
+	
 	
 	
 	<select id="getACKByEmplyee" resultType="com.nwm.api.entities.AlertHistoryEntity" parameterType="com.nwm.api.entities.AlertHistoryEntity">

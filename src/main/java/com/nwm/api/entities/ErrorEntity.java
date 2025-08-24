@@ -52,10 +52,26 @@ public class ErrorEntity{
 	private List recommendTools;
 	private List dataSteps;
 	private int troubleshoot_enable = 0;
+	private String alert_note;
+	private int id_alert;
 	
 	
 	
 	
+	
+	
+	public int getId_alert() {
+		return id_alert;
+	}
+	public void setId_alert(int id_alert) {
+		this.id_alert = id_alert;
+	}
+	public String getAlert_note() {
+		return alert_note;
+	}
+	public void setAlert_note(String alert_note) {
+		this.alert_note = alert_note;
+	}
 	public int getTroubleshoot_enable() {
 		return troubleshoot_enable;
 	}

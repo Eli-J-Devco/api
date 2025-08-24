@@ -60,6 +60,8 @@
 			el.`name` AS `level`,
 			e.message,
 			e.error_code,
+			e.id AS id_error,
+			e.troubleshoot_enable,
 			d.devicename,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			s.id AS id_site,

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AlertFilterEntity;
 import com.nwm.api.entities.AlertHistoryEntity;
+import com.nwm.api.entities.AlertNoteEntity;
 import com.nwm.api.entities.ChartAlertDateEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.AlertService;
@@ -259,6 +260,28 @@ public class AlertController extends BaseController {
 			AlertService service = new AlertService();
 			service.updateACK(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
+	
+	/**
+	 * @description update alert note
+	 * @author long.pham
+	 * @since 2025-08-24
+	 * @param id
+	 * @return object
+	 */
+	@PostMapping("/update-alert-note")
+	public Object updateAlertNote(@RequestBody AlertNoteEntity obj) {
+		try {
+			AlertService service = new AlertService();
+			service.updateAlertNote(obj);
+			return this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, obj, 1);
 		} catch (Exception e) {
 			// log error
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);

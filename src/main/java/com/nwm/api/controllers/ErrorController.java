@@ -16,14 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nwm.api.entities.AccountEntity;
 import com.nwm.api.entities.ErrorEntity;
-import com.nwm.api.entities.ErrorLevelEntity;
-import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.services.AWSService;
-import com.nwm.api.services.ErrorLevelService;
 import com.nwm.api.services.ErrorService;
-import com.nwm.api.services.SiteService;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -113,9 +108,10 @@ public class ErrorController extends BaseController {
 	public Object save(@Valid @RequestBody ErrorEntity obj) {
 		try {
 			ErrorService service = new ErrorService();
+			List recommendTools = obj.getRecommendTools();
+			List dataTools = new ArrayList();
 			if (obj.getScreen_mode() == 1) {
-				List recommendTools = obj.getRecommendTools();
-				List dataTools = new ArrayList();
+				
 				
 				if(recommendTools.size() > 0) {
 					for(int i = 0; i < recommendTools.size(); i++) {
@@ -146,6 +142,26 @@ public class ErrorController extends BaseController {
 				}
 			} else {
 				if (obj.getScreen_mode() == 2) {
+					
+					if(recommendTools.size() > 0) {
+						for(int i = 0; i < recommendTools.size(); i++) {
+							Map<String, Object> item = (Map<String, Object>) recommendTools.get(i);
+							String fileName = "";
+							String saveDir = "";
+							if(!Lib.isBlank(item.get("file_upload"))) {
+								saveDir = uploadRootPath() +"/"+ Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons);
+								fileName = randomAlphabetic(16);
+								String saveFileName = Lib.uploadFromBase64(item.get("file_upload").toString(), fileName, saveDir);
+								String filePath = awsService.uploadFile(saveDir + "/" + saveFileName, Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathConfigKeyIcons) + "/" + saveFileName);
+								item.replace("image", filePath);
+							}
+							
+							dataTools.add(item);
+						}
+						
+						obj.setRecommendTools(dataTools);
+					}
+					
 					boolean update = service.updateError(obj);
 					if (update == true) {
 						return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
