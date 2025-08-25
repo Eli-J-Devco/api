@@ -190,16 +190,15 @@
 					s.show_menu,
 					CONCAT_WS(', ',e.first_name,e.last_name) AS full_name,
 					
-					IF(rs.auths >= 1, 1, 0) AS `view`,
-					IF(rs.auths >= 2, 2, 0) AS `new`,
-					IF(rs.auths >= 4, 4, 0) AS `delete`,
-					IF(rs.auths >= 8, 8, 0) AS `edit`,
-					IF(rs.auths >= 16, 16, 0) AS `excel`,
-					IF(rs.auths >= 32, 32, 0) AS `pdf`,
-					IF(rs.auths >= 64, 64, 0) AS `print`,
-					IF(rs.auths >= 128, 128, 0) AS `translate`,
-					IF(rs.auths >= 256, 256, 0)  AS `approval`
-		
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 1) AS `view`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 2) AS `new`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 4) AS `delete`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 8) AS `edit`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 16) AS `excel`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 32) AS `pdf`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 64) AS `print`, 
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 128) AS `translate`,
+					(IFNULL(rs.auths,0) <![CDATA[&]]> 256) AS `approval`
 				FROM
 					role_screen_map rs
 					LEFT JOIN screen s ON s.id = rs.id_screen
