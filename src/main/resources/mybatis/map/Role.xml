@@ -151,7 +151,7 @@
 			s.path,
 			s.link_demo,
 			s.description,
-			rcs.auths,
+			IF(rcs.auths > 1 <![CDATA[&& ]]> rcs.auths <![CDATA[<]]> 511, rcs.auths - 1 , rcs.auths) AS auths,
 			rcs.id_role,
 			0 AS collapse,
 			(IFNULL(rcs.auths,0) <![CDATA[&]]> 1) AS `view`,
