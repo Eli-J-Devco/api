@@ -112,7 +112,7 @@
 			`offset_timezone`
 		)VALUES(
 			#{id_site},
-			#{id_employee},
+			#{created_by},
 			#{type_report},
 			#{cadence_range},
 			#{date_from},
@@ -198,7 +198,7 @@
 				report.id = cte.id
 		)
 		SELECT
-			id_employee,
+			#{created_by},
 			id_site,
 			type_report,
 			cadence_range,
