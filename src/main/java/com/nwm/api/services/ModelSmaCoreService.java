@@ -47,7 +47,7 @@ public class ModelSmaCoreService extends DB {
 				dataModelSmaCore.setCurrentPhase1(Double.parseDouble(!Lib.isBlank(words.get(4)) ? words.get(4) : "0.001"));
 				dataModelSmaCore.setCurrentPhase2(Double.parseDouble(!Lib.isBlank(words.get(5)) ? words.get(5) : "0.001"));
 				dataModelSmaCore.setCurrentPhase3(Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001"));
-				dataModelSmaCore.setGridFrequency(power);
+				dataModelSmaCore.setGridFrequency(Double.parseDouble(!Lib.isBlank(words.get(7)) ? words.get(7) : "0.001"));
 				dataModelSmaCore.setVoltagePhase1(Double.parseDouble(!Lib.isBlank(words.get(8)) ? words.get(8) : "0.001"));
 				dataModelSmaCore.setVoltagePhase2(Double.parseDouble(!Lib.isBlank(words.get(9)) ? words.get(9) : "0.001"));
 				dataModelSmaCore.setVoltagePhase3(Double.parseDouble(!Lib.isBlank(words.get(10)) ? words.get(10) : "0.001"));			
