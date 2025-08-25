@@ -329,6 +329,7 @@
 					alert_notes s
 				WHERE s.id_alert = #{id_alert} AND s.id_employee = #{id_employee} LIMIT 1
 			) AS alert_note
+			
 		FROM
 			error e
 		WHERE
