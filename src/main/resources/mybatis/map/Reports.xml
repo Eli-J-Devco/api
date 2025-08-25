@@ -185,6 +185,18 @@
 			offset_timezone,
 			duplicated_from
 		)
+		WITH RECURSIVE cte(id) AS (
+			SELECT
+				#{id}
+			UNION ALL
+			SELECT
+				report.duplicated_from
+			FROM
+				report
+				JOIN cte ON report.id = cte.id
+			WHERE
+				report.id = cte.id
+		)
 		SELECT
 			id_employee,
 			id_site,
@@ -204,7 +216,7 @@
 			time_schedule,
 			days_week,
 			offset_timezone,
-			id
+			(SELECT MIN(id) FROM cte)
 		FROM
 			`report`
 		WHERE
