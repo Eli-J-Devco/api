@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.PortfolioRankingEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.DeviceOverviewService;
@@ -126,6 +127,33 @@ public class DeviceOverviewController extends BaseController {
 			DeviceOverviewService service = new DeviceOverviewService();
 
 			Object detail = service.getDeviceDetail(obj);
+			
+			if (detail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	/**
+	 * @description Get device detail
+	 * @author Duy.Phan
+	 * @since 2024-08-12
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/get-portfolio-alert-ranking")
+	public Object getPortFolioAlertRanking(@RequestBody PortfolioRankingEntity obj) {
+		try {
+
+			DeviceOverviewService service = new DeviceOverviewService();
+
+			Object detail = service.getPortFolioAlertRanking(obj);
 			
 			if (detail != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);

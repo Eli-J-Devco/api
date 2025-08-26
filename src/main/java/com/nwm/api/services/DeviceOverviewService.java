@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.PortfolioRankingEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 
@@ -140,6 +141,31 @@ public class DeviceOverviewService extends DB {
 		}
 		return maps;
 	}
+	
+	
+	/**
+	 * @description get getPortFolioAlertRanking
+	 * @author Long.Pham
+	 * @since 2024-08-12
+	 * @param id_site
+	 */
+	
+	
+	public Object getPortFolioAlertRanking(PortfolioRankingEntity obj) {
+		Map<String, Object> maps = new HashMap<>();
+		try {
+			maps =  (Map<String, Object>) queryForObject("DeviceOverview.getPortfolioRanking", obj);
+			if (maps == null)
+				return new PortfolioRankingEntity();
+			List dataList = queryForList("DeviceOverview.getPortFolioAlertRanking", obj);
+			
+			maps.put("dataPortRanking", dataList);
+		} catch (Exception ex) {
+			return new PortfolioRankingEntity();
+		}
+		return maps;
+	}
+	
 	
 	
 }
