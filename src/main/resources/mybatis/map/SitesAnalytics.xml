@@ -98,6 +98,17 @@
 	</select>
 	
 	<select id="getDataChartParameter" resultType="Map">
+	SELECT
+		categories_time,
+		time_full,
+		<foreach collection="parameters" item="param" separator=",">
+			IF(
+				${filterEnabled} = true AND ((${param.min_value} != 0.001 AND ${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND ${param.slug} <![CDATA[ > ]]> ${param.max_value})),
+				NULL,
+				${param.slug}
+			) AS ${param.slug}
+		</foreach>
+	FROM (
 		SELECT
 			categories_time,
 			<choose>
@@ -267,19 +278,11 @@
 								(table_name == 'model_sma_stp_25_50_us_50' and param.slug == 'Active_Power') or
 								(table_name == 'model_sma_inverter_12_15_20_24_30tlus10' and param.slug == 'Power')
 							">
-								${param.value_chart_tool}(IF(
-									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.${param.slug} <![CDATA[ > ]]> ${param.max_value})),
-									NULL,
-									IF(dv.${param.slug} <![CDATA[<]]> 0, 0, dv.${param.slug})
-								)) AS ${param.slug}
+								${param.value_chart_tool}(IF(dv.${param.slug} <![CDATA[<]]> 0, 0, dv.${param.slug})) AS ${param.slug}
 							</when>
 							
 							<when test="table_name != 'model_virtual_meter_or_inverter' and param.slug == 'Energy'">
-								SUM(IF(
-									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.MeasuredProduction <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.MeasuredProduction <![CDATA[ > ]]> ${param.max_value})),
-									NULL,
-									dv.MeasuredProduction
-								)) AS Energy
+								SUM(dv.MeasuredProduction) AS Energy
 							</when>
 							
 							<when test="param.slug == 'MeasuredProduction'">
@@ -361,11 +364,7 @@
 							</when>
 							
 							<otherwise>
-								${param.value_chart_tool}(IF(
-									${filterEnabled} = true AND ((${param.min_value} != 0.001 AND dv.${param.slug} <![CDATA[ < ]]> ${param.min_value}) OR (${param.max_value} != 0.001 AND dv.${param.slug} <![CDATA[ > ]]> ${param.max_value})),
-									NULL,
-									dv.${param.slug}
-								)) AS ${param.slug}
+								${param.value_chart_tool}(dv.${param.slug}) AS ${param.slug}
 							</otherwise>
 						</choose>
 					</if>
@@ -541,6 +540,7 @@
 		) t
 		GROUP BY
 			time_full
+	) t
 	</select>
 	
 	<select id="getListFilter" resultType="com.nwm.api.entities.EmployeeChartFilterEntity">
