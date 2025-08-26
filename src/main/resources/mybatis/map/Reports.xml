@@ -227,63 +227,24 @@
         </selectKey>
 	</insert>
 	
-	<sql id="reportMappingSite">
-		GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
-		JSON_ARRAYAGG(JSON_OBJECT(
-			'id', s.id,
-			'value', s.id,
-			'text', <include refid="com.nwm.common.siteName"/>,
-			'label', <include refid="com.nwm.common.siteName"/>,
-			'id_group', s.id_site_group
-		)) AS sitesListJSON
-	</sql>
-	
-	<sql id="managedSites">
-		site s
-		JOIN time_zone tz ON tz.id = s.id_time_zone
-		JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee}
-	</sql>
-	
-	<sql id="siteConditionForReportMappingSite">
-		s.`status` = 1
-		AND s.is_delete = 0
-		AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-	</sql>
-	
 	<select id="getList" resultType="Map" >
 		SELECT
 			CONCAT_WS(
 				" ",
+				CASE r.type_option
+					WHEN 1 THEN "Entire Portfolio"
+					WHEN 2 THEN GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR ' - ')
+					WHEN 3 THEN CONCAT_WS(" ", ssg.name, "Sub-Group")
+					WHEN 4 THEN "REC"
+					ELSE ""
+				END,
 				CASE r.type_report
-			    	WHEN 1 THEN
-			    		CASE r.type_option
-			    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Solar Production Report")
-			    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Solar Production Report")
-			    			ELSE "Solar Production Report"
-			    		END
-			    	WHEN 2 THEN
-			    		CASE r.type_option
-			    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Production Trend Report")
-			    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Production Trend Report")
-			    			WHEN 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Production Trend Report")
-			    			ELSE "Production Trend Report"
-			    		END
-			    	WHEN 3 THEN
-			    		CASE r.type_option
-			    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Leviton BMO Consumption Report")
-			    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Leviton BMO Consumption Report")
-			    			WHEN 3 THEN CONCAT_WS(" " , t3.sites_name, "Sub-Group", "Leviton BMO Consumption Report")
-			    			ELSE "Leviton BMO Consumption Report"
-			    		END
-			    	WHEN 4 THEN CONCAT_WS(" " , t2.sites_name, "Asset Management and Operation Performance Report")
-			    	WHEN 5 THEN
-			    		CASE r.type_option
-			    			WHEN 1 THEN CONCAT_WS(" " , t1.sites_name, "Sanity Check Report")
-			    			WHEN 2 THEN CONCAT_WS(" " , t2.sites_name, "Sanity Check Report")
-			    			WHEN 4 THEN CONCAT_WS(" " , t4.sites_name, "Sanity Check Report")
-			    			ELSE "Sanity Check Report"
-			    		END
-			    	ELSE ""
+		    		WHEN 1 THEN "Solar Production Report"
+			    	WHEN 2 THEN "Production Trend Report"
+			    	WHEN 3 THEN "Leviton BMO Consumption Report"
+			    	WHEN 4 THEN "Asset Management and Operation Performance Report"
+			    	WHEN 5 THEN "Sanity Check Report"
+			    	ELSE "Report"
 				END,
 				IF(
 					r.duplicated_from IS NULL,
@@ -331,78 +292,38 @@
 			r.offset_timezone,
 			DATE_FORMAT(CONVERT_TZ(r.created_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS created_on,
 			DATE_FORMAT(CONVERT_TZ(r.updated_date, 'UTC', IFNULL(r.offset_timezone, 'UTC')), '%m/%d/%Y %H:%i %p') AS last_modified,
-			CASE r.type_option
-				WHEN 1 THEN t1.ids_site
-				WHEN 2 THEN t2.ids_site
-				WHEN 3 THEN t3.ids_site
-				WHEN 4 THEN t4.ids_site
-				ELSE t2.ids_site
-			END AS ids_site,
-			CASE r.type_option
-				WHEN 1 THEN t1.sitesListJSON
-				WHEN 2 THEN t2.sitesListJSON
-				WHEN 3 THEN t3.sitesListJSON
-				WHEN 4 THEN t4.sitesListJSON
-				ELSE t2.sitesListJSON
-			END AS sitesListJSON
+			GROUP_CONCAT(s.id SEPARATOR ',') AS ids_site,
+			JSON_ARRAYAGG(JSON_OBJECT(
+				'id', s.id,
+				'value', s.id,
+				'text', <include refid="com.nwm.common.siteName"/>,
+				'label', <include refid="com.nwm.common.siteName"/>,
+				'id_group', s.id_site_group
+			)) AS sitesListJSON
 		FROM
 			report r
-			CROSS JOIN (
-				SELECT
-					sem.id_employee,
-					"Entire Portfolio" AS sites_name,
-					<include refid="reportMappingSite"/>
-				FROM
-					<include refid="managedSites"/>
-				WHERE
-					<include refid="siteConditionForReportMappingSite"/>
-				GROUP BY
-					sem.id_employee
-			) t1
-			LEFT JOIN (
-				SELECT
-					rsm.id_report,
-					GROUP_CONCAT(<include refid="com.nwm.common.siteName"/> SEPARATOR ' - ') AS sites_name,
-					<include refid="reportMappingSite"/>
-				FROM
-					<include refid="managedSites"/>
-					JOIN report_site_map rsm ON rsm.id_site = s.id
-				WHERE
-					<include refid="siteConditionForReportMappingSite"/>
-				GROUP BY
-					rsm.id_report
-			) t2 ON t2.id_report = r.id
-			LEFT JOIN (
-				SELECT
-					s.id_site_sub_group,
-					ssg.name AS sites_name,
-					<include refid="reportMappingSite"/>
-				FROM
-					<include refid="managedSites"/>
-					JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
-				WHERE 
-					<include refid="siteConditionForReportMappingSite"/>
-				GROUP BY
-					s.id_site_sub_group
-			) t3 ON t3.id_site_sub_group = r.id_sub_group
-			CROSS JOIN (
-				SELECT
-					sem.id_employee,
-					'REC' AS sites_name,
-					<include refid="reportMappingSite"/>
-				FROM
-					<include refid="managedSites"/>
-				WHERE 
-					<include refid="siteConditionForReportMappingSite"/>
-					AND s.is_rec_report = 1
-				GROUP BY
-					sem.id_employee
-			) t4
+			JOIN site_employee_map sem ON sem.id_employee = r.id_employee
+			JOIN site s ON s.id = sem.id_site
+			JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
+			LEFT JOIN report_site_map rsm ON r.type_option = 2 AND rsm.id_site = s.id AND rsm.id_report = r.id
 		WHERE
 			r.status = 1
 			<if test="is_supper_admin != 1">
 				AND r.id_employee = #{id_employee}
 			</if>
+			AND s.`status` = 1
+			AND s.is_delete = 0
+			AND (CONVERT_TZ(NOW(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
+			AND (
+				CASE r.type_option
+					WHEN 1 THEN TRUE
+			    	WHEN 2 THEN rsm.id_report IS NOT NULL
+			    	WHEN 3 THEN r.id_sub_group = ssg.id
+					WHEN 4 THEN s.is_rec_report = 1
+			    	ELSE TRUE
+				END
+			)
 		GROUP BY r.id 
 		ORDER BY
 	        <choose>  
