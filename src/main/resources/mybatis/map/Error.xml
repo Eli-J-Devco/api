@@ -293,7 +293,8 @@
 	    name,
 	    description,
 	    warning,
-	    content
+	    content,
+	    senior_dev_recomm
 	    )
 	    VALUES
 	    <foreach collection="dataSteps" item="element" index="index" open="(" separator="),("  close=")">
@@ -301,7 +302,8 @@
 	        #{element.name},
 	        #{element.description},
 	        #{element.warning},
-	        #{element.content}
+	        #{element.content},
+	        #{element.senior_dev_recomm}
 	    </foreach>
 	</insert>
 	
@@ -365,6 +367,7 @@
 			s.description,
 			s.warning,
 			s.content,
+			s.senior_dev_recomm,
 			0 AS `read`,
 			0 AS active
 		FROM
