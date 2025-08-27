@@ -1426,18 +1426,30 @@
 				(
 					SELECT
 						AVG(nvm_irradiance)
-					FROM
-						${item.datatablename}
-					WHERE
-						time >= CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC')
+					FROM (
+						SELECT
+							AVG(nvm_irradiance) AS nvm_irradiance
+						FROM
+							${item.datatablename}
+						WHERE
+							time >= CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(DATE_ADD(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC')
+						GROUP BY
+							DAY(CONVERT_TZ(time, 'UTC', #{item.timezone_value}))
+					) t
 				) AS current,
 				(
 					SELECT
 						AVG(nvm_irradiance)
-					FROM
-						${item.datatablename}
-					WHERE
-						time >= CONVERT_TZ(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC')
+					FROM (
+						SELECT
+							AVG(nvm_irradiance) AS nvm_irradiance
+						FROM
+							${item.datatablename}
+						WHERE
+							time >= CONVERT_TZ(DATE_SUB(#{start_date}, INTERVAL 1 MONTH), #{item.timezone_value}, 'UTC') AND time <![CDATA[ < ]]> CONVERT_TZ(#{start_date}, #{item.timezone_value}, 'UTC')
+						GROUP BY
+							DAY(CONVERT_TZ(time, 'UTC', #{item.timezone_value}))
+					) t
 				) AS last
 		</foreach>
 	</select>
