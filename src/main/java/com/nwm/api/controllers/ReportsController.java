@@ -7,10 +7,12 @@ package com.nwm.api.controllers;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -338,11 +340,16 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-list-site-by-customer")
-	public Object getListSiteByEmployee(@RequestBody ReportsEntity obj) {
+	public Object getListSiteByEmployee(@RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
+			obj.setId_sites(Lib.sitesManagedByUser(authz).stream().map(item -> {
+				Map<String, Integer> map = new HashMap<>();
+				map.put("id", item);
+				return map;
+			}).collect(Collectors.toList()));
 			ReportsService service = new ReportsService();
 			List data = service.getListSiteByEmployee(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);
@@ -359,11 +366,16 @@ public class ReportsController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/get-list-site-sub-group-by-customer")
-	public Object getListSiteSubGroupByEmployee(@RequestBody ReportsEntity obj) {
+	public Object getListSiteSubGroupByEmployee(@RequestBody ReportsEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			if (obj.getLimit() == 0) {
 				obj.setLimit(Constants.MAXRECORD);
 			}
+			obj.setId_sites(Lib.sitesManagedByUser(authz).stream().map(item -> {
+				Map<String, Integer> map = new HashMap<>();
+				map.put("id", item);
+				return map;
+			}).collect(Collectors.toList()));
 			ReportsService service = new ReportsService();
 			List data = service.getListSiteSubGroupByEmployee(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 0);

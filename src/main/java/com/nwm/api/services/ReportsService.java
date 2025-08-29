@@ -800,23 +800,14 @@ public class ReportsService extends DB {
 	 */
 
 	public List getListSiteByEmployee(ReportsEntity obj) {
-		try {
-			List dataList = (List<Map<String, Object>>) queryForList("Site.getAllSite", obj);
-			if (dataList == null) return new ArrayList();
-			ObjectMapper mapper = new ObjectMapper();
-			for (int i = 0; i < dataList.size(); i++) {
-				Map<String, Object> item = (Map<String, Object>) dataList.get(i);
-				
-				try {
-					item.put("options", mapper.readValue(item.get("options").toString(), new TypeReference<List<Map<String, Object>>>(){}));
-				} catch (JsonProcessingException e) {
-					item.put("options", new ArrayList<Map<String, Object>>());
-				}
-			}
-			return dataList;
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
+		SiteService service = new SiteService();
+		SiteEntity site = new SiteEntity();
+		site.setId_sites(obj.getId_sites());
+		site.setIs_supper_admin(obj.getIs_supper_admin());
+		site.setDomain(obj.getDomain());
+		site.setId_employee(obj.getId_employee());
+		
+		return service.getAllSite(site);
 	}
 	/**
 	 * @description Get list site sub-group by employee
