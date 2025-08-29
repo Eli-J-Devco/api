@@ -48,6 +48,66 @@ public class CompanyController extends BaseController {
 	}
 	
 	/**
+	 * @description Get detail company by id
+	 * @author duy.phan
+	 * @since 2025-08-29
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/detail-company-by-id")
+	public Object getDetailCompany(@RequestBody CompanyEntity obj) {
+		try {
+			CompanyService service = new CompanyService();
+		
+			CompanyEntity getDetail = service.getDetailCompanyById(obj);
+			if (getDetail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, getDetail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update performance on actual expected on company
+	 * @author duy.phan
+	 * @since 2025-08-29
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-performance-actual-expected")
+	public Object updatePerformanceThresholdsActualExpected(@RequestBody CompanyEntity obj) {
+		try {
+			CompanyService service = new CompanyService();
+			service.updatePerformanceThresholdsActualExpected(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description update performance availability on company
+	 * @author duy.phan
+	 * @since 2025-08-29
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/update-availability-performance")
+	public Object updateAvailabilityPerformanceThresholds(@RequestBody CompanyEntity obj) {
+		try {
+			CompanyService service = new CompanyService();
+			service.updateAvailabilityPerformanceThresholds(obj);
+			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);
+		} catch (Exception e) {
+			// log error
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
 	 * @description Get list site by id_customer
 	 * @author long.pham
 	 * @since 2020-10-09

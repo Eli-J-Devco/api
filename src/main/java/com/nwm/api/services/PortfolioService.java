@@ -406,6 +406,7 @@ public class PortfolioService extends DB {
 					item.setName(site.getName());
 					item.setId(site.getId_site());
 					item.setHash_id(site.getHash_id());
+					item.setLast_updated(site.getLast_updated());
 					
 					for (PerformanceDataChartItemEntity entity : data) {
 						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
@@ -416,7 +417,10 @@ public class PortfolioService extends DB {
 						} else if (entity.getType().equals("expected_power") || entity.getType().equals("expected_energy")) {
 							item.setExpectedPower(siteEnergyData.getExpected_power());
 							item.setExpectedEnergy(siteEnergyData.getExpected_energy());
-						}
+						} else if (entity.getType().equals("nvm_irradiance")) {
+							item.setIrradiance(siteEnergyData.getNvm_irradiance());						
+							}
+						
 					}
 					
 					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {

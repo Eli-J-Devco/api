@@ -44,6 +44,27 @@ public class CompanyService extends DB {
 	}
 	
 	/**
+	 * @description Get detail company by id
+	 * @author duy.phan
+	 * @since 2025-08-29	
+	 * @param id
+	 * @return Object
+	 */
+
+	public CompanyEntity getDetailCompanyById(CompanyEntity obj) {
+		CompanyEntity dataObj = new CompanyEntity();
+		try {
+			dataObj = (CompanyEntity) queryForObject("Company.getDetailCompanyById", obj);
+			
+			if (dataObj == null)
+				return new CompanyEntity();
+		} catch (Exception ex) {
+			return new CompanyEntity();
+		}
+		return dataObj;
+	}
+	
+	/**
 	 * @description get list company 
 	 * @author long.pham
 	 * @since 2022-03-10
@@ -367,5 +388,34 @@ public class CompanyService extends DB {
 		}
 	}
 	
+	/**
+	 * @description update company performance on Actual Expected
+	 * @author duy.phan
+	 * @since 2025-08-29
+	 * @param id
+	 */
+	public boolean updatePerformanceThresholdsActualExpected(CompanyEntity obj){
+		try{
+			return update("Company.updatePerformanceThresholdsActualExpected", obj)>0;
+		}catch (Exception ex) {
+			log.error("Company.updatePerformanceThresholdsActualExpected", ex);
+			return false;
+		}
+	}
+	
+	/**
+	 * @description update company performance availability
+	 * @author duy.phan
+	 * @since 2025-08-29
+	 * @param id
+	 */
+	public boolean updateAvailabilityPerformanceThresholds(CompanyEntity obj){
+		try{
+			return update("Company.updateAvailabilityPerformanceThresholds", obj)>0;
+		}catch (Exception ex) {
+			log.error("Company.updateAvailabilityPerformanceThresholds", ex);
+			return false;
+		}
+	}
 
 }

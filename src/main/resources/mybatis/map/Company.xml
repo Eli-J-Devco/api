@@ -34,6 +34,18 @@
 		ORDER BY `name` ASC;
 	</select>
 	
+	<select id="getDetailCompanyById" resultMap="CompanyMap" parameterType="com.nwm.api.entities.CompanyEntity">
+		SELECT
+			t.*
+		FROM
+			company AS t
+		WHERE
+			t.id = #{id} 
+			AND t.`status` = 1 AND t.is_delete = 0 
+		ORDER BY `name` ASC;
+	</select>
+	
+	
 	<select id="getList" resultType="Map" >
 		SELECT
 			s.*,
@@ -278,6 +290,32 @@
 			`updated_date` = NOW(),
 			`updated_by` = #{updated_by},
 			`bill_different_address` = #{bill_different_address}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updatePerformanceThresholdsActualExpected">
+		UPDATE `company`
+		SET
+			`overPerformingActualExpected` = #{overPerformingActualExpected},
+			`onTargetBetweenActualExpected` = #{onTargetBetweenActualExpected},
+			`onTargetAndActualExpected` = #{onTargetAndActualExpected},
+			`underPerformingActualExpected` = #{underPerformingActualExpected}
+		WHERE
+			`id` = #{id}
+	</update>
+	
+	<update id="updateAvailabilityPerformanceThresholds">
+		UPDATE `company`
+		SET
+			`highAvailability` = #{highAvailability},
+			`moderateAvailabilityBetween` = #{moderateAvailabilityBetween},
+			`moderateAvailabilityAnd` = #{moderateAvailabilityAnd},
+			`lowAvailability` = #{lowAvailability},		
+			`highPerformance` = #{highPerformance},
+			`moderatePerformanceBetween` = #{moderatePerformanceBetween},
+			`moderatePerformanceAnd` = #{moderatePerformanceAnd},
+			`lowPerformance` = #{lowPerformance}		
 		WHERE
 			`id` = #{id}
 	</update>

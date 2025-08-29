@@ -32,6 +32,7 @@ public class SiteEntity extends SortEntity {
 	private Date updated_date;
 	private String updated_by;
 	private String built_since;
+	private String last_updated;
 	private int limit;
 	private int offset;
 	private int totalRecord;
@@ -327,6 +328,12 @@ public class SiteEntity extends SortEntity {
 	
 	
 	
+	public String getLast_updated() {
+		return last_updated;
+	}
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
+	}
 	public int getYear() {
 		return year;
 	}

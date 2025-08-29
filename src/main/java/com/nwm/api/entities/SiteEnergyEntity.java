@@ -13,9 +13,28 @@ public class SiteEnergyEntity {
 	private Double expectedPower;
 	private Double actualEnergy;
 	private Double expectedEnergy;
+	private Double irradiance;
 	private Double variance;
 	private Double ae;
+	private String last_updated;
 	
+	
+	public String getLast_updated() {
+		return last_updated;
+	}
+
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
+	}
+
+	public Double getIrradiance() {
+		return irradiance;
+	}
+
+	public void setIrradiance(Double irradiance) {
+		this.irradiance = irradiance;
+	}
+
 	public int getId() {
 		return id;
 	}
