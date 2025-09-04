@@ -321,18 +321,29 @@ public class SiteEntity extends SortEntity {
 	private double humidity;
 	private int device_mode;
 	private int inv_level;
-	private int year;
-	
-	
-	
-	
-	
-	public int getYear() {
-		return year;
+	private List dataDevice;
+	private String model_name;
+	private int ai_train_type;
+
+	public int getAi_train_type() {
+		return ai_train_type;
 	}
-	public void setYear(int year) {
-		this.year = year;
+	public void setAi_train_type(int ai_train_type) {
+		this.ai_train_type = ai_train_type;
 	}
+	public String getModel_name() {
+		return model_name;
+	}
+	public void setModel_name(String model_name) {
+		this.model_name = model_name;
+	}
+	public List getDataDevice() {
+		return dataDevice;
+	}
+	public void setDataDevice(List dataDevice) {
+		this.dataDevice = dataDevice;
+	}
+
 	public int getInv_level() {
 		return inv_level;
 	}
