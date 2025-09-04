@@ -32,6 +32,7 @@ public class SiteEntity extends SortEntity {
 	private Date updated_date;
 	private String updated_by;
 	private String built_since;
+	private String last_updated;
 	private int limit;
 	private int offset;
 	private int totalRecord;
@@ -321,29 +322,24 @@ public class SiteEntity extends SortEntity {
 	private double humidity;
 	private int device_mode;
 	private int inv_level;
-	private List dataDevice;
-	private String model_name;
-	private int ai_train_type;
-
-	public int getAi_train_type() {
-		return ai_train_type;
+	private int year;
+	
+	
+	
+	
+	
+	public String getLast_updated() {
+		return last_updated;
 	}
-	public void setAi_train_type(int ai_train_type) {
-		this.ai_train_type = ai_train_type;
+	public void setLast_updated(String last_updated) {
+		this.last_updated = last_updated;
 	}
-	public String getModel_name() {
-		return model_name;
+	public int getYear() {
+		return year;
 	}
-	public void setModel_name(String model_name) {
-		this.model_name = model_name;
+	public void setYear(int year) {
+		this.year = year;
 	}
-	public List getDataDevice() {
-		return dataDevice;
-	}
-	public void setDataDevice(List dataDevice) {
-		this.dataDevice = dataDevice;
-	}
-
 	public int getInv_level() {
 		return inv_level;
 	}

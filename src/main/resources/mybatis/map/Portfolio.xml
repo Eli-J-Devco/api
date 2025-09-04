@@ -782,7 +782,8 @@
 			s.table_data_report,
 			s.table_data_virtual,
 			s.pv_model,
-			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device
+			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+			w.last_updated
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
@@ -801,6 +802,22 @@
 				GROUP BY
 					d.id_site
 			) v ON v.id_site = s.id
+			LEFT JOIN (
+				SELECT
+					DATE_FORMAT( CONVERT_TZ( d.last_updated, 'UTC', t.`value` ) , '%m/%d/%Y %h:%i %p') AS last_updated,
+					d.id_site
+				FROM
+					device d 
+					LEFT JOIN site s ON d.id_site = s.id
+					LEFT JOIN time_zone t ON t.id = s.id_time_zone
+				WHERE
+					d.`status` = 1 
+					AND d.is_delete = 0 
+					AND d.hidden = 0
+					AND d.id_device_type = 4
+				GROUP BY
+					d.id_site
+			) w ON w.id_site = s.id
 		WHERE
 			<foreach collection="id_sites" item="item" open="s.id IN (" close=")" separator=",">
 				#{item}

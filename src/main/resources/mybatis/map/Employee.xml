@@ -209,6 +209,95 @@
 			)m  GROUP BY m.id_screen ORDER BY m.`level`
 	</select>
 	
+	<sql id="managedSitesDerivedTable">
+		SELECT
+			id_employee,
+			GROUP_CONCAT(sem.`id_site`) AS ids_site,
+			GROUP_CONCAT(s.`name`) AS site_name,
+			COUNT(sem.id_employee) AS manage_site_total
+		FROM
+			site_employee_map sem
+			LEFT JOIN site s ON s.id = sem.id_site
+		WHERE
+			s.status = 1
+			AND s.is_delete = 0
+        <include refid="com.nwm.common.siteByDomainCondition"/>
+		GROUP BY
+			sem.id_employee
+	</sql>
+	
+	<sql id="rolesDerivedTable">
+		SELECT 
+			er.id_employee,
+			GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, 
+			GROUP_CONCAT(r.`id`) AS role_ids, 
+			r.color,
+			IF(
+				COUNT(r.id) = 0,
+				JSON_ARRAY(),
+				JSON_ARRAYAGG(JSON_OBJECT(
+					'id', r.id,
+					'name', r.name,
+					'color', r.color
+				))
+			) AS data_roles
+		FROM
+			employee_role_map er 
+			LEFT JOIN employee e ON e.id = er.id_employee
+			LEFT JOIN role r ON r.id = er.id_role
+		WHERE
+			r.status = 1
+			AND r.is_delete = 0
+			
+			<if test="roles != null and !roles.isEmpty()">
+				AND r.id IN  (
+					<foreach item="item" index="index" collection="roles" separator=" , ">
+						#{item.id}
+					</foreach>
+				)
+			</if>
+			
+			<if test="id_company != null and id_company != 0 and id_company > 1">
+				AND e.id_company = #{id_company}
+			</if>
+			
+			<if test="id_role != 0">
+				AND r.id = #{id_role}
+			</if>
+		GROUP BY
+			er.id_employee
+	</sql>
+	
+	<sql id="getListCondition">
+		e.is_delete = 0
+		<if test="roles != null and !roles.isEmpty() ">
+			AND t.group_roles <![CDATA[!=]]> ""
+		</if>
+		
+		<if test="id_company != null and id_company != 0 and id_company > 1">
+			AND e.id_company = #{id_company}
+		</if>
+		
+		<if test="keyword != null">
+			<choose>
+				<when test="filterBy == 'fullname'">
+					AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
+				</when>
+				<when test="filterBy == 'phone'">
+					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'email'">
+					AND e.email LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<when test="filterBy == 'manage_site'">
+					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
+				</when>
+				<otherwise>
+					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
+				</otherwise>
+			</choose>
+		</if>
+	</sql>
 	
 	<select id="getList" resultMap="EmployeeMap" parameterType="com.nwm.api.entities.EmployeeManageEntity" >
 		SELECT
@@ -246,65 +335,8 @@
 			e.is_admin_company
 		FROM
 			`employee` e	
-			
-			LEFT JOIN (
-						SELECT
-							id_employee,
-							GROUP_CONCAT(sem.`id_site`) AS ids_site,
-							GROUP_CONCAT(s.`name`) AS site_name,
-							COUNT(sem.id_employee) AS manage_site_total
-						FROM
-							site_employee_map sem
-							LEFT JOIN site s ON s.id = sem.id_site
-						WHERE
-							s.status = 1
-							AND s.is_delete = 0
-			            <include refid="com.nwm.common.siteByDomainCondition"/>
-						GROUP BY
-							sem.id_employee
-			)m ON m.id_employee = e.id
-					
-					
-			LEFT JOIN (
-						SELECT 
-						er.id_employee,
-						 GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, 
-						 GROUP_CONCAT(r.`id`) AS role_ids, 
-						 r.color,
-						 
-						 IF(
-							COUNT(r.id) = 0,
-							JSON_ARRAY(),
-							JSON_ARRAYAGG(JSON_OBJECT(
-								'id', r.id,
-								'name', r.name,
-								'color', r.color
-							))
-						) AS data_roles
-			
-						FROM employee_role_map er 
-						LEFT JOIN employee e ON e.id = er.id_employee
-						LEFT JOIN role r ON r.id = er.id_role
-						WHERE r.status = 1 and r.is_delete = 0
-						<if test="roles != null and !roles.isEmpty()">
-							AND r.id IN  (
-								<foreach item="item" index="index" collection="roles" separator=" , ">
-									#{item.id}
-								</foreach>
-							)
-						</if>
-						
-						<if test="id_company != null and id_company != 0 and id_company > 1">
-							AND e.id_company = #{id_company}
-						</if>
-						
-						<if test="id_role != 0">
-							AND r.id = #{id_role}
-						</if>
-						
-						GROUP BY er.id_employee
-					)t ON t.id_employee = e.id
-					
+			LEFT JOIN (<include refid="managedSitesDerivedTable"/>) m ON m.id_employee = e.id
+			LEFT JOIN (<include refid="rolesDerivedTable"/>)t ON t.id_employee = e.id
 			LEFT JOIN (
 				SELECT *
 				FROM account_status
@@ -316,41 +348,12 @@
 					GROUP BY id_employee
 				)
 			)s ON s.id_employee = e.id
-		LEFT JOIN employee_role_map erm ON erm.id_employee = e.id
-		WHERE e.is_delete = 0
-		<if test="roles != null and !roles.isEmpty() ">
-			AND t.group_roles <![CDATA[!=]]> ""
-		</if>
 		
-		<if test="id_role != null and id_role !='' and id_role > 0">
-			AND erm.id_role = #{id_role}
-		</if>
-		
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			AND e.id_company = #{id_company}
-		</if>
-		
-		<if test="keyword != null">
-			<choose>
-				<when test="filterBy == 'fullname'">
-					AND (CONCAT_WS(' ', e.first_name, e.last_name) LIKE CONCAT("%",#{keyword}, "%") OR CONCAT_WS(' ', e.last_name, e.first_name) LIKE CONCAT("%",#{keyword}, "%"))
-				</when>
-				<when test="filterBy == 'phone'">
-					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<when test="filterBy == 'email'">
-					AND e.email LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<when test="filterBy == 'manage_site'">
-					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<otherwise>
-					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
-				</otherwise>
-			</choose>
-		</if> 	
-		GROUP BY e.id
-		    order by
+		WHERE
+			<include refid="getListCondition"/>
+		GROUP BY
+			e.id
+		ORDER BY
 	        <choose>  
 	            <when test="sort_column == 'first_name'">
 	                CONCAT(e.first_name, ' ', e.last_name) ${order_by}
@@ -384,65 +387,12 @@
 	
 	<select id="getListCount"  resultType="int" parameterType="com.nwm.api.entities.EmployeeManageEntity">
     	SELECT count(*) as totalRecord
-		FROM employee e
-		LEFT JOIN (
-				SELECT er.id_employee, GROUP_CONCAT(r.`name` SEPARATOR ', ') AS group_roles, GROUP_CONCAT(r.`id`) AS role_ids, r.color 
-				FROM employee_role_map er 
-				LEFT JOIN role r ON r.id = er.id_role
-				WHERE r.status = 1 and r.is_delete = 0
-				<if test="roles != null and !roles.isEmpty()">
-					AND r.id IN  (
-						<foreach item="item" index="index" collection="roles" separator=" , ">
-							#{item.id}
-						</foreach>
-					)
-				</if>
-				
-				GROUP BY er.id_employee
-			)t ON t.id_employee = e.id
-		LEFT JOIN (
-			SELECT id_employee, GROUP_CONCAT(s.`name`) AS site_name
-			FROM site_employee_map sem
-			LEFT JOIN site s ON s.id = sem.id_site
-			GROUP BY sem.id_employee
-		)m ON m.id_employee = e.id
-		
-		LEFT JOIN employee_role_map erm ON erm.id_employee = e.id
-		
-		WHERE e.is_delete = 0
-		<if test="roles != null and !roles.isEmpty() ">
-			AND t.group_roles <![CDATA[!=]]> ""
-		</if>
-		
-		<if test="id_role != null and id_role !=''  and id_role > 0">
-			AND erm.id_role = #{id_role}
-		</if>
-		
-		
-		<if test="id_company != null and id_company != 0 and id_company > 1">
-			AND e.id_company = #{id_company}
-		</if>
-		
-		<if test="keyword != null">
-			<choose>
-				<when test="filterBy == 'fullname'">
-					AND ( e.first_name LIKE CONCAT("%",#{keyword}, "%") OR e.last_name LIKE CONCAT("%",#{keyword}, "%") )
-				</when>
-				<when test="filterBy == 'phone'">
-					AND e.phone LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<when test="filterBy == 'email'">
-					AND e.email LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<when test="filterBy == 'manage_site'">
-					AND m.site_name LIKE CONCAT("%",#{keyword}, "%")
-				</when>
-				<otherwise>
-					AND ( CONCAT_WS(" ", TRIM(e.first_name), TRIM(e.last_name)) LIKE CONCAT("%",TRIM(#{keyword}), "%")  )
-				</otherwise>
-			</choose>
-		</if>
-		GROUP BY e.id
+		FROM
+			employee e
+			LEFT JOIN (<include refid="managedSitesDerivedTable"/>) m ON m.id_employee = e.id
+			LEFT JOIN (<include refid="rolesDerivedTable"/>) t ON t.id_employee = e.id
+		WHERE
+			<include refid="getListCondition"/>
   	</select>
   	
   	<update id="updateStatus">

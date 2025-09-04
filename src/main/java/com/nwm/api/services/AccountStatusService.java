@@ -8,6 +8,8 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.ibatis.session.SqlSession;
+
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AccountStatusEntity;
 
@@ -19,33 +21,12 @@ public class AccountStatusService extends DB {
 	 */
 
 	public List getList(AccountStatusEntity obj) {
-		List dataList = new ArrayList();
 		try {
-			dataList = queryForList("AccountStatus.getListByEmployee", obj);
-			if (dataList == null)
-				return new ArrayList();
+			List dataList = queryForList("AccountStatus.getListByEmployee", obj);
+			return dataList == null ? new ArrayList<>() : dataList;
 		} catch (Exception ex) {
-			return new ArrayList();
+			return new ArrayList<>();
 		}
-		return dataList;
-	}
-	
-	/**
-	 * @description get latest records by employee
-	 * @author Hung.Bui
-	 * @since 2023-03-24
-	 */
-	
-	public List getLatestRecordsByEmployee(AccountStatusEntity obj) {
-		List dataList = new ArrayList();
-		try {
-			dataList = queryForList("AccountStatus.getLatestRecordsByEmployee", obj);
-			if (dataList == null)
-				return new ArrayList();
-		} catch (Exception ex) {
-			return new ArrayList();
-		}
-		return dataList;
 	}
 	
 	/**
@@ -68,30 +49,18 @@ public class AccountStatusService extends DB {
 	 * @param id
 	 */
 	public AccountStatusEntity insertAccountStatus(AccountStatusEntity obj) {
+		SqlSession session = this.beginTransaction();
 		try {
-			Object insertId = insert("AccountStatus.insertAccountStatus", obj);
-			if (insertId != null && insertId instanceof Integer) {
-				return obj;
-			} else {
-				return null;
-			}
+			AccountStatusEntity latest = session.selectOne("AccountStatus.getLatestRecordsByEmployee", obj);
+			int row = latest != null && obj.getPage_login().equals(latest.getPage_login()) ? session.update("AccountStatus.update", latest) : session.insert("AccountStatus.insert", obj);
+			session.commit();
+			return row > 0 ? obj : null;
 		} catch (Exception ex) {
-			log.error("AccountStatus.insertAccountStatus", ex);
+			session.rollback();
+			log.error("AccountStatus.insert", ex);
 			return null;
-		}
-	}
-	
-	/** @description delete old records by employee
-	 * @author Hung.Bui
-	 * @since 2023-03-24
-	 * @param id
-	 */
-	public boolean deleteOldRecordsByEmployee(AccountStatusEntity obj) {
-		try {
-			return delete("AccountStatus.deleteOldRecordsByEmployee", obj) > 0;
-		} catch (Exception ex) {
-			log.error("AccountStatus.deleteOldRecordsByEmployee", ex);
-			return false;
+		} finally {
+			session.close();
 		}
 	}
 
