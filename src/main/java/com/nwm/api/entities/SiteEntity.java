@@ -324,10 +324,32 @@ public class SiteEntity extends SortEntity {
 	private int inv_level;
 	private int year;
 	
+	private List dataDevice;
+	private String model_name;
+	private int ai_train_type;
 	
 	
 	
 	
+	
+	public List getDataDevice() {
+		return dataDevice;
+	}
+	public void setDataDevice(List dataDevice) {
+		this.dataDevice = dataDevice;
+	}
+	public String getModel_name() {
+		return model_name;
+	}
+	public void setModel_name(String model_name) {
+		this.model_name = model_name;
+	}
+	public int getAi_train_type() {
+		return ai_train_type;
+	}
+	public void setAi_train_type(int ai_train_type) {
+		this.ai_train_type = ai_train_type;
+	}
 	public String getLast_updated() {
 		return last_updated;
 	}
