@@ -302,6 +302,8 @@
 				AND sem.is_hiding = 0
 			</if>
 			
+			<include refid="com.nwm.common.siteByDomainCondition"/>
+			
 			<!-- AND s.id_company = #{id_company} -->
 		GROUP BY s.id	
 		ORDER BY s.`name`, s.id_company ASC;
