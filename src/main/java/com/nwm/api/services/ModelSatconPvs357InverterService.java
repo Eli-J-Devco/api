@@ -183,10 +183,9 @@ public class ModelSatconPvs357InverterService extends DB {
 				
 				dataModelSatcon.setNvmActivePower(power);
 				
-				Double nvm103 = Double.parseDouble(!Lib.isBlank(words.get(103)) ? words.get(103) : "0");
-				Double nvm102 = Double.parseDouble(!Lib.isBlank(words.get(102)) ? words.get(102) : "0");
-				Double nvmEnergyTotal = nvm103 * 1000 + nvm102;
-				dataModelSatcon.setNvmActiveEnergy(!Lib.isBlank(words.get(31)) ? nvmEnergyTotal : Double.parseDouble("0.001"));
+				Double nvm103 = !Lib.isBlank(words.get(103)) ? Double.parseDouble(words.get(103)) : null;
+				Double nvm102 = !Lib.isBlank(words.get(102)) ? Double.parseDouble(words.get(102)) : null;
+				dataModelSatcon.setNvmActiveEnergy(nvm103 != null && nvm102 != null ? (nvm103 * 1000 + nvm102) : Double.parseDouble("0.001"));
 				
 				return dataModelSatcon;
 				
