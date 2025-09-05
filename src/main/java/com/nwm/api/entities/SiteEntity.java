@@ -323,6 +323,10 @@ public class SiteEntity extends SortEntity {
 	private int device_mode;
 	private int inv_level;
 	private int year;
+	private double overPerformingActualExpected;
+	private double onTargetBetweenActualExpected;
+	private double onTargetAndActualExpected;
+	private double underPerformingActualExpected;
 	
 	private List dataDevice;
 	private String model_name;
@@ -332,6 +336,30 @@ public class SiteEntity extends SortEntity {
 	
 	
 	
+	public double getOverPerformingActualExpected() {
+		return overPerformingActualExpected;
+	}
+	public void setOverPerformingActualExpected(double overPerformingActualExpected) {
+		this.overPerformingActualExpected = overPerformingActualExpected;
+	}
+	public double getOnTargetBetweenActualExpected() {
+		return onTargetBetweenActualExpected;
+	}
+	public void setOnTargetBetweenActualExpected(double onTargetBetweenActualExpected) {
+		this.onTargetBetweenActualExpected = onTargetBetweenActualExpected;
+	}
+	public double getOnTargetAndActualExpected() {
+		return onTargetAndActualExpected;
+	}
+	public void setOnTargetAndActualExpected(double onTargetAndActualExpected) {
+		this.onTargetAndActualExpected = onTargetAndActualExpected;
+	}
+	public double getUnderPerformingActualExpected() {
+		return underPerformingActualExpected;
+	}
+	public void setUnderPerformingActualExpected(double underPerformingActualExpected) {
+		this.underPerformingActualExpected = underPerformingActualExpected;
+	}
 	public List getDataDevice() {
 		return dataDevice;
 	}

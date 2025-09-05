@@ -407,6 +407,13 @@ public class PortfolioService extends DB {
 					item.setId(site.getId_site());
 					item.setHash_id(site.getHash_id());
 					item.setLast_updated(site.getLast_updated());
+					item.setOverPerformingActualExpected(site.getOverPerformingActualExpected());
+					item.setOnTargetBetweenActualExpected(site.getOnTargetBetweenActualExpected());
+					item.setOnTargetAndActualExpected(site.getOnTargetAndActualExpected());
+					item.setUnderPerformingActualExpected(site.getUnderPerformingActualExpected());
+					
+
+
 					
 					for (PerformanceDataChartItemEntity entity : data) {
 						ClientMonthlyDateEntity siteEnergyData = entity.getData_energy().get(0);
