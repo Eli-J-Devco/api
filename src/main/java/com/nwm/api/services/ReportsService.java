@@ -11,7 +11,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -122,9 +121,6 @@ import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
-import com.nwm.api.entities.LogBase;
-import com.nwm.api.entities.LogDifference;
-import com.nwm.api.entities.LogOperationEnum;
 import com.nwm.api.entities.MonthlyDateEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
@@ -1030,57 +1026,12 @@ public class ReportsService extends DB {
 		try {
 			List<ReportLogs> logs = queryForList("Reports.getLogs", obj);
 			if (Objects.isNull(logs)) return new ArrayList<>();
-			return getLogDifferences(logs, null);
+			AuditingLogsService logsService = new AuditingLogsService();
+			return logsService.getLogDifferences(logs, null);
 		} catch (Exception ex) {
 			return new ArrayList<>();
 		}
 	}
-	
-	private <T extends LogBase> List<AuditLog> getLogDifferences(List<T> logs, List<String> excludedFields) {
-		try {
-			List<AuditLog> auditLogList = new ArrayList<>();
-			
-			for (int i = 0; i < logs.size(); i++) {
-				T log = logs.get(i);
-				
-				switch (LogOperationEnum.fromValue(log.getOperation())) {
-					case INSERT:
-						auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.INSERT, new ArrayList<>()));
-						continue;
-						
-					case DELETE:
-						auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.DELETE, new ArrayList<>()));
-						continue;
-						
-					case UPDATE:
-						if (i + 1 >= logs.size()) continue;
-						T prevLog = logs.get(i + 1);
-						if (prevLog.getOperation().equals(LogOperationEnum.DELETE.getValue())) continue;
-						List<LogDifference> logDifferences = new ArrayList<>();
-						
-						for (Field field: log.getClass().getDeclaredFields()) {
-							if (Objects.nonNull(excludedFields) && excludedFields.contains(field.getName())) continue;
-							field.setAccessible(true);
-							Object newValue = field.get(log);
-							Object oldValue = field.get(prevLog);
-							if (Objects.equals(oldValue, newValue)) continue;
-							logDifferences.add(new LogDifference(field.getName(), oldValue, newValue));
-						}
-						
-						if (logDifferences.size() > 0) auditLogList.add(new AuditLog(log.getModified_date(), log.getModified_by(), LogOperationEnum.UPDATE, logDifferences));
-						continue;
-	
-					default:
-						break;
-				}
-			}
-			
-			return auditLogList;
-		} catch (Exception e) {
-			return new ArrayList<>();
-		}
-	}
-	
 	
 	/**
 	 * @description get monthly  report 
