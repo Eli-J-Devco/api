@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,8 +47,9 @@ public class SiteConfigController extends BaseController {
 	 */
 
 	@PostMapping("/update")
-	public Object updateSiteConfig(@Valid @RequestBody SitesDevicesEntity obj) {
+	public Object updateSiteConfig(@Valid @RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			SiteConfigService service = new SiteConfigService();
 			boolean insert = service.updateSiteConfig(obj);
 			if (insert == true) {
@@ -70,8 +72,9 @@ public class SiteConfigController extends BaseController {
 	 */
 
 	@PostMapping("/update-site-setting")
-	public Object updateSiteSetting(@Valid @RequestBody SitesDevicesEntity obj) {
+	public Object updateSiteSetting(@Valid @RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			SiteConfigService service = new SiteConfigService();
 			boolean insert = service.updateSiteSetting(obj);
 			if (insert == true) {
@@ -94,12 +97,13 @@ public class SiteConfigController extends BaseController {
 	 */
 
 	@PostMapping("/update-pv-model-setting")
-	public Object updatePVModelSetting(@Valid @RequestBody SitesDevicesEntity obj) throws ParseException {
+	public Object updatePVModelSetting(@Valid @RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) throws ParseException {
 		String domainCronJob = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.domainCronJob);
 		String privateKey = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.privateKey);
 		int total_day = 10;
 		String url = domainCronJob + "/api-server/virtual-device/render-data?token=" + privateKey + "&id_site="+ obj.getId();
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			SiteConfigService service = new SiteConfigService();
 			boolean	insert = service.updatePVModelSetting(obj);
 			if (insert == true) {

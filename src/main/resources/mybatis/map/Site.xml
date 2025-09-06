@@ -770,6 +770,8 @@
   	
   	<insert id="insertSite" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO `site`(
+			`created_date`,
+			`created_by`,
 			`id_company`,
 			`id_country`,
 			`id_time_zone`,
@@ -843,6 +845,8 @@
 			`is_solar_site`,
 			`inv_level`
 		)VALUES(
+			NOW(),
+			#{created_by},
 			#{id_company},
 			#{id_country},
 			#{id_time_zone},
@@ -925,6 +929,8 @@
 	<update id="updateSite">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`id_company` = #{id_company},
 			`id_country` = #{id_country},
 			`id_time_zone` = #{id_time_zone},
@@ -1060,7 +1066,7 @@
 			s.unit_wind_speed,
 			sg.name AS site_group,
 			tz.name AS time_zone,
-			IFNULL(DATE_FORMAT(al.modified_date,'%m/%d/%Y %H:%i:%s'), "-") AS last_modified,
+			al.modified_date AS last_modified,
 			s.ftp_server,
 			s.ftp_user,
 			s.ftp_pass,
@@ -1165,9 +1171,10 @@
 			LEFT JOIN site_group sg ON sg.id = s.id_site_group
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
 			LEFT JOIN (
-						SELECT id_site,
-						MAX(modified_date) AS modified_date
-						FROM auditing_logs
+						SELECT
+							id_site,
+							MAX(IFNULL(updated_date, created_date)) AS modified_date
+						FROM site_log
 						GROUP BY id_site
 						
 			) al ON al.id_site = s.id
@@ -1280,6 +1287,8 @@
 	<update id="deleteSite">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`is_delete` = #{is_delete}
 		WHERE
 			`id` = #{id}
@@ -3084,4 +3093,158 @@
 	        electricity_status = VALUES(electricity_status)  
 	</insert>
 	
+	<select id="getLogs" resultType="com.nwm.api.entities.SiteLogs">
+		SELECT
+			s.operation,
+			IF(s.operation = 1, s.created_date, s.updated_date) AS modified_date,
+			e.email AS modified_by,
+			s.employee_mapping,
+			s.id_country,
+			s.id_time_zone,
+			s.id_company,
+			s.name,
+			s.street,
+			s.lat,
+			s.lng,
+			s.built_since,
+			s.old_data,
+			s.number,
+			s.postal_code,
+			s.city,
+			s.state,
+			s.commissioning,
+			s.emergency_contact,
+			s.ac_capacity,
+			s.dc_capacity,
+			s.gallery,
+			s.status,
+			s.is_delete,
+			s.site_default,
+			s.data_send_time,
+			s.start_date_time,
+			s.end_date_time,
+			s.config_sunset_sunrise,
+			s.note,
+			s.is_rec_report,
+			s.datalogger_ip,
+			s.cf_start_time,
+			s.cf_end_time,
+			s.cf_alert_threshold,
+			s.cf_email_subscribers,
+			s.rec_id,
+			s.about,
+			s.kiosk_view,
+			s.site_logo,
+			s.id_site_group,
+			s.timezone_datalogger,
+			s.gu_id,
+			s.unit_type_temp,
+			s.unit_wind_speed,
+			s.display_timezone,
+			s.display_date_format,
+			s.display_time_format,
+			s.pv_model,
+			s.t_avg_nrel,
+			s.ftp_server,
+			s.ftp_user,
+			s.ftp_pass,
+			s.ftp_port,
+			s.ftp_folder,
+			s.datalogger_type,
+			s.pv_module_temperature_coeff,
+			s.global_solar_irradiance_at_stc,
+			s.stc_temperature,
+			s.inverter_efficiency,
+			s.t_avg,
+			s.system_loss,
+			s.min_irradiance_limit,
+			s.clip,
+			s.bifaciality_factor,
+			s.ids_device_poa,
+			s.ids_device_rpoa,
+			s.ids_device_panel_temp,
+			s.ids_device_ambient_temp,
+			s.modules_per_string,
+			s.number_of_strings,
+			s.kwp_dc_for_each_solar_module,
+			s.data_interval_factor,
+			s.id_site_sub_group,
+			s.alert_mail_cc,
+			s.alert_mail_bcc,
+			s.diagram,
+			s.annual_pv_module_degradation,
+			s.cable_losses,
+			s.transformer_losses,
+			s.soiling,
+			s.other_losses,
+			s.expiration,
+			s.is_show_each_meter,
+			s.enable_alert,
+			s.communication,
+			s.serial_number,
+			s.mqtt_host,
+			s.mqtt_port,
+			s.mqtt_protocol,
+			s.mqtt_username,
+			s.mqtt_password,
+			s.third_party_key,
+			s.reporting_region,
+			s.cost,
+			s.cost_unit,
+			s.is_solar_site,
+			s.site_domain_type,
+			s.b_year_built,
+			s.b_total_area,
+			s.b_type,
+			s.b_status,
+			s.g_company_name,
+			s.g_account_number,
+			s.g_voltage_level_type,
+			s.g_voltage_level,
+			s.g_pcc_location,
+			s.g_maximum_capacity,
+			s.g_interconnection_agreement_details,
+			s.g_grid_contraints,
+			s.g_existing_ders,
+			s.g_der_capacities,
+			s.g_tariff_structure_rate_schedule,
+			s.g_net_metering_feed_in_tariff,
+			s.g_power_quality_requirements,
+			s.g_transformer_size,
+			s.g_transformer_type,
+			s.g_status,
+			s.g_lat,
+			s.g_lng,
+			s.gas_company_name,
+			s.gas_account_number,
+			s.gas_average_daily_consumption,
+			s.gas_peak_demand,
+			s.gas_service_type,
+			s.gas_service_pressure,
+			s.gas_interconnection_agreement,
+			s.gas_complicance_standard,
+			s.gas_safety_features,
+			s.gas_additional_notes,
+			s.gas_billing_cycle,
+			s.gas_tariff_structure,
+			s.gas_billing_address,
+			s.site_type,
+			s.dashboard_overview_note,
+			s.time_queue,
+			s.threshold_item_max,
+			s.advance_tech_host,
+			s.advance_tech_pass,
+			s.advance_tech_status,
+			s.advance_tech_control_enable,
+			s.total_area,
+			s.total_unit,
+			s.inv_level
+		FROM
+			site_log s
+			JOIN employee e ON e.id = IF(s.operation = 1, s.created_by, s.updated_by)
+		WHERE
+			s.id_site = #{id}
+		ORDER BY
+			s.id DESC
+	</select>
 </mapper>

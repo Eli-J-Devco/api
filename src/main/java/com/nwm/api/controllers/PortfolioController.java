@@ -81,8 +81,9 @@ public class PortfolioController extends BaseController {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/update-note")
-	public Object updateIsColor(@RequestBody PortfolioEntity obj) {
+	public Object updateIsColor(@RequestBody PortfolioEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			PortfolioService service = new PortfolioService();
 			service.updateNote(obj);
 			return this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1);

@@ -11,6 +11,7 @@ import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +20,8 @@ import com.nwm.api.entities.EmailTrackingEntity;
 import com.nwm.api.entities.SitesDevicesEntity;
 import com.nwm.api.services.EmailTrackingService;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Lib;
+
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
@@ -54,8 +57,9 @@ public class EmailTrackingController extends BaseController {
 	 */
 
 	@PostMapping("/save")
-	public Object saveEmailTrackingSetup(@RequestBody SitesDevicesEntity obj) {
+	public Object saveEmailTrackingSetup(@RequestBody SitesDevicesEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
+			obj.setUpdated_by(Lib.getUserId(authz));
 			EmailTrackingService service = new EmailTrackingService();
 			boolean insert = service.updateSiteEmailTrackingSetup(obj);
 			return insert ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1) : this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);

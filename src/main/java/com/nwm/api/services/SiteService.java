@@ -8,17 +8,21 @@ package com.nwm.api.services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.ibatis.session.SqlSession;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
+import com.nwm.api.entities.SiteLogs;
 
 public class SiteService extends DB {
 	/**
@@ -1036,6 +1040,23 @@ public class SiteService extends DB {
 		}
 		return dataObj;
 
+	}
+	
+	/**
+	 * @description Get site logs
+	 * @author Hung.Bui
+	 * @since 2025-09-05
+	 * @param id
+	 */
+	public List<AuditLog> getLogs(SiteEntity obj) {
+		try {
+			List<SiteLogs> logs = queryForList("Site.getLogs", obj);
+			if (Objects.isNull(logs)) return new ArrayList<>();
+			AuditingLogsService logsService = new AuditingLogsService();
+			return logsService.getLogDifferences(logs, null);
+		} catch (Exception ex) {
+			return new ArrayList<>();
+		}
 	}
 	
 	/**

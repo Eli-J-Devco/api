@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
@@ -210,7 +211,7 @@ public static String convertByteToHex(byte[] data) {
 	 */
 
 	@PostMapping("/save")
-	public Object saveRole(@Valid @RequestBody SiteEntity obj) {
+	public Object saveRole(@Valid @RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		try {
 			SiteService service = new SiteService();
 			
@@ -239,6 +240,7 @@ public static String convertByteToHex(byte[] data) {
 			}
 			
 			if (obj.getScreen_mode() == 1) {
+				obj.setCreated_by(Lib.getUserId(authz));
 				SiteEntity data = service.insertSite(obj);
 				
 				// Send mail to customer 
@@ -263,6 +265,7 @@ public static String convertByteToHex(byte[] data) {
 				
 				return data != null ? this.jsonResult(true, Constants.SAVE_SUCCESS_MSG, data, 1) : this.jsonResult(false, Constants.SAVE_ERROR_MSG, null, 0);
 			} else {
+				obj.setUpdated_by(Lib.getUserId(authz));
 				boolean insert = service.updateSite(obj);
 				return insert ? this.jsonResult(true, Constants.UPDATE_SUCCESS_MSG, obj, 1) : this.jsonResult(false, Constants.UPDATE_ERROR_MSG, null, 0);
 			}
@@ -348,11 +351,12 @@ public static String convertByteToHex(byte[] data) {
 	 * @return data (status, message, array, total_row
 	 */
 	@PostMapping("/delete")
-	public Object delete(@Valid @RequestBody SiteEntity obj) {
+	public Object delete(@Valid @RequestBody SiteEntity obj, @RequestHeader(name = "Authorization") String authz) {
 		SiteService service = new SiteService();
 		try {
 			String mailCC = service.getEmailCC(obj);
 			
+			obj.setUpdated_by(Lib.getUserId(authz));
 			boolean result = service.deleteEmployee(obj);
 			if (result) {
 				if(obj.getMail_to() != null) {
@@ -760,6 +764,25 @@ public static String convertByteToHex(byte[] data) {
 		} catch (Exception e) {
 			log.error(e);
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	/**
+	 * @description Get site logs
+	 * @author Hung.Bui
+	 * @since 2025-09-05
+	 * @param id
+	 * @return obj
+	 */
+	@PostMapping("/logs")
+	public Object getLogs(@Valid @RequestBody SiteEntity obj) {
+		try {
+			SiteService service = new SiteService();
+			List<AuditLog> data = service.getLogs(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null);
 		}
 	}
 	
