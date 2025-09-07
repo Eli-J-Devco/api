@@ -70,8 +70,15 @@ public class PortfolioEntity extends SortEntity {
 	private String start_date;
 	private String end_date;
 	private String id_filter;
+	private int id_site_group = 0;
 	
 	
+	public int getId_site_group() {
+		return id_site_group;
+	}
+	public void setId_site_group(int id_site_group) {
+		this.id_site_group = id_site_group;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}

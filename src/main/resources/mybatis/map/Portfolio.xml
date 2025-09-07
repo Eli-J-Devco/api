@@ -194,6 +194,10 @@
 						d.id_device_type,
 						'active_power',
 						d.last_value,
+						'inverter_availability',
+						IF(d.uptime_7days > 100, 100, d.uptime_7days),
+						'rating_ac_power', 
+						d.rating_ac_power,
 						'comparison_ratio',
 						IF(
 							ws.device_count > 0,
@@ -285,11 +289,14 @@
 			s.id_company,
 			s.is_rec_report,
 			p.last_updated,
+			DATE_FORMAT(s.expiration, '%m/%d/%Y') AS expiration,
 			p.times_ago_unit,
 			IFNULL(p.unix_time, 0) AS unix_time,
 			s.note,
 			h.is_hiding,
 			tag.tags,
+			IFNULL(sgm.id_site_group, 0 ) AS id_site_group,
+			IFNULL(s.id_site_group, 0 ) AS id_site_group_old,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, p.times_ago, NULL) AS times_ago,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(ROUND(t.irradiance, 2), IF(t.id_device_type = 4, 0, NULL)), NULL) AS irradiance,
 			IF(CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', tz.value) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL, IFNULL(s.eer_last_month, 0), NULL) AS EERLastMonth,
@@ -305,6 +312,7 @@
 			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN site_employee_map sem ON sem.id_site = s.id
 			LEFT JOIN time_zone tz ON tz.id = s.id_time_zone
+			LEFT JOIN site_group_map sgm ON sgm.id_site = s.id
 			
 			LEFT JOIN (
 				SELECT
@@ -393,6 +401,10 @@
 
 		<if test="hash_id_site_group != null">	
  			AND SHA2(s.id_site_group, 256) = #{hash_id_site_group}
+		</if>
+		
+		<if test="id_site_group > 0">	
+ 			AND (s.id_site_group = #{id_site_group} OR sgm.id_site_group = #{id_site_group})
 		</if>
 		
 		<if test="hash_id_site_sub_group != null">	

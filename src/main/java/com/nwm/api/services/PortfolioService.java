@@ -90,6 +90,7 @@ public class PortfolioService extends DB {
 			List<Object> green = new ArrayList<>();
 			List<Object> yellow = new ArrayList<>();
 			List<Object> red = new ArrayList<>();
+			List<Object> inverters = new ArrayList<>();
 			
 			boolean hasInverter = jsonArray.stream().filter(item -> Integer.parseInt(item.get("id_device_type").toString()) == 1).findFirst().isPresent();
 			
@@ -97,6 +98,7 @@ public class PortfolioService extends DB {
 				Map<String, Object> device = (Map<String, Object>) jsonArray.get(j);
 				Double comparison_ratio = device.get("comparison_ratio") == null ? null : Double.parseDouble(device.get("comparison_ratio").toString()) ;
 				int id_device_type = Integer.parseInt(device.get("id_device_type").toString());
+				if(id_device_type == 1) { inverters.add(device); }
 				if (id_device_type != (hasInverter ? 1 : 3)) continue;
 				
 				if (comparison_ratio == null || comparison_ratio <= 10) {
@@ -111,6 +113,7 @@ public class PortfolioService extends DB {
 			site.put("green", green);
 			site.put("yellow", yellow);
 			site.put("red", red);
+			site.put("inverters", inverters);
 			site.remove("devices_list");
 		} catch (Exception e) {
 		}
