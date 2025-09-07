@@ -76,6 +76,8 @@
 	<update id="updateSiteConfig">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`cf_start_time` = #{cf_start_time},
 			`cf_end_time` = #{cf_end_time},
 			`cf_alert_threshold` = #{cf_alert_threshold}
@@ -88,6 +90,8 @@
 	<update id="updateSiteSetting">
 		<if test="checkall == 1">
 			UPDATE site SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`display_time_format` = #{display_time_format},
 			`display_date_format` = #{display_date_format},
 			`id_time_zone` = #{id_time_zone}
@@ -99,6 +103,8 @@
 		<if test="checkall == 0">
 			UPDATE `site`
 			SET
+				`updated_date` = NOW(),
+				`updated_by` = #{updated_by},
 				`display_time_format` = #{display_time_format},
 				`display_date_format` = #{display_date_format},
 				`id_time_zone` = #{id_time_zone}
@@ -112,6 +118,8 @@
 	<update id="updatePVModelSetting">
 		UPDATE `site`
 		SET
+			updated_date = NOW(),
+			updated_by = #{updated_by},
 			pv_model = #{pv_model},
 			pv_module_temperature_coeff = #{pv_module_temperature_coeff},
 			stc_temperature = #{stc_temperature},

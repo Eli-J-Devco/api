@@ -686,6 +686,8 @@
 	<update id="updateNote">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`note` = #{note}
 		WHERE
 			`id` = #{id}

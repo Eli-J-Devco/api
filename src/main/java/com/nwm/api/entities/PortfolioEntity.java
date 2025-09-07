@@ -28,6 +28,7 @@ public class PortfolioEntity extends SortEntity {
 	private Date created_date;
 	private String created_by;
 	private Date updated_date;
+	private Integer updated_by;
 	private String built_since;
 	private int limit;
 	private int offset;
@@ -249,6 +250,12 @@ public class PortfolioEntity extends SortEntity {
 	}
 	public void setUpdated_date(Date updated_date) {
 		this.updated_date = updated_date;
+	}
+	public Integer getUpdated_by() {
+		return updated_by;
+	}
+	public void setUpdated_by(Integer updated_by) {
+		this.updated_by = updated_by;
 	}
 	public String getBuilt_since() {
 		return built_since;

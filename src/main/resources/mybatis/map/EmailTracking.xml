@@ -19,6 +19,8 @@
 	<update id="updateSiteEmailTrackingSetup">
 		UPDATE `site`
 		SET
+			`updated_date` = NOW(),
+			`updated_by` = #{updated_by},
 			`time_queue` = #{time_queue},
 			`threshold_item_max` = #{threshold_item_max}
 		WHERE 
