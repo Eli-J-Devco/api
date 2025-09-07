@@ -233,7 +233,7 @@ public class SiteService extends DB {
 	{
 		SqlSession session = this.beginTransaction();
 		try {
-			List dataEmployee = obj.getDataEmployee();
+			List<Map<String, Object>> dataEmployee = obj.getDataEmployee();
 			if (dataEmployee.size() <= 0) {
 				throw new Exception();
 			}
@@ -242,6 +242,8 @@ public class SiteService extends DB {
 			int insertLastId = obj.getId();
 
 			if (insertLastId > 0) {
+				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
+				
 				// Update table virtual and table report
 				obj.setTable_data_report("site" + insertLastId + "_data_report");
 				obj.setTable_data_virtual("model"+ insertLastId + "_virtual_meter_or_inverter");
@@ -250,15 +252,7 @@ public class SiteService extends DB {
 				session.insert("Site.createTableReportSite", obj);
 				session.insert("Site.createTableVirtualDeviceSite", obj);
 				session.insert("Site.updateTableVirtualAndReport", obj);
-				
-				
-				for (int i = 0; i < dataEmployee.size(); i++) {
-					Map<String, Object> employee = (Map<String, Object>) dataEmployee.get(i);
-					int id_employee = (int) employee.get("id");
-					EmployeeSiteMapEntity siteEmployeeMaptItem = this._buildSiteEmployeeMapItem(insertLastId, id_employee);
-					session.insert("Site.insertSiteEmployeeMap", siteEmployeeMaptItem);
-				}
-				
+				session.insert("Site.insertSiteEmployeeMap", dataEmployee);
 				session.update("Site.updateHidingSite", obj);
 				
 				if (obj.getSite_type() == 2) {
@@ -289,28 +283,6 @@ public class SiteService extends DB {
 			
 	}
 	
-	
-	/**
-	 * build order product item
-	 * 
-	 * @param productItem
-	 * @param productId
-	 * @param insertOrderLastId
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private EmployeeSiteMapEntity _buildSiteEmployeeMapItem(int id_site, int id_employee ) {
-		try {
-			EmployeeSiteMapEntity item = new EmployeeSiteMapEntity();
-			item.setId_employee(id_employee);
-			item.setId_site(id_site);
-			return item;
-		} catch (Exception e) {
-			return null;
-		}
-	}
-	
-	
 	/**
 	 * @description update role
 	 * @author long.pham
@@ -325,21 +297,15 @@ public class SiteService extends DB {
 			
 			switch (obj.getTab_menu()) {
 			case 1:
-				List dataEmployee = obj.getDataEmployee();
+				List<Map<String, Object>> dataEmployee = obj.getDataEmployee();
 				if (dataEmployee.size() <= 0) {
 					throw new Exception();
 				}
+				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 
 				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.update("Site.updateSite", obj);
-
-				for (int i = 0; i < dataEmployee.size(); i++) {
-					Map<String, Object> customer = (Map<String, Object>) dataEmployee.get(i);
-					int id_employee = (int) customer.get("id");
-					EmployeeSiteMapEntity siteCustomerMaptItem = this._buildSiteEmployeeMapItem(obj.getId(), id_employee);
-					session.insert("Site.insertSiteEmployeeMap", siteCustomerMaptItem);
-				}
-				
+				session.insert("Site.insertSiteEmployeeMap", dataEmployee);
 				session.update("Site.updateHidingSite", obj);
 				
 				if (obj.getSite_type() == 2) {

@@ -663,14 +663,13 @@
 		INSERT INTO `site_employee_map`(
 			id_employee,
 			id_site
-		)VALUES(
-			#{id_employee},
-			#{id_site}
-		);
-		<selectKey keyProperty="id" resultType="int">
-	        SELECT 
-	        LAST_INSERT_ID() as id
-        </selectKey>
+		)
+		<foreach collection="list" item="item" open="VALUES" close=";" separator=",">
+		(
+			#{item.id},
+			#{item.id_site}
+		)
+		</foreach>
 	</insert>
 	
 	<update id="updateHidingSite">
