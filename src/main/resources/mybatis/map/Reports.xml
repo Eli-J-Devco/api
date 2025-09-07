@@ -377,7 +377,6 @@
 		SELECT
 			r.operation,
 			r.site_mapping,
-			r.id_report,
 			r.id_site,
 			r.type_report,
 			r.cadence_range,

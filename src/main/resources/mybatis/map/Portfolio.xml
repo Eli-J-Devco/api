@@ -726,11 +726,20 @@
 	<select id="getAvailability" resultType="Map">
 		SELECT
 			s.id AS site_id,
+			c.highAvailability,
+			c.moderateAvailabilityBetween,
+			c.moderateAvailabilityAnd,
+			c.lowAvailability,
+			c.highPerformance,
+			c.moderatePerformanceBetween,
+			c.moderatePerformanceAnd,
+			c.lowPerformance,
 			<include refid="com.nwm.common.siteName"/> AS site_name,
 			(a.total_inverters - IFNULL(b.unavailable_inverters, 0)) / a.total_inverters AS availability,
 			im.devices_list AS devices_list
 		FROM
 			site s
+			LEFT JOIN company c ON c.id = s.id_company
 			JOIN time_zone t ON t.id = s.id_time_zone
 			LEFT JOIN (
 				SELECT 
@@ -795,10 +804,15 @@
 			s.table_data_virtual,
 			s.pv_model,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+			c.overPerformingActualExpected,
+			c.onTargetBetweenActualExpected,
+			c.onTargetAndActualExpected,
+			c.underPerformingActualExpected,
 			w.last_updated
 		FROM
 			site s
 			JOIN time_zone t ON t.id = s.id_time_zone
+			LEFT JOIN company c ON c.id = s.id_company
 			LEFT JOIN (
 				SELECT
 					COUNT(*) AS enable_virtual_device,

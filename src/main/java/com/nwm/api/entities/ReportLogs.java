@@ -12,7 +12,6 @@ import java.time.format.DateTimeFormatter;
 
 public class ReportLogs extends LogBase {
 	private String site_mapping;
-	private Integer id_report;
 	private Integer id_site;
 	private Integer type_report;
 	private Integer cadence_range;
@@ -34,12 +33,6 @@ public class ReportLogs extends LogBase {
 	}
 	public void setSite_mapping(String site_mapping) {
 		this.site_mapping = site_mapping;
-	}
-	public Integer getId_report() {
-		return id_report;
-	}
-	public void setId_report(Integer id_report) {
-		this.id_report = id_report;
 	}
 	public Integer getId_site() {
 		return id_site;

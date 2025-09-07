@@ -17,8 +17,44 @@ public class SiteEnergyEntity {
 	private Double variance;
 	private Double ae;
 	private String last_updated;
+	private double overPerformingActualExpected;
+	private double onTargetBetweenActualExpected;
+	private double onTargetAndActualExpected;
+	private double underPerformingActualExpected;
 	
 	
+	public double getOverPerformingActualExpected() {
+		return overPerformingActualExpected;
+	}
+
+	public void setOverPerformingActualExpected(double overPerformingActualExpected) {
+		this.overPerformingActualExpected = overPerformingActualExpected;
+	}
+
+	public double getOnTargetBetweenActualExpected() {
+		return onTargetBetweenActualExpected;
+	}
+
+	public void setOnTargetBetweenActualExpected(double onTargetBetweenActualExpected) {
+		this.onTargetBetweenActualExpected = onTargetBetweenActualExpected;
+	}
+
+	public double getOnTargetAndActualExpected() {
+		return onTargetAndActualExpected;
+	}
+
+	public void setOnTargetAndActualExpected(double onTargetAndActualExpected) {
+		this.onTargetAndActualExpected = onTargetAndActualExpected;
+	}
+
+	public double getUnderPerformingActualExpected() {
+		return underPerformingActualExpected;
+	}
+
+	public void setUnderPerformingActualExpected(double underPerformingActualExpected) {
+		this.underPerformingActualExpected = underPerformingActualExpected;
+	}
+
 	public String getLast_updated() {
 		return last_updated;
 	}
