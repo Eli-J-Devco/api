@@ -252,8 +252,7 @@ public class SiteService extends DB {
 				session.insert("Site.createTableReportSite", obj);
 				session.insert("Site.createTableVirtualDeviceSite", obj);
 				session.insert("Site.updateTableVirtualAndReport", obj);
-				session.insert("Site.insertSiteEmployeeMap", dataEmployee);
-				session.update("Site.updateHidingSite", obj);
+				session.insert("Site.insertSiteEmployeeMap", obj);
 				
 				if (obj.getSite_type() == 2) {
 					List areaList = obj.getAreaList();
@@ -305,8 +304,7 @@ public class SiteService extends DB {
 
 				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.update("Site.updateSite", obj);
-				session.insert("Site.insertSiteEmployeeMap", dataEmployee);
-				session.update("Site.updateHidingSite", obj);
+				session.insert("Site.insertSiteEmployeeMap", obj);
 				
 				if (obj.getSite_type() == 2) {
 					// add Area
