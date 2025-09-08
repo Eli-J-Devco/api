@@ -662,33 +662,29 @@
   	<insert id="insertSiteEmployeeMap" useGeneratedKeys="true" keyProperty="id_site">
 		INSERT INTO `site_employee_map`(
 			id_employee,
-			id_site
+			id_site,
+			is_hiding
 		)
-		<foreach collection="list" item="item" open="VALUES" close=";" separator=",">
-		(
-			#{item.id},
-			#{item.id_site}
-		)
-		</foreach>
-	</insert>
-	
-	<update id="updateHidingSite">
-		UPDATE `site_employee_map` sem
-		LEFT JOIN (
+		WITH site_employee_cte (id_employee, id_site) AS
+		<foreach collection="dataEmployee" item="item" open="(" close=")" separator="UNION ALL">
 			SELECT
-				id_employee,
-				MIN(id_role) AS id_role
-			FROM employee_role_map
-			GROUP BY id_employee
-		) erm ON erm.id_employee = sem.id_employee
-		SET
-			`is_hiding` = #{is_hiding}
-		WHERE
-			sem.`id_site` = #{id}
-			AND erm.id_role != 1
-	</update>
-  	
-  	
+				#{item.id},
+				#{item.id_site}
+		</foreach>
+		SELECT
+			cte.id_employee,
+			cte.id_site,
+			IF(erm.id_role != 1, #{is_hiding}, 0)
+		FROM
+			site_employee_cte cte
+			JOIN (
+				SELECT
+					id_employee,
+					MIN(id_role) AS id_role
+				FROM employee_role_map
+				GROUP BY id_employee
+			) erm ON erm.id_employee = cte.id_employee
+	</insert>
   	
   	<update id="updateTableVirtualAndReport">
 		UPDATE `site` 
