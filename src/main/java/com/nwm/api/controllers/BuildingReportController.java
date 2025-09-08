@@ -1,0 +1,50 @@
+/********************************************************
+* Copyright 2020-2021 NEXT WAVE ENERGY MONITORING INC.
+* All rights reserved.
+* 
+*********************************************************/
+package com.nwm.api.controllers;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.nwm.api.entities.BuildingReportEntity;
+import com.nwm.api.services.BuildingReportService;
+import com.nwm.api.utils.Constants;
+
+import springfox.documentation.annotations.ApiIgnore;
+
+@RestController
+@ApiIgnore
+@RequestMapping("/building-report")
+public class BuildingReportController extends BaseController {
+	
+	
+	/**
+	 * @description Get data building report
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/get-data-report")
+	public Object getDataBuildingReport(@RequestBody BuildingReportEntity obj) {
+		try {
+
+			BuildingReportService service = new BuildingReportService();
+
+			BuildingReportEntity detail = service.getDataBuildingReport(obj);
+			
+			if (detail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+}

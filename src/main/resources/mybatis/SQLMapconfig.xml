@@ -184,7 +184,7 @@
 		<mapper resource="mybatis/map/ModelSmaShp7510.xml"/>
 		<mapper resource="mybatis/map/ModelLovatoDmg800.xml"/>
 		<mapper resource="mybatis/map/AdminSettingGroup.xml"/>
-
+		<mapper resource="mybatis/map/BuildingReport.xml"/>
 		
 		
 		

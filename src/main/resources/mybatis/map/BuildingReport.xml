@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="BuildingReport">
+
+	<select id="getListDeviceBySite" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			IFNULL(d.meter_type, 0) AS meter_type 
+			
+		FROM
+			device AS d
+			
+		WHERE
+			d.is_delete = 0	
+			AND d.`status` = 1 
+			AND d.id_site = #{id_site}
+		GROUP BY d.id;
+	</select>
+	
+	
+	
+	<select id="getDataDeviceGroup" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+		(
+			SELECT ROUND(SUM(v.current_month), 1) AS current_month FROM (
+			
+				
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						SUM( t.nvmActiveEnergy ) AS current_month
+					FROM
+						(
+							SELECT
+								IFNULL( LEAD( mi.nvmActiveEnergy ) OVER ( ORDER BY mi.time_format ), ma.nvmActiveEnergy ) - mi.nvmActiveEnergy AS nvmActiveEnergy 
+							FROM
+								(
+									SELECT
+										t.time_format,
+										t.time_full,
+										dv.nvmActiveEnergy 
+									FROM
+										${item.datatablename} dv
+										JOIN (
+										SELECT
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m" ) AS time_format, DATE_FORMAT( CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m" ) AS time_full,
+											MIN( dv.time ) AS time 
+										FROM
+											${item.datatablename} dv
+											LEFT JOIN device d ON d.id = dv.id_device 
+										WHERE
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m-%d %H:%i:%s" ) BETWEEN 
+											DATE_FORMAT(LAST_DAY( #{end_date}),"%Y-%m-01 00:00:00" ) 
+											AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+										GROUP BY
+											time_format 
+										) t ON t.time = dv.time 
+								) mi
+								LEFT JOIN (
+									SELECT
+										t.time_format,
+										t.time_full,
+										dv.nvmActiveEnergy 
+									FROM
+										${item.datatablename} dv
+										JOIN (
+										SELECT
+											DATE_FORMAT( CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m" ) AS time_format,
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m" ) AS time_full,
+											MAX( dv.time ) AS time 
+										FROM
+											${item.datatablename} dv
+											LEFT JOIN device d ON d.id = dv.id_device 
+										WHERE
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+											DATE_FORMAT(LAST_DAY( #{end_date}),"%Y-%m-01 00:00:00" ) 
+											AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+										GROUP BY
+											time_format 
+										) t ON t.time = dv.time 
+									) ma ON ma.time_full = mi.time_full 
+						) t
+				</foreach>
+				
+				
+					
+					
+		
+				)v
+		) AS current_month,
+		
+		
+		(
+			SELECT ROUND(SUM(v.compare_current_month), 1) AS compare_current_month FROM (
+			
+			
+			
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT
+						SUM( t.nvmActiveEnergy ) AS compare_current_month
+					FROM
+						(
+							SELECT
+								IFNULL( LEAD( mi.nvmActiveEnergy ) OVER ( ORDER BY mi.time_format ), ma.nvmActiveEnergy ) - mi.nvmActiveEnergy AS nvmActiveEnergy 
+							FROM
+								(
+									SELECT
+										t.time_format,
+										t.time_full,
+										dv.nvmActiveEnergy 
+									FROM
+										${item.datatablename} dv
+										JOIN (
+										SELECT
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m" ) AS time_format, DATE_FORMAT( CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m" ) AS time_full,
+											MIN( dv.time ) AS time 
+										FROM
+											${item.datatablename} dv
+											LEFT JOIN device d ON d.id = dv.id_device 
+										WHERE
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m-%d %H:%i:%s" ) BETWEEN 
+											DATE_FORMAT(LAST_DAY(DATE_ADD(#{end_date},INTERVAL-1 MONTH)),"%Y-%m-01 00:00:00")
+											AND DATE_FORMAT(DATE_ADD(LAST_DAY(DATE_ADD("2025-08-01 00:00:00",INTERVAL-1 MONTH)),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
+										GROUP BY
+											time_format 
+										) t ON t.time = dv.time 
+								) mi
+								LEFT JOIN (
+									SELECT
+										t.time_format,
+										t.time_full,
+										dv.nvmActiveEnergy 
+									FROM
+										${item.datatablename} dv
+										JOIN (
+										SELECT
+											DATE_FORMAT( CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m" ) AS time_format,
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"),"%Y-%m" ) AS time_full,
+											MAX( dv.time ) AS time 
+										FROM
+											${item.datatablename} dv
+											LEFT JOIN device d ON d.id = dv.id_device 
+										WHERE
+											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", "America/Los_Angeles"), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+												DATE_FORMAT(LAST_DAY(DATE_ADD(#{end_date},INTERVAL-1 MONTH)),"%Y-%m-01 00:00:00")
+											AND DATE_FORMAT(DATE_ADD(LAST_DAY(DATE_ADD("2025-08-01 00:00:00",INTERVAL-1 MONTH)),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
+										GROUP BY
+											time_format 
+										) t ON t.time = dv.time 
+									) ma ON ma.time_full = mi.time_full 
+						) t
+				</foreach>
+				
+		
+				)v
+		) AS compare_current_month
+		
+
+	</select>
+	
+	
+	<select id="getDataBuildingReport" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT
+			s.id,
+			s.id_company
+		FROM
+			site s 
+			LEFT JOIN country c ON c.id = s.id_country
+		WHERE
+			s.id = #{id_site} 
+			AND s.`status` = 1 
+			AND s.is_delete = 0
+	</select>
+	
+</mapper>
