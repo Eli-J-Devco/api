@@ -302,8 +302,8 @@ public class SiteService extends DB {
 				}
 				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 
-				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.update("Site.updateSite", obj);
+				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.insert("Site.insertSiteEmployeeMap", obj);
 				
 				if (obj.getSite_type() == 2) {
