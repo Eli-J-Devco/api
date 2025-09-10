@@ -242,6 +242,7 @@ public class SiteService extends DB {
 			int insertLastId = obj.getId();
 
 			if (insertLastId > 0) {
+				dataEmployee.sort((a,b) -> ((Integer) a.get("id")).compareTo(((Integer) b.get("id"))));
 				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 				
 				// Update table virtual and table report
@@ -300,10 +301,11 @@ public class SiteService extends DB {
 				if (dataEmployee.size() <= 0) {
 					throw new Exception();
 				}
+				dataEmployee.sort((a,b) -> ((Integer) a.get("id")).compareTo(((Integer) b.get("id"))));
 				dataEmployee.forEach(item -> item.put("id_site", insertLastId));
 
-				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.update("Site.updateSite", obj);
+				session.delete("Site.deleteSiteEmployeeMapEdit", obj);
 				session.insert("Site.insertSiteEmployeeMap", obj);
 				
 				if (obj.getSite_type() == 2) {

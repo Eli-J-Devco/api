@@ -293,39 +293,13 @@
 		
 		(
 			SELECT
-				IFNULL(ROUND(SUM(IF(meter.generationNow >= 0, meter.generationNow, inv.generationNow)), 2), 0) AS generationNow
+				IFNULL(ROUND(SUM(IFNULL(v.activePower, IFNULL(m.activePower, ivt.activePower))), 2), 0) AS generationNow
 			FROM
 				site s
 				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-				LEFT JOIN (
-					SELECT 
-						SUM(d.last_value) AS generationNow,
-						d.id_site
-					FROM
-						device d
-					WHERE
-						d.id_device_type IN (3,7,9)
-						AND d.is_excluded_meter = 0
-						AND d.`status` = 1 
-						AND d.`is_delete` = 0
-						<include refid="com.nwm.common.deviceByDomainCondition"/>
-					GROUP BY
-						d.id_site
-				) meter ON meter.id_site = s.id
-				LEFT JOIN (
-					SELECT 
-						SUM(d.last_value) AS generationNow,
-						d.id_site
-					FROM
-						device d
-					WHERE
-						d.id_device_type = 1
-						AND d.`status` = 1 
-						AND d.`is_delete` = 0
-						<include refid="com.nwm.common.deviceByDomainCondition"/>
-					GROUP BY
-						d.id_site
-				) inv ON inv.id_site = s.id
+				LEFT JOIN (<include refid="Portfolio.activeAndExpectedPowerByVirtualDeviceSubquery"/>) v ON v.id_site = s.id
+				LEFT JOIN (<include refid="Portfolio.activePowerByInverterSubquery"/>) ivt ON ivt.id_site = s.id 
+				LEFT JOIN (<include refid="Portfolio.activePowerByMeterSubquery"/>) m ON m.id_site = s.id
 			WHERE 
 				s.`status` = 1
 				AND s.`is_delete` = 0
@@ -337,6 +311,7 @@
 						</foreach>
 					)
 				</if>
+				<include refid="com.nwm.common.siteByDomainCondition"/>
 		) AS generationNow,
 		
 		
