@@ -30,11 +30,83 @@ public class BuildingReportEntity extends SortEntity {
 	
 	private double current_month;
 	private double compare_current_month;
+	private List dataWeatherCurrentMonth;
+	private List dataWeatherComapreMonth;
+	
+	private List dataPVStatistics;
+	private List dataElectricStatistics;
+	private List dataGasStatistics;
+	private List dataWaterStatistics;
+	private List dataDaily;
+	private List dataDailyExpected;
+	
+	private List dataHistory;
+	private List dataHistoryExpected;
 	
 	
 	
 	
 	
+	public List getDataHistory() {
+		return dataHistory;
+	}
+	public void setDataHistory(List dataHistory) {
+		this.dataHistory = dataHistory;
+	}
+	public List getDataHistoryExpected() {
+		return dataHistoryExpected;
+	}
+	public void setDataHistoryExpected(List dataHistoryExpected) {
+		this.dataHistoryExpected = dataHistoryExpected;
+	}
+	public List getDataDailyExpected() {
+		return dataDailyExpected;
+	}
+	public void setDataDailyExpected(List dataDailyExpected) {
+		this.dataDailyExpected = dataDailyExpected;
+	}
+	public List getDataDaily() {
+		return dataDaily;
+	}
+	public void setDataDaily(List dataDaily) {
+		this.dataDaily = dataDaily;
+	}
+	public List getDataPVStatistics() {
+		return dataPVStatistics;
+	}
+	public void setDataPVStatistics(List dataPVStatistics) {
+		this.dataPVStatistics = dataPVStatistics;
+	}
+	public List getDataElectricStatistics() {
+		return dataElectricStatistics;
+	}
+	public void setDataElectricStatistics(List dataElectricStatistics) {
+		this.dataElectricStatistics = dataElectricStatistics;
+	}
+	public List getDataGasStatistics() {
+		return dataGasStatistics;
+	}
+	public void setDataGasStatistics(List dataGasStatistics) {
+		this.dataGasStatistics = dataGasStatistics;
+	}
+	public List getDataWaterStatistics() {
+		return dataWaterStatistics;
+	}
+	public void setDataWaterStatistics(List dataWaterStatistics) {
+		this.dataWaterStatistics = dataWaterStatistics;
+	}
+	public List getDataWeatherCurrentMonth() {
+		return dataWeatherCurrentMonth;
+	}
+	public void setDataWeatherCurrentMonth(List dataWeatherCurrentMonth) {
+		this.dataWeatherCurrentMonth = dataWeatherCurrentMonth;
+	}
+	public List getDataWeatherComapreMonth() {
+		return dataWeatherComapreMonth;
+	}
+	public void setDataWeatherComapreMonth(List dataWeatherComapreMonth) {
+		this.dataWeatherComapreMonth = dataWeatherComapreMonth;
+	}
 	public double getCurrent_month() {
 		return current_month;
 	}

@@ -47,4 +47,32 @@ public class BuildingReportController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description Get data building report by type
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 * @return data (status, message, array
+	 */
+	@PostMapping("/get-data-report-by-type")
+	public Object getDataBuildingReportByType(@RequestBody BuildingReportEntity obj) {
+		try {
+
+			BuildingReportService service = new BuildingReportService();
+
+			BuildingReportEntity detail = service.getDataBuildingReportByType(obj);
+			
+			if (detail != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, detail, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
+	
+	
 }
