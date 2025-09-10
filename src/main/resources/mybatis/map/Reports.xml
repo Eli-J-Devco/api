@@ -298,7 +298,7 @@
 				'value', s.id,
 				'text', <include refid="com.nwm.common.siteName"/>,
 				'label', <include refid="com.nwm.common.siteName"/>,
-				'id_group', s.id_site_group
+				'id_group', s.id_site_sub_group
 			)) AS sitesListJSON
 		FROM
 			report r
