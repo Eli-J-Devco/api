@@ -263,7 +263,7 @@ public class PortfolioService extends DB {
 						item.put("actual_power", energyItem.getActualPower());
 						item.put("expected_energy", energyItem.getExpectedEnergy());
 						item.put("expected_power", energyItem.getExpectedPower());
-						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? energyItem.getActualEnergy() / energyItem.getExpectedEnergy() : null);
+						item.put("performance", Objects.nonNull(energyItem.getActualEnergy()) && Objects.nonNull(energyItem.getExpectedEnergy()) && energyItem.getExpectedEnergy() > 0 ? Math.round(energyItem.getActualEnergy() / energyItem.getExpectedEnergy() * 1000.0) / 1000.0 : null);
 						item.put("variance", energyItem.getVariance());
 						item.put("hash_id", energyItem.getHash_id());
 						
@@ -435,7 +435,7 @@ public class PortfolioService extends DB {
 					
 					if (Objects.nonNull(item.getActualEnergy()) && Objects.nonNull(item.getExpectedEnergy()) && item.getExpectedEnergy() > 0) {
 						item.setVariance((item.getActualEnergy() - item.getExpectedEnergy()) / item.getExpectedEnergy());
-						item.setAe(item.getActualEnergy() / item.getExpectedEnergy());
+						item.setAe(Math.round(item.getActualEnergy() / item.getExpectedEnergy() * 1000.0) / 1000.0);
 					}
 					
 					return item;
