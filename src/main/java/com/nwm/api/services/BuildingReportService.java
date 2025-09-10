@@ -280,6 +280,13 @@ public class BuildingReportService extends DB {
 				}
 				
 				
+				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
+				if(dataPeakDemand != null) {
+					obj.setPeak_demand(dataPeakDemand.getPeak_demand());
+					obj.setPeak_demand_date(dataPeakDemand.getPeak_demand_date());
+				}
+				
+				
 			}
 			
 			return obj;

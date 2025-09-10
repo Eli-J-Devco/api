@@ -42,11 +42,26 @@ public class BuildingReportEntity extends SortEntity {
 	
 	private List dataHistory;
 	private List dataHistoryExpected;
+	private double peak_demand;
+	private String peak_demand_date;
 	
 	
 	
 	
 	
+	
+	public double getPeak_demand() {
+		return peak_demand;
+	}
+	public void setPeak_demand(double peak_demand) {
+		this.peak_demand = peak_demand;
+	}
+	public String getPeak_demand_date() {
+		return peak_demand_date;
+	}
+	public void setPeak_demand_date(String peak_demand_date) {
+		this.peak_demand_date = peak_demand_date;
+	}
 	public List getDataHistory() {
 		return dataHistory;
 	}
