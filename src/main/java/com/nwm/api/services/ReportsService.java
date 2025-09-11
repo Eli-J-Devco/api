@@ -1051,16 +1051,19 @@ public class ReportsService extends DB {
 			
 			List<MonthlyDateEntity> dataEnergy = new ArrayList<>();
 			
-			if (dataObj.isEnable_virtual_device()) {
+			if (dataObj.isHave_poa()) {
 				SiteEntity siteObj = new SiteEntity();
 				siteObj.setId_site(dataObj.getId_site());
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
 				siteObj.setData_send_time(4);
 				siteObj.setDatatablename(dataObj.getTable_data_virtual());
+				siteObj.setTable_data_report(dataObj.getTable_data_report());
+				siteObj.setIs_show_each_meter(0);
+				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
 				siteObj.setHidden_data_list(new ArrayList<>());
 				
-				List<ClientMonthlyDateEntity> virtualData = queryForList("CustomerView.getDataVirtualDevice", siteObj);
+				List<ClientMonthlyDateEntity> virtualData = dataObj.isEnable_virtual_device() ? queryForList("CustomerView.getDataVirtualDevice", siteObj) : queryForList("CustomerView.getDataSiteDataReport", siteObj);
 				
 				dataEnergy = virtualData.stream().map(item -> {
 					MonthlyDateEntity dataItem = new MonthlyDateEntity();
