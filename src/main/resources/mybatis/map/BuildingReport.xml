@@ -58,7 +58,7 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value),"%Y-%m-%d %H:%i:%s" ) BETWEEN 
-											DATE_FORMAT(#{end_date},"%Y-%m-%d 00:00:00" ) 
+											DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
 											AND DATE_FORMAT(DATE_ADD( #{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 										GROUP BY
 											time_format 
@@ -83,7 +83,7 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-											DATE_FORMAT(#{end_date},"%Y-%m-%d 00:00:00" ) 
+											DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
 											AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 										GROUP BY
 											time_format 
