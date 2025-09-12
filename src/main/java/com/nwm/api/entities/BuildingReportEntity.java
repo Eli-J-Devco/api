@@ -44,12 +44,26 @@ public class BuildingReportEntity extends SortEntity {
 	private List dataHistoryExpected;
 	private double peak_demand;
 	private String peak_demand_date;
+	private double lastMonth;
+	private double avg3Month;
 	
 	
 	
 	
 	
 	
+	public double getAvg3Month() {
+		return avg3Month;
+	}
+	public void setAvg3Month(double avg3Month) {
+		this.avg3Month = avg3Month;
+	}
+	public double getLastMonth() {
+		return lastMonth;
+	}
+	public void setLastMonth(double lastMonth) {
+		this.lastMonth = lastMonth;
+	}
 	public double getPeak_demand() {
 		return peak_demand;
 	}

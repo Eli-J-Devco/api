@@ -58,8 +58,8 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value),"%Y-%m-%d %H:%i:%s" ) BETWEEN 
-											DATE_FORMAT(LAST_DAY( #{end_date}),"%Y-%m-01 00:00:00" ) 
-											AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+											DATE_FORMAT(#{end_date},"%Y-%m-%d 00:00:00" ) 
+											AND DATE_FORMAT(DATE_ADD( #{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 										GROUP BY
 											time_format 
 										) t ON t.time = dv.time 
@@ -83,8 +83,8 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-											DATE_FORMAT(LAST_DAY( #{end_date}),"%Y-%m-01 00:00:00" ) 
-											AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+											DATE_FORMAT(#{end_date},"%Y-%m-%d 00:00:00" ) 
+											AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 										GROUP BY
 											time_format 
 										) t ON t.time = dv.time 
@@ -131,8 +131,8 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value),"%Y-%m-%d %H:%i:%s" ) BETWEEN 
-											DATE_FORMAT(LAST_DAY(DATE_ADD(#{start_date},INTERVAL-1 MONTH)),"%Y-%m-01 00:00:00")
-											AND DATE_FORMAT(DATE_ADD(LAST_DAY(DATE_ADD(#{end_date},INTERVAL-1 MONTH)),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
+											DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 MONTH),"%Y-%m-%d 00:00:00")
+											AND DATE_FORMAT(DATE_ADD(DATE_ADD(#{end_date},INTERVAL-1 MONTH),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
 										GROUP BY
 											time_format 
 										) t ON t.time = dv.time 
@@ -156,8 +156,8 @@
 											LEFT JOIN time_zone t ON t.id = s.id_time_zone
 										WHERE
 											DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-												DATE_FORMAT(LAST_DAY(DATE_ADD(#{start_date},INTERVAL-1 MONTH)),"%Y-%m-01 00:00:00")
-											AND DATE_FORMAT(DATE_ADD(LAST_DAY(DATE_ADD(#{end_date},INTERVAL-1 MONTH)),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
+												DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 MONTH),"%Y-%m-%d 00:00:00")
+											AND DATE_FORMAT(DATE_ADD(DATE_ADD(#{end_date},INTERVAL-1 MONTH),INTERVAL 1 DAY),"%Y-%m-%d 00:00:00") 
 										GROUP BY
 											time_format 
 										) t ON t.time = dv.time 
@@ -371,8 +371,8 @@
 										LEFT JOIN time_zone t ON t.id = s.id_time_zone
 									WHERE
 									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-									DATE_FORMAT(LAST_DAY( #{start_date}),"%Y-%m-01 00:00:00" ) 
-									AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 									GROUP BY
 										time_format
 								) t ON t.time = dv.time
@@ -398,8 +398,8 @@
 										LEFT JOIN time_zone t ON t.id = s.id_time_zone
 									WHERE
 					 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-										DATE_FORMAT(LAST_DAY( #{start_date}),"%Y-%m-01 00:00:00" ) 
-										AND DATE_FORMAT(DATE_ADD(LAST_DAY( #{end_date}),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
+										DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+										AND DATE_FORMAT(DATE_ADD( #{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
 									GROUP BY
 										time_format
 								) t ON t.time = dv.time
@@ -605,5 +605,145 @@
 			</foreach>
 		)t
 	</select>
+	
+	
+	<select id="getDataLastMonth" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			SUM(v.nvmActiveEnergy) AS lastMonth
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					mi.time_format,
+					mi.time_full,
+					mi.categories_time,
+					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
+				FROM
+					(
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
+									MIN(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+								DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+								DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -1 MONTH), "%Y-%m-%d 00:00:00" ) 
+								AND DATE_FORMAT( DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH) ,"%Y-%m-%d 00:00:00" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) mi
+					LEFT JOIN (
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
+									MAX(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+									DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT(DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) ma ON ma.time_full = mi.time_full
+			</foreach>
+		)v
+	</select>
+	
+	<select id="getDataCompare3Month" resultType="com.nwm.api.entities.BuildingReportEntity" parameterType="com.nwm.api.entities.BuildingReportEntity">
+		SELECT 
+			ROUND(SUM(v.nvmActiveEnergy)/3, 1) AS avg3Month
+		FROM (
+			<foreach collection="devices" item="item" index="index" separator="union all">
+				SELECT
+					mi.time_format,
+					mi.time_full,
+					mi.categories_time,
+					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
+				FROM
+					(
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
+									MIN(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+								DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+								DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -4 MONTH), "%Y-%m-%d 00:00:00" ) 
+								AND DATE_FORMAT( DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH) ,"%Y-%m-%d 00:00:00" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) mi
+					LEFT JOIN (
+						SELECT
+							t.time_format,
+							t.time_full,
+							t.categories_time,
+							dv.nvmActiveEnergy
+						FROM
+							${item.datatablename} dv
+							JOIN (
+								SELECT
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
+									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
+									MAX(dv.time) AS time
+								FROM
+									${item.datatablename} dv
+									LEFT JOIN device d ON d.id = dv.id_device
+									LEFT JOIN site s ON s.id = d.id_site 
+									LEFT JOIN time_zone t ON t.id = s.id_time_zone
+								WHERE
+									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
+									DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -4 MONTH),"%Y-%m-%d 00:00:00" ) 
+									AND DATE_FORMAT(DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+								GROUP BY
+									time_format
+							) t ON t.time = dv.time
+					) ma ON ma.time_full = mi.time_full
+			</foreach>
+		)v
+	</select>
+	
 	
 </mapper>

@@ -286,6 +286,19 @@ public class BuildingReportService extends DB {
 					obj.setPeak_demand_date(dataPeakDemand.getPeak_demand_date());
 				}
 				
+				BuildingReportEntity dataLastMonth = (BuildingReportEntity) queryForObject("BuildingReport.getDataLastMonth", obj);
+				if(dataLastMonth != null) {
+					obj.setLastMonth(dataLastMonth.getLastMonth());
+				}
+				
+				BuildingReportEntity dataCompare3Month = (BuildingReportEntity) queryForObject("BuildingReport.getDataCompare3Month", obj);
+				if(dataLastMonth != null) {
+					obj.setAvg3Month(dataCompare3Month.getAvg3Month());
+				}
+				
+				
+				
+				
 				
 			}
 			
