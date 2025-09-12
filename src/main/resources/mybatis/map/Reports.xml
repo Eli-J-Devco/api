@@ -436,6 +436,7 @@
 			r.type_option,
 			r.cadence_range,
 			IF(v.enable_virtual_device > 0 , 1, 0) AS enable_virtual_device,
+			COUNT(IF(d.id_device_type = 4 AND d.reverse_poa = 0, 1, NULL)) > 0 AS have_poa,
 			COUNT(IF(d.id_device_type IN (3,7,9) AND d.is_excluded_meter = 0, 1, NULL)) > 0 AS have_meter,
 			COUNT(IF(d.id_device_type = 1, 1, NULL)) > 0 AS have_inverter
 		FROM
