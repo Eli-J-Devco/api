@@ -133,10 +133,143 @@ public class BuildingReportService extends DB {
 				}
 				
 				
+//				if(weather.size() > 0) {
+//					obj.setDevices(weather);
+//					List dataWeatherCurrentMonth = queryForList("BuildingReport.getDataWeatherStation", obj);
+//					obj.setDataWeatherCurrentMonth(dataWeatherCurrentMonth);
+//					
+//					List dataWeatherLastMonth = queryForList("BuildingReport.getDataWeatherStationLastMonth", obj);
+//					obj.setDataWeatherComapreMonth(dataWeatherLastMonth);
+//				}
+				
+				
+			}
+			
+			return obj;
+		} catch (Exception ex) {
+			return new BuildingReportEntity();
+		}
+	}
+	
+
+	
+	/**
+	 * @description get data building report
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 */
+	public BuildingReportEntity getDataWeatherStationReport(BuildingReportEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("BuildingReport.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+//				List<Object> electrics = new ArrayList<>();
+//				List<Object> gas = new ArrayList<>();
+//				List<Object> pvProduction = new ArrayList<>();
+//				List<Object> waters = new ArrayList<>();
+				List<Object> weather = new ArrayList<>();
+				
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
+					if(idDeviceType == 4) {
+						weather.add(item);
+					}
+					
+//					switch (meterType) {
+//				        case 3:
+//				        	pvProduction.add(item);
+//				            break;
+//				        case 4:
+//				        	electrics.add(item);
+//				            break;
+//				        case 5:
+//				        	waters.add(item);
+//				            break;
+//				        case 7:
+//				        	gas.add(item);
+//				            break;
+//				    }
+				}
+				
+//				if(pvProduction.size() > 0) {
+//					obj.setDevices(pvProduction);
+//					BuildingReportEntity dataPV = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
+//					if(dataPV != null) {
+//						obj.setPv_current_month(dataPV.getCurrent_month());
+//						obj.setPv_compare_current_month(dataPV.getCompare_current_month());
+//					}
+//				
+//					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+//					obj.setDataPVStatistics(dataPVStatistics);
+//				}
+//				
+//				if(gas.size() > 0) {
+//					obj.setDevices(gas);
+//					BuildingReportEntity dataGas = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
+//					if(dataGas != null) {
+//						obj.setGas_current_month(dataGas.getCurrent_month());
+//						obj.setGas_compare_current_month(dataGas.getCompare_current_month());
+//					}
+//					
+//					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+//					obj.setDataGasStatistics(dataGasStatistics);
+//					
+//				}
+				
+//				if(waters.size() > 0) {
+//					obj.setDevices(waters);
+//					BuildingReportEntity dataWater = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
+//					if(dataWater != null) {
+//						obj.setWater_current_month(dataWater.getCurrent_month());
+//						obj.setWater_compare_current_month(dataWater.getCompare_current_month());
+//					}
+//					
+//					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+//					obj.setDataWaterStatistics(dataWaterStatistics);
+//					
+//				}
+//				if(electrics.size() > 0) {
+//					obj.setDevices(electrics);
+//					BuildingReportEntity dataElectric = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
+//					if(dataElectric != null) {
+//						obj.setElectric_current_month(dataElectric.getCurrent_month());
+//						obj.setElectric_compare_current_month(dataElectric.getCompare_current_month());
+//					}
+//					
+//					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+//					obj.setDataElectricStatistics(dataElectricStatistics);
+//				}
+				
+				int interval = 1;
+				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
+				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
+				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
+				
+				ChronoUnit timeUnit = ChronoUnit.HOURS;
+				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				
+				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
+				while (!start.isAfter(end)) {
+					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
+					dateTime.setTime_full(start.format(timeFullFormat));
+					dateTime.setCategories_time(start.format(categoriesTimeFormat));
+					dateTime.setTime_format(start.format(timeFormat));
+					dateTimeList.add(dateTime);
+					start = start.plus(interval, timeUnit);
+				}
+				
+				
+				
 				if(weather.size() > 0) {
 					obj.setDevices(weather);
 					List dataWeatherCurrentMonth = queryForList("BuildingReport.getDataWeatherStation", obj);
-					obj.setDataWeatherCurrentMonth(dataWeatherCurrentMonth);
+					List<BuildingReportDateEntity> fillData = Lib.fulfillData(dateTimeList, dataWeatherCurrentMonth, "time_full");
+					
+					obj.setDataWeatherCurrentMonth(fillData);
 					
 					List dataWeatherLastMonth = queryForList("BuildingReport.getDataWeatherStationLastMonth", obj);
 					obj.setDataWeatherComapreMonth(dataWeatherLastMonth);

@@ -14,8 +14,26 @@ public class BuildingReportDateEntity extends DateTimeReportDataEntity {
 	private int days;
 	private double previousRead;
 	private double currentRead;
+	private double nvm_irradiance;
+	private double nvm_temperature;
 	
 	
+
+	public double getNvm_irradiance() {
+		return nvm_irradiance;
+	}
+
+	public void setNvm_irradiance(double nvm_irradiance) {
+		this.nvm_irradiance = nvm_irradiance;
+	}
+
+	public double getNvm_temperature() {
+		return nvm_temperature;
+	}
+
+	public void setNvm_temperature(double nvm_temperature) {
+		this.nvm_temperature = nvm_temperature;
+	}
 
 	public double getPreviousRead() {
 		return previousRead;

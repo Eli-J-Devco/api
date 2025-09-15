@@ -188,8 +188,8 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS categories_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_hour,
-						AVG(dv.nvm_irradiance) AS nvm_irradiance,
-						AVG(dv.nvm_temperature) AS nvm_temperature
+						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -226,8 +226,8 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS categories_time,
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_hour,
-						AVG(dv.nvm_irradiance) AS nvm_irradiance,
-						AVG(dv.nvm_temperature) AS nvm_temperature
+						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
