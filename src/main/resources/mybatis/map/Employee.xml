@@ -321,8 +321,7 @@
 			m.manage_site_total,
 			m.ids_site,
 			m.site_name AS site_names,
-			s.last_login,
-			s.offset_timezone,
+			CONVERT_TZ(s.last_login, s.offset_timezone, 'UTC') AS last_login,
 			s.page_login,
 			e.account_locked,
 			e.failed_attempt,
@@ -362,7 +361,7 @@
 	                t.group_roles ${order_by}
 	            </when>
 	            <when test="sort_column == 'status'">
-	                s.last_login ${order_by}
+	                last_login ${order_by}
 	            </when>
 	            <when test="sort_column == 'manage_site'">
 	                m.manage_site_total ${order_by}
