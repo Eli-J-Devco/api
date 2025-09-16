@@ -90,9 +90,6 @@ public class BuildingReportService extends DB {
 						obj.setPv_current_month(dataPV.getCurrent_month());
 						obj.setPv_compare_current_month(dataPV.getCompare_current_month());
 					}
-				
-					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataPVStatistics(dataPVStatistics);
 				}
 				
 				if(gas.size() > 0) {
@@ -102,9 +99,6 @@ public class BuildingReportService extends DB {
 						obj.setGas_current_month(dataGas.getCurrent_month());
 						obj.setGas_compare_current_month(dataGas.getCompare_current_month());
 					}
-					
-					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataGasStatistics(dataGasStatistics);
 					
 				}
 				
@@ -116,9 +110,6 @@ public class BuildingReportService extends DB {
 						obj.setWater_compare_current_month(dataWater.getCompare_current_month());
 					}
 					
-					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataWaterStatistics(dataWaterStatistics);
-					
 				}
 				if(electrics.size() > 0) {
 					obj.setDevices(electrics);
@@ -127,9 +118,6 @@ public class BuildingReportService extends DB {
 						obj.setElectric_current_month(dataElectric.getCurrent_month());
 						obj.setElectric_compare_current_month(dataElectric.getCompare_current_month());
 					}
-					
-					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-					obj.setDataElectricStatistics(dataElectricStatistics);
 				}
 
 			}
@@ -148,15 +136,15 @@ public class BuildingReportService extends DB {
 	 * @since 2025-09-08
 	 * @param id_site
 	 */
-	public BuildingReportEntity getDataWeatherStationReport(BuildingReportEntity obj) {
+	public BuildingReportEntity getDataCategoryStatisticsReport(BuildingReportEntity obj) {
 		try {
 			// Get device by id_site
 			List devices = queryForList("BuildingReport.getListDeviceBySite", obj);
 			if(devices.size() > 0) {
-//				List<Object> electrics = new ArrayList<>();
-//				List<Object> gas = new ArrayList<>();
-//				List<Object> pvProduction = new ArrayList<>();
-//				List<Object> waters = new ArrayList<>();
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
 				List<Object> weather = new ArrayList<>();
 				
 				for (int j = 0; j < devices.size(); j++) {
@@ -167,20 +155,75 @@ public class BuildingReportService extends DB {
 						weather.add(item);
 					}
 					
-//					switch (meterType) {
-//				        case 3:
-//				        	pvProduction.add(item);
-//				            break;
-//				        case 4:
-//				        	electrics.add(item);
-//				            break;
-//				        case 5:
-//				        	waters.add(item);
-//				            break;
-//				        case 7:
-//				        	gas.add(item);
-//				            break;
-//				    }
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				    }
+				}
+				
+				if(pvProduction.size() > 0) {
+					obj.setDevices(pvProduction);
+					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+					obj.setDataPVStatistics(dataPVStatistics);
+				}
+				
+				if(gas.size() > 0) {
+					obj.setDevices(gas);
+					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+					obj.setDataGasStatistics(dataGasStatistics);
+					
+				}
+				
+				if(waters.size() > 0) {
+					obj.setDevices(waters);
+					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+					obj.setDataWaterStatistics(dataWaterStatistics);
+					
+				}
+				if(electrics.size() > 0) {
+					obj.setDevices(electrics);
+					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
+					obj.setDataElectricStatistics(dataElectricStatistics);
+				}
+
+			}
+			
+			return obj;
+		} catch (Exception ex) {
+			return new BuildingReportEntity();
+		}
+	}
+	
+	/**
+	 * @description get data building report
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 */
+	public BuildingReportEntity getDataWeatherStationReport(BuildingReportEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("BuildingReport.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> weather = new ArrayList<>();
+				
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
+					if(idDeviceType == 4) {
+						weather.add(item);
+					}
 				}
 				
 				int interval = 1;
