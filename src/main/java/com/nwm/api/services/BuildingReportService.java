@@ -131,18 +131,7 @@ public class BuildingReportService extends DB {
 					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
 					obj.setDataElectricStatistics(dataElectricStatistics);
 				}
-				
-				
-//				if(weather.size() > 0) {
-//					obj.setDevices(weather);
-//					List dataWeatherCurrentMonth = queryForList("BuildingReport.getDataWeatherStation", obj);
-//					obj.setDataWeatherCurrentMonth(dataWeatherCurrentMonth);
-//					
-//					List dataWeatherLastMonth = queryForList("BuildingReport.getDataWeatherStationLastMonth", obj);
-//					obj.setDataWeatherComapreMonth(dataWeatherLastMonth);
-//				}
-				
-				
+
 			}
 			
 			return obj;
@@ -193,55 +182,6 @@ public class BuildingReportService extends DB {
 //				            break;
 //				    }
 				}
-				
-//				if(pvProduction.size() > 0) {
-//					obj.setDevices(pvProduction);
-//					BuildingReportEntity dataPV = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
-//					if(dataPV != null) {
-//						obj.setPv_current_month(dataPV.getCurrent_month());
-//						obj.setPv_compare_current_month(dataPV.getCompare_current_month());
-//					}
-//				
-//					List dataPVStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-//					obj.setDataPVStatistics(dataPVStatistics);
-//				}
-//				
-//				if(gas.size() > 0) {
-//					obj.setDevices(gas);
-//					BuildingReportEntity dataGas = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
-//					if(dataGas != null) {
-//						obj.setGas_current_month(dataGas.getCurrent_month());
-//						obj.setGas_compare_current_month(dataGas.getCompare_current_month());
-//					}
-//					
-//					List dataGasStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-//					obj.setDataGasStatistics(dataGasStatistics);
-//					
-//				}
-				
-//				if(waters.size() > 0) {
-//					obj.setDevices(waters);
-//					BuildingReportEntity dataWater = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
-//					if(dataWater != null) {
-//						obj.setWater_current_month(dataWater.getCurrent_month());
-//						obj.setWater_compare_current_month(dataWater.getCompare_current_month());
-//					}
-//					
-//					List dataWaterStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-//					obj.setDataWaterStatistics(dataWaterStatistics);
-//					
-//				}
-//				if(electrics.size() > 0) {
-//					obj.setDevices(electrics);
-//					BuildingReportEntity dataElectric = (BuildingReportEntity) queryForObject("BuildingReport.getDataDeviceGroup", obj);
-//					if(dataElectric != null) {
-//						obj.setElectric_current_month(dataElectric.getCurrent_month());
-//						obj.setElectric_compare_current_month(dataElectric.getCompare_current_month());
-//					}
-//					
-//					List dataElectricStatistics = queryForList("BuildingReport.getDataReportCategoryStatistics", obj);
-//					obj.setDataElectricStatistics(dataElectricStatistics);
-//				}
 				
 				int interval = 1;
 				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
