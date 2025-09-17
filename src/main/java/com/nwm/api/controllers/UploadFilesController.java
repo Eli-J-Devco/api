@@ -27,211 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
-import com.nwm.api.entities.DeviceEntity;
-import com.nwm.api.entities.ModelAE1000NXClass9644Entity;
-import com.nwm.api.entities.ModelATiTrackerEntity;
-import com.nwm.api.entities.ModelAbbTrio500tkOutdEntity;
-import com.nwm.api.entities.ModelAbbTrioClass6210Entity;
-import com.nwm.api.entities.ModelAbbUnoDm1250tpPlusEntity;
-import com.nwm.api.entities.ModelAcuRevProductionMeterEntity;
-import com.nwm.api.entities.ModelAcuvimIIREntity;
-import com.nwm.api.entities.ModelAdam4017WSClass8110Nelis190Entity;
-import com.nwm.api.entities.ModelAdvancedEnergySolaronEntity;
-import com.nwm.api.entities.ModelAeRefusolEntity;
-import com.nwm.api.entities.ModelAesTxInverterEntity;
-import com.nwm.api.entities.ModelCampellScientificMeter1Entity;
-import com.nwm.api.entities.ModelCampellScientificMeter2Entity;
-import com.nwm.api.entities.ModelCampellScientificMeter3Entity;
-import com.nwm.api.entities.ModelCampellScientificMeter4Entity;
-import com.nwm.api.entities.ModelChintSolectriaInverterClass9725Entity;
-import com.nwm.api.entities.ModelDTSMeasurelogicDemandMeterEntity;
-import com.nwm.api.entities.ModelDataloggerEntity;
-import com.nwm.api.entities.ModelDent48PSHDMeterEntity;
-import com.nwm.api.entities.ModelERIWeatherICPClass8050Entity;
-import com.nwm.api.entities.ModelEatonNova6RecloserEntity;
-import com.nwm.api.entities.ModelElkorProductionMeterEntity;
-import com.nwm.api.entities.ModelElkorProductionMeterv1Entity;
-import com.nwm.api.entities.ModelElkorWattsonPVMeterEntity;
-import com.nwm.api.entities.ModelElsterA1700Entity;
-import com.nwm.api.entities.ModelG3LightControllerEntity;
-import com.nwm.api.entities.ModelGasMeterEntity;
-import com.nwm.api.entities.ModelEC350GasMeterEntity;
-import com.nwm.api.entities.ModelHoneywellEMON3200Entity;
-import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
-import com.nwm.api.entities.ModelHukselfluxSr30d1DeviceclassV0Entity;
-import com.nwm.api.entities.ModelIMTSolarClass8000Entity;
-import com.nwm.api.entities.ModelIMTSolarTmodulClass8006Entity;
-import com.nwm.api.entities.ModelIVTSolaronEXTEntity;
-import com.nwm.api.entities.ModelJanitzaUmg604proEntity;
-import com.nwm.api.entities.ModelKippZonenRT1Class8009Entity;
-import com.nwm.api.entities.ModelKlea220pEntity;
-import com.nwm.api.entities.ModelKyPulseMeterEntity;
-import com.nwm.api.entities.ModelLeviton70D48000Entity;
-import com.nwm.api.entities.ModelLevitonAbviusA891123ChannelEntity;
-import com.nwm.api.entities.ModelLevitonS40000rPowerMeterEntity;
-import com.nwm.api.entities.ModelLovatoDmg800Entity;
-import com.nwm.api.entities.ModelLufftClass8020Entity;
-import com.nwm.api.entities.ModelLufftWS501UMBWeatherEntity;
-import com.nwm.api.entities.ModelMeterIon6200Entity;
-import com.nwm.api.entities.ModelMeterIon8600Entity;
-import com.nwm.api.entities.ModelMeterIon8600V1Entity;
-import com.nwm.api.entities.ModelMeterIon8600V2Entity;
-import com.nwm.api.entities.ModelMeterIon8600V3Entity;
-import com.nwm.api.entities.ModelMeterIon8600V4Entity;
-import com.nwm.api.entities.ModelPVMet100Entity;
-import com.nwm.api.entities.ModelPVMet200Entity;
-import com.nwm.api.entities.ModelPVPInverterEntity;
-import com.nwm.api.entities.ModelPVPowered3550260500kwInverterEntity;
-import com.nwm.api.entities.ModelPhoenixContactQuintUPSEntity;
-import com.nwm.api.entities.ModelPoaTempEntity;
-import com.nwm.api.entities.ModelPowerLogicPM8000LoadMeterEntity;
-import com.nwm.api.entities.ModelPowerMeasurementIon7650Entity;
-import com.nwm.api.entities.ModelPyranometerPoaEntity;
-import com.nwm.api.entities.ModelQuint4UPSEntity;
-import com.nwm.api.entities.ModelQuintUPSPosoEntity;
-import com.nwm.api.entities.ModelRT1Class30000Entity;
-import com.nwm.api.entities.ModelSEL651REntity;
-import com.nwm.api.entities.ModelSatconPowergate225InverterEntity;
-import com.nwm.api.entities.ModelSatconPvs357InverterEntity;
-import com.nwm.api.entities.ModelSevSg110cxEntity;
-import com.nwm.api.entities.ModelShark100Entity;
-import com.nwm.api.entities.ModelShark100TestEntity;
-import com.nwm.api.entities.ModelShark100v1Entity;
-import com.nwm.api.entities.ModelShark250Entity;
-import com.nwm.api.entities.ModelSmaCoreEntity;
-import com.nwm.api.entities.ModelSmaInverterStp1215202430Tlus10Entity;
-import com.nwm.api.entities.ModelSmaShp7510Entity;
-import com.nwm.api.entities.ModelSmaStp2550us50Entity;
-import com.nwm.api.entities.ModelSmartLogger3000Entity;
-import com.nwm.api.entities.ModelSolArkInverterEntity;
-import com.nwm.api.entities.ModelSolarEdgeInverterEntity;
-import com.nwm.api.entities.ModelSolarEdgeInverterV1Entity;
-import com.nwm.api.entities.ModelSolectriaINV00SLC3146Entity;
-import com.nwm.api.entities.ModelSolectriaSGI226IVTEntity;
-import com.nwm.api.entities.ModelSth01TempSensorEntity;
-import com.nwm.api.entities.ModelSunSpecInverterEntity;
-import com.nwm.api.entities.ModelSungrowLogger1000Entity;
-import com.nwm.api.entities.ModelSunnyCentralClass9775InverterEntity;
-import com.nwm.api.entities.ModelTTiTrackerEntity;
-import com.nwm.api.entities.ModelVerisIndustriesE50c2aEntity;
-import com.nwm.api.entities.ModelVerisIndustriesE51c2PowerMeterEntity;
-import com.nwm.api.entities.ModelWKippZonenRT1Entity;
-import com.nwm.api.entities.ModelWaterMeterKyPulseEntity;
-import com.nwm.api.entities.ModelWattsunTcuEntity;
-import com.nwm.api.entities.ModelWattsunTrackerEntity;
-import com.nwm.api.entities.ModelWattsunTrackerMasterEntity;
-import com.nwm.api.entities.ModelWeatherStationBSPEntity;
-import com.nwm.api.entities.ModelXGI1500Entity;
-import com.nwm.api.entities.ModelXantrexGT100250500Entity;
-import com.nwm.api.entities.ModelXantrexGT500EEntity;
-import com.nwm.api.entities.ModelXantrexInverterEntity;
-import com.nwm.api.entities.ModelAbbEmaxCbEkipEntity;
-import com.nwm.api.entities.ModelPextronUrp6000Entity;
-import com.nwm.api.entities.ModelSiemens7Sr11Entity;
-import com.nwm.api.entities.ModelThermtronicTh104BusEntity;
-import com.nwm.api.services.DeviceService;
-import com.nwm.api.services.ModelAE1000NXClass9644Service;
-import com.nwm.api.services.ModelATiTrackerService;
-import com.nwm.api.services.ModelAbbTrio500tkOutdService;
-import com.nwm.api.services.ModelAbbTrioClass6210Service;
-import com.nwm.api.services.ModelAbbUnoDm1250tpPlusService;
-import com.nwm.api.services.ModelAcuRevProductionMeterService;
-import com.nwm.api.services.ModelAcuvimIIRService;
-import com.nwm.api.services.ModelAdam4017WSClass8110Nelis190Service;
-import com.nwm.api.services.ModelAdvancedEnergySolaronService;
-import com.nwm.api.services.ModelAeRefusolService;
-import com.nwm.api.services.ModelAesTxInverterService;
-import com.nwm.api.services.ModelCampellScientificMeter1Service;
-import com.nwm.api.services.ModelCampellScientificMeter2Service;
-import com.nwm.api.services.ModelCampellScientificMeter3Service;
-import com.nwm.api.services.ModelCampellScientificMeter4Service;
-import com.nwm.api.services.ModelChintSolectriaInverterClass9725Service;
-import com.nwm.api.services.ModelDTSMeasurelogicDemandMeterService;
-import com.nwm.api.services.ModelDataloggerService;
-import com.nwm.api.services.ModelDent48PSHDMeterService;
-import com.nwm.api.services.ModelERIWeatherICPClass8050Service;
-import com.nwm.api.services.ModelEatonNova6RecloserService;
-import com.nwm.api.services.ModelElkorProductionMeterService;
-import com.nwm.api.services.ModelElkorProductionMeterv1Service;
-import com.nwm.api.services.ModelElkorWattsonPVMeterService;
-import com.nwm.api.services.ModelElsterA1700Service;
-import com.nwm.api.services.ModelG3LightControllerService;
-import com.nwm.api.services.ModelGasMeterService;
-import com.nwm.api.services.ModelEC350GasMeterService;
-import com.nwm.api.services.ModelHoneywellEMON3200Service;
-import com.nwm.api.services.ModelHuaweiSun200028ktlService;
-import com.nwm.api.services.ModelHukselfluxSr30d1DeviceclassV0Service;
-import com.nwm.api.services.ModelIMTSolarClass8000Service;
-import com.nwm.api.services.ModelIMTSolarTmodulClass8006Service;
-import com.nwm.api.services.ModelIVTSolaronEXTService;
-import com.nwm.api.services.ModelJanitzaUmg604proService;
-import com.nwm.api.services.ModelKippZonenRT1Class8009Service;
-import com.nwm.api.services.ModelKlea220pService;
-import com.nwm.api.services.ModelKyPulseMeterService;
-import com.nwm.api.services.ModelLeviton70D48000Service;
-import com.nwm.api.services.ModelLevitonAbviusA891123ChannelService;
-import com.nwm.api.services.ModelLevitonS40000rPowerMeterService;
-import com.nwm.api.services.ModelLovatoDmg800Service;
-import com.nwm.api.services.ModelLufftClass8020Service;
-import com.nwm.api.services.ModelLufftWS501UMBWeatherService;
-import com.nwm.api.services.ModelMeterIon6200Service;
-import com.nwm.api.services.ModelMeterIon8600Service;
-import com.nwm.api.services.ModelMeterIon8600V1Service;
-import com.nwm.api.services.ModelMeterIon8600V2Service;
-import com.nwm.api.services.ModelMeterIon8600V3Service;
-import com.nwm.api.services.ModelMeterIon8600V4Service;
-import com.nwm.api.services.ModelPVMet100Service;
-import com.nwm.api.services.ModelPVMet200Service;
-import com.nwm.api.services.ModelPVPInverterService;
-import com.nwm.api.services.ModelPVPowered3550260500kwInverterService;
-import com.nwm.api.services.ModelPhoenixContactQuintUPSService;
-import com.nwm.api.services.ModelPoaTempService;
-import com.nwm.api.services.ModelPowerLogicPM8000LoadMeterService;
-import com.nwm.api.services.ModelPowerMeasurementIon7650Service;
-import com.nwm.api.services.ModelPyranometerPoaService;
-import com.nwm.api.services.ModelQuint4UPSService;
-import com.nwm.api.services.ModelQuintUPSPosoService;
-import com.nwm.api.services.ModelRT1Class30000Service;
-import com.nwm.api.services.ModelSEL651RService;
-import com.nwm.api.services.ModelSatconPowergate225InverterService;
-import com.nwm.api.services.ModelSatconPvs357InverterService;
-import com.nwm.api.services.ModelSevSg110cxService;
-import com.nwm.api.services.ModelShark100Service;
-import com.nwm.api.services.ModelShark100TestService;
-import com.nwm.api.services.ModelShark100v1Service;
-import com.nwm.api.services.ModelShark250Service;
-import com.nwm.api.services.ModelSmaCoreService;
-import com.nwm.api.services.ModelSmaInverterStp1215202430Tlus10Service;
-import com.nwm.api.services.ModelSmaShp7510Service;
-import com.nwm.api.services.ModelSmaStp2550us50Service;
-import com.nwm.api.services.ModelSmartLogger3000Service;
-import com.nwm.api.services.ModelSolArkInverterService;
-import com.nwm.api.services.ModelSolarEdgeInverterService;
-import com.nwm.api.services.ModelSolarEdgeInverterV1Service;
-import com.nwm.api.services.ModelSolectriaINV00SLC3146Service;
-import com.nwm.api.services.ModelSolectriaSGI226IVTService;
-import com.nwm.api.services.ModelSth01TempSensorService;
-import com.nwm.api.services.ModelSunSpecInverterService;
-import com.nwm.api.services.ModelSungrowLogger1000Service;
-import com.nwm.api.services.ModelSunnyCentralClass9775InverterService;
-import com.nwm.api.services.ModelTTiTrackerService;
-import com.nwm.api.services.ModelVerisIndustriesE50c2aService;
-import com.nwm.api.services.ModelVerisIndustriesE51c2PowerMeterService;
-import com.nwm.api.services.ModelWKippZonenRT1Service;
-import com.nwm.api.services.ModelWaterMeterKyPulseService;
-import com.nwm.api.services.ModelWattsunTcuService;
-import com.nwm.api.services.ModelWattsunTrackerMasterService;
-import com.nwm.api.services.ModelWattsunTrackerService;
-import com.nwm.api.services.ModelWeatherStationBSPService;
-import com.nwm.api.services.ModelXGI1500Service;
-import com.nwm.api.services.ModelXantrexGT100250500Service;
-import com.nwm.api.services.ModelXantrexGT500EService;
-import com.nwm.api.services.ModelXantrexInverterService;
-import com.nwm.api.services.ModelAbbEmaxCbEkipService;
-import com.nwm.api.services.ModelPextronUrp6000Service;
-import com.nwm.api.services.ModelSiemens7Sr11Service;
-import com.nwm.api.services.ModelThermtronicTh104BusService;
-import com.nwm.api.services.UploadFilesService;
+import com.nwm.api.entities.*;
+import com.nwm.api.services.*;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 import java.io.BufferedReader;
@@ -4548,6 +4345,46 @@ public class UploadFilesController extends BaseController {
 														serviceD.updateLastUpdated(deviceUpdateE);
 														
 														serviceModelSiemens7Sr11.insertModelSiemens7Sr11(dataEntity);
+														
+														uploadFilesService.checkWrongEnergy(item, dataEntity);
+													}
+												}
+												
+												break;
+												
+											case "model_ginlong_solis_inverter_class6007":
+												ModelGinlongSolisInverterClass6007Service serviceModelGinlong = new ModelGinlongSolisInverterClass6007Service();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelGinlongSolisInverterClass6007Entity dataEntity = serviceModelGinlong.setModelGinlongSolisInverterClass6007(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														// ActivePower3PhaseTotal
+														if(dataEntity.getActiveower() != 0.001 && dataEntity.getActiveower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getActiveower() != 0.001 ? dataEntity.getActiveower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getActiveower() != 0.001 ? dataEntity.getActiveower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelGinlong.insertGinlongSolisInverterClass6007(dataEntity);
 														
 														uploadFilesService.checkWrongEnergy(item, dataEntity);
 													}

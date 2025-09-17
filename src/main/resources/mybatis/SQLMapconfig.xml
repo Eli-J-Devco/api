@@ -185,6 +185,8 @@
 		<mapper resource="mybatis/map/ModelLovatoDmg800.xml"/>
 		<mapper resource="mybatis/map/AdminSettingGroup.xml"/>
 		<mapper resource="mybatis/map/BuildingReport.xml"/>
+		<mapper resource="mybatis/map/ModelGinlongSolisInverterClass6007.xml"/>
+		
 		
 		
 		

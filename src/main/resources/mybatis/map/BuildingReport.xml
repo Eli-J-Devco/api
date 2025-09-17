@@ -339,71 +339,18 @@
 			ROUND(SUM(`previousRead`), 2) AS previousRead,
 			ROUND(SUM(`currentRead`), 2) AS currentRead
 		FROM (
-		
-		
 				<foreach collection="devices" item="item" index="index" separator="union all">
-					SELECT
-						mi.time_format,
-						mi.time_full,
-						mi.categories_time,
-						IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy,
-						mi.nvmActiveEnergy AS previousRead,
-						IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) AS currentRead
-					FROM
-						(
-							SELECT
-								t.time_format,
-								t.time_full,
-								t.categories_time,
-								dv.nvmActiveEnergy
-							FROM
-								${item.datatablename} dv
-								JOIN (
-									SELECT
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
-										MIN(dv.time) AS time
-									FROM
-										${item.datatablename} dv
-										LEFT JOIN device d ON d.id = dv.id_device
-										LEFT JOIN site s ON s.id = d.id_site 
-										LEFT JOIN time_zone t ON t.id = s.id_time_zone
-									WHERE
-									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-									DATE_FORMAT( #{start_date},"%Y-%m-%d 00:00:00" ) 
-									AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
-									GROUP BY
-										time_format
-								) t ON t.time = dv.time
-						) mi
-						LEFT JOIN (
-							SELECT
-								t.time_format,
-								t.time_full,
-								t.categories_time,
-								dv.nvmActiveEnergy
-							FROM
-								${item.datatablename} dv
-								JOIN (
-									SELECT
-					 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
-										MAX(dv.time) AS time
-									FROM
-										${item.datatablename} dv
-										LEFT JOIN device d ON d.id = dv.id_device
-										LEFT JOIN site s ON s.id = d.id_site 
-										LEFT JOIN time_zone t ON t.id = s.id_time_zone
-									WHERE
-					 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-										DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-										AND DATE_FORMAT(DATE_ADD( #{end_date},INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
-									GROUP BY
-										time_format
-								) t ON t.time = dv.time
-						) ma ON ma.time_full = mi.time_full
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy,
+						dv.previousRead AS previousRead,
+						dv.currentRead AS currentRead
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
 				</foreach>
 
 		) t
@@ -423,66 +370,17 @@
 		FROM (
 		
 				<foreach collection="devices" item="item" index="index" separator="union all">
-					SELECT
-						mi.time_format,
-						mi.time_full,
-						mi.categories_time,
-						IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
-					FROM
-						(
-							SELECT
-								t.time_format,
-								t.time_full,
-								t.categories_time,
-								dv.nvmActiveEnergy
-							FROM
-								${item.datatablename} dv
-								JOIN (
-									SELECT
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
-										MIN(dv.time) AS time
-									FROM
-										${item.datatablename} dv
-										LEFT JOIN device d ON d.id = dv.id_device
-										LEFT JOIN site s ON s.id = d.id_site 
-										LEFT JOIN time_zone t ON t.id = s.id_time_zone
-									WHERE
-									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-									DATE_FORMAT(LAST_DAY( DATE_ADD( #{start_date},INTERVAL -1 YEAR)),"%Y-%m-01 00:00:00" ) 
-									AND DATE_FORMAT(DATE_ADD(LAST_DAY( DATE_ADD( #{end_date},INTERVAL -1 YEAR)),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
-									GROUP BY
-										time_format
-								) t ON t.time = dv.time
-						) mi
-						LEFT JOIN (
-							SELECT
-								t.time_format,
-								t.time_full,
-								t.categories_time,
-								dv.nvmActiveEnergy
-							FROM
-								${item.datatablename} dv
-								JOIN (
-									SELECT
-					 					DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_format,
-										DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_full,
-										MAX(dv.time) AS time
-									FROM
-										${item.datatablename} dv
-										LEFT JOIN device d ON d.id = dv.id_device
-										LEFT JOIN site s ON s.id = d.id_site 
-										LEFT JOIN time_zone t ON t.id = s.id_time_zone
-									WHERE
-					 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-										DATE_FORMAT(LAST_DAY( DATE_ADD( #{start_date},INTERVAL -1 YEAR)),"%Y-%m-01 00:00:00" ) 
-										AND DATE_FORMAT(DATE_ADD(LAST_DAY( DATE_ADD( #{end_date},INTERVAL -1 YEAR)),INTERVAL 1 DAY ),"%Y-%m-%d 00:00:00" ) 
-									GROUP BY
-										time_format
-								) t ON t.time = dv.time
-						) ma ON ma.time_full = mi.time_full
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy,
+						dv.previousRead AS previousRead,
+						dv.currentRead AS currentRead
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" ) 
 				</foreach>
 
 		) t
@@ -504,7 +402,18 @@
 		
 		
 				<foreach collection="devices" item="item" index="index" separator="union all">
-					SELECT
+					SELECT 
+						DATE_FORMAT(dv.time, '%b %Y' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						DATE_FORMAT( LAST_DAY(dv.time), '%d' ) AS days,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+					
+					<!-- SELECT
 						mi.time_format,
 						mi.time_full,
 						mi.days,
@@ -568,7 +477,7 @@
 									GROUP BY
 										time_format
 								) t ON t.time = dv.time
-						) ma ON ma.time_full = mi.time_full
+						) ma ON ma.time_full = mi.time_full --> 
 				</foreach>
 
 		) t
@@ -612,66 +521,15 @@
 			SUM(v.nvmActiveEnergy) AS lastMonth
 		FROM (
 			<foreach collection="devices" item="item" index="index" separator="union all">
-				SELECT
-					mi.time_format,
-					mi.time_full,
-					mi.categories_time,
-					IFNULL(LEAD(mi.nvmActiveEnergy) OVER (ORDER BY mi.time_format), ma.nvmActiveEnergy) - mi.nvmActiveEnergy AS nvmActiveEnergy
-				FROM
-					(
-						SELECT
-							t.time_format,
-							t.time_full,
-							t.categories_time,
-							dv.nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							JOIN (
-								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m-%d' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
-									MIN(dv.time) AS time
-								FROM
-									${item.datatablename} dv
-									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
-									LEFT JOIN time_zone t ON t.id = s.id_time_zone
-								WHERE
-								DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-								DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -1 MONTH), "%Y-%m-%d 00:00:00" ) 
-								AND DATE_FORMAT( DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH) ,"%Y-%m-%d 00:00:00" ) 
-								GROUP BY
-									time_format
-							) t ON t.time = dv.time
-					) mi
-					LEFT JOIN (
-						SELECT
-							t.time_format,
-							t.time_full,
-							t.categories_time,
-							dv.nvmActiveEnergy
-						FROM
-							${item.datatablename} dv
-							JOIN (
-								SELECT
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d' ) AS categories_time,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%Y-%m' ) AS time_format,
-									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%b %d, %Y' ) AS time_full,
-									MAX(dv.time) AS time
-								FROM
-									${item.datatablename} dv
-									LEFT JOIN device d ON d.id = dv.id_device
-									LEFT JOIN site s ON s.id = d.id_site 
-									LEFT JOIN time_zone t ON t.id = s.id_time_zone
-								WHERE
-									DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.value), "%Y-%m-%d %H:%i:s" ) BETWEEN 
-									DATE_FORMAT( DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
-									AND DATE_FORMAT(DATE_ADD(DATE_ADD( #{end_date},INTERVAL 1 DAY ),INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
-								GROUP BY
-									time_format
-							) t ON t.time = dv.time
-					) ma ON ma.time_full = mi.time_full
+				SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -1 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" ) 
 			</foreach>
 		)v
 	</select>
@@ -681,6 +539,17 @@
 			ROUND(SUM(v.nvmActiveEnergy)/3, 1) AS avg3Month
 		FROM (
 			<foreach collection="devices" item="item" index="index" separator="union all">
+			SELECT 
+						DATE_FORMAT(dv.time, '%b %d' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%Y-%m-%d' ) AS time_format,
+						DATE_FORMAT( dv.time, '%b %d, %Y' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL -4 MONTH),"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL -1 MONTH),"%Y-%m-%d 23:59:59" ) 
+					
+			<!-- 
 				SELECT
 					mi.time_format,
 					mi.time_full,
@@ -741,6 +610,7 @@
 									time_format
 							) t ON t.time = dv.time
 					) ma ON ma.time_full = mi.time_full
+					--> 
 			</foreach>
 		)v
 	</select>

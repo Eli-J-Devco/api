@@ -324,7 +324,7 @@ public class BuildingReportService extends DB {
 				int interval = 1;
 				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MMM d, yyyy");
+				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 				
 				ChronoUnit timeUnit = ChronoUnit.DAYS;
 				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -363,38 +363,37 @@ public class BuildingReportService extends DB {
 					obj.setDataDaily(fillDataDaily);
 					
 					List<BuildingReportDateEntity> dataDailyExpected = queryForList("BuildingReport.getDataReportDailyExpectedByType", obj);
-					List<BuildingReportDateEntity> fillDataExpected = Lib.fulfillData(dateTimeList, dataDailyExpected, "time_full");
+					List<BuildingReportDateEntity> fillDataExpected = Lib.fulfillData(dateTimeListExpected, dataDailyExpected, "time_full");
 					obj.setDataDailyExpected(fillDataExpected);
 				}
 				
 				
 				// Usage History
-				int intervalHistory = 1;
-				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
-				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
-				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
-				
-				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
-				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
-				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-				
-				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
-				while (!startHistory.isAfter(endHistory)) {
-					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
-					dateTimeHistory.setTime_full(startHistory.format(timeFullFormatHistory));
-					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
-					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
-					dateTimeListHistory.add(dateTimeHistory);
-					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
-				}
-				
-				if(obj.getDevices().size() > 0) {
-					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
-					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
-					obj.setDataHistory(fillDataHistory);
-				}
-				
+//				int intervalHistory = 1;
+//				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
+//				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
+//				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
+//				
+//				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
+//				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
+//				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//				
+//				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
+//				while (!startHistory.isAfter(endHistory)) {
+//					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
+//					dateTimeHistory.setTime_full(startHistory.format(timeFullFormatHistory));
+//					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
+//					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
+//					dateTimeListHistory.add(dateTimeHistory);
+//					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
+//				}
+//				
+//				if(obj.getDevices().size() > 0) {
+//					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
+//					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
+//					obj.setDataHistory(fillDataHistory);
+//				}
 				
 				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
 				if(dataPeakDemand != null) {
@@ -411,9 +410,6 @@ public class BuildingReportService extends DB {
 				if(dataLastMonth != null) {
 					obj.setAvg3Month(dataCompare3Month.getAvg3Month());
 				}
-				
-				
-				
 				
 				
 			}

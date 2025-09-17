@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ModelGinlongSolisInverterClass6007">
+
+	<insert id="insertModelGinlongSolisInverterClass6007"
+		useGeneratedKeys="true" keyProperty="time">
+		INSERT INTO `${datatablename}`
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				`time`,
+			</if>
+			<if test="id_device != 0.001">
+				`id_device`,
+			</if>
+			<if test="error != 0.001">
+				`error`,
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm`,
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm`,
+			</if>
+			<if test="Activeower != 0.001">
+				`Activeower`,
+			</if>
+			<if test="TotalDCoutputpower != 0.001">
+				`TotalDCoutputpower`,
+			</if>
+			<if test="DCVoltage1 != 0.001">
+				`DCVoltage1`,
+			</if>
+			<if test="DCcurrent1 != 0.001">
+				`DCcurrent1`,
+			</if>
+			<if test="DCVoltage2 != 0.001">
+				`DCVoltage2`,
+			</if>
+			<if test="DCcurrent2 != 0.001">
+				`DCcurrent2`,
+			</if>
+			<if test="DCVoltage3 != 0.001">
+				`DCVoltage3`,
+			</if>
+			<if test="DCcurrent3 != 0.001">
+				`DCcurrent3`,
+			</if>
+			
+			<if test="DCVoltage4 != 0.001">
+				`DCVoltage4`,
+			</if>
+			<if test="DCcurrent4 != 0.001">
+				`DCcurrent4`,
+			</if>
+			<if test="ABlinevoltage != 0.001">
+				`ABlinevoltage`,
+			</if>
+			<if test="BClinevoltage != 0.001">
+				`BClinevoltage`,
+			</if>
+			<if test="CAlinevoltage != 0.001">
+				`CAlinevoltage`,
+			</if>
+			<if test="AphaseCurrent != 0.001">
+				`AphaseCurrent`,
+			</if>
+			<if test="BphaseCurrent != 0.001">
+				`BphaseCurrent`,
+			</if>
+			<if test="CphaseCurrent != 0.001">
+				`CphaseCurrent`,
+			</if>
+			<if test="Invertertemperature != 0.001">
+				`Invertertemperature`,
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency`,
+			</if>
+			<if test="Inverterstatus != 0.001">
+				`Inverterstatus`,
+			</if>
+			<if test="Actualvalueoflimitedpower != 0.001">
+				`Actualvalueoflimitedpower`,
+			</if>
+			<if test="Reactivepowerhigh16bit != 0.001">
+				`Reactivepowerhigh16bit`,
+			</if>
+			<if test="Reactivepowerlow16bit != 0.001">
+				`Reactivepowerlow16bit`,
+			</if>
+			<if test="Apparentpowerhigh16bit != 0.001">
+				`Apparentpowerhigh16bit`,
+			</if>
+			<if test="Apparentpowerlow16bit != 0.001">
+				`Apparentpowerlow16bit`,
+			</if>
+			<if test="Realtimepowerfactor != 0.001">
+				`Realtimepowerfactor`,
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy`,
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower`,
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy`,
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				`MeasuredProduction`,
+			</if>
+			
+
+		</trim>
+
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="time != null">
+				#{time},
+			</if>
+			<if test="id_device != 0.001">
+				#{id_device},
+			</if>
+			<if test="error != 0.001">
+				#{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				#{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				#{high_alarm},
+			</if>
+			
+			<if test="Activeower != 0.001">
+				#{Activeower},
+			</if>
+			<if test="TotalDCoutputpower != 0.001">
+				#{TotalDCoutputpower},
+			</if>
+			<if test="DCVoltage1 != 0.001">
+				#{DCVoltage1},
+			</if>
+			<if test="DCcurrent1 != 0.001">
+				#{DCcurrent1},
+			</if>
+			<if test="DCVoltage2 != 0.001">
+				#{DCVoltage2},
+			</if>
+			<if test="DCcurrent2 != 0.001">
+				#{DCcurrent2},
+			</if>
+			<if test="DCVoltage3 != 0.001">
+				#{DCVoltage3},
+			</if>
+			<if test="DCcurrent3 != 0.001">
+				#{DCcurrent3},
+			</if>
+			
+			<if test="DCVoltage4 != 0.001">
+				#{DCVoltage4},
+			</if>
+			<if test="DCcurrent4 != 0.001">
+				#{DCcurrent4},
+			</if>
+			<if test="ABlinevoltage != 0.001">
+				#{ABlinevoltage},
+			</if>
+			<if test="BClinevoltage != 0.001">
+				#{BClinevoltage},
+			</if>
+			<if test="CAlinevoltage != 0.001">
+				#{CAlinevoltage},
+			</if>
+			<if test="AphaseCurrent != 0.001">
+				#{AphaseCurrent},
+			</if>
+			<if test="BphaseCurrent != 0.001">
+				#{BphaseCurrent},
+			</if>
+			<if test="CphaseCurrent != 0.001">
+				#{CphaseCurrent},
+			</if>
+			<if test="Invertertemperature != 0.001">
+				#{Invertertemperature},
+			</if>
+			<if test="GridFrequency != 0.001">
+				#{GridFrequency},
+			</if>
+			<if test="Inverterstatus != 0.001">
+				#{Inverterstatus},
+			</if>
+			<if test="Actualvalueoflimitedpower != 0.001">
+				#{Actualvalueoflimitedpower},
+			</if>
+			<if test="Reactivepowerhigh16bit != 0.001">
+				#{Reactivepowerhigh16bit},
+			</if>
+			<if test="Reactivepowerlow16bit != 0.001">
+				#{Reactivepowerlow16bit},
+			</if>
+			<if test="Apparentpowerhigh16bit != 0.001">
+				#{Apparentpowerhigh16bit},
+			</if>
+			<if test="Apparentpowerlow16bit != 0.001">
+				#{Apparentpowerlow16bit},
+			</if>
+			<if test="Realtimepowerfactor != 0.001">
+				#{Realtimepowerfactor},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				#{TotalEnergy},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				#{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				#{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001">
+				#{MeasuredProduction},
+			</if>
+			
+		</trim>
+
+		<trim prefix="ON DUPLICATE KEY UPDATE " suffix=""
+			suffixOverrides=",">
+			<if test="id_device != 0.001">
+				`id_device` = #{id_device},
+			</if>
+			<if test="error != 0.001">
+				`error` = #{error},
+			</if>
+			<if test="low_alarm != 0.001">
+				`low_alarm` = #{low_alarm},
+			</if>
+			<if test="high_alarm != 0.001">
+				`high_alarm` = #{high_alarm},
+			</if>
+			
+			<if test="Activeower != 0.001">
+				`Activeower` = #{Activeower},
+			</if>
+			<if test="TotalDCoutputpower != 0.001">
+				`TotalDCoutputpower` = #{TotalDCoutputpower},
+			</if>
+			<if test="DCVoltage1 != 0.001">
+				`DCVoltage1` = #{DCVoltage1},
+			</if>
+			<if test="DCcurrent1 != 0.001">
+				`DCcurrent1` = #{DCcurrent1},
+			</if>
+			<if test="DCVoltage2 != 0.001">
+				`DCVoltage2` = #{DCVoltage2},
+			</if>
+			<if test="DCcurrent2 != 0.001">
+				`DCcurrent2` = #{DCcurrent2},
+			</if>
+			<if test="DCVoltage3 != 0.001">
+				`DCVoltage3` = #{DCVoltage3},
+			</if>
+			<if test="DCcurrent3 != 0.001">
+				`DCcurrent3` = #{DCcurrent3},
+			</if>
+			
+			<if test="DCVoltage4 != 0.001">
+				`DCVoltage4` = #{DCVoltage4},
+			</if>
+			<if test="DCcurrent4 != 0.001">
+				`DCcurrent4` = #{DCcurrent4},
+			</if>
+			<if test="ABlinevoltage != 0.001">
+				`ABlinevoltage` = #{ABlinevoltage},
+			</if>
+			<if test="BClinevoltage != 0.001">
+				`BClinevoltage` = #{BClinevoltage},
+			</if>
+			<if test="CAlinevoltage != 0.001">
+				`CAlinevoltage` = #{CAlinevoltage},
+			</if>
+			<if test="AphaseCurrent != 0.001">
+				`AphaseCurrent` = #{AphaseCurrent},
+			</if>
+			<if test="BphaseCurrent != 0.001">
+				`BphaseCurrent` = #{BphaseCurrent},
+			</if>
+			<if test="CphaseCurrent != 0.001">
+				`CphaseCurrent` = #{CphaseCurrent},
+			</if>
+			<if test="Invertertemperature != 0.001">
+				`Invertertemperature` = #{Invertertemperature},
+			</if>
+			<if test="GridFrequency != 0.001">
+				`GridFrequency` = #{GridFrequency},
+			</if>
+			<if test="Inverterstatus != 0.001">
+				`Inverterstatus` = #{Inverterstatus},
+			</if>
+			<if test="Actualvalueoflimitedpower != 0.001">
+				`Actualvalueoflimitedpower` = #{Actualvalueoflimitedpower},
+			</if>
+			<if test="Reactivepowerhigh16bit != 0.001">
+				`Reactivepowerhigh16bit` = #{Reactivepowerhigh16bit},
+			</if>
+			<if test="Reactivepowerlow16bit != 0.001">
+				`Reactivepowerlow16bit` = #{Reactivepowerlow16bit},
+			</if>
+			<if test="Apparentpowerhigh16bit != 0.001">
+				`Apparentpowerhigh16bit` = #{Apparentpowerhigh16bit},
+			</if>
+			<if test="Apparentpowerlow16bit != 0.001">
+				`Apparentpowerlow16bit` = #{Apparentpowerlow16bit},
+			</if>
+			<if test="Realtimepowerfactor != 0.001">
+				`Realtimepowerfactor` = #{Realtimepowerfactor},
+			</if>
+			<if test="TotalEnergy != 0.001">
+				`TotalEnergy` = #{TotalEnergy},
+			</if>
+			
+			<if test="nvmActivePower != 0.001">
+				`nvmActivePower` = #{nvmActivePower},
+			</if>
+			<if test="nvmActiveEnergy != 0.001">
+				`nvmActiveEnergy` = #{nvmActiveEnergy},
+			</if>
+			<if test="MeasuredProduction != 0.001 and MeasuredProduction > 0">
+				`MeasuredProduction` = #{MeasuredProduction},
+			</if>
+			
+		</trim>
+	</insert>
+	
+	
+	<select id="getLastRow" resultType="com.nwm.api.entities.ModelGinlongSolisInverterClass6007Entity">
+		SELECT
+			dv.*,
+			s.enable_alert,
+			s.data_send_time
+		FROM
+			${view_tablename} dv 
+			LEFT JOIN device d ON d.id = dv.id_device
+			LEFT JOIN site s ON s.id = d.id_site
+		WHERE
+			dv.id_device = #{id_device}
+			<if test="time != null" >
+	        	AND dv.time <![CDATA[<]]> #{time}
+	        </if>
+		ORDER BY
+			dv.time DESC 
+			LIMIT 1
+	</select>
+	
+
+</mapper> 

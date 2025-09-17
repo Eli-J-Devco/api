@@ -15,6 +15,7 @@ public class BuildingReportEntity extends SortEntity {
 	private String end_date;
 	private List devices;
 	private int meter_type;
+	private String table_data_report;
 	
 	private double pv_current_month;
 	private double pv_compare_current_month;
@@ -52,6 +53,12 @@ public class BuildingReportEntity extends SortEntity {
 	
 	
 	
+	public String getTable_data_report() {
+		return table_data_report;
+	}
+	public void setTable_data_report(String table_data_report) {
+		this.table_data_report = table_data_report;
+	}
 	public double getAvg3Month() {
 		return avg3Month;
 	}
