@@ -345,83 +345,21 @@
 	
   	
   	<select id="getAlertSummary" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
-		SELECT (
-			SELECT
-				COUNT( e.id_error_level ) AS lowPriority 
-			FROM
-				alert a
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				e.id_error_level = 13
-				AND a.`status` = 1 
-				AND e.`status` = 1
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND s.enable_alert = 1
-				AND d.is_delete = 0
-				AND d.id_site = #{id_site}
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<include refid="com.nwm.common.deviceByDomainCondition"/>
-			GROUP BY
-				e.id_error_level
-		) AS lowPriority,
-		
-		(
-			SELECT
-				COUNT( e.id_error_level ) AS highPriority 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				e.id_error_level = 11
-				AND a.`status` = 1 
-				AND e.`status` = 1 
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND s.enable_alert = 1
-				AND d.id_site = #{id_site}
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<include refid="com.nwm.common.deviceByDomainCondition"/>
-			GROUP BY
-				e.id_error_level
-		) AS highPriority,
-		
-		
-		(
-			SELECT
-				COUNT(*) AS totalError 
-			FROM
-				alert a
-				LEFT JOIN error e ON a.id_error = e.id 
-				LEFT JOIN device d ON d.id = a.id_device
-				LEFT JOIN site s ON s.id = d.id_site
-				LEFT JOIN time_zone t ON t.id = s.id_time_zone
-			WHERE
-				a.`status` = 1 
-				AND e.`status` = 1 
-				AND a.is_delete = 0
-				AND e.is_delete = 0
-				AND d.`status` = 1
-				AND d.is_delete = 0
-				AND s.enable_alert = 1
-				AND d.id_site = #{id_site}
-				AND (CONVERT_TZ(NOW(), '+00:00', t.offset) <![CDATA[ < ]]> s.expiration OR s.expiration IS NULL)
-				<include refid="com.nwm.common.deviceByDomainCondition"/>
-		        <if test="!isUserNW.booleanValue()">
-					AND e.id_error_level != 14
-				</if>
-		) AS totalError
-		
-				
+  		SELECT
+	  		(
+				<include refid="Alert.alertSummary" />
+				AND e.id_error_level = 13
+				AND s.id = #{id_site}
+			) AS lowPriority,
+			(
+				<include refid="Alert.alertSummary" />
+				AND e.id_error_level = 11
+				AND s.id = #{id_site}
+			) AS highPriority,
+			(
+				<include refid="Alert.alertSummary" />
+				AND s.id = #{id_site}
+			) AS totalError
   	</select>
   	
   	<select id="getDetailSendMail" resultType="com.nwm.api.entities.AlertEntity" parameterType="com.nwm.api.entities.AlertEntity">
