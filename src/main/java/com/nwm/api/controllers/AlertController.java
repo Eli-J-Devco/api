@@ -102,6 +102,7 @@ public class AlertController extends BaseController {
     public Object getAllAlertBySite(@RequestBody AlertEntity obj, @RequestHeader(name = "Authorization") String authz){
 		try {
 			obj.setIsUserNW(Lib.isUserNW(authz));
+			obj.setId_employee(Lib.getUserId(authz));
 			AlertService service = new AlertService();
 			List data = service.getAllAlertBySite(obj);
 			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, data.size());
