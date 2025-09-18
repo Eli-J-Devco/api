@@ -91,7 +91,29 @@ public class AlertEntity extends SortEntity {
 	private int is_supper_admin;
 	private String domain_role;
 	
+	private int id_error_type;
+	private int id_site_group;
+	private int id_device_type_int;
 	
+	
+	public int getId_device_type_int() {
+		return id_device_type_int;
+	}
+	public void setId_device_type_int(int id_device_type_int) {
+		this.id_device_type_int = id_device_type_int;
+	}
+	public int getId_error_type() {
+		return id_error_type;
+	}
+	public void setId_error_type(int id_error_type) {
+		this.id_error_type = id_error_type;
+	}
+	public int getId_site_group() {
+		return id_site_group;
+	}
+	public void setId_site_group(int id_site_group) {
+		this.id_site_group = id_site_group;
+	}
 	public String getDomain_role() {
 		return domain_role;
 	}
