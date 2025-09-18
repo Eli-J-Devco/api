@@ -529,6 +529,47 @@ public class UploadFilesController extends BaseController {
 											
 											break;
 											
+										case "model_imtsolar_tv_class8004":
+											ModelIMTSolarTvClass8004Service serviceModelIMT = new ModelIMTSolarTvClass8004Service();
+											// Check insert database status
+											while ((line = br.readLine()) != null) {
+												sb.append(line); // appends line to string buffer
+												sb.append("\n"); // line feed
+												// Convert string to array
+												List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+												if (words.size() > 0) {
+													ModelIMTSolarTvClass8004Entity dataEntity = serviceModelIMT.setModelIMTSolarTvClass8004(line);
+													dataEntity.setId_device(item.getId());
+													dataEntity.setDatatablename(item.getDatatablename());
+													dataEntity.setView_tablename(item.getView_tablename());
+													dataEntity.setJob_tablename(item.getJob_tablename());
+													
+													uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+
+													// irradiance
+													
+													if(dataEntity.getIrradiance() != 0.001 && dataEntity.getIrradiance()  >= 0){
+														deviceUpdateE.setLast_updated(dataEntity.getTime());
+													}
+													
+													deviceUpdateE.setLast_value(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													deviceUpdateE.setField_value1(dataEntity.getIrradiance() != 0.001 ? dataEntity.getIrradiance() : null);
+													
+													// tcell
+													deviceUpdateE.setField_value2(dataEntity.getTcell() != 0.001 ? dataEntity.getTcell() : null);
+													
+													// value 3
+													deviceUpdateE.setField_value3(null);
+													
+													deviceUpdateE.setId(item.getId());
+													serviceD.updateLastUpdated(deviceUpdateE);
+													
+													serviceModelIMT.insertModelIMTSolarTvClass8004(dataEntity);
+												}
+											}
+											
+											break;
+											
 										case "model_imtsolar_tmodul_class8006":
 											ModelIMTSolarTmodulClass8006Service serviceModelIMTSolarTmodulClass8006 = new ModelIMTSolarTmodulClass8006Service();
 											// Check insert database status
