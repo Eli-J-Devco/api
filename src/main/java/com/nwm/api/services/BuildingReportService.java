@@ -368,32 +368,38 @@ public class BuildingReportService extends DB {
 				}
 				
 				
-				// Usage History
-//				int intervalHistory = 1;
-//				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
-//				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
-//				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
-//				
-//				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
-//				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
-//				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-//				
-//				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
-//				while (!startHistory.isAfter(endHistory)) {
-//					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
-//					dateTimeHistory.setTime_full(startHistory.format(timeFullFormatHistory));
-//					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
-//					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
-//					dateTimeListHistory.add(dateTimeHistory);
-//					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
-//				}
-//				
-//				if(obj.getDevices().size() > 0) {
-//					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
-//					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
-//					obj.setDataHistory(fillDataHistory);
-//				}
+				// get data History
+				int intervalHistory = 1;
+				DateTimeFormatter timeFullFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
+				DateTimeFormatter categoriesTimeFormatHistory = DateTimeFormatter.ofPattern("MMM yyyy");
+				DateTimeFormatter timeFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM");
+				DateTimeFormatter timeDateFormatHistory = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				
+				ChronoUnit timeUnitHistory = ChronoUnit.MONTHS;
+				LocalDateTime startHistory = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				startHistory = startHistory.plus(-11, ChronoUnit.MONTHS);
+				LocalDateTime endHistory = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				
+				List<BuildingReportDateEntity> dateTimeListHistory = new ArrayList<>();
+				while (!startHistory.isAfter(endHistory)) {
+					BuildingReportDateEntity dateTimeHistory = new BuildingReportDateEntity();
+					dateTimeHistory.setTime_full(startHistory.format(timeFullFormatHistory));
+					dateTimeHistory.setCategories_time(startHistory.format(categoriesTimeFormatHistory));
+					dateTimeHistory.setTime_format(startHistory.format(timeFormatHistory));
+					dateTimeHistory.setStart_date(startHistory.format(timeDateFormatHistory));
+					
+					startHistory = startHistory.plus(intervalHistory, timeUnitHistory);
+					dateTimeHistory.setEnd_date(startHistory.format(timeDateFormatHistory));
+					dateTimeListHistory.add(dateTimeHistory);
+				}
+				
+				
+				if(obj.getDevices().size() > 0) {
+					obj.setDateTimeList(dateTimeListHistory);
+					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
+					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
+					obj.setDataHistory(fillDataHistory);
+				}
 				
 				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
 				if(dataPeakDemand != null) {
@@ -419,39 +425,6 @@ public class BuildingReportService extends DB {
 			return new BuildingReportEntity();
 		}
 	}
-	
-	
-	
-//	private List<ClientMonthlyDateEntity> convertDateTimeFormat(SiteEntity obj, List<ClientMonthlyDateEntity> dataList, LocalDateTime start, LocalDateTime end) {
-//		try {
-//			DeviceEntity chartParams = new DeviceEntity();
-//			chartParams.setData_send_time(obj.getData_send_time());
-//			chartParams.setFilterBy(obj.getFilterBy());
-//			chartParams.setDate_format(obj.getDate_format());
-//			chartParams.setTime_format(obj.getTime_format());
-//			chartParams.setLocale(obj.getLocale());
-//			
-//			List<Map<String, Object>> data = dataList
-//					.stream()
-//					.map(item -> ClientMonthlyDateEntity.convertDateTimeToMap(item))
-//					.collect(Collectors.toList());
-//			
-//			List<ClientMonthlyDateEntity> convertedDateTimeList = sitesAnalyticsService.convertDateTimeFormat(chartParams, data, start, end)
-//					.stream()
-//					.map(item -> ClientMonthlyDateEntity.convertDateTimeToEntity(item))
-//					.collect(Collectors.toList());
-//			
-//			for (int i = 0; i < dataList.size(); i++) {
-//				ClientMonthlyDateEntity item = dataList.get(i);
-//				ClientMonthlyDateEntity convertedItem = convertedDateTimeList.get(i);
-//				item.setTime_full(convertedItem.getTime_full());
-//				item.setCategories_time(convertedItem.getCategories_time());
-//			}
-//		} catch (Exception e) {
-//		}
-//		
-//		return dataList;
-//	}
 	
 	
 }

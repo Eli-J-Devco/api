@@ -40,7 +40,7 @@ public class BuildingReportEntity extends SortEntity {
 	private List dataWaterStatistics;
 	private List dataDaily;
 	private List dataDailyExpected;
-	
+	private List dateTimeList;
 	private List dataHistory;
 	private List dataHistoryExpected;
 	private double peak_demand;
@@ -53,6 +53,12 @@ public class BuildingReportEntity extends SortEntity {
 	
 	
 	
+	public List getDateTimeList() {
+		return dateTimeList;
+	}
+	public void setDateTimeList(List dateTimeList) {
+		this.dateTimeList = dateTimeList;
+	}
 	public String getTable_data_report() {
 		return table_data_report;
 	}
