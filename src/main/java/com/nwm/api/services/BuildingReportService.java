@@ -393,12 +393,47 @@ public class BuildingReportService extends DB {
 					dateTimeListHistory.add(dateTimeHistory);
 				}
 				
+				// Get data history expected 
+				// get data History
+				int intervalEx = 1;
+				DateTimeFormatter timeFullFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
+				DateTimeFormatter categoriesTimeFormatEx = DateTimeFormatter.ofPattern("MMM yyyy");
+				DateTimeFormatter timeFormatEx = DateTimeFormatter.ofPattern("yyyy-MM");
+				DateTimeFormatter timeDateFormatEx = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				
+				ChronoUnit timeUnitEx = ChronoUnit.MONTHS;
+				LocalDateTime startEx = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				startEx = startEx.plus(-2, ChronoUnit.YEARS);
+				LocalDateTime endEx = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				endEx = endEx.plus(-1, ChronoUnit.YEARS);
+				
+				List<BuildingReportDateEntity> dateTimeListEx = new ArrayList<>();
+				while (!startEx.isAfter(endEx)) {
+					BuildingReportDateEntity dateTimeEx = new BuildingReportDateEntity();
+					dateTimeEx.setTime_full(startEx.format(timeFullFormatEx));
+					dateTimeEx.setCategories_time(startEx.format(categoriesTimeFormatEx));
+					dateTimeEx.setTime_format(startEx.format(timeFormatEx));
+					dateTimeEx.setStart_date(startEx.format(timeDateFormatEx));
+					
+					startEx = startEx.plus(intervalEx, timeUnitEx);
+					dateTimeEx.setEnd_date(startEx.format(timeDateFormatEx));
+					dateTimeListEx.add(dateTimeEx);
+				}
+				
+				
 				
 				if(obj.getDevices().size() > 0) {
 					obj.setDateTimeList(dateTimeListHistory);
 					List<BuildingReportDateEntity>	dataHistory = queryForList("BuildingReport.getDataReportHistory", obj);
 					List<BuildingReportDateEntity> fillDataHistory = Lib.fulfillData(dateTimeListHistory, dataHistory, "time_full");
 					obj.setDataHistory(fillDataHistory);
+					
+					// Get data history expected
+					obj.setDateTimeList(dateTimeListEx);
+					List<BuildingReportDateEntity>	dataEx = queryForList("BuildingReport.getDataReportHistory", obj);
+					List<BuildingReportDateEntity> fillDataEx = Lib.fulfillData(dateTimeListEx, dataEx, "time_full");
+					obj.setDataHistoryExpected(fillDataEx);
+					
 				}
 				
 				BuildingReportEntity dataPeakDemand = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakDemand", obj);
