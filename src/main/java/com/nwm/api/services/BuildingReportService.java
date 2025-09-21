@@ -89,7 +89,16 @@ public class BuildingReportService extends DB {
 					if(dataPV != null) {
 						obj.setPv_current_month(dataPV.getCurrent_month());
 						obj.setPv_compare_current_month(dataPV.getCompare_current_month());
+						obj.setPv_year_over_year(dataPV.getYear_over_year());
+						obj.setPv_year_over_date(dataPV.getYear_over_date());
 					}
+					
+					BuildingReportEntity pvPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
+					if(pvPeakFlowRate != null) {
+						obj.setPv_peak_flow_rate(pvPeakFlowRate.getPeak_flow_rate());
+						obj.setPv_peak_flow_rate_date(pvPeakFlowRate.getPeak_flow_rate_date());
+					}
+					
 				}
 				
 				if(gas.size() > 0) {
@@ -98,7 +107,16 @@ public class BuildingReportService extends DB {
 					if(dataGas != null) {
 						obj.setGas_current_month(dataGas.getCurrent_month());
 						obj.setGas_compare_current_month(dataGas.getCompare_current_month());
+						obj.setGas_year_over_year(dataGas.getYear_over_year());
+						obj.setGas_year_over_date(dataGas.getYear_over_date());
 					}
+					
+					BuildingReportEntity gasPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
+					if(gasPeakFlowRate != null) {
+						obj.setGas_peak_flow_rate(gasPeakFlowRate.getPeak_flow_rate());
+						obj.setGas_peak_flow_rate_date(gasPeakFlowRate.getPeak_flow_rate_date());
+					}
+					
 					
 				}
 				
@@ -108,6 +126,14 @@ public class BuildingReportService extends DB {
 					if(dataWater != null) {
 						obj.setWater_current_month(dataWater.getCurrent_month());
 						obj.setWater_compare_current_month(dataWater.getCompare_current_month());
+						obj.setWater_year_over_year(dataWater.getYear_over_year());
+						obj.setWater_year_over_date(dataWater.getYear_over_date());
+					}
+					
+					BuildingReportEntity waterPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
+					if(waterPeakFlowRate != null) {
+						obj.setWater_peak_flow_rate(waterPeakFlowRate.getPeak_flow_rate());
+						obj.setWater_peak_flow_rate_date(waterPeakFlowRate.getPeak_flow_rate_date());
 					}
 					
 				}
@@ -117,7 +143,16 @@ public class BuildingReportService extends DB {
 					if(dataElectric != null) {
 						obj.setElectric_current_month(dataElectric.getCurrent_month());
 						obj.setElectric_compare_current_month(dataElectric.getCompare_current_month());
+						obj.setElectric_year_over_year(dataElectric.getYear_over_year());
+						obj.setElectric_year_over_date(dataElectric.getYear_over_date());
 					}
+					
+					BuildingReportEntity electricPeakFlowRate = (BuildingReportEntity) queryForObject("BuildingReport.getDataPeakFlowRate", obj);
+					if(electricPeakFlowRate != null) {
+						obj.setElectric_peak_flow_rate(electricPeakFlowRate.getPeak_flow_rate());
+						obj.setElectric_peak_flow_rate_date(electricPeakFlowRate.getPeak_flow_rate_date());
+					}
+					
 				}
 
 			}
@@ -404,6 +439,7 @@ public class BuildingReportService extends DB {
 				ChronoUnit timeUnitEx = ChronoUnit.MONTHS;
 				LocalDateTime startEx = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				startEx = startEx.plus(-2, ChronoUnit.YEARS);
+				startEx = startEx.plus(1, ChronoUnit.MONTHS);
 				LocalDateTime endEx = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				endEx = endEx.plus(-1, ChronoUnit.YEARS);
 				
@@ -447,10 +483,14 @@ public class BuildingReportService extends DB {
 					obj.setLastMonth(dataLastMonth.getLastMonth());
 				}
 				
-				BuildingReportEntity dataCompare3Month = (BuildingReportEntity) queryForObject("BuildingReport.getDataCompare3Month", obj);
-				if(dataLastMonth != null) {
-					obj.setAvg3Month(dataCompare3Month.getAvg3Month());
+				BuildingReportEntity dataMaxAnnualDaily = (BuildingReportEntity) queryForObject("BuildingReport.getDataMaxAnnualDaily", obj);
+				if(dataMaxAnnualDaily != null) {
+					obj.setMax_annual_daily(dataMaxAnnualDaily.getMax_annual_daily());
+					obj.setMax_annual_daily_date(dataMaxAnnualDaily.getMax_annual_daily_date());
+					obj.setLast_year(dataMaxAnnualDaily.getLast_year());
+					obj.setAvg_last_eriod(dataMaxAnnualDaily.getAvg_last_eriod());
 				}
+				
 				
 				
 			}

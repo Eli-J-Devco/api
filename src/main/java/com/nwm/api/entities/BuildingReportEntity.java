@@ -46,13 +46,189 @@ public class BuildingReportEntity extends SortEntity {
 	private double peak_demand;
 	private String peak_demand_date;
 	private double lastMonth;
-	private double avg3Month;
+
+	
+	private double gas_peak_flow_rate;
+	private String gas_peak_flow_rate_date;
+	private double water_peak_flow_rate;
+	private String water_peak_flow_rate_date;
+	private double pv_peak_flow_rate;
+	private String pv_peak_flow_rate_date;
+	private double electric_peak_flow_rate;
+	private String electric_peak_flow_rate_date;
+	
+	private double peak_flow_rate;
+	private String peak_flow_rate_date;
+	
+	private double year_over_year;
+	private String year_over_date;
+	
+	private double pv_year_over_year;
+	private String pv_year_over_date;
+	private double water_year_over_year;
+	private String water_year_over_date;
+	private double gas_year_over_year;
+	private String gas_year_over_date;
+	private double electric_year_over_year;
+	private String electric_year_over_date;
+	
+	private double last_year;
+	private double avg_last_eriod;
+	
+	
+	
+	public double getAvg_last_eriod() {
+		return avg_last_eriod;
+	}
+	public void setAvg_last_eriod(double avg_last_eriod) {
+		this.avg_last_eriod = avg_last_eriod;
+	}
+	public double getLast_year() {
+		return last_year;
+	}
+	public void setLast_year(double last_year) {
+		this.last_year = last_year;
+	}
+	private double max_annual_daily;
+	public double getMax_annual_daily() {
+		return max_annual_daily;
+	}
+	public void setMax_annual_daily(double max_annual_daily) {
+		this.max_annual_daily = max_annual_daily;
+	}
+	public String getMax_annual_daily_date() {
+		return max_annual_daily_date;
+	}
+	public void setMax_annual_daily_date(String max_annual_daily_date) {
+		this.max_annual_daily_date = max_annual_daily_date;
+	}
+	private String max_annual_daily_date;
 	
 	
 	
 	
 	
 	
+	public double getPv_year_over_year() {
+		return pv_year_over_year;
+	}
+	public void setPv_year_over_year(double pv_year_over_year) {
+		this.pv_year_over_year = pv_year_over_year;
+	}
+	public String getPv_year_over_date() {
+		return pv_year_over_date;
+	}
+	public void setPv_year_over_date(String pv_year_over_date) {
+		this.pv_year_over_date = pv_year_over_date;
+	}
+	public double getWater_year_over_year() {
+		return water_year_over_year;
+	}
+	public void setWater_year_over_year(double water_year_over_year) {
+		this.water_year_over_year = water_year_over_year;
+	}
+	public String getWater_year_over_date() {
+		return water_year_over_date;
+	}
+	public void setWater_year_over_date(String water_year_over_date) {
+		this.water_year_over_date = water_year_over_date;
+	}
+	public double getGas_year_over_year() {
+		return gas_year_over_year;
+	}
+	public void setGas_year_over_year(double gas_year_over_year) {
+		this.gas_year_over_year = gas_year_over_year;
+	}
+	public String getGas_year_over_date() {
+		return gas_year_over_date;
+	}
+	public void setGas_year_over_date(String gas_year_over_date) {
+		this.gas_year_over_date = gas_year_over_date;
+	}
+	public double getElectric_year_over_year() {
+		return electric_year_over_year;
+	}
+	public void setElectric_year_over_year(double electric_year_over_year) {
+		this.electric_year_over_year = electric_year_over_year;
+	}
+	public String getElectric_year_over_date() {
+		return electric_year_over_date;
+	}
+	public void setElectric_year_over_date(String electric_year_over_date) {
+		this.electric_year_over_date = electric_year_over_date;
+	}
+	public double getYear_over_year() {
+		return year_over_year;
+	}
+	public void setYear_over_year(double year_over_year) {
+		this.year_over_year = year_over_year;
+	}
+	public String getYear_over_date() {
+		return year_over_date;
+	}
+	public void setYear_over_date(String year_over_date) {
+		this.year_over_date = year_over_date;
+	}
+	public double getPeak_flow_rate() {
+		return peak_flow_rate;
+	}
+	public void setPeak_flow_rate(double peak_flow_rate) {
+		this.peak_flow_rate = peak_flow_rate;
+	}
+	public String getPeak_flow_rate_date() {
+		return peak_flow_rate_date;
+	}
+	public void setPeak_flow_rate_date(String peak_flow_rate_date) {
+		this.peak_flow_rate_date = peak_flow_rate_date;
+	}
+	public double getGas_peak_flow_rate() {
+		return gas_peak_flow_rate;
+	}
+	public void setGas_peak_flow_rate(double gas_peak_flow_rate) {
+		this.gas_peak_flow_rate = gas_peak_flow_rate;
+	}
+	public String getGas_peak_flow_rate_date() {
+		return gas_peak_flow_rate_date;
+	}
+	public void setGas_peak_flow_rate_date(String gas_peak_flow_rate_date) {
+		this.gas_peak_flow_rate_date = gas_peak_flow_rate_date;
+	}
+	public double getWater_peak_flow_rate() {
+		return water_peak_flow_rate;
+	}
+	public void setWater_peak_flow_rate(double water_peak_flow_rate) {
+		this.water_peak_flow_rate = water_peak_flow_rate;
+	}
+	public String getWater_peak_flow_rate_date() {
+		return water_peak_flow_rate_date;
+	}
+	public void setWater_peak_flow_rate_date(String water_peak_flow_rate_date) {
+		this.water_peak_flow_rate_date = water_peak_flow_rate_date;
+	}
+	public double getPv_peak_flow_rate() {
+		return pv_peak_flow_rate;
+	}
+	public void setPv_peak_flow_rate(double pv_peak_flow_rate) {
+		this.pv_peak_flow_rate = pv_peak_flow_rate;
+	}
+	public String getPv_peak_flow_rate_date() {
+		return pv_peak_flow_rate_date;
+	}
+	public void setPv_peak_flow_rate_date(String pv_peak_flow_rate_date) {
+		this.pv_peak_flow_rate_date = pv_peak_flow_rate_date;
+	}
+	public double getElectric_peak_flow_rate() {
+		return electric_peak_flow_rate;
+	}
+	public void setElectric_peak_flow_rate(double electric_peak_flow_rate) {
+		this.electric_peak_flow_rate = electric_peak_flow_rate;
+	}
+	public String getElectric_peak_flow_rate_date() {
+		return electric_peak_flow_rate_date;
+	}
+	public void setElectric_peak_flow_rate_date(String electric_peak_flow_rate_date) {
+		this.electric_peak_flow_rate_date = electric_peak_flow_rate_date;
+	}
 	public List getDateTimeList() {
 		return dateTimeList;
 	}
@@ -65,12 +241,7 @@ public class BuildingReportEntity extends SortEntity {
 	public void setTable_data_report(String table_data_report) {
 		this.table_data_report = table_data_report;
 	}
-	public double getAvg3Month() {
-		return avg3Month;
-	}
-	public void setAvg3Month(double avg3Month) {
-		this.avg3Month = avg3Month;
-	}
+
 	public double getLastMonth() {
 		return lastMonth;
 	}
