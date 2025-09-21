@@ -129,6 +129,12 @@ public class ModelSmaShp7510Service extends DB {
 	public boolean insertModelSmaShp7510(ModelSmaShp7510Entity obj) {
 		try {
 			ModelSmaShp7510Entity dataObj = (ModelSmaShp7510Entity) queryForObject("ModelSmaShp7510.getLastRow", obj);
+			if(obj.getOffset_data_old() !=0) {
+				Double energy = obj.getNvmActiveEnergy();
+				energy = energy + obj.getOffset_data_old();
+				obj.setNvmActiveEnergy(energy);
+				obj.setTotalyield(energy);
+			}
 			
 			// filter data 
 			if(dataObj != null && ( obj.getError() > 0 || obj.getNvmActiveEnergy() < dataObj.getNvmActiveEnergy() || obj.getNvmActiveEnergy() == 0.001 || obj.getNvmActiveEnergy() < 0) ) {
