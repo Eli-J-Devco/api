@@ -491,6 +491,18 @@ public class BuildingReportService extends DB {
 					obj.setAvg_last_eriod(dataMaxAnnualDaily.getAvg_last_eriod());
 				}
 				
+				if("electric".equals(obj.getType_group())){
+					BuildingReportEntity dataDaytimeAndNightTime = (BuildingReportEntity) queryForObject("BuildingReport.getDataDaytimeAndNightTime", obj);
+					if(dataDaytimeAndNightTime != null) {
+						obj.setDaytime(dataDaytimeAndNightTime.getDaytime());
+						obj.setNighttime(dataDaytimeAndNightTime.getNighttime());
+					}
+				}
+				
+				
+				
+				
+				
 				
 				
 			}

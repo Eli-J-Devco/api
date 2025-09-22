@@ -16,7 +16,7 @@ public class BuildingReportEntity extends SortEntity {
 	private List devices;
 	private int meter_type;
 	private String table_data_report;
-	
+	private String type_group;
 	private double pv_current_month;
 	private double pv_compare_current_month;
 	
@@ -74,9 +74,29 @@ public class BuildingReportEntity extends SortEntity {
 	
 	private double last_year;
 	private double avg_last_eriod;
+	private double daytime;
+	private double nighttime;
 	
 	
 	
+	public String getType_group() {
+		return type_group;
+	}
+	public void setType_group(String type_group) {
+		this.type_group = type_group;
+	}
+	public double getDaytime() {
+		return daytime;
+	}
+	public void setDaytime(double daytime) {
+		this.daytime = daytime;
+	}
+	public double getNighttime() {
+		return nighttime;
+	}
+	public void setNighttime(double nighttime) {
+		this.nighttime = nighttime;
+	}
 	public double getAvg_last_eriod() {
 		return avg_last_eriod;
 	}
