@@ -60,7 +60,7 @@ public class MQTTClientConfig {
 	
 	@Bean
 	MessageProducer inbound() {
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(), mqttClientFactory(), "t/+/NextWave123/telemetry");
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(), mqttClientFactory(), "hvac/+/t/+/NextWave123/telemetry");
 		adapter.setConverter(new DefaultPahoMessageConverter());
 		adapter.setOutputChannel(mqttInputChannel());
 		
@@ -76,7 +76,7 @@ public class MQTTClientConfig {
 			@Override
 			public void handleMessage(Message<?> message) {
 				String[] topic = message.getHeaders().get("mqtt_receivedTopic").toString().split("/");
-				if (topic[2].equals("NextWave123") && topic[3].equals("telemetry")) service.saveFieldData(message);
+				if (topic[4].equals("NextWave123") && topic[5].equals("telemetry")) service.saveFieldData(message);
 			}
 		};
 	}
@@ -91,6 +91,7 @@ public class MQTTClientConfig {
     MessageHandler mqttOutbound() {
         MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttAsyncClient.generateClientId(), mqttClientFactory());
         messageHandler.setAsync(true);
+        messageHandler.setDefaultQos(1);
         return messageHandler;
     }
 

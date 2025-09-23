@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.DeviceEntity;
+import com.nwm.api.entities.HVACGatewayEntity;
 import com.nwm.api.entities.building.ChartConsumptionEntity;
 import com.nwm.api.entities.building.HVACMappingPointEntity;
 import com.nwm.api.entities.building.SitesOverviewHVACFieldChartEntity;
@@ -154,14 +155,14 @@ public class SitesOverviewHVACService extends DB {
 	 * @since 2025-04-08
 	 * @return list of gateway
 	 */
-	public List<String> getGatewayList() {
+	public List<HVACGatewayEntity> getGatewayList() {
 		try {
-			List<String> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
+			List<HVACGatewayEntity> dataList = queryForList("SitesOverviewHVAC.getGatewayList", null);
 			if (dataList != null && dataList.size() > 0) return dataList;
 		} catch (Exception ex) {
 			log.error("SitesOverviewHVAC.getGatewayList", ex);
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 	
 	private static Map<String, Map<String, String>> fieldCache = new HashMap<String, Map<String, String>>();
