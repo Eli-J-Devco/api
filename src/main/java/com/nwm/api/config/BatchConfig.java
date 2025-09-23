@@ -5,6 +5,7 @@
 *********************************************************/
 package com.nwm.api.config;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nwm.api.batchjob.BatchJob;
 import com.nwm.api.config.MQTTClientConfig.HVACGateway;
+import com.nwm.api.entities.HVACGatewayEntity;
 import com.nwm.api.services.building.SitesOverviewHVACService;
 import com.nwm.api.utils.Constants;
 
@@ -324,15 +326,22 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
+			List<HVACGatewayEntity> gatewayList = sitesOverviewHVACService.getGatewayList();
+			if (gatewayList.size() == 0) return;
+			
 			ObjectMapper objectMapper = new ObjectMapper();
 			Map<String, Object> message = new HashMap<String, Object>();
+			message.put("ts", Instant.now().toString());
 
-			message.put("online", false);
-			message.put("ts", "2025-01-09T15:10:12.167Z");
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
-			
-			message.put("online", true);
-			hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/NextWave123/status/client");
+			for (HVACGatewayEntity gateway : gatewayList) {
+				String topic = "hvac/".concat(gateway.getId_site().toString()).concat("_").concat(gateway.getId_gateway()).concat("/t/NextWave123/status/client");
+				
+				message.put("online", false);
+				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), topic);
+				
+				message.put("online", true);
+				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), topic);
+			}
 		}
 	}
 	
@@ -346,7 +355,7 @@ public class BatchConfig {
 		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
 		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
 		if (env.equals("staging")) {
-			List<String> gatewayList = sitesOverviewHVACService.getGatewayList();
+			List<HVACGatewayEntity> gatewayList = sitesOverviewHVACService.getGatewayList();
 			if (gatewayList.size() == 0) return;
 			
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -358,9 +367,10 @@ public class BatchConfig {
 			message.put("arguments", arguments);
 			message.put("sequence", 2);
 			
-			for (String gateway : gatewayList) {
-				message.put("targetId", gateway);
-				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), "t/".concat(gateway).concat("/cmd/req"));
+			for (HVACGatewayEntity gateway : gatewayList) {
+				String topic = "hvac/".concat(gateway.getId_site().toString()).concat("_").concat(gateway.getId_gateway()).concat("/t/").concat(gateway.getId_gateway()).concat("/cmd/req");
+				message.put("targetId", gateway.getId_gateway());
+				hvacGateway.topicPublish(objectMapper.writeValueAsString(message), topic);
 			}
 		}
 	}

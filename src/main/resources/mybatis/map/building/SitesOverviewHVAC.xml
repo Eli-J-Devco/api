@@ -75,9 +75,10 @@
 			id_gateway = #{id_gateway}
 	</select>
 	
-	<select id="getGatewayList" resultType="String">
+	<select id="getGatewayList" resultType="com.nwm.api.entities.HVACGatewayEntity">
 		SELECT
-			id_gateway
+			id_gateway,
+			id_site
 		FROM
 			hvac_gateway
 	</select>
