@@ -16,10 +16,19 @@ public class BuildingReportDateEntity extends DateTimeReportDataEntity {
 	private double currentRead;
 	private double nvm_irradiance;
 	private double nvm_temperature;
+	private double nvm_humid;
 	private String start_date;
 	private String end_date;
 	
 	
+
+	public double getNvm_humid() {
+		return nvm_humid;
+	}
+
+	public void setNvm_humid(double nvm_humid) {
+		this.nvm_humid = nvm_humid;
+	}
 
 	public String getStart_date() {
 		return start_date;

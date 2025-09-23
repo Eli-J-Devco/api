@@ -216,23 +216,26 @@
 	</select>
 	
 	
-	<select id="getDataWeatherStation" resultType="Map" >
+	<select id="getDataWeatherStation" resultType="com.nwm.api.entities.BuildingReportDateEntity" >
 		SELECT
 			t.time_full,
 			t.categories_time,
-			t.categories_hour,
+			t.time_format,
 			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
-			ROUND( AVG(t.nvm_temperature), 1 ) AS nvm_temperature
+			ROUND( AVG(t.nvm_temperature) * 1.8, 1 ) AS nvm_temperature,
+			ROUND( AVG(t.nvm_humid), 1 ) AS nvm_humid
+			
 			
 		FROM
 			(
 				<foreach collection="devices" item="item" index="index" separator="union all">
 					SELECT
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_hour,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
-						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
+						AVG(IFNULL(dv.humid, 0)) AS nvm_humid
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -240,37 +243,36 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{item.id_site}
-						AND d.id_device_type_group IN(49)
+						AND d.id_device_group IN(110)
 						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1
-						AND d.id = #{item.id}
-					GROUP BY
-						d.id,
-						time_full
+					GROUP BY time_full
 				</foreach>
 			) t
 			GROUP BY t.time_full
 	</select>
 	
 	
-	<select id="getDataWeatherStationLastMonth" resultType="Map" >
+	<select id="getDataWeatherStationLastMonth" resultType="com.nwm.api.entities.BuildingReportDateEntity" >
 		SELECT
 			t.time_full,
 			t.categories_time,
-			t.categories_hour,
+			t.time_format,
 			ROUND( AVG(t.nvm_irradiance), 1 ) AS nvm_irradiance,
-			ROUND( AVG(t.nvm_temperature), 1 ) AS nvm_temperature
+			ROUND( AVG(t.nvm_temperature)  * 1.8, 1 ) AS nvm_temperature,
+			ROUND( AVG(t.nvm_humid), 1 ) AS nvm_humid
 			
 		FROM
 			(
 				<foreach collection="devices" item="item" index="index" separator="union all">
 					SELECT
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_hour,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%b %d, %Y' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
-						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
+						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
+						AVG(IFNULL(dv.humid, 0)) AS nvm_humid
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -278,14 +280,11 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{item.id_site}
-						AND d.id_device_type IN(4)
+						AND d.id_device_group IN(110)
 						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN DATE_ADD(#{start_date},INTERVAL -1 MONTH) AND DATE_ADD(#{end_date},INTERVAL -1 MONTH) )
 						AND s.`status` = 1 
 						AND d.`status` = 1
-						AND d.id = #{item.id}
-					GROUP BY
-						d.id,
-						time_full
+					GROUP BY time_full
 				</foreach>
 			) t
 			GROUP BY t.time_full

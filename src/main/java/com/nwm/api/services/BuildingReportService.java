@@ -256,19 +256,24 @@ public class BuildingReportService extends DB {
 					Map<String, Object> item = (Map<String, Object>) devices.get(j);
 					int meterType = Integer.parseInt(item.get("meter_type").toString());
 					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
-					if(idDeviceType == 4) {
+					if(idDeviceType == 21) {
 						weather.add(item);
 					}
 				}
 				
 				int interval = 1;
-				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
-				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
-				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:00");
+				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				
-				ChronoUnit timeUnit = ChronoUnit.HOURS;
+				ChronoUnit timeUnit = ChronoUnit.DAYS;
 				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				
+				LocalDateTime startLastMonth = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				startLastMonth = startLastMonth.plus(-1, ChronoUnit.MONTHS);
+				LocalDateTime endLastMonth = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				endLastMonth = endLastMonth.plus(-1, ChronoUnit.MONTHS);
 				
 				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
 				while (!start.isAfter(end)) {
@@ -278,6 +283,16 @@ public class BuildingReportService extends DB {
 					dateTime.setTime_format(start.format(timeFormat));
 					dateTimeList.add(dateTime);
 					start = start.plus(interval, timeUnit);
+				}
+				
+				List<BuildingReportDateEntity> dateTimeListLastMonth = new ArrayList<>();
+				while (!startLastMonth.isAfter(endLastMonth)) {
+					BuildingReportDateEntity dateTimeLastMonth = new BuildingReportDateEntity();
+					dateTimeLastMonth.setTime_full(startLastMonth.format(timeFullFormat));
+					dateTimeLastMonth.setCategories_time(startLastMonth.format(categoriesTimeFormat));
+					dateTimeLastMonth.setTime_format(startLastMonth.format(timeFormat));
+					dateTimeListLastMonth.add(dateTimeLastMonth);
+					startLastMonth = startLastMonth.plus(interval, timeUnit);
 				}
 				
 				
@@ -290,7 +305,8 @@ public class BuildingReportService extends DB {
 					obj.setDataWeatherCurrentMonth(fillData);
 					
 					List dataWeatherLastMonth = queryForList("BuildingReport.getDataWeatherStationLastMonth", obj);
-					obj.setDataWeatherComapreMonth(dataWeatherLastMonth);
+					List<BuildingReportDateEntity> fillDataLastMonth = Lib.fulfillData(dateTimeListLastMonth, dataWeatherLastMonth, "time_full");
+					obj.setDataWeatherComapreMonth(fillDataLastMonth);
 				}
 				
 				
