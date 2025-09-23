@@ -228,9 +228,9 @@
 			(
 				<foreach collection="devices" item="item" index="index" separator="union all">
 					SELECT
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS categories_time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_hour,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_hour,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
 						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
 					FROM
@@ -240,7 +240,7 @@
 						LEFT JOIN time_zone t ON t.id = s.id_time_zone
 					WHERE
 						s.id = #{item.id_site}
-						AND d.id_device_type IN(4)
+						AND d.id_device_type_group IN(49)
 						AND (CONVERT_TZ( dv.time, 'UTC', t.value ) BETWEEN #{start_date} AND #{end_date})
 						AND s.`status` = 1 
 						AND d.`status` = 1
@@ -266,9 +266,9 @@
 			(
 				<foreach collection="devices" item="item" index="index" separator="union all">
 					SELECT
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS time_full,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d %H:00' ) AS categories_time,
-						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%H:00' ) AS categories_hour,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_full,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_time,
+						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS categories_hour,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
 						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature
 					FROM
