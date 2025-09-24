@@ -13,6 +13,7 @@
 			d.view_tablename,
 			d.id_device_type,
 			d.hidden,
+			d.reverse_poa,
 			dg.group_name,
 			IFNULL(dt.title_trans, "N/A") AS type_title_trans,
 			IFNULL(dg.title_trans, "N/A") AS group_title_trans,
@@ -306,8 +307,21 @@
 									</choose> AS ${param.slug}
 							</when>
 							
-							<when test="table_name == 'model_virtual_meter_or_inverter' and param.slug == 'expected_power'">
-								AVG(dv.expected_power_ac) AS expected_power
+							<when test="param.slug == 'expected_power'">
+								<if test="table_name != 'model_virtual_meter_or_inverter'">
+									AVG(
+										<include refid="com.nwm.common.expectedPowerByPvModel">
+											<property name="irradiance" value="dv.nvm_irradiance" />
+											<property name="temperature" value="dv.nvm_temperature" />
+											<property name="panelTemperature" value="dv.nvm_panel_temperature" />
+											<property name="power" value="NULL" />
+										</include>
+									) AS ${param.slug}
+								</if>
+								
+								<if test="table_name == 'model_virtual_meter_or_inverter'">
+									AVG(dv.expected_power_ac) AS ${param.slug}
+								</if>
 							</when>
 							
 							<otherwise>

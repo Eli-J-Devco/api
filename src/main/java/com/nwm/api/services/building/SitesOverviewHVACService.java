@@ -181,7 +181,7 @@ public class SitesOverviewHVACService extends DB {
 			ObjectMapper mapper = new ObjectMapper();
 			List<Map<String, Object>> payload = mapper.readValue(message.getPayload().toString(), new TypeReference<List<Map<String, Object>>>(){});
 			if (payload == null || payload.size() == 0) return;
-			String id_gateway = message.getHeaders().get("mqtt_receivedTopic").toString().split("/")[1];
+			String id_gateway = message.getHeaders().get("mqtt_receivedTopic").toString().split("/")[3];
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 			
 			for (Map<String, Object> item : payload) {
