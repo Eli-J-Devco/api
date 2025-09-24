@@ -5,6 +5,10 @@
 *********************************************************/
 package com.nwm.api.services;
 
+import java.awt.Color;
+import java.io.File;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -13,6 +17,8 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -20,17 +26,40 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.ibatis.session.SqlSession;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateTickMarkPosition;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.time.Minute;
+import org.jfree.data.time.RegularTimePeriod;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.itextpdf.io.font.constants.StandardFonts;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.font.PdfFontFactory;
+import com.itextpdf.kernel.geom.PageSize;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.AreaBreak;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.TextAlignment;
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AuditLog;
 import com.nwm.api.entities.BuildingReportDateEntity;
 import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.BuildingReportWeatherEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
+import com.nwm.api.entities.DailyDateEntity;
 import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.EmployeeSiteMapEntity;
@@ -38,10 +67,21 @@ import com.nwm.api.entities.SiteAreaBuildingFloorRoomEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.SiteGasWaterElectricityRateScheduleEntity;
 import com.nwm.api.entities.SiteLogs;
+import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.entities.ZoneGraphDateEntity;
+import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 
 public class BuildingReportService extends DB {
+	private static final Color BLUE_COLOR = new Color(49, 119, 168);
+	private static final Color LIGHT_BLUE_COLOR = new Color(109, 189, 246);
+	private static final Color ORANGE_COLOR = new Color(255, 129, 39);
+	private String getReportFolderPath() {
+		String uploadRootPath = Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey);
+		return uploadRootPath + "/" + Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadFilePathReportFiles);
+	}
+	
 	/**
 	 * @description get data building report
 	 * @author Long.Pham
@@ -308,8 +348,6 @@ public class BuildingReportService extends DB {
 					List<BuildingReportDateEntity> fillDataLastMonth = Lib.fulfillData(dateTimeListLastMonth, dataWeatherLastMonth, "time_full");
 					obj.setDataWeatherComapreMonth(fillDataLastMonth);
 				}
-				
-				
 			}
 			
 			return obj;
@@ -374,7 +412,7 @@ public class BuildingReportService extends DB {
 				
 				int interval = 1;
 				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("MMM dd, yyyy");
 				
 				ChronoUnit timeUnit = ChronoUnit.DAYS;
@@ -528,6 +566,177 @@ public class BuildingReportService extends DB {
 			return new BuildingReportEntity();
 		}
 	}
+	
+	
+	/**
+	 * @description download PDF file report
+	 * @author Long.Pham
+	 * @since 2025-08-08
+	 * @param obj
+	 */
+	public BuildingReportEntity downloadReportPDFFile(BuildingReportEntity obj) {
+		try {
+			
+//			String filePath = createReportPdfFile(obj);
+//			obj.setDownload_file_path(filePath);
+//			List<ViewReportEntity> dataObjList = getReportDataList(obj);
+//			if (dataObjList == null || dataObjList.size() == 0) return false;
+//			String filePath = obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+//			if (filePath == null) return false;
+			
+//			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
+//			return obj;
+			return new BuildingReportEntity();
+		} catch (Exception e) {
+			return new BuildingReportEntity();
+		}
+	}
+	
+	/**
+	 * @description write to pdf file
+	 * @author Hung.Bui
+	 * @since 2024-07-01
+	 * @param cadenceRange
+	 */
+	public File writeToPdfFile(String cadenceRangeName) throws Exception {
+		String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
+		String fileName = getReportFolderPath() + "/" + cadenceRangeName + "-report-" + timeStamp + ".pdf";
+		return new File(fileName);
+	}
+	
+	/**
+	 * @description create daily report pdf file
+	 * @author Hung.Bui
+	 * @since 2025-08-08
+	 * @param obj
+	 * @return file path
+	 */
+//	public String createReportPdfFile(BuildingReportEntity obj, List<BuildingReportEntity> dataObjList) {
+	public String createReportPdfFile(BuildingReportEntity obj) {
+		try {
+//			File file = writeToPdfFile(obj.getCadence_range_name());
+			File file = writeToPdfFile("comprehensive-utilities");
+			
+			try (
+				PdfDocument pdfDocument = new PdfDocument(new PdfWriter(file));
+				Document document = new Document(pdfDocument, PageSize.A3.rotate());
+			) {
+				Image logoImage = DocumentHelper.readLogoImageFile();
+				
+//				for (int l = 0; l < dataObjList.size(); l++) {
+//					ViewReportEntity dataObj = dataObjList.get(l);
+//					
+//					if (dataObj != null) {
+//						SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+//						SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+//						SimpleDateFormat categoryFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+//						Date startDate = dateFormat.parse(obj.getStart_date());
+//						Date endDate = dateFormat.parse(obj.getEnd_date());
+//						dataObj.setStart_date(format.format(startDate));
+//						dataObj.setEnd_date(format.format(endDate));
+//						List<DailyDateEntity> dataExports = dataObj.getDataReports() != null ? dataObj.getDataReports() : new ArrayList<>();
+//						
+//						// total column: 12
+//						Table table = new Table(12).useAllAvailableWidth();
+//						table.setFont(PdfFontFactory.createFont(StandardFonts.TIMES_ROMAN));
+//						table.setFontSize(8);
+//						table.setTextAlignment(TextAlignment.CENTER);
+//						
+//						//====== table ============================================================
+//						// header and logo
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+//						table.addCell(new com.itextpdf.layout.element.Cell(6, 5).add(new Paragraph("DAILY PRODUCTION REPORT")).setTextAlignment(TextAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER).setFontSize(20).setBold());
+//						table.addCell(new com.itextpdf.layout.element.Cell(6, 3).add(logoImage).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE).setBorder(Border.NO_BORDER));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Site Name").setBold().setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getSite_name()).setBold().setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getReport_date()).setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(dataObj.getStart_date() + " - " + dataObj.getEnd_date()).setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("System Size (kW DC)").setBold().setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(String.valueOf(dataObj.getDc_capacity())).setTextAlignment(TextAlignment.LEFT)));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 4).setHeight(14).setBorder(Border.NO_BORDER));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+//						
+//						// chart
+//						com.itextpdf.layout.element.Cell chartCell = new com.itextpdf.layout.element.Cell(16, 12);
+//						table.addCell(chartCell.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE));
+//						// empty row
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 12).setHeight(14).setBorder(Border.NO_BORDER));
+//						
+//						// header of data table
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Time").setBold()));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Power (kW)").setBold()));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Actual Energy (kWh)").setBold()));
+//						table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph("Irradiance (W/m2)").setBold()));
+//						
+//						// data table
+//						DecimalFormat dfs = new DecimalFormat(DocumentHelper.noDecimalDataFormat);
+//						for (int i = 0; i < dataExports.size(); i++) {
+//							DailyDateEntity item = (DailyDateEntity) dataExports.get(i);
+//							
+//							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getCategories_time())));
+//							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getPower() != null ? dfs.format(item.getPower()).replaceAll( "^-(?=0(\\.0*)?$)", "") : "")));
+//							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getEnergy() != null ? dfs.format(item.getEnergy()) : "")));
+//							table.addCell(new com.itextpdf.layout.element.Cell(1, 3).add(new Paragraph(item.getIrradiance() != null ? dfs.format(item.getIrradiance()) : "")));						
+//						}
+//						
+//						//====== chart ============================================================
+//						JFreeChart chart = DocumentHelper.createJFreeChart(null);
+//						XYPlot plot = chart.getXYPlot();
+//						
+//						// data source
+//						TimeSeriesCollection powerDataset = DocumentHelper.createJFreeChartLineDataset(0, plot, null);
+//						TimeSeries powerSeries = new TimeSeries("Actual Power (kW)");
+//						powerDataset.addSeries(powerSeries);
+//						plot.getRendererForDataset(powerDataset).setSeriesPaint(0, BLUE_COLOR);
+//						
+//						TimeSeriesCollection energyDataset = DocumentHelper.createJFreeChartLineDataset(1, plot, null);
+//						TimeSeries energySeries = new TimeSeries("Actual Energy (kWh)");
+//						energyDataset.addSeries(energySeries);
+//						plot.getRendererForDataset(energyDataset).setSeriesPaint(0, LIGHT_BLUE_COLOR);
+//						
+//						TimeSeriesCollection irradianceDataset = DocumentHelper.createJFreeChartLineDataset(2, plot, null);
+//						TimeSeries irradianceSeries = new TimeSeries("Irradiance (W/m2)");
+//						irradianceDataset.addSeries(irradianceSeries);
+//						plot.getRendererForDataset(irradianceDataset).setSeriesPaint(0, ORANGE_COLOR);
+//						plot.getRendererForDataset(irradianceDataset).setSeriesVisible(0, dataObj.isHave_poa());
+//						
+//						for (int i = 0; i < dataExports.size(); i++) {
+//							DailyDateEntity item = dataExports.get(i);
+//							RegularTimePeriod period = new Minute(categoryFormat.parse(item.getCategories_time()));
+//							
+//							powerSeries.add(period, item.getPower());
+//							energySeries.add(period, item.getEnergy());
+//							irradianceSeries.add(period, item.getIrradiance());
+//						}
+//						
+//						// category axis
+//						DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(DateTickUnitType.HOUR, 24, categoryFormat), startDate, endDate).setTickMarkPosition(DateTickMarkPosition.START);
+//						// left axis
+//						DocumentHelper.createJFreeChartNumberAxis("kW", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
+//						// right axis
+//						DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_RIGHT, 1, 1, plot);
+//						// 2nd right axis
+//						if (dataObj.isHave_poa()) DocumentHelper.createJFreeChartNumberAxis("W/m2", AxisLocation.BOTTOM_OR_RIGHT, 2, 2, plot);
+//						
+//						chartCell.add(new Image(ImageDataFactory.create(chart.createBufferedImage(1800, 700), null)).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER).scaleToFit(1100, 700));
+//						document.add(table);
+//						if (l < dataObjList.size() - 1) document.add(new AreaBreak());
+//					}
+//				}
+				
+				// It must be closed before attach to mail
+				document.close();
+				
+				return file.getAbsolutePath();
+			}
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 	
 	
 }

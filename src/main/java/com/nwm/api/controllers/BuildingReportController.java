@@ -128,5 +128,27 @@ public class BuildingReportController extends BaseController {
 	}
 	
 	
+	/**
+	 * @description sent mail daily report
+	 * @author long.pham
+	 * @since 2021-12-28
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/download-report-pdf-file")
+	public Object downloadReportPDFFile(@RequestBody BuildingReportEntity obj) {
+		try {
+			BuildingReportService service = new BuildingReportService();
+			BuildingReportEntity data = service.downloadReportPDFFile(obj);
+			if (data != null) {
+				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, obj, 1);
+			} else {
+				return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			}
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
 	
 }

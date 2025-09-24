@@ -76,9 +76,16 @@ public class BuildingReportEntity extends SortEntity {
 	private double avg_last_eriod;
 	private double daytime;
 	private double nighttime;
+	private String download_file_path;
 	
 	
 	
+	public String getDownload_file_path() {
+		return download_file_path;
+	}
+	public void setDownload_file_path(String download_file_path) {
+		this.download_file_path = download_file_path;
+	}
 	public String getType_group() {
 		return type_group;
 	}
