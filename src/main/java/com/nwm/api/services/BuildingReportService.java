@@ -550,14 +550,19 @@ public class BuildingReportService extends DB {
 					if(dataDaytimeAndNightTime != null) {
 						obj.setDaytime(dataDaytimeAndNightTime.getDaytime());
 						obj.setNighttime(dataDaytimeAndNightTime.getNighttime());
+						obj.setPower_factor(dataDaytimeAndNightTime.getPower_factor());
+						obj.setMax_annual_daily(dataDaytimeAndNightTime.getMax_annual_demand());
+						obj.setMax_monthly_demand(dataDaytimeAndNightTime.getMax_monthly_demand());
+					}
+					
+					
+					BuildingReportEntity dataPF = (BuildingReportEntity) queryForObject("BuildingReport.getDataLowestPF", obj);
+					if(dataPF != null) {
+						obj.setPower_factor_pf(dataPF.getPower_factor_pf());
+						obj.setPower_factor_pf_time(dataPF.getPower_factor_pf_time());
 					}
 				}
-				
-				
-				
-				
-				
-				
+
 				
 			}
 			
