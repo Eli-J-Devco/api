@@ -69,7 +69,7 @@
 	
 	<sql id="viewHistoryCondition">
 		AND ${alertTable}.`status` = 1
-		
+		AND ${alertTable}.resolved = 0
 		<if test="id_site != null and id_site > 0">
 				AND s.id = #{id_site}
 		</if>
