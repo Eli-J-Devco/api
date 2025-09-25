@@ -23,6 +23,22 @@ public class PortfolioRankingEntity extends SortEntity {
 	private int total_meter;
 	private int active_meter;
 	private String last_updated;
+	private int is_supper_admin;
+	private boolean isUserNW;
+	
+	
+	public boolean isUserNW() {
+		return isUserNW;
+	}
+	public void setUserNW(boolean isUserNW) {
+		this.isUserNW = isUserNW;
+	}
+	public int getIs_supper_admin() {
+		return is_supper_admin;
+	}
+	public void setIs_supper_admin(int is_supper_admin) {
+		this.is_supper_admin = is_supper_admin;
+	}
 	public int getId() {
 		return id;
 	}
