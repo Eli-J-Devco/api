@@ -188,7 +188,7 @@
 		<mapper resource="mybatis/map/BuildingReport.xml"/>
 		<mapper resource="mybatis/map/ModelGinlongSolisInverterClass6007.xml"/>
 		<mapper resource="mybatis/map/ModelIMTSolarTvClass8004.xml"/>
-		
+		<mapper resource="mybatis/map/ModelKehuaSPI5060KInverter.xml"/>
 		
 		
 		

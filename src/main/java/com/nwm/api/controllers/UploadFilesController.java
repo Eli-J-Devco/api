@@ -4473,7 +4473,44 @@ public class UploadFilesController extends BaseController {
 													}
 												}
 												
-												break;								
+												break;		
+												
+											case "model_Kehua_SPI50_60K_inverter":
+												ModelKehuaSPI5060KInverterService serviceModelKehua = new ModelKehuaSPI5060KInverterService();
+												// Check insert database status
+												while ((line = br.readLine()) != null) {
+													sb.append(line); // appends line to string buffer
+													sb.append("\n"); // line feed
+													// Convert string to array
+													List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+													if (words.size() > 0) {
+														ModelKehuaSPI5060KInverterEntity dataEntity = serviceModelKehua.setModelKehuaSPI5060KInverter(line);
+														dataEntity.setId_device(item.getId());
+														dataEntity.setDatatablename(item.getDatatablename());
+														dataEntity.setView_tablename(item.getView_tablename());
+														dataEntity.setJob_tablename(item.getJob_tablename());
+														
+														uploadFilesService.scalingDeviceParameters(scaledDeviceParameters, dataEntity);
+														
+														if(dataEntity.getOngridactivepower() != 0.001 && dataEntity.getOngridactivepower() >= 0){
+															deviceUpdateE.setLast_updated(dataEntity.getTime());
+														}
+
+														deviceUpdateE.setLast_value(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														deviceUpdateE.setField_value1(dataEntity.getOngridactivepower() != 0.001 ? dataEntity.getOngridactivepower() : null);
+														
+														deviceUpdateE.setField_value2(null);
+														deviceUpdateE.setField_value3(null);
+														
+														
+														deviceUpdateE.setId(item.getId());
+														serviceD.updateLastUpdated(deviceUpdateE);
+														
+														serviceModelKehua.insertModelKehuaSPI5060KInverter(dataEntity);							
+													}
+												}
+												
+												break;	
 											
 										}
 										
