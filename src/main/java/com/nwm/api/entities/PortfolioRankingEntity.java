@@ -27,10 +27,11 @@ public class PortfolioRankingEntity extends SortEntity {
 	private boolean isUserNW;
 	
 	
+	
 	public boolean isUserNW() {
 		return isUserNW;
 	}
-	public void setUserNW(boolean isUserNW) {
+	public void setIsUserNW(boolean isUserNW) {
 		this.isUserNW = isUserNW;
 	}
 	public int getIs_supper_admin() {

@@ -485,7 +485,7 @@
 		STRAIGHT_JOIN error e ON e.id = a.id_error
 		JOIN error_level el ON el.id = e.id_error_level
 		
-		WHERE s.`status` = 1 AND s.is_delete = 0 
+		WHERE s.`status` = 1 AND s.is_delete = 0 AND s.enable_alert = 1
 		AND d.is_delete = 0 AND d.`status` = 1
 		AND e.`status` = 1 AND e.is_delete = 0
 		AND a.is_delete = 0 AND a.status = 1 AND a.resolved = 0
