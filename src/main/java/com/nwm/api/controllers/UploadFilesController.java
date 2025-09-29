@@ -73,7 +73,7 @@ public class UploadFilesController extends BaseController {
 //	@RequestParam("MD5CHECKSUM") String md5checksum, @RequestParam("FILESIZE") String filesize,
 //	@RequestParam("FILETIME") String filetime
 
-	public String uploadFiles(@RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
+	public String uploadFiles(HttpServletRequest request, @RequestParam(name = "LOGFILE", required = false) MultipartFile files[],
 			@RequestParam(name = "SENDDATATRACE", required = false) String senddatatrace,
 			@RequestParam(name = "MODE", required = false) String mode,
 			@RequestParam(name = "SERIALNUMBER", required = true) String serialnumber,
@@ -88,39 +88,64 @@ public class UploadFilesController extends BaseController {
 			@RequestParam(name = "MODBUSDEVICECLASS", required = false) String modbusdeviceclass,
 			@RequestParam(name = "MD5CHECKSUM", required = false) String md5checksum,
 			@RequestParam(name = "FILESIZE", required = false) String filesize,
-			@RequestParam(name = "FILETIME", required = false) String filetime) {
+			@RequestParam(name = "FILETIME", required = false) String filetime,
+			@RequestParam(name = "FILENAME", required = false) String filename) {
 
-//		public String message = " ";
+
+		// Basic validation to ensure data can be saved successfully
+		if (serialnumber == null || serialnumber.trim().isEmpty()) {
+			message = "\nFAILURE\n";
+			return message;
+		}
+		
+		if (mode == null || mode.trim().isEmpty()) {
+			message = "\nFAILURE\n";
+			return message;
+		}
+		
+		if (files == null || files.length == 0) {
+			message = "\nFAILURE\n";
+			return message;
+		}
 
 		try {
 
 			String LOGFILEUPLOAD = "LOGFILEUPLOAD";
 			List<String> fileNames = new ArrayList<>();
 			
-			System.out.println("SENDDATATRACE: " + senddatatrace);
-			System.out.println("MODE: " + mode);
-			System.out.println("SERIALNUMBER: " + serialnumber);
-			System.out.println("PASSWORD: " + password);
-			System.out.println("LOOPNAME: " + loopname);
-			System.out.println("MODBUSIP: " + modbusip);
-			System.out.println("MODBUSPORT: " + modbusport);
-			System.out.println("MODBUSDEVICE: " + modbusdevice);
-			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
-			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
-			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
-			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
-			System.out.println("MD5CHECKSUM: " + md5checksum);
-			System.out.println("FILESIZE: " + filesize);
-			System.out.println("FILETIME: " + filetime);
-			
-			System.out.println("FILE: " + files.length);
-//			
+//			System.out.println("SENDDATATRACE: " + senddatatrace);
+//			System.out.println("MODE: " + mode);
+//			System.out.println("SERIALNUMBER: " + serialnumber);
+//			System.out.println("PASSWORD: " + password);
+//			System.out.println("LOOPNAME: " + loopname);
+//			System.out.println("MODBUSIP: " + modbusip);
+//			System.out.println("MODBUSPORT: " + modbusport);
+//			System.out.println("MODBUSDEVICE: " + modbusdevice);
+//			System.out.println("MODBUSDEVICENAME: " + modbusdevicename);
+//			System.out.println("MODBUSDEVICETYPE: " + modbusdevicetype);
+//			System.out.println("MODBUSDEVICETYPENUMBER: " + modbusdevicetypenumber);
+//			System.out.println("MODBUSDEVICECLASS: " + modbusdeviceclass);
+//			System.out.println("MD5CHECKSUM: " + md5checksum);
+//			System.out.println("FILESIZE: " + filesize);
+//			System.out.println("FILETIME: " + filetime);
 
-			if (mode.equals(LOGFILEUPLOAD) && files.length > 0) {
+
+			if (LOGFILEUPLOAD.equalsIgnoreCase(mode) && files != null && files.length > 0) {
 				Arrays.asList(files).stream().forEach(file -> {
 					String fileName = file.getOriginalFilename();
-					String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+					
+					String ext = "";
+					if (fileName != null) {
+						int lastDot = fileName.lastIndexOf('.');
+						if (lastDot >= 0 && lastDot < fileName.length() - 1) {
+							ext = fileName.substring(lastDot + 1);
+						} else {
+							ext = "log";
+						}
+					}
+					
 					fileNames.add(file.getOriginalFilename());
+					
 
 					Path root = Paths.get(Lib.getReourcePropValue(Constants.appConfigFileName, Constants.uploadRootPathConfigKey));
 					String timeStamp = new SimpleDateFormat("yyyyMMddHHmmss").format(Calendar.getInstance().getTime());
