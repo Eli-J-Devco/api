@@ -57,7 +57,9 @@ public class MQTTClientConfig {
 	@Bean
 	MessageProducer inbound() {
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(), mqttClientFactory(), "hvac/+/t/+/NextWave123/telemetry");
-		adapter.setConverter(new DefaultPahoMessageConverter());
+		DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
+		converter.setPayloadAsBytes(true);
+		adapter.setConverter(converter);
 		adapter.setOutputChannel(mqttInputChannel());
 		
 		return adapter;
