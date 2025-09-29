@@ -5,20 +5,16 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
 import org.springframework.integration.core.MessageProducer;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
-import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
-import org.springframework.integration.mqtt.support.MqttHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.handler.annotation.Header;
 
 import com.nwm.api.services.building.SitesOverviewHVACService;
 
@@ -61,7 +57,9 @@ public class MQTTClientConfig {
 	@Bean
 	MessageProducer inbound() {
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(MqttAsyncClient.generateClientId(), mqttClientFactory(), "hvac/+/t/+/NextWave123/telemetry");
-		adapter.setConverter(new DefaultPahoMessageConverter());
+		DefaultPahoMessageConverter converter = new DefaultPahoMessageConverter();
+		converter.setPayloadAsBytes(true);
+		adapter.setConverter(converter);
 		adapter.setOutputChannel(mqttInputChannel());
 		
 		return adapter;
@@ -80,23 +78,4 @@ public class MQTTClientConfig {
 			}
 		};
 	}
-	
-	@Bean
-    MessageChannel mqttOutboundChannel() {
-        return new DirectChannel();
-    }
-	
-	@Bean
-    @ServiceActivator(inputChannel = "mqttOutboundChannel")
-    MessageHandler mqttOutbound() {
-        MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler(MqttAsyncClient.generateClientId(), mqttClientFactory());
-        messageHandler.setAsync(true);
-        messageHandler.setDefaultQos(1);
-        return messageHandler;
-    }
-
-    @MessagingGateway(defaultRequestChannel = "mqttOutboundChannel")
-    public interface HVACGateway {
-        void topicPublish(String data, @Header(MqttHeaders.TOPIC) String topic);
-    }
 }
