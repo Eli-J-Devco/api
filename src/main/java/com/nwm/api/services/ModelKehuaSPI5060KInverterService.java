@@ -22,7 +22,7 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 			if (words.size() > 0) {
 				ModelKehuaSPI5060KInverterEntity dataModelIon = new ModelKehuaSPI5060KInverterEntity();
 				
-				Double power = Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001");
+				Double power = Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001");
 				Double energy = Double.parseDouble(!Lib.isBlank(words.get(6)) ? words.get(6) : "0.001");
 				
 				dataModelIon.setTime(words.get(0).replace("'", ""));
@@ -42,7 +42,7 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 				dataModelIon.setVphasegridcurrent(Double.parseDouble(!Lib.isBlank(words.get(12)) ? words.get(12) : "0.001"));
 				
 				dataModelIon.setWphasegridcurrent(Double.parseDouble(!Lib.isBlank(words.get(13)) ? words.get(13) : "0.001"));
-				dataModelIon.setGridconnectedtotalactivepower(Double.parseDouble(!Lib.isBlank(words.get(14)) ? words.get(14) : "0.001"));
+				dataModelIon.setGridconnectedtotalactivepower(power);
 				dataModelIon.setGridconnectedtotalreactivepower(Double.parseDouble(!Lib.isBlank(words.get(15)) ? words.get(15) : "0.001"));
 				dataModelIon.setHeatsinktemperature(Double.parseDouble(!Lib.isBlank(words.get(16)) ? words.get(16) : "0.001"));
 				dataModelIon.setInnertemperature(Double.parseDouble(!Lib.isBlank(words.get(17)) ? words.get(17) : "0.001"));
@@ -54,7 +54,7 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 				
 				dataModelIon.setDailypowerconsumption(Double.parseDouble(!Lib.isBlank(words.get(23)) ? words.get(23) : "0.001"));
 				dataModelIon.setTotalpowerconsumption(Double.parseDouble(!Lib.isBlank(words.get(24)) ? words.get(24) : "0.001"));
-				dataModelIon.setOngridactivepower(power);
+				dataModelIon.setOngridactivepower(Double.parseDouble(!Lib.isBlank(words.get(25)) ? words.get(25) : "0.001"));
 				dataModelIon.setOngridapparentpower(Double.parseDouble(!Lib.isBlank(words.get(26)) ? words.get(26) : "0.001"));
 				dataModelIon.setOngridreactivepower(Double.parseDouble(!Lib.isBlank(words.get(27)) ? words.get(27) : "0.001"));
 				dataModelIon.setOngridPowerfactor(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
