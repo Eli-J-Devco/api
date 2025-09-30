@@ -7411,6 +7411,19 @@
 							`Ongridreactivepower` double DEFAULT NULL,
 							`OngridPowerfactor` double DEFAULT NULL,
 							
+							
+							`TotalInsulationImpedance` double DEFAULT NULL,
+							`MPPT1Voltage` double DEFAULT NULL,
+							`MPPT2Voltage` double DEFAULT NULL,
+							`MPPT3Voltage` double DEFAULT NULL,
+							`MPPT4Voltage` double DEFAULT NULL,
+							`MPPT1Current` double DEFAULT NULL,
+							`MPPT2Current` double DEFAULT NULL,
+							`MPPT3Current` double DEFAULT NULL,
+							`MPPT4Current` double DEFAULT NULL,
+							`BusVoltage` double DEFAULT NULL,
+							`FaultWord` double DEFAULT NULL,
+							
 						  `nvmActivePower` double DEFAULT NULL,
 						  `nvmActiveEnergy` double DEFAULT NULL,
 						  `MeasuredProduction` double DEFAULT NULL,
