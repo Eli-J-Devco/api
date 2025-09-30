@@ -60,6 +60,19 @@ public class ModelKehuaSPI5060KInverterService extends DB{
 				dataModelIon.setOngridPowerfactor(Double.parseDouble(!Lib.isBlank(words.get(28)) ? words.get(28) : "0.001"));
 				
 				
+				dataModelIon.setTotalInsulationImpedance(Double.parseDouble(!Lib.isBlank(words.get(29)) ? words.get(29) : "0.001"));
+				dataModelIon.setMPPT1Voltage(Double.parseDouble(!Lib.isBlank(words.get(30)) ? words.get(30) : "0.001"));
+				dataModelIon.setMPPT2Voltage(Double.parseDouble(!Lib.isBlank(words.get(31)) ? words.get(31) : "0.001"));
+				dataModelIon.setMPPT3Voltage(Double.parseDouble(!Lib.isBlank(words.get(32)) ? words.get(32) : "0.001"));
+				dataModelIon.setMPPT4Voltage(Double.parseDouble(!Lib.isBlank(words.get(33)) ? words.get(33) : "0.001"));
+				dataModelIon.setMPPT1Current(Double.parseDouble(!Lib.isBlank(words.get(34)) ? words.get(34) : "0.001"));
+				dataModelIon.setMPPT2Current(Double.parseDouble(!Lib.isBlank(words.get(35)) ? words.get(35) : "0.001"));
+				dataModelIon.setMPPT3Current(Double.parseDouble(!Lib.isBlank(words.get(36)) ? words.get(36) : "0.001"));
+				dataModelIon.setMPPT4Current(Double.parseDouble(!Lib.isBlank(words.get(37)) ? words.get(37) : "0.001"));
+				dataModelIon.setBusVoltage(Double.parseDouble(!Lib.isBlank(words.get(38)) ? words.get(38) : "0.001"));
+				dataModelIon.setFaultWord(Double.parseDouble(!Lib.isBlank(words.get(39)) ? words.get(39) : "0.001"));
+				
+				
 				// set custom field nvmActivePower and nvmActiveEnergy
 				dataModelIon.setNvmActivePower(power);
 				dataModelIon.setNvmActiveEnergy(energy);

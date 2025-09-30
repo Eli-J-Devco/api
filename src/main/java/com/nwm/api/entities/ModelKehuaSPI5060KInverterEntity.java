@@ -26,6 +26,86 @@ public class ModelKehuaSPI5060KInverterEntity extends ModelBaseEntity {
 	private double Ongridapparentpower;
 	private double Ongridreactivepower;
 	private double OngridPowerfactor;
+	private double TotalInsulationImpedance;
+	private double MPPT1Voltage;
+	private double MPPT2Voltage;
+	private double MPPT3Voltage;
+	private double MPPT4Voltage;
+	private double MPPT1Current;
+	private double MPPT2Current;
+	private double MPPT3Current;
+	private double MPPT4Current;
+	private double BusVoltage;
+	private double FaultWord;
+	
+	
+	
+	public double getTotalInsulationImpedance() {
+		return TotalInsulationImpedance;
+	}
+	public void setTotalInsulationImpedance(double totalInsulationImpedance) {
+		TotalInsulationImpedance = totalInsulationImpedance;
+	}
+	public double getMPPT1Voltage() {
+		return MPPT1Voltage;
+	}
+	public void setMPPT1Voltage(double mPPT1Voltage) {
+		MPPT1Voltage = mPPT1Voltage;
+	}
+	public double getMPPT2Voltage() {
+		return MPPT2Voltage;
+	}
+	public void setMPPT2Voltage(double mPPT2Voltage) {
+		MPPT2Voltage = mPPT2Voltage;
+	}
+	public double getMPPT3Voltage() {
+		return MPPT3Voltage;
+	}
+	public void setMPPT3Voltage(double mPPT3Voltage) {
+		MPPT3Voltage = mPPT3Voltage;
+	}
+	public double getMPPT4Voltage() {
+		return MPPT4Voltage;
+	}
+	public void setMPPT4Voltage(double mPPT4Voltage) {
+		MPPT4Voltage = mPPT4Voltage;
+	}
+	public double getMPPT1Current() {
+		return MPPT1Current;
+	}
+	public void setMPPT1Current(double mPPT1Current) {
+		MPPT1Current = mPPT1Current;
+	}
+	public double getMPPT2Current() {
+		return MPPT2Current;
+	}
+	public void setMPPT2Current(double mPPT2Current) {
+		MPPT2Current = mPPT2Current;
+	}
+	public double getMPPT3Current() {
+		return MPPT3Current;
+	}
+	public void setMPPT3Current(double mPPT3Current) {
+		MPPT3Current = mPPT3Current;
+	}
+	public double getMPPT4Current() {
+		return MPPT4Current;
+	}
+	public void setMPPT4Current(double mPPT4Current) {
+		MPPT4Current = mPPT4Current;
+	}
+	public double getBusVoltage() {
+		return BusVoltage;
+	}
+	public void setBusVoltage(double busVoltage) {
+		BusVoltage = busVoltage;
+	}
+	public double getFaultWord() {
+		return FaultWord;
+	}
+	public void setFaultWord(double faultWord) {
+		FaultWord = faultWord;
+	}
 	public double getDeviceStatus() {
 		return DeviceStatus;
 	}
