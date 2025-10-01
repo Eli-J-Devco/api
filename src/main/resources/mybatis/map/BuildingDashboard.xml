@@ -1145,4 +1145,92 @@
 	
 	
 	
+	<select id="getTopChangeContributors" resultType="com.nwm.api.entities.TopChangeContributorsEntity" parameterType="com.nwm.api.entities.TopChangeContributorsEntity">
+		SELECT 
+		(
+			SELECT ROUND(IFNULL(SUM(v.nvmActiveEnergy), 0), 1) AS current FROM (
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+				
+				)v
+		) AS current,
+		
+		(
+			SELECT ROUND(IFNULL(SUM(v.nvmActiveEnergy), 0), 1) AS current_compare FROM (
+			
+				<foreach collection="devices" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
+						IFNULL(SUM(dv.ActualGeneration), 0) AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					<choose> 
+			       		<when test="id_filter == 'today'">
+			                AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 DAY),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL-1 DAY),"%Y-%m-%d 23:59:59" ) 
+			            </when>
+			            
+			            <when test="id_filter == 'this_month'">
+			                AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 MONTH),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL-1 MONTH),"%Y-%m-%d 23:59:59" ) 
+			            </when>
+			            
+			            <when test="id_filter == 'last_month'">
+			                AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 MONTH),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL-1 MONTH),"%Y-%m-%d 23:59:59" ) 
+			            </when>
+			             
+			            <when test="id_filter == 'this_year'">
+			                AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+							DATE_FORMAT(DATE_ADD(#{start_date},INTERVAL-1 YEAR),"%Y-%m-%d 00:00:00" ) 
+							AND DATE_FORMAT(DATE_ADD(#{end_date},INTERVAL-1 YEAR),"%Y-%m-%d 23:59:59" ) 
+			            </when>                                                     
+			        </choose> 
+	        
+					
+				</foreach>
+				
+		
+				)v
+		) AS current_compare	
+	</select>
+	
+	
+	<select id="getListDeviceBySite" resultType="Map">
+		SELECT
+			d.id,
+			d.id_site,
+			d.devicename,
+			d.datatablename,
+			IFNULL(d.meter_type, 0) AS meter_type,
+			d.id_device_type,
+			d.serialnumber
+			
+		FROM
+			device AS d
+			
+		WHERE
+			d.is_delete = 0	
+			AND d.`status` = 1 
+			AND d.id_site = #{id}
+		GROUP BY d.id;
+	</select>
+	
+	
+	
+	
+	
+	
 </mapper>

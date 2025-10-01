@@ -26,11 +26,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.nwm.api.DBManagers.DB;
+import com.nwm.api.entities.BuildingReportEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.utils.Constants;
 import com.nwm.api.utils.Lib;
 
@@ -542,4 +544,119 @@ public class BuildingDashboardService extends DB {
 		
 	}
 	
+	
+	
+	/**
+	 * @description get data top change contributors
+	 * @author Long.Pham
+	 * @since 2025-09-08
+	 * @param id_site
+	 */
+	public TopChangeContributorsEntity getTopChangeContributors(TopChangeContributorsEntity obj) {
+		try {
+			// Get device by id_site
+			List devices = queryForList("BuildingDashboard.getListDeviceBySite", obj);
+			if(devices.size() > 0) {
+				List<Object> electrics = new ArrayList<>();
+				List<Object> gas = new ArrayList<>();
+				List<Object> pvProduction = new ArrayList<>();
+				List<Object> waters = new ArrayList<>();
+				List<Object> weather = new ArrayList<>();
+				List<Object> lighting = new ArrayList<>();
+				List<Object> hvac = new ArrayList<>();
+				
+				for (int j = 0; j < devices.size(); j++) {
+					Map<String, Object> item = (Map<String, Object>) devices.get(j);
+					int meterType = Integer.parseInt(item.get("meter_type").toString());
+					int idDeviceType = Integer.parseInt(item.get("id_device_type").toString());
+					if(idDeviceType == 4) {
+						weather.add(item);
+					}
+					
+					switch (meterType) {
+				        case 3:
+				        	pvProduction.add(item);
+				            break;
+				        case 4:
+				        	electrics.add(item);
+				            break;
+				        case 5:
+				        	waters.add(item);
+				            break;
+				        case 7:
+				        	gas.add(item);
+				            break;
+				            
+				        case 1:
+				        	lighting.add(item);
+				            break;
+				        case 6:
+				        	hvac.add(item);
+				            break;
+				    }
+				}
+				
+				if(pvProduction.size() > 0) {
+					obj.setDevices(pvProduction);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setPv_current(data.getCurrent());
+						obj.setPv_compare(data.getCurrent_compare());
+					}
+				}
+				
+				if(gas.size() > 0) {
+					obj.setDevices(gas);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setGas_current(data.getCurrent());
+						obj.setGas_compare(data.getCurrent_compare());
+					}
+				}
+				
+				if(waters.size() > 0) {
+					obj.setDevices(waters);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setWater_current(data.getCurrent());
+						obj.setWater_compare(data.getCurrent_compare());
+					}
+				}
+				if(electrics.size() > 0) {
+					obj.setDevices(electrics);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setElectric_current(data.getCurrent());
+						obj.setElectric_compare(data.getCurrent_compare());
+					}
+					
+				}
+				
+				if(lighting.size() > 0) {
+					obj.setDevices(lighting);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setLighting_current(data.getCurrent());
+						obj.setLighting_compare(data.getCurrent_compare());
+					}
+					
+				}
+				
+				if(hvac.size() > 0) {
+					obj.setDevices(hvac);
+					TopChangeContributorsEntity data = (TopChangeContributorsEntity) queryForObject("BuildingDashboard.getTopChangeContributors", obj);
+					if(data != null) {
+						obj.setHvac_current(data.getCurrent());
+						obj.setHvac_compare(data.getCurrent_compare());
+					}
+					
+				}
+
+			}
+			
+			return obj;
+		} catch (Exception ex) {
+			return new TopChangeContributorsEntity();
+		}
+	}
 }
