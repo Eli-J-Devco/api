@@ -23,6 +23,23 @@ public class SiteDataReportEntity {
 	private Double TCellAVG;
 	private String table_data_report;
 	
+	private Double previousRead;
+	private Double currentRead;
+	
+	
+	
+	public Double getPreviousRead() {
+		return previousRead;
+	}
+	public void setPreviousRead(Double previousRead) {
+		this.previousRead = previousRead;
+	}
+	public Double getCurrentRead() {
+		return currentRead;
+	}
+	public void setCurrentRead(Double currentRead) {
+		this.currentRead = currentRead;
+	}
 	public String getTime() {
 		return time;
 	}
