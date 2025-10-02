@@ -192,9 +192,62 @@ public class Constants {
     public static final int NO_COMMUNICATION  = 1001; // "nvm_1001";
     public static final int NO_PRODUCTION =  1000; // "nvm_1000";
     public static final int TOTAL_CONSECUTIVE_ALARMS =  20;
-    public static final int DAILY_INTERVAL = 4;
-    public static final int MONTHLY_INTERVAL = 6;
-    public static final int ANNUALLY_INTERVAL = 7;
+    
+    public enum ReportIntervals {
+    	_5_MINUTE(1),
+    	_15_MINUTES(2),
+    	_30_MINUTES(8),
+    	_1_HOUR(3),
+    	DAILY(4),
+    	WEEKLY(5),
+    	MONTHLY(6),
+    	ANNUAL(7);
+
+    	private final int value;
+
+    	ReportIntervals(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportIntervals fromValue(int value) {
+            for (ReportIntervals interval : ReportIntervals.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportIntervals._15_MINUTES;
+        }
+    }
+    
+    public enum ReportRange {
+    	DAILY(1),
+    	WEEKLY(6),
+    	MONTHLY(2),
+    	QUARTERLY(3),
+    	ANNUALLY(4),
+    	CUSTOM(5);
+    	
+    	private final int value;
+    	
+    	ReportRange(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportRange fromValue(int value) {
+    		for (ReportRange range : ReportRange.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportRange.MONTHLY;
+    	}
+    }
     
     public static final int MAXRECORD_DISPLAY_DEFAULT = 5;
     public static final int MAXRECORD_NO_MINIT = 200;
