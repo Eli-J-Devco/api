@@ -222,13 +222,39 @@ public class Constants {
         }
     }
     
+    public enum ReportFileType {
+    	PDF(1),
+    	EXCEL(2),
+    	CSV(3);
+
+    	private final int value;
+
+    	ReportFileType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+            return this.value;
+        }
+    	
+    	public static ReportFileType fromValue(int value) {
+            for (ReportFileType interval : ReportFileType.values()) {
+                if (interval.getValue() == value) return interval;
+            }
+            
+            return ReportFileType.EXCEL;
+        }
+    }
+    
     public enum ReportRange {
     	DAILY(1),
-    	WEEKLY(6),
     	MONTHLY(2),
-    	QUARTERLY(3),
+    	LAST_QUARTER(3),
     	ANNUALLY(4),
-    	CUSTOM(5);
+    	CUSTOM(5),
+    	WEEKLY(6),
+    	LAST_MONTH(7),
+    	LAST_WEEK(8);
     	
     	private final int value;
     	
@@ -246,6 +272,32 @@ public class Constants {
     		}
     		
     		return ReportRange.MONTHLY;
+    	}
+    }
+    
+    public enum ReportType {
+    	SOLAR_PRODUCTION_REPORT(1),
+    	PRODUCTION_TREND_REPORT(2),
+    	LEVITON_BMO_CONSUMPTION_REPORT(3),
+    	ASSET_MANAGEMENT_AND_OPERATION_PERFORMANCE_REPORT(4),
+    	SANITY_CHECK_REPORT(5);
+    	
+    	private final int value;
+    	
+    	ReportType(int value) {
+    		this.value = value;
+    	}
+    	
+    	public int getValue() {
+    		return this.value;
+    	}
+    	
+    	public static ReportType fromValue(int value) {
+    		for (ReportType range : ReportType.values()) {
+    			if (range.getValue() == value) return range;
+    		}
+    		
+    		return ReportType.SOLAR_PRODUCTION_REPORT;
     	}
     }
     

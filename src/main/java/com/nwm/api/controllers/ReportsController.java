@@ -74,7 +74,7 @@ public class ReportsController extends BaseController {
 	public Object getDailyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			ViewReportEntity dataObj = (ViewReportEntity) service.getDailyReport(obj);
+			ViewReportEntity dataObj = service.getDailyReport(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 			} else {
@@ -114,7 +114,7 @@ public class ReportsController extends BaseController {
 	public Object getAnnuallyReport(@RequestBody ViewReportEntity obj) {
 		try {
 			ReportsService service = new ReportsService();
-			ViewReportEntity dataObj = (ViewReportEntity) service.getAnnuallyReport(obj);
+			ViewReportEntity dataObj = service.getAnnuallyReport(obj);
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
 			} else {
@@ -155,7 +155,7 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 
-			ViewReportEntity dataObj = (ViewReportEntity) service.getQuarterlyReport(obj);
+			ViewReportEntity dataObj = service.getQuarterlyReport(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -180,7 +180,7 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 
-			AssetManagementAndOperationPerformanceReportEntity dataObj = (AssetManagementAndOperationPerformanceReportEntity) service.getAssetManagementAndOperationPerformanceReport(obj);
+			AssetManagementAndOperationPerformanceReportEntity dataObj = service.getAssetManagementAndOperationPerformanceReport(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
@@ -541,7 +541,7 @@ public class ReportsController extends BaseController {
 		try {
 			ReportsService service = new ReportsService();
 
-			ViewReportEntity dataObj = (ViewReportEntity) service.getMonthlyReport(obj);
+			ViewReportEntity dataObj = service.getMonthlyReport(obj);
 
 			if (dataObj != null) {
 				return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);

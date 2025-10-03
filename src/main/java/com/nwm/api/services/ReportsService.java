@@ -135,6 +135,7 @@ import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Constants.ReportFileType;
 import com.nwm.api.utils.Constants.ReportIntervals;
 import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
@@ -174,7 +175,7 @@ public class ReportsService extends DB {
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 		
 			switch (ReportRange.fromValue(obj.getCadence_range())) {
-				case DAILY: // daily
+				case DAILY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
 					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
 						case _5_MINUTE:
@@ -189,13 +190,16 @@ public class ReportsService extends DB {
 							interval = 1;
 							timeUnit = ChronoUnit.HOURS;
 							break;
+						default:
+							break;
 					}
 					break;
+				case LAST_MONTH:
 				case MONTHLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case QUARTERLY:
+				case LAST_QUARTER:
 					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
 						case DAILY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
@@ -204,6 +208,8 @@ public class ReportsService extends DB {
 						case MONTHLY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
 							timeUnit = ChronoUnit.MONTHS;
+							break;
+						default:
 							break;
 					}
 					break;
@@ -236,7 +242,11 @@ public class ReportsService extends DB {
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
 	                		timeUnit = ChronoUnit.YEARS;
 	                		break;
+	                	default:
+	    					break;
 	                }
+					break;
+				default:
 					break;
 			}
 			
@@ -334,14 +344,21 @@ public class ReportsService extends DB {
 					
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
-							ViewReportEntity data = null;
-							if (reportObj.getCadence_range() == ReportRange.DAILY.getValue()) data = (ViewReportEntity) this.getDailyReport(siteObj);
-							else if (reportObj.getCadence_range() == ReportRange.MONTHLY.getValue()) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
-							else if (reportObj.getCadence_range() == ReportRange.QUARTERLY.getValue()) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
-							else if (reportObj.getCadence_range() == ReportRange.ANNUALLY.getValue()) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
-							else if (reportObj.getCadence_range() == ReportRange.CUSTOM.getValue()) data = (ViewReportEntity) this.getCustomReport(siteObj);
-							
-							return data;
+							switch (ReportRange.fromValue(reportObj.getCadence_range())) {
+								case DAILY:
+									return this.getDailyReport(siteObj);
+								case LAST_MONTH:
+								case MONTHLY:
+									return this.getMonthlyReport(siteObj);
+								case LAST_QUARTER:
+									return this.getQuarterlyReport(siteObj);
+								case ANNUALLY:
+									return this.getAnnuallyReport(siteObj);
+								case CUSTOM:
+									return this.getCustomReport(siteObj);
+								default:
+									return null;
+							}
 						} catch (Exception ex) {
 							log.error(ex);
 							return null;
@@ -437,7 +454,7 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getAnnuallyReport(ViewReportEntity obj) {
+	public ViewReportEntity getAnnuallyReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null || dataObj.getId_site() == 0) return null;
@@ -463,7 +480,7 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, data_to
 	 */
 	
-	public Object getQuarterlyReport(ViewReportEntity obj) {
+	public ViewReportEntity getQuarterlyReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null || dataObj.getId_site() == 0) return null;
@@ -1075,7 +1092,7 @@ public class ReportsService extends DB {
 	 * @param id_site
 	 */
 	
-	public Object getMonthlyReport(ViewReportEntity obj) {
+	public ViewReportEntity getMonthlyReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null || dataObj.getId_site() == 0) return null;
@@ -1130,7 +1147,7 @@ public class ReportsService extends DB {
 	 * @param id_site, date_from, date_to
 	 */
 	
-	public Object getCustomReport(ViewReportEntity obj) {
+	public ViewReportEntity getCustomReport(ViewReportEntity obj) {
 		try {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null || dataObj.getId_site() == 0) return null;
@@ -1302,7 +1319,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1322,7 +1339,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createDailyReportPdfFile(obj, dataObjList) : createDailyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1338,7 +1355,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1358,7 +1375,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createMonthlyReportPdfFile(obj, dataObjList) : createMonthlyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1374,7 +1391,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1394,7 +1411,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createQuarterlyReportPdfFile(obj, dataObjList) : createQuarterlyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1410,7 +1427,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1430,7 +1447,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createAnnuallyReportPdfFile(obj, dataObjList) : createAnnuallyReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1446,7 +1463,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return false;
-			String filePath = obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+			String filePath = obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
 			if (filePath == null) return false;
 			
 			sentReportByMail(filePath, dataObjList.get(0).getSubscribers(), obj.getCadence_range_name(), 16, "Customer", obj.getCadence_range_name());
@@ -1466,7 +1483,7 @@ public class ReportsService extends DB {
 		try {
 			List<ViewReportEntity> dataObjList = getReportDataList(obj);
 			if (dataObjList == null || dataObjList.size() == 0) return null;
-			return obj.getFile_type() == 1 ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
+			return obj.getFile_type() == ReportFileType.PDF.getValue() ? createCustomReportPdfFile(obj, dataObjList) : createCustomReportSheetFile(obj, dataObjList);
 		} catch (Exception e) {
 			return null;
 		}
@@ -1645,9 +1662,19 @@ public class ReportsService extends DB {
 						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
 						// adjust tick mark position based on data intervals
 						int dataIntervals = 1;
-						if (dataObj.getData_intervals() == ReportIntervals._5_MINUTE.getValue()) dataIntervals = 288;
-						else if (dataObj.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
-						else if (dataObj.getData_intervals() == ReportIntervals._1_HOUR.getValue()) dataIntervals = 24;
+						switch (ReportIntervals.fromValue(dataObj.getData_intervals())) {
+							case _5_MINUTE:
+								dataIntervals = 288;
+								break;
+							case _15_MINUTES:
+								dataIntervals = 96;
+								break;
+							case _1_HOUR:
+								dataIntervals = 24;
+								break;
+							default:
+								break;
+						}
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
 						
@@ -3953,10 +3980,20 @@ public class ReportsService extends DB {
 							
 							if (itemCategoryTime.equals("Total")) continue;
 							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
-							if (obj.getData_intervals() == ReportIntervals.DAILY.getValue()) period = new Day(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == ReportIntervals.MONTHLY.getValue()) period = new Month(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == ReportIntervals.ANNUAL.getValue()) period = new Year(format.parse(itemCategoryTime));
-							else period = new Minute(format.parse(itemCategoryTime));
+							switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+								case DAILY:
+									period = new Day(format.parse(itemCategoryTime));
+									break;
+								case MONTHLY:
+									period = new Month(format.parse(itemCategoryTime));
+									break;
+								case ANNUAL:
+									period = new Year(format.parse(itemCategoryTime));
+									break;
+								default:
+									period = new Minute(format.parse(itemCategoryTime));
+									break;
+							}
 							
 							series.add(period, itemActual);
 						}
