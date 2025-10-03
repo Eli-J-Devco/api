@@ -282,8 +282,8 @@
 			r.file_type,
 			r.type_option,
 			r.id_sub_group,
-			DATE_FORMAT(r.date_from, '%Y-%m-%d %H:%i:%s') AS date_from,
-			DATE_FORMAT(r.date_to, '%Y-%m-%d %H:%i:%s') AS date_to,
+			DATE_FORMAT(r.date_from, '%Y-%m-%d 00:00:00') AS date_from,
+			DATE_FORMAT(r.date_to, '%Y-%m-%d 23:59:59') AS date_to,
 			r.`status`,
 			r.schedule_enable,
 			DATE_FORMAT(r.time_schedule, '%Y-%m-%d %H:%i') AS time_schedule,
@@ -882,7 +882,7 @@
 	
 	
 	
-	<select id="getDataEnergyMeterDailyReport" resultType="com.nwm.api.entities.DailyDateEntity" >
+	<select id="getDataEnergyMeter" resultType="com.nwm.api.entities.DailyDateEntity" >
 		 	SELECT
 				t.categories_time,
 				ROUND(SUM(t.nvmActivePower), 0) AS power,
@@ -896,6 +896,9 @@
 								</if>
 								<if test="data_intervals == 2">
 									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 900)*900), '%m/%d/%Y %H:%i') AS categories_time,
+								</if>
+								<if test="data_intervals == 8">
+									FROM_UNIXTIME(((UNIX_TIMESTAMP(CONVERT_TZ( dv.time, 'UTC', t.`value` )) DIV 1800)*1800), '%m/%d/%Y %H:%i') AS categories_time,
 								</if>
 								<if test="data_intervals == 3">
 									DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.`value` ), '%m/%d/%Y %H:00' ) AS categories_time,

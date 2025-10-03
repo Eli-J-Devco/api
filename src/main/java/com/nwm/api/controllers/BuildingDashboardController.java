@@ -14,6 +14,7 @@ import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DeviceGroupEntity;
 import com.nwm.api.entities.ElectricInformationEntity;
 import com.nwm.api.entities.SiteEntity;
+import com.nwm.api.entities.TopChangeContributorsEntity;
 import com.nwm.api.services.BuildingDashboardService;
 import com.nwm.api.services.CustomerViewService;
 import com.nwm.api.services.DeviceGroupService;
@@ -87,6 +88,26 @@ public class BuildingDashboardController extends BaseController {
 			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
 		}
 	}
+	
+	/**
+	 * @description Get top change contributors
+	 * @author long.pham
+	 * @since 2024-10-30
+	 * @param id
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/get-top-change-contributors")
+	public Object getTopChangeContributors(@RequestBody TopChangeContributorsEntity obj) {
+		try {
+			BuildingDashboardService service = new BuildingDashboardService();
+			TopChangeContributorsEntity data = service.getTopChangeContributors(obj);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, data, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, e, 0);
+		}
+	}
+	
 	
 	
 	/**

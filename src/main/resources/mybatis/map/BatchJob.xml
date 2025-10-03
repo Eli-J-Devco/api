@@ -969,7 +969,9 @@
 			ROUND(ac.nvmActivePower, 2) AS PowerTodayTotal,
 			ROUND(ac.avg_nvmActivePower, 2) AS PowerTodayAVG,
 			NULL AS POATotal,
-			NULL AS POAAVG
+			NULL AS POAAVG,
+			ac.previousRead,
+			ac.currentRead
 		FROM (
 			SELECT 
 				iv.id_device,
@@ -991,7 +993,9 @@
 					 when iv.time_month = '10' then ROUND((SELECT en.oct FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
 					 when iv.time_month = '11' then ROUND((SELECT en.nov FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/30)
 					 when iv.time_month = '12' then ROUND((SELECT en.`dec` FROM energy_expectations en WHERE en.id_site=#{id_site} AND `year`=iv.time_year)/31)
-					END as estimated
+					END as estimated,
+				iv.previousRead AS previousRead,
+				iv.currentRead AS currentRead
 			FROM (
 					SELECT
 						dv.id_device,
@@ -1002,7 +1006,9 @@
 						<!--MAX(dv.nvmActiveEnergy) - MIN(dv.nvmActiveEnergy) AS nvmActiveEnergy, -->
 						SUM(dv.MeasuredProduction) AS nvmActiveEnergy,
 						IF(SUM(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, SUM(dv.nvmActivePower)) AS nvmActivePower,
-						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower
+						IF(AVG(dv.nvmActivePower) <![CDATA[<]]> 0.1, 0, AVG(dv.nvmActivePower)) AS avg_nvmActivePower,
+						MIN(dv.nvmActiveEnergy) AS previousRead,
+						MAX(dv.nvmActiveEnergy) AS currentRead
 					FROM
 						${datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -1115,6 +1121,8 @@
 				`POATotal`,
 				`POAAVG`,
 				`TCellAVG`,
+				`previousRead`,
+				`currentRead`
 		</trim>
 		
 		<foreach collection="dataDevice" item="item" open="VALUES" separator=",">
@@ -1133,6 +1141,8 @@
 				#{item.POATotal},
 				#{item.POAAVG},
 				#{item.TCellAVG},
+				#{item.previousRead},
+				#{item.currentRead},
 			</trim>
 		</foreach>
 		
@@ -1149,6 +1159,8 @@
 				`POATotal` = VALUES(POATotal),
 				`POAAVG` = VALUES(POAAVG),
 				`TCellAVG` = VALUES(TCellAVG),
+				`previousRead` = VALUES(previousRead),
+				`currentRead` = VALUES(currentRead),
 		</trim>
 		
 	</insert>

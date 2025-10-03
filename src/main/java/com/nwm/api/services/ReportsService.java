@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -33,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -133,6 +135,8 @@ import com.nwm.api.entities.SanityCheckReportEntity;
 import com.nwm.api.entities.SiteEntity;
 import com.nwm.api.entities.ViewReportEntity;
 import com.nwm.api.utils.Constants;
+import com.nwm.api.utils.Constants.ReportIntervals;
+import com.nwm.api.utils.Constants.ReportRange;
 import com.nwm.api.utils.DocumentHelper;
 import com.nwm.api.utils.Lib;
 import com.nwm.api.utils.SendMail;
@@ -169,56 +173,66 @@ public class ReportsService extends DB {
 			DateTimeFormatter categoryTimeFormat = DateTimeFormatter.ofPattern("HH:mm");
 			ChronoUnit timeUnit = ChronoUnit.MINUTES;
 		
-			switch (obj.getCadence_range()) {
-				case 1: // daily
+			switch (ReportRange.fromValue(obj.getCadence_range())) {
+				case DAILY: // daily
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
-					switch (obj.getData_intervals()) {
-						case 1:
+					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						case _5_MINUTE:
 							interval = 5;
 							timeUnit = ChronoUnit.MINUTES;
 							break;
-						case 2:
+						case _15_MINUTES:
 							interval = 15;
 							timeUnit = ChronoUnit.MINUTES;
 							break;
-						case 3:
+						case _1_HOUR:
 							interval = 1;
 							timeUnit = ChronoUnit.HOURS;
 							break;
 					}
 					break;
-				case 2: // monthly
+				case MONTHLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 					timeUnit = ChronoUnit.DAYS;
 					break;
-				case 3: // quarterly
-					switch (obj.getData_intervals()) {
-						case 4:
+				case QUARTERLY:
+					switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+						case DAILY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 							timeUnit = ChronoUnit.DAYS;
 							break;
-						case 6:
+						case MONTHLY:
 							categoryTimeFormat = DateTimeFormatter.ofPattern("MMM-yyyy");
 							timeUnit = ChronoUnit.MONTHS;
 							break;
 					}
 					break;
-				case 4: // annually
+				case ANNUALLY:
 					categoryTimeFormat = DateTimeFormatter.ofPattern("MMM");
 					timeUnit = ChronoUnit.MONTHS;
 					break;
-				case 5: // custom
-	                switch (obj.getData_intervals()) {
-	                	case 4:
+				case CUSTOM:
+	                switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+		                case _15_MINUTES:
+		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+							interval = 15;
+							timeUnit = ChronoUnit.MINUTES;
+							break;
+		                case _30_MINUTES:
+		                	categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy HH:mm");
+							interval = 30;
+							timeUnit = ChronoUnit.MINUTES;
+							break;
+	                	case DAILY:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/dd/yyy");
 	                		timeUnit = ChronoUnit.DAYS;
 	                		break;
-	                	case 6:
+	                	case MONTHLY:
 	                		end = end.with(TemporalAdjusters.lastDayOfMonth());
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("MM/yyy");
 	                		timeUnit = ChronoUnit.MONTHS;
 	                		break;
-	                	case 7:
+	                	case ANNUAL:
 	                		categoryTimeFormat = DateTimeFormatter.ofPattern("yyyy");
 	                		timeUnit = ChronoUnit.YEARS;
 	                		break;
@@ -321,11 +335,11 @@ public class ReportsService extends DB {
 					CompletableFuture<ViewReportEntity> future = CompletableFuture.supplyAsync(() -> {
 						try {
 							ViewReportEntity data = null;
-							if (reportObj.getCadence_range() == 1) data = (ViewReportEntity) this.getDailyReport(siteObj);
-							else if (reportObj.getCadence_range() == 2) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 3) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
-							else if (reportObj.getCadence_range() == 4) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
-							else if (reportObj.getCadence_range() == 5) data = (ViewReportEntity) this.getCustomReport(siteObj);
+							if (reportObj.getCadence_range() == ReportRange.DAILY.getValue()) data = (ViewReportEntity) this.getDailyReport(siteObj);
+							else if (reportObj.getCadence_range() == ReportRange.MONTHLY.getValue()) data = (ViewReportEntity) this.getMonthlyReport(siteObj);
+							else if (reportObj.getCadence_range() == ReportRange.QUARTERLY.getValue()) data = (ViewReportEntity) this.getQuarterlyReport(siteObj);
+							else if (reportObj.getCadence_range() == ReportRange.ANNUALLY.getValue()) data = (ViewReportEntity) this.getAnnuallyReport(siteObj);
+							else if (reportObj.getCadence_range() == ReportRange.CUSTOM.getValue()) data = (ViewReportEntity) this.getCustomReport(siteObj);
 							
 							return data;
 						} catch (Exception ex) {
@@ -340,7 +354,7 @@ public class ReportsService extends DB {
 			
 			List<ViewReportEntity> dataList = list.stream().map(future -> future.join()).filter(item -> item != null).collect(Collectors.toList());
 			
-			return reportObj.getCadence_range() == 5 ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
+			return reportObj.getCadence_range() == ReportRange.CUSTOM.getValue() ? this.dataSummarize(this.dataSort(dataList, reportObj)) : dataList;
 		} catch (Exception e) {
 			return new ArrayList<>();
 		}
@@ -358,40 +372,61 @@ public class ReportsService extends DB {
 			ViewReportEntity dataObj = (ViewReportEntity) queryForObject("Reports.getDetailReport", obj);
 			if (dataObj == null || dataObj.getId_site() == 0) return null;
 			
-			List<DailyDateEntity> dataPower = new ArrayList<DailyDateEntity>();
-			List powerDeviceList = dataObj.isHave_meter() ? queryForList("Reports.getListDeviceTypeMeter", obj) : queryForList("Reports.getListDeviceTypeInverter", obj);
-			if(powerDeviceList.size() > 0 ) {
-				obj.setGroupDevices(powerDeviceList);
-				dataPower = queryForList("Reports.getDataEnergyMeterDailyReport", obj);
-			}
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setData_intervals(dataObj.getData_intervals());
-			List<DailyDateEntity> dateTimeList = getDateTimeList(obj, DailyDateEntity.class);
-			List<DailyDateEntity> fulfillData = Lib.fulfillData(dateTimeList, dataPower, "categories_time");
 			
-			// get irradiance 
-			try {
-				List dataListDeviceIrr = queryForList("Reports.getListDeviceTypeIrradiance", obj);
-				if (dataListDeviceIrr.size() > 0) {
-					obj.setGroupDevices(dataListDeviceIrr);
-					List<DailyDateEntity> dataIrradiance = queryForList("Reports.getDataIrradiance", obj);
-					List<DailyDateEntity> fulfillIrradiance = Lib.fulfillData(dateTimeList, dataIrradiance, "categories_time");
-					if(fulfillIrradiance.size() > 0) {
-						for (int i = 0; i < fulfillData.size(); i++) {
-							DailyDateEntity item = (DailyDateEntity) fulfillData.get(i);
-							item.setIrradiance(fulfillIrradiance.get(i).getIrradiance());
-						}
-					}
-				}
-				
-				dataObj.setHave_poa(dataListDeviceIrr.size() > 0);
-			} catch (Exception ex) {
+			CustomerViewService customerService = new CustomerViewService();
+			DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
+			List<DeviceEntity> meterDevices = devices.getMeter();
+			List<DeviceEntity> inverterDevices = devices.getInverter();
+			List<DeviceEntity> irradianceDevices = devices.getIrradiance();
+			List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+			
+			if(powerDevices.size() > 0) {
+				obj.setGroupDevices(powerDevices);
+				List<DailyDateEntity> dataPower = getEnergyByMeter(obj);
+				dataObj.setDataReports(dataPower);
 			}
 			
-			dataObj.setDataReports(fulfillData);
+			// get irradiance 
+			if (irradianceDevices.size() > 0) {
+				obj.setGroupDevices(irradianceDevices);
+				List<DailyDateEntity> dataIrradiance = getIrradianceByWS(obj);
+				List<DailyDateEntity> dataPower = dataObj.getDataReports();
+				
+				if (dataIrradiance.size() > 0 && dataPower.size() > 0) {
+					for (int i = 0; i < dataPower.size(); i++) {
+						DailyDateEntity item = (DailyDateEntity) dataPower.get(i);
+						item.setIrradiance(dataIrradiance.get(i).getIrradiance());
+					}
+				} else if (dataIrradiance.size() > 0) {
+					dataObj.setDataReports(dataIrradiance);
+				}
+				
+				dataObj.setHave_poa(true);
+			}
+			
 			return dataObj;
 		} catch (Exception ex) {
 			return null;
+		}
+	}
+	
+	private List<DailyDateEntity> getEnergyByMeter(ViewReportEntity obj) {
+		try {
+			List<DailyDateEntity> data = queryForList("Reports.getDataEnergyMeter", obj);
+			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
+		} catch (Exception e) {
+			return new ArrayList<>();
+		}
+	}
+	
+	private List<DailyDateEntity> getIrradianceByWS(ViewReportEntity obj) {
+		try {
+			List<DailyDateEntity> data = queryForList("Reports.getDataIrradiance", obj);
+			return Lib.fulfillData(getDateTimeList(obj, DailyDateEntity.class), data, "categories_time");
+		} catch (Exception e) {
+			return new ArrayList<>();
 		}
 	}
 	
@@ -437,7 +472,7 @@ public class ReportsService extends DB {
 			obj.setData_intervals(dataObj.getData_intervals());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
+			List<QuarterlyDateEntity> dataEnergy = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue() ? queryForList("Reports.getDataEnergyQuarterlyReportByMonth", obj) : queryForList("Reports.getDataEnergyQuarterlyReportByDay", obj);
 			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, QuarterlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
@@ -1103,8 +1138,29 @@ public class ReportsService extends DB {
 			obj.setCadence_range(dataObj.getCadence_range());
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
-			List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
-			List<CustomReportDataEntity> fulfillData = Lib.fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower, "categories_time");
+			List<CustomReportDataEntity> fulfillData = new ArrayList<>(); 
+			
+			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue() || obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) {
+				CustomerViewService customerService = new CustomerViewService();
+				DevicesByTypeEntity devices = customerService.getDevicesBySite(obj);
+				List<DeviceEntity> meterDevices = devices.getMeter();
+				List<DeviceEntity> inverterDevices = devices.getInverter();
+				List<DeviceEntity> powerDevices = meterDevices.size() > 0 ? meterDevices : inverterDevices;
+				
+				obj.setGroupDevices(powerDevices);
+				List<DailyDateEntity> dataPower = getEnergyByMeter(obj);
+				
+				for (DailyDateEntity item : dataPower) {
+					CustomReportDataEntity dataItem = new CustomReportDataEntity();
+					dataItem.setCategories_time(item.getCategories_time());
+					dataItem.setActual(item.getEnergy());
+					fulfillData.add(dataItem);
+				}
+			} else {
+				List<CustomReportDataEntity> dataPower = queryForList("Reports.getDataEnergyCustomReport", obj);
+				fulfillData = Lib.fulfillData(getDateTimeList(obj, CustomReportDataEntity.class), dataPower, "categories_time");
+			}
+			
 			if (fulfillData.size() > 0) {
 				CustomReportDataEntity totalRow = new CustomReportDataEntity();
 				totalRow.setCategories_time("Total");
@@ -1589,9 +1645,9 @@ public class ReportsService extends DB {
 						XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
 						// adjust tick mark position based on data intervals
 						int dataIntervals = 1;
-						if (dataObj.getData_intervals() == 1) dataIntervals = 288;
-						else if (dataObj.getData_intervals() == 2) dataIntervals = 96;
-						else if (dataObj.getData_intervals() == 3) dataIntervals = 24;
+						if (dataObj.getData_intervals() == ReportIntervals._5_MINUTE.getValue()) dataIntervals = 288;
+						else if (dataObj.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
+						else if (dataObj.getData_intervals() == ReportIntervals._1_HOUR.getValue()) dataIntervals = 24;
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
                         chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
 						
@@ -2398,7 +2454,7 @@ public class ReportsService extends DB {
 				ViewReportEntity dataObj = dataObjList.get(i);
 					
 				if (dataObj != null) {
-					boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+					boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 
 					SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 					SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -2510,7 +2566,7 @@ public class ReportsService extends DB {
 			CellStyle tableRowOneDecimalPlaceRedTextCellStyle = DocumentHelper.createStyleForTableRowNumber(sheet, false, DocumentHelper.oneDecimalPlaceDataFormat);
 			tableRowOneDecimalPlaceRedTextCellStyle.setFont(redFont);
 			
-			boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+			boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 
 			Row row = sheet.createRow(0);
 			row.setHeight((short) 600);
@@ -2835,7 +2891,7 @@ public class ReportsService extends DB {
 					ViewReportEntity dataObj = dataObjList.get(l);
 					
 					if (dataObj != null) {
-						boolean quarterlyReportByMonth = dataObj.getData_intervals() == Constants.MONTHLY_INTERVAL;
+						boolean quarterlyReportByMonth = dataObj.getData_intervals() == ReportIntervals.MONTHLY.getValue();
 	
 						SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 						SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -3523,6 +3579,13 @@ public class ReportsService extends DB {
 			// category axis
 			XDDFCategoryAxis bottomAxis = DocumentHelper.createCategoryAxis(chart);
 			
+			// adjust tick mark position based on data intervals
+			int dataIntervals = 1;
+			if (obj.getData_intervals() == ReportIntervals._15_MINUTES.getValue()) dataIntervals = 96;
+			else if (obj.getData_intervals() == ReportIntervals._30_MINUTES.getValue()) dataIntervals = 48;
+            chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickLblSkip().setVal(dataIntervals);
+            chart.getCTChart().getPlotArea().getCatAxArray(0).addNewTickMarkSkip().setVal(dataIntervals);
+			
 			// left value axis
 			XDDFValueAxis leftAxis = DocumentHelper.createLeftValueAxis(chart, "kWh");
 			
@@ -3628,9 +3691,9 @@ public class ReportsService extends DB {
 			
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
-			if (report.getData_intervals() == Constants.DAILY_INTERVAL) format = new SimpleDateFormat("MM/dd/yyyy");
-			else if (report.getData_intervals() == Constants.MONTHLY_INTERVAL) format = new SimpleDateFormat("MM/yyyy");
-			else if (report.getData_intervals() == Constants.ANNUALLY_INTERVAL) format = new SimpleDateFormat("yyyy");
+			if (report.getData_intervals() == ReportIntervals.ANNUAL.getValue()) format = new SimpleDateFormat("yyyy");
+			else if (report.getData_intervals() == ReportIntervals.MONTHLY.getValue()) format = new SimpleDateFormat("MM/yyyy");
+			else format = new SimpleDateFormat("MM/dd/yyyy");
 			
 			cell = row.createCell(2);
 			cell.setCellStyle(reportInfoCellStyle);
@@ -3789,29 +3852,40 @@ public class ReportsService extends DB {
 				
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 				SimpleDateFormat format  = new SimpleDateFormat("MM/yyyy");
+				SimpleDateFormat coveredPeriodFormat = new SimpleDateFormat("MM/dd/yyyy");
 				DateTickUnitType dateTickUnitType = DateTickUnitType.MONTH;
+				int dateTickInterval = (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15);
+				Date startDate = dateFormat.parse(obj.getStart_date());
+				Date endDate = dateFormat.parse(obj.getEnd_date());
 				
 				// select format based on intervals
-				switch (obj.getData_intervals()) {
-					case Constants.DAILY_INTERVAL:
+				switch (ReportIntervals.fromValue(obj.getData_intervals())) {
+					case DAILY:
 						format = new SimpleDateFormat("MM/dd/yyyy");
 						dateTickUnitType = DateTickUnitType.DAY;
 						break;
 						
-					case Constants.MONTHLY_INTERVAL:
+					case MONTHLY:
 						format = new SimpleDateFormat("MM/yyyy");
+						coveredPeriodFormat = new SimpleDateFormat("MM/yyyy");
 						dateTickUnitType = DateTickUnitType.MONTH;
+						startDate = Date.from(startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.firstDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
+						endDate = Date.from(endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().with(TemporalAdjusters.lastDayOfMonth()).atZone(ZoneId.systemDefault()).toInstant());
 						break;
 						
-					case Constants.ANNUALLY_INTERVAL:
+					case ANNUAL:
 						format = new SimpleDateFormat("yyyy");
+						coveredPeriodFormat = new SimpleDateFormat("yyyy");
 						dateTickUnitType = DateTickUnitType.YEAR;
+						break;
+					
+					default:
+						format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
+						dateTickUnitType = DateTickUnitType.DAY;
+						dateTickInterval = (int) Math.ceil((double) (TimeUnit.DAYS.convert(endDate.getTime() - startDate.getTime(), TimeUnit.MILLISECONDS) + 1) / 15);
 						break;
 				}
 				
-				Date startDate = dateFormat.parse(obj.getStart_date());
-				Date endDate = dateFormat.parse(obj.getEnd_date());
-			
 				//====== table ============================================================
 				// header and logo
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
@@ -3822,7 +3896,7 @@ public class ReportsService extends DB {
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Report Date").setBold().setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(dataObjList.get(0).getReport_date()).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).add(new Paragraph("Covered Period").setBold().setTextAlignment(TextAlignment.LEFT)));
-				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(format.format(startDate) + " - " + format.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
+				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).add(new Paragraph(coveredPeriodFormat.format(startDate) + " - " + coveredPeriodFormat.format(endDate)).setTextAlignment(TextAlignment.LEFT)));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 1).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 2).setHeight(14).setBorder(Border.NO_BORDER));
 				table.addCell(new com.itextpdf.layout.element.Cell(1, 3).setHeight(14).setBorder(Border.NO_BORDER));
@@ -3837,7 +3911,7 @@ public class ReportsService extends DB {
 				XYPlot plot = chart.getXYPlot();
 				
 				// category axis
-				DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, (int) Math.ceil((double) dataObjList.get(0).getDataReports().size() / 15), format), startDate, endDate);
+				DocumentHelper.createJFreeChartDomainAxis(plot, new DateTickUnit(dateTickUnitType, dateTickInterval, format), startDate, endDate);
 				// left axis
 				DocumentHelper.createJFreeChartNumberAxis("kWh", AxisLocation.BOTTOM_OR_LEFT, 0, 0, plot);
 				
@@ -3879,9 +3953,10 @@ public class ReportsService extends DB {
 							
 							if (itemCategoryTime.equals("Total")) continue;
 							RegularTimePeriod period = new Month(format.parse(itemCategoryTime));
-							if (obj.getData_intervals() == Constants.DAILY_INTERVAL) period = new Day(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == Constants.MONTHLY_INTERVAL) period = new Month(format.parse(itemCategoryTime));
-							else if (obj.getData_intervals() == Constants.ANNUALLY_INTERVAL) period = new Year(format.parse(itemCategoryTime));
+							if (obj.getData_intervals() == ReportIntervals.DAILY.getValue()) period = new Day(format.parse(itemCategoryTime));
+							else if (obj.getData_intervals() == ReportIntervals.MONTHLY.getValue()) period = new Month(format.parse(itemCategoryTime));
+							else if (obj.getData_intervals() == ReportIntervals.ANNUAL.getValue()) period = new Year(format.parse(itemCategoryTime));
+							else period = new Minute(format.parse(itemCategoryTime));
 							
 							series.add(period, itemActual);
 						}
