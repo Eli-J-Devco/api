@@ -505,6 +505,23 @@ public class ImportOldDataController extends BaseController {
 											service.setModelHoneywellEMON3200(rowItem, r);
 											break;
 											
+											
+										case "model_QUINT4_UPS":
+											service.setModelQUINT4UPS(rowItem, r);
+											break;
+										case "model_huawei_sun2000_28ktl":
+											service.setModelHuaweiSun200028ktl(rowItem, r);
+											break;
+										case "model_smartlogger3000":
+											service.setModelSmartlogger3000(rowItem, r);
+											break;
+										case "model_ginlong_solis_inverter_class6007":
+											service.setModelGinlongSolisInverterClass6007(rowItem, r);
+											break;
+										case "model_imtsolar_tv_class8004":
+											service.setModelImtsolarTvClass8004(rowItem, r);
+											break;
+											
 										}
 										
 		

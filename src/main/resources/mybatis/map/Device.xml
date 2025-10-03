@@ -8307,7 +8307,81 @@
 					WHERE
 					    id_device = #{id_device};
 	            </when>
-	                                                          
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            <when test="id_device_group == 102">
+	            	<!-- model_QUINT4_UPS -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActualInputVoltage`, `ActualInputCurrent`, `ActualOutputVoltage`, `ActualOutputCurrent`, `BatteryActualVoltage`, `BatteryChargeCurrent`, `BatteryTemperature`, `DeviceTemperature`, `StateofCharge`,`StateofChargeRemainingTime`,`StateofHealth`,`StateofHealthRemainingLifetime`,`OperationTime`,`BatteryModeTime`,`StatusAlarm`,`StatusWarning`,`Battery1StateofCharge`,`Battery1StateofHealth`,`Battery1Temperature`,`Battery1StatusofFuse`,`Battery1ActualInternalVoltage`,`Battery1ActualBlockVoltage`,`Battery1InstalledCapacity`,`Battery1NominalResistance`,`Battery1MaxTemperature`,`Battery1MinTemperature`,`Battery1NominalLifetime`,`Battery1MaxChargeCurrent`,`Battery1ChargeAbsorptionVoltage`,`Battery1ChargeEndvoltage`,`Battery1ChargeTemperatureCoefficient`,`Battery1DischargeEndvoltage`,`Battery1MaxDischargeCurrent`,`Battery1MaxTemperatureWarning`,`Battery1MinTemperatureWarning`,`Battery1DischargeEndvoltageLowCurrent`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActualInputVoltage`, `ActualInputCurrent`, `ActualOutputVoltage`, `ActualOutputCurrent`, `BatteryActualVoltage`, `BatteryChargeCurrent`, `BatteryTemperature`, `DeviceTemperature`, `StateofCharge`,`StateofChargeRemainingTime`,`StateofHealth`,`StateofHealthRemainingLifetime`,`OperationTime`,`BatteryModeTime`,`StatusAlarm`,`StatusWarning`,`Battery1StateofCharge`,`Battery1StateofHealth`,`Battery1Temperature`,`Battery1StatusofFuse`,`Battery1ActualInternalVoltage`,`Battery1ActualBlockVoltage`,`Battery1InstalledCapacity`,`Battery1NominalResistance`,`Battery1MaxTemperature`,`Battery1MinTemperature`,`Battery1NominalLifetime`,`Battery1MaxChargeCurrent`,`Battery1ChargeAbsorptionVoltage`,`Battery1ChargeEndvoltage`,`Battery1ChargeTemperatureCoefficient`,`Battery1DischargeEndvoltage`,`Battery1MaxDischargeCurrent`,`Battery1MaxTemperatureWarning`,`Battery1MinTemperatureWarning`,`Battery1DischargeEndvoltageLowCurrent`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            <when test="id_device_group == 112">
+	            	<!-- model_huawei_sun2000_28ktl -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`,`ReactivePower`,`TotalDCInputCurrent`,`TotalInputPower`,`InsulationResistance`,`PowerFactor`,`InverterStatus`,`CabinetTemperature`,`MajorFaultCode`,`MinorFaultCode`,`WarningCode`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `ActivePower`,`ReactivePower`,`TotalDCInputCurrent`,`TotalInputPower`,`InsulationResistance`,`PowerFactor`,`InverterStatus`,`CabinetTemperature`,`MajorFaultCode`,`MinorFaultCode`,`WarningCode`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 113">
+	            	<!-- model_smartlogger3000 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOn`,`PowerOff`,`PowerOnOff`,`PowerOnOffReverse`,`TransferTrip`,`ArrayReset`,`ActiveAdjustment`,`ReactiveAdjustment`,`ActiveAdjustment2`,`ReactiveAdjustment2`,`ActivePowerAdjustmentBy`,`PowerFactorAdjustment`,`DCCurrent`,`InputPower`,`CO2Reduction`,`ActivePower`,`PowerFactor`,`PlantStatusQinghai`,`ReactivePower`,`CO2ReductionLarge`,`DCCurrent2`,`ETotal`,`EDaily`,`DurationOfDailyPowerGeneration`,`PlantStatusXinjiang`,`PlantStatusNingxia`,`ActiveAlarmSequenceNumber`,`HistoricalAlarmSequenceNumber`,`PhaseACurrent`,`PhaseBCurrent`,`PhaseCCurrent`,`Uab`,`Ubc`,`Uca`,`Reserved`,`InverterEfficiency`,`MaxReactiveAdjustment`,`MinReactiveAdjustment`,`MaxActiveAdjustment`,`Locked`,`DIStatus`,`ESN`,`SystemReset`,`FastDeviceAccess`,`DeviceOperation`,`DeviceAccessStatus`,`ActivePowerControlMode`,`ActivePowerSchedulingTargetValue`,`ReactivePowerControlMode`,`ReactivePowerSchedulingCurveMode`,`ReactivePowerSchedulingTargetValue`,`ActiveSchedulingPercentage`,`CO2EmissionReductionCoefficient`,`PVModuleCapacity`,`RatedPlantCapacity`,`TotalRatedCapacityOfGridConnectedInverters`,`ConversionCoefficient`,`CommunicationStatus`,`AlarmInfo1`,`AlarmInfo2`,`AlarmInfo3`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `PowerOn`,`PowerOff`,`PowerOnOff`,`PowerOnOffReverse`,`TransferTrip`,`ArrayReset`,`ActiveAdjustment`,`ReactiveAdjustment`,`ActiveAdjustment2`,`ReactiveAdjustment2`,`ActivePowerAdjustmentBy`,`PowerFactorAdjustment`,`DCCurrent`,`InputPower`,`CO2Reduction`,`ActivePower`,`PowerFactor`,`PlantStatusQinghai`,`ReactivePower`,`CO2ReductionLarge`,`DCCurrent2`,`ETotal`,`EDaily`,`DurationOfDailyPowerGeneration`,`PlantStatusXinjiang`,`PlantStatusNingxia`,`ActiveAlarmSequenceNumber`,`HistoricalAlarmSequenceNumber`,`PhaseACurrent`,`PhaseBCurrent`,`PhaseCCurrent`,`Uab`,`Ubc`,`Uca`,`Reserved`,`InverterEfficiency`,`MaxReactiveAdjustment`,`MinReactiveAdjustment`,`MaxActiveAdjustment`,`Locked`,`DIStatus`,`ESN`,`SystemReset`,`FastDeviceAccess`,`DeviceOperation`,`DeviceAccessStatus`,`ActivePowerControlMode`,`ActivePowerSchedulingTargetValue`,`ReactivePowerControlMode`,`ReactivePowerSchedulingCurveMode`,`ReactivePowerSchedulingTargetValue`,`ActiveSchedulingPercentage`,`CO2EmissionReductionCoefficient`,`PVModuleCapacity`,`RatedPlantCapacity`,`TotalRatedCapacityOfGridConnectedInverters`,`ConversionCoefficient`,`CommunicationStatus`,`AlarmInfo1`,`AlarmInfo2`,`AlarmInfo3`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            <when test="id_device_group == 126">
+	            	<!-- model_ginlong_solis_inverter_class6007 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Activeower`,`TotalDCoutputpower`,`DCVoltage1`,`DCcurrent1`,`DCVoltage2`,`DCcurrent2`,`DCVoltage3`,`DCcurrent3`,`DCVoltage4`,`DCcurrent4`,`ABlinevoltage`,`BClinevoltage`,`CAlinevoltage`,`AphaseCurrent`,`BphaseCurrent`,`CphaseCurrent`,`Invertertemperature`,`GridFrequency`,`Inverterstatus`,`Actualvalueoflimitedpower`,`Reactivepowerhigh16bit`,`Reactivepowerlow16bit`,`Apparentpowerhigh16bit`,`Apparentpowerlow16bit`,`Realtimepowerfactor`,`TotalEnergy`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `Activeower`,`TotalDCoutputpower`,`DCVoltage1`,`DCcurrent1`,`DCVoltage2`,`DCcurrent2`,`DCVoltage3`,`DCcurrent3`,`DCVoltage4`,`DCcurrent4`,`ABlinevoltage`,`BClinevoltage`,`CAlinevoltage`,`AphaseCurrent`,`BphaseCurrent`,`CphaseCurrent`,`Invertertemperature`,`GridFrequency`,`Inverterstatus`,`Actualvalueoflimitedpower`,`Reactivepowerhigh16bit`,`Reactivepowerlow16bit`,`Apparentpowerhigh16bit`,`Apparentpowerlow16bit`,`Realtimepowerfactor`,`TotalEnergy`,`nvmActivePower`,`nvmActiveEnergy`,`MeasuredProduction`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	            
+	            <when test="id_device_group == 127">
+	            	<!-- model_imtsolar_tv_class8004 -->
+		            INSERT IGNORE INTO ${newtablename}(
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`,`tcell`,`text`,`wspeed`,`nvm_irradiance`,`nvm_temperature`,`nvm_panel_temperature`
+					)
+					SELECT
+		            	`time`, `id_device`, `error`, `low_alarm`, `high_alarm`, `irradiance`,`tcell`,`text`,`wspeed`,`nvm_irradiance`,`nvm_temperature`,`nvm_panel_temperature`
+					FROM 
+					    ${device_group_table}
+					WHERE
+					    id_device = #{id_device};
+	            </when>
+	            
+	                              	                            
 	        </choose> 
 	        
 		
