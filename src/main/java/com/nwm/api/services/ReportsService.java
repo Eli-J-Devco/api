@@ -124,6 +124,7 @@ import com.nwm.api.entities.DateTimeReportDataEntity;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.DevicesByTypeEntity;
 import com.nwm.api.entities.MonthlyDateEntity;
+import com.nwm.api.entities.PerformanceDataChartItemEntity;
 import com.nwm.api.entities.AccumulatedEnergyByMonthEntity;
 import com.nwm.api.entities.AlertEntity;
 import com.nwm.api.entities.AssetManagementAndOperationPerformanceDataEntity;
@@ -1101,37 +1102,45 @@ public class ReportsService extends DB {
 			obj.setTable_data_report(dataObj.getTable_data_report());
 			obj.setHave_meter(dataObj.isHave_meter());
 			
-			List<MonthlyDateEntity> dataEnergy = new ArrayList<>();
-			
 			if (dataObj.isHave_poa()) {
+				CustomerViewService customerViewService = new CustomerViewService();
 				SiteEntity siteObj = new SiteEntity();
 				siteObj.setId_site(dataObj.getId_site());
 				siteObj.setStart_date(obj.getStart_date());
 				siteObj.setEnd_date(obj.getEnd_date());
-				siteObj.setData_send_time(4);
+				siteObj.setData_send_time(ReportIntervals.DAILY.getValue());
 				siteObj.setDatatablename(dataObj.getTable_data_virtual());
 				siteObj.setTable_data_report(dataObj.getTable_data_report());
 				siteObj.setIs_show_each_meter(0);
 				siteObj.setTotalMeter(dataObj.isHave_meter() ? 1 : 0);
 				siteObj.setHidden_data_list(new ArrayList<>());
+				siteObj.setEnable_virtual_device(dataObj.isEnable_virtual_device() ? 1 : 0);
 				
-				List<ClientMonthlyDateEntity> virtualData = dataObj.isEnable_virtual_device() ? queryForList("CustomerView.getDataVirtualDevice", siteObj) : queryForList("CustomerView.getDataSiteDataReport", siteObj);
+				List<PerformanceDataChartItemEntity> data = customerViewService.getChartDataPerformance(siteObj);
+				List<ClientMonthlyDateEntity> actualData = data.stream().filter(item -> item.getType().equals("chart_energy_kwh")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<ClientMonthlyDateEntity> estimatedData = data.stream().filter(item -> item.getType().equals("expected_power") || item.getType().equals("expected_energy")).findFirst().orElse(new PerformanceDataChartItemEntity()).getData_energy();
+				List<MonthlyDateEntity> reportData = new ArrayList<>();
 				
-				dataEnergy = virtualData.stream().map(item -> {
-					MonthlyDateEntity dataItem = new MonthlyDateEntity();
-					
-					dataItem.setCategories_time(LocalDate.parse(item.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
-					dataItem.setActual(item.getChart_energy_kwh());
-					dataItem.setEstimated(item.getExpected_energy());
-					if (Objects.nonNull(dataItem.getActual()) && Objects.nonNull(dataItem.getEstimated()) && dataItem.getEstimated() > 0) dataItem.setPercent(BigDecimal.valueOf(dataItem.getActual() / dataItem.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
-					
-					return dataItem;
-				}).collect(Collectors.toList());
+				if (Objects.nonNull(actualData)) {
+					for (int i = 0; i < actualData.size(); i++) {
+						MonthlyDateEntity item = new MonthlyDateEntity();
+						ClientMonthlyDateEntity actualItem = actualData.get(i);
+						ClientMonthlyDateEntity estimatedItem = Objects.nonNull(estimatedData) && estimatedData.size() > 0 ? estimatedData.get(i) : new ClientMonthlyDateEntity();
+						
+						item.setCategories_time(LocalDate.parse(actualItem.getTime_full()).format(DateTimeFormatter.ofPattern("MM/dd/yyy")));
+						item.setActual(actualItem.getChart_energy_kwh());
+						item.setEstimated(estimatedItem.getExpected_energy());
+						if (Objects.nonNull(item.getActual()) && Objects.nonNull(item.getEstimated()) && item.getEstimated() > 0) item.setPercent(BigDecimal.valueOf(item.getActual() / item.getEstimated() * 100).setScale(1, RoundingMode.HALF_UP).doubleValue());
+						
+						reportData.add(item);
+					}
+				}
+				
+				dataObj.setDataReports(reportData);
 			} else {
-				dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+				List<MonthlyDateEntity> dataEnergy = queryForList("Reports.getDataEnergyMonthlyReport", obj);
+				dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			}
-			
-			dataObj.setDataReports(Lib.fulfillData(getDateTimeList(obj, MonthlyDateEntity.class), dataEnergy, "categories_time"));
 			
 			return dataObj;
 		} catch (Exception ex) {
