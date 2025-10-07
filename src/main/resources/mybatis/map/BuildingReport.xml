@@ -117,7 +117,7 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
 						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
-						AVG(IFNULL(dv.humid, 0)) AS nvm_humid
+						AVG(IFNULL(dv.irradiance, 0)) AS nvm_humid
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
@@ -154,7 +154,7 @@
 						DATE_FORMAT( CONVERT_TZ( dv.time, 'UTC', t.value ), '%Y-%m-%d' ) AS time_format,
 						AVG(IFNULL(dv.nvm_irradiance, 0)) AS nvm_irradiance,
 						AVG(IFNULL(dv.nvm_temperature, 0)) AS nvm_temperature,
-						AVG(IFNULL(dv.humid, 0)) AS nvm_humid
+						AVG(IFNULL(dv.irradiance, 0)) AS nvm_humid
 					FROM
 						${item.datatablename} dv
 						LEFT JOIN device d ON d.id = dv.id_device
