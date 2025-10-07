@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -66,12 +67,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 import com.nwm.api.entities.DeviceEntity;
 import com.nwm.api.entities.ModelCellModemEntity;
 import com.nwm.api.entities.ModelDataloggerEntity;
+import com.nwm.api.entities.ModelHuaweiSun200028ktlEntity;
 import com.nwm.api.entities.ModelOpenMeteoWeatherEntity;
 import com.nwm.api.entities.ModelSmaInverterStp3000ktlus10Entity;
 import com.nwm.api.entities.ModelSmaInverterStp62us41Entity;
@@ -84,6 +88,7 @@ import com.nwm.api.services.BuiltInReportService;
 import com.nwm.api.services.DeviceService;
 import com.nwm.api.services.ModelCellModemService;
 import com.nwm.api.services.ModelDataloggerService;
+import com.nwm.api.services.ModelHuaweiSun200028ktlService;
 import com.nwm.api.services.ModelSmaInverterStp3000ktlus10Service;
 import com.nwm.api.services.ModelSmaInverterStp62us41Service;
 import com.nwm.api.services.ReportsService;
@@ -3165,5 +3170,89 @@ public class BatchJob {
 			}
 		}
 	}
+	
+	
+	
+	
+	public void runCronJobOldDataImport() {
+		
+		ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
+		File folder = new File("/Volumes/Data/Gaskins/test_file");
+
+        // List all files
+        File[] files = folder.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isFile()) { // only files, not sub-directories
+                    System.out.println("File: " + file.getName());
+                    
+                    String filePath = folder + "/" + file.getName(); // your CSV file path
+
+                    try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+                        String line;
+                        String serialNumber = "";
+                        
+                        
+//                        ModelHuaweiSun200028ktlService serviceHuaweiSun200028ktl = new ModelHuaweiSun200028ktlService();
+//						// Check insert database status
+//						while ((line = br.readLine()) != null) {
+//							sb.append(line); // appends line to string buffer
+//							sb.append("\n"); // line feed
+//							// Convert string to array
+//							List<String> words = Lists.newArrayList(Splitter.on(',').split(line));
+//							if (words.size() > 0) {
+//								ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(line);
+								
+								
+                        while ((line = br.readLine()) != null) {
+                            // Split by comma
+                            String[] values = line.split(",");
+                            
+                            System.out.println("values: " + values);
+                            System.out.println();
+                            for (String value : values) {
+                            	int indexFindSerialNumber = value.indexOf("ESN:");
+                            	int indexTitle = value.indexOf("#Time");
+                            	
+                                if (indexFindSerialNumber != -1) {
+                                	String[] stringArray = value.split(":");
+                                	if(stringArray.length > 1) {
+                                		serialNumber = stringArray[1];
+                                	}
+                                }
+                                
+                                // Check insert data 
+                                if(indexTitle == -1 && indexFindSerialNumber == -1 && serialNumber != "") {
+                                	String itemLine = value.replace(";",",");
+                                	System.out.println(itemLine);
+                                	
+//                                	int index = 5;
+//                                    String result = str.substring(0, index) + insertStr + str.substring(index);
+                                    
+                                    itemLine = itemLine.substring(0, 17) + ",0,0,0" + itemLine.substring(17);
+                                    
+                                	ModelHuaweiSun200028ktlEntity dataEntity = serviceHuaweiSun200028ktl.setModelHuaweiSun200028ktl(itemLine);
+//                                	System.out.println(dataEntity);
+//                                	System.out.print(value + " | " + serialNumber);
+//                                	System.out.println();
+                                }
+                                
+//                                System.out.print(value + " | " + serialNumber);
+                            }
+//                            System.out.println();
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    
+                }
+            }
+        } else {
+            System.out.println("Folder not found or empty.");
+        }
+        
+        
+	}
+	
 
 }

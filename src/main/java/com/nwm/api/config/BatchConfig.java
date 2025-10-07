@@ -251,6 +251,24 @@ public class BatchConfig {
 	
 	
 	/**
+	 * @description batch job import data old 
+	 * @author long.pham
+	 * @since 2021-05-18
+	 */
+//	@Scheduled(cron = "* * * * * *")
+//	@Scheduled(cron = "0 */1 * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
+	public void startBatchOldDataImport() throws Exception {
+		ResourceBundle resourceAppBundle = ResourceBundle.getBundle(Constants.appConfigFileName);
+		String env = readProperty(resourceAppBundle, "spring.profiles.active", "dev");
+		if (env.equals("staging")) {
+//			BatchJob job =new BatchJob(); 
+//			job.runCronJobOldDataImport();
+		}
+	}
+	
+	
+	/**
 	 * @description batch job generate data report
 	 * @author long.pham
 	 * @since 2021-05-18

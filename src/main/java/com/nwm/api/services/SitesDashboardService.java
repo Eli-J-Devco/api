@@ -437,12 +437,21 @@ public class SitesDashboardService extends DB {
 						// get Energy usage 
 						List<ClientMonthlyDateEntity> data = new ArrayList<>();
 						
+						System.out.println(obj.getId_filter());
+						
 						switch (obj.getId_filter()) {
-							case "today": // 1 hour
+							case "hourly": // 1 hour
 								interval = 1;
 								timeUnit = ChronoUnit.HOURS;
-								timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy HH:mm");
+								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 								categoriesTimeFormat = DateTimeFormatter.ofPattern("HH:mm a");
+								break;
+							
+							case "day": // 1 hour
+								interval = 1;
+								timeUnit = ChronoUnit.DAYS;
+								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyyy");
 								break;
 								
 							case "this_week": // 1 day
@@ -453,6 +462,14 @@ public class SitesDashboardService extends DB {
 								timeUnit = ChronoUnit.DAYS;
 								timeFullFormat = DateTimeFormatter.ofPattern("MM-dd-yyyy");
 								categoriesTimeFormat = DateTimeFormatter.ofPattern("dd");
+								break;
+								
+							case "month":
+								interval = 1;
+								timeUnit = ChronoUnit.MONTHS;
+								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("LLL. yyyy");
+								start = start.withDayOfMonth(1);
 								break;
 								
 							case "12_month":
@@ -471,6 +488,13 @@ public class SitesDashboardService extends DB {
 								start = start.withDayOfMonth(1);
 								break;
 								
+							default:
+								interval = 1;
+								timeUnit = ChronoUnit.DAYS;
+								timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+								categoriesTimeFormat = DateTimeFormatter.ofPattern("MM-dd-yyyyy");
+								break;
+								
 								
 						}
 						
@@ -479,6 +503,7 @@ public class SitesDashboardService extends DB {
 							ClientMonthlyDateEntity dateTime = new ClientMonthlyDateEntity();
 							dateTime.setTime_full(start.format(timeFullFormat));
 							dateTime.setCategories_time(start.format(categoriesTimeFormat));
+							dateTime.setEnergy(0.0);
 							dateTimeList.add(dateTime);
 							start = start.plus(interval, timeUnit);
 						}

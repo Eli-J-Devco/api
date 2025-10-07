@@ -143,6 +143,7 @@ public class SitesDevicesEntity extends SortEntity {
 	private String start_date;
 	private String end_date;
 	private String id_filter;
+	private String id_time_filter;
 	private double cost;
 	private String cost_unit;
 	private int site_domain_type;
@@ -195,6 +196,13 @@ public class SitesDevicesEntity extends SortEntity {
 	
 	
 	
+	
+	public String getId_time_filter() {
+		return id_time_filter;
+	}
+	public void setId_time_filter(String id_time_filter) {
+		this.id_time_filter = id_time_filter;
+	}
 	public int getId_site_group() {
 		return id_site_group;
 	}
