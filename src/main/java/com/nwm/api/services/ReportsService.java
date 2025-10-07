@@ -3809,7 +3809,7 @@ public class ReportsService extends DB {
 								cel26D.setCellStyle(tableRowCellStyle);
 								cel26D = row26.createCell(2);
 								cel26D.setCellStyle(tableRowCellStyle);
-								sheet.addMergedRegion(new CellRangeAddress(t, t, 0, 2));
+								sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 0, 2));
 							}
 							
 							Cell cel26G = row26.createCell(3 + 3*i);
@@ -3819,7 +3819,7 @@ public class ReportsService extends DB {
 							cel26H.setCellStyle(tableRowNoDecimalCellStyle);
 							Cell cel26I = row26.createCell(5 + 3*i);
 							cel26I.setCellStyle(tableRowNoDecimalCellStyle);
-							sheet.addMergedRegion(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
+							sheet.addMergedRegionUnsafe(new CellRangeAddress(t, t, 3 + 3*i, 5 + 3*i));
 						}
 					}
 				}
