@@ -2018,9 +2018,9 @@ public class ReportsService extends DB {
 							DailyDateEntity item = dataExports.get(i);
 							RegularTimePeriod period = new Minute(categoryFormat.parse(item.getCategories_time()));
 							
-							powerSeries.add(period, item.getPower());
-							energySeries.add(period, item.getEnergy());
-							irradianceSeries.add(period, item.getIrradiance());
+							powerSeries.addOrUpdate(period, item.getPower());
+							energySeries.addOrUpdate(period, item.getEnergy());
+							irradianceSeries.addOrUpdate(period, item.getIrradiance());
 						}
 						
 						// category axis
@@ -2421,9 +2421,9 @@ public class ReportsService extends DB {
 							MonthlyDateEntity item = (MonthlyDateEntity) dataExports.get(i);
 							RegularTimePeriod period = new Day(dateFormat.parse(item.getCategories_time()));
 							
-							actualSeries.add(period, item.getActual());
-							estimateSeries.add(period, item.getEstimated());
-							estimateIndexSeries.add(period, item.getPercent());
+							actualSeries.addOrUpdate(period, item.getActual());
+							estimateSeries.addOrUpdate(period, item.getEstimated());
+							estimateIndexSeries.addOrUpdate(period, item.getPercent());
 						}
 						
 						// category axis
@@ -3059,8 +3059,8 @@ public class ReportsService extends DB {
 								QuarterlyDateEntity item = dataExports.get(i);
 								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
 								
-								estimateSeries.add(period, item.getEstimated());
-								actualSeries.add(period, item.getActual());
+								estimateSeries.addOrUpdate(period, item.getEstimated());
+								actualSeries.addOrUpdate(period, item.getActual());
 							}
 							
 							// category axis
@@ -3087,8 +3087,8 @@ public class ReportsService extends DB {
 								QuarterlyDateEntity item = dataExports.get(i);
 								RegularTimePeriod period = new Month(monthYearFormat.parse(item.getCategories_time()));
 								
-								estimatedCumulativeSeries.add(period, item.getEstimatedCumulative());
-								actualCumulativeSeries.add(period, item.getActualCumulative());
+								estimatedCumulativeSeries.addOrUpdate(period, item.getEstimatedCumulative());
+								actualCumulativeSeries.addOrUpdate(period, item.getActualCumulative());
 							}
 							
 							// category axis
@@ -4004,7 +4004,7 @@ public class ReportsService extends DB {
 									break;
 							}
 							
-							series.add(period, itemActual);
+							series.addOrUpdate(period, itemActual);
 						}
 					}
 				}
