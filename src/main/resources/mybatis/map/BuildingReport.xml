@@ -360,36 +360,7 @@
 		</foreach>
 		
 		) m ORDER BY m.time_full ASC
-		<!-- WHERE m.time_full IS NOT NULL -->
-
-		<!-- SELECT
-			time_full,
-			time_format,
-			days,
-			categories_time,
-			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
-		FROM (
 		
-		
-				<foreach collection="devices" item="item" index="index" separator="union all">
-					SELECT 
-						DATE_FORMAT(dv.time, '%b %Y' ) AS categories_time,
-						DATE_FORMAT(dv.time, '%Y-%m' ) AS time_format,
-						DATE_FORMAT( dv.time, '%Y-%m' ) AS time_full,
-						DATE_FORMAT( LAST_DAY(dv.time), '%d' ) AS days,
-						dv.ActualGeneration AS nvmActiveEnergy
-					FROM ${table_data_report} dv 
-					WHERE dv.id_device = #{item.id} 
-					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:s" ) BETWEEN  DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
-					
-					
-				</foreach>
-
-		) t
-		
-		GROUP BY
-			time_format	-->
 		
 	</select>
 	

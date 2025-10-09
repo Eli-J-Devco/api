@@ -14,6 +14,7 @@ import java.util.Map;
 
 import com.nwm.api.DBManagers.DB;
 import com.nwm.api.entities.AlertEntity;
+import com.nwm.api.entities.BuildingReportDateEntity;
 import com.nwm.api.entities.ClientMonthlyDateEntity;
 import com.nwm.api.entities.DevicePanelEntity;
 import com.nwm.api.entities.DeviceZoneEntity;
@@ -267,6 +268,54 @@ public class SitesDashboardService extends DB {
 	}
 	
 	/**
+	 * @description get data 7days
+	 * @author long.pham
+	 * @since 2022-03-04
+	 * @param id_site
+	 * @return Object
+	 */
+	
+	public List getData7Days(SitesDevicesEntity obj) {
+		try {
+			List dataDevices = queryForList("SitesDashboard.getListDeviceByMeterType", obj);
+			
+			if (dataDevices.size() > 0) {
+				obj.setList_device(dataDevices);
+				
+				int interval = 1;
+				DateTimeFormatter timeFullFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				DateTimeFormatter categoriesTimeFormat = DateTimeFormatter.ofPattern("E MMM dd, yyyy");
+				DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("E MMM dd, yyyy");
+				
+				ChronoUnit timeUnit = ChronoUnit.DAYS;
+				LocalDateTime start = LocalDateTime.parse(obj.getStart_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				LocalDateTime end = LocalDateTime.parse(obj.getEnd_date(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+				
+				List<BuildingReportDateEntity> dateTimeList = new ArrayList<>();
+				while (!start.isAfter(end)) {
+					BuildingReportDateEntity dateTime = new BuildingReportDateEntity();
+					dateTime.setTime_full(start.format(timeFullFormat));
+					dateTime.setCategories_time(start.format(categoriesTimeFormat));
+					dateTime.setTime_format(start.format(timeFormat));
+					dateTimeList.add(dateTime);
+					start = start.plus(interval, timeUnit);
+				}
+				
+				List dataWeatherCurrentMonth = queryForList("SitesDashboard.getData7Days", obj);
+				List<BuildingReportDateEntity> fillData = Lib.fulfillData(dateTimeList, dataWeatherCurrentMonth, "time_full");
+				
+				return fillData;
+			} else {
+				return new ArrayList();
+			}
+				
+		} catch (Exception ex) {
+			return new ArrayList();
+		}
+	}
+	
+	
+	/**
 	 * @description get list device by id site
 	 * @author long.pham
 	 * @since 2022-03-04
@@ -437,7 +486,6 @@ public class SitesDashboardService extends DB {
 						// get Energy usage 
 						List<ClientMonthlyDateEntity> data = new ArrayList<>();
 						
-						System.out.println(obj.getId_filter());
 						
 						switch (obj.getId_filter()) {
 							case "hourly": // 1 hour

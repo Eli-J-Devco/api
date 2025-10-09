@@ -1190,4 +1190,53 @@
 	</select>
 	
 	
+	<select id="getListDeviceByMeterType" resultType="Map">
+		SELECT
+			d.id,
+			d.datatablename,
+			d.devicename,
+			d.id_device_group,
+			d.meter_type
+		FROM
+			device d 
+		WHERE
+			d.id_site = #{id_site}
+			AND d.`status` = 1 
+			AND d.is_delete = 0 
+			AND d.meter_type = #{meter_type}
+	</select>
+	
+	
+	
+	
+	<select id="getData7Days" resultType="com.nwm.api.entities.BuildingReportDateEntity">
+		SELECT
+			time_full,
+			time_format,
+			categories_time,
+			ROUND(SUM(`nvmActiveEnergy`), 2) AS `energy` 
+		FROM (
+		
+				<foreach collection="list_device" item="item" index="index" separator="union all">
+					SELECT 
+						DATE_FORMAT(dv.time, '%a' ) AS categories_time,
+						DATE_FORMAT(dv.time, '%a %b %d, %Y' ) AS time_format,
+						DATE_FORMAT( dv.time, '%Y-%m-%d' ) AS time_full,
+						dv.ActualGeneration AS nvmActiveEnergy
+					FROM ${table_data_report} dv 
+					WHERE dv.id_device = #{item.id} 
+					AND DATE_FORMAT(dv.time, "%Y-%m-%d %H:%i:%s" ) BETWEEN  
+					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
+					AND DATE_FORMAT(#{end_date},"%Y-%m-%d 23:59:59" ) 
+				</foreach>
+
+		) t
+		
+		GROUP BY
+			time_format	
+		
+	</select>
+	
+	
+	
 </mapper>
