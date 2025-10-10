@@ -645,5 +645,43 @@ public class ReportsController extends BaseController {
 			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
 		}
 	}
+	
+	/**
+	 * Get meter level production irradiance temp report
+	 * @author Duy.Phan
+	 * @since 2025-09-10
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/meter-level-production-irradiance-temp-report")
+	public Object getMeterLevelProductionIrradianceTempReport(@RequestBody ViewReportEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			ViewReportEntity dataObj = service.getMeterLevelProductionIrradianceTempReport(obj);
+			
+			if (dataObj == null) return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+			return this.jsonResult(true, Constants.GET_SUCCESS_MSG, dataObj, 1);
+		} catch (Exception e) {
+			log.error(e);
+			return this.jsonResult(false, Constants.GET_ERROR_MSG, null, 0);
+		}
+	}
+	
+	/**
+	 * Sent mail meter level production irradiance temp report in excel
+	 * @author Duy.Phan
+	 * @since 2025-09-10
+	 * @param obj
+	 * @return data (status, message, array, total_row
+	 */
+	@PostMapping("/sent-mail-excel-meter-level-production-irradiance-temp-report")
+	public Object sentMailMeterLevelProductionIrradianceTempReport(@RequestBody ViewReportEntity obj) {
+		try {
+			ReportsService service = new ReportsService();
+			return service.sentMailMeterLevelProductionIrradianceTempReport(obj) ? this.jsonResult(true, Constants.SENT_EMAIL_SUCCESS, obj, 1) : this.jsonResult(false, Constants.SENT_EMAIL_ERROR, null, 0);
+		} catch (Exception e) {
+			return this.jsonResult(false, Constants.SENT_EMAIL_ERROR, e, 0);
+		}
+	}
 
 }

@@ -129,6 +129,9 @@ public class Constants {
 	public static final String mailSanityCheckReportTitle = "mailSanityCheckReportTitle";
 	public static final String mailSanityCheckReportBody = "mailSanityCheckReportBody";
 	
+	public static final String mailMeterLevelProductionIrradianceTempReportTitle = "mailMeterLevelProductionIrradianceTempReportTitle";
+	public static final String mailMeterLevelProductionIrradianceTempReportBody = "mailMeterLevelProductionIrradianceTempReportBody";
+	
 	public static final String mailOTPTitle = "mailOTPTitle";
 	public static final String mailOTPBody = "mailOTPBody";
 	
@@ -280,7 +283,8 @@ public class Constants {
     	PRODUCTION_TREND_REPORT(2),
     	LEVITON_BMO_CONSUMPTION_REPORT(3),
     	ASSET_MANAGEMENT_AND_OPERATION_PERFORMANCE_REPORT(4),
-    	SANITY_CHECK_REPORT(5);
+    	SANITY_CHECK_REPORT(5),
+    	METER_LEVEL_PRODUCTION_IRRADIANCE_TEMP_REPORT(6);
     	
     	private final int value;
     	
@@ -704,6 +708,9 @@ public class Constants {
 		case 25:
 			// sanity check report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportBody);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportBody);
 		default:
 			return null;
 		}
@@ -780,6 +787,9 @@ public class Constants {
 		case 25:
 			// sanity check report
 			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailSanityCheckReportTitle);
+		case 26:
+			// meter level production irradiance temp
+			return Lib.getReourcePropValue(Constants.mailConfigFileName, Constants.mailMeterLevelProductionIrradianceTempReportTitle);
 		default:
 			return null;
 		}
