@@ -387,7 +387,7 @@
 				WHERE
 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
 					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
 					ORDER BY dv.nvmActivePower DESC LIMIT 1
 			</foreach>
 		)t
@@ -411,7 +411,7 @@
 				WHERE
 					DATE_FORMAT(CONVERT_TZ( dv.time, "UTC", t.`value`), "%Y-%m-%d %H:%i:%s" ) BETWEEN 
 					DATE_FORMAT(#{start_date},"%Y-%m-%d 00:00:00" ) 
-					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 00:00:00" )
+					AND DATE_FORMAT( #{end_date},"%Y-%m-%d 23:59:59" )
 					ORDER BY dv.nvmActivePower DESC LIMIT 1
 			</foreach>
 		)t
