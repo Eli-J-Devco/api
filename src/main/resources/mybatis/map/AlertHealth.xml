@@ -75,7 +75,7 @@
 		</if>
 		
 		<if test="id_site_group != null and id_site_group > 0">
-				AND ssg.id = #{id_site_group}
+				AND s.id_site_group = #{id_site_group}
 		</if>
 		
 		<if test="date_from != null and !date_from.isEmpty() and date_to != null and !date_to.isEmpty()">
@@ -180,9 +180,6 @@
 			) h ON h.id_site = s.id
 			<if test="is_supper_admin != 1">
 				JOIN site_employee_map sem ON sem.id_site = s.id AND sem.id_employee = #{id_employee} AND sem.is_hiding = 0
-			</if>
-			<if test="id_site_group != null and id_site_group > 0">
-				LEFT JOIN site_sub_group ssg ON ssg.id = s.id_site_sub_group
 			</if>
 			
 		WHERE

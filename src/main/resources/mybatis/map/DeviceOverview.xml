@@ -109,7 +109,7 @@
 			</if>
 			
 			<if test="id_site_group != null and id_site_group > 0">
-				AND sgm.id_site_group = #{id_site_group}
+				AND s.id_site_group = #{id_site_group}
 			</if>
 			
 			<if test="id_site != null and id_site > 0">
@@ -222,7 +222,7 @@
 			</if>
 			
 			<if test="id_site_group != null and id_site_group > 0">
-				AND sgm.id_site_group = #{id_site_group}
+				AND s.id_site_group = #{id_site_group}
 			</if>
 			
 			<if test="id_device_type != null and id_device_type > 0">
